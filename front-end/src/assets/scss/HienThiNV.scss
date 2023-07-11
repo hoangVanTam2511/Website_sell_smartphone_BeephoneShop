@@ -1,0 +1,42 @@
+.btn-add {
+  margin-right: 20px;
+  margin-top: 20px;
+  .bl-add {
+    float: right;
+    padding-left: 10px;
+  }
+  .btn-them-tk {
+    background-color: rgb(69 88 255);
+    color: white;
+    border-radius: 10px;
+    margin-left: 20px;
+    margin-right: 10px;
+    &:hover {
+      background-color: rgba(163, 224, 255, 0.667);
+      color: rgb(232, 36, 36);
+      border-radius: 10px;
+    }
+  }
+
+  .btn-them-tu-file {
+    background-color: rgb(26 167 132);
+    color: white;
+    border-radius: 10px;
+  }
+  .btn-them-tu-file:hover {
+    background-color: rgb(2, 101, 70);
+    color: white;
+    border-radius: 10px;
+  }
+}
+.form-tbl {
+  // padding-left: 20em;
+  padding-top: 10px;
+  margin-top: 10px;
+}
+.text-f {
+  margin-bottom: 58px;
+}
+.date-p {
+  margin-bottom: 20px;
+}
