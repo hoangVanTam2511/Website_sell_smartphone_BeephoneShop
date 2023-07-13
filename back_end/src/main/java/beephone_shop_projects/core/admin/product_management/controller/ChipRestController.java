@@ -29,7 +29,7 @@ public class ChipRestController {
 
     @GetMapping("/view-all")
     public Page<Chip> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
-        Pageable pageable = PageRequest.of(page-1,5);
+        Pageable pageable = PageRequest.of(page,5);
         return chipService.getAll(pageable);
     }
 

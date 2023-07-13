@@ -1,7 +1,8 @@
 package beephone_shop_projects.core.admin.product_management.controller;
 
-import beephone_shop_projects.core.admin.product_management.service.impl.MauSacServiceImpl;
-import beephone_shop_projects.entity.MauSac;
+import beephone_shop_projects.core.admin.product_management.service.impl.ImeiServiceImpl;
+import beephone_shop_projects.entity.Imei;
+import beephone_shop_projects.entity.ManHinh;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,37 +19,33 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/mau-sac")
-@CrossOrigin(origins = "http://localhost:3000")
-public class MauSacRestController{
+@RequestMapping("/imei")
+@CrossOrigin
+public class ImeiRestController {
 
     @Autowired
-    private MauSacServiceImpl mauSacService;
+    private ImeiServiceImpl imeiService;
 
     @GetMapping("/view-all")
-    public Page<MauSac> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
-        Pageable pageable = PageRequest.of(page,2);
-        return mauSacService.getAll(pageable);
+    public Page<Imei> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
+        Pageable pageable = PageRequest.of(page,5);
+        return imeiService.getAll(pageable);
     }
 
     @DeleteMapping("/delete")
     public void delete(@RequestParam("id")String id) {
-      mauSacService.delete(id);
+        imeiService.delete(id);
     }
 
     @PostMapping("/save")
-    public void save(@RequestBody MauSac mauSac) {
-     mauSacService.insert(mauSac);
+    public void save(@RequestBody Imei imei) {
+        imeiService.insert(imei);
     }
 
     @PutMapping("/update/{id}")
-    public void update(@RequestBody MauSac mauSac,@PathVariable("id")String id) {
-        mauSac.setId(id);
-        mauSacService.insert(mauSac);
+    public void update(@RequestBody Imei imei ,@PathVariable("id")String id) {
+        imeiService.insert(imei);
     }
 
-    @GetMapping("/get-one/{id}")
-    public MauSac update(@PathVariable("id")String id) {
-        return mauSacService.getOne(id);
-    }
+
 }

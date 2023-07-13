@@ -27,7 +27,7 @@ public class SanPhamRestController {
 
     @GetMapping("/view-all")
     public Page<SanPham> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
-        Pageable pageable = PageRequest.of(page-1,5);
+        Pageable pageable = PageRequest.of(page,5);
         return sanPhamService.getAll(pageable);
     }
 
