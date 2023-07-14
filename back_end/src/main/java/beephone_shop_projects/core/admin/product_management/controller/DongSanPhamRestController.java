@@ -1,7 +1,6 @@
 package beephone_shop_projects.core.admin.product_management.controller;
 
 import beephone_shop_projects.core.admin.product_management.service.impl.DongSanPhamServiceImpl;
-import beephone_shop_projects.entity.Chip;
 import beephone_shop_projects.entity.DongSanPham;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,7 +27,7 @@ public class DongSanPhamRestController {
 
     @GetMapping("/view-all")
     public Page<DongSanPham> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
-        Pageable pageable = PageRequest.of(page-1,5);
+        Pageable pageable = PageRequest.of(page,5);
         return dongSanPhamService.getAll(pageable);
     }
 

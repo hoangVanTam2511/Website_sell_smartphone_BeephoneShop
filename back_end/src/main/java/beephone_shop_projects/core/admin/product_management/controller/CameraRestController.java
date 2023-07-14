@@ -27,7 +27,7 @@ public class CameraRestController  {
     private CameraServiceImpl cameraService;
     @GetMapping("/view-all")
     public Page<Camera> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
-        Pageable pageable = PageRequest.of(page-1,5);
+        Pageable pageable = PageRequest.of(page,5);
         return cameraService.getAll(pageable);
     }
 

@@ -22,7 +22,6 @@ import java.math.BigDecimal;
 @Table(name = "chi_tiet_san_pham")
 public class ChiTietSanPham extends PrimaryEntity implements IsIdentified {
 
-    private String tenSanPham;
 
     private BigDecimal donGia;
 
@@ -69,9 +68,6 @@ public class ChiTietSanPham extends PrimaryEntity implements IsIdentified {
     @JoinColumn(name = "id_camera")
     private Camera idCamera;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_imei")
-    private Imei idImei;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_hinh_thuc")

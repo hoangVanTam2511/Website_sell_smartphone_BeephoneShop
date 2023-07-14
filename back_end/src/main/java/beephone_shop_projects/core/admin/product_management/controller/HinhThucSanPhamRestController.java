@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/hinh-thuc-san-pham ")
-@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/hinh-thuc-san-pham")
+@CrossOrigin
 public class HinhThucSanPhamRestController {
 
     @Autowired
@@ -28,7 +28,7 @@ public class HinhThucSanPhamRestController {
 
     @GetMapping("/view-all")
     public Page<HinhThucSanPham> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
-        Pageable pageable = PageRequest.of(page-1,5);
+        Pageable pageable = PageRequest.of(page,5);
         return hinhThucSanPhamService.getAll(pageable);
     }
 
