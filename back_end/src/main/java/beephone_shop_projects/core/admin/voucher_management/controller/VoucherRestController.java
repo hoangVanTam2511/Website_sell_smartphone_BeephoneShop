@@ -6,6 +6,7 @@ import beephone_shop_projects.core.admin.voucher_management.service.VoucherServi
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,17 +14,19 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/voucher")
-public class VoucherController {
+@CrossOrigin("*")
+public class VoucherRestController {
     @Autowired
     private VoucherService voucherService;
 
     @GetMapping("/hien-thi")
-    public ResponseEntity hienThiVoucher() {
-        return new ResponseEntity(voucherService.getAll(), HttpStatus.OK);
+    public ResponseEntity hienThiVoucher(@RequestParam( name = "page",defaultValue = "0") Integer page) {
+        return new ResponseEntity(voucherService.getAll(page), HttpStatus.OK);
     }
 
     @GetMapping("/get-by-id/{ma}")
