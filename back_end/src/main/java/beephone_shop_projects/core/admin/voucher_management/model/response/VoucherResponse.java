@@ -22,7 +22,7 @@ public interface VoucherResponse {
     Date getNgayKetThuc();
 
     @Value("#{target.giaTriVoucher}")
-    BigDecimal getGiaTri();
+    BigDecimal getGiaTriVoucher();
 
     @Value("#{target.trangThai}")
     Integer getTrangThai();

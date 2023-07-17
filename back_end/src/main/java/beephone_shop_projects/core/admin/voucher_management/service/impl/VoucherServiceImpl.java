@@ -23,10 +23,8 @@ public class VoucherServiceImpl implements VoucherService {
     private VoucherRepository voucherRepository;
 
     @Override
-    public List<VoucherResponse> getAll(Integer page) {
-        Pageable pageable = PageRequest.of(page, 5);
-        Page<VoucherResponse> result = voucherRepository.getAllVoucher(pageable);
-        return result.getContent();
+    public Page<VoucherResponse> getAll(Pageable pageable) {
+        return voucherRepository.getAllVoucher(pageable);
     }
 
     @Override

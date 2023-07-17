@@ -2,8 +2,12 @@ package beephone_shop_projects.core.admin.voucher_management.controller;
 
 import beephone_shop_projects.core.admin.voucher_management.model.request.CreateVoucherRequest;
 import beephone_shop_projects.core.admin.voucher_management.model.request.UpdateVoucherRequest;
+import beephone_shop_projects.core.admin.voucher_management.model.response.VoucherResponse;
 import beephone_shop_projects.core.admin.voucher_management.service.VoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -25,8 +29,9 @@ public class VoucherRestController {
     private VoucherService voucherService;
 
     @GetMapping("/hien-thi")
-    public ResponseEntity hienThiVoucher(@RequestParam( name = "page",defaultValue = "0") Integer page) {
-        return new ResponseEntity(voucherService.getAll(page), HttpStatus.OK);
+    public Page<VoucherResponse> hienThiVoucher(@RequestParam( value = "page",defaultValue = "1") Integer page) {
+        Pageable pageable = PageRequest.of(page, 2);
+        return voucherService.getAll(pageable);
     }
 
     @GetMapping("/get-by-id/{ma}")

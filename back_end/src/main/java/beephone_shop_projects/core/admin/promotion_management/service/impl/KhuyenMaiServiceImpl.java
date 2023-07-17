@@ -7,6 +7,9 @@ import beephone_shop_projects.core.admin.promotion_management.repository.KhuyenM
 import beephone_shop_projects.core.admin.promotion_management.service.KhuyenMaiService;
 import beephone_shop_projects.entity.KhuyenMai;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,8 +21,8 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
     private KhuyenMaiRepository khuyenMaiRepository;
 
     @Override
-    public List<KhuyenMaiResponse> getAll() {
-        return khuyenMaiRepository.getAllKhuyenMai();
+    public Page<KhuyenMaiResponse> getAll(Pageable pageable) {
+        return khuyenMaiRepository.getAllKhuyenMai(pageable);
     }
 
     @Override
