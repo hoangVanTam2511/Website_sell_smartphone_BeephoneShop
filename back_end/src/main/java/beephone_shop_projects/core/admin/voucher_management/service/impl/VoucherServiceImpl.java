@@ -8,6 +8,9 @@ import beephone_shop_projects.core.admin.voucher_management.service.VoucherServi
 import beephone_shop_projects.entity.Voucher;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -20,8 +23,10 @@ public class VoucherServiceImpl implements VoucherService {
     private VoucherRepository voucherRepository;
 
     @Override
-    public List<VoucherResponse> getAll() {
-        return voucherRepository.getAllVoucher();
+    public List<VoucherResponse> getAll(Integer page) {
+        Pageable pageable = PageRequest.of(page, 5);
+        Page<VoucherResponse> result = voucherRepository.getAllVoucher(pageable);
+        return result.getContent();
     }
 
     @Override

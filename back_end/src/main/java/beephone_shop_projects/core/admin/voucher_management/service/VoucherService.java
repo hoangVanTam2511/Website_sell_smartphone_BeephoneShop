@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface VoucherService {
 
-    List<VoucherResponse> getAll();
+    List<VoucherResponse> getAll(Integer page);
 
     VoucherResponse getOne(String ma);
 

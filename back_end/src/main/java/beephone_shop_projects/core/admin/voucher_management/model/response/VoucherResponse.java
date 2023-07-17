@@ -6,6 +6,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 public interface VoucherResponse {
+    @Value("#{target.id}")
+    String getId();
 
     @Value("#{target.ma}")
     String getMa();
