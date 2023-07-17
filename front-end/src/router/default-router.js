@@ -57,6 +57,10 @@ import ChiTietSanPham from '../views/admin/product-manager/chi-tiet-san-pham/chi
 import ThemChiTietSanPham from '../views/admin/product-manager/chi-tiet-san-pham/them-chi-tiet-san-pham';
 
 
+// rom
+import Imei from '../views/admin/product-manager/imei/imei';
+import ThemImei from '../views/admin/product-manager/imei/them-imei'
+
 
 
 // khach hang
@@ -71,7 +75,6 @@ import AddNv from '../views/admin/account-manager/nhanvien/AddNV'
 import NhapTuFileNV from '../views/admin/account-manager/nhanvien/NhapTuFile'
 
 // role
-
 import Role from '../views/admin/account-manager/role/hoho'
 import AddRole from '../views/admin/account-manager/role/hoho'
 
@@ -184,6 +187,14 @@ export const DefaultRouter = [
             {
                 path: 'them-chi-tiet-san-pham',
                 element: <ThemChiTietSanPham />
+            },
+            {
+                path: 'imei/:idChiTietSanPham',
+                element: <Imei />
+            },
+            {
+                path: 'them-imei/:idChiTietSanPham',
+                element: <ThemImei />
             },
 
             {

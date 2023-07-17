@@ -12,7 +12,7 @@ import Swal from 'sweetalert2'
 import moment from "moment";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { apiURLSanPham } from "../../../../service/api";
+import { apiURLimei } from "../../../../service/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import {
@@ -22,7 +22,7 @@ import {
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import "../../../../assets/scss/HienThiNV.scss";
-import { Link } from "react-router-dom";
+import { Link,useParams  } from "react-router-dom";
 import { SearchOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
 
@@ -44,6 +44,7 @@ const EditableCell = ({
   (
    <Input />
  );
+ 
   return (
     //copy props bắt buộc nhập các trường sau bấm edit
     <td {...restProps}>
@@ -80,6 +81,8 @@ const HienThiKH = () => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
+  const {idChiTietSanPham} =useParams()
+
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
     setSearchText(selectedKeys[0]);
@@ -131,6 +134,7 @@ const HienThiKH = () => {
           >
             Search
           </Button>
+
           <Button
             onClick={() => clearFilters && handleReset(clearFilters)}
             size="small"
@@ -140,6 +144,7 @@ const HienThiKH = () => {
           >
             Reset
           </Button>
+
 
           <Button
             type="link"
@@ -169,6 +174,7 @@ const HienThiKH = () => {
     },
     render: (text) =>
       searchedColumn === dataIndex ? (
+        
         <Highlighter
           highlightStyle={{
             backgroundColor: "#ffc069",
@@ -176,8 +182,7 @@ const HienThiKH = () => {
           }}
           searchWords={[searchText]}
           autoEscape
-          textToHighlight={text ? text.toString() : ""}
-        />
+          textToHighlight={text ? text.toString() : ""} />
       ) : (
         text
       ),
@@ -188,11 +193,10 @@ const HienThiKH = () => {
     loadDatalistMauSac(currentPage);
   }, [currentPage]);
 
-
   // cutstom load data
   const loadDatalistMauSac = (currentPage) => {
     if (currentPage == undefined) currentPage = 0;
-    axios.get(apiURLSanPham + "/view-all?page=" + currentPage).then((response) => {
+    axios.get(apiURLimei + `/view-all/${idChiTietSanPham}?page=` + currentPage).then((response) => {
       const modifiedData = response.data.content.map((item, index) => ({
         ...item,
         stt: index + 1,
@@ -202,12 +206,6 @@ const HienThiKH = () => {
       setTotalPages(response.data.totalPages);
     });
   };
-
-  // set filter
-  const handleFilter = (status) => {
-    setFilterStatus(status);
-  };
-
 
 
   const filteredDataSource = filterStatus
@@ -220,11 +218,11 @@ const HienThiKH = () => {
 
   const isEditing = (record) => record.id === editingKey;
 
+
   // ham edit
   const edit = (record) => {
     form.setFieldsValue({
-      ma: record.ma,
-      ten: record.ten,
+      soImei: record.soImei,
     });
     setEditingKey(record.id);
   };
@@ -233,7 +231,7 @@ const HienThiKH = () => {
     const index = listMauSac.findIndex((item) => record.id === item.id);
     if(index > -1){
       Swal.fire({
-        title: 'Bạn có muốn xóa sản phẩm này',
+        title: 'Bạn có muốn xóa imei này',
         showDenyButton: true,
         confirmButtonText: 'Có',
         denyButtonText: `Không`,
@@ -249,13 +247,13 @@ const HienThiKH = () => {
       })
 
     } else{
-      Swal.fire('Không tìm thấy sản phẩm', '', 'failed')
+      Swal.fire('Không tìm thấy imei', '', 'failed')
     }
   };
   
   // delete
   const deleteColor = async (id) => {
-    await axios.delete(`${apiURLSanPham}/delete?id=${id}`).then(
+    await axios.delete(`${apiURLimei}/delete?id=${id}`).then(
       (response)=>{
         loadDatalistMauSac();
       })
@@ -279,7 +277,7 @@ const HienThiKH = () => {
           ...row,
         };
         axios
-          .put(`${apiURLSanPham}/update/${id}`, updatedItem)
+          .put(`${apiURLimei}/update/${id}`, updatedItem)
           .then((response) => {
             if (response.status === 200) {
               newData.splice(index, 1, updatedItem);
@@ -314,17 +312,11 @@ const HienThiKH = () => {
       sorter: (a, b) => a.stt - b.stt,
     },
     {
-      title: "Mã",
-      dataIndex: "ma",
-      width: "10%",
-      ...getColumnSearchProps("ma"),
-    },
-    {
-      title: "Tên sản phẩm ",
-      dataIndex: "ten",
+      title: "imei ",
+      dataIndex: "soImei",
       width: "15%",
       editable: true,
-      ...getColumnSearchProps("ten"),
+      ...getColumnSearchProps("imei"),
     },
     {
       title: "Thao Tác",
@@ -372,8 +364,6 @@ const HienThiKH = () => {
           </>
 
         );
-
-
       },
     },
   ];
@@ -398,7 +388,7 @@ const HienThiKH = () => {
       <div className="btn-add">
         <span>
           <Form style={{ width: "20em", display: "inline-block" }}>
-            <h2>Quản lí sản phẩm</h2>
+            <h2>Danh sách imei</h2>
           </Form>
         </span>
 
@@ -409,8 +399,9 @@ const HienThiKH = () => {
         />
         <span className="bl-add">
 
-          <Link to="/them-san-pham">
-            <Button className="btn-them-tk">+ Thêm sản phẩm </Button>
+
+          <Link to={`/them-imei/${idChiTietSanPham}`}>
+            <Button className="btn-them-tk">+ Thêm imei </Button>
           </Link>
 
         </span>

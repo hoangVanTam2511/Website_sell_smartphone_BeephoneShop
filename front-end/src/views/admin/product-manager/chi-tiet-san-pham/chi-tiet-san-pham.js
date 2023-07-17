@@ -40,9 +40,11 @@ import {
     ...restProps
   }) => {
     
-  
-   
-  
+    const inputNode =
+    (
+     <Input />
+   );
+
     return (
       //copy props bắt buộc nhập các trường sau bấm edit
       <td {...restProps}>
@@ -59,6 +61,7 @@ import {
               },
             ]}
           >
+               {inputNode}
           </Form.Item>
         ) : (
           children
@@ -126,7 +129,7 @@ import {
               style={{
                 width: 90,
               }}
-            >
+              >
               Search
             </Button>
             <Button
@@ -321,61 +324,55 @@ import {
       },
       {
         title: "Tên sản phẩm",
-        dataIndex: "idSanPham.ten",
+        dataIndex: "tenSanPham",
         width: "5%",
         editable: true,
-        ...getColumnSearchProps("tên sản phẩm"),
-      },
-      
-      {
-        title: "Nhà sản xuất",
-        dataIndex: "idNhaSanXuat.tenNhaSanXuat",
-        width: "5%",
-        editable: true,
-        ...getColumnSearchProps("nhà sản xuất"),
+        ...getColumnSearchProps("tenSanPham"),
       },
       {
         title: "Màu sắc",
-        dataIndex: "idMauSac.tenMauSac",
+        dataIndex: "tenMauSac",
         width: "5%",
         editable: true,
-        ...getColumnSearchProps("pin"),
+        ...getColumnSearchProps("tenMauSac"),
       },
       
       {
-        title: "Hình thức",
-        dataIndex: "idHinhThuc.hinhThuc",
+        title: "Hình thức(%)",
+        dataIndex: "hinhThucSanPham",
         width: "2%",
         editable: true,
-        ...getColumnSearchProps("hình thức"),
+        ...getColumnSearchProps("hinhThucSanPham"),
       },
       {
         title: "Số lượng",
-        dataIndex: "0",
+        dataIndex: "soLuong",
         width: "2%",
         editable: true,
-        ...getColumnSearchProps("hình thức"),
+        ...getColumnSearchProps("soLuong"),
       },
       {
         title: "Đơn giá",
         dataIndex: "donGia",
         width: "5%",
         editable: true,
-        ...getColumnSearchProps("đơn giá"),
+        ...getColumnSearchProps("donGia"),
       },
       {
         title: "Ảnh",
-        dataIndex: "donGia",
+        dataIndex: `operation`,
         width: "5%",
-        editable: true,
-        ...getColumnSearchProps("đơn giá"),
+        render:(_,record) =>{
+        return <Link type="primary" style={{ borderRadius: "30px" }} >Danh sách ảnh</Link>
+       }
       },
       {
         title: "Imei",
         dataIndex: `operation`,
         width: "5%",
        render:(_,record) =>{
-        return <Link>Danh sách imei</Link>
+        console.log(record)
+        return <Link type="primary" to={`/imei/${record.id}`} style={{ borderRadius: "30px" }}>Danh sách imei</Link>
        }
       },
       {
@@ -462,7 +459,7 @@ import {
           <span className="bl-add">
   
   
-            <Link to="/them-man-hinh">
+            <Link to="/them-chi-tiet-san-pham">
               <Button className="btn-them-tk">+ Thêm chi tiết sản phẩm </Button>
             </Link>
   

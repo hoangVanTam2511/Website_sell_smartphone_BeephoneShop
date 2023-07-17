@@ -13,5 +13,5 @@ export const apiURLram = "http://localhost:8080/ram";
 export const apiURLrom = "http://localhost:8080/rom";
 export const apiURLSanPham = "http://localhost:8080/san-pham";
 export const apiURLChiTietSanPham = "http://localhost:8080/chi-tiet-san-pham";
-
+export const apiURLimei = "http://localhost:8080/imei";
 

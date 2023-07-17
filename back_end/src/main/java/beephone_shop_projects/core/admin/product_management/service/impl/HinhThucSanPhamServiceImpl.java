@@ -9,6 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+
 @Service
 public class HinhThucSanPhamServiceImpl implements IService<HinhThucSanPham> {
 
@@ -18,7 +20,7 @@ public class HinhThucSanPhamServiceImpl implements IService<HinhThucSanPham> {
 
     @Override
     public Page<HinhThucSanPham> getAll(Pageable pageable) {
-        return hinhThucSanPhamRepository.findAll(pageable) ;
+        return hinhThucSanPhamRepository.findAllByDelected(true,pageable) ;
     }
 
     @Override
@@ -33,10 +35,14 @@ public class HinhThucSanPhamServiceImpl implements IService<HinhThucSanPham> {
 
     @Override
     public void delete(String id) {
-        hinhThucSanPhamRepository.deleteById(id);
+        hinhThucSanPhamRepository.updateDelected(false,id);
     }
 
     public HinhThucSanPham getOne(String id){
         return hinhThucSanPhamRepository.findById(id).get();
+    }
+
+    public ArrayList<HinhThucSanPham> getDanhSachHinhThucSanPham(){
+        return (ArrayList<HinhThucSanPham>) this.hinhThucSanPhamRepository.findAll();
     }
 }

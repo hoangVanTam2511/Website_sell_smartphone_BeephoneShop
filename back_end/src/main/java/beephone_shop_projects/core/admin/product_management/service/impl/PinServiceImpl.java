@@ -9,6 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+
 @Service
 public class PinServiceImpl implements IService<Pin> {
 
@@ -18,7 +20,7 @@ public class PinServiceImpl implements IService<Pin> {
 
     @Override
     public Page<Pin> getAll(Pageable pageable) {
-        return pinRepository.findAll(pageable);
+        return pinRepository.findAllByDelected(true,pageable);
     }
 
     @Override
@@ -33,10 +35,14 @@ public class PinServiceImpl implements IService<Pin> {
 
     @Override
     public void delete(String id) {
-        pinRepository.deleteById(id);
+        pinRepository.updateDelected(false,id);
     }
 
     public Pin getOne(String id){
         return pinRepository.findById(id).get();
+    }
+
+    public ArrayList<Pin> getDanhSachPin(){
+        return (ArrayList<Pin>) this.pinRepository.findAll();
     }
 }

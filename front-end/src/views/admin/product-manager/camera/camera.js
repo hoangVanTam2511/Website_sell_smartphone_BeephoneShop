@@ -41,7 +41,10 @@ const EditableCell = ({
   ...restProps
 }) => {
   
-
+  const inputNode =
+  (
+   <Input />
+ );
  
 
   return (
@@ -60,6 +63,7 @@ const EditableCell = ({
             },
           ]}
         >
+          {inputNode}
         </Form.Item>
       ) : (
         children
@@ -316,14 +320,14 @@ const HienThiKH = () => {
       title: "Mã",
       dataIndex: "ma",
       width: "10%",
-      ...getColumnSearchProps("mã"),
+      ...getColumnSearchProps("ma"),
     },
     {
       title: "Độ phân giải (MP)",
       dataIndex: "doPhanGiai",
       width: "15%",
       editable: true,
-      ...getColumnSearchProps("Độ phân giải (MP)"),
+      ...getColumnSearchProps("doPhanGiai"),
     },
     {
       title: "Thao Tác",

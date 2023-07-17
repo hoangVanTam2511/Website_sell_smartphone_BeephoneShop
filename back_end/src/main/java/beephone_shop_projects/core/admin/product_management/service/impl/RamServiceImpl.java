@@ -9,6 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+
 @Service
 public class RamServiceImpl implements IService<Ram> {
 
@@ -18,7 +20,7 @@ public class RamServiceImpl implements IService<Ram> {
 
     @Override
     public Page<Ram> getAll(Pageable pageable) {
-        return ramRepository.findAll(pageable);
+        return ramRepository.findAllByDelected(true,pageable);
     }
 
     @Override
@@ -33,10 +35,14 @@ public class RamServiceImpl implements IService<Ram> {
 
     @Override
     public void delete(String id) {
-       ramRepository.deleteById(id);
+       ramRepository.updateDelected(false,id);
     }
 
     public Ram getOne(String id){
         return ramRepository.findById(id).get();
+    }
+
+    public ArrayList<Ram> getDanhSachRam(){
+        return (ArrayList<Ram>) this.ramRepository.findAll();
     }
 }

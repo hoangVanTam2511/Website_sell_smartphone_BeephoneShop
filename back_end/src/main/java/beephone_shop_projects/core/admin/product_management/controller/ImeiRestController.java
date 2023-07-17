@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.admin.product_management.controller;
 
+import beephone_shop_projects.core.admin.product_management.repository.ChiTietSanPhamReponsitory;
 import beephone_shop_projects.core.admin.product_management.service.impl.ImeiServiceImpl;
 import beephone_shop_projects.entity.Imei;
 import beephone_shop_projects.entity.ManHinh;
@@ -20,16 +21,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/imei")
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:3000")
 public class ImeiRestController {
 
     @Autowired
     private ImeiServiceImpl imeiService;
 
-    @GetMapping("/view-all")
-    public Page<Imei> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
+    @Autowired
+    private ChiTietSanPhamReponsitory chiTietSanPhamReponsitory;
+
+    @GetMapping("/view-all/{id}")
+    public Page<Imei> viewAll(@PathVariable("id")String id,
+                              @RequestParam(value = "page",defaultValue = "1") Integer page) {
         Pageable pageable = PageRequest.of(page,5);
-        return imeiService.getAll(pageable);
+        return imeiService.getAllByIdChiTietSanPham(id,pageable);
     }
 
     @DeleteMapping("/delete")
@@ -37,8 +42,10 @@ public class ImeiRestController {
         imeiService.delete(id);
     }
 
-    @PostMapping("/save")
-    public void save(@RequestBody Imei imei) {
+    @PostMapping("/save/{id}")
+    public void save(@PathVariable("id")String id,@RequestBody Imei imei) {
+        imei.setIdChiTietSanPham(chiTietSanPhamReponsitory.findById(id).get());
+        imei.setTrangThai(1);
         imeiService.insert(imei);
     }
 

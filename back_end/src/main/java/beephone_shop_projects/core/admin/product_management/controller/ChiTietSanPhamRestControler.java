@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.admin.product_management.controller;
 
+import beephone_shop_projects.core.admin.product_management.model.responce.ChiTietSanPhamResponce;
 import beephone_shop_projects.core.admin.product_management.service.impl.ChiTietSanPhamServiceImpl;
 import beephone_shop_projects.entity.ChiTietSanPham;
 import beephone_shop_projects.entity.Imei;
@@ -28,9 +29,9 @@ public class ChiTietSanPhamRestControler {
     private ChiTietSanPhamServiceImpl chiTietSanPhamService;
 
     @GetMapping("/view-all")
-    public Page<ChiTietSanPham> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
+    public Page<ChiTietSanPhamResponce> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
         Pageable pageable = PageRequest.of(page,5);
-        return chiTietSanPhamService.getAll(pageable);
+        return chiTietSanPhamService.getAllByDelected(pageable);
     }
 
     @DeleteMapping("/delete")

@@ -9,6 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+
 
 @Service
 public class RomServiceImpl implements IService<Rom> {
@@ -18,7 +20,7 @@ public class RomServiceImpl implements IService<Rom> {
 
     @Override
     public Page<Rom> getAll(Pageable pageable) {
-        return romRepository.findAll(pageable);
+        return romRepository.findAllByDelected(true,pageable);
     }
 
     @Override
@@ -33,10 +35,14 @@ public class RomServiceImpl implements IService<Rom> {
 
     @Override
     public void delete(String id) {
-        romRepository.deleteById(id);
+        romRepository.updateDelected(false,id);
     }
 
     public Rom getOne(String id){
         return romRepository.findById(id).get();
+    }
+
+    public ArrayList<Rom> getDanhSachRom(){
+        return (ArrayList<Rom>) this.romRepository.findAll();
     }
 }

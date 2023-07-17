@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.admin.product_management.service.impl;
 
+import beephone_shop_projects.core.admin.product_management.model.responce.ChiTietSanPhamResponce;
 import beephone_shop_projects.core.admin.product_management.repository.ChiTietSanPhamReponsitory;
 import beephone_shop_projects.core.admin.product_management.service.IService;
 import beephone_shop_projects.entity.ChiTietSanPham;
@@ -17,7 +18,11 @@ public class ChiTietSanPhamServiceImpl implements IService<ChiTietSanPham> {
 
     @Override
     public Page<ChiTietSanPham> getAll(Pageable pageable) {
-        return chiTietSanPhamReponsitory.findAll(pageable);
+        return chiTietSanPhamReponsitory.findAllByDelected(true,pageable);
+    }
+
+    public Page<ChiTietSanPhamResponce> getAllByDelected(Pageable pageable) {
+        return chiTietSanPhamReponsitory.findAllChiTietSanPham(1,pageable);
     }
 
     @Override
@@ -32,6 +37,6 @@ public class ChiTietSanPhamServiceImpl implements IService<ChiTietSanPham> {
 
     @Override
     public void delete(String id) {
-        chiTietSanPhamReponsitory.deleteById(id);
+        chiTietSanPhamReponsitory.updateDelected(false,id);
     }
 }

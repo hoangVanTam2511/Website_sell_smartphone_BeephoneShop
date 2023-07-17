@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.security.PrivateKey;
+import java.util.ArrayList;
 
 @Service
 public class ManHinhServiceImpl implements IService<ManHinh> {
@@ -20,7 +21,7 @@ public class ManHinhServiceImpl implements IService<ManHinh> {
 
     @Override
     public Page<ManHinh> getAll(Pageable pageable) {
-        return manHinhRepository.findAll(pageable);
+        return manHinhRepository.findAllByDelected(true,pageable);
     }
 
     @Override
@@ -35,10 +36,14 @@ public class ManHinhServiceImpl implements IService<ManHinh> {
 
     @Override
     public void delete(String id) {
-      manHinhRepository.deleteById(id);
+      manHinhRepository.updateDelected(false,id);
     }
 
     public ManHinh getOne(String id){
         return manHinhRepository.findById(id).get();
+    }
+
+    public ArrayList<ManHinh> getDanhSachManHinh(){
+        return (ArrayList<ManHinh>) this.manHinhRepository.findAll();
     }
 }

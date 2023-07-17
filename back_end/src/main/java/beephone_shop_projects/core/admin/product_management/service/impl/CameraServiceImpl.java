@@ -9,6 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+
 @Service
 public class CameraServiceImpl implements IService<Camera> {
 
@@ -18,7 +20,7 @@ public class CameraServiceImpl implements IService<Camera> {
 
     @Override
     public Page<Camera> getAll(Pageable pageable) {
-        return cameraRepository.findAll(pageable);
+        return cameraRepository.findAllByDelected(true,pageable);
     }
 
     @Override
@@ -33,10 +35,14 @@ public class CameraServiceImpl implements IService<Camera> {
 
     @Override
     public void delete(String id) {
-        cameraRepository.deleteById(id);
+        cameraRepository.updateDelected(false,id);
     }
 
     public Camera getOne(String id){
         return cameraRepository.findById(id).get();
+    }
+
+    public ArrayList<Camera> getListCamera(){
+        return (ArrayList<Camera>) this.cameraRepository.findAll();
     }
 }

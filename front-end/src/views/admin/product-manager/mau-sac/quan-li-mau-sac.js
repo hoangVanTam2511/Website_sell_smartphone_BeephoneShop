@@ -42,6 +42,7 @@ const EditableCell = ({
   ...restProps
 }) => {
   const [ngaySinhValue, setNgaySinhValue] = useState(null);
+  
   useEffect(() => {
     if (editing) {
       if (inputType === "date") {
@@ -185,7 +186,7 @@ const HienThiKH = () => {
       />
     ),
     onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+      String(record[dataIndex]).toLowerCase().includes(value.toLowerCase()),
     onFilterDropdownOpenChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
@@ -228,9 +229,7 @@ const HienThiKH = () => {
   };
 
   // set filter
-  const handleFilter = (status) => {
-    setFilterStatus(status);
-  };
+
 
 
 
@@ -341,14 +340,14 @@ const HienThiKH = () => {
       title: "Mã",
       dataIndex: "ma",
       width: "10%",
-      ...getColumnSearchProps("mã"),
+      ...getColumnSearchProps("ma"),
     },
     {
       title: "Tên màu sắc",
       dataIndex: "tenMauSac",
       width: "15%",
       editable: true,
-      ...getColumnSearchProps("tên màu sắc"),
+      ...getColumnSearchProps("tenMauSac"),
     },
     {
       title: "Thao Tác",
