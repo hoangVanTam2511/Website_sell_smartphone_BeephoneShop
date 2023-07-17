@@ -5,12 +5,12 @@ import beephone_shop_projects.core.admin.promotion_management.model.request.Crea
 import beephone_shop_projects.core.admin.promotion_management.model.request.UpdateKhuyenMaiRequest;
 import beephone_shop_projects.entity.KhuyenMai;
 import jakarta.validation.Valid;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface KhuyenMaiService {
 
-    List<KhuyenMaiResponse> getAll();
+    Page<KhuyenMaiResponse> getAll(Pageable pageable);
 
     KhuyenMaiResponse getOne(String ma);
 
