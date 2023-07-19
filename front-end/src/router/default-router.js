@@ -1,93 +1,88 @@
-import React from 'react'
-import Index from '../views/index'
+import React from "react";
+import Index from "../views/index";
 // san pham
-import QuanLiMauSac from '../views/admin/product-manager/quan-li-mau-sac/quan-li-mau-sac';
-import ThemMauSac from '../views/admin/product-manager/quan-li-mau-sac/them-mau-sac'
-import SuaMauSac from '../views/admin/product-manager/quan-li-mau-sac/sua-mau-sac'
+import QuanLiMauSac from "../views/admin/product-manager/quan-li-mau-sac/quan-li-mau-sac";
+import ThemMauSac from "../views/admin/product-manager/quan-li-mau-sac/them-mau-sac";
+import SuaMauSac from "../views/admin/product-manager/quan-li-mau-sac/sua-mau-sac";
 
 // khach hang
-import KhachHang from '../views/admin/account-manager/khachhang/HienThiKH'
-import AddKH from '../views/admin/account-manager/khachhang/AddKH'
-import NhapTuFileKH from '../views/admin/account-manager/khachhang/NhapTuFile'
-
+import KhachHang from "../views/admin/account-manager/khachhang/HienThiKH";
+import AddKH from "../views/admin/account-manager/khachhang/AddKH";
+import NhapTuFileKH from "../views/admin/account-manager/khachhang/NhapTuFile";
 
 // nhan vien
-import NhanVien from '../views/admin/account-manager/nhanvien/HienThiNV'
-import AddNv from '../views/admin/account-manager/nhanvien/AddNV'
-import NhapTuFileNV from '../views/admin/account-manager/nhanvien/NhapTuFile'
+import NhanVien from "../views/admin/account-manager/nhanvien/HienThiNV";
+import AddNv from "../views/admin/account-manager/nhanvien/AddNV";
+import NhapTuFileNV from "../views/admin/account-manager/nhanvien/NhapTuFile";
 
 // role
 
-import Role from '../views/admin/account-manager/role/hoho'
-import AddRole from '../views/admin/account-manager/role/hoho'
+import Role from "../views/admin/account-manager/role/HienThiRole";
+import AddRole from "../views/admin/account-manager/role/AddRole";
 
 //admin
 
-import Default from '../layouts/dashboard/default';
-
+import Default from "../layouts/dashboard/default";
 
 export const DefaultRouter = [
-    {
-        path: '/',
-        element: <Default />,
-        children: [
-            {
-                path: '',
-                element: <Index />
-            },
-            {
-                path: 'mau-sac',
-                element: <QuanLiMauSac />
-            },
-            {
-                path: 'them-mau-sac',
-                element: <ThemMauSac />
-            },
-            {
-                path: 'sua-mau-sac/:id',
-                element: <SuaMauSac />
-            },
-            {
-                path: 'khach-hang',
-                element: <KhachHang />
-            },
-            ,
-            {
-                path: 'them-khach-hang',
-                element: <AddKH />
-            }
-            ,
-            ,
-            {
-                path: 'nhap-excel-khach-hang',
-                element: <NhapTuFileKH />
-            },
-            {
-                path: 'nhan-vien',
-                element: <NhanVien />
-            },
-            {
-                path: 'them-nhan-vien',
-                element: <AddNv />
-            }
-            ,
-            {
-                path: 'nhap-excel-nhan-vien',
-                element: <NhapTuFileNV />
-            },
-            {
-                path: 'chuc-vu',
-                element: <Role />
-            },
-            {
-                path: 'them-chuc-vu',
-                element: <AddRole />
-            }
-           
-           
-        ]
-    }
-]
+  {
+    path: "/",
+    element: <Default />,
+    // eslint-disable-next-line no-sparse-arrays
+    children: [
+      {
+        path: "",
+        element: <Index />,
+      },
+      {
+        path: "mau-sac",
+        element: <QuanLiMauSac />,
+      },
+      {
+        path: "them-mau-sac",
+        element: <ThemMauSac />,
+      },
+      {
+        path: "sua-mau-sac/:id",
+        element: <SuaMauSac />,
+      },
+      {
+        path: "khach-hang",
+        element: <KhachHang />,
+      },
+      ,
+      {
+        path: "them-khach-hang",
+        element: <AddKH />,
+      },
+      ,
+      {
+        path: "nhap-excel-khach-hang",
+        element: <NhapTuFileKH />,
+      },
+      {
+        path: "nhan-vien",
+        element: <NhanVien />,
+      },
+      {
+        path: "them-nhan-vien",
+        element: <AddNv />,
+      },
+      {
+        path: "nhap-excel-nhan-vien",
+        element: <NhapTuFileNV />,
+      },
+      {
+        path: "chuc-vu",
+        element: <Role />,
+      },
+      {
+        path: "them-chuc-vu",
+        element: <AddRole />,
+      },
+    ],
+  },
+];
 // const DefaultRouter = () => {
 //     return (
 //         <TransitionGroup>

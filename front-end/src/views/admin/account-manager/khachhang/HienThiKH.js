@@ -25,6 +25,10 @@ import { Link } from "react-router-dom";
 import NhapTuFile from "./NhapTuFile";
 import { SearchOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
+import ExportButton from "./Export";
+import ExcelUploader from "./UploadExcel";
+import YourComponent from "./UploadExcel";
+// import ExcelUploader from "./UploadExcel";
 const { Option } = Select;
 
 const currentDate = new Date().toISOString().split("T")[0];
@@ -103,11 +107,54 @@ const HienThiKH = () => {
     confirm();
     setSearchText(selectedKeys[0]);
     setSearchedColumn(dataIndex);
+
+    // const isPage1Empty = currentPage === 0 && filteredDataSource.length === 0;
+
+    // if (isPage1Empty && currentPage > 0) {
+    //   setCurrentPage(0);
+    //   loadDataListKH(0);
+    // } else {
+    //   setCurrentPage(0);
+    //   loadDataListKH(0);
+    // }
   };
+
   const handleReset = (clearFilters) => {
     clearFilters();
     setSearchText("");
   };
+  const [filteredDataSource, setFilteredDataSource] = useState([]);
+  // const filteredDataSource = filterStatus
+  // ? listNV.filter((item) => item.trangThai === filterStatus)
+  // : listNV;
+  const handleSearchTop = async () => {
+    try {
+      const response = await axios.get(apiURLKH + "/search-all", {
+        params: {
+          tenKH: searchText,
+          page: currentPage,
+        },
+      });
+      let count = 0;
+      const modifiedData = response.data.content.map((item) => ({
+        ...item,
+        stt: ++count,
+      }));
+
+      setFilteredDataSource(modifiedData);
+      setListKH(modifiedData); //1day
+      setTotalPages(response.data.totalPages);
+    } catch (error) {
+      console.log("Error searching accounts:", error);
+    }
+  };
+
+  const handleInputChangeTop = (e) => {
+    console.log(e.target.value);
+    setSearchText(e.target.value);
+    // setTotalPages(e.data.totalPages);
+  };
+
   const getColumnSearchProps = (dataIndex) => ({
     filterDropdown: ({
       setSelectedKeys,
@@ -217,19 +264,19 @@ const HienThiKH = () => {
     axios.get(apiURLKH + "/hien-thi?page=" + currentPage).then((response) => {
       const modifiedData = response.data.content.map((item, index) => ({
         ...item,
-        stt: index + 1,
+        stt: currentPage === 0 ? index + 1 : index + 1,
       }));
-      setListKH(modifiedData);
+
       setCurrentPage(response.data.number);
       setTotalPages(response.data.totalPages);
+      setFilteredDataSource(modifiedData);
+      setListKH(modifiedData);
     });
   };
   const handleFilter = (status) => {
     setFilterStatus(status);
   };
-  const filteredDataSource = filterStatus
-    ? listKH.filter((item) => item.trangThai === filterStatus)
-    : listKH;
+  // const filteredDataSource = listKH;
   //edit
   const [editingKey, setEditingKey] = useState("");
   const isEditing = (record) => record.id === editingKey;
@@ -263,7 +310,9 @@ const HienThiKH = () => {
         const updatedItem = {
           ...item,
           ...row,
+          // id: editingKey,
         };
+
         axios
           .put(`${apiURLKH}/update/${id}`, updatedItem)
           .then((response) => {
@@ -271,7 +320,8 @@ const HienThiKH = () => {
               newData.splice(index, 1, updatedItem);
               setListKH(newData);
               setEditingKey("");
-              loadDataListKH();
+              loadDataListKH(currentPage);
+              console.log(id);
             }
           })
           .catch((error) => {
@@ -287,6 +337,7 @@ const HienThiKH = () => {
       console.log("Validate Failed:", errInfo);
     }
   };
+
   const doChangeTrangThai = (id) => {
     //  const [trangThai, setTrangThai] = useState(record.trangThai);
     axios
@@ -466,33 +517,46 @@ const HienThiKH = () => {
     <>
       <div className="btn-add">
         <span>
-          <Form style={{ width: "20em", display: "inline-block" }}>
+          <Form
+            style={{
+              display: "inline-block",
+              marginLeft: "50px",
+              paddingBottom: " 10px",
+              width: "20em",
+              height: "32px",
+            }}
+          >
             <Input
               placeholder="Search"
-              // value={searchValue}
-              // onChange={handleChange}
+              value={searchText}
+              onChange={handleInputChangeTop}
+              style={{
+                marginLeft: "50px",
+                width: "20em",
+                display: "inline-block",
+                borderRadius: "50px 0px 0px 50px",
+              }}
             />
           </Form>
         </span>
         {/* Search */}
-        <FontAwesomeIcon
+        {/* <FontAwesomeIcon
           icon={faMagnifyingGlass}
-          style={{ marginLeft: "5px" }}
-        />
+          style={{ marginLeft: "5px", cursor: "pointer" }}
+        /> */}
+        <Button
+          onClick={handleSearchTop}
+          style={{
+            borderRadius: "50px",
+            width: "4em",
+            backgroundColor: "#4976e8",
+            color: "white",
+            paddingBottom: "30px",
+          }}
+        >
+          <SearchOutlined style={{ cursor: "pointer" }} />
+        </Button>
         <span className="bl-add">
-          Trạng thái{" "}
-          <Select
-            defaultValue="Tất cả"
-            style={{
-              width: 120,
-            }}
-            onChange={handleFilter}
-          >
-            {" "}
-            <Option value="">Tất cả</Option>
-            <Option value={1}>Hoạt động</Option>
-            <Option value={2}>Vô hiệu hóa</Option>
-          </Select>
           <Link to="/them-khach-hang">
             <Button className="btn-them-tk">+ Thêm Tài khoản</Button>
           </Link>
@@ -521,7 +585,12 @@ const HienThiKH = () => {
             rowKey="id"
             style={{ marginBottom: "20px" }}
           />
-
+          {/* <ExportButton /> */}
+          {/* <Button>
+           >
+          </Button> */}{" "}
+          <YourComponent />
+          <ExcelUploader />
           <Pagination
             simple
             current={currentPage + 1}

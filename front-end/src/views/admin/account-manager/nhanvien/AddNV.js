@@ -1,5 +1,6 @@
 import {
   Button,
+  Card,
   // DatePicker, Form, Input, Radio, Select
 } from "antd";
 import React from "react";
@@ -14,7 +15,6 @@ import { toast } from "react-toastify";
 import { Box } from "@mui/material";
 const AddNV = () => {
   let [listNhanVien, setListNhanVien] = useState([]);
-  // let [listCuaHang, setListCuaHang] = useState([]);
   let [hoVaTen, setTen] = useState("");
   let [ngaySinh, setNgaySinh] = useState("");
   let [soDienThoai, setSdt] = useState("");
@@ -56,86 +56,118 @@ const AddNV = () => {
   };
   return (
     <>
-      <h2>Tạo tài khoản nhân viên</h2>
-      <div className="text-f">
-        <TextField
-          label="Họ và tên"
-          value={hoVaTen}
-          id="fullWidth"
-          onChange={(e) => {
-            setTen(e.target.value);
-          }}
-          style={{ maxHeight: "10px", width: "35em" }}
-        />
-      </div>
-      <div className="text-f" style={{ marginBottom: "20px" }}>
-        <Box
-          component="form"
-          sx={{
-            "& .MuiTextField-root": { m: 1, width: "35em" },
-          }}
-          noValidate
-          autoComplete="off"
+      <Card
+        bordered={false}
+        style={{
+          width: "100%",
+        }}
+      >
+        <h3
+          style={{ color: "gray", textAlign: "center", marginBottom: "20px" }}
+        >
+          Tạo tài khoản nhân viên
+        </h3>
+        <div
+          className="text-f"
+          style={{ textAlign: "center", marginBottom: "20px" }}
         >
           <TextField
-            label="Ngày sinh"
-            type="date"
-            value={ngaySinh}
-            format="YYYY-MM-DD"
-            InputLabelProps={{
-              shrink: true,
-            }}
-            inputProps={{
-              style: {
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                width: "100%",
-              },
-            }}
+            label="Họ và tên"
+            value={hoVaTen}
+            id="fullWidth"
             onChange={(e) => {
-              setNgaySinh(e.target.value); // Cập nhật giá trị ngaySinh sau khi thay đổi
+              setTen(e.target.value);
+            }}
+            style={{ maxHeight: "10px", width: "40em" }}
+          />
+        </div>
+        <div
+          className="text-f"
+          style={{
+            textAlign: "center",
+            marginTop: "50px",
+            marginBottom: "15px",
+          }}
+        >
+          <Box
+            component="form"
+            sx={{
+              "& .MuiTextField-root": { m: 1, width: "40em" },
+            }}
+            noValidate
+            autoComplete="off"
+          >
+            <TextField
+              label="Ngày sinh"
+              type="date"
+              value={ngaySinh}
+              format="YYYY-MM-DD"
+              InputLabelProps={{
+                shrink: true,
+              }}
+              inputProps={{
+                style: {
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  width: "100%",
+                },
+              }}
+              onChange={(e) => {
+                setNgaySinh(e.target.value); // Cập nhật giá trị ngaySinh sau khi thay đổi
+              }}
+            />
+          </Box>
+        </div>
+        <div
+          className="text-f"
+          style={{ textAlign: "center", marginBottom: "20px" }}
+        >
+          <TextField
+            label="Email"
+            value={email}
+            // id="fullWidth"
+            onChange={(e) => {
+              setEmail(e.target.value);
+            }}
+            style={{ width: "40em" }}
+          />
+        </div>
+        <div
+          className="text-f"
+          style={{ textAlign: "center", marginBottom: "20px" }}
+        >
+          <TextField
+            label="Số điện thoại"
+            id="fullWidth"
+            value={soDienThoai}
+            style={{ width: "40em" }}
+            onChange={(e) => {
+              setSdt(e.target.value);
             }}
           />
-        </Box>
-      </div>
-      <div className="text-f">
-        <TextField
-          label="Email"
-          value={email}
-          // id="fullWidth"
-          onChange={(e) => {
-            setEmail(e.target.value);
-          }}
-          style={{ maxHeight: "15px", width: "35em" }}
-        />
-      </div>
-      <div className="text-f">
-        <TextField
-          label="Số điện thoại"
-          id="fullWidth"
-          value={soDienThoai}
-          style={{ maxHeight: "15px", width: "35em" }}
-          onChange={(e) => {
-            setSdt(e.target.value);
-          }}
-        />
-      </div>
-      <div className="text-f">
-        <TextField
-          label="Địa chỉ"
-          id="fullWidth"
-          value={diaChi}
-          onChange={(e) => {
-            setDiaChi(e.target.value);
-          }}
-          style={{ maxHeight: "15px", width: "35em" }}
-        />
-      </div>
-      <Button type="primary" onClick={addNhanVien} htmlType="submit">
-        Xác nhận{" "}
-        <FontAwesomeIcon icon={faCheck} style={{ paddingLeft: "10px" }} />
-      </Button>
+        </div>
+        <div
+          className="text-f"
+          style={{ textAlign: "center", marginBottom: "20px" }}
+        >
+          <TextField
+            label="Địa chỉ"
+            id="fullWidth"
+            value={diaChi}
+            onChange={(e) => {
+              setDiaChi(e.target.value);
+            }}
+            style={{ width: "40em" }}
+          />
+        </div>
+        <div style={{ textAlign: "center", paddingLeft: "32em" }}>
+          <Button type="primary" onClick={addNhanVien} htmlType="submit">
+            Xác nhận{" "}
+            <FontAwesomeIcon icon={faCheck} style={{ paddingLeft: "10px" }} />
+          </Button>
+        </div>
+      </Card>
     </>
   );
 };

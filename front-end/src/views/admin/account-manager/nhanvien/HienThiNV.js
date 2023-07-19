@@ -2,10 +2,8 @@ import {
   Form,
   Popconfirm,
   Table,
-  // Typography,
   Input,
   Button,
-  // Select,
   Select,
   Pagination,
   Space,
@@ -16,7 +14,6 @@ import axios from "axios";
 import { apiURLNV } from "../../../../service/api";
 import { SearchOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
-// import "rc-calendar/assets/index.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPencilAlt,
@@ -27,9 +24,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import "../../../../assets/scss/HienThiNV.scss";
 import { Link } from "react-router-dom";
-// import HienThiKH from "../khachhang/HienThiKH";
 import NhapTuFile from "../nhanvien/NhapTuFile";
-const { Option } = Select;
+// const { Option } = Select;
 const currentDate = new Date().toISOString().split("T")[0];
 const EditableCell = ({
   editing,
@@ -98,34 +94,49 @@ const HienThiNV = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [editingNgaySinh, setEditingNgaySinh] = useState(null);
-  const [filterStatus, setFilterStatus] = useState(null);
-  // const [searchValue, setSearchValue] = useState("");
+  // const [filterStatus, setFilterStatus] = useState(null);
+  const [searchValue, setSearchValue] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const handleChange = (event) => {
+    const inputValue = event.target.value;
+    setSearchValue(inputValue);
 
-  // const handleChange = (event) => {
-  //   const inputValue = event.target.value;
-  //   setSearchValue(inputValue);
-  //   searchAccounts(inputValue)
-  //     .then((response) => {
-  //       // Xử lý kết quả tìm kiếm ở đây
-  //       console.log(response.data);
-  //     })
-  //     .catch((error) => {
-  //       // Xử lý lỗi ở đây
-  //       console.error(error);
-  //     });
-  // };
+    if (inputValue.trim() !== "") {
+      setCurrentPage(0); // Reset currentPage when search value changes and is not empty
+    }
+  };
 
-  // // Gửi yêu cầu tìm kiếm đến API backend
-  // function searchAccounts(searchValue) {
-  //   const apiUrl = apiURLNV + "/search-all";
+  const fetchData = () => {
+    const apiUrl = apiURLNV + "/search-all";
+    axios
+      .get(apiUrl, {
+        params: {
+          hoVaTen: searchValue,
+          page: currentPage,
+        },
+      })
+      .then((response) => {
+        if (
+          response.data.totalPages > 0 &&
+          currentPage >= response.data.totalPages
+        ) {
+          setCurrentPage(response.data.totalPages - 1); // Set currentPage to the last page if it exceeds the total number of pages
+        } else {
+          setSearchResults(response.data.content);
+          setTotalPages(response.data.totalPages);
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
-  //   // Gửi yêu cầu GET với tham số tìm kiếm
-  //   return axios.get(apiUrl, {
-  //     params: {
-  //       hoVaTen: searchValue,
-  //     },
-  //   });
-  // }
+  useEffect(() => {
+    if (searchValue.trim() !== "") {
+      fetchData();
+    }
+  }, [searchValue]);
+
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
@@ -248,24 +259,29 @@ const HienThiNV = () => {
     axios
       .get(apiURLNV + "/hien-thi?page=" + currentPage)
       .then((response) => {
-        console.log(response)
+        console.log(response);
         const modifiedData = response.data.content.map((item, index) => ({
           ...item,
           stt: index + 1,
         }));
-        console.log(modifiedData)
+        // console.log(modifiedData);
         setListNV(modifiedData);
         setCurrentPage(response.data.number);
         setTotalPages(response.data.totalPages);
       })
       .catch((error) => {});
   };
-  const handleFilter = (status) => {
-    setFilterStatus(status);
-  };
-  const filteredDataSource = filterStatus
-    ? listNV.filter((item) => item.trangThai === filterStatus)
-    : listNV;
+  // const handleFilter = (status) => {
+  //   setFilterStatus(status);
+  // };
+
+  const filteredDataSource = listNV.filter((data) => {
+    // Lọc dữ liệu dựa trên giá trị tìm kiếm trong mỗi cột
+    return Object.values(data).some((value) =>
+      String(value).toLowerCase().includes(String(searchValue).toLowerCase())
+    );
+  });
+
   //edit
   const [editingKey, setEditingKey] = useState("");
   const isEditing = (record) => record.id === editingKey;
@@ -456,10 +472,8 @@ const HienThiNV = () => {
               onClick={() => edit(record)}
               style={{
                 cursor: "pointer",
-                // opacity: editingKey === record.id ? 0.5 : 1,
-                color: editingKey === record.id ? "red" : "green",
+                color: "green",
               }}
-              disabled={editingKey !== ""}
             />
             <Popconfirm
               title={`Đổi trạng thái nhân viên từ ${
@@ -473,7 +487,11 @@ const HienThiNV = () => {
             >
               <FontAwesomeIcon
                 icon={faArrowsRotate}
-                style={{ cursor: "pointer", paddingLeft: "20px" }}
+                style={{
+                  cursor: "pointer",
+                  paddingLeft: "20px",
+                  color: "#598cfe",
+                }}
                 transform={{ rotate: 90 }}
                 onClick={() => {
                   // Hành động khi nhấp vào biểu tượng
@@ -509,8 +527,8 @@ const HienThiNV = () => {
           <Form style={{ width: "20em", display: "inline-block" }}>
             <Input
               placeholder="Search"
-              // value={searchValue}
-              // onChange={handleChange}
+              value={searchValue}
+              onChange={handleChange}
             />
           </Form>
         </span>
@@ -520,7 +538,7 @@ const HienThiNV = () => {
           style={{ marginLeft: "5px" }}
         />
         <span className="bl-add">
-          Trạng thái{" "}
+          {/* Trạng thái{" "}
           <Select
             defaultValue="Tất cả"
             style={{
@@ -532,7 +550,7 @@ const HienThiNV = () => {
             <Option value="">Tất cả</Option>
             <Option value={1}>Làm việc</Option>
             <Option value={2}>Đã nghỉ</Option>
-          </Select>
+          </Select> */}
           <Link to="/them-nhan-vien">
             <Button className="btn-them-tk">+ Thêm Tài khoản</Button>
           </Link>
@@ -570,15 +588,16 @@ const HienThiNV = () => {
             rowKey="id"
             style={{ marginBottom: "20px" }}
           />
-
-          <Pagination
-            simple
-            current={currentPage + 1}
-            onChange={(value) => {
-              setCurrentPage(value - 1);
-            }}
-            total={totalPages * 10}
-          />
+          <div className="phanTrang" style={{ textAlign: "center" }}>
+            <Pagination
+              // simple
+              current={currentPage + 1}
+              onChange={(value) => {
+                setCurrentPage(value - 1);
+              }}
+              total={totalPages * 10}
+            />
+          </div>
         </Form>
       </div>
     </>

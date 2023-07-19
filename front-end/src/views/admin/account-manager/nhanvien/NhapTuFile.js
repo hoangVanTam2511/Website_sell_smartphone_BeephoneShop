@@ -26,7 +26,11 @@ const NhapTuFile = () => {
         footer={null}
         bodyStyle={{ textAlign: "center" }}
       >
-        <h2 style={{ textAlign: "center", color: "gray" }}>NHẬP TỪ FILE </h2>
+        <h3
+          style={{ textAlign: "center", color: "gray", marginBottom: "10px" }}
+        >
+          NHẬP TỪ FILE{" "}
+        </h3>
         <span>
           <Button className="custom-button">
             <FontAwesomeIcon
