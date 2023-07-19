@@ -1,5 +1,6 @@
 package beephone_shop_projects.entity.base;
 
+import beephone_shop_projects.infrastructure.listener.AuditEntityListener;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
@@ -11,7 +12,7 @@ import java.util.Date;
 @Getter
 @Setter
 @MappedSuperclass
-@EntityListeners(AuditingEntityListener.class)
+@EntityListeners(AuditEntityListener.class)
 public abstract class AuditEntity {
 
     @Column(name = "created_at")

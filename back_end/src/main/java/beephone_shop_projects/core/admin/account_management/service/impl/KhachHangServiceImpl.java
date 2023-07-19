@@ -1,6 +1,7 @@
 package beephone_shop_projects.core.admin.account_management.service.impl;
 
 import beephone_shop_projects.core.admin.account_management.model.request.CreateAccountRequest;
+import beephone_shop_projects.core.admin.account_management.model.response.AccountResponse;
 import beephone_shop_projects.core.admin.account_management.repository.AccountRepository;
 import beephone_shop_projects.core.admin.account_management.repository.RoleRepository;
 import beephone_shop_projects.core.admin.account_management.service.KhachHangService;
@@ -33,6 +34,12 @@ public class KhachHangServiceImpl implements KhachHangService {
     }
 
     @Override
+    public Page<AccountResponse> searchAllKHang(Integer pageNo) {
+        Pageable pageable = PageRequest.of(pageNo, 3);
+        return accountRepository.searchAllKHang(pageable);
+    }
+
+    @Override
     public Account addKH(CreateAccountRequest request) {
         Random random = new Random();
         int number = random.nextInt(10000);
@@ -54,7 +61,7 @@ public class KhachHangServiceImpl implements KhachHangService {
         Account kh = new Account().builder()
                 .email(request.getEmail())
                 .ngaySinh(date)
-                .idRole(roleRepository.findByMa("Role2"))
+                .idRole(roleRepository.findByMa("role2"))
                 .hoVaTen(request.getHoVaTen())
                 .trangThai(1)
                 .ma(code)
@@ -75,7 +82,7 @@ public class KhachHangServiceImpl implements KhachHangService {
             optional.get().setDiaChi(request.getDiaChi());
             optional.get().setTrangThai(request.getTrangThai());
             optional.get().setDiaChi(request.getDiaChi());
-            optional.get().setIdRole(roleRepository.findByMa("Role01"));
+            optional.get().setIdRole(roleRepository.findByMa("role2"));
             optional.get().setMatKhau(request.getMatKhau());
             optional.get().setNgaySinh(request.getNgaySinh());
             optional.get().setHoVaTen(request.getHoVaTen());
@@ -84,6 +91,12 @@ public class KhachHangServiceImpl implements KhachHangService {
             return accountRepository.save(optional.get());
         }
         return optional.get();
+    }
+
+    @Override
+    public Page<Account> search(Optional<String> tenSearch, Integer pageNo) {
+        Pageable pageable = PageRequest.of(pageNo, 3);
+        return accountRepository.searchAllKH(tenSearch,pageable);
     }
 
     @Override

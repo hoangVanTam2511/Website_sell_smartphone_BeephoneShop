@@ -48,9 +48,10 @@ public class NhanVienRescontroller {
     }
 
     @GetMapping("search-all")
-    public Page<Account> searchAll(@RequestBody SearchRequest request,
+    public Page<Account> searchAll(@RequestParam("tenKH") String hoVaTen,
                                    @RequestParam(name = "page", defaultValue = "0") Integer pageNo) {
-        Optional<String> opTen = Optional.ofNullable(request.getHoVaTen());
+        Optional<String> opTen = Optional.ofNullable(hoVaTen);
+//        accService.searchAllKH(hoVaTen, PageRequest.of(pageNo, pageSize))
         return accService.search(opTen, pageNo);
     }
 }

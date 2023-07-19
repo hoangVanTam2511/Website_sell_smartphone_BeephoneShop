@@ -54,7 +54,7 @@ public class NhanVienServiceImpl implements NhanVienService {
         Account kh = new Account().builder()
                 .email(request.getEmail())
                 .ngaySinh(date)
-                .idRole(roleRepository.findByMa("Role1"))
+                .idRole(roleRepository.findByMa("role1"))
                 .hoVaTen(request.getHoVaTen())
                 .trangThai(1)
                 .ma(code)
@@ -74,14 +74,13 @@ public class NhanVienServiceImpl implements NhanVienService {
     public Account updateNV(Account request, String id) {
         Optional<Account> optional = accountRepository.findById(id);
         if (optional.isPresent()) {
-
             optional.get().setMa(request.getMa());
             optional.get().setId(id);
             optional.get().setEmail(request.getEmail());
             optional.get().setDiaChi(request.getDiaChi());
             optional.get().setTrangThai(request.getTrangThai());
             optional.get().setDiaChi(request.getDiaChi());
-            optional.get().setIdRole(roleRepository.findByMa("Role01"));
+            optional.get().setIdRole(roleRepository.findByMa("role1"));
             optional.get().setMatKhau(request.getMatKhau());
             optional.get().setNgaySinh(request.getNgaySinh());
             optional.get().setHoVaTen(request.getHoVaTen());
@@ -94,8 +93,8 @@ public class NhanVienServiceImpl implements NhanVienService {
 
     @Override
     public Page<Account> search(Optional<String> tenSearch, Integer pageNo) {
-        Pageable pageable = PageRequest.of(pageNo, 3);
-        return accountRepository.searchAllKH(tenSearch, pageable);
+        Pageable pageable = PageRequest.of(pageNo, 10);
+        return accountRepository.searchAllNV(tenSearch, pageable);
     }
 
     public static String removeDiacritics(String str) {
