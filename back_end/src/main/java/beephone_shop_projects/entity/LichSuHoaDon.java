@@ -18,12 +18,16 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "linh_su_hoa_don")
-public class LinhSuHoaDon extends PrimaryEntity implements IsIdentified {
+public class LincSuHoaDon extends PrimaryEntity implements IsIdentified {
 
-    private Integer trangThaiHoaDon;
+  private String thaoTac;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "hoa_don_id")
-    private HoaDon  hoa_don_id;
+  private Integer loaiThaoTac;
+
+  private String moTa;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "hoa_don_id")
+  private HoaDon hoaDon;
 
 }
