@@ -17,8 +17,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "linh_su_hoa_don")
-public class LincSuHoaDon extends PrimaryEntity implements IsIdentified {
+@Table(name = "lich_su_hoa_don")
+public class LichSuHoaDon extends PrimaryEntity implements IsIdentified {
 
   private String thaoTac;
 
