@@ -17,13 +17,17 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "linh_su_hoa_don")
-public class LinhSuHoaDon extends PrimaryEntity implements IsIdentified {
+@Table(name = "lich_su_hoa_don")
+public class LichSuHoaDon extends PrimaryEntity implements IsIdentified {
 
-    private Integer trangThaiHoaDon;
+    private String thaoTac;
+
+    private Integer loaiThaoTac;
+
+    private String mota;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "hoa_don_id")
-    private HoaDon  hoa_don_id;
+    private HoaDon hoaDon;
 
 }
