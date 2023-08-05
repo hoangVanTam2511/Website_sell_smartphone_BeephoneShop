@@ -1,6 +1,7 @@
 package beephone_shop_projects.core.admin.voucher_management.controller;
 
 import beephone_shop_projects.core.admin.voucher_management.model.request.CreateVoucherRequest;
+import beephone_shop_projects.core.admin.voucher_management.model.request.FindVoucherRequest;
 import beephone_shop_projects.core.admin.voucher_management.model.request.UpdateVoucherRequest;
 import beephone_shop_projects.core.admin.voucher_management.model.response.VoucherResponse;
 import beephone_shop_projects.core.admin.voucher_management.service.VoucherService;
@@ -29,8 +30,8 @@ public class VoucherRestController {
     private VoucherService voucherService;
 
     @GetMapping("/hien-thi")
-    public Page<VoucherResponse> hienThiVoucher(@RequestParam( value = "page",defaultValue = "1") Integer page) {
-        Pageable pageable = PageRequest.of(page, 2);
+    public Page<VoucherResponse> hienThiVoucher(@RequestParam(value = "page", defaultValue = "0") Integer page) {
+        Pageable pageable = PageRequest.of(page, 5);
         return voucherService.getAll(pageable);
     }
 
@@ -41,7 +42,7 @@ public class VoucherRestController {
 
     @PostMapping("/addVoucher")
     public ResponseEntity addVoucher(@RequestBody CreateVoucherRequest request) {
-        return new ResponseEntity(voucherService.addVoucher(request), HttpStatus.CREATED);
+            return new ResponseEntity(voucherService.addVoucher(request), HttpStatus.CREATED);
     }
 
     @PutMapping("/updateVoucher/{id}")
@@ -53,4 +54,15 @@ public class VoucherRestController {
     public ResponseEntity deleteVoucher(@PathVariable("id") String id) {
         return new ResponseEntity(voucherService.deleteVoucher(id), HttpStatus.OK);
     }
+
+    @PutMapping("/deleteTrangThaiVoucher/{id}")
+    public ResponseEntity deleteTrangThaiVoucher(@PathVariable("id") String id) {
+        return new ResponseEntity(voucherService.doiTrangThai(id), HttpStatus.OK);
+    }
+
+    @GetMapping("/searchVoucher")
+    public ResponseEntity searchVoucher(@RequestBody FindVoucherRequest request) {
+        return new ResponseEntity(voucherService.timKiemVoucher(request), HttpStatus.OK);
+    }
+
 }

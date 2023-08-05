@@ -17,7 +17,6 @@ public interface AccountResponse {
     @Value("#{target.diaChi}")
     String getDiaChi();
 
-
     @Value("#{target.soDienThoai}")
     String getSoDienThoai();
 

@@ -19,6 +19,7 @@ import {
   Radio,
   RadioGroup,
 } from "@mui/material";
+import "../../../assets/scss/addPromotion.scss";
 
 const AddKhuyenMai = () => {
   let [listKhuyenMai, setlistKhuyenMai] = useState([]);
@@ -74,154 +75,156 @@ const AddKhuyenMai = () => {
 
   return (
     <>
-      <h2 style={{ marginBottom: "2%" }}>Thêm Voucher</h2>
-      <div className="text-f">
-        <TextField
-          label="Mã Khuyến Mãi:"
-          value={ma}
-          id="fullWidth"
-          onChange={(e) => {
-            setMa(e.target.value);
-          }}
-          style={{ marginBottom: "0.1%", width: "35em" }}
-        />
-      </div>
-      <div className="text-f">
-        <TextField
-          label="Tên Khuyến Mãi:"
-          value={tenKhuyenMai}
-          id="fullWidth"
-          onChange={(e) => {
-            setTenKhuyenMai(e.target.value);
-          }}
-          style={{ marginBottom: "0.1%", width: "35em" }}
-        />
-      </div>
-      <div className="text-f">
-        <TextField
-          label="Mức Giảm Giá Theo Phần Trăm:"
-          value={mucGiamGiaTheoPhanTram}
-          id="fullWidth"
-          onChange={(e) => {
-            setMucGiamGiaTheoPhanTram(e.target.value);
-          }}
-          style={{ marginBottom: "0.1%", width: "35em" }}
-        />
-      </div>
-      <div className="text-f">
-        <TextField
-          label="Mức Giảm Giá Theo Số Tiền:"
-          value={mucGiamGiaTheoSoTien}
-          id="fullWidth"
-          onChange={(e) => {
-            setMucGiamGiaTheoSoTien(e.target.value);
-          }}
-          style={{ marginBottom: "0.1%", width: "35em" }}
-        />
-      </div>
-      <div className="text-f">
-        <Box
-          component="form"
-          sx={{
-            "& .MuiTextField-root": { m: 1, width: "35em" },
-          }}
-          noValidate
-          autoComplete="off"
-        >
+      <div className="add-voucher-container">
+        <h2 style={{ marginBottom: "2%" }}>Thêm Voucher</h2>
+        <div className="text-f">
           <TextField
-            label="Ngày Bắt Đầu:"
-            type="date"
-            value={ngayBatDau}
-            format="YYYY-MM-DD"
-            InputLabelProps={{
-              shrink: true,
-            }}
-            inputProps={{
-              style: {
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                width: "100%",
-              },
-            }}
+            label="Mã Khuyến Mãi:"
+            value={ma}
+            id="fullWidth"
             onChange={(e) => {
-              setNgayBatDau(e.target.value);
+              setMa(e.target.value);
             }}
+            style={{ marginBottom: "0.1%", width: "35em" }}
           />
-        </Box>
-      </div>
-      <div className="text-f">
-        <Box
-          component="form"
-          sx={{
-            "& .MuiTextField-root": { m: 1, width: "35em" },
-          }}
-          noValidate
-          autoComplete="off"
-        >
+        </div>
+        <div className="text-f">
           <TextField
-            label="Ngày Kết Thúc:"
-            type="date"
-            value={ngayKetThuc}
-            format="YYYY-MM-DD"
-            InputLabelProps={{
-              shrink: true,
-            }}
-            inputProps={{
-              style: {
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                width: "100%",
-              },
-            }}
+            label="Tên Khuyến Mãi:"
+            value={tenKhuyenMai}
+            id="fullWidth"
             onChange={(e) => {
-              setNgayKetThuc(e.target.value);
+              setTenKhuyenMai(e.target.value);
             }}
+            style={{ marginBottom: "0.1%", width: "35em" }}
           />
-        </Box>
-      </div>
-      <div className="text-f">
-        <TextField
-          label="Điều Kiện Giảm Giá:"
-          value={dieuKienGiamGia}
-          id="fullWidth"
-          onChange={(e) => {
-            setDieuKienGiamGia(e.target.value);
-          }}
-          style={{ marginBottom: "0.1%", width: "35em" }}
-        />
-      </div>
-      <div className="text-f">
-        <FormControl component="fieldset">
-          <FormLabel component="legend">Trạng Thái Voucher:</FormLabel>
-          <RadioGroup
-            row
-            aria-label="trạng thái voucher"
-            name="trangThai"
-            value={trangThai}
+        </div>
+        <div className="text-f">
+          <TextField
+            label="Mức Giảm Giá Theo Phần Trăm:"
+            value={mucGiamGiaTheoPhanTram}
+            id="fullWidth"
             onChange={(e) => {
-              setTrangThai(e.target.value);
+              setMucGiamGiaTheoPhanTram(e.target.value);
             }}
+            style={{ marginBottom: "0.1%", width: "35em" }}
+          />
+        </div>
+        <div className="text-f">
+          <TextField
+            label="Mức Giảm Giá Theo Số Tiền:"
+            value={mucGiamGiaTheoSoTien}
+            id="fullWidth"
+            onChange={(e) => {
+              setMucGiamGiaTheoSoTien(e.target.value);
+            }}
+            style={{ marginBottom: "0.1%", width: "35em" }}
+          />
+        </div>
+        <div className="text-f">
+          <Box
+            component="form"
+            sx={{
+              "& .MuiTextField-root": { m: 1, width: "35em" },
+            }}
+            noValidate
+            autoComplete="off"
           >
-            <FormControlLabel
-              value="true"
-              control={<Radio />}
-              label="Còn Hiệu Lực"
+            <TextField
+              label="Ngày Bắt Đầu:"
+              type="date"
+              value={ngayBatDau}
+              format="YYYY-MM-DD"
+              InputLabelProps={{
+                shrink: true,
+              }}
+              inputProps={{
+                style: {
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  width: "100%",
+                },
+              }}
+              onChange={(e) => {
+                setNgayBatDau(e.target.value);
+              }}
             />
-            <FormControlLabel
-              value="false"
-              control={<Radio />}
-              label="Hết Hiệu Lực"
+          </Box>
+        </div>
+        <div className="text-f">
+          <Box
+            component="form"
+            sx={{
+              "& .MuiTextField-root": { m: 1, width: "35em" },
+            }}
+            noValidate
+            autoComplete="off"
+          >
+            <TextField
+              label="Ngày Kết Thúc:"
+              type="date"
+              value={ngayKetThuc}
+              format="YYYY-MM-DD"
+              InputLabelProps={{
+                shrink: true,
+              }}
+              inputProps={{
+                style: {
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  width: "100%",
+                },
+              }}
+              onChange={(e) => {
+                setNgayKetThuc(e.target.value);
+              }}
             />
-          </RadioGroup>
-        </FormControl>
-      </div>
-      <div style={{ marginBottom: "0.1%" }}>
-        <Button type="primary" onClick={addKhuyenMai} htmlType="submit">
-          Xác nhận{" "}
-          <FontAwesomeIcon icon={faCheck} style={{ paddingLeft: "10px" }} />
-        </Button>
+          </Box>
+        </div>
+        <div className="text-f">
+          <TextField
+            label="Điều Kiện Giảm Giá:"
+            value={dieuKienGiamGia}
+            id="fullWidth"
+            onChange={(e) => {
+              setDieuKienGiamGia(e.target.value);
+            }}
+            style={{ marginBottom: "0.1%", width: "35em" }}
+          />
+        </div>
+        <div className="text-f">
+          <FormControl component="fieldset">
+            <FormLabel component="legend">Trạng Thái Voucher:</FormLabel>
+            <RadioGroup
+              row
+              aria-label="trạng thái voucher"
+              name="trangThai"
+              value={trangThai}
+              onChange={(e) => {
+                setTrangThai(e.target.value);
+              }}
+            >
+              <FormControlLabel
+                value="true"
+                control={<Radio />}
+                label="Còn Hiệu Lực"
+              />
+              <FormControlLabel
+                value="false"
+                control={<Radio />}
+                label="Hết Hiệu Lực"
+              />
+            </RadioGroup>
+          </FormControl>
+        </div>
+        <div style={{ marginBottom: "0.1%" }}>
+          <Button type="primary" onClick={addKhuyenMai} htmlType="submit">
+            Xác nhận{" "}
+            <FontAwesomeIcon icon={faCheck} style={{ paddingLeft: "10px" }} />
+          </Button>
+        </div>
       </div>
     </>
   );
