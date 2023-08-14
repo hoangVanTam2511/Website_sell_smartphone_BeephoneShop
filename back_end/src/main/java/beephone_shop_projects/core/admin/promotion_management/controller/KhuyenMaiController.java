@@ -56,4 +56,9 @@ public class KhuyenMaiController {
         return new ResponseEntity(khuyenMaiService.getOne(ma), HttpStatus.OK);
     }
 
+    @PutMapping("doi-trang-thai/{id}")
+    public ResponseEntity doiTrangThai(@PathVariable("id") String id){
+        return new ResponseEntity(khuyenMaiService.doiTrangThai(id),HttpStatus.OK);
+    }
+
 }

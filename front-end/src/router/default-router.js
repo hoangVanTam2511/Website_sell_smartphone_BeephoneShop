@@ -236,6 +236,10 @@ export const DefaultRouter = [
         path: "them-khuyen-mai",
         element: <AddKhuyenMai />,
       },
+      {
+        path: "sua-khuyen-mai",
+        element: <AddKhuyenMai />,
+      },
     ],
   },
 ];

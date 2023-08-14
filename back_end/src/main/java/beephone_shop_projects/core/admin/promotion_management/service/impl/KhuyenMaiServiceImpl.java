@@ -40,7 +40,7 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
                 .mucGiamGiaTheoSoTien(request.getMucGiamGiaTheoSoTien())
                 .ngayBatDau(request.getNgayBatDau())
                 .ngayKetThuc(request.getNgayKetThuc())
-                .trangThai(request.getTrangThai())
+                .trangThai(true)
                 .build();
         return khuyenMaiRepository.save(khuyenMai);
     }
@@ -52,7 +52,6 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
             khuyenMai.setMa(request.getMa());
             khuyenMai.setTenKhuyenMai(request.getTenKhuyenMai());
             khuyenMai.setNgayBatDau(request.getNgayBatDau());
-            khuyenMai.setTrangThai(request.getTrangThai());
             khuyenMai.setDieuKienGiamGia(request.getDieuKienGiamGia());
             khuyenMai.setNgayKetThuc(request.getNgayKetThuc());
             khuyenMai.setMucGiamGiaTheoPhanTram(request.getMucGiamGiaTheoPhanTram());
@@ -68,6 +67,17 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
         KhuyenMai findKhuyenMai = khuyenMaiRepository.findById(ma).get();
         if (findKhuyenMai != null) {
             khuyenMaiRepository.deleteById(ma);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public Boolean doiTrangThai(String id) {
+        KhuyenMai findKhuyenMai = khuyenMaiRepository.findById(id).get();
+        if (findKhuyenMai != null) {
+            khuyenMaiRepository.doiTrangThai(id);
             return true;
         } else {
             return false;

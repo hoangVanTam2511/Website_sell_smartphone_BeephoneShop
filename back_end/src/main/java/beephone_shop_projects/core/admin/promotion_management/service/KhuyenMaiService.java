@@ -20,4 +20,6 @@ public interface KhuyenMaiService {
 
     Boolean deleteVoucher(String ma);
 
+    Boolean doiTrangThai(String id);
+
 }
