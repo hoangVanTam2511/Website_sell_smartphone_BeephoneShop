@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+
 @RestController
 @RequestMapping("/hinh-thuc-san-pham")
 @CrossOrigin
@@ -30,6 +32,11 @@ public class HinhThucSanPhamRestController {
     public Page<HinhThucSanPham> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
         Pageable pageable = PageRequest.of(page,5);
         return hinhThucSanPhamService.getAll(pageable);
+    }
+
+    @GetMapping("/get-list")
+    public ArrayList<HinhThucSanPham> getList(){
+        return this.hinhThucSanPhamService.getDanhSachHinhThucSanPham();
     }
 
     @DeleteMapping("/delete")

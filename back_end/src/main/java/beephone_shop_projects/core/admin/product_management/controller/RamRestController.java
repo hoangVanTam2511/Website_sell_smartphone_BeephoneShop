@@ -1,6 +1,7 @@
 package beephone_shop_projects.core.admin.product_management.controller;
 
 import beephone_shop_projects.core.admin.product_management.service.impl.RamServiceImpl;
+import beephone_shop_projects.entity.HinhThucSanPham;
 import beephone_shop_projects.entity.Pin;
 import beephone_shop_projects.entity.Ram;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+
 @RestController
 @RequestMapping("/ram")
 @CrossOrigin(origins = "http://localhost:3000")
@@ -30,6 +33,11 @@ public class RamRestController {
     public Page<Ram> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
         Pageable pageable = PageRequest.of(page,5);
         return ramService.getAll(pageable);
+    }
+
+    @GetMapping("/get-list")
+    public ArrayList<Ram> getList(){
+        return this.ramService.getDanhSachRam();
     }
 
     @DeleteMapping("/delete")

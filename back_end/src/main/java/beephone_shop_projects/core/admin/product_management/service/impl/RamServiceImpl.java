@@ -43,6 +43,6 @@ public class RamServiceImpl implements IService<Ram> {
     }
 
     public ArrayList<Ram> getDanhSachRam(){
-        return (ArrayList<Ram>) this.ramRepository.findAll();
+      return (ArrayList<Ram>) this.ramRepository.findAllByDelected(true);
     }
 }

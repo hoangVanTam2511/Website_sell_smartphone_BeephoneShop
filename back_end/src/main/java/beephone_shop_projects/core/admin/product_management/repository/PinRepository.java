@@ -10,6 +10,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface PinRepository extends IPinRepository {
     Page<Pin> findAllByDelected(Boolean delected, Pageable pageable);
 
@@ -20,4 +22,8 @@ public interface PinRepository extends IPinRepository {
            where id = :id
           """,nativeQuery = true)
     void updateDelected(@Param("delected") Boolean delected, @Param("id")String id);
+
+    List<Pin> findAllByDelected(Boolean delected);
+
+    Pin findByDungLuong(Integer dungLuong);
 }

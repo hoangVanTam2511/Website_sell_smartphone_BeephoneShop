@@ -43,6 +43,6 @@ public class ChipServiceImpl implements IService<Chip> {
     }
 
     public ArrayList<Chip> getListChip(){
-        return (ArrayList<Chip>) this.chipRepository.findAll();
+        return (ArrayList<Chip>) this.chipRepository.findAllByDelected(true);
     }
 }

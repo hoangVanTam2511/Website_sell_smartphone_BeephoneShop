@@ -6,10 +6,6 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.Setter;
-<<<<<<< HEAD
-=======
-
->>>>>>> beephone_dung
 import java.util.Date;
 
 @Getter

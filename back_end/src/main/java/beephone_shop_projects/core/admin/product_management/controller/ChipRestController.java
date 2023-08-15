@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+
 @RestController
 @RequestMapping("/chip")
 @CrossOrigin(origins = "http://localhost:3000")
@@ -31,6 +33,11 @@ public class ChipRestController {
     public Page<Chip> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
         Pageable pageable = PageRequest.of(page,5);
         return chipService.getAll(pageable);
+    }
+
+    @GetMapping("/get-list")
+    public ArrayList<Chip> getList(){
+        return this.chipService.getListChip();
     }
 
     @DeleteMapping("/delete")

@@ -43,6 +43,6 @@ public class SanPhamServiceImpl implements IService<SanPham> {
     }
 
     public ArrayList<SanPham> getDanhSachSanPham(){
-        return (ArrayList<SanPham>) this.sanPhamRepository.findAll();
+        return (ArrayList<SanPham>) this.sanPhamRepository.findAllByDelected(true);
     }
 }

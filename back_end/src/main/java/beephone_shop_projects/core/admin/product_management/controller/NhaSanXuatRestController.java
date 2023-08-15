@@ -1,6 +1,7 @@
 package beephone_shop_projects.core.admin.product_management.controller;
 
 import beephone_shop_projects.core.admin.product_management.service.impl.NhaSanXuatServiceImpl;
+import beephone_shop_projects.entity.HinhThucSanPham;
 import beephone_shop_projects.entity.MauSac;
 import beephone_shop_projects.entity.NhaSanXuat;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+
 @RestController
 @RequestMapping("/nha-san-xuat")
 @CrossOrigin(origins = "http://localhost:3000")
@@ -31,6 +34,11 @@ public class NhaSanXuatRestController {
     public Page<NhaSanXuat> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
         Pageable pageable = PageRequest.of(page,5);
         return nhaSanXuatService.getAll(pageable);
+    }
+
+    @GetMapping("/get-list")
+    public ArrayList<NhaSanXuat> getList(){
+        return this.nhaSanXuatService.getDanhSachNhaSanXuat();
     }
 
     @DeleteMapping("/delete")

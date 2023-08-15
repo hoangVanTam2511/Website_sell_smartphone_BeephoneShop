@@ -11,6 +11,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface ChipRepository extends IChipRepository {
 
     Page<Chip> findAllByDelected(Boolean delected, Pageable pageable);
@@ -22,4 +24,9 @@ public interface ChipRepository extends IChipRepository {
            where id = :id
           """,nativeQuery = true)
     void updateDelected(@Param("delected") Boolean delected, @Param("id")String id);
+
+
+    List<Chip> findAllByDelected(Boolean delected);
+
+    Chip findByTenChip(String tenChip);
 }

@@ -11,6 +11,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface DongSanPhamRepository extends IDongSanPhamRepository {
     Page<DongSanPham> findAllByDelected(Boolean delected, Pageable pageable);
@@ -22,4 +24,9 @@ public interface DongSanPhamRepository extends IDongSanPhamRepository {
            where id = :id
           """,nativeQuery = true)
     void updateDelected(@Param("delected") Boolean delected, @Param("id")String id);
+
+    List<DongSanPham> findAllByDelected(Boolean delected);
+
+    DongSanPham findByTenDongSanPham(String tenDongSanPham);
+
 }

@@ -43,6 +43,6 @@ public class PinServiceImpl implements IService<Pin> {
     }
 
     public ArrayList<Pin> getDanhSachPin(){
-        return (ArrayList<Pin>) this.pinRepository.findAll();
+        return (ArrayList<Pin>) this.pinRepository.findAllByDelected(true);
     }
 }

@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+
 @RestController
 @RequestMapping("/man-hinh")
 @CrossOrigin(origins = "http://localhost:3000")
@@ -32,6 +34,10 @@ public class ManHinhRestController {
         return manHinhService.getAll(pageable);
     }
 
+    @GetMapping("/get-list")
+    public ArrayList<ManHinh> getList(){
+        return this.manHinhService.getDanhSachManHinh();
+    }
     @DeleteMapping("/delete")
     public void delete(@RequestParam("id")String id) {
         manHinhService.delete(id);

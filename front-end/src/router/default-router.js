@@ -45,20 +45,14 @@ import SanPham from "../views/admin/product-manager/san-pham/san-pham";
 import ThemSanPham from "../views/admin/product-manager/san-pham/them-san-pham";
 
 // chi-tiet-san-pham
-<<<<<<< HEAD
 import ChiTietSanPham from '../views/admin/product-manager/chi-tiet-san-pham/chi-tiet-san-pham';
 import ThemChiTietSanPham from '../views/admin/product-manager/chi-tiet-san-pham/them-chi-tiet-san-pham';
 
 
-// rom
+// // imei
 import Imei from '../views/admin/product-manager/imei/imei';
 import ThemImei from '../views/admin/product-manager/imei/them-imei'
 
-
-=======
-import ChiTietSanPham from "../views/admin/product-manager/chi-tiet-san-pham/chi-tiet-san-pham";
-import ThemChiTietSanPham from "../views/admin/product-manager/chi-tiet-san-pham/them-chi-tiet-san-pham";
->>>>>>> beephone_dung
 
 // khach hang
 import KhachHang from "../views/admin/account-manager/khachhang/HienThiKH";
@@ -71,14 +65,12 @@ import AddNv from "../views/admin/account-manager/nhanvien/AddNV";
 import NhapTuFileNV from "../views/admin/account-manager/nhanvien/NhapTuFile";
 
 // role
-<<<<<<< HEAD
+
 import Role from '../views/admin/account-manager/role/hoho'
 import AddRole from '../views/admin/account-manager/role/hoho'
-=======
 
-import Role from "../views/admin/account-manager/role/hoho";
-import AddRole from "../views/admin/account-manager/role/hoho";
->>>>>>> beephone_dung
+
+
 
 //admin
 
@@ -89,120 +81,6 @@ import HienThiKhuyenMai from "../views/admin/promotion-manager/quan-li-promotion
 import AddKhuyenMai from "../views/admin/promotion-manager/them-promotion";
 
 export const DefaultRouter = [
-<<<<<<< HEAD
-    {
-        path: '/',
-        element: <Default />,
-        children: [
-            {
-                path: '',
-                element: <Index />
-            },
-            {
-                path: 'mau-sac',
-                element: <QuanLiMauSac />
-            },
-            {
-                path: 'them-mau-sac',
-                element: <ThemMauSac />
-            },
-            {
-                path: 'camera',
-                element: <Camera />
-            },
-            {
-                path: 'them-camera',
-                element: <ThemCamera />
-            },
-            {
-                path: 'chip',
-                element: <Chip />
-            },
-            {
-                path: 'them-chip',
-                element: <ThemChip />
-            },
-            {
-                path: 'dong-san-pham',
-                element: <DongSanPham />
-            },
-            {
-                path: 'them-dong-san-pham',
-                element: <ThemDongSanPham />
-            },
-            {
-                path: 'hinh-thuc-san-pham',
-                element: <HinhThucSanPham />
-            },
-            {
-                path: 'them-hinh-thuc-san-pham',
-                element: <ThemHinhThucSanPham />
-            },
-            {
-                path: 'nha-san-xuat',
-                element: <NhaSanXuat />
-            },
-            {
-                path: 'them-nha-san-xuat',
-                element: <ThemNhaSanXuat />
-            },
-            {
-                path: 'man-hinh',
-                element: <ManHinh />
-            },
-            {
-                path: 'them-man-hinh',
-                element: <ThemManHinh />
-            },
-            {
-                path: 'pin',
-                element: <Pin />
-            },
-            {
-                path: 'them-pin',
-                element: <ThemPin />
-            },
-            {
-                path: 'ram',
-                element: <Ram />
-            },
-            {
-                path: 'them-ram',
-                element: <ThemRam />
-            },
-            {
-                path: 'rom',
-                element: <Rom />
-            },
-            {
-                path: 'them-rom',
-                element: <ThemRom />
-            },
-            {
-                path: 'san-pham',
-                element: <SanPham />
-            },
-            {
-                path: 'them-san-pham',
-                element: <ThemSanPham />
-            },
-            {
-                path: 'chi-tiet-san-pham',
-                element: <ChiTietSanPham />
-            },
-            {
-                path: 'them-chi-tiet-san-pham',
-                element: <ThemChiTietSanPham />
-            },
-            {
-                path: 'imei/:idChiTietSanPham',
-                element: <Imei />
-            },
-            {
-                path: 'them-imei/:idChiTietSanPham',
-                element: <ThemImei />
-            },
-=======
   {
     path: "/",
     element: <Default />,
@@ -307,7 +185,6 @@ export const DefaultRouter = [
         path: "them-chi-tiet-san-pham",
         element: <ThemChiTietSanPham />,
       },
->>>>>>> beephone_dung
 
       {
         path: "khach-hang",
@@ -330,6 +207,14 @@ export const DefaultRouter = [
       {
         path: "them-nhan-vien",
         element: <AddNv />,
+      },
+      {
+        path: "imei/:idChiTietSanPham",
+        element: <Imei />,
+      },
+      {
+        path: "them-imei",
+        element: <ThemImei />,
       },
       {
         path: "nhap-excel-nhan-vien",

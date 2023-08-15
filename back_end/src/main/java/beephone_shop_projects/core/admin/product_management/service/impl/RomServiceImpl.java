@@ -43,6 +43,6 @@ public class RomServiceImpl implements IService<Rom> {
     }
 
     public ArrayList<Rom> getDanhSachRom(){
-        return (ArrayList<Rom>) this.romRepository.findAll();
+        return (ArrayList<Rom>) this.romRepository.findAllByDelected(true);
     }
 }

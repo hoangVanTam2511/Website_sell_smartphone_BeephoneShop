@@ -43,6 +43,6 @@ public class HinhThucSanPhamServiceImpl implements IService<HinhThucSanPham> {
     }
 
     public ArrayList<HinhThucSanPham> getDanhSachHinhThucSanPham(){
-        return (ArrayList<HinhThucSanPham>) this.hinhThucSanPhamRepository.findAll();
+        return (ArrayList<HinhThucSanPham>) this.hinhThucSanPhamRepository.findAllByDelected(true);
     }
 }

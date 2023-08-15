@@ -47,7 +47,6 @@ public class ChiTietSanPham extends PrimaryEntity implements IsIdentified {
     @JoinColumn(name = "id_ram")
     private Ram idRam;
 
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_rom")
     private Rom idRom;

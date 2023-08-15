@@ -63,7 +63,8 @@ const Header = memo((props) => {
                             </svg>
                         </i>
                     </div>
-                    <div className="input-group search-input">
+                    
+                    {/* <div className="input-group search-input">
                         <span className="input-group-text" id="search-input">
                             <svg width="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <circle cx="11.7669" cy="11.7666" r="8.98856" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></circle>
@@ -71,7 +72,8 @@ const Header = memo((props) => {
                             </svg>
                         </span>
                         <input type="search" className="form-control" placeholder="Search..."/>
-                    </div>
+                    </div> */}
+
                     <Navbar.Toggle aria-controls="navbarSupportedContent">
                         <span className="navbar-toggler-icon">
                             <span className="mt-2 navbar-toggler-bar bar1"></span>

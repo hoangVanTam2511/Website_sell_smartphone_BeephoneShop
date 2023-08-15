@@ -44,6 +44,7 @@ public class ManHinhServiceImpl implements IService<ManHinh> {
     }
 
     public ArrayList<ManHinh> getDanhSachManHinh(){
-        return (ArrayList<ManHinh>) this.manHinhRepository.findAll();
+        return (ArrayList<ManHinh>)
+                this.manHinhRepository.findAllByDelected(true);
     }
 }

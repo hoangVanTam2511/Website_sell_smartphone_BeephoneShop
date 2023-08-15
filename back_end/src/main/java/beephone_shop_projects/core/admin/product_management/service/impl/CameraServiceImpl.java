@@ -43,6 +43,6 @@ public class CameraServiceImpl implements IService<Camera> {
     }
 
     public ArrayList<Camera> getListCamera(){
-        return (ArrayList<Camera>) this.cameraRepository.findAll();
+        return (ArrayList<Camera>) this.cameraRepository.findAllByDelected(true);
     }
 }

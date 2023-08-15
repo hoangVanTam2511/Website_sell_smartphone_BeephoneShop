@@ -25,6 +25,8 @@ import "../../../../assets/scss/HienThiNV.scss";
 import { Link,useParams  } from "react-router-dom";
 import { SearchOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
+import NhapTuFile from "../imei/NhapTuFile";
+
 
 const currentDate = new Date().toISOString().split("T")[0];
 
@@ -404,6 +406,9 @@ const HienThiKH = () => {
             <Button className="btn-them-tk">+ Thêm imei </Button>
           </Link>
 
+          <Button className="btn-them-tu-file">
+            <NhapTuFile />
+          </Button>
         </span>
       </div>
       <div className="form-tbl">

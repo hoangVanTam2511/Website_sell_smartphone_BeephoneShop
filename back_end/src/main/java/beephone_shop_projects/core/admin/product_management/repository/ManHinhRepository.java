@@ -10,6 +10,9 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 public interface ManHinhRepository extends IManHinhRepository {
     Page<ManHinh> findAllByDelected(Boolean delected, Pageable pageable);
 
@@ -20,4 +23,9 @@ public interface ManHinhRepository extends IManHinhRepository {
            where id = :id
           """,nativeQuery = true)
     void updateDelected(@Param("delected") Boolean delected, @Param("id")String id);
+
+
+    List<ManHinh> findAllByDelected(Boolean delected);
+
+    ManHinh findByKichThuoc(BigDecimal kichThuoc);
 }

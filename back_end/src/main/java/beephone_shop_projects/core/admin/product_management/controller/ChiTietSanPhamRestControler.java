@@ -1,5 +1,8 @@
 package beephone_shop_projects.core.admin.product_management.controller;
 
+import beephone_shop_projects.core.admin.product_management.model.request.CreateChiTietSanPhamRequest;
+import beephone_shop_projects.core.admin.product_management.model.request.SearchChiTietSanPhamRequest;
+import beephone_shop_projects.core.admin.product_management.model.responce.ChiTietCauHinhResponce;
 import beephone_shop_projects.core.admin.product_management.model.responce.ChiTietSanPhamResponce;
 import beephone_shop_projects.core.admin.product_management.service.impl.ChiTietSanPhamServiceImpl;
 import beephone_shop_projects.entity.ChiTietSanPham;
@@ -28,25 +31,40 @@ public class ChiTietSanPhamRestControler {
     @Autowired
     private ChiTietSanPhamServiceImpl chiTietSanPhamService;
 
-    @GetMapping("/view-all")
+    @GetMapping("/products")
     public Page<ChiTietSanPhamResponce> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
         Pageable pageable = PageRequest.of(page,5);
         return chiTietSanPhamService.getAllByDelected(pageable);
     }
 
-    @DeleteMapping("/delete")
-    public void delete(@RequestParam("id")String id) {
+    @DeleteMapping("/doi-trang-thai/{id}")
+    public void delete(@PathVariable("id")String id) {
         chiTietSanPhamService.delete(id);
     }
 
     @PostMapping("/save")
-    public void save(@RequestBody ChiTietSanPham chiTietSanPham) {
-        chiTietSanPhamService.insert(chiTietSanPham);
+    public void save(@RequestBody CreateChiTietSanPhamRequest chiTietSanPhamRequest) {
+        chiTietSanPhamService.insert(chiTietSanPhamRequest);
     }
 
     @PutMapping("/update/{id}")
     public void update(@RequestBody ChiTietSanPham chiTietSanPham ,@PathVariable("id")String id) {
-        chiTietSanPhamService.insert(chiTietSanPham);
+
+    }
+
+
+    @PostMapping("/view-all")
+    public Page<ChiTietSanPhamResponce> search(@RequestParam(value = "page",defaultValue = "1") Integer page,
+                                               @RequestBody(required = false) SearchChiTietSanPhamRequest chiTietSanPhamRequest) {
+        Pageable pageable = PageRequest.of(page,5);
+        System.out.println(chiTietSanPhamRequest);
+        return chiTietSanPhamService.searchByAllPosition(chiTietSanPhamRequest,pageable);
+    }
+
+    @GetMapping("/get-cau-hinh")
+    public Page<ChiTietCauHinhResponce> getChiTietCauHinh(@RequestParam(value = "page",defaultValue = "1") Integer page){
+        Pageable pageable = PageRequest.of(page,5);
+        return chiTietSanPhamService.getChiTietCauHinh(pageable);
     }
 
 }

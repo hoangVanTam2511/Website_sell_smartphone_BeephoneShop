@@ -43,6 +43,6 @@ public class MauSacServiceImpl implements IService<MauSac> {
     }
 
     public ArrayList<MauSac> getDanhSachMauSac(){
-        return (ArrayList<MauSac>) this.mauSacRepository.findAll();
+        return (ArrayList<MauSac>) this.mauSacRepository.findAllByDelected(true);
     }
 }

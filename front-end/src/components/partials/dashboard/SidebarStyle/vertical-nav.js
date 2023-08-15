@@ -5,7 +5,7 @@ import {
   useAccordionButton,
   AccordionContext,
 } from "react-bootstrap";
-
+import { faShoppingCart } from "@fortawesome/react-fontawesome";
 function CustomToggle({ children, eventKey, onClick }) {
   const { activeEventKey } = useContext(AccordionContext);
 
@@ -45,29 +45,36 @@ const VerticalNav = memo((props) => {
             className={`${location.pathname === "/" ? "active" : ""} nav-link `}
             aria-current="page"
             to="/"
-            onClick={() => {}}
+            onClick={() => { }}
           >
             <i className="icon">
-              <svg
-                width="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  opacity="0.4"
-                  d="M16.0756 2H19.4616C20.8639 2 22.0001 3.14585 22.0001 4.55996V7.97452C22.0001 9.38864 20.8639 10.5345 19.4616 10.5345H16.0756C14.6734 10.5345 13.5371 9.38864 13.5371 7.97452V4.55996C13.5371 3.14585 14.6734 2 16.0756 2Z"
-                  fill="currentColor"
-                ></path>
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M4.53852 2H7.92449C9.32676 2 10.463 3.14585 10.463 4.55996V7.97452C10.463 9.38864 9.32676 10.5345 7.92449 10.5345H4.53852C3.13626 10.5345 2 9.38864 2 7.97452V4.55996C2 3.14585 3.13626 2 4.53852 2ZM4.53852 13.4655H7.92449C9.32676 13.4655 10.463 14.6114 10.463 16.0255V19.44C10.463 20.8532 9.32676 22 7.92449 22H4.53852C3.13626 22 2 20.8532 2 19.44V16.0255C2 14.6114 3.13626 13.4655 4.53852 13.4655ZM19.4615 13.4655H16.0755C14.6732 13.4655 13.537 14.6114 13.537 16.0255V19.44C13.537 20.8532 14.6732 22 16.0755 22H19.4615C20.8637 22 22 20.8532 22 19.44V16.0255C22 14.6114 20.8637 13.4655 19.4615 13.4655Z"
-                  fill="currentColor"
-                ></path>
-              </svg>
+              <img
+                width={20}
+                color="#8888"
+                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAADNElEQVR4nO2aTU8TURSGHxdtZaFGxaULJWqiIh+icaERfoQfP0H/hMrOSCLFoIEFLnWFaDCwZU80GqULYKUbjQUjZSEtac1N3kluaof56J0yVd5kNsy5557DPV/3ncIe/j3kgCFgGJgBCsA6UAZqtAH6gUngpwz2e1KLXmC+ztivwBRwB7gOnEmzIx3AKLAtA38Dz4ErPvKpdOQU8EGGVeXA8YA19Y5s6TH5s6R8Mnk1qDxLHJeBHzLqi0InDOod2SmPjHMTQF+STpS02QLQGWFtvSNZIAMcBnqAG8Bj4KMlWwXeAt2uw8k7iVlgf8T1UXLkrJwqaU0FGHERch1WTizEcCJush8F8nLErH0PdNEERq2ciBJOrqpWP7Cs9d+Bgbh9oqJ4DZvYSZTfA8oXo2MDuBhVgdfsTIltBi76SAZ4YZ3MyShH6jW7oD4RBFcNMQPMSde7sAVg0tFpuO7sB4EV6XsUJJyzBkC/sSMKXI8oAxqPykF9ZsgaAPc52DiJWeuJ1dd8MSwhM8WSUkc6gU1VVDMdNMRrbXzX0aZJTb+j0vvMT6AggWZ6RyscOS+9a5rf/kJRAqcdbZjkfeSzdF9r9HIrYNSO+ySBvHTfb/Sy1kaO3JLuV7Q5euWICbG2RqccMfelQHg507Ay7DJy1kz4/zhSlLC5tbV1aBUkfIE2T/YZCd8kfbgt26bDCHtDpGE30oYx2XYvjPCghA3vlDYs7TSiNKoM61pgeKe0oFs2FXUNDoWJFIZXXjY9jbKoT5eYUkrK8LEwFys/eNySSbDdxrhseRM3Jit6DF20W7hkkQ/n4ioZ0X9iWQxgq3EIWJUND5tRlBM5VlOoha4WDpCx2M9FFwx9l2jLmmjMVjiTAV5qz2/ACZck2YYUz4kBTDKc5rXXrzgkdhhnvJNZiUv5h0jsVesknDthh5mXM9tiAON+R6nvE+PWl+NFl+Hkh5wIZe8XDpsizwzvFKfEm469KV1lVaeWfO21jZhVt61Z94S82A5zdziim2ZWE0Kv3o1ZA6B5qmp2sfuEC/SIxlyLQRkVNTv1kCJkNV4/0MXnkwz1fjBQ1N+mRbBdbXFf2gOtwB84n09GlR2llgAAAABJRU5ErkJggg==" />
             </i>
-            <span className="item-name">Trang chủ</span>
+            <span className="item-name">Thống kê</span>
+          </Link>
+        </li>
+
+
+        <li
+          className={`${location.pathname === "/ban-hang-tai-quay" ? "active" : ""} nav-item `}
+        >
+          <Link
+            className={`${location.pathname === "/ban-hang-tai-quay" ? "active" : ""} nav-link `}
+            aria-current="page"
+            to="/ban-hang-tai-quay"
+            onClick={() => { }}
+          >
+            <i className="icon">
+              {/* icon */}
+              <img
+                width={20}
+                color="#8888"
+                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAABzklEQVR4nO2Yvy9DURiGn0bTtAZLzdj5BzqwsCOY1M4mqURsRFqV8AeolVWwMxBDWZn9bE0sorSVVE5yhy83Jb23557bJudJvqXJ+37v6Tn3nHMvWCwWS6eQA76AhlMfwBUwQxcQcQI3/qgsXUDWNQPuStFl9AFHYgAFupDUPzMSVn0Dm60OoBf46YDQDVep57Vl7jogcMNVt14GcCiEi4THkshx4EW4IoR7hEdB5Mh4EU4IYZHwuBY5xr0Ik0Kozoko5okCFZGj36vBkxAPY54R0f/Rj8GJMEhjngXR/9iPwbow2ME8u6K/yuKZKWFwhnnORf9JPwaDwuDdub2aIgK8if4Dfo2kiRqQKYZ0/XlyGtWSMsW0ruXb9oPkkw1dG0haGKlt1RSnou+8rsNEHWymeNZ1iPYAn+0c5z5Iin4VHdeYojCcJXjmdF8kc8JQ3Q7jBEccuNH9ZUTtyVVhegGMAgn0kQDGgEvRp9rOAeYmE8Ir5DKaWQPqBoLXgVUCQm2r+8ADUNMYugbcO95hvHtYQiEGbANloATknd+C0mkn32Qt5wPUaafcJMhrgDrtlJoEeQlQp51mS2ErQJ12Yk6Yko+HOO9DZ7FYLHQGv8aUfw/+DduBAAAAAElFTkSuQmCC" />
+            </i>
+            <span className="item-name">Bán hàng tại quầy</span>
           </Link>
         </li>
 
@@ -83,28 +90,10 @@ const VerticalNav = memo((props) => {
             onClick={(activeKey) => setActiveMenu(activeKey)}
           >
             <i className="icon">
-              <svg
-                width="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  opacity="0.4"
-                  d="M2 11.0786C2.05 13.4166 2.19 17.4156 2.21 17.8566C2.281 18.7996 2.642 19.7526 3.204 20.4246C3.986 21.3676 4.949 21.7886 6.292 21.7886C8.148 21.7986 10.194 21.7986 12.181 21.7986C14.176 21.7986 16.112 21.7986 17.747 21.7886C19.071 21.7886 20.064 21.3566 20.836 20.4246C21.398 19.7526 21.759 18.7896 21.81 17.8566C21.83 17.4856 21.93 13.1446 21.99 11.0786H2Z"
-                  fill="currentColor"
-                ></path>
-                <path
-                  d="M11.2451 15.3843V16.6783C11.2451 17.0923 11.5811 17.4283 11.9951 17.4283C12.4091 17.4283 12.7451 17.0923 12.7451 16.6783V15.3843C12.7451 14.9703 12.4091 14.6343 11.9951 14.6343C11.5811 14.6343 11.2451 14.9703 11.2451 15.3843Z"
-                  fill="currentColor"
-                ></path>
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M10.211 14.5565C10.111 14.9195 9.762 15.1515 9.384 15.1015C6.833 14.7455 4.395 13.8405 2.337 12.4815C2.126 12.3435 2 12.1075 2 11.8555V8.38949C2 6.28949 3.712 4.58149 5.817 4.58149H7.784C7.972 3.12949 9.202 2.00049 10.704 2.00049H13.286C14.787 2.00049 16.018 3.12949 16.206 4.58149H18.183C20.282 4.58149 21.99 6.28949 21.99 8.38949V11.8555C21.99 12.1075 21.863 12.3425 21.654 12.4815C19.592 13.8465 17.144 14.7555 14.576 15.1105C14.541 15.1155 14.507 15.1175 14.473 15.1175C14.134 15.1175 13.831 14.8885 13.746 14.5525C13.544 13.7565 12.821 13.1995 11.99 13.1995C11.148 13.1995 10.433 13.7445 10.211 14.5565ZM13.286 3.50049H10.704C10.031 3.50049 9.469 3.96049 9.301 4.58149H14.688C14.52 3.96049 13.958 3.50049 13.286 3.50049Z"
-                  fill="currentColor"
-                ></path>
-              </svg>
+              <img
+                width={20}
+                color="#8888"
+                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAAsTAAALEwEAmpwYAAACSklEQVR4nO2bW2oUURCGvzaGuAHjAnQBGl2Elw14WYSMGfDFwDwKmg4a3YCIqIsx8VV9igrRt5gFTCgooTg0CjOnunvg/+HAwEBduuvUdxpOQR01wBbwAJgAj5PWxH1suc/BdQnYA34C857XD6AFNodIvAGmwOkAiZfrD/Coz4q4ALzrCOQYeO9v5WnSat3Hrw7/b4GN7OSbjuQ/ATeBc/Qn83ULOOh4CKmVMC0cvgDOM5zM934Rk22HFG36fovJj0WvQlyn3pyra68o+0Xf/BWvpBJxU/9vEVkshyG+51RWU6DO9vyi+vaPjv5lCbu3g53vtXvBjaLbL9PwviY9gLWCDnZYqqb7wbBhaBlZme90IO4JcHlJ2x9DnHdJ6v7PGK92Q5zbNQ3PgmH7PValxTnTA0AVMNcWQD1griaIKDBjvBIG0TkAHYTQSRAdhdG3APoYYhX4WlnCIMIgwiDCIMIgwiDCIKvA18oSBhEGEQYRBhEGEQYRBlkFvlaWMIgwiDCIMIgwiDCIMMgq8LWy0uLczryIXFFt1rX5exWvymYq7ars9YqXpbNkl6V/hziv1TTe+JTWX+M2rjI23QnxHWWMzrTBwcHAozKl1oHP2X3qInASnLxkPHpdjNGljMzgnTUOOOwPXAnrRfK2HmY6bHw0LTo89HEVa0J9ac33fCx7W2/6cL7R8RDmPq7ywXtF1uxw66iL3T4mnz44GSthUozRDbVOssv+f7OEuz6l1XfiR97trTkPrsYPHnZitMrImh022+bjai3OnwF4eENmxJKIXwAAAABJRU5ErkJggg==" />
             </i>
             <span className="item-name">Sản phẩm</span>
             <i className="right-icon">
@@ -128,9 +117,8 @@ const VerticalNav = memo((props) => {
             <ul className="sub-nav">
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/chi-tiet-san-pham" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/chi-tiet-san-pham" ? "active" : ""
+                    } nav-link`}
                   to="/chi-tiet-san-pham"
                 >
                   <i className="icon">
@@ -156,9 +144,8 @@ const VerticalNav = memo((props) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/mau-sac" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/mau-sac" ? "active" : ""
+                    } nav-link`}
                   to="/mau-sac"
                 >
                   <i className="icon">
@@ -184,9 +171,8 @@ const VerticalNav = memo((props) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/chip" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/chip" ? "active" : ""
+                    } nav-link`}
                   to="/chip"
                 >
                   <i className="icon">
@@ -212,9 +198,8 @@ const VerticalNav = memo((props) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/ram" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/ram" ? "active" : ""
+                    } nav-link`}
                   to="/ram"
                 >
                   <i className="icon">
@@ -241,9 +226,8 @@ const VerticalNav = memo((props) => {
 
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/camera" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/camera" ? "active" : ""
+                    } nav-link`}
                   to="/camera"
                 >
                   <i className="icon">
@@ -270,9 +254,8 @@ const VerticalNav = memo((props) => {
 
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/dong-san-pham" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/dong-san-pham" ? "active" : ""
+                    } nav-link`}
                   to="/dong-san-pham"
                 >
                   <i className="icon">
@@ -299,9 +282,8 @@ const VerticalNav = memo((props) => {
 
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/hinh-thuc-san-pham" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/hinh-thuc-san-pham" ? "active" : ""
+                    } nav-link`}
                   to="/hinh-thuc-san-pham"
                 >
                   <i className="icon">
@@ -328,9 +310,8 @@ const VerticalNav = memo((props) => {
 
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/man-hinh" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/man-hinh" ? "active" : ""
+                    } nav-link`}
                   to="/man-hinh"
                 >
                   <i className="icon">
@@ -357,9 +338,8 @@ const VerticalNav = memo((props) => {
 
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/nha-san-xuat" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/nha-san-xuat" ? "active" : ""
+                    } nav-link`}
                   to="/nha-san-xuat"
                 >
                   <i className="icon">
@@ -386,9 +366,8 @@ const VerticalNav = memo((props) => {
 
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/pin" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/pin" ? "active" : ""
+                    } nav-link`}
                   to="/pin"
                 >
                   <i className="icon">
@@ -415,9 +394,8 @@ const VerticalNav = memo((props) => {
 
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/rom" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/rom" ? "active" : ""
+                    } nav-link`}
                   to="/rom"
                 >
                   <i className="icon">
@@ -442,34 +420,6 @@ const VerticalNav = memo((props) => {
                 </Link>
               </li>
 
-              <li className="nav-item">
-                <Link
-                  className={`${
-                    location.pathname === "/san-pham" ? "active" : ""
-                  } nav-link`}
-                  to="/san-pham"
-                >
-                  <i className="icon">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="10"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                    >
-                      <g>
-                        <circle
-                          cx="12"
-                          cy="12"
-                          r="8"
-                          fill="currentColor"
-                        ></circle>
-                      </g>
-                    </svg>
-                  </i>
-                  <i className="sidenav-mini-icon"> C </i>
-                  <span className="item-name">Sản phẩm</span>
-                </Link>
-              </li>
             </ul>
           </Accordion.Collapse>
         </Accordion.Item>
@@ -542,9 +492,8 @@ const VerticalNav = memo((props) => {
             <ul className="sub-nav">
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/nhan-vien" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/nhan-vien" ? "active" : ""
+                    } nav-link`}
                   to="/nhan-vien"
                 >
                   <i className="icon">
@@ -570,9 +519,8 @@ const VerticalNav = memo((props) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/khach-hang" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/khach-hang" ? "active" : ""
+                    } nav-link`}
                   to="/khach-hang"
                 >
                   <i className="icon">
@@ -599,9 +547,8 @@ const VerticalNav = memo((props) => {
 
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/chuc-vu" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/chuc-vu" ? "active" : ""
+                    } nav-link`}
                   to="/chuc-vu"
                 >
                   <i className="icon">
@@ -670,9 +617,8 @@ const VerticalNav = memo((props) => {
             <ul className="sub-nav">
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/voucher" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/voucher" ? "active" : ""
+                    } nav-link`}
                   to="/voucher"
                 >
                   <i className="icon">
@@ -698,9 +644,8 @@ const VerticalNav = memo((props) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/khuyen-mai" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/khuyen-mai" ? "active" : ""
+                    } nav-link`}
                   to="/khuyen-mai"
                 >
                   <i className="icon">

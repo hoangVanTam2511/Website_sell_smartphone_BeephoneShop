@@ -13,10 +13,6 @@ export const apiURLram = "http://localhost:8080/ram";
 export const apiURLrom = "http://localhost:8080/rom";
 export const apiURLSanPham = "http://localhost:8080/san-pham";
 export const apiURLChiTietSanPham = "http://localhost:8080/chi-tiet-san-pham";
-<<<<<<< HEAD
 export const apiURLimei = "http://localhost:8080/imei";
-
-=======
 export const apiURLVoucher = "http://localhost:8080/voucher";
 export const apiURLKhuyenMai = "http://localhost:8080/khuyen-mai";
->>>>>>> beephone_dung

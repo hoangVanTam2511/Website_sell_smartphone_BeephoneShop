@@ -11,6 +11,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface NhaSanXuatRepository extends INhaSanXuatRepository {
     Page<NhaSanXuat> findAllByDelected(Boolean delected, Pageable pageable);
@@ -22,4 +24,8 @@ public interface NhaSanXuatRepository extends INhaSanXuatRepository {
            where id = :id
           """,nativeQuery = true)
     void updateDelected(@Param("delected") Boolean delected, @Param("id")String id);
+
+    List<NhaSanXuat> findAllByDelected(Boolean delected);
+
+    NhaSanXuat findByTenNhaSanXuat(String tenNhaSanXuat);
 }

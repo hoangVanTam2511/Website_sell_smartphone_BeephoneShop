@@ -1,6 +1,7 @@
 package beephone_shop_projects.core.admin.product_management.controller;
 
 import beephone_shop_projects.core.admin.product_management.service.impl.MauSacServiceImpl;
+import beephone_shop_projects.entity.HinhThucSanPham;
 import beephone_shop_projects.entity.MauSac;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+
 @RestController
 @RequestMapping("/mau-sac")
 @CrossOrigin(origins = "http://localhost:3000")
@@ -29,6 +32,11 @@ public class MauSacRestController{
     public Page<MauSac> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
         Pageable pageable = PageRequest.of(page,2);
         return mauSacService.getAll(pageable);
+    }
+
+    @GetMapping("/get-list")
+    public ArrayList<MauSac> getList(){
+        return this.mauSacService.getDanhSachMauSac();
     }
 
     @DeleteMapping("/delete")

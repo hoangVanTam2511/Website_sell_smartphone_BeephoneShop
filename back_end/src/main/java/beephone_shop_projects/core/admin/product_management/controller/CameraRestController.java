@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+
 @RestController
 @RequestMapping("/camera")
 @CrossOrigin(origins = "http://localhost:3000")
@@ -29,6 +31,11 @@ public class CameraRestController  {
     public Page<Camera> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
         Pageable pageable = PageRequest.of(page,5);
         return cameraService.getAll(pageable);
+    }
+
+    @GetMapping("/get-list")
+    public ArrayList<Camera> getList(){
+        return this.cameraService.getListCamera();
     }
 
     @DeleteMapping("/delete")

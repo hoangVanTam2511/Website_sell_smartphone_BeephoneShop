@@ -1,6 +1,7 @@
 package beephone_shop_projects.core.admin.product_management.controller;
 
 import beephone_shop_projects.core.admin.product_management.service.impl.SanPhamServiceImpl;
+import beephone_shop_projects.entity.HinhThucSanPham;
 import beephone_shop_projects.entity.SanPham;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+
 @RestController
 @RequestMapping("/san-pham")
 @CrossOrigin(origins = "http://localhost:3000")
@@ -29,6 +32,11 @@ public class SanPhamRestController {
     public Page<SanPham> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
         Pageable pageable = PageRequest.of(page,5);
         return sanPhamService.getAll(pageable);
+    }
+
+    @GetMapping("/get-list")
+    public ArrayList<SanPham> getList(){
+        return this.sanPhamService.getDanhSachSanPham();
     }
 
     @DeleteMapping("/delete")

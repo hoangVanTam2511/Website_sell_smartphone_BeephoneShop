@@ -11,6 +11,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface MauSacRepository extends IMauSacRepository {
     Page<MauSac> findAllByDelected(Boolean delected, Pageable pageable);
@@ -22,5 +24,9 @@ public interface MauSacRepository extends IMauSacRepository {
            where id = :id
           """,nativeQuery = true)
     void updateDelected(@Param("delected") Boolean delected, @Param("id")String id);
+
+    List<MauSac> findAllByDelected(Boolean delected);
+
+    MauSac findByTenMauSac(String tenMauSac);
 
 }

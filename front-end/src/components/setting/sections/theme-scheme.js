@@ -133,8 +133,8 @@ const ThemeScheme = memo((props) => {
                   data-bs-original-title="Default"
                   onClick={() => {
                     colorChange("theme-color-default", {
-                      "--{{prefix}}primary": "#3a57e8",
-                      "--{{prefix}}info": "#4bc7d2",
+                      "--{{prefix}}primary": "#0C97FA",
+                      "--{{prefix}}info": "#16E1F5",
                     });
                   }}
                 >
