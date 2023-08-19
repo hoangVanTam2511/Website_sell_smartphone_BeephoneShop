@@ -10,7 +10,7 @@ const YourComponent = () => {
     try {
       const response = await axios.post(apiURLKH + "/import", formData);
       // Xử lý phản hồi thành công từ API
-      console.log(response.data);
+      console.log(response.data.content);
     } catch (error) {
       // Xử lý lỗi
       console.error(error);

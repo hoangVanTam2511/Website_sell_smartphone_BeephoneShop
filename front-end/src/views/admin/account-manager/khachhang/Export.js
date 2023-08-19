@@ -7,7 +7,6 @@ import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import "../../../../assets/scss/HienThiNV.scss";
 const ExportButton = () => {
   const handleExport = () => {
-    // Gửi yêu cầu API xuất file Excel
     fetch(apiURLKH + "/export")
       .then((response) => response.blob())
       .then((blob) => {
@@ -21,7 +20,7 @@ const ExportButton = () => {
   };
 
   return (
-    <Button onClick={handleExport}>
+    <Button onClick={handleExport} style={{ marginRight: "10px" }}>
       <FontAwesomeIcon icon={faDownload} style={{ paddingRight: "10px" }} />
       Tải File Mẫu
     </Button>

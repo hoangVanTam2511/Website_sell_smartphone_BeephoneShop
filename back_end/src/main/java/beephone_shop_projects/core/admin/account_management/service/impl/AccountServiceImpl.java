@@ -2,6 +2,7 @@ package beephone_shop_projects.core.admin.account_management.service.impl;
 
 import beephone_shop_projects.core.admin.account_management.model.request.CreateAccountRequest;
 import beephone_shop_projects.core.admin.account_management.repository.AccountRepository;
+import beephone_shop_projects.core.admin.account_management.repository.DiaChiRepository;
 import beephone_shop_projects.core.admin.account_management.repository.RoleRepository;
 import beephone_shop_projects.core.admin.account_management.service.AccountService;
 import beephone_shop_projects.entity.Account;
@@ -14,10 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -25,6 +23,8 @@ public class AccountServiceImpl implements AccountService {
     private AccountRepository accountRepository;
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private DiaChiRepository diaChiRepository;
 
     @Override
     public Page<Account> getAll(Integer pageNo) {
@@ -44,8 +44,20 @@ public class AccountServiceImpl implements AccountService {
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
-        Account kh = new Account().builder().email(request.getEmail()).ngaySinh(date).idRole(roleRepository.findById(request.getIdRole()).get()).hoVaTen(request.getHoVaTen()).ma(code).matKhau(request.getMatKhau()).soDienThoai(request.getSoDienThoai()).diaChi(request.getDiaChi()).trangThai(request.getTrangThai()).build();
+        Account kh = new Account().builder()
+                .email(request.getEmail())
+                .ngaySinh(date).idRole(roleRepository.findById(request.getIdRole()).get())
+                .hoVaTen(request.getHoVaTen())
+                .ma(code).matKhau(request.getMatKhau())
+                .soDienThoai(request.getSoDienThoai())
+                .diaChi(request.getDiaChi())
+                .trangThai(request.getTrangThai()).build();
         return accountRepository.save(kh);
+    }
+
+    @Override
+    public Account getOneAcc(UUID id) {
+        return accountRepository.findById(String.valueOf(id)).get();
     }
 
 

@@ -14,10 +14,7 @@ import org.springframework.stereotype.Service;
 import java.text.Normalizer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 @Service
 public class NhanVienServiceImpl implements NhanVienService {
@@ -28,7 +25,7 @@ public class NhanVienServiceImpl implements NhanVienService {
 
     @Override
     public Page<Account> getAllNV(Integer pageNo) {
-        Pageable pageable = PageRequest.of(pageNo, 10);
+        Pageable pageable = PageRequest.of(pageNo, 20);
         return accountRepository.getAllNV(pageable);
     }
 
@@ -56,6 +53,12 @@ public class NhanVienServiceImpl implements NhanVienService {
                 .ngaySinh(date)
                 .idRole(roleRepository.findByMa("role1"))
                 .hoVaTen(request.getHoVaTen())
+                .anhDaiDien(request.getAnhDaiDien())
+                .gioiTinh(request.getGioiTinh())
+                .quanHuyen(request.getQuanHuyen())
+                .xaPhuong(request.getXaPhuong())
+                .canCuocCongDan(request.getCanCuocCongDan())
+                .tinhThanhPho(request.getTinhThanhPho())
                 .trangThai(1)
                 .ma(code)
                 .matKhau(matKhau)
@@ -83,6 +86,12 @@ public class NhanVienServiceImpl implements NhanVienService {
             optional.get().setIdRole(roleRepository.findByMa("role1"));
             optional.get().setMatKhau(request.getMatKhau());
             optional.get().setNgaySinh(request.getNgaySinh());
+            optional.get().setAnhDaiDien(request.getAnhDaiDien());
+            optional.get().setCanCuocCongDan(request.getCanCuocCongDan());
+            optional.get().setTinhThanhPho(request.getTinhThanhPho());
+            optional.get().setQuanHuyen(request.getQuanHuyen());
+            optional.get().setXaPhuong(request.getXaPhuong());
+            optional.get().setGioiTinh(request.getGioiTinh());
             optional.get().setHoVaTen(request.getHoVaTen());
             optional.get().setSoDienThoai(request.getSoDienThoai());
             accountRepository.save(optional.get());
@@ -95,6 +104,11 @@ public class NhanVienServiceImpl implements NhanVienService {
     public Page<Account> search(Optional<String> tenSearch, Integer pageNo) {
         Pageable pageable = PageRequest.of(pageNo, 10);
         return accountRepository.searchAllNV(tenSearch, pageable);
+    }
+
+    @Override
+    public Account getOne(UUID id) {
+        return accountRepository.findById(String.valueOf(id)).get();
     }
 
     public static String removeDiacritics(String str) {

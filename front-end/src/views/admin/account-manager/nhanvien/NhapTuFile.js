@@ -3,6 +3,7 @@ import { useState } from "react";
 import "../../../../assets/scss/NhapTuFile.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload, faUpload } from "@fortawesome/free-solid-svg-icons";
+import ExportButton from "./ExportNV";
 const NhapTuFile = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
@@ -32,13 +33,7 @@ const NhapTuFile = () => {
           NHẬP TỪ FILE{" "}
         </h3>
         <span>
-          <Button className="custom-button">
-            <FontAwesomeIcon
-              icon={faDownload}
-              style={{ paddingRight: "10px" }}
-            />
-            Tải File Mẫu
-          </Button>
+          <ExportButton />
           <Button className="custom-button1">
             <FontAwesomeIcon icon={faUpload} style={{ paddingRight: "10px" }} />
             Tải File Lên

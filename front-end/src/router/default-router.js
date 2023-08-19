@@ -23,6 +23,10 @@ import AddRole from "../views/admin/account-manager/role/AddRole";
 //admin
 
 import Default from "../layouts/dashboard/default";
+import AddressForm from "../views/admin/account-manager/khachhang/DiaChi";
+import { ToastContainer } from "react-toastify";
+import UpdateKH from "../views/admin/account-manager/khachhang/UpdateKH";
+import UpdateNV from "../views/admin/account-manager/nhanvien/UpdateNV";
 
 export const DefaultRouter = [
   {
@@ -54,6 +58,18 @@ export const DefaultRouter = [
       {
         path: "them-khach-hang",
         element: <AddKH />,
+      },
+      {
+        path: "/update-khach-hang/:id",
+        element: <UpdateKH />,
+      },
+      {
+        path: "/update-nhan-vien/:id",
+        element: <UpdateNV />,
+      },
+      {
+        path: "diachi-khach-hang",
+        element: <AddressForm />,
       },
       ,
       {

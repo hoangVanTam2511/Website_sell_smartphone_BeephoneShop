@@ -4,4 +4,5 @@ import java.io.IOException;
 
 public interface ExportService {
     byte[] exportExcelData(Integer pageNo) throws IOException;
+    byte[] exportExcelDataNV(Integer pageNo) throws IOException;
 }

@@ -1,16 +1,20 @@
 package beephone_shop_projects.core.admin.account_management.model.request;
 
-import beephone_shop_projects.entity.Role;
+
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
-public class CreateAccountRequest {
+
+public class CreateKhachHangRequest {
 
     private String ma;
+
+    private UUID id;
 
     private String hoVaTen;
 
@@ -18,19 +22,11 @@ public class CreateAccountRequest {
 
     private String ngaySinh;
 
-    private String diaChi;
-
     private String matKhau;
 
     private String soDienThoai;
 
-    private String xaPhuong;
-
-    private String quanHuyen;
-
     private String canCuocCongDan;
-
-    private String tinhThanhPho;
 
     private Boolean gioiTinh;
 
@@ -39,5 +35,7 @@ public class CreateAccountRequest {
     private Integer trangThai;
 
     private String idRole;
+
+    private List<DiaChiKhachHangRequest> diaChiList;
 
 }

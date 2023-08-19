@@ -4,28 +4,31 @@ import {
   Table,
   Input,
   Button,
-  Select,
   Pagination,
-  Space,
+  // Space,
+  Tooltip,
+  Select,
+  Card,
 } from "antd";
 import moment from "moment";
-import { useState, useEffect, useRef } from "react";
+import {
+  useState,
+  useEffect, //useRef
+} from "react";
 import axios from "axios";
 import { apiURLNV } from "../../../../service/api";
 import { SearchOutlined } from "@ant-design/icons";
-import Highlighter from "react-highlight-words";
+// import Highlighter from "react-highlight-words";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPencilAlt,
-  faSave,
-  faTimes,
   faArrowsRotate,
-  faMagnifyingGlass,
+  faRectangleList,
 } from "@fortawesome/free-solid-svg-icons";
 import "../../../../assets/scss/HienThiNV.scss";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import NhapTuFile from "../nhanvien/NhapTuFile";
-// const { Option } = Select;
+const { Option } = Select;
 const currentDate = new Date().toISOString().split("T")[0];
 const EditableCell = ({
   editing,
@@ -38,15 +41,7 @@ const EditableCell = ({
   ...restProps
 }) => {
   const [ngaySinhValue, setNgaySinhValue] = useState(null);
-  useEffect(() => {
-    if (editing) {
-      if (inputType === "date") {
-        setNgaySinhValue(
-          record && record.ngaySinh ? moment(record.ngaySinh) : null
-        );
-      }
-    }
-  }, [editing, record, inputType]);
+  useEffect(() => {}, [record]);
   const handleDatePickerChange = (date) => {
     setNgaySinhValue(date);
   };
@@ -55,9 +50,9 @@ const EditableCell = ({
       <Input
         type="date"
         max={currentDate}
-        value={ngaySinhValue ? moment(ngaySinhValue).format("YYYY-MM-DD") : ""}
+        value={ngaySinhValue ? moment(ngaySinhValue).format("mm/dd/yyyy") : ""}
         onChange={(e) =>
-          handleDatePickerChange(moment(e.target.value, "YYYY-MM-DD"))
+          handleDatePickerChange(moment(e.target.value, "mm/dd/yyyy"))
         }
       />
     ) : (
@@ -93,164 +88,37 @@ const HienThiNV = () => {
   let [listNV, setListNV] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const [editingNgaySinh, setEditingNgaySinh] = useState(null);
-  // const [filterStatus, setFilterStatus] = useState(null);
-  const [searchValue, setSearchValue] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const handleChange = (event) => {
-    const inputValue = event.target.value;
-    setSearchValue(inputValue);
 
-    if (inputValue.trim() !== "") {
-      setCurrentPage(0); // Reset currentPage when search value changes and is not empty
-    }
+  const [filterStatus, setFilterStatus] = useState(null);
+  const handleFilter = (status) => {
+    setFilterStatus(status);
   };
-
-  const fetchData = () => {
-    const apiUrl = apiURLNV + "/search-all";
-    axios
-      .get(apiUrl, {
+  const filteredDataSource = filterStatus
+    ? listNV.filter((item) => item.trangThai === filterStatus)
+    : listNV;
+  const handleSearchTop = async () => {
+    try {
+      const response = await axios.get(apiURLNV + "/search-all", {
         params: {
-          hoVaTen: searchValue,
+          tenKH: searchText,
           page: currentPage,
         },
-      })
-      .then((response) => {
-        if (
-          response.data.totalPages > 0 &&
-          currentPage >= response.data.totalPages
-        ) {
-          setCurrentPage(response.data.totalPages - 1); // Set currentPage to the last page if it exceeds the total number of pages
-        } else {
-          setSearchResults(response.data.content);
-          setTotalPages(response.data.totalPages);
-        }
-      })
-      .catch((error) => {
-        console.error(error);
       });
-  };
+      let count = 0;
+      const modifiedData = response.data.content.map((item) => ({
+        ...item,
+        stt: ++count,
+      }));
 
-  useEffect(() => {
-    if (searchValue.trim() !== "") {
-      fetchData();
+      // setFilteredDataSource(modifiedData);
+      setListNV(modifiedData); //1day
+      setTotalPages(response.data.totalPages);
+    } catch (error) {
+      console.log("Error searching accounts:", error);
     }
-  }, [searchValue]);
+  };
 
   const [searchText, setSearchText] = useState("");
-  const [searchedColumn, setSearchedColumn] = useState("");
-  const searchInput = useRef(null);
-  const handleSearch = (selectedKeys, confirm, dataIndex) => {
-    confirm();
-    setSearchText(selectedKeys[0]);
-    setSearchedColumn(dataIndex);
-  };
-  const handleReset = (clearFilters) => {
-    clearFilters();
-    setSearchText("");
-  };
-  const getColumnSearchProps = (dataIndex) => ({
-    filterDropdown: ({
-      setSelectedKeys,
-      selectedKeys,
-      confirm,
-      clearFilters,
-      close,
-    }) => (
-      <div
-        style={{
-          padding: 8,
-        }}
-        onKeyDown={(e) => e.stopPropagation()}
-      >
-        <Input
-          ref={searchInput}
-          placeholder={`Search ${dataIndex}`}
-          value={selectedKeys[0]}
-          onChange={(e) =>
-            setSelectedKeys(e.target.value ? [e.target.value] : [])
-          }
-          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-          style={{
-            marginBottom: 8,
-            display: "block",
-          }}
-        />
-        <Space>
-          <Button
-            type="primary"
-            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-            icon={<SearchOutlined />}
-            size="small"
-            style={{
-              width: 90,
-            }}
-          >
-            Search
-          </Button>
-          <Button
-            onClick={() => clearFilters && handleReset(clearFilters)}
-            size="small"
-            style={{
-              width: 90,
-            }}
-          >
-            Reset
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              confirm({
-                closeDropdown: false,
-              });
-              setSearchText(selectedKeys[0]);
-              setSearchedColumn(dataIndex);
-            }}
-          >
-            Filter
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              close();
-            }}
-          >
-            close
-          </Button>
-        </Space>
-      </div>
-    ),
-    filterIcon: (filtered) => (
-      <SearchOutlined
-        style={{
-          color: filtered ? "#1677ff" : undefined,
-        }}
-      />
-    ),
-    onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-    onFilterDropdownOpenChange: (visible) => {
-      if (visible) {
-        setTimeout(() => searchInput.current?.select(), 100);
-      }
-    },
-    render: (text) =>
-      searchedColumn === dataIndex ? (
-        <Highlighter
-          highlightStyle={{
-            backgroundColor: "#ffc069",
-            padding: 0,
-          }}
-          searchWords={[searchText]}
-          autoEscape
-          textToHighlight={text ? text.toString() : ""}
-        />
-      ) : (
-        text
-      ),
-  });
   useEffect(() => {
     loadDataListRole(currentPage);
   }, [currentPage]);
@@ -271,81 +139,35 @@ const HienThiNV = () => {
       })
       .catch((error) => {});
   };
-  // const handleFilter = (status) => {
-  //   setFilterStatus(status);
-  // };
-
-  const filteredDataSource = listNV.filter((data) => {
-    // Lọc dữ liệu dựa trên giá trị tìm kiếm trong mỗi cột
-    return Object.values(data).some((value) =>
-      String(value).toLowerCase().includes(String(searchValue).toLowerCase())
-    );
-  });
-
-  //edit
+  const navigate = useNavigate();
   const [editingKey, setEditingKey] = useState("");
   const isEditing = (record) => record.id === editingKey;
   const edit = (record) => {
-    const ngaySinh = moment(record.ngaySinh, "YYYY-MM-DD"); // Tạo đối tượng Moment hiện tại
+    const ngaySinh = moment(record.ngaySinh, "mm/dd/yyyy"); // Tạo đối tượng Moment hiện tại
     form.setFieldsValue({
       ma: record.ma,
       hoVaTen: record.hoVaTen,
       id: record.id,
       email: record.email,
-      ngaySinh: ngaySinh.format("YYYY-MM-DD"),
+      ngaySinh: ngaySinh.format("mm/dd/yyyy"),
       trangThai: record.trangThai,
       diaChi: record.diaChi,
       matKhau: record.matKhau,
       soDienThoai: record.soDienThoai,
+      xaPhuong: record.xaPhuong,
+      quanHuyen: record.quanHuyen,
+      tinhThanhPho: record.tinhThanhPho,
+      gioiTinh: record.gioiTinh,
+      anhDaiDien: record.anhDaiDien,
     });
+    navigate(`/update-nhan-vien/${record.id}`);
     setEditingKey(record.id);
-  };
-  //cancel
-  const cancel = () => {
-    setEditingKey("");
-  };
-  //save
-  const save = async (id) => {
-    try {
-      const row = await form.validateFields();
-      const newData = [...listNV];
-      const index = newData.findIndex((item) => id === item.id);
-      if (index > -1) {
-        const item = newData[index];
-        const updatedItem = {
-          ...item,
-          ...row,
-        };
-        axios
-          .put(`${apiURLNV}/update/${id}`, updatedItem)
-          .then((response) => {
-            if (response.status === 200) {
-              newData.splice(index, 1, updatedItem);
-              setListNV(newData);
-              setEditingKey("");
-              loadDataListRole();
-            }
-          })
-          .catch((error) => {
-            console.log("Failed to update record:", error);
-          });
-      } else {
-        newData.push(row);
-        setListNV(newData);
-        setEditingKey("");
-        setEditingNgaySinh(null);
-      }
-    } catch (errInfo) {
-      console.log("Validate Failed:", errInfo);
-    }
   };
   const doChangeTrangThai = (id) => {
     //  const [trangThai, setTrangThai] = useState(record.trangThai);
     axios
       .put(apiURLNV + `/${id}/doi-tt`)
       .then((response) => {
-        // Xử lý thành công
-        // setTrangThai(trangThai === 1 ? 2 : 1);
         loadDataListRole(currentPage);
         console.log("Trạng thái đã được thay đổi");
       })
@@ -353,6 +175,9 @@ const HienThiNV = () => {
         // Xử lý lỗi
         console.error("Đã xảy ra lỗi khi thay đổi trạng thái", error);
       });
+  };
+  const handleInputChangeTop = (e) => {
+    setSearchText(e.target.value);
   };
   //Ten column
   const columns = [
@@ -367,7 +192,7 @@ const HienThiNV = () => {
       title: "Ma",
       dataIndex: "ma",
       width: "8%",
-      ...getColumnSearchProps("ma"),
+      // ...getColumnSearchProps("ma"),
     },
     {
       title: "Họ và tên",
@@ -375,54 +200,61 @@ const HienThiNV = () => {
       width: "15%",
       editable: true,
       ellipsis: true,
-      ...getColumnSearchProps("hoVaTen"),
+      // ...getColumnSearchProps("hoVaTen"),
     },
 
-    {
-      title: "Ngày Sinh",
-      dataIndex: "ngaySinh",
-      width: "13%",
-      editable: true,
-      ...getColumnSearchProps("ngaySinh"),
-    },
+    // {
+    //   title: "Ngày Sinh",
+    //   dataIndex: "ngaySinh",
+    //   width: "13%",
+    //   editable: true,
+    //   ...getColumnSearchProps("ngaySinh"),
+    // },
     {
       title: "Email",
       dataIndex: "email",
       width: "15%",
       editable: true,
       ellipsis: true,
-      ...getColumnSearchProps("email"),
+      // ...getColumnSearchProps("email"),
     },
     {
       title: "Số điện thoại",
       dataIndex: "soDienThoai",
       width: "14%",
       editable: true,
-      ...getColumnSearchProps("soDienThoai"),
+      // ...getColumnSearchProps("soDienThoai"),
     },
     {
       title: "Địa chỉ",
-      dataIndex: "diaChi",
+      // dataIndex: "diaChiTongHop",
       width: "10%",
       editable: true,
       ellipsis: true,
-      ...getColumnSearchProps("diaChi"),
+      render: (text, record) => {
+        return (
+          <span>
+            {record.diaChi} {record.xaPhuong}
+            {record.quanHuyen} {record.tinhThanhPho}
+          </span>
+        );
+      },
     },
 
     {
       title: "Trạng thái",
       dataIndex: "trangThai",
       width: "10%",
-      filters: [
-        {
-          text: "Làm việc",
-          value: "1",
-        },
-        {
-          text: "Đã nghỉ",
-          value: "2",
-        },
-      ],
+      // filters: [
+      //   {
+      //     text: "Làm việc",
+      //     value: "1",
+      //   },
+      //   {
+      //     text: "Đã nghỉ",
+      //     value: "2",
+      //   },
+      // ],
       // eslint-disable-next-line eqeqeq
       onFilter: (value, record) => record.trangThai == value,
       filterSearch: true,
@@ -455,28 +287,22 @@ const HienThiNV = () => {
       render: (_, record) => {
         const editable = isEditing(record);
         return editable ? (
-          <span>
-            <FontAwesomeIcon
-              icon={faSave}
-              onClick={() => save(record.id)}
-              style={{ marginRight: "15px", cursor: "pointer" }}
-            />
-            <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
-              <FontAwesomeIcon icon={faTimes} style={{ cursor: "pointer" }} />
-            </Popconfirm>
-          </span>
+          ""
         ) : (
           <>
-            <FontAwesomeIcon
-              icon={faPencilAlt}
-              onClick={() => edit(record)}
-              style={{
-                cursor: "pointer",
-                color: "green",
-              }}
-            />
+            <Tooltip title="Sửa Khách Hàng" color={"black"} placement="bottom">
+              <FontAwesomeIcon
+                icon={faPencilAlt}
+                onClick={() => edit(record)}
+                style={{
+                  cursor: "pointer",
+                  color: editingKey === record.id ? "red" : "green",
+                }}
+                disabled={editingKey !== ""}
+              />
+            </Tooltip>
             <Popconfirm
-              title={`Đổi trạng thái nhân viên từ ${
+              title={`Đổi trạng thái tài khoản từ ${
                 record.trangThai === 1 ? "LÀM VIỆC" : "ĐÃ NGHỈ"
               } sang ${record.trangThai === 1 ? "ĐÃ NGHỈ" : "LÀM VIỆC"} `}
               onConfirm={() => {
@@ -485,18 +311,18 @@ const HienThiNV = () => {
               okText="Đồng ý"
               cancelText="Hủy"
             >
-              <FontAwesomeIcon
-                icon={faArrowsRotate}
-                style={{
-                  cursor: "pointer",
-                  paddingLeft: "20px",
-                  color: "#598cfe",
-                }}
-                transform={{ rotate: 90 }}
-                onClick={() => {
-                  // Hành động khi nhấp vào biểu tượng
-                }}
-              />
+              <Tooltip
+                title="Đổi Trạng Thái"
+                color={"black"}
+                placement="bottom"
+              >
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <FontAwesomeIcon
+                  icon={faArrowsRotate}
+                  style={{ cursor: "pointer" }}
+                  transform={{ rotate: 90 }}
+                />
+              </Tooltip>
             </Popconfirm>
           </>
         );
@@ -522,84 +348,115 @@ const HienThiNV = () => {
 
   return (
     <>
-      <div className="btn-add">
-        <span>
-          <Form style={{ width: "20em", display: "inline-block" }}>
-            <Input
-              placeholder="Search"
-              value={searchValue}
-              onChange={handleChange}
-            />
-          </Form>
-        </span>
-        {/* Search */}
-        <FontAwesomeIcon
-          icon={faMagnifyingGlass}
-          style={{ marginLeft: "5px" }}
-        />
-        <span className="bl-add">
-          {/* Trạng thái{" "}
-          <Select
-            defaultValue="Tất cả"
-            style={{
-              width: 120,
-            }}
-            onChange={handleFilter}
-          >
-            {" "}
-            <Option value="">Tất cả</Option>
-            <Option value={1}>Làm việc</Option>
-            <Option value={2}>Đã nghỉ</Option>
-          </Select> */}
-          <Link to="/them-nhan-vien">
-            <Button className="btn-them-tk">+ Thêm Tài khoản</Button>
-          </Link>
-          <Button className="btn-them-tu-file">
-            <NhapTuFile />
-          </Button>
-        </span>
-      </div>
-      <div className="form-tbl">
-        <Form
-          form={form}
-          component={false}
-          initialValues={editingNgaySinh || {}}
-        >
-          <Table
-            components={{
-              body: {
-                cell: EditableCell,
-              },
-            }}
-            bordered
-            dataSource={filteredDataSource}
-            columns={mergedColumns}
-            rowClassName="editable-row"
-            pagination={false}
-            // {{
-            //   pageSize: 10,
-            //   current: currentPage + 1,
-            //   total: totalPages * 10,
-            //   showSizeChanger: false,
-            //   onChange: (value) => {
-            //     setCurrentPage(value - 1);
-            //   },
-            // }}
-            rowKey="id"
-            style={{ marginBottom: "20px" }}
-          />
-          <div className="phanTrang" style={{ textAlign: "center" }}>
-            <Pagination
-              // simple
-              current={currentPage + 1}
-              onChange={(value) => {
-                setCurrentPage(value - 1);
+      <Card>
+        {/* <h5 style={{ marginBottom: "10px" }}>
+          {" "}
+          <FontAwesomeIcon icon={faFilter} />
+          &nbsp;Lọc
+        </h5> */}
+
+        <div className="btn-add">
+          <span>
+            <Form
+              style={{
+                display: "inline-block",
+                marginLeft: "50px",
+                paddingBottom: " 10px",
+                width: "20em",
+                height: "32px",
               }}
-              total={totalPages * 10}
+            >
+              <Input
+                placeholder="Tìm theo mã / họ và tên / sdt..."
+                value={searchText}
+                onChange={handleInputChangeTop}
+                style={{
+                  width: "21em",
+                  display: "inline-block",
+                  borderRadius: "10px 0px 0px 10px",
+                }}
+              />
+            </Form>
+          </span>
+          <Tooltip title="Search" color={"black"} placement="bottom">
+            <Button
+              onClick={handleSearchTop}
+              style={{
+                borderRadius: "30px",
+                width: "4em",
+                backgroundColor: "#4976e8",
+                color: "white",
+                paddingBottom: "30px",
+              }}
+            >
+              <SearchOutlined style={{ cursor: "pointer" }} />
+            </Button>
+          </Tooltip>
+
+          <span className="bl-add">
+            Trạng thái{"  "} &nbsp;&nbsp;
+            <Select
+              defaultValue="Tất cả"
+              style={{
+                width: 200,
+                marginRight: "20em",
+              }}
+              onChange={handleFilter}
+            >
+              {" "}
+              <Option value="">Tất cả</Option>
+              <Option value={1}>Làm việc</Option>
+              <Option value={2}>Đã nghỉ</Option>
+            </Select>
+          </span>
+        </div>
+      </Card>
+
+      <Card style={{ marginTop: "10px" }}>
+        {" "}
+        <div className="btn-add">
+          <h5>
+            <FontAwesomeIcon icon={faRectangleList} /> &nbsp;Danh sách Nhân viên
+            <span className="bl-add">
+              <Link to="/them-nhan-vien">
+                <Button className="btn-them-tk">+ Thêm Tài khoản</Button>
+              </Link>
+              <Button className="btn-them-tu-file">
+                <NhapTuFile />
+              </Button>
+            </span>
+          </h5>
+        </div>
+        <div className="form-tbl">
+          {" "}
+          <Form form={form} component={false}>
+            <Table
+              components={{
+                body: {
+                  cell: EditableCell,
+                },
+              }}
+              bordered
+              dataSource={filteredDataSource}
+              columns={mergedColumns}
+              rowClassName="editable-row"
+              pagination={false}
+              rowKey="id"
+              style={{ marginBottom: "20px" }}
             />
-          </div>
-        </Form>
-      </div>
+            <div className="phanTrang" style={{ textAlign: "center" }}>
+              <Pagination
+                simple
+                current={currentPage + 1}
+                onChange={(value) => {
+                  setCurrentPage(value - 1);
+                }}
+                total={totalPages * 10}
+              />
+            </div>
+          </Form>
+        </div>
+      </Card>
     </>
   );
 };

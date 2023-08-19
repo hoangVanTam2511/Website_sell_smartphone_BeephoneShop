@@ -14,12 +14,10 @@ import { IndexRouters } from "./router";
 import { SimpleRouter } from "./router/simple-router";
 import { DefaultRouter } from "./router/default-router";
 
-const router = createBrowserRouter([
-
-  ...DefaultRouter,
-  ...IndexRouters,
-  ...SimpleRouter
-] ,{basename: process.env.PUBLIC_URL });
+const router = createBrowserRouter(
+  [...DefaultRouter, ...IndexRouters, ...SimpleRouter],
+  { basename: process.env.PUBLIC_URL }
+);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
