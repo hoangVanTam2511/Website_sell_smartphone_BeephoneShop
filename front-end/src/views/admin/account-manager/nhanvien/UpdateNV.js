@@ -1,5 +1,5 @@
 import { Button, Card, Modal } from "antd";
-import React, { useEffect } from "react";
+import React, { useEffect } from "react"; // , { useEffect }
 import { useState } from "react";
 // import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 // import { faCheck } from "@fortawesome/free-solid-svg-icons";
@@ -9,8 +9,6 @@ import TextField from "@mui/material/TextField";
 import "../../../../assets/scss/HienThiNV.scss";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { ExclamationCircleOutlined } from "@ant-design/icons";
-
 import {
   Box,
   FormControl,
@@ -21,16 +19,14 @@ import {
   RadioGroup,
 } from "@mui/material";
 import AddressForm from "./DiaChi";
-import ImageUploadComponent from "./Anh";
-import IDScan from "./QuetCanCuoc";
-// import Haha from "./DiaChi.hah";
+import ImageUploadComponent from "./AnhUpdate";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faExclamationCircle,
-  faFloppyDisk,
-} from "@fortawesome/free-solid-svg-icons";
-const AddNV = () => {
-  let [listKH, setListKH] = useState([]);
+import { faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
+import { useParams } from "react-router-dom";
+import AddressFormUpdate from "./DiaChiUpdate";
+const UpdateNV = () => {
+  const { id } = useParams();
+  let [listNV, setListNV] = useState([]);
   let [hoVaTen, setTen] = useState("");
   let [ngaySinh, setNgaySinh] = useState("");
   let [soDienThoai, setSdt] = useState("");
@@ -41,51 +37,12 @@ const AddNV = () => {
   let [gioiTinh, setGioiTinh] = useState(true);
   let [diaChi, setDiaChi] = useState("");
   let [cccd, setCCCD] = useState("");
+  let [ma, setMa] = useState("");
+  let [matKhau, setMatKhau] = useState("");
+  let [trangThai, setTrangThai] = useState(1);
   let [anhDaiDien, setAnhDaiDien] = useState("");
+  let [editing, setEditing] = useState(false);
   const [isConfirmVisible, setIsConfirmVisible] = useState(false);
-
-  const [formSubmitted, setFormSubmitted] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-
-  const handleScanData = (data) => {
-    if (data) {
-      setTen(data.hoVaTen);
-      setNgaySinh(data.ngaySinh);
-      setDiaChi(data.diaChi);
-      setTinhThanhPho(data.tinhThanhPho);
-      setXaPhuong(data.xaPhuong);
-      setCCCD(data.cccd);
-      setGioiTinh(data.gioiTinh);
-      console.log(data);
-    }
-    // setIsScanning(false); // Ẩn modal sau khi quét xong
-  };
-  const handleProvinceChange = (value) => {
-    setTinhThanhPho(value);
-    console.log("Selected Province:", value);
-  };
-
-  const handleDistrictChange = (value) => {
-    setQuanHuyen(value);
-    // Truyền thông tin quận/huyện vào component khác (ở đây ví dụ là console.log)
-    console.log("Selected District:", value);
-  };
-
-  const handleWardChange = (value) => {
-    setXaPhuong(value);
-    // Truyền thông tin xã vào component khác (ở đây ví dụ là console.log)
-    console.log("Selected Ward:", value);
-  };
-  const handleDiaChiChange = (result) => {
-    setDiaChi(result); // Cập nhật giá trị diaChi trong thành phần cha
-  };
-  const handleAnhDaiDienChange = (imageURL) => {
-    setAnhDaiDien(imageURL);
-  };
-  const redirectToHienThiKH = () => {
-    // Thực hiện điều hướng tới trang "Hiển thị nhân viên"
-    window.location.href = "/nhan-vien";
-  };
   const showConfirm = () => {
     setIsConfirmVisible(true); // Mở hộp thoại xác nhận
   };
@@ -93,70 +50,91 @@ const AddNV = () => {
   const handleCancel = () => {
     setIsConfirmVisible(false); // Đóng hộp thoại xác nhận khi người dùng hủy
   };
-  const AddNV = () => {
-    setSubmitted(true);
-    setFormSubmitted(true);
-    let obj = {
-      hoVaTen: hoVaTen,
-      ngaySinh: ngaySinh,
-      soDienThoai: soDienThoai,
-      xaPhuong: xaPhuong,
-      quanHuyen: quanHuyen,
-      tinhThanhPho: tinhThanhPho,
-      gioiTinh: gioiTinh,
-      diaChi: diaChi,
-      email: email,
-      anhDaiDien: anhDaiDien,
-      canCuocCongDan: cccd,
-    };
-    if (!hoVaTen || !ngaySinh || !email || !soDienThoai || !diaChi) {
-      toast.error("Please fill in all required fields.", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
-      return; // Stop form submission if any required field is empty
-    }
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  useEffect(() => {
+    getKHById(id);
+  }, [id]);
+  const getKHById = (id) => {
     axios
-      .post(apiURLNV + "/add", obj)
+      .get(apiURLNV + `/hien-thi-theo/${id}`)
       .then((response) => {
-        // let res = response.data;
-        let newKhachHangResponse = {
-          hoVaTen: hoVaTen,
-          ngaySinh: ngaySinh,
-          soDienThoai: soDienThoai,
-          xaPhuong: xaPhuong,
-          quanHuyen: quanHuyen,
-          tinhThanhPho: tinhThanhPho,
-          gioiTinh: gioiTinh,
-          diaChi: diaChi,
-          email: email,
-          anhDaiDien: anhDaiDien,
-          canCuocCongDan: cccd,
-        };
-
-        setListKH([newKhachHangResponse, ...listKH]);
-        toast.info("Add success!", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        });
-        redirectToHienThiKH();
+        const data = response.data;
+        setMa(data.ma);
+        setCCCD(data.canCuocCongDan);
+        setGioiTinh(data.gioiTinh);
+        setTen(data.hoVaTen);
+        setNgaySinh(data.ngaySinh);
+        setMatKhau(data.matKhau);
+        setTrangThai(data.trangThai);
+        setAnhDaiDien(data.anhDaiDien);
+        setEmail(data.email);
+        setSdt(data.soDienThoai);
+        setDiaChi(data.diaChi);
+        setXaPhuong(data.xaPhuong);
+        setQuanHuyen(data.quanHuyen);
+        setTinhThanhPho(data.tinhThanhPho);
       })
       .catch((error) => {
-        alert("Thêm thất bại");
-        console.log("hahah");
+        console.error("Error fetching customer information:", error);
       });
+  };
+  const handleProvinceChange = (value) => {
+    setTinhThanhPho(value);
+  };
+
+  const handleDistrictChange = (value) => {
+    setQuanHuyen(value);
+  };
+
+  const handleWardChange = (value) => {
+    setXaPhuong(value);
+  };
+  const handleDiaChiChange = (diaChi) => {
+    setDiaChi(diaChi); // Cập nhật giá trị diaChi trong thành phần cha
+  };
+  const handleAnhDaiDienChange = (imageURL) => {
+    setAnhDaiDien(imageURL);
+  };
+  const save = async (id) => {
+    try {
+      const updatedItem = {
+        ma: ma,
+        hoVaTen: hoVaTen,
+        ngaySinh: ngaySinh,
+        soDienThoai: soDienThoai,
+        xaPhuong: xaPhuong,
+        quanHuyen: quanHuyen,
+        tinhThanhPho: tinhThanhPho,
+        gioiTinh: gioiTinh,
+        diaChi: diaChi,
+        email: email,
+        anhDaiDien: anhDaiDien,
+        canCuocCongDan: cccd,
+        trangThai: trangThai,
+        matKhau: matKhau,
+      };
+
+      axios
+        .put(`${apiURLNV}/update/${id}`, updatedItem)
+        .then((response) => {
+          if (response.status === 200) {
+            setIsConfirmVisible(false);
+            toast.success("Customer information updated successfully!");
+          } else {
+            // Show an error message using react-toastify
+            toast.error("Failed to update customer information.");
+          }
+        })
+        .catch((error) => {
+          console.error("Failed to update customer information:", error);
+
+          // Show an error message using react-toastify
+          toast.error("An error occurred while updating customer information.");
+        });
+    } catch (errInfo) {
+      console.error("Validate Failed:", errInfo);
+    }
   };
   return (
     <>
@@ -169,10 +147,7 @@ const AddNV = () => {
             marginLeft: "40px",
           }}
         >
-          Tạo tài khoản nhân viên{" "}
-          <span style={{ float: "right", fontSize: "20px" }}>
-            <IDScan onScanData={handleScanData} />
-          </span>
+          Tài khoản nhân viên{" "}
         </h3>
 
         <Grid container justifyContent="space-between">
@@ -182,13 +157,14 @@ const AddNV = () => {
               style={{
                 display: "flex",
                 flexDirection: "column",
-                alignItems: "center",
-                marginBottom: "20px",
                 width: "100%",
+                alignItems: "center",
+                // marginLeft: "10px",
               }}
             >
               <ImageUploadComponent
                 setAnhDaiDien={handleAnhDaiDienChange}
+                existingImageUrl={anhDaiDien}
                 hoten={hoVaTen}
               />
             </div>
@@ -356,48 +332,40 @@ const AddNV = () => {
                   marginBottom: "30px",
                 }}
               >
-                <AddressForm
+                <AddressFormUpdate
                   onDiaChiChange={handleDiaChiChange}
                   required={true}
                   submitted={submitted}
                   onProvinceChange={handleProvinceChange}
                   onDistrictChange={handleDistrictChange}
                   onWardChange={handleWardChange}
-                  tinhThanhPho={handleScanData.tinhThanhPho}
-                  // provinces={provinces}
-                  // districts={districts}
-                  // wards={wards}
+                  selectedTinhThanhPho={tinhThanhPho}
+                  selectedQuanHuyen={quanHuyen}
+                  selectedXaPhuong={xaPhuong}
+                  editing={editing}
                 />
-                {/* <Haha onDiaChiChange={handleDiaChiChange} /> */}
+                <div style={{ textAlign: "center", marginTop: "20px" }}>
+                  <Button type="primary" onClick={showConfirm} size={"large"}>
+                    <FontAwesomeIcon
+                      icon={faFloppyDisk}
+                      style={{ paddingRight: "5px" }}
+                    />
+                    Lưu Nhân Viên{" "}
+                  </Button>
+                  <Modal
+                    title="Xác nhận"
+                    open={isConfirmVisible}
+                    onOk={() => save(id)}
+                    onCancel={handleCancel}
+                  >
+                    <p>Bạn có chắc chắn muốn lưu nhân viên?</p>
+                  </Modal>
+                </div>
               </div>
             </div>
           </Grid>
-
-          {/* Right column */}
         </Grid>
-        <div style={{ textAlign: "center" }}>
-          <Button
-            type="primary"
-            onClick={showConfirm}
-            htmlType="submit"
-            size="large"
-          >
-            <FontAwesomeIcon
-              icon={faFloppyDisk}
-              style={{ paddingRight: "5px" }}
-            />
-            Xác nhận{" "}
-          </Button>
-          <Modal
-            title="Xác nhận"
-            open={isConfirmVisible}
-            icon={<FontAwesomeIcon icon={faExclamationCircle} size="3px" />}
-            onOk={AddNV}
-            onCancel={handleCancel}
-          >
-            <p>Bạn có chắc chắn muốn tạo tài khoản nhân viên?</p>
-          </Modal>
-        </div>
+
         <ToastContainer
           position="top-right"
           autoClose={5000}
@@ -415,4 +383,4 @@ const AddNV = () => {
   );
 };
 
-export default AddNV;
+export default UpdateNV;
