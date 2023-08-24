@@ -257,10 +257,8 @@ const HienThiVoucher = () => {
       title: "Trạng Thái",
       dataIndex: "trangThai",
       width: "1%",
-      // eslint-disable-next-line eqeqeq
       onFilter: (value, record) => record.trangThai == value,
       filterSearch: true,
-      // editable: true,
       render: (text, record) => (
         <span>
           {/*  eslint-disable-next-line eqeqeq */}

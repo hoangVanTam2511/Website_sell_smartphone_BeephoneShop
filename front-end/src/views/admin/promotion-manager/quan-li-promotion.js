@@ -6,6 +6,7 @@ import {
   Button,
   Pagination,
   Space,
+  Tooltip,
 } from "antd";
 import Swal from "sweetalert2";
 import { useState, useEffect, useRef } from "react";
@@ -16,6 +17,9 @@ import {
   faTrashAlt,
   faSave,
   faTimes,
+  faMagnifyingGlass,
+  faArrowsRotate,
+  faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import "../../../assets/scss/HienThiNV.scss";
 import { Link } from "react-router-dom";
@@ -23,45 +27,8 @@ import { SearchOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
 import { apiURLKhuyenMai } from "../../../service/api";
 import "../../../assets/scss/quanLyPromotion.scss";
-
-const currentDate = new Date().toISOString().split("T")[0];
-
-// khởi tạo các cell
-const EditableCell = ({
-  editing,
-  dataIndex,
-  title,
-  inputType,
-  record,
-  index,
-  children,
-  ...restProps
-}) => {
-  const inputNode = <Input />;
-  return (
-    //copy props bắt buộc nhập các trường sau bấm edit
-    <td {...restProps}>
-      {editing ? (
-        <Form.Item
-          name={dataIndex}
-          style={{
-            margin: 0,
-          }}
-          rules={[
-            {
-              required: true,
-              message: `Please Input ${title}!`,
-            },
-          ]}
-        >
-          {inputNode}
-        </Form.Item>
-      ) : (
-        children
-      )}
-    </td>
-  );
-};
+import { useNavigate } from "react-router-dom";
+import dayjs from "dayjs"; // Import thư viện Day.js
 
 //show
 const HienThiKhuyenMai = () => {
@@ -72,110 +39,15 @@ const HienThiKhuyenMai = () => {
   const [editingNgayBatDau, setEditingNgayBatDau] = useState(null);
   const [editingNgayKetThuc, setEditingNgayKetThuc] = useState(null);
   const [filterStatus, setFilterStatus] = useState(null);
-  const [searchText, setSearchText] = useState("");
-  const [searchedColumn, setSearchedColumn] = useState("");
-  const searchInput = useRef(null);
-  const handleSearch = (selectedKeys, confirm, dataIndex) => {
-    confirm();
-    setSearchText(selectedKeys[0]);
-    setSearchedColumn(dataIndex);
-  };
+  const [searchTatCa, setSearchTatCa] = useState("");
+  const [searchMaVoucher, setSearchMaVoucher] = useState("");
+  const [searchTenVoucher, setSearchTenVoucher] = useState("");
+  const [searchGiaTriVoucher, setSearchGiaTriVoucher] = useState("");
+
   const handleReset = (clearFilters) => {
     clearFilters();
-    setSearchText("");
+    setSearchTatCa("");
   };
-
-  const getColumnSearchProps = (dataIndex) => ({
-    filterDropdown: ({
-      setSelectedKeys,
-      selectedKeys,
-      confirm,
-      clearFilters,
-      close,
-    }) => (
-      <div
-        style={{
-          padding: 8,
-        }}
-        onKeyDown={(e) => e.stopPropagation()}
-      >
-        <Input
-          ref={searchInput}
-          placeholder={`Nhập ${dataIndex}`}
-          value={selectedKeys[0]}
-          onChange={(e) =>
-            setSelectedKeys(e.target.value ? [e.target.value] : [])
-          }
-          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-          style={{
-            marginBottom: 8,
-            display: "block",
-          }}
-        />
-
-        <Space>
-          <Button
-            type="primary"
-            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-            icon={<SearchOutlined />}
-            size="small"
-            style={{
-              width: 90,
-            }}
-          >
-            Search
-          </Button>
-          <Button
-            onClick={() => clearFilters && handleReset(clearFilters)}
-            size="small"
-            style={{
-              width: 90,
-            }}
-          >
-            Reset
-          </Button>
-
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              close();
-            }}
-          >
-            close
-          </Button>
-        </Space>
-      </div>
-    ),
-    filterIcon: (filtered) => (
-      <SearchOutlined
-        style={{
-          color: filtered ? "#1677ff" : undefined,
-        }}
-      />
-    ),
-    onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-    onFilterDropdownOpenChange: (visible) => {
-      if (visible) {
-        setTimeout(() => searchInput.current?.select(), 100);
-      }
-    },
-    render: (text) =>
-      searchedColumn === dataIndex ? (
-        <Highlighter
-          highlightStyle={{
-            backgroundColor: "#ffc069",
-            padding: 0,
-          }}
-          searchWords={[searchText]}
-          autoEscape
-          textToHighlight={text ? text.toString() : ""}
-        />
-      ) : (
-        text
-      ),
-  });
 
   useEffect(() => {
     loadDataListKhuyenMai(currentPage);
@@ -206,99 +78,73 @@ const HienThiKhuyenMai = () => {
   const filteredDataSource = filterStatus
     ? listKhuyenMai.filter((item) => item.trangThai === filterStatus)
     : listKhuyenMai;
-
-  //edit
-
-  const [editingKey, setEditingKey] = useState("");
-
-  const isEditing = (record) => record.id === editingKey;
-
-  // ham edit
-  const edit = (record) => {
-    console.log(record);
-    form.setFieldsValue({
-      ma: record.ma,
-      tenKhuyenMai: record.tenKhuyenMai,
-      mucGiamGiaTheoPhanTram: record.mucGiamGiaTheoPhanTram,
-      mucGiamGiaTheoSoTien: record.mucGiamGiaTheoSoTien,
-      ngayBatDau: record.ngayBatDau,
-      ngayKetThuc: record.ngayKetThuc,
-      dieuKienGiamGia: record.dieuKienGiamGia,
-      trangThai: record.trangThai,
-    });
-    setEditingKey(record.id);
-  };
-
-  const Delete = async (record) => {
-    const index = listKhuyenMai.findIndex((item) => record.id === item.id);
-    if (index > -1) {
-      Swal.fire({
-        title: "Bạn có muốn xóa khuyến mãi này",
-        showDenyButton: true,
-        confirmButtonText: "Có",
-        denyButtonText: `Không`,
-      }).then((result) => {
-        /* Read more about isConfirmed, isDenied below */
-        if (result.isConfirmed) {
-          deleteKhuyenMai(record.id);
-          Swal.fire("Xóa thành công", "", "success");
-          loadDataListKhuyenMai();
-        } else if (result.isDenied) {
-        }
-      });
-    } else {
-      Swal.fire("Không tìm thấy khuyến mãi", "", "failed");
-    }
-  };
-
-  // delete
-  const deleteKhuyenMai = async (id) => {
-    await axios
-      .delete(`${apiURLKhuyenMai}/delete-khuyen-mai/${id}`)
-      .then((response) => {
-        loadDataListKhuyenMai();
-      });
-  };
-
-  //cancel
-  const cancel = () => {
-    setEditingKey("");
-  };
   //save
-  const save = async (id) => {
-    try {
-      const row = await form.validateFields();
-      const newData = [...listKhuyenMai];
-      const index = newData.findIndex((item) => id === item.id);
-      if (index > -1) {
-        const item = newData[index];
-        const updatedItem = {
-          ...item,
-          ...row,
-        };
+  // const save = async (id) => {
+  //   try {
+  //     const row = await form.validateFields();
+  //     const newData = [...listKhuyenMai];
+  //     const index = newData.findIndex((item) => id === item.id);
+  //     if (index > -1) {
+  //       const item = newData[index];
+  //       const updatedItem = {
+  //         ...item,
+  //         ...row,
+  //       };
+  //       axios
+  //         .put(`${apiURLKhuyenMai}/update-khuyen-mai/${id}`, updatedItem)
+  //         .then((response) => {
+  //           if (response.status === 200) {
+  //             newData.splice(index, 1, updatedItem);
+  //             setlistKhuyenMai(newData);
+  //             loadDataListKhuyenMai();
+  //           }
+  //         })
+  //         .catch((error) => {
+  //           console.log("Failed to update record:", error);
+  //         });
+  //     } else {
+  //       newData.push(row);
+  //       setlistKhuyenMai(newData);
+  //       setEditingNgayBatDau(null);
+  //       setEditingNgayKetThuc(null);
+  //     }
+  //   } catch (errInfo) {
+  //     console.log("Validate Failed:", errInfo);
+  //   }
+  // };
+
+  const doiTrangThaiVoucher = (id) => {
+    Swal.fire({
+      icon: "warning",
+      title: "Xác nhận",
+      text: "Bạn có chắc chắn muốn thay đổi trạng thái?",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Đồng ý",
+      cancelButtonText: "Hủy",
+    }).then((result) => {
+      if (result.isConfirmed) {
         axios
-          .put(`${apiURLKhuyenMai}/update-khuyen-mai/${id}`, updatedItem)
+          .put(apiURLKhuyenMai + "/doi-trang-thai/" + id)
           .then((response) => {
-            if (response.status === 200) {
-              newData.splice(index, 1, updatedItem);
-              setlistKhuyenMai(newData);
-              setEditingKey("");
-              loadDataListKhuyenMai();
-            }
+            loadDataListKhuyenMai(currentPage);
+            Swal.fire({
+              icon: "success",
+              title: "Thành công!",
+              text: "Trạng thái đã được thay đổi",
+            });
           })
           .catch((error) => {
-            console.log("Failed to update record:", error);
+            console.error("Đã xảy ra lỗi khi đổi trạng thái");
+            Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: "Đã xảy ra lỗi khi đổi trạng thái",
+            });
           });
-      } else {
-        newData.push(row);
-        setlistKhuyenMai(newData);
-        setEditingKey("");
-        setEditingNgayBatDau(null);
-        setEditingNgayKetThuc(null);
       }
-    } catch (errInfo) {
-      console.log("Validate Failed:", errInfo);
-    }
+    });
   };
 
   const ConverttrangThai = (trangThai) => {
@@ -317,109 +163,86 @@ const HienThiKhuyenMai = () => {
       title: "Mã",
       dataIndex: "ma",
       width: "10%",
-      editable: true,
-      ...getColumnSearchProps("ma"),
-    },
-    {
-      title: "Tên",
-      dataIndex: "tenKhuyenMai",
-      width: "10%",
-      editable: true,
-      ...getColumnSearchProps("ten"),
     },
     {
       title: "Giảm Giá (%)",
       dataIndex: "mucGiamGiaTheoPhanTram",
       width: "10%",
-      editable: true,
-      ...getColumnSearchProps("mucGiamGiaTheoPhanTram"),
     },
     {
       title: "Giảm Giá ($)",
       dataIndex: "mucGiamGiaTheoSoTien",
       width: "10%",
-      editable: true,
-      ...getColumnSearchProps("mucGiamGiaTheoSoTien"),
     },
     {
-      title: "Ngày Bắt Đầu",
-      dataIndex: "ngayBatDau",
+      title: "Thời Gian",
+      dataIndex: "thoiGian",
       width: "10%",
-      editable: true,
-      render: (ngayBatDau) => {
-        const date = new Date(ngayBatDau);
-        const formattedDate = date.toLocaleDateString("en-US");
-        return formattedDate;
-      },
-      ...getColumnSearchProps("ngayBatDau"),
-    },
-    {
-      title: "Ngày Kết Thúc",
-      dataIndex: "ngayKetThuc",
-      width: "10%",
-      editable: true,
-      render: (item) => {
-        const formattedDate = item.substring(0, 10); // Lấy phần ngày tháng từ chuỗi ngày tháng
-        return formattedDate;
-      },
-      ...getColumnSearchProps("ngayKetThuc"),
+      render: (text, record) => (
+        <div style={{ textAlign: "center" }}>
+          {dayjs(record.ngayBatDau).format("HH:mm:ss DD-MM-YYYY")} -{" "}
+          {dayjs(record.ngayKetThuc).format("HH:mm:ss DD-MM-YYYY")}
+        </div>
+      ),
     },
     {
       title: "Điều Kiện Giảm Giá",
       dataIndex: "dieuKienGiamGia",
       width: "10%",
-      editable: true,
-      ...getColumnSearchProps("dieuKienGiamGia"),
     },
     {
       title: "Trạng Thái",
       dataIndex: "trangThai",
       width: "15%",
-      editable: true,
-      ...getColumnSearchProps("trangThai"),
-      render: (trangThai) => ConverttrangThai(trangThai),
+      onFilter: (value, record) => record.trangThai == value,
+      filterSearch: true,
+      render: (text, record) => (
+        <span>
+          {/*  eslint-disable-next-line eqeqeq */}
+          {record.trangThai == true ? (
+            <Button
+              type="primary"
+              onClick={() => {
+                doiTrangThaiVoucher(record.id);
+              }}
+              style={{ borderRadius: "30px" }}
+            >
+              Còn Hiệu Lực
+            </Button>
+          ) : // eslint-disable-next-line eqeqeq
+          record.trangThai == false ? (
+            <Button
+              type="primary"
+              onClick={() => {
+                doiTrangThaiVoucher(record.id);
+              }}
+              danger
+              style={{ borderRadius: "30px" }}
+            >
+              Hết Hiệu Lực
+            </Button>
+          ) : (
+            <Button type="primary" style={{ borderRadius: "30px" }}>
+              Không xác định
+            </Button>
+          )}
+        </span>
+      ),
     },
     {
       title: "Thao Tác",
       dataIndex: "operation",
       width: "10%",
       render: (_, record) => {
-        const editable = isEditing(record);
-        return editable ? (
-          <span>
-            <FontAwesomeIcon
-              icon={faSave}
-              onClick={() => save(record.id)}
-              style={{ marginRight: "15px", cursor: "pointer" }}
-            />
-            <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
-              <FontAwesomeIcon icon={faTimes} style={{ cursor: "pointer" }} />
-            </Popconfirm>
-          </span>
-        ) : (
+        return (
           <>
-            <FontAwesomeIcon
-              icon={faPencilAlt}
-              onClick={() => edit(record)}
-              style={{
-                cursor: "pointer",
-                // opacity: editingKey === record.id ? 0.5 : 1,
-                color: editingKey === record.id ? "red" : "green",
-              }}
-              disabled={editingKey !== ""}
-            />
-
-            <FontAwesomeIcon
-              icon={faTrashAlt}
-              onClick={() => Delete(record)}
-              style={{
-                cursor: "pointer",
-                // opacity: editingKey === record.id ? 0.5 : 1,
-                color: "#F55E4C",
-                marginLeft: 20,
-              }}
-              disabled={editingKey !== ""}
-            />
+            <div style={{ textAlign: "center" }}>
+              <Tooltip title="Edit">
+                <Link to={`/sua-voucher/${record.id}`}>
+                  <FontAwesomeIcon icon={faPencilAlt} />
+                </Link>{" "}
+              </Tooltip>
+            </div>
           </>
         );
       },
@@ -436,66 +259,210 @@ const HienThiKhuyenMai = () => {
         record,
         dataIndex: col.dataIndex,
         title: col.title,
-        editing: isEditing(record),
       }),
     };
   });
 
   return (
     <>
-      <div className="your-component-container">
-        <div className="btn-add">
+      <div className="search-component-container">
+        <h6 className="boloc-voucher">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="1em"
+            viewBox="0 0 512 512"
+          >
+            <path d="M3.9 54.9C10.5 40.9 24.5 32 40 32H472c15.5 0 29.5 8.9 36.1 22.9s4.6 30.5-5.2 42.5L320 320.9V448c0 12.1-6.8 23.2-17.7 28.6s-23.8 4.3-33.5-3l-64-48c-8.1-6-12.8-15.5-12.8-25.6V320.9L9 97.3C-.7 85.4-2.8 68.8 3.9 54.9z" />
+          </svg>
+          &nbsp; Bộ Lọc
+        </h6>
+        <div className="row-search">
           <span>
             <Form style={{ width: "20em", display: "inline-block" }}>
-              <h2>Quản lí Khuyến Mãi</h2>
-              <Space>
-                <Form.Item name="ma" noStyle>
-                  <Input
-                    ref={searchInput}
-                    placeholder="Tìm kiếm Khuyến Mãi"
-                    value={searchText}
-                    style={{ marginBottom: "0.1%", width: "15em" }}
-                  />
-                </Form.Item>
-                <Button type="primary" icon={<SearchOutlined />}>
-                  Tìm kiếm
-                </Button>
-                {/* <Button onClick={() => clearFilters && handleReset(clearFilters)}>
-                Reset
-              </Button> */}
-              </Space>
+              <Input
+                placeholder="Search"
+                value={searchTatCa}
+                onChange={(e) => setSearchTatCa(e.target.value)}
+              />
             </Form>
           </span>
+          {/* Search */}
 
+          <div className="btn-search">
+            <Link to="/search-voucher">
+              <Button className="btn-search-voucher">
+                <FontAwesomeIcon icon={faMagnifyingGlass} />
+                &nbsp; Tìm Kiếm{" "}
+              </Button>
+            </Link>
+          </div>
+
+          <div className="btn-reset">
+            <Button className="btn-search-reset">
+              <FontAwesomeIcon icon={faArrowsRotate} />
+              &nbsp; Làm Mới{" "}
+            </Button>
+          </div>
+        </div>
+        {/*Bộ Lọc trạng thái*/}
+        <div className="boloc-trangThai">
+          <div className="search1">
+            <h6 style={{ marginTop: 6 }}>Mã Khuyến Mãi: &nbsp;</h6>
+            <span>
+              <Form
+                style={{
+                  width: "15em",
+                  display: "inline-block",
+                }}
+              >
+                <Input
+                  placeholder="Search Mã Voucher"
+                  value={searchMaVoucher}
+                  onChange={(e) => setSearchMaVoucher(e.target.value)}
+                />
+              </Form>
+            </span>
+          </div>
+          <div className="search1">
+            <h6 style={{ marginTop: 6 }}>Tên Khuyến Mãi: &nbsp;</h6>
+            <span>
+              <Form
+                style={{
+                  width: "15em",
+                  display: "inline-block",
+                }}
+              >
+                <Input
+                  placeholder="Search Tên Voucher"
+                  value={searchTenVoucher}
+                  onChange={(e) => setSearchTenVoucher(e.target.value)}
+                />
+              </Form>
+            </span>
+          </div>
+          <div className="search1">
+            <h6 style={{ marginTop: 6 }}>Trạng Thái: &nbsp;</h6>
+            <span>
+              <Form
+                style={{
+                  width: "15em",
+                  display: "inline-block",
+                }}
+              >
+                <Input
+                  placeholder="Search Mã Voucher"
+                  value={searchMaVoucher}
+                  onChange={(e) => setSearchMaVoucher(e.target.value)}
+                />
+              </Form>
+            </span>
+          </div>
+        </div>
+        <div className="boloc-promotion">
+          <div className="search1">
+            <h6 style={{ marginTop: 6 }}>Giảm Giá: &nbsp;</h6>
+            <span>
+              <Form
+                style={{
+                  width: "15em",
+                  display: "inline-block",
+                }}
+              >
+                <Input
+                  placeholder="Search Mã Voucher"
+                  value={searchMaVoucher}
+                  onChange={(e) => setSearchMaVoucher(e.target.value)}
+                />
+              </Form>
+            </span>
+          </div>
+          <div className="search1">
+            <h6 style={{ marginTop: 6 }}>Ngày Bắt Đầu: &nbsp;</h6>
+            <span>
+              <Form
+                style={{
+                  width: "15em",
+                  display: "inline-block",
+                }}
+              >
+                <Input
+                  placeholder="Search Mã Voucher"
+                  value={searchMaVoucher}
+                  onChange={(e) => setSearchMaVoucher(e.target.value)}
+                />
+              </Form>
+            </span>
+          </div>
+          <div className="search1">
+            <h6 style={{ marginTop: 6 }}>Ngày Kết Thúc: &nbsp;</h6>
+            <span>
+              <Form
+                style={{
+                  width: "15em",
+                  display: "inline-block",
+                }}
+              >
+                <Input
+                  placeholder="Search Tên Voucher"
+                  value={searchTenVoucher}
+                  onChange={(e) => setSearchTenVoucher(e.target.value)}
+                />
+              </Form>
+            </span>
+          </div>
+          <div className="search1">
+            <h6 style={{ marginTop: 6 }}>Điều Kiện Giảm Giá: &nbsp;</h6>
+            <span>
+              <Form
+                style={{
+                  width: "15em",
+                  display: "inline-block",
+                }}
+              >
+                <Input
+                  placeholder="Search Giá Trị Khuyến Mãi"
+                  value={searchGiaTriVoucher}
+                  onChange={(e) => setSearchGiaTriVoucher(e.target.value)}
+                />
+              </Form>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div className="your-component-container">
+        <h6>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="1em"
+            viewBox="0 0 448 512"
+          >
+            <path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z" />
+          </svg>
+          &nbsp; Danh Sách Khuyến Mãi
+        </h6>
+        <div className="btn-add">
           {/* Search */}
           <FontAwesomeIcon style={{ marginLeft: "5px" }} />
           <span className="bl-add">
             <Link to="/them-khuyen-mai">
-              <Button className="btn-add-promotion">+ Thêm Khuyến Mãi </Button>
+              <Button className="btn-add-voucher">
+                <FontAwesomeIcon icon={faPlus} />
+                &nbsp; Thêm Khuyến Mãi{" "}
+              </Button>
             </Link>
           </span>
         </div>
         <div className="form-tbl">
-          <Form
-            form={form}
-            component={false}
-            initialValues={editingNgayBatDau || {} || editingNgayKetThuc || {}}
-          >
-            <Table
-              components={{
-                body: {
-                  cell: EditableCell,
-                },
-              }}
-              bordered
-              dataSource={filteredDataSource}
-              columns={mergedColumns}
-              rowClassName="editable-row"
-              pagination={false}
-              rowKey="id"
-              style={{ marginBottom: "20px" }}
-            />
+          <Table
+            bordered
+            dataSource={filteredDataSource}
+            columns={mergedColumns}
+            pagination={false}
+            rowKey="id"
+            style={{ marginBottom: "20px" }}
+          />
 
+          <div className="phan-trang">
             <Pagination
               simplecurrent={currentPage + 1}
               onChange={(value) => {
@@ -503,7 +470,7 @@ const HienThiKhuyenMai = () => {
               }}
               total={totalPages * 10}
             />
-          </Form>
+          </div>
         </div>
       </div>
     </>
