@@ -467,8 +467,7 @@ const ManagementOrders = () => {
                       position: "relative",
                       width: "50px",
                       "& .MuiInputLabel-root": {
-                        position: "absolute",
-                        top: "-3.8px",
+                        top: "-3.2px",
                       },
                       "& .MuiInputBase-root": {
                         width: "85%",
@@ -491,8 +490,7 @@ const ManagementOrders = () => {
                       position: "relative",
                       width: "50px",
                       "& .MuiInputLabel-root": {
-                        position: "absolute",
-                        top: "-3.8px",
+                        top: "-3.2px",
                       },
                       "& .MuiInputBase-root": {
                         width: "85%",
@@ -514,7 +512,6 @@ const ManagementOrders = () => {
               >
                 <PlusOutlined
                   style={{
-                    position: "absolute",
                     bottom: "15px",
                     left: "15px",
                   }}
