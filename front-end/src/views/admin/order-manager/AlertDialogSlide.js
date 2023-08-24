@@ -196,6 +196,7 @@ export function UpdateRecipientOrderDialog(props) {
     </div>
   );
 }
+
 export function PaymentDialog(props) {
 
   const { open, onClose, onCloseNoAction } = props;
@@ -258,6 +259,7 @@ export function PaymentDialog(props) {
     </div>
   );
 }
+
 export function OrderHistoryDialog(props) {
 
   const { columns, open, onClose, dataSource } = props;
@@ -289,6 +291,7 @@ export function OrderHistoryDialog(props) {
     </div>
   );
 }
+
 export function ConfirmDialog(props) {
 
   const { open, status, confirmOrderInfo, confirmDelivery, confirmFinish, confirmCancel, onCloseNoAction } = props;

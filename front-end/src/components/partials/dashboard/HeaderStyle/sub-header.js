@@ -1,5 +1,5 @@
-import React, {memo,Fragment} from 'react'
-import { Row,Col,Container} from 'react-bootstrap'
+import React, { memo, Fragment } from 'react'
+import { Row, Col, Container } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 //img
 import topHeader from '../../../../assets/images/dashboard/top-header.png'
@@ -13,15 +13,15 @@ import topHeader5 from '../../../../assets/images/dashboard/top-header5.png'
 const SubHeader = memo((props) => {
 
 
-    return (
-        <div>
-            <br/>
-            <br/>
-            <br/>
+  return (
+    <div>
+      <br />
+      <br />
+      <br />
 
-        </div>
-    )
-       
+    </div>
+  )
+
 })
 
 export default SubHeader
