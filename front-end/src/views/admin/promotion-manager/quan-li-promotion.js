@@ -22,6 +22,7 @@ import { Link } from "react-router-dom";
 import { SearchOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
 import { apiURLKhuyenMai } from "../../../service/api";
+import "../../../assets/scss/quanLyPromotion.scss";
 
 const currentDate = new Date().toISOString().split("T")[0];
 
@@ -442,50 +443,68 @@ const HienThiKhuyenMai = () => {
 
   return (
     <>
-      <div className="btn-add">
-        <span>
-          <Form style={{ width: "20em", display: "inline-block" }}>
-            <h2>Quản lí Khuyến Mãi</h2>
+      <div className="your-component-container">
+        <div className="btn-add">
+          <span>
+            <Form style={{ width: "20em", display: "inline-block" }}>
+              <h2>Quản lí Khuyến Mãi</h2>
+              <Space>
+                <Form.Item name="ma" noStyle>
+                  <Input
+                    ref={searchInput}
+                    placeholder="Tìm kiếm Khuyến Mãi"
+                    value={searchText}
+                    style={{ marginBottom: "0.1%", width: "15em" }}
+                  />
+                </Form.Item>
+                <Button type="primary" icon={<SearchOutlined />}>
+                  Tìm kiếm
+                </Button>
+                {/* <Button onClick={() => clearFilters && handleReset(clearFilters)}>
+                Reset
+              </Button> */}
+              </Space>
+            </Form>
+          </span>
+
+          {/* Search */}
+          <FontAwesomeIcon style={{ marginLeft: "5px" }} />
+          <span className="bl-add">
+            <Link to="/them-khuyen-mai">
+              <Button className="btn-add-promotion">+ Thêm Khuyến Mãi </Button>
+            </Link>
+          </span>
+        </div>
+        <div className="form-tbl">
+          <Form
+            form={form}
+            component={false}
+            initialValues={editingNgayBatDau || {} || editingNgayKetThuc || {}}
+          >
+            <Table
+              components={{
+                body: {
+                  cell: EditableCell,
+                },
+              }}
+              bordered
+              dataSource={filteredDataSource}
+              columns={mergedColumns}
+              rowClassName="editable-row"
+              pagination={false}
+              rowKey="id"
+              style={{ marginBottom: "20px" }}
+            />
+
+            <Pagination
+              simplecurrent={currentPage + 1}
+              onChange={(value) => {
+                setCurrentPage(value - 1);
+              }}
+              total={totalPages * 10}
+            />
           </Form>
-        </span>
-
-        {/* Search */}
-        <FontAwesomeIcon style={{ marginLeft: "5px" }} />
-        <span className="bl-add">
-          <Link to="/them-khuyen-mai">
-            <Button className="btn-them-tk">+ Thêm Khuyến Mãi </Button>
-          </Link>
-        </span>
-      </div>
-      <div className="form-tbl">
-        <Form
-          form={form}
-          component={false}
-          initialValues={editingNgayBatDau || {} || editingNgayKetThuc || {}}
-        >
-          <Table
-            components={{
-              body: {
-                cell: EditableCell,
-              },
-            }}
-            bordered
-            dataSource={filteredDataSource}
-            columns={mergedColumns}
-            rowClassName="editable-row"
-            pagination={false}
-            rowKey="id"
-            style={{ marginBottom: "20px" }}
-          />
-
-          <Pagination
-            simplecurrent={currentPage + 1}
-            onChange={(value) => {
-              setCurrentPage(value - 1);
-            }}
-            total={totalPages * 10}
-          />
-        </Form>
+        </div>
       </div>
     </>
   );

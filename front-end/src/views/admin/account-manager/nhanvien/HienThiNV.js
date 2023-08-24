@@ -248,12 +248,12 @@ const HienThiNV = () => {
     axios
       .get(apiURLNV + "/hien-thi?page=" + currentPage)
       .then((response) => {
-        console.log(response)
+        console.log(response);
         const modifiedData = response.data.content.map((item, index) => ({
           ...item,
           stt: index + 1,
         }));
-        console.log(modifiedData)
+        console.log(modifiedData);
         setListNV(modifiedData);
         setCurrentPage(response.data.number);
         setTotalPages(response.data.totalPages);
@@ -508,7 +508,7 @@ const HienThiNV = () => {
         <span>
           <Form style={{ width: "20em", display: "inline-block" }}>
             <Input
-              placeholder="Search"
+              placeholder="Search by Mã, Tên,..."
               // value={searchValue}
               // onChange={handleChange}
             />

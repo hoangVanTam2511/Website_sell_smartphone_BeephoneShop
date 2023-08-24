@@ -1,6 +1,7 @@
 package beephone_shop_projects.core.admin.voucher_management.service.impl;
 
 import beephone_shop_projects.core.admin.voucher_management.model.request.CreateVoucherRequest;
+import beephone_shop_projects.core.admin.voucher_management.model.request.FindVoucherRequest;
 import beephone_shop_projects.core.admin.voucher_management.model.request.UpdateVoucherRequest;
 import beephone_shop_projects.core.admin.voucher_management.model.response.VoucherResponse;
 import beephone_shop_projects.core.admin.voucher_management.repository.VoucherRepository;
@@ -13,8 +14,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-
-import java.util.List;
 
 @Service
 @Validated
@@ -34,13 +33,14 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     public Voucher addVoucher(@Valid CreateVoucherRequest request) {
+
         Voucher voucher = Voucher.builder()
                 .ma(request.getMa())
                 .ten(request.getTen())
                 .ngayBatDau(request.getNgayBatDau())
                 .ngayKetThuc(request.getNgayKetThuc())
                 .giaTriVoucher(request.getGiaTriVoucher())
-                .trangThai(request.getTrangThai())
+                .trangThai(1)
                 .build();
         return voucherRepository.save(voucher);
     }
@@ -69,6 +69,27 @@ public class VoucherServiceImpl implements VoucherService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public Boolean doiTrangThai(String id) {
+        Voucher voucher = voucherRepository.findById(id).get();
+        if (voucher != null){
+            voucherRepository.doiTrangThai(id);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public Page<VoucherResponse> timKiemVoucher(FindVoucherRequest request) {
+        Pageable pageable = PageRequest.of(request.getPageNo(), 5);
+        Page<VoucherResponse> voucherResponses = voucherRepository.timKiemVoucher(
+                                                                "%"+request.getMa()+"%",
+                "%"+request.getTen() +"%",
+                                                                request.getNgayBatDau(), request.getNgayKetThuc(),
+                                                                "%"+request.getGiaTriVoucher()+"%", "%"+request.getTrangThai()+"%", pageable);
+        return voucherResponses;
     }
 
 }
