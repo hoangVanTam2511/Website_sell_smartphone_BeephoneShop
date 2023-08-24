@@ -132,11 +132,8 @@ const HienThiNV = () => {
           ...item,
           stt: index + 1,
         }));
-<<<<<<< HEAD
         console.log(modifiedData);
-=======
         // console.log(modifiedData);
->>>>>>> beephone_hoa
         setListNV(modifiedData);
         setCurrentPage(response.data.number);
         setTotalPages(response.data.totalPages);
@@ -352,7 +349,6 @@ const HienThiNV = () => {
 
   return (
     <>
-<<<<<<< HEAD
       <div className="btn-add">
         <span>
           <Form style={{ width: "20em", display: "inline-block" }}>
@@ -365,7 +361,7 @@ const HienThiNV = () => {
         </span>
         {/* Search */}
         <FontAwesomeIcon
-          icon={faMagnifyingGlass}
+          // icon={faMagnifyingGlass}
           style={{ marginLeft: "5px" }}
         />
         <span className="bl-add">
@@ -394,7 +390,7 @@ const HienThiNV = () => {
         <Form
           form={form}
           component={false}
-          initialValues={editingNgaySinh || {}}
+          initialValues={ {}}
         >
           <Table
             components={{
@@ -419,14 +415,14 @@ const HienThiNV = () => {
             rowKey="id"
             style={{ marginBottom: "20px" }}
           />
-=======
+
       <Card>
         {/* <h5 style={{ marginBottom: "10px" }}>
           {" "}
           <FontAwesomeIcon icon={faFilter} />
           &nbsp;Lọc
         </h5> */}
->>>>>>> beephone_hoa
+
 
         <div className="btn-add">
           <span>
@@ -530,6 +526,9 @@ const HienThiNV = () => {
           </Form>
         </div>
       </Card>
+      </Form>
+    
+     </div>
     </>
   );
 };

@@ -86,15 +86,6 @@ export const DefaultRouter = [
         element: <Index />,
       },
       {
-        path: "mau-sac",
-        element: <QuanLiMauSac />,
-      },
-      {
-        path: "them-mau-sac",
-        element: <ThemMauSac />,
-      },
-      {
-
         path: "chip",
         element: <Chip />,
       },

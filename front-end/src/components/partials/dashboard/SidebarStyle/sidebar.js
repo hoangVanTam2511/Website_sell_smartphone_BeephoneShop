@@ -82,13 +82,9 @@ const Sidebar = memo((props) => {
       >
         <div className="sidebar-header d-flex align-items-center justify-content-start">
           <Link to="/dashboard" className="navbar-brand">
-<<<<<<< HEAD
-            <Logo />
-=======
             <h4 className="logo-title">
               <Logo />
             </h4>
->>>>>>> beephone_hoa
           </Link>
           <div
             className="sidebar-toggle"

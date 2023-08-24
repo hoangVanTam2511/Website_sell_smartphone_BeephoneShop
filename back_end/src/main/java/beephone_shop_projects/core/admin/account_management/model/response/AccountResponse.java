@@ -29,11 +29,8 @@ public interface AccountResponse {
     @Value("#{target.trang_thai}")
     String getTrangThai();
 
-<<<<<<< HEAD
-    @Value("#{target.soDienThoai}")
-=======
+
     @Value("#{target.so_dien_thoai}")
->>>>>>> beephone_hoa
     String getSoDienThoai();
 //    @Temporal(TemporalType.DATE)
     @Value("#{target.ngay_sinh}")

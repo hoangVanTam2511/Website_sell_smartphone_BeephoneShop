@@ -149,29 +149,7 @@ const Header = memo((props) => {
                         <h5 className="mb-0 text-white">All Notifications</h5>
                       </div>
                     </div>
-<<<<<<< HEAD
-                    
-                    {/* <div className="input-group search-input">
-                        <span className="input-group-text" id="search-input">
-                            <svg width="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <circle cx="11.7669" cy="11.7666" r="8.98856" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></circle>
-                                <path d="M18.0186 18.4851L21.5426 22" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                            </svg>
-                        </span>
-                        <input type="search" className="form-control" placeholder="Search..."/>
-                    </div> */}
 
-                    <Navbar.Toggle aria-controls="navbarSupportedContent">
-                        <span className="navbar-toggler-icon">
-                            <span className="mt-2 navbar-toggler-bar bar1"></span>
-                            <span className="navbar-toggler-bar bar2"></span>
-                            <span className="navbar-toggler-bar bar3"></span>
-                        </span>
-                    </Navbar.Toggle>
-                    <Navbar.Collapse  id="navbarSupportedContent">
-                        <Nav as="ul" className="mb-2 ms-auto navbar-list mb-lg-0 align-items-center">
-                        <Nav.Link  className="ml-4"  href="/" target="_blank">
-=======
                     <div className="p-0 card-body">
                       <Link to="#" className="iq-sub-card">
                         <div className="d-flex align-items-center">
@@ -447,6 +425,5 @@ const Header = memo((props) => {
     </Fragment>
   );
 });
->>>>>>> beephone_hoa
 
 export default Header;
