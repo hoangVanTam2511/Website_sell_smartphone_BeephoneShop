@@ -1,222 +1,124 @@
-import {
-  Form,
-  Popconfirm,
-  Table,
-  Input,
-  Button,
-  Pagination,
-  Space,
-  Dropdown,
-  MenuProps,
-  Tooltip,
-  Modal,
-  Select,
-  DatePicker,
-} from "antd";
-import Swal from "sweetalert2";
+import { Form, Table, Input, Button, Tooltip, Space } from "antd";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
 import {
   faPencilAlt,
-  faTrashAlt,
-  faSave,
-  faTimes,
-  faMagnifyingGlass,
   faArrowsRotate,
   faPlus,
+  faRotateRight,
 } from "@fortawesome/free-solid-svg-icons";
-import "../../../assets/scss/HienThiNV.scss";
-import { Link } from "react-router-dom";
-import { DownOutlined } from "@ant-design/icons";
+
+import { Link, useSearchParams } from "react-router-dom";
 import { apiURLVoucher } from "../../../service/api";
 import "../../../assets/scss/quanLyVoucher.scss";
-import { format, parse } from "date-fns";
-import { TextField, colors } from "@mui/material";
-import { is } from "date-fns/locale";
-
-const currentDate = new Date().toISOString().split("T")[0];
+import { useNavigate } from "react-router-dom";
+import dayjs from "dayjs"; // Import thư viện Day.js
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import numeral from "numeral"; // Import thư viện numeral
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { Box, Pagination } from "@mui/material";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { current } from "@reduxjs/toolkit";
 
 //show
 const HienThiVoucher = () => {
   const [form] = Form.useForm();
-  let [listVoucher, setlistVoucher] = useState([]);
-  let [listSearch, setlistSearch] = useState([]);
-  const [currentPage, setCurrentPage] = useState(0);
+  let [listVoucher, setListVoucher] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const [editingThoiGian, setEditingThoiGian] = useState(null);
-  const [filterStatus, setFilterStatus] = useState(null);
-  const [searchTatCa, setSearchTatCa] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [searchMaVoucher, setSearchMaVoucher] = useState("");
-  const [searchTenVoucher, setSearchTenVoucher] = useState("");
-  const [searchGiaTriVoucher, setSearchGiaTriVoucher] = useState("");
-  const [isSearching, setIsSearching] = useState(false);
-  const voucher = {
-    ma: "",
-    ten: "",
-    ngayBatDau: "",
-    ngayKetThuc: "",
-    giaTriVoucher: "",
-    trangThai: "",
-  };
-
-  // const [searchedColumn, setSearchedColumn] = useState("");
-  const searchInput = useRef(null);
-
-  const formatDateTime = (dateTime) => {
-    const parsedDate = new Date(dateTime);
-    return format(parsedDate, "HH:mm:ss dd-MM-yyyy");
-  };
-
-  const handleChange = (value) => {
-    console.log(value);
-  };
-
-  useEffect(() => {
-    loadDataListVoucher(currentPage);
-  }, [currentPage]);
+  const [searchNgayBatDau, setSearchNgayBatDau] = useState("");
+  const [searchNgayKetThuc, setSearchNgayKetThuc] = useState("");
+  const [searchTrangThai, setSearchTrangThai] = useState("");
+  let [searchTatCa, setSearchTatCa] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   // cutstom load data
-  const loadDataListVoucher = (currentPage) => {
+  const loadDataListVoucher = (page) => {
     axios
-      .get(apiURLVoucher + "/hien-thi?page=" + currentPage)
+      .get(`${apiURLVoucher}/vouchers`, {
+        params: {
+          keyword: searchTatCa,
+          pageNo: page,
+          trangThai: searchTrangThai,
+          ngayBatDau: searchNgayBatDau,
+          ngayKetThuc: searchNgayKetThuc,
+        },
+      })
       .then((response) => {
         const modifiedData = response.data.content.map((item, index) => ({
           ...item,
           stt: index + 1,
         }));
-        setlistVoucher(modifiedData);
-        setCurrentPage(response.data.number);
+        setListVoucher(modifiedData);
         setTotalPages(response.data.totalPages);
-        console.log(modifiedData);
       });
   };
 
-  const searchVoucher = (currentPage) => {
-    axios
-      .get(apiURLVoucher + "/searchVoucher")
-      .then((response) => {
-        setlistSearch(response.data);
-        setCurrentPage(response.data.number);
-        setTotalPages(response.data.totalPages);
-        setIsSearching(false);
-      })
-      .catch((error) => {
-        console.error("Đã xảy ra lỗi khi đổi trạng thái");
-        setIsSearching(false);
-      });
+  useEffect(() => {
+    loadDataListVoucher(currentPage);
+    console.log(currentPage);
+  }, [
+    searchTatCa,
+    searchTrangThai,
+    searchNgayBatDau,
+    searchNgayKetThuc,
+    currentPage,
+  ]);
+
+  const handleReset = () => {
+    loadDataListVoucher(currentPage);
+    setSearchTatCa("");
+    setSearchNgayBatDau("");
+    setSearchNgayKetThuc("");
+    setSearchTrangThai("");
   };
 
   const doiTrangThaiVoucher = (id) => {
-    Swal.fire({
-      icon: "warning",
-      title: "Xác nhận",
-      text: "Bạn có chắc chắn muốn thay đổi trạng thái?",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Đồng ý",
-      cancelButtonText: "Hủy",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        axios
-          .put(apiURLVoucher + "/deleteTrangThaiVoucher/" + id)
-          .then((response) => {
-            loadDataListVoucher(currentPage);
-            Swal.fire({
-              icon: "success",
-              title: "Thành công!",
-              text: "Trạng thái đã được thay đổi",
-            });
-          })
-          .catch((error) => {
-            console.error("Đã xảy ra lỗi khi đổi trạng thái");
-            Swal.fire({
-              icon: "error",
-              title: "Oops...",
-              text: "Đã xảy ra lỗi khi đổi trạng thái",
-            });
-          });
-      }
-    });
-  };
-  // set filter
-  const handleFilter = (status) => {
-    setFilterStatus(status);
+    axios
+      .put(apiURLVoucher + "/deleteTrangThaiVoucher/" + id)
+      .then((response) => {
+        loadDataListVoucher(currentPage);
+        showToast("success", "Đổi trạng thái thành công");
+      })
+      .catch((error) => {
+        console.error("Đã xảy ra lỗi khi đổi trạng thái");
+        showToast("error", "Đã xảy ra lỗi khi đổi trạng thái");
+      });
   };
 
-  const filteredDataSource = filterStatus
-    ? listVoucher.filter((item) => item.trangThai === filterStatus)
-    : listVoucher;
-
-  //edit
-
-  const [editingKey, setEditingKey] = useState("");
-
-  const isEditing = (record) => record.id === editingKey;
-
-  // ham edit
-  const edit = (record) => {
-    console.log(record);
-    form.setFieldsValue({
-      ma: record.ma,
-      ten: record.ten,
-      ngayBatDau: record.ngayBatDau,
-      ngayKetThuc: record.ngayKetThuc,
-      thoiGian: record.thoiGian,
-      giaTriVoucher: record.giaTriVoucher,
-      trangThai: record.trangThai,
-    });
-    setEditingKey(record.id);
-  };
-
-  //show modal
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
-
-  // save
-  const save = async (id) => {
-    try {
-      const row = await form.validateFields();
-      const newData = [...listVoucher];
-      const index = newData.findIndex((item) => id === item.id);
-      if (index > -1) {
-        const item = newData[index];
-        const updatedItem = {
-          ...item,
-          ...row,
-        };
-        axios
-          .put(`${apiURLVoucher}/updateVoucher/${id}`, updatedItem)
-          .then((response) => {
-            if (response.status === 200) {
-              newData.splice(index, 1, updatedItem);
-              setlistVoucher(newData);
-              setEditingKey("");
-              loadDataListVoucher();
-            }
-          })
-          .catch((error) => {
-            console.log("Failed to update record:", error);
-          });
-      } else {
-        newData.push(row);
-        setlistVoucher(newData);
-        setEditingKey("");
-        setEditingThoiGian(null);
-      }
-    } catch (errInfo) {
-      console.log("Validate Failed:", errInfo);
+  const showToast = (type, message) => {
+    // Replace with your actual toast notification implementation
+    // Here's an example using the 'toast' library
+    if (type === "success") {
+      toast.success(message);
+    } else if (type === "error") {
+      toast.error(message);
     }
+  };
+
+  const handleSearchTrangThaiChange = (event) => {
+    const selectedValue = event.target.value;
+    setSearchTrangThai(parseInt(selectedValue)); // Cập nhật giá trị khi Select thay đổi
+    searchParams.set("trangThai", parseInt(searchTrangThai));
+    setSearchParams(searchParams);
+  };
+
+  const handleSearchNgayBatDauChange = (selectedDate) => {
+    const value = selectedDate.format("DD/MM/YYYY");
+    setSearchNgayBatDau(value);
+  };
+
+  const handleSearchNgayKetThucChange = (selectedDate) => {
+    const value = selectedDate.format("DD/MM/YYYY");
+    setSearchNgayKetThuc(value); // Cập nhật giá trị khi Select thay đổi
   };
 
   //Ten column
@@ -231,69 +133,98 @@ const HienThiVoucher = () => {
     {
       title: "Mã Voucher",
       dataIndex: "ma",
-      width: "10%",
+      width: "1%",
     },
     {
       title: "Tên Voucher",
       dataIndex: "ten",
-      width: "10%",
+      width: "25%",
+      render: (text, record) => (
+        <span
+          style={{
+            maxWidth: "25%",
+            whiteSpace: "pre-line",
+            overflow: "hidden",
+          }}
+        >
+          {record.ten}
+        </span>
+      ),
     },
     {
-      title: "Thời Gian",
+      title: "Số Lượng",
+      dataIndex: "soLuong",
+      width: "1%",
+    },
+    {
+      title: "Thời Gian Bắt Đầu - Kết Thúc Voucher",
       dataIndex: "thoiGian",
       width: "10%",
       editable: true,
-      render: (text, record) =>
-        `${formatDateTime(record.ngayBatDau)} - ${formatDateTime(
-          record.ngayKetThuc
-        )}`,
+      render: (text, record) => (
+        <>
+          {dayjs(record.ngayBatDau).format("HH:mm DD/MM/YYYY")} -{" "}
+          {dayjs(record.ngayKetThuc).format("HH:mm DD/MM/YYYY")}
+        </>
+      ),
     },
     {
       title: "Giá Trị Voucher",
       dataIndex: "giaTriVoucher",
       width: "10%",
+      // const formattedValue = inputValue
+      // .replace(/[^0-9]+/g, "")
+      // .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      render: (value) => {
+        const formattedValue = numeral(value).format("0,0 VND") + " VNĐ";
+        return <span>{formattedValue}</span>;
+      },
     },
     {
       title: "Trạng Thái",
       dataIndex: "trangThai",
       width: "1%",
-      // eslint-disable-next-line eqeqeq
       onFilter: (value, record) => record.trangThai == value,
       filterSearch: true,
-      // editable: true,
       render: (text, record) => (
         <span>
-          {/*  eslint-disable-next-line eqeqeq */}
-          {record.trangThai == 1 ? (
+          {record.trangThai === 1 ? (
             <Button
               type="primary"
-              onClick={() => {
-                doiTrangThaiVoucher(record.id);
+              style={{
+                borderRadius: "30px",
+                pointerEvents: "none",
+                cursor: "default",
               }}
-              style={{ borderRadius: "30px" }}
             >
               Còn Hiệu Lực
             </Button>
-          ) : // eslint-disable-next-line eqeqeq
-          record.trangThai == 2 ? (
+          ) : record.trangThai === 2 ? (
             <Button
               type="primary"
-              onClick={() => {
-                doiTrangThaiVoucher(record.id);
-              }}
               danger
-              style={{ borderRadius: "30px" }}
+              style={{
+                borderRadius: "30px",
+                pointerEvents: "none",
+                cursor: "default",
+              }}
             >
               Hết Hiệu Lực
             </Button>
           ) : (
-            <Button type="primary" style={{ borderRadius: "30px" }}>
+            <Button
+              type="primary"
+              style={{
+                borderRadius: "30px",
+                pointerEvents: "none",
+                cursor: "default",
+              }}
+            >
               Không xác định
             </Button>
           )}
         </span>
       ),
-      // render: (trangThai) => trangThaiVoucher(trangThai),
     },
     {
       title: "Thao Tác",
@@ -302,52 +233,38 @@ const HienThiVoucher = () => {
       render: (_, record) => {
         return (
           <>
-            <div style={{ textAlign: "center" }}>
-              <Tooltip title="Edit">
-                <FontAwesomeIcon
-                  icon={faPencilAlt}
-                  onClick={showModal}
-                  style={{
-                    cursor: "pointer",
-                    // opacity: editingKey === record.id ? 0.5 : 1,
-                    color: editingKey === record.id ? "red" : "green",
-                  }}
-                  disabled={editingKey !== ""}
-                />
-                <Modal
-                  title="Basic Modal"
-                  open={isModalOpen}
-                  onOk={handleOk}
-                  onCancel={handleCancel}
-                >
-                  {/* <div className="row-input">
-                    <div className="input-container">
-                      <TextField
-                        label="Mã Voucher:"
-                        value={ma}
-                        id="fullWidth"
-                        onChange={(e) => {
-                          setMa(e.target.value);
-                        }}
-                        style={{ width: "25em" }}
-                      />
-                    </div>
-                    <div className="input-container">
-                      <TextField
-                        label="Tên Voucher:"
-                        value={ten}
-                        id="fullWidth"
-                        onChange={(e) => {
-                          setTen(e.target.value);
-                        }}
-                        style={{ width: "25em" }}
-                      />
-                    </div>
-                  </div> */}
-                  <p>Some contents...</p>
-                  <p>Some contents...</p>
-                </Modal>
-              </Tooltip>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                textAlign: "center",
+                paddingLeft: "10px",
+              }}
+            >
+              <div>
+                <Tooltip title="Change">
+                  <Button
+                    onClick={() => doiTrangThaiVoucher(record.id)}
+                    style={{ border: "none", background: "none", padding: "0" }}
+                  >
+                    <FontAwesomeIcon
+                      icon={faRotateRight}
+                      style={{
+                        color: record.trangThai === 1 ? "green" : "red",
+                      }}
+                    />
+                  </Button>
+                  <ToastContainer />
+                </Tooltip>
+              </div>
+              &nbsp;&nbsp;&nbsp;&nbsp;
+              <div>
+                <Tooltip title="Edit">
+                  <Link to={`/sua-voucher/${record.id}`}>
+                    <FontAwesomeIcon icon={faPencilAlt} />
+                  </Link>
+                </Tooltip>
+              </div>
             </div>
           </>
         );
@@ -365,15 +282,18 @@ const HienThiVoucher = () => {
         record,
         dataIndex: col.dataIndex,
         title: col.title,
-        editing: isEditing(record),
       }),
     };
   });
 
+  const chuyenTrang = (event, page) => {
+    loadDataListVoucher(page);
+  };
+
   return (
     <>
       <div className="search-component-container">
-        <h6 className="boloc-voucher">
+        <h6 className="boloc-voucher" style={{ color: "black" }}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             height="1em"
@@ -393,19 +313,16 @@ const HienThiVoucher = () => {
               />
             </Form>
           </span>
+          <div className="btn-search"></div>
           {/* Search */}
 
-          <div className="btn-search">
-            <Link to="/search-voucher">
-              <Button className="btn-search-voucher">
-                <FontAwesomeIcon icon={faMagnifyingGlass} />
-                &nbsp; Tìm Kiếm{" "}
-              </Button>
-            </Link>
-          </div>
-
           <div className="btn-reset">
-            <Button className="btn-search-reset">
+            <Button
+              className="btn-search-reset"
+              onClick={() => {
+                handleReset();
+              }}
+            >
               <FontAwesomeIcon icon={faArrowsRotate} />
               &nbsp; Làm Mới{" "}
             </Button>
@@ -414,104 +331,51 @@ const HienThiVoucher = () => {
         {/*Bộ Lọc trạng thái*/}
         <div className="boloc-trangThai">
           <div className="search1">
-            <h6 style={{ marginTop: 6 }}>Mã Voucher: &nbsp;</h6>
-            <span>
-              <Form
-                style={{
-                  width: "15em",
-                  display: "inline-block",
-                }}
+            <span className="boloc-nho">
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DatePicker
+                  label="Ngày Bắt Đầu"
+                  value={dayjs(searchNgayBatDau, "DD/MM/YYYY")}
+                  format="DD/MM/YYYY"
+                  onChange={handleSearchNgayBatDauChange}
+                />
+              </LocalizationProvider>
+            </span>
+          </div>
+
+          <div className="search1">
+            <span className="boloc-nho">
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DatePicker
+                  label="Ngày Kết Thúc"
+                  value={dayjs(searchNgayKetThuc, "DD/MM/YYYY")}
+                  format="DD/MM/YYYY"
+                  onChange={handleSearchNgayKetThucChange}
+                />
+              </LocalizationProvider>
+            </span>
+          </div>
+          <div className="search1">
+            <span className="boloc-nho"></span>
+            <FormControl sx={{ width: "15em" }}>
+              <InputLabel id="demo-select-small-label">
+                Chọn Trạng Thái
+              </InputLabel>
+              <Select
+                labelId="demo-select-small-label"
+                id="demo-select-small"
+                value={searchTrangThai}
+                label="Chọn Trạng Thái"
+                onChange={handleSearchTrangThaiChange}
               >
-                <Input
-                  placeholder="Search Mã Voucher"
-                  value={searchMaVoucher}
-                  onChange={(e) => setSearchMaVoucher(e.target.value)}
-                />
-              </Form>
-            </span>
-          </div>
-          <div className="search1">
-            <h6 style={{ marginTop: 6 }}>Tên Voucher: &nbsp;</h6>
-            <span>
-              <Form
-                style={{
-                  width: "15em",
-                  display: "inline-block",
-                }}
-              >
-                <Input
-                  placeholder="Search Tên Voucher"
-                  value={searchTenVoucher}
-                  onChange={(e) => setSearchTenVoucher(e.target.value)}
-                />
-              </Form>
-            </span>
-          </div>
-          <div className="search1">
-            <h6 style={{ marginTop: 6 }}>Trạng Thái: &nbsp;</h6>
-            <Select
-              defaultValue="Tất Cả"
-              style={{ width: "15em" }}
-              onChange={handleChange}
-              options={[
-                { value: "0", label: "Tất Cả" },
-                { value: "1", label: "Còn Hiệu Lực" },
-                { value: "2", label: "Sắp Hết Hiệu Lực" },
-                { value: "3", label: "Hết Hiệu Lực" },
-              ]}
-            />
-          </div>
-        </div>
-        <div className="boloc-trangThai">
-          <div className="search1">
-            <h6 style={{ marginTop: 6 }}>Ngày Bắt Đầu: &nbsp;</h6>
-            <span>
-              {/* <Space direction="vertical" size={12}>
-                <DatePicker showTime onChange={onChange} onOk={onOk} />
-                <RangePicker
-                  showTime={{
-                    format: "HH:mm",
-                  }}
-                  format="YYYY-MM-DD HH:mm"
-                  onChange={onChange}
-                  onOk={onOk}
-                />
-              </Space>{" "} */}
-            </span>
-          </div>
-          <div className="search1">
-            <h6 style={{ marginTop: 6 }}>Ngày Kết Thúc: &nbsp;</h6>
-            <span>
-              <Form
-                style={{
-                  width: "15em",
-                  display: "inline-block",
-                }}
-              >
-                <Input
-                  placeholder="Search Tên Voucher"
-                  value={searchTenVoucher}
-                  onChange={(e) => setSearchTenVoucher(e.target.value)}
-                />
-              </Form>
-            </span>
-          </div>
-          <div className="search1">
-            <h6 style={{ marginTop: 6 }}>Giá Trị Voucher: &nbsp;</h6>
-            <span>
-              <Form
-                style={{
-                  width: "15em",
-                  display: "inline-block",
-                }}
-              >
-                <Input
-                  placeholder="Search Giá Trị Voucher"
-                  value={searchGiaTriVoucher}
-                  onChange={(e) => setSearchGiaTriVoucher(e.target.value)}
-                />
-              </Form>
-            </span>
+                {/* <MenuItem value="">
+                  <em>Tất cả</em>
+                </MenuItem> */}
+                <MenuItem value={parseInt(1)}>Còn Hiệu lực</MenuItem>
+                <MenuItem value={parseInt(2)}>Hết Hiệu lực</MenuItem>
+                <MenuItem value={parseInt(3)}>Chưa Bắt Đầu</MenuItem>
+              </Select>
+            </FormControl>
           </div>
         </div>
       </div>
@@ -539,14 +403,10 @@ const HienThiVoucher = () => {
           </span>
         </div>
         <div className="form-tbl">
-          <Form
-            form={form}
-            component={false}
-            initialValues={editingThoiGian || {}}
-          >
+          <Form form={form}>
             <Table
               bordered
-              dataSource={filteredDataSource}
+              dataSource={listVoucher}
               columns={mergedColumns}
               rowClassName="editable-row"
               pagination={false}
@@ -555,12 +415,9 @@ const HienThiVoucher = () => {
             />
             <div className="phan-trang">
               <Pagination
-                simple
-                current={currentPage + 1}
-                onChange={(value) => {
-                  setCurrentPage(value - 1);
-                }}
-                total={totalPages * 10}
+                count={totalPages}
+                onChange={chuyenTrang}
+                color="primary"
               />
             </div>
           </Form>

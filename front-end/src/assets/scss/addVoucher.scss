@@ -7,9 +7,9 @@
 }
 
 .input-container {
-  display: flex; /* Sử dụng flexbox để các phần tử nằm trên cùng một dòng */
-  gap: 20px; /* Khoảng cách giữa các ô input */
-  margin-bottom: 10px;
+  // display: flex; /* Sử dụng flexbox để các phần tử nằm trên cùng một dòng */
+  // gap: 20px; /* Khoảng cách giữa các ô input */
+  // margin-bottom: 10px;
   padding-left: 25px;
 }
 
@@ -23,4 +23,12 @@
   margin-bottom: 20px;
   display: flex;
   justify-content: flex-end;
+}
+
+.validate {
+  display: block; /* Hiển thị thông báo lỗi ở dưới input */
+  margin-top: 5px; /* Khoảng cách từ input */
+  font-size: 14px;
+  text-align: start;
+  color: red;
 }
