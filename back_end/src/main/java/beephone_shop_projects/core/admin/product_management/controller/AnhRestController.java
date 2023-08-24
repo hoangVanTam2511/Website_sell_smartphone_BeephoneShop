@@ -29,7 +29,7 @@ public class AnhRestController {
 
     @GetMapping("/view-all")
     public Page<Anh> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
-        Pageable pageable = PageRequest.of(page-1,5);
+        Pageable pageable = PageRequest.of(page,5);
         return anhService.getAll(pageable);
     }
 

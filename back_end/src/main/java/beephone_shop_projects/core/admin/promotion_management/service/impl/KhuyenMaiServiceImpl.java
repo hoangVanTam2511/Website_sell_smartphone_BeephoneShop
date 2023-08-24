@@ -7,6 +7,9 @@ import beephone_shop_projects.core.admin.promotion_management.repository.KhuyenM
 import beephone_shop_projects.core.admin.promotion_management.service.KhuyenMaiService;
 import beephone_shop_projects.entity.KhuyenMai;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,8 +21,8 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
     private KhuyenMaiRepository khuyenMaiRepository;
 
     @Override
-    public List<KhuyenMaiResponse> getAll() {
-        return khuyenMaiRepository.getAllKhuyenMai();
+    public Page<KhuyenMaiResponse> getAll(Pageable pageable) {
+        return khuyenMaiRepository.getAllKhuyenMai(pageable);
     }
 
     @Override
@@ -37,7 +40,7 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
                 .mucGiamGiaTheoSoTien(request.getMucGiamGiaTheoSoTien())
                 .ngayBatDau(request.getNgayBatDau())
                 .ngayKetThuc(request.getNgayKetThuc())
-                .trangThai(request.getTrangThai())
+                .trangThai(true)
                 .build();
         return khuyenMaiRepository.save(khuyenMai);
     }
@@ -49,7 +52,6 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
             khuyenMai.setMa(request.getMa());
             khuyenMai.setTenKhuyenMai(request.getTenKhuyenMai());
             khuyenMai.setNgayBatDau(request.getNgayBatDau());
-            khuyenMai.setTrangThai(request.getTrangThai());
             khuyenMai.setDieuKienGiamGia(request.getDieuKienGiamGia());
             khuyenMai.setNgayKetThuc(request.getNgayKetThuc());
             khuyenMai.setMucGiamGiaTheoPhanTram(request.getMucGiamGiaTheoPhanTram());
@@ -65,6 +67,17 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
         KhuyenMai findKhuyenMai = khuyenMaiRepository.findById(ma).get();
         if (findKhuyenMai != null) {
             khuyenMaiRepository.deleteById(ma);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public Boolean doiTrangThai(String id) {
+        KhuyenMai findKhuyenMai = khuyenMaiRepository.findById(id).get();
+        if (findKhuyenMai != null) {
+            khuyenMaiRepository.doiTrangThai(id);
             return true;
         } else {
             return false;

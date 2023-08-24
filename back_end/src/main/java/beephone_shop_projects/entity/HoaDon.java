@@ -23,45 +23,46 @@ import java.util.Date;
 @Table(name = "hoa_don")
 public class HoaDon extends PrimaryEntity implements IsIdentified {
 
-    private String ma;
+  private String ma;
 
-    private String tenNguoNhan;
+  private String tenNguoiNhan;
 
-    private String soDienThoaiNguoiNhan;
+  private String soDienThoaiNguoiNhan;
 
-    private String diaChiNguoiNhan;
+  private String diaChiNguoiNhan;
 
-    private BigDecimal tongTien;
+  private BigDecimal tongTien;
 
-    private BigDecimal tienThua;
+  private BigDecimal tienThua;
 
-    private BigDecimal tongTienSauKhiGiam;
+  private BigDecimal tongTienSauKhiGiam;
 
-    private String ghiChu;
+  private String ghiChu;
 
-    private String loaiHoaDon;
+  private Integer loaiHoaDon;
 
-    private Date ngayGiaoHang;
+  private Date ngayGiaoHang;
 
-    private Date ngayNhanHang;
+  private Date ngayNhanHang;
 
-    private Date ngayThanhToan;
+  private Date ngayThanhToan;
 
-    private Date ngayMongMuonNhan;
+  private Date ngayMongMuonNhan;
 
-    private Date ngayHenKhachNhan;
+  private Date ngayHenKhachNhan;
 
-    private Integer trangThai;
+  private Integer trangThai;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_hinh_thuc_thanh_toan")
-    private HinhThucThanhToan idHinhThucThanhToan;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_hinh_thuc_thanh_toan")
+  private HinhThucThanhToan hinhThucThanhToan;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_khach_hang")
-    private Account idKhachHang;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_khach_hang")
+  private Account account;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_voucher")
-    private Voucher idVoucher;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_voucher")
+  private Voucher voucher;
+
 }

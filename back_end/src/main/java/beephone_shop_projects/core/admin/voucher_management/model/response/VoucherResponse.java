@@ -6,6 +6,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 public interface VoucherResponse {
+    @Value("#{target.id}")
+    String getId();
 
     @Value("#{target.ma}")
     String getMa();
@@ -20,7 +22,7 @@ public interface VoucherResponse {
     Date getNgayKetThuc();
 
     @Value("#{target.giaTriVoucher}")
-    BigDecimal getGiaTri();
+    BigDecimal getGiaTriVoucher();
 
     @Value("#{target.trangThai}")
     Integer getTrangThai();

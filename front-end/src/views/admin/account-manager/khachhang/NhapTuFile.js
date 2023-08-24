@@ -3,6 +3,8 @@ import { useState } from "react";
 import "../../../../assets/scss/NhapTuFile.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload, faUpload } from "@fortawesome/free-solid-svg-icons";
+import ExportButton from "./Export";
+import "../../../../assets/scss/HienThiNV.scss";
 const NhapTuFile = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
@@ -26,19 +28,22 @@ const NhapTuFile = () => {
         footer={null}
         bodyStyle={{ textAlign: "center" }}
       >
-        <h2 style={{ textAlign: "center", color: "gray" }}>NHẬP TỪ FILE </h2>
+        <h3
+          style={{ textAlign: "center", color: "gray", marginBottom: "10px" }}
+        >
+          NHẬP TỪ FILE{" "}
+        </h3>
         <span>
-          <Button className="custom-button">
-            <FontAwesomeIcon
-              icon={faDownload}
-              style={{ paddingRight: "10px" }}
-            />
-            Tải File Mẫu
-          </Button>
-          <Button className="custom-button1">
-            <FontAwesomeIcon icon={faUpload} style={{ paddingRight: "10px" }} />
-            Tải File Lên
-          </Button>
+          <ExportButton />
+          <label htmlFor="file-upload">
+            <Button className="custom-button1">
+              <FontAwesomeIcon
+                icon={faUpload}
+                style={{ paddingRight: "10px" }}
+              />
+              Tải File Lên
+            </Button>
+          </label>
         </span>
       </Modal>
     </>

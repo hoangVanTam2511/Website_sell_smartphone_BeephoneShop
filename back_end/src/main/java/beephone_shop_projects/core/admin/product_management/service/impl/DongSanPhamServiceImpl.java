@@ -9,6 +9,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class DongSanPhamServiceImpl implements IService<DongSanPham> {
 
@@ -18,7 +21,7 @@ public class DongSanPhamServiceImpl implements IService<DongSanPham> {
 
     @Override
     public Page<DongSanPham> getAll(Pageable pageable) {
-        return dongSanPhamRepository.findAll(pageable);
+        return dongSanPhamRepository.findAllByDelected(true,pageable);
     }
 
     @Override
@@ -33,10 +36,16 @@ public class DongSanPhamServiceImpl implements IService<DongSanPham> {
 
     @Override
     public void delete(String id) {
-        dongSanPhamRepository.deleteById(id);
+        dongSanPhamRepository.updateDelected(false,id);
     }
 
     public DongSanPham getOne(String id){
         return dongSanPhamRepository.findById(id).get();
     }
+
+    public ArrayList<DongSanPham> getDanhSachDongSanPham(){
+        return (ArrayList<DongSanPham>) this.dongSanPhamRepository.findAllByDelected(true);
+    }
+
+    public String generateNewCode(){return this.dongSanPhamRepository.getNewCode();}
 }
