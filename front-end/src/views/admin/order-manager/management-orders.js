@@ -1,31 +1,12 @@
-import React, { useState, useEffect } from "react";
-import {
-  Row,
-  Col,
-  Modal,
-  Form,
-  Button as button,
-  Badge,
-  Tab,
-} from "react-bootstrap";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import { Table, Button } from "antd";
-import {
-  TextField,
-  IconButton,
-  Button as MuiButton,
-  Table as TableMui,
-  Alert,
-  Pagination,
-  InputAdornment,
-} from "@mui/material";
-import { DeleteFilled, EditFilled, PlusOutlined, ReconciliationFilled } from "@ant-design/icons";
+import { Button, Table } from "antd";
+import { Pagination, TextField, } from "@mui/material";
+import { PlusOutlined } from "@ant-design/icons";
 import Card from "../../../components/Card";
-import styleCss from "./style.css";
 import { format } from "date-fns";
 import axios from "axios";
-import { ConfirmDialog, ConfirmOrderDialog } from "./AlertDialogSlide";
-import { escape, parseInt } from "lodash";
+import { parseInt } from "lodash";
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -170,7 +151,7 @@ const ManagementOrders = () => {
   };
 
   const handleAdd = () => {
-    alert(localStorage.getItem('totalPages'));
+    alert("hello");
   };
 
   const updateOrder = async (orderStatus, orderHistory) => {
@@ -185,7 +166,8 @@ const ManagementOrders = () => {
         },
       });
       findOrdersByMultipleCriteriaWithPagination(currentPage);
-    } catch (error) { }
+    } catch (error) {
+    }
   };
 
   const [open, setOpen] = useState(false);
@@ -550,7 +532,8 @@ const ManagementOrders = () => {
             <OrderTable />
           </Card.Body>
           <div className='mx-auto'>
-            <Pagination color="primary" page={parseInt(currentPage)} key={refreshPage} count={totalPages} onChange={handlePageChange} />
+            <Pagination color="primary" page={parseInt(currentPage)} key={refreshPage} count={totalPages}
+              onChange={handlePageChange} />
           </div>
           <div className="mt-4"></div>
         </Card>

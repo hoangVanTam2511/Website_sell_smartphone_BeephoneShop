@@ -615,7 +615,6 @@ const OrderDetail = () => {
                 type="primary"
                 style={{
                   height: "50px",
-                  width: "auto",
                   fontSize: "16px",
                   backgroundColor: "#3A57E8",
                   width: "100px",
@@ -880,7 +879,6 @@ const OrderDetail = () => {
                 type="primary"
                 style={{
                   height: "50px",
-                  width: "auto",
                   fontSize: "16px",
                   backgroundColor: "#3A57E8",
                   width: "193px",
