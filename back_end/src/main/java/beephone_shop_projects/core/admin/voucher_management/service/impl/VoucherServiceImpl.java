@@ -15,28 +15,47 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.security.SecureRandom;
+import java.time.LocalDate;
+
 @Service
 @Validated
 public class VoucherServiceImpl implements VoucherService {
+
+    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private static final int CODE_LENGTH = 10;
+
     @Autowired
     private VoucherRepository voucherRepository;
 
-    @Override
-    public Page<VoucherResponse> getAll(Pageable pageable) {
-        return voucherRepository.getAllVoucher(pageable);
-    }
+//    @Override
+//    public Page<VoucherResponse> getAll(Pageable pageable) {
+//        return voucherRepository.getAllVoucher(pageable);
+//    }
 
     @Override
-    public VoucherResponse getOne(String ma) {
-        return voucherRepository.getOneVoucher(ma);
+    public VoucherResponse getOne(String id) {
+        return voucherRepository.getOneVoucher(id);
+    }
+
+    public String generateRandomCode() {
+        SecureRandom random = new SecureRandom();
+        StringBuilder code = new StringBuilder(CODE_LENGTH);
+        for (int i = 0; i < CODE_LENGTH; i++) {
+            int randomIndex = random.nextInt(CHARACTERS.length());
+            char randomChar = CHARACTERS.charAt(randomIndex);
+            code.append(randomChar);
+        }
+        return code.toString();
     }
 
     @Override
     public Voucher addVoucher(@Valid CreateVoucherRequest request) {
-
         Voucher voucher = Voucher.builder()
-                .ma(request.getMa())
+                .ma(generateRandomCode())
                 .ten(request.getTen())
+                .dieuKienApDung(request.getDieuKienApDung())
+                .soLuong(request.getSoLuong())
                 .ngayBatDau(request.getNgayBatDau())
                 .ngayKetThuc(request.getNgayKetThuc())
                 .giaTriVoucher(request.getGiaTriVoucher())
@@ -50,12 +69,12 @@ public class VoucherServiceImpl implements VoucherService {
         Voucher voucher = voucherRepository.findById(id).get();
         System.out.println(voucher);
         if (voucher != null) {
-            voucher.setMa(request.getMa());
             voucher.setTen(request.getTen());
+            voucher.setDieuKienApDung(request.getDieuKienApDung());
+            voucher.setSoLuong(request.getSoLuong());
             voucher.setNgayBatDau(request.getNgayBatDau());
             voucher.setNgayKetThuc(request.getNgayKetThuc());
             voucher.setGiaTriVoucher(request.getGiaTriVoucher());
-            voucher.setTrangThai(request.getTrangThai());
             return voucherRepository.save(voucher);
         }
         return null;
@@ -74,7 +93,7 @@ public class VoucherServiceImpl implements VoucherService {
     @Override
     public Boolean doiTrangThai(String id) {
         Voucher voucher = voucherRepository.findById(id).get();
-        if (voucher != null){
+        if (voucher != null) {
             voucherRepository.doiTrangThai(id);
             return true;
         }
@@ -82,14 +101,20 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
-    public Page<VoucherResponse> timKiemVoucher(FindVoucherRequest request) {
-        Pageable pageable = PageRequest.of(request.getPageNo(), 5);
-        Page<VoucherResponse> voucherResponses = voucherRepository.timKiemVoucher(
-                                                                "%"+request.getMa()+"%",
-                "%"+request.getTen() +"%",
-                                                                request.getNgayBatDau(), request.getNgayKetThuc(),
-                                                                "%"+request.getGiaTriVoucher()+"%", "%"+request.getTrangThai()+"%", pageable);
-        return voucherResponses;
+    public Page<Voucher> getAll(FindVoucherRequest request) {
+        if (request.getPageNo() == null){
+            request.setPageNo(1);
+        }
+        if (request.getPageSize() == null){
+            request.setPageSize(5);
+        }
+        if (request.getKeyword() == null){
+            request.setKeyword("");
+        }
+        Pageable pageable = PageRequest.of(request.getPageNo() - 1, request.getPageSize());
+        Page<Voucher> vouchers = voucherRepository.findAll(pageable,request);
+        return vouchers;
     }
+
 
 }
