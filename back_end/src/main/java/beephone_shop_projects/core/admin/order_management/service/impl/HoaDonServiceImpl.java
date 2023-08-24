@@ -63,6 +63,7 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderDto, Str
     orderHistory.setHoaDon(createdOrder);
     orderHistory.setCreatedAt(new Date());
     orderHistory.setThaoTac("Tạo Đơn Hàng");
+    orderHistory.setMoTa("Khách hàng đặt hàng online");
     orderHistory.setLoaiThaoTac(0);
     lichSuHoaDonRepository.save(orderHistory);
     return orderConverter.convertToDto(createdOrder);
