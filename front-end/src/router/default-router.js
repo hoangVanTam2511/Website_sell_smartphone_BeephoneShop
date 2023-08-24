@@ -1,8 +1,8 @@
 import React from "react";
 import Index from "../views/index";
 // san pham
-import QuanLiMauSac from "../views/admin/product-manager/mau-sac/quan-li-mau-sac";
-import ThemMauSac from "../views/admin/product-manager/mau-sac/them-mau-sac";
+
+
 
 // chip
 import Chip from "../views/admin/product-manager/chip/chip";
@@ -56,8 +56,8 @@ import NhapTuFileNV from "../views/admin/account-manager/nhanvien/NhapTuFile";
 
 // role
 
-import Role from '../views/admin/account-manager/role/hoho'
-import AddRole from '../views/admin/account-manager/role/hoho'
+import Role from "../views/admin/account-manager/role/HienThiRole";
+import AddRole from "../views/admin/account-manager/role/AddRole";
 
 
 
@@ -69,6 +69,12 @@ import HienThiVoucher from "../views/admin/voucher-manager/quan-li-voucher";
 import AddVoucher from "../views/admin/voucher-manager/them-voucher";
 import HienThiKhuyenMai from "../views/admin/promotion-manager/quan-li-promotion";
 import AddKhuyenMai from "../views/admin/promotion-manager/them-promotion";
+import AddressForm from "../views/admin/account-manager/khachhang/DiaChi";
+import { ToastContainer } from "react-toastify";
+import UpdateKH from "../views/admin/account-manager/khachhang/UpdateKH";
+import UpdateNV from "../views/admin/account-manager/nhanvien/UpdateNV";
+
+
 
 export const DefaultRouter = [
   {
@@ -88,6 +94,7 @@ export const DefaultRouter = [
         element: <ThemMauSac />,
       },
       {
+
         path: "chip",
         element: <Chip />,
       },
@@ -156,12 +163,28 @@ export const DefaultRouter = [
         path: "khach-hang",
         element: <KhachHang />,
       },
-
+      {
+        path: "khach-hang",
+        element: <KhachHang />,
+      },
+      ,
       {
         path: "them-khach-hang",
         element: <AddKH />,
       },
-
+      {
+        path: "/update-khach-hang/:id",
+        element: <UpdateKH />,
+      },
+      {
+        path: "/update-nhan-vien/:id",
+        element: <UpdateNV />,
+      },
+      {
+        path: "diachi-khach-hang",
+        element: <AddressForm />,
+      },
+      ,
       {
         path: "nhap-excel-khach-hang",
         element: <NhapTuFileKH />,
@@ -183,6 +206,7 @@ export const DefaultRouter = [
         element: <ThemImei />,
       },
       {
+
         path: "nhap-excel-nhan-vien",
         element: <NhapTuFileNV />,
       },

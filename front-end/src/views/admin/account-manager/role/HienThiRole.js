@@ -1,8 +1,17 @@
-import { Form, InputNumber, Popconfirm, Table, Typography, Input } from "antd";
+import {
+  Form,
+  InputNumber,
+  Popconfirm,
+  Table,
+  Typography,
+  Input,
+  Button,
+} from "antd";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { apiURLRole } from "../../../../service/api";
-
+import { Link } from "react-router-dom";
+import "../../../../assets/scss/HienThiNV.scss";
 const EditableCell = ({
   editing,
   dataIndex,
@@ -52,7 +61,12 @@ const App = () => {
     axios
       .get(apiURLRole + "/hien-thi")
       .then((response) => {
-        setListRole(response.data);
+        console.log(response);
+        const modifiedData = response.data.map((item, index) => ({
+          ...item,
+          stt: index + 1,
+        }));
+        setListRole(modifiedData);
         // setCurrentPage(response.data.number);
         // setToTalPages(response.data.totalPages);
       })
@@ -114,19 +128,26 @@ const App = () => {
 
   const columns = [
     {
-      title: "ma",
+      title: "STT",
+      dataIndex: "stt",
+      width: "5%",
+      render: (text) => <span>{text}</span>,
+      sorter: (a, b) => a.stt - b.stt,
+    },
+    {
+      title: "Mã",
       dataIndex: "ma",
       width: "25%",
       editable: true,
     },
     {
-      title: "ten",
+      title: "Tên",
       dataIndex: "ten",
-      width: "15%",
+      width: "25%",
       editable: true,
     },
     {
-      title: "operation",
+      title: "Thao tác",
       dataIndex: "operation",
       render: (_, record) => {
         const editable = isEditing(record);
@@ -173,21 +194,31 @@ const App = () => {
   });
 
   return (
-    <Form form={form} component={false}>
-      <Table
-        components={{
-          body: {
-            cell: EditableCell,
-          },
-        }}
-        bordered
-        dataSource={listRole}
-        columns={mergedColumns}
-        rowClassName="editable-row"
-        pagination={false}
-        rowKey="id"
-      />
-    </Form>
+    <>
+      <Form form={form} component={false}>
+        <div
+          className="btn-add"
+          style={{ textAlign: "right", marginBottom: "20px" }}
+        >
+          <Link to="/them-chuc-vu">
+            <Button className="btn-them-tk">+ Thêm Chức vụ</Button>
+          </Link>
+        </div>
+        <Table
+          components={{
+            body: {
+              cell: EditableCell,
+            },
+          }}
+          bordered
+          dataSource={listRole}
+          columns={mergedColumns}
+          rowClassName="editable-row"
+          pagination={false}
+          rowKey="id"
+        />
+      </Form>
+    </>
   );
 };
 
