@@ -24,7 +24,7 @@ public class LichSuHoaDon extends PrimaryEntity implements IsIdentified {
 
     private Integer loaiThaoTac;
 
-    private String mota;
+    private String moTa;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "hoa_don_id")
