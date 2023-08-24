@@ -66,10 +66,15 @@ import AddRole from "../views/admin/account-manager/role/hoho";
 //admin
 
 import Default from "../layouts/dashboard/default";
+
+//voucher
 import HienThiVoucher from "../views/admin/voucher-manager/quan-li-voucher";
 import AddVoucher from "../views/admin/voucher-manager/them-voucher";
+
+//khuyen mai
 import HienThiKhuyenMai from "../views/admin/promotion-manager/quan-li-promotion";
 import AddKhuyenMai from "../views/admin/promotion-manager/them-promotion";
+import SuaKhuyenMai from "../views/admin/promotion-manager/sua-promotion";
 
 export const DefaultRouter = [
   {
@@ -237,8 +242,8 @@ export const DefaultRouter = [
         element: <AddKhuyenMai />,
       },
       {
-        path: "sua-khuyen-mai",
-        element: <AddKhuyenMai />,
+        path: "sua-khuyen-mai/:id",
+        element: <SuaKhuyenMai />,
       },
     ],
   },

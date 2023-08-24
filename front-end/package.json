@@ -19,6 +19,7 @@
     "@fullcalendar/list": "^5.9.0",
     "@fullcalendar/react": "^5.11.0",
     "@mui/icons-material": "^5.13.7",
+    "@mui/lab": "^5.0.0-alpha.140",
     "@mui/material": "^5.13.7",
     "@mui/system": "^5.14.4",
     "@mui/x-date-pickers": "^6.11.1",
@@ -80,6 +81,7 @@
     "sweetalert2": "^11.7.12",
     "swiper": "^8.3.0",
     "three": "^0.139.2",
+    "validator": "^13.11.0",
     "waypoints": "^4.0.1",
     "web-vitals": "^1.1.2"
   },
