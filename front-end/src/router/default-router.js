@@ -24,69 +24,79 @@ import AddRole from '../views/admin/account-manager/role/hoho'
 //admin
 
 import Default from '../layouts/dashboard/default';
+import ManagementOrders from '../views/admin/order-manager/management-orders';
+import OrderDetail from '../views/admin/order-manager/order-detail';
 
 
 export const DefaultRouter = [
-    {
-        path: '/',
-        element: <Default />,
-        children: [
-            {
-                path: '',
-                element: <Index />
-            },
-            {
-                path: 'mau-sac',
-                element: <QuanLiMauSac />
-            },
-            {
-                path: 'them-mau-sac',
-                element: <ThemMauSac />
-            },
-            {
-                path: 'sua-mau-sac/:id',
-                element: <SuaMauSac />
-            },
-            {
-                path: 'khach-hang',
-                element: <KhachHang />
-            },
-            ,
-            {
-                path: 'them-khach-hang',
-                element: <AddKH />
-            }
-            ,
-            ,
-            {
-                path: 'nhap-excel-khach-hang',
-                element: <NhapTuFileKH />
-            },
-            {
-                path: 'nhan-vien',
-                element: <NhanVien />
-            },
-            {
-                path: 'them-nhan-vien',
-                element: <AddNv />
-            }
-            ,
-            {
-                path: 'nhap-excel-nhan-vien',
-                element: <NhapTuFileNV />
-            },
-            {
-                path: 'chuc-vu',
-                element: <Role />
-            },
-            {
-                path: 'them-chuc-vu',
-                element: <AddRole />
-            }
-           
-           
-        ]
-    }
+  {
+    path: '/',
+    element: <Default />,
+    children: [
+      {
+        path: 'dashboard/management-orders',
+        element: <ManagementOrders />,
+      },
+      {
+        path: 'dashboard/order-detail/:id',
+        element: <OrderDetail />,
+      },
+      {
+        path: '',
+        element: <Index />
+      },
+      {
+        path: 'mau-sac',
+        element: <QuanLiMauSac />
+      },
+      {
+        path: 'them-mau-sac',
+        element: <ThemMauSac />
+      },
+      {
+        path: 'sua-mau-sac/:id',
+        element: <SuaMauSac />
+      },
+      {
+        path: 'khach-hang',
+        element: <KhachHang />
+      },
+      ,
+      {
+        path: 'them-khach-hang',
+        element: <AddKH />
+      }
+      ,
+      ,
+      {
+        path: 'nhap-excel-khach-hang',
+        element: <NhapTuFileKH />
+      },
+      {
+        path: 'nhan-vien',
+        element: <NhanVien />
+      },
+      {
+        path: 'them-nhan-vien',
+        element: <AddNv />
+      }
+      ,
+      {
+        path: 'nhap-excel-nhan-vien',
+        element: <NhapTuFileNV />
+      },
+      {
+        path: 'chuc-vu',
+        element: <Role />
+      },
+      {
+        path: 'them-chuc-vu',
+        element: <AddRole />
+      }
+
+
+    ]
+  }
 ]
 // const DefaultRouter = () => {
 //     return (
