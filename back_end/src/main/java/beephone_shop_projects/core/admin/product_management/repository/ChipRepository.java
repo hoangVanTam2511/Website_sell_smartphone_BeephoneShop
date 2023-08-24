@@ -1,7 +1,5 @@
 package beephone_shop_projects.core.admin.product_management.repository;
 
-import beephone_shop_projects.entity.Anh;
-import beephone_shop_projects.entity.Camera;
 import beephone_shop_projects.entity.Chip;
 import beephone_shop_projects.repository.IChipRepository;
 import jakarta.transaction.Transactional;
@@ -29,4 +27,11 @@ public interface ChipRepository extends IChipRepository {
     List<Chip> findAllByDelected(Boolean delected);
 
     Chip findByTenChip(String tenChip);
+
+
+    @Query(value = """
+    SELECT CONCAT( 'CHIP_',IF(count(*)  = 0,0,SUBSTRING(ma,6) + 1))   FROM chip
+    """,nativeQuery = true)
+    String getNewCode();
+
 }

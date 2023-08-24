@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import { Form, Button } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
 import axios from "axios"
@@ -17,6 +17,18 @@ const ThemMauSac = () => {
     const onInputChange = (e) => {
         setMauSac({ ...mauSac, [e.target.name]: e.target.value })
     }
+
+    useEffect(() => {
+        generateCode()
+       }, []);
+ 
+       const generateCode = async () =>{
+         await axios.get("http://localhost:8080/dong-san-pham/new-code")
+         .then((res)=>{
+             console.log(res.data)
+             setMauSac({ ...mauSac, 'ma': res.data })
+         })
+       }
 
     const onSubmit = async (e) => {
         e.preventDefault();

@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.admin.product_management.service.impl;
 
+import beephone_shop_projects.core.admin.product_management.model.request.CreateManHinh;
 import beephone_shop_projects.core.admin.product_management.repository.ManHinhRepository;
 import beephone_shop_projects.core.admin.product_management.service.IService;
 import beephone_shop_projects.entity.ManHinh;
@@ -29,6 +30,11 @@ public class ManHinhServiceImpl implements IService<ManHinh> {
        manHinhRepository.save(manHinh);
     }
 
+    public void insert(CreateManHinh req) {
+        ManHinh manHinh = new ManHinh(req.getMamanHinh(),req.getTenmanHinh());
+        manHinhRepository.save(manHinh);
+    }
+
     @Override
     public void update(ManHinh manHinh, String id) {
       manHinhRepository.save(manHinh);
@@ -47,4 +53,6 @@ public class ManHinhServiceImpl implements IService<ManHinh> {
         return (ArrayList<ManHinh>)
                 this.manHinhRepository.findAllByDelected(true);
     }
+
+    public String generateNewCode(){return this.manHinhRepository.getNewCode();}
 }

@@ -45,4 +45,6 @@ public class ChipServiceImpl implements IService<Chip> {
     public ArrayList<Chip> getListChip(){
         return (ArrayList<Chip>) this.chipRepository.findAllByDelected(true);
     }
+
+    public String generateNewCode(){return this.chipRepository.getNewCode();}
 }

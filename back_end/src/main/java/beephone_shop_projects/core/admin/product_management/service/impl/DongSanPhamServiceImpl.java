@@ -46,4 +46,6 @@ public class DongSanPhamServiceImpl implements IService<DongSanPham> {
     public ArrayList<DongSanPham> getDanhSachDongSanPham(){
         return (ArrayList<DongSanPham>) this.dongSanPhamRepository.findAllByDelected(true);
     }
+
+    public String generateNewCode(){return this.dongSanPhamRepository.getNewCode();}
 }

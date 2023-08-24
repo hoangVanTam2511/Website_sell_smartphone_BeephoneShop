@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.admin.product_management.service.impl;
 
+import beephone_shop_projects.core.admin.product_management.model.request.CreateRam;
 import beephone_shop_projects.core.admin.product_management.repository.RamRepository;
 import beephone_shop_projects.core.admin.product_management.service.IService;
 import beephone_shop_projects.entity.Ram;
@@ -28,6 +29,11 @@ public class RamServiceImpl implements IService<Ram> {
          ramRepository.save(ram);
     }
 
+    public void insert(CreateRam req) {
+        Ram ram = new Ram(req.getMaram(),req.getTenram());
+        ramRepository.save(ram);
+    }
+
     @Override
     public void update(Ram ram, String id) {
         ramRepository.save(ram);
@@ -45,4 +51,6 @@ public class RamServiceImpl implements IService<Ram> {
     public ArrayList<Ram> getDanhSachRam(){
       return (ArrayList<Ram>) this.ramRepository.findAllByDelected(true);
     }
+
+    public String generateNewCode(){return this.ramRepository.getNewCode();}
 }

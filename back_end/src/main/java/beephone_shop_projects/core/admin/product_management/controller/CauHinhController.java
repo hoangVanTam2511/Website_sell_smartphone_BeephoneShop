@@ -1,8 +1,10 @@
 package beephone_shop_projects.core.admin.product_management.controller;
 
-import beephone_shop_projects.core.admin.product_management.service.impl.CameraServiceImpl;
-import beephone_shop_projects.entity.Anh;
-import beephone_shop_projects.entity.Camera;
+import beephone_shop_projects.core.admin.product_management.model.request.CreateCauHinhRequest;
+import beephone_shop_projects.core.admin.product_management.model.responce.CauHinhResponce;
+import beephone_shop_projects.core.admin.product_management.service.impl.CauHinhServiceImpl;
+import beephone_shop_projects.entity.CauHinh;
+import beephone_shop_projects.entity.Chip;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,45 +14,33 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-
 @RestController
-@RequestMapping("/camera")
+@RequestMapping("/cau-hinh")
 @CrossOrigin(origins = "http://localhost:3000")
-public class CameraRestController  {
+public class CauHinhController {
 
     @Autowired
-    private CameraServiceImpl cameraService;
+    private CauHinhServiceImpl cauHinhService;
+
     @GetMapping("/view-all")
-    public Page<Camera> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
+    public Page<CauHinhResponce> viewAll(@RequestParam(value = "page",defaultValue = "0") Integer page) {
         Pageable pageable = PageRequest.of(page,5);
-        return cameraService.getAll(pageable);
-    }
-
-    @GetMapping("/get-list")
-    public ArrayList<Camera> getList(){
-        return this.cameraService.getListCamera();
-    }
-
-    @DeleteMapping("/delete")
-    public void delete(@RequestParam("id")String id) {
-        cameraService.delete(id);
+        return cauHinhService.getAllCauHinhResponce(pageable);
     }
 
     @PostMapping("/save")
-    public void save(@RequestBody Camera anh) {
-        cameraService.insert(anh);
+    public void save(@RequestBody CreateCauHinhRequest req) {
+        cauHinhService.addCauHinh(req);
     }
 
-    @PutMapping("/update/{id}")
-    public void update(@RequestBody Camera anh ,@PathVariable("id")String id) {
-        cameraService.insert(anh);
+    @DeleteMapping("/delete/{id}")
+    public void delete(@PathVariable("id")String id) {
+        cauHinhService.delete(id);
     }
 
 }

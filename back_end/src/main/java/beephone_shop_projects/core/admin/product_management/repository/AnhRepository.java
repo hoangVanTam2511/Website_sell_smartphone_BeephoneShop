@@ -1,7 +1,6 @@
 package beephone_shop_projects.core.admin.product_management.repository;
 
 import beephone_shop_projects.entity.Anh;
-import beephone_shop_projects.entity.Camera;
 import beephone_shop_projects.repository.IAnhRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -26,4 +25,9 @@ public interface AnhRepository extends IAnhRepository  {
            where id = :id
           """,nativeQuery = true)
     void updateDelected(@Param("delected") Boolean delected, @Param("id")String id);
+
+    @Query(value = """
+    SELECT CONCAT( 'ANH_',SUBSTRING(ma,5) + 1)   FROM chip
+    """,nativeQuery = true)
+    String getNewCode();
 }

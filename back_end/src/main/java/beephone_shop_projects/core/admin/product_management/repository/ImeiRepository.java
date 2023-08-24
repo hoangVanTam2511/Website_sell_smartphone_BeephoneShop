@@ -1,6 +1,5 @@
 package beephone_shop_projects.core.admin.product_management.repository;
 
-import beephone_shop_projects.entity.Camera;
 import beephone_shop_projects.entity.Imei;
 import beephone_shop_projects.repository.IImeiRepository;
 import jakarta.transaction.Transactional;

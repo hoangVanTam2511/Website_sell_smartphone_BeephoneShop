@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.admin.product_management.service.impl;
 
+import beephone_shop_projects.core.admin.product_management.model.request.CreateMauSac;
 import beephone_shop_projects.core.admin.product_management.repository.MauSacRepository;
 import beephone_shop_projects.core.admin.product_management.service.IService;
 import beephone_shop_projects.entity.MauSac;
@@ -28,6 +29,11 @@ public class MauSacServiceImpl implements IService<MauSac> {
         mauSacRepository.save(mauSac);
     }
 
+    public void insert(CreateMauSac req) {
+        MauSac mauSac  = new MauSac(req.getMamauSac(),req.getTenmauSac());
+        mauSacRepository.save(mauSac);
+    }
+
     @Override
     public void update(MauSac mauSac, String id) {
         mauSacRepository.save(mauSac);
@@ -45,4 +51,6 @@ public class MauSacServiceImpl implements IService<MauSac> {
     public ArrayList<MauSac> getDanhSachMauSac(){
         return (ArrayList<MauSac>) this.mauSacRepository.findAllByDelected(true);
     }
+
+    public String generateNewCode(){return this.mauSacRepository.getNewCode();}
 }

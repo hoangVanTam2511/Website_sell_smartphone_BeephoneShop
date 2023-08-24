@@ -44,4 +44,6 @@ public class NhaSanXuatServiceImpl implements IService<NhaSanXuat> {
     public ArrayList<NhaSanXuat> getDanhSachNhaSanXuat(){
         return (ArrayList<NhaSanXuat>) nhaSanXuatRepository.findAllByDelected(true);
     }
+
+    public String generateNewCode(){return this.nhaSanXuatRepository.getNewCode();}
 }

@@ -25,4 +25,9 @@ public interface RomRepository extends IRomRepository {
     List<Rom> findAllByDelected(Boolean delected);
 
     Rom findByKichThuoc(Integer kichThuoc);
+
+    @Query(value = """
+    SELECT CONCAT( 'ROM_',IF(count(*)  = 0,0,SUBSTRING(ma,5) + 1))   FROM rom
+    """,nativeQuery = true)
+    String getNewCode();
 }

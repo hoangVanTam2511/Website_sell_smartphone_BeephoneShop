@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.admin.product_management.service.impl;
 
+import beephone_shop_projects.core.admin.product_management.model.request.CreatePin;
 import beephone_shop_projects.core.admin.product_management.repository.PinRepository;
 import beephone_shop_projects.core.admin.product_management.service.IService;
 import beephone_shop_projects.entity.Pin;
@@ -28,6 +29,11 @@ public class PinServiceImpl implements IService<Pin> {
         pinRepository.save(pin);
     }
 
+    public void insert(CreatePin req) {
+        Pin pin = new Pin(req.getMapin(),req.getTenpin());
+        pinRepository.save(pin);
+    }
+
     @Override
     public void update(Pin pin, String id) {
         pinRepository.save(pin);
@@ -45,4 +51,6 @@ public class PinServiceImpl implements IService<Pin> {
     public ArrayList<Pin> getDanhSachPin(){
         return (ArrayList<Pin>) this.pinRepository.findAllByDelected(true);
     }
+
+    public String generateNewCode(){return this.pinRepository.getNewCode();}
 }

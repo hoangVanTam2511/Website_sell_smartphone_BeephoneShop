@@ -1,8 +1,6 @@
 package beephone_shop_projects.core.admin.product_management.controller;
 
 import beephone_shop_projects.core.admin.product_management.service.impl.NhaSanXuatServiceImpl;
-import beephone_shop_projects.entity.HinhThucSanPham;
-import beephone_shop_projects.entity.MauSac;
 import beephone_shop_projects.entity.NhaSanXuat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -31,7 +29,7 @@ public class NhaSanXuatRestController {
     private NhaSanXuatServiceImpl nhaSanXuatService;
     
     @GetMapping("/view-all")
-    public Page<NhaSanXuat> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
+    public Page<NhaSanXuat> viewAll(@RequestParam(value = "page",defaultValue = "0") Integer page) {
         Pageable pageable = PageRequest.of(page,5);
         return nhaSanXuatService.getAll(pageable);
     }
@@ -54,5 +52,10 @@ public class NhaSanXuatRestController {
     @PutMapping("/update/{id}")
     public void update(@RequestBody NhaSanXuat mauSac,@PathVariable("id")String id) {
         nhaSanXuatService.insert(mauSac);
+    }
+
+    @GetMapping("/new-code")
+    public  String getNewCode(){
+        return this.nhaSanXuatService.generateNewCode();
     }
 }

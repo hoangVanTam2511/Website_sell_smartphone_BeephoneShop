@@ -1,6 +1,5 @@
 package beephone_shop_projects.core.admin.product_management.repository;
 
-import beephone_shop_projects.entity.Camera;
 import beephone_shop_projects.entity.ManHinh;
 import beephone_shop_projects.repository.IManHinhRepository;
 import jakarta.transaction.Transactional;
@@ -28,4 +27,9 @@ public interface ManHinhRepository extends IManHinhRepository {
     List<ManHinh> findAllByDelected(Boolean delected);
 
     ManHinh findByKichThuoc(BigDecimal kichThuoc);
+
+    @Query(value = """
+    SELECT CONCAT( 'MANHINH_',IF(count(*)  = 0,0,SUBSTRING(ma,9) + 1))   FROM man_hinh
+    """,nativeQuery = true)
+    String getNewCode();
 }

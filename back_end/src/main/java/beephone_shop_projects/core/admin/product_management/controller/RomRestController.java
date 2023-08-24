@@ -1,7 +1,7 @@
 package beephone_shop_projects.core.admin.product_management.controller;
 
+import beephone_shop_projects.core.admin.product_management.model.request.CreateRom;
 import beephone_shop_projects.core.admin.product_management.service.impl.RomServiceImpl;
-import beephone_shop_projects.entity.HinhThucSanPham;
 import beephone_shop_projects.entity.Rom;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,7 +30,7 @@ public class RomRestController {
     
     
     @GetMapping("/view-all")
-    public Page<Rom> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
+    public Page<Rom> viewAll(@RequestParam(value = "page",defaultValue = "0") Integer page) {
         Pageable pageable = PageRequest.of(page,5);
         return romService.getAll(pageable);
     }
@@ -50,8 +50,19 @@ public class RomRestController {
         romService.insert(mauSac);
     }
 
+    @PostMapping("/save-second")
+    public void saveSecond(@RequestBody CreateRom mauSac) {
+        romService.insert(mauSac);
+    }
+
+
     @PutMapping("/update/{id}")
     public void update(@RequestBody Rom mauSac,@PathVariable("id")String id) {
         romService.insert(mauSac);
+    }
+
+    @GetMapping("/new-code")
+    public  String getNewCode(){
+        return this.romService.generateNewCode();
     }
 }

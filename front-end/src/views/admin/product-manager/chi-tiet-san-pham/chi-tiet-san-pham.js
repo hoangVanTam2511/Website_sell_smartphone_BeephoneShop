@@ -7,13 +7,14 @@ import {
   Pagination,
   Space,
   Switch,
-  Slider
+  Slider,
+  Tag
 } from "antd";
 import { useState, useEffect,useReducer, useRef } from "react";
 import axios from "axios";
 import {
-  apiURLChiTietSanPham, apiURLCamera, apiURLChip, apiURLDongSanPham, apiURLHinhThucSanPham, apiURLManHinh, apiURLMauSac,
-  apiURLNhaSanXuat, apiURLPin, apiURLSanPham, apiURLram, apiURLrom
+  apiURLSanPham, apiURLChip, apiURLDongSanPham, apiURLManHinh, apiURLMauSac,
+  apiURLNhaSanXuat, apiURLPin, apiURLram, apiURLrom
 } from "../../../../service/api";
 import {
   FontAwesomeIcon
@@ -81,17 +82,14 @@ const HienThiKH = () => {
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
   const [listColor, setlistColor] = useState([])
-  const [listCamera, setlistCamera] = useState([])
   const [listChip, setlistChip] = useState([])
   const [listRam, setListRam] = useState([])
   const [listManHinh, setlistManHinh] = useState([])
   const [listRom, setlistRom] = useState([])
   const [listPin, setListPin] = useState([])
   const [listNhaSanXuat, setlistNhaSanXuat] = useState([])
-  const [listSanPham, setListSanPham] = useState([])
-  const [listHinhThucSanPham, setListHinhThucSanPham] = useState([])
   const [listDongSanPham, setListDongSanPham] = useState([])
-
+  const [priceBiggest,setpriceBiggest] = useState(0)
 
   const [chiTietSanPham, setchiTietSanPham] = useState({
     sanPham: "",
@@ -101,9 +99,7 @@ const HienThiKH = () => {
     pin: "",
     ram: "",
     rom: "",
-    camera: "",
     chip: "",
-    hinhThucSanPham: "",
     manHinh: "",
     donGiaMin: "",
     donGiaMax: "",
@@ -218,23 +214,29 @@ const HienThiKH = () => {
   useEffect(() => {
     loadDatalistMauSac(currentPage);
     loadDataComboBox()
-    console.log('hehe')
   }, [currentPage,chiTietSanPham]);
 
 
+ 
   // cutstom load data
   const loadDatalistMauSac = async (currentPage) => {
     if (currentPage == undefined) currentPage = 0;
-    axios.post(apiURLChiTietSanPham + "/view-all?page=" + currentPage, chiTietSanPham).then((response) => {
-
+    axios.post(apiURLSanPham + "/products?page=" + currentPage,chiTietSanPham).then((response) => {
+      
       const modifiedData = response.data.content.map((item, index) => ({
         ...item,
+        tags:[item.tenDongSanPham,item.tenNhaSanXuat,item.tenChip],
         stt: index + 1,
       }));
+
       setlistMauSac(modifiedData);
       setCurrentPage(response.data.number);
       setTotalPages(response.data.totalPages);
     });
+      
+    axios.get(apiURLSanPham+'/don-gia-lon-nhat').then((response)=>{
+      setpriceBiggest(response.data)
+     })
   };
 
 
@@ -252,7 +254,7 @@ const HienThiKH = () => {
   const doChangeTrangThai = (e, record) => {
     //  const [trangThai, setTrangThai] = useState(record.trangThai);
     axios
-      .delete(apiURLChiTietSanPham + `/doi-trang-thai/${record.id}`)
+      .delete(apiURLSanPham + `/doi-trang-thai/${record.id}`)
       .then((response) => {
         // Xử lý thành công
         // setTrangThai(trangThai === 1 ? 2 : 1);
@@ -279,7 +281,6 @@ const HienThiKH = () => {
 
   const handleText = (e) =>{
     setchiTietSanPham({ ...chiTietSanPham, sanPham: e.target.value})
-    console.log(chiTietSanPham)
   }
 
 
@@ -291,32 +292,6 @@ const HienThiKH = () => {
   const loadDataComboBox = async () => {
   
 
-    // load các combobõx tươuơng ứg
-    axios.get(apiURLCamera + "/get-list").then((response) => {
-      var itemAll = {
-        label: "Tất cả",
-        value: "camera:",
-      };
-      const modifiedData = response.data.map((item, index) => ({
-        label: item.doPhanGiai + "MP",
-        value: "camera:" + item.doPhanGiai,
-      }));
-      modifiedData.unshift(itemAll)
-      setlistCamera(modifiedData);
-    });
-
-    axios.get(apiURLSanPham + "/get-list").then((response) => {
-      var itemAll = {
-        label: "Tất cả",
-        value: "sanPham:",
-      };
-      const modifiedData = response.data.map((item, index) => ({
-        label: item.ten,
-        value: "sanPham:" + item.ten,
-      }));
-      modifiedData.unshift(itemAll)
-      setListSanPham(modifiedData);
-    });
 
     axios.get(apiURLDongSanPham + "/get-list").then((response) => {
       var itemAll = {
@@ -395,20 +370,6 @@ const HienThiKH = () => {
       setlistChip(modifiedData);
     });
 
-    axios.get(apiURLHinhThucSanPham + "/get-list").then((response) => {
-      var itemAll = {
-        label: "Tất cả",
-        value: "hinhThucSanPham:",
-      };
-      const modifiedData = response.data.map((item, index) => ({
-        label: item.hinhThuc + " %",
-        value: "hinhThucSanPham:" + item.hinhThuc,
-      }));
-      modifiedData.unshift(itemAll)
-      setListHinhThucSanPham(modifiedData);
-    });
-
-
     axios.get(apiURLMauSac + "/get-list").then((response) => {
       var itemAll = {
         label: "Tất cả",
@@ -421,8 +382,6 @@ const HienThiKH = () => {
       modifiedData.unshift(itemAll)
       setlistColor(modifiedData);
     });
-
-
 
     axios.get(apiURLManHinh + "/get-list").then((response) => {
       var itemAll = {
@@ -455,57 +414,28 @@ const HienThiKH = () => {
       ...getColumnSearchProps("tenSanPham"),
     },
     {
-      title: "Màu sắc",
-      dataIndex: "tenMauSac",
+      title: "Thông tin",
+      dataIndex: "tags",
       width: "5%",
-      editable: true,
-      ...getColumnSearchProps("tenMauSac"),
-    },
-
-    {
-      title: "Hình thức(%)",
-      dataIndex: "hinhThucSanPham",
-      width: "2%",
-      editable: true,
-      ...getColumnSearchProps("hinhThucSanPham"),
-    },
-    {
-      title: "Số lượng",
-      dataIndex: "soLuong",
-      width: "2%",
-      editable: true,
-      ...getColumnSearchProps("soLuong"),
-    },
-    {
-      title: "Đơn giá",
-      dataIndex: "donGia",
-      width: "5%",
-      editable: true,
-      ...getColumnSearchProps("donGia"),
-    },
-
-    // {
-    //   title: "Ảnh",
-    //   dataIndex: `operation`,
-    //   width: "5%",
-    //   render:(_,record) =>{
-    //   return <Link type="primary" style={{ borderRadius: "30px" }} >Danh sách ảnh</Link>
-    //  }
-    // },
-
-    {
-      title: "Imei",
-      dataIndex: `operation`,
-      width: "5%",
-      render: (_, record) => {
-        return (
-          <Link type="primary" to={`/imei/${record.id}`} style={{ borderRadius: "30px" }}>Danh sách imei</Link>
-        )
-      }
+      render: (_, { tags }) => (
+        <>
+          {tags.map((tag) => {
+            let color = tag.length >2 ? 'geekblue' : 'GREEN';
+            if (tag === 'loser') {
+              color = 'volcano';
+            }
+            return (
+              <Tag color={color} key={tag}>
+                {tag.toUpperCase()}
+              </Tag>
+            );
+          })}
+        </>
+      ),
     },
     {
       title: "Trạng thái",
-      dataIndex: "trangThai",
+      dataIndex: "delected",
       width: "5%",
       filters: [
         {
@@ -731,18 +661,6 @@ const HienThiKH = () => {
             ]}
           />
 
-          <Select
-            defaultValue="Chọn camera"
-            style={{ width: 150, marginRight: 15, marginBottom: 20 }}
-            onChange={handleChange}
-            options={[
-
-              {
-                label: 'Vui lòng chọn camera',
-                options: listCamera
-              },
-            ]}
-          />
 
           <Select
             defaultValue="Chọn chip"
@@ -756,18 +674,7 @@ const HienThiKH = () => {
             ]}
           />
 
-          <Select
-            defaultValue="Chọn hình thức sản phẩm"
-            style={{ width: 150, marginRight: 15, marginBottom: 20 }}
-            onChange={handleChange}
-            options={[
-
-              {
-                label: 'Chọn hình thức sản phẩm',
-                options: listHinhThucSanPham
-              },
-            ]}
-          />
+         
 
           <Select
             defaultValue="Chọn kích cỡ màn hình"
@@ -793,13 +700,13 @@ const HienThiKH = () => {
               onChange={(e) => sliderChange(e)}
               style={{ width: 250, marginLeft: 5, marginBottom: 20 }}
               min={0}
-              max={50000000}
+              max={Number(priceBiggest)}
               step={1000000}
-              range defaultValue={[0, 50000000]} />
+              range defaultValue={[0, Number(priceBiggest)]} />
             <Button
               style={{ marginLeft: 5, marginBottom: 20 }}
               type="primary" ghost>
-              {chiTietSanPham.donGiaMax == "" ? "50000000".toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + " đ" : chiTietSanPham.donGiaMax.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + " đ"}
+              {chiTietSanPham.donGiaMax == "" ? priceBiggest.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + " đ" : chiTietSanPham.donGiaMax.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + " đ"}
             </Button>
           </div>
 

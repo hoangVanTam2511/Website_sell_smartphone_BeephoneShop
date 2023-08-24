@@ -1,6 +1,5 @@
 package beephone_shop_projects.core.admin.product_management.repository;
 
-import beephone_shop_projects.entity.Camera;
 import beephone_shop_projects.entity.NhaSanXuat;
 import beephone_shop_projects.repository.INhaSanXuatRepository;
 import jakarta.transaction.Transactional;
@@ -28,4 +27,9 @@ public interface NhaSanXuatRepository extends INhaSanXuatRepository {
     List<NhaSanXuat> findAllByDelected(Boolean delected);
 
     NhaSanXuat findByTenNhaSanXuat(String tenNhaSanXuat);
+
+    @Query(value = """
+    SELECT CONCAT( 'NHASANXUAT_',IF(count(*)  = 0,0,SUBSTRING(ma,11) + 1))   FROM nha_san_xuat
+    """,nativeQuery = true)
+    String getNewCode();
 }

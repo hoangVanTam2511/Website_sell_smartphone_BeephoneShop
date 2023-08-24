@@ -11,30 +11,14 @@ import java.math.BigDecimal;
 @ToString
 public class CreateChiTietSanPhamRequest {
 
-    private BigDecimal donGia;
+    private String tenSanPham;
 
     private String moTa;
-
-    private Integer camera;
 
     private String chip;
 
     private String dongSanPham;
 
-    private BigDecimal manHinh;
-
-    private String mauSac;
-
-    private BigDecimal hinhThucSanPham;
-
     private String nhaSanXuat;
-
-    private Integer pin;
-
-    private Integer ram;
-
-    private Integer rom;
-
-    private String sanPham;
 
 }

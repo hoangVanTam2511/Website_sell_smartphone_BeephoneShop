@@ -1,7 +1,7 @@
 package beephone_shop_projects.core.admin.product_management.controller;
 
+import beephone_shop_projects.core.admin.product_management.model.request.CreatePin;
 import beephone_shop_projects.core.admin.product_management.service.impl.PinServiceImpl;
-import beephone_shop_projects.entity.HinhThucSanPham;
 import beephone_shop_projects.entity.Pin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -29,7 +29,7 @@ public class PinRestController {
     private PinServiceImpl pinService;
 
     @GetMapping("/view-all")
-    public Page<Pin> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
+    public Page<Pin> viewAll(@RequestParam(value = "page",defaultValue = "0") Integer page) {
         Pageable pageable = PageRequest.of(page,5);
         return pinService.getAll(pageable);
     }
@@ -49,8 +49,18 @@ public class PinRestController {
         pinService.insert(mauSac);
     }
 
+    @PostMapping("/save-second")
+    public void saveSecond(@RequestBody CreatePin mauSac) {
+        pinService.insert(mauSac);
+    }
+
     @PutMapping("/update/{id}")
     public void update(@RequestBody Pin mauSac,@PathVariable("id")String id) {
         pinService.insert(mauSac);
+    }
+
+    @GetMapping("/new-code")
+    public  String getNewCode(){
+        return this.pinService.generateNewCode();
     }
 }

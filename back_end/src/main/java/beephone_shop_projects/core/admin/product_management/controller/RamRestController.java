@@ -1,8 +1,7 @@
 package beephone_shop_projects.core.admin.product_management.controller;
 
+import beephone_shop_projects.core.admin.product_management.model.request.CreateRam;
 import beephone_shop_projects.core.admin.product_management.service.impl.RamServiceImpl;
-import beephone_shop_projects.entity.HinhThucSanPham;
-import beephone_shop_projects.entity.Pin;
 import beephone_shop_projects.entity.Ram;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,7 +29,7 @@ public class RamRestController {
     private RamServiceImpl ramService;
 
     @GetMapping("/view-all")
-    public Page<Ram> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
+    public Page<Ram> viewAll(@RequestParam(value = "page",defaultValue = "0") Integer page) {
         Pageable pageable = PageRequest.of(page,5);
         return ramService.getAll(pageable);
     }
@@ -50,8 +49,19 @@ public class RamRestController {
         ramService.insert(mauSac);
     }
 
+    @PostMapping("/save-second")
+    public void saveSecond(@RequestBody CreateRam mauSac) {
+        ramService.insert(mauSac);
+    }
+
+
     @PutMapping("/update/{id}")
     public void update(@RequestBody Ram mauSac,@PathVariable("id")String id) {
         ramService.insert(mauSac);
+    }
+
+    @GetMapping("/new-code")
+    public  String getNewCode(){
+        return this.ramService.generateNewCode();
     }
 }

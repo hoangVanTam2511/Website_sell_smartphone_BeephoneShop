@@ -10,26 +10,35 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import java.io.Serializable;
-import java.math.BigDecimal;
 
 @Entity
-@Setter
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "hoa_don_chi_tiet")
-public class HoaDonChiTiet extends PrimaryEntity implements Serializable {
-    private BigDecimal donGia;
-
-    private BigDecimal donGiaSauKhiGiam;
+@Table(name = "cau_hinh")
+public class CauHinh extends PrimaryEntity implements Serializable {
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_chi_tiet_san_pham")
-    private SanPham idSanPham;
+    @JoinColumn(name = "id_ram")
+    private Ram idRam;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_hoa_don")
-    private HoaDon idHoaDon;
+    @JoinColumn(name = "id_rom")
+    private Rom idRom;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_pin")
+    private Pin idPin;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_mau_sac")
+    private MauSac idMauSac;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_man_hinh")
+    private ManHinh idManHinh;
 
 }

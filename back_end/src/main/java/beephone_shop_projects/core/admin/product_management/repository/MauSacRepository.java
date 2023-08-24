@@ -1,6 +1,5 @@
 package beephone_shop_projects.core.admin.product_management.repository;
 
-import beephone_shop_projects.entity.Camera;
 import beephone_shop_projects.entity.MauSac;
 import beephone_shop_projects.repository.IMauSacRepository;
 import jakarta.transaction.Transactional;
@@ -28,5 +27,10 @@ public interface MauSacRepository extends IMauSacRepository {
     List<MauSac> findAllByDelected(Boolean delected);
 
     MauSac findByTenMauSac(String tenMauSac);
+
+    @Query(value = """
+    SELECT CONCAT( 'MAUSAC_',IF(count(*)  = 0,0,SUBSTRING(ma,8) + 1))   FROM mau_sac
+    """,nativeQuery = true)
+    String getNewCode();
 
 }

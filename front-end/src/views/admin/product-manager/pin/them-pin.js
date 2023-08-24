@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import { Form, Button } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
 import axios from "axios"
@@ -12,11 +12,26 @@ const ThemMauSac = () => {
         dungLuong: ""
     })
 
+    
+
     const { ma, dungLuong } = mauSac // tạo contructor
 
     const onInputChange = (e) => {
         setMauSac({ ...mauSac, [e.target.name]: e.target.value })
     }
+
+    useEffect(() => {
+       generateCode()
+      }, []);
+
+      const generateCode = async () =>{
+        await axios.get("http://localhost:8080/pin/new-code")
+        .then((res)=>{
+            console.log(res.data)
+            setMauSac({ ...mauSac, 'ma': res.data })
+        })
+      }
+    
 
     const onSubmit = async (e) => {
         e.preventDefault();
@@ -41,7 +56,7 @@ const ThemMauSac = () => {
                                 placeholder='Enter code'
                                 name='ma'
                                 value={ma}
-                                onChange={(e) => onInputChange(e)}
+                                disabled='true'
                                 id="ma" />
                         </Form.Group>
                         <Form.Group className="form-group">

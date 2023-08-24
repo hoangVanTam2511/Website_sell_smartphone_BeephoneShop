@@ -4,10 +4,6 @@ import Index from "../views/index";
 import QuanLiMauSac from "../views/admin/product-manager/mau-sac/quan-li-mau-sac";
 import ThemMauSac from "../views/admin/product-manager/mau-sac/them-mau-sac";
 
-// camera
-import Camera from "../views/admin/product-manager/camera/camera";
-import ThemCamera from "../views/admin/product-manager/camera/them-camera";
-
 // chip
 import Chip from "../views/admin/product-manager/chip/chip";
 import ThemChip from "../views/admin/product-manager/chip/them-chip";
@@ -16,9 +12,6 @@ import ThemChip from "../views/admin/product-manager/chip/them-chip";
 import DongSanPham from "../views/admin/product-manager/dong-san-pham/dong-san-pham";
 import ThemDongSanPham from "../views/admin/product-manager/dong-san-pham/them-dong-san-pham";
 
-// hinh-thuc-san-pham
-import HinhThucSanPham from "../views/admin/product-manager/hinh-thuc-san-pham/hinh-thuc-san-pham";
-import ThemHinhThucSanPham from "../views/admin/product-manager/hinh-thuc-san-pham/them-hinh-thuc-san-pham";
 
 // man-hinh
 import ManHinh from "../views/admin/product-manager/man-hinh/man-hinh";
@@ -40,9 +33,6 @@ import ThemNhaSanXuat from "../views/admin/product-manager/nha-san-xuat/them-nha
 import Rom from "../views/admin/product-manager/rom/rom";
 import ThemRom from "../views/admin/product-manager/rom/them-rom";
 
-// san-pham
-import SanPham from "../views/admin/product-manager/san-pham/san-pham";
-import ThemSanPham from "../views/admin/product-manager/san-pham/them-san-pham";
 
 // chi-tiet-san-pham
 import ChiTietSanPham from '../views/admin/product-manager/chi-tiet-san-pham/chi-tiet-san-pham';
@@ -98,14 +88,6 @@ export const DefaultRouter = [
         element: <ThemMauSac />,
       },
       {
-        path: "camera",
-        element: <Camera />,
-      },
-      {
-        path: "them-camera",
-        element: <ThemCamera />,
-      },
-      {
         path: "chip",
         element: <Chip />,
       },
@@ -120,14 +102,6 @@ export const DefaultRouter = [
       {
         path: "them-dong-san-pham",
         element: <ThemDongSanPham />,
-      },
-      {
-        path: "hinh-thuc-san-pham",
-        element: <HinhThucSanPham />,
-      },
-      {
-        path: "them-hinh-thuc-san-pham",
-        element: <ThemHinhThucSanPham />,
       },
       {
         path: "nha-san-xuat",
@@ -168,14 +142,6 @@ export const DefaultRouter = [
       {
         path: "them-rom",
         element: <ThemRom />,
-      },
-      {
-        path: "san-pham",
-        element: <SanPham />,
-      },
-      {
-        path: "them-san-pham",
-        element: <ThemSanPham />,
       },
       {
         path: "chi-tiet-san-pham",

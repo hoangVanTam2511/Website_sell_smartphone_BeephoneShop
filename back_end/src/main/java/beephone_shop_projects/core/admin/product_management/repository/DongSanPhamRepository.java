@@ -1,6 +1,5 @@
 package beephone_shop_projects.core.admin.product_management.repository;
 
-import beephone_shop_projects.entity.Camera;
 import beephone_shop_projects.entity.DongSanPham;
 import beephone_shop_projects.repository.IDongSanPhamRepository;
 import jakarta.transaction.Transactional;
@@ -28,5 +27,10 @@ public interface DongSanPhamRepository extends IDongSanPhamRepository {
     List<DongSanPham> findAllByDelected(Boolean delected);
 
     DongSanPham findByTenDongSanPham(String tenDongSanPham);
+
+    @Query(value = """
+    SELECT CONCAT( 'DONGSANPHAM_',IF(count(*)  = 0,0,SUBSTRING(ma,13) + 1))   FROM dong_san_pham
+    """,nativeQuery = true)
+    String getNewCode();
 
 }

@@ -1,6 +1,5 @@
 package beephone_shop_projects.entity;
 
-import beephone_shop_projects.entity.base.IsIdentified;
 import beephone_shop_projects.entity.base.PrimaryEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,23 +11,29 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "anh")
-public class Anh  extends PrimaryEntity implements IsIdentified {
+@Table(name = "san_pham_chi_tiet")
+public class SanPhamChiTiet extends PrimaryEntity {
 
-    private  String ma;
+    private BigDecimal donGia;
 
-    private String tenAnh;
-
-    private String duongDan;
-
-    private Integer trangThai;
+    private int soLuong;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_san_pham")
     private SanPham idSanPham;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_cau_hinh")
+    private CauHinh idCauHinh;
+
+
+
+
 }

@@ -29,7 +29,7 @@ public class DongSanPhamRestController {
     private DongSanPhamServiceImpl dongSanPhamService;
 
     @GetMapping("/view-all")
-    public Page<DongSanPham> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
+    public Page<DongSanPham> viewAll(@RequestParam(value = "page",defaultValue = "0") Integer page) {
         Pageable pageable = PageRequest.of(page,5);
         return dongSanPhamService.getAll(pageable);
     }
@@ -54,4 +54,8 @@ public class DongSanPhamRestController {
         dongSanPhamService.insert(anh);
     }
 
+    @GetMapping("/new-code")
+    public  String getNewCode(){
+        return this.dongSanPhamService.generateNewCode();
+    }
 }
