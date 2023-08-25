@@ -34,7 +34,7 @@ public class HoaDonRepositoryImpl extends AbstractRepositoryImpl<HoaDon, String>
   @Override
   @Transactional
   public HoaDon getOrderDetailsById(String id) {
-    HoaDon order = null;
+    HoaDon order;
     String query = "SELECT O FROM HoaDon O WHERE O.ma = ?1";
 
     try (EntityManager entityManager = this.getEntityManager()) {

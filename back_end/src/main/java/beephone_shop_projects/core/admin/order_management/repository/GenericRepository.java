@@ -17,14 +17,14 @@ public interface GenericRepository<T, ID extends Serializable> {
 
   Optional<T> findOneById(ID id);
 
-  T save(T entity);
+  T save(T entity) throws Exception;
 
-  T update(T entity);
+  T update(T entity) throws Exception;
 
-  void delete(T entity);
+  void delete(T entity) throws Exception;
 
-  void deleteById(ID id);
+  void deleteById(ID id) throws Exception;
 
-  Long getMaxSuffixCode();
+  String getMaxEntityCode();
 
 }
