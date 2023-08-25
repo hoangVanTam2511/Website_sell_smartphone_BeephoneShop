@@ -1,6 +1,6 @@
 package beephone_shop_projects.core.admin.order_management.controller;
 
-import beephone_shop_projects.core.admin.order_management.constant.ApiConstant;
+import beephone_shop_projects.core.admin.order_management.constant.Constants;
 import beephone_shop_projects.core.admin.order_management.dto.OrderDto;
 import beephone_shop_projects.core.admin.order_management.dto.OrderHistoryDto;
 import beephone_shop_projects.core.admin.order_management.dto.SearchFilterOrderDto;
@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping(ApiConstant.API_ORDER_URI)
+@RequestMapping(Constants.Api.API_ORDER_URI)
 @CrossOrigin(origins = "http://localhost:3000")
 public class HoaDonRestController {
 
@@ -48,16 +48,19 @@ public class HoaDonRestController {
       searchFilter.setPageSize(5);
     }
     Page<OrderDto> orders = hoaDonService.findOrdersByMultipleCriteriaWithPagination(searchFilter);
-    return ResponseEntity.ok(orders);
+    if (orders.isEmpty()) {
+      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+    return new ResponseEntity<>(orders, HttpStatus.OK);
   }
 
   @GetMapping("/{id}")
   public ResponseEntity<?> getOrderDetails(@PathVariable("id") String id) {
     OrderDto order = hoaDonService.getOrderDetailsById(id);
     if (order == null) {
-      return ResponseEntity.notFound().build();
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-    return ResponseEntity.ok(order);
+    return new ResponseEntity<>(order, HttpStatus.OK);
   }
 
   @GetMapping("/{id}/orderHistory")
@@ -68,25 +71,25 @@ public class HoaDonRestController {
       return ResponseEntity.notFound().build();
     }
     if (orderHistories.isEmpty()) {
-      return ResponseEntity.noContent().build();
+      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-    return ResponseEntity.ok(orderHistories);
+    return new ResponseEntity<>(orderHistories, HttpStatus.OK);
   }
 
   @PostMapping
-  public ResponseEntity<?> placeOrder(Account account, Voucher voucher) {
+  public ResponseEntity<?> placeOrder(Account account, Voucher voucher) throws Exception {
     OrderDto createdOrder = hoaDonService.placeOrder(account, voucher);
     return new ResponseEntity<>(createdOrder, HttpStatus.CREATED);
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<?> updateOrder(@RequestBody UpdateOrderDto updateOrderDTO, @PathVariable("id") String id) {
+  public ResponseEntity<?> updateOrder(@RequestBody UpdateOrderDto updateOrderDTO, @PathVariable("id") String id) throws Exception {
     OrderDto order = hoaDonService.getOrderDetailsById(id);
     if (order == null) {
       return ResponseEntity.notFound().build();
     }
     OrderDto updatedOrder = hoaDonService.updateOrder(updateOrderDTO, order);
-    return ResponseEntity.ok(updatedOrder);
+    return new ResponseEntity<>(updatedOrder, HttpStatus.OK);
   }
 
 }
