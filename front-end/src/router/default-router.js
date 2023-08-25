@@ -64,12 +64,14 @@ import AddRole from "../views/admin/account-manager/role/AddRole";
 
 //admin
 
+//voucher
 import Default from "../layouts/dashboard/default";
 
 //voucher
 import HienThiVoucher from "../views/admin/voucher-manager/quan-li-voucher";
 import AddVoucher from "../views/admin/voucher-manager/them-voucher";
 
+<<<<<<< HEAD
 //khuyen mai
 import HienThiKhuyenMai from "../views/admin/promotion-manager/quan-li-promotion";
 import AddKhuyenMai from "../views/admin/promotion-manager/them-promotion";
@@ -83,6 +85,12 @@ import UpdateNV from "../views/admin/account-manager/nhanvien/UpdateNV";
 =======
 import SuaKhuyenMai from "../views/admin/promotion-manager/sua-promotion";
 >>>>>>> beephone_van_anh
+=======
+//khuyenMai
+import HienThiKhuyenMai from "../views/admin/promotion-manager/quan-li-promotion";
+import AddKhuyenMai from "../views/admin/promotion-manager/them-promotion";
+import UpdateVoucher from "../views/admin/voucher-manager/sua-voucher";
+>>>>>>> beephone_dung
 
 export const DefaultRouter = [
   {
@@ -157,16 +165,18 @@ export const DefaultRouter = [
         path: "them-chi-tiet-san-pham",
         element: <ThemChiTietSanPham />,
       },
-
       {
         path: "khach-hang",
         element: <KhachHang />,
       },
+<<<<<<< HEAD
       {
         path: "khach-hang",
         element: <KhachHang />,
       },
       ,
+=======
+>>>>>>> beephone_dung
       {
         path: "them-khach-hang",
         element: <AddKH />,
@@ -218,10 +228,6 @@ export const DefaultRouter = [
         element: <AddRole />,
       },
       {
-        path: "voucher",
-        element: <HienThiVoucher />,
-      },
-      {
         path: "them-voucher",
         element: <AddVoucher />,
       },
@@ -233,6 +239,10 @@ export const DefaultRouter = [
       {
         path: "them-voucher",
         element: <AddVoucher />,
+      },
+      {
+        path: "sua-voucher/:id",
+        element: <UpdateVoucher />,
       },
       {
         path: "khuyen-mai",

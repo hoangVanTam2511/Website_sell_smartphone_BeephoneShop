@@ -1,6 +1,15 @@
-import { Button } from "antd";
-import React from "react";
-import { useState, useEffect } from "react";
+import {
+  Button,
+  Select,
+  Col,
+  Row,
+  Input,
+  message,
+  Upload,
+  // DatePicker, Form, Input, Radio, Select
+} from "antd";
+import React, { useEffect } from "react";
+import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faCheck } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
@@ -9,9 +18,7 @@ import TextField from "@mui/material/TextField";
 import "../../../assets/scss/HienThiNV.scss";
 import { Box, InputAdornment } from "@mui/material";
 import "../../../assets/scss/addVoucher.scss";
-<<<<<<< HEAD
-import Swal from "sweetalert2";
-=======
+import { Link, useParams } from "react-router-dom";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -20,20 +27,47 @@ import dayjs from "dayjs"; // Import thư viện Day.js
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { isEmpty, isBefore, isAfter, equals } from "validator";
->>>>>>> beephone_dung
 
-const AddVoucher = () => {
+const UpdateVoucher = () => {
+  let [voucher, setVoucher] = useState({});
   let [ten, setTen] = useState("");
-  const [ngayBatDau, setNgayBatDau] = useState(dayjs());
-  const [ngayKetThuc, setNgayKetThuc] = useState(dayjs());
-  const [giaTriVoucher, setGiaTriVoucher] = useState(0);
-  const [dieuKienApDung, setDieuKienApDung] = useState(0);
-  const [dieuKienApDungConvert, setDieuKienApDungConvert] = useState(0);
-  const [soLuong, setSoLuong] = useState("");
-  const [validationMsg, setValidationMsg] = useState({});
+  let [soLuong, setSoLuong] = useState("");
+  const [ngayBatDau, setNgayBatDau] = useState("");
+  const [ngayKetThuc, setNgayKetThuc] = useState("");
   const [giaTriVoucherConvert, setGiaTriVoucherConvert] = useState(0);
   const [value, setValue] = React.useState();
   const [value1, setValue1] = React.useState();
+  let [giaTriVoucher, setGiaTriVoucher] = useState("");
+  let [dieuKienApDung, setDieuKienApDung] = useState(0);
+  const [dieuKienApDungConvert, setDieuKienApDungConvert] = useState(0);
+  const [validationMsg, setValidationMsg] = useState({});
+  const { id } = useParams();
+
+  const redirectToHienThiVoucher = () => {
+    window.location.href = "/voucher";
+  };
+
+  const convertTien = () => {
+    dieuKienApDung = voucher.dieuKienApDung;
+    const numericValue = parseFloat(
+      String(dieuKienApDung).replace(/[^0-9.-]+/g, "")
+    );
+    const fomarttedDieuKien = String(dieuKienApDung)
+      .replace(/[^0-9]+/g, "")
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    setValue1(numericValue);
+    setDieuKienApDung(fomarttedDieuKien);
+
+    giaTriVoucher = voucher.giaTriVoucher;
+    const numericValue1 = parseFloat(
+      String(giaTriVoucher).replace(/[^0-9.-]+/g, "")
+    );
+    const formattedValue = String(giaTriVoucher)
+      .replace(/[^0-9]+/g, "")
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    setValue(numericValue1);
+    setGiaTriVoucher(formattedValue);
+  };
 
   const handleChange = (event) => {
     const inputValue = event.target.value;
@@ -41,8 +75,8 @@ const AddVoucher = () => {
     const formattedValue = inputValue
       .replace(/[^0-9]+/g, "")
       .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    setValue(formattedValue);
-    setGiaTriVoucherConvert(numericValue);
+    setValue(numericValue);
+    setGiaTriVoucher(formattedValue);
   };
 
   const handleChange1 = (event) => {
@@ -51,29 +85,52 @@ const AddVoucher = () => {
     const formattedValue = inputValue
       .replace(/[^0-9]+/g, "")
       .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    setValue1(formattedValue);
-    setDieuKienApDungConvert(numericValue);
+    setValue1(numericValue);
+    setDieuKienApDung(formattedValue);
   };
 
-  const redirectToHienThiVoucher = () => {
-    // Thực hiện điều hướng tới trang "Hiển thị nhân viên"
-    window.location.href = "/voucher";
+  useEffect(() => {
+    setTen(() => voucher.ten);
+    setSoLuong(() => voucher.soLuong);
+    setNgayBatDau(() => voucher.ngayBatDau);
+    setNgayKetThuc(() => voucher.ngayKetThuc);
+    convertTien();
+  }, [voucher]);
+
+  const detailVoucher = () => {
+    axios
+      .get(apiURLVoucher + "/get-by-id/" + id)
+      .then((response) => {
+        convertTien();
+        setVoucher(response.data);
+      })
+      .catch((error) => {});
   };
 
-  const addVoucher = () => {
+  useEffect(() => {
+    detailVoucher();
+  }, []);
+
+  let isToastVisible = false;
+
+  const updateVoucher = () => {
+    if (isToastVisible) {
+      return;
+    }
+
     let obj = {
       ten: ten,
-      dieuKienApDung: dieuKienApDungConvert,
       soLuong: soLuong,
+      dieuKienApDung: value1,
       ngayBatDau: ngayBatDau,
       ngayKetThuc: ngayKetThuc,
-      giaTriVoucher: giaTriVoucherConvert,
+      giaTriVoucher: value,
     };
     toast
-      .promise(axios.post(apiURLVoucher + "/addVoucher", obj), {
+      .promise(axios.put(apiURLVoucher + "/updateVoucher/" + id, obj), {
         success: {
           render({ data }) {
-            toast.success("Thêm thành công!");
+            toast.success("Cập Nhật thành công!");
             setTimeout(() => {
               redirectToHienThiVoucher();
             }, 2000);
@@ -81,7 +138,7 @@ const AddVoucher = () => {
         },
         error: {
           render({ error }) {
-            toast.error("Đã xảy ra lỗi khi thêm voucher.");
+            toast.error("Đã xảy ra lỗi khi Cập Nhật voucher.");
           },
         },
       })
@@ -91,30 +148,30 @@ const AddVoucher = () => {
   const validationAll = () => {
     const msg = {};
     if (isEmpty(ten)) {
-      msg.ten = "Không để trống Tên !!!";
+      msg.ten = "Không để trống Tên.";
     }
-    if (isEmpty(value)) {
-      msg.value = "Không để trống Giá Trị Voucher !!!";
-    }
+    // if (isEmpty(giaTriVoucher)) {
+    //   msg.giaTriVoucher = "Không để trống Giá Trị Voucher.";
+    // }
 
     if (isEmpty(soLuong)) {
-      msg.soLuong = "Không để trống Số Lượng !!!";
+      msg.soLuong = "Không để trống Số Lượng.";
     }
 
-    if (isEmpty(value1)) {
-      msg.value1 = "Không để trống Điều Kiện Voucher !!!";
+    // if (isEmpty(dieuKienApDung)) {
+    //   msg.dieuKienApDung = "Không để trống Điều Kiện Voucher.";
+    // }
+
+    if (isAfter(String(ngayBatDau), String(ngayKetThuc))) {
+      msg.ngayBatDau = "Ngày Bắt Đầu phải nhỏ hơn ngày kết thúc.";
     }
 
     if (isAfter(String(ngayBatDau), String(ngayKetThuc))) {
-      msg.ngayBatDau = "Ngày Bắt Đầu phải nhỏ hơn ngày kết thúc !!!";
-    }
-
-    if (isAfter(String(ngayBatDau), String(ngayKetThuc))) {
-      msg.ngayBatDau = "Ngày Bắt Đầu phải nhỏ hơn ngày kết thúc !!!";
+      msg.ngayBatDau = "Ngày Bắt Đầu phải nhỏ hơn ngày kết thúc.";
     }
 
     if (equals(String(ngayBatDau), String(ngayKetThuc))) {
-      msg.ngayKetThuc = "Ngày Kết Thúc phải lớn hơn Ngày Bắt Đầu !!!";
+      msg.ngayKetThuc = "Ngày Kết Thúc phải lớn hơn Ngày Bắt Đầu.";
     }
 
     setValidationMsg(msg);
@@ -125,33 +182,30 @@ const AddVoucher = () => {
   const handleSubmit = () => {
     const isValid = validationAll();
     if (!isValid) return;
-    addVoucher();
+    updateVoucher();
   };
 
   return (
     <>
       <div className="add-voucher-container">
-        <h5 style={{ marginBottom: "3%" }}>Thêm Voucher</h5>
+        <h5 style={{ marginBottom: "3%" }}>Sửa Voucher</h5>
         <div className="row-input">
           <div className="input-container">
             <TextField
-              label="Tên Voucher:"
-              value={ten}
+              label="Tên Voucher"
+              value={ten !== "Tên Voucher" ? ten : voucher.ten}
               id="fullWidth"
               onChange={(e) => {
                 setTen(e.target.value);
               }}
               style={{ width: "25em" }}
             />
-
-            <span className="validate" style={{ color: "red" }}>
-              {validationMsg.ten}
-            </span>
           </div>
+
           <div className="input-container">
             <TextField
-              label="Nhập Giá Trị Voucher"
-              value={value}
+              label="Giá Trị Giảm Giá Theo VND"
+              value={giaTriVoucher}
               onChange={handleChange}
               id="outlined-start-adornment"
               InputProps={{
@@ -170,8 +224,8 @@ const AddVoucher = () => {
         <div className="row-input">
           <div className="input-container">
             <TextField
-              label="Số Lượng:"
-              value={soLuong}
+              label="Số Lượng"
+              value={soLuong !== "Số Lượng" ? soLuong : voucher.soLuong}
               id="fullWidth"
               onChange={(e) => {
                 setSoLuong(e.target.value);
@@ -185,8 +239,8 @@ const AddVoucher = () => {
           </div>
           <div className="input-container">
             <TextField
-              label="Điều Kiện Áp Dụng:"
-              value={value1}
+              label="Điều Kiện Áp Dụng"
+              value={dieuKienApDung}
               onChange={handleChange1}
               id="outlined-start-adornment"
               InputProps={{
@@ -209,6 +263,7 @@ const AddVoucher = () => {
               sx={{
                 "& .MuiTextField-root": { width: "25em" },
               }}
+              noValidate
               autoComplete="off"
             >
               <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -217,8 +272,8 @@ const AddVoucher = () => {
                     ampm={true}
                     disablePast={true}
                     label="Ngày Bắt Đầu"
+                    value={dayjs(ngayBatDau)}
                     format="HH:mm DD/MM/YYYY"
-                    value={ngayBatDau}
                     onChange={(e) => {
                       setNgayBatDau(e);
                     }}
@@ -226,9 +281,6 @@ const AddVoucher = () => {
                 </DemoContainer>
               </LocalizationProvider>
             </Box>
-            <span className="validate" style={{ color: "red" }}>
-              {validationMsg.ngayBatDau}
-            </span>
           </div>
           <div className="input-container">
             <Box
@@ -236,6 +288,7 @@ const AddVoucher = () => {
               sx={{
                 "& .MuiTextField-root": { width: "25em" },
               }}
+              noValidate
               autoComplete="off"
             >
               <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -243,9 +296,9 @@ const AddVoucher = () => {
                   <DateTimePicker
                     ampm={true}
                     label="Ngày Kết Thúc"
-                    value={ngayKetThuc}
-                    format="HH:mm DD/MM/YYYY"
+                    value={dayjs(ngayKetThuc)}
                     disablePast={true}
+                    format="HH:mm DD/MM/YYYY"
                     onChange={(e) => {
                       setNgayKetThuc(e);
                     }}
@@ -253,33 +306,26 @@ const AddVoucher = () => {
                 </DemoContainer>
               </LocalizationProvider>
             </Box>
-            <span className="validate" style={{ color: "red" }}>
-              {validationMsg.ngayKetThuc}
-            </span>
           </div>
         </div>
 
         <div className="btn-accept">
-          <Button type="primary" onClick={handleSubmit}>
+          <Button type="primary" onClick={handleSubmit} htmlType="submit">
             <FontAwesomeIcon icon={faCheck} />
             &nbsp; Xác nhận{" "}
           </Button>
           <ToastContainer />
-          &nbsp;&nbsp;
-          <Button
-            type="primary"
-            onClick={() => {
-              redirectToHienThiVoucher();
-            }}
-            htmlType="submit"
-          >
-            <FontAwesomeIcon icon={faArrowLeft} />
-            &nbsp; Quay Về{" "}
-          </Button>
+          &nbsp; &nbsp;
+          <Link to="/voucher">
+            <Button type="primary" htmlType="submit">
+              <FontAwesomeIcon icon={faArrowLeft} />
+              &nbsp; Quay Về{" "}
+            </Button>
+          </Link>
         </div>
       </div>
     </>
   );
 };
 
-export default AddVoucher;
+export default UpdateVoucher;

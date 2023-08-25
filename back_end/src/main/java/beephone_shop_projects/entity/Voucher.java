@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -31,6 +32,10 @@ public class Voucher extends PrimaryEntity implements IsIdentified {
     private Date ngayKetThuc;
 
     private BigDecimal giaTriVoucher;
+
+    private BigDecimal dieuKienApDung;
+
+    private Integer soLuong;
 
     private Integer trangThai;
 }
