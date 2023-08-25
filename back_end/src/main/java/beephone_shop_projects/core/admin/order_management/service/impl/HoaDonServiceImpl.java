@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -45,7 +46,7 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderDto, Str
   }
 
   @Override
-  public OrderDto placeOrder(Account account, Voucher voucher) {
+  public OrderDto placeOrder(Account account, Voucher voucher) throws Exception {
     HoaDon newOrder = new HoaDon();
     newOrder.setMa(this.getCode());
     newOrder.setAccount(null);
@@ -77,7 +78,7 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderDto, Str
   }
 
   @Override
-  public OrderDto updateOrder(UpdateOrderDto updateOrderDto, OrderDto orderDto) {
+  public OrderDto updateOrder(UpdateOrderDto updateOrderDto, OrderDto orderDto) throws Exception {
     orderDto.setTrangThai(updateOrderDto.getOrderStatus());
     OrderDto updatedOrderDto = this.update(orderDto);
     LichSuHoaDon orderHistory = new LichSuHoaDon();
