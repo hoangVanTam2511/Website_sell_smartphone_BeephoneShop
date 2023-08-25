@@ -11,19 +11,19 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface KhuyenMaiRepository extends IKhuyenMaiRepository {
+public interface KhuyenMaiRepository extends IKhuyenMaiRepository, CustomKhuyenMaiRepository {
+
+//    @Query(value = """
+//            SELECT k.id, k.ma, k.ten_khuyen_mai, k.muc_giam_gia_theo_phan_tram, k.muc_giam_gia_theo_so_tien, k.ngay_bat_dau,
+//            k.ngay_ket_thuc, k.dieu_kien_giam_gia, k.trang_thai FROM khuyen_mai k
+//            """, nativeQuery = true)
+//    Page<KhuyenMaiResponse> getAllKhuyenMai(Pageable pageable);
 
     @Query(value = """
             SELECT k.id, k.ma, k.ten_khuyen_mai, k.muc_giam_gia_theo_phan_tram, k.muc_giam_gia_theo_so_tien, k.ngay_bat_dau, 
-            k.ngay_ket_thuc, k.dieu_kien_giam_gia, k.trang_thai FROM khuyen_mai k
+            k.ngay_ket_thuc, k.dieu_kien_giam_gia, k.trang_thai FROM khuyen_mai k WHERE k.id = ?1
             """, nativeQuery = true)
-    Page<KhuyenMaiResponse> getAllKhuyenMai(Pageable pageable);
-
-    @Query(value = """
-            SELECT k.ma, k.ten_khuyen_mai, k.muc_giam_gia_theo_phan_tram, k.muc_giam_gia_theo_so_tien, k.ngay_bat_dau, 
-            k.ngay_ket_thuc, k.dieu_kien_giam_gia, k.trang_thai FROM khuyen_mai k WHERE k.ma = ?1
-            """, nativeQuery = true)
-    KhuyenMaiResponse getOneKhuyenMai(String ma);
+    KhuyenMaiResponse getOneKhuyenMai(String id);
 
     @Transactional
     @Modifying

@@ -65,16 +65,24 @@ import AddRole from "../views/admin/account-manager/role/AddRole";
 //admin
 
 import Default from "../layouts/dashboard/default";
+
+//voucher
 import HienThiVoucher from "../views/admin/voucher-manager/quan-li-voucher";
 import AddVoucher from "../views/admin/voucher-manager/them-voucher";
+
+//khuyen mai
 import HienThiKhuyenMai from "../views/admin/promotion-manager/quan-li-promotion";
 import AddKhuyenMai from "../views/admin/promotion-manager/them-promotion";
+<<<<<<< HEAD
 import AddressForm from "../views/admin/account-manager/khachhang/DiaChi";
 import { ToastContainer } from "react-toastify";
 import UpdateKH from "../views/admin/account-manager/khachhang/UpdateKH";
 import UpdateNV from "../views/admin/account-manager/nhanvien/UpdateNV";
 
 
+=======
+import SuaKhuyenMai from "../views/admin/promotion-manager/sua-promotion";
+>>>>>>> beephone_van_anh
 
 export const DefaultRouter = [
   {
@@ -235,8 +243,8 @@ export const DefaultRouter = [
         element: <AddKhuyenMai />,
       },
       {
-        path: "sua-khuyen-mai",
-        element: <AddKhuyenMai />,
+        path: "sua-khuyen-mai/:id",
+        element: <SuaKhuyenMai />,
       },
     ],
   },

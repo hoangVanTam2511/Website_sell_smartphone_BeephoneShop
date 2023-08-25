@@ -1,5 +1,6 @@
 import {
   Form,
+  Popconfirm,
   Table,
   Input,
   Button,
@@ -117,7 +118,6 @@ const HienThiKH = () => {
     clearFilters();
     setSearchText("");
   };
-
 
   const getColumnSearchProps = (dataIndex) => ({
     filterDropdown: ({
@@ -462,7 +462,7 @@ const HienThiKH = () => {
 
         </span>
       ),
-    },
+    },{
     // {
     //   title: "Thao Tác",
     //   dataIndex: "operation",
@@ -520,6 +520,109 @@ const HienThiKH = () => {
 
     //   },
     // },
+      dataIndex: "idSanPham.ten",
+      width: "5%",
+      editable: true,
+      ...getColumnSearchProps("tên sản phẩm"),
+    },
+
+    {
+      title: "Nhà sản xuất",
+      dataIndex: "idNhaSanXuat.tenNhaSanXuat",
+      width: "5%",
+      editable: true,
+      ...getColumnSearchProps("nhà sản xuất"),
+    },
+    {
+      title: "Màu sắc",
+      dataIndex: "idMauSac.tenMauSac",
+      width: "5%",
+      editable: true,
+      ...getColumnSearchProps("pin"),
+    },
+
+    {
+      title: "Hình thức",
+      dataIndex: "idHinhThuc.hinhThuc",
+      width: "2%",
+      editable: true,
+      ...getColumnSearchProps("hình thức"),
+    },
+    {
+      title: "Số lượng",
+      dataIndex: "0",
+      width: "2%",
+      editable: true,
+      ...getColumnSearchProps("hình thức"),
+    },
+    {
+      title: "Đơn giá",
+      dataIndex: "donGia",
+      width: "5%",
+      editable: true,
+      ...getColumnSearchProps("đơn giá"),
+    },
+    {
+      title: "Ảnh",
+      dataIndex: "donGia",
+      width: "5%",
+      editable: true,
+      ...getColumnSearchProps("đơn giá"),
+    },
+    {
+      title: "Imei",
+      dataIndex: `operation`,
+      width: "5%",
+      render: (_, record) => {
+        return <Link>Danh sách imei</Link>;
+      },
+    },
+    {
+      title: "Thao Tác",
+      dataIndex: "operation",
+      width: "5%",
+      render: (_, record) => {
+        const editable = isEditing(record);
+        return editable ? (
+          <span>
+            <FontAwesomeIcon
+              icon={faSave}
+              onClick={() => save(record.id)}
+              style={{ marginRight: "15px", cursor: "pointer" }}
+            />
+            <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
+              <FontAwesomeIcon icon={faTimes} style={{ cursor: "pointer" }} />
+            </Popconfirm>
+          </span>
+        ) : (
+          <>
+            <FontAwesomeIcon
+              icon={faPencilAlt}
+              onClick={() => edit(record)}
+              style={{
+                cursor: "pointer",
+                // opacity: editingKey === record.id ? 0.5 : 1,
+                color: editingKey === record.id ? "red" : "green",
+              }}
+              disabled={editingKey !== ""}
+            />
+
+            <FontAwesomeIcon
+              icon={faTrashAlt}
+              onClick={() => Delete(record)}
+              style={{
+                cursor: "pointer",
+                // opacity: editingKey === record.id ? 0.5 : 1,
+                color: "#F55E4C",
+                marginLeft: 20,
+              }}
+              disabled={editingKey !== ""}
+            />
+          </>
+        );
+      },
+    },
+>>>>>>> beephone_van_anh
   ];
 
   const mergedColumns = columns.map((col) => {
@@ -539,6 +642,7 @@ const HienThiKH = () => {
 
   return (
     <>
+
 
       <h2 className="text-center font-weight-bold">Quản lí chi tiết sản phẩm</h2>
       <br />
@@ -775,6 +879,52 @@ const HienThiKH = () => {
             />
           </Form>
         </div>
+
+      <div className="btn-add">
+        <span>
+          <Form style={{ width: "20em", display: "inline-block" }}>
+            <h2>Quản lí chi tiết sản phẩm</h2>
+          </Form>
+        </span>
+
+        {/* Search */}
+        <FontAwesomeIcon style={{ marginLeft: "5px" }} />
+        <span className="bl-add">
+          <Link to="/them-man-hinh">
+            <Button className="btn-them-tk">+ Thêm chi tiết sản phẩm </Button>
+          </Link>
+        </span>
+      </div>
+      <div className="form-tbl">
+        <Form
+          form={form}
+          component={false}
+          initialValues={editingNgaySinh || {}}
+        >
+          <Table
+            components={{
+              body: {
+                cell: EditableCell,
+              },
+            }}
+            bordered
+            dataSource={filteredDataSource}
+            columns={mergedColumns}
+            rowClassName="editable-row"
+            pagination={false}
+            rowKey="id"
+            style={{ marginBottom: "20px" }}
+          />
+
+          <Pagination
+            simplecurrent={currentPage + 1}
+            onChange={(value) => {
+              setCurrentPage(value - 1);
+            }}
+            total={totalPages * 10}
+          />
+        </Form>
+      </div>
       </div>
     </>
   );

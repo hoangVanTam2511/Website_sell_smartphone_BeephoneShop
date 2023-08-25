@@ -1,7 +1,5 @@
 package beephone_shop_projects.core.admin.promotion_management.model.request;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -9,33 +7,31 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.math.BigDecimal;
 import java.util.Date;
 
-@Setter
 @Getter
-public class UpdateKhuyenMaiRequest {
+@Setter
+public class FindKhuyenMaiRequest {
 
-//    @NotBlank
-//    private String ma;
+    private String ma;
 
-    @NotBlank
     private String tenKhuyenMai;
 
-    @NotNull
     private BigDecimal mucGiamGiaTheoPhanTram;
 
-    @NotNull
     private BigDecimal mucGiamGiaTheoSoTien;
 
-    @NotNull
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date ngayBatDau;
 
-    @NotNull
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date ngayKetThuc;
 
-    @NotBlank
     private String dieuKienGiamGia;
 
     private Boolean trangThai;
 
+    private String keyword;
+
+    private Integer pageNo;
+
+    private Integer pageSize;
 }
