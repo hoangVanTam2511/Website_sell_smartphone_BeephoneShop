@@ -9,9 +9,7 @@ import TextField from "@mui/material/TextField";
 import "../../../assets/scss/HienThiNV.scss";
 import { Box, InputAdornment } from "@mui/material";
 import "../../../assets/scss/addVoucher.scss";
-<<<<<<< HEAD
 import Swal from "sweetalert2";
-=======
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -20,7 +18,6 @@ import dayjs from "dayjs"; // Import thư viện Day.js
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { isEmpty, isBefore, isAfter, equals } from "validator";
->>>>>>> beephone_dung
 
 const AddVoucher = () => {
   let [ten, setTen] = useState("");

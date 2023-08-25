@@ -11,7 +11,7 @@ import {
   Slider,
   Tag
 } from "antd";
-import { useState, useEffect,useReducer, useRef } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import {
   apiURLSanPham, apiURLChip, apiURLDongSanPham, apiURLManHinh, apiURLMauSac,
@@ -81,7 +81,7 @@ const HienThiKH = () => {
   const [filterStatus, setFilterStatus] = useState(null);
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
-  const searchInput = useRef(null);
+  // const searchInput = useRef(null);
   const [listColor, setlistColor] = useState([])
   const [listChip, setlistChip] = useState([])
   const [listRam, setListRam] = useState([])
@@ -134,7 +134,7 @@ const HienThiKH = () => {
         onKeyDown={(e) => e.stopPropagation()}
       >
         <Input
-          ref={searchInput}
+          // ref={searchInput}
           placeholder={`Nhập ${dataIndex}`}
           value={selectedKeys[0]}
           onChange={(e) =>
@@ -192,7 +192,7 @@ const HienThiKH = () => {
       record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
     onFilterDropdownOpenChange: (visible) => {
       if (visible) {
-        setTimeout(() => searchInput.current?.select(), 100);
+        // setTimeout(() => searchInput.current?.select(), 100);
       }
     },
     render: (text) =>
@@ -578,51 +578,51 @@ const HienThiKH = () => {
       },
     },
     {
-      title: "Thao Tác",
-      dataIndex: "operation",
-      width: "5%",
-      render: (_, record) => {
-        const editable = isEditing(record);
-        return editable ? (
-          <span>
-            <FontAwesomeIcon
-              icon={faSave}
-              onClick={() => save(record.id)}
-              style={{ marginRight: "15px", cursor: "pointer" }}
-            />
-            <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
-              <FontAwesomeIcon icon={faTimes} style={{ cursor: "pointer" }} />
-            </Popconfirm>
-          </span>
-        ) : (
-          <>
-            <FontAwesomeIcon
-              icon={faPencilAlt}
-              onClick={() => edit(record)}
-              style={{
-                cursor: "pointer",
-                // opacity: editingKey === record.id ? 0.5 : 1,
-                color: editingKey === record.id ? "red" : "green",
-              }}
-              disabled={editingKey !== ""}
-            />
+      // title: "Thao Tác",
+      // dataIndex: "operation",
+      // width: "5%",
+      // render: (_, record) => {
+      //   const editable = isEditing(record);
+      //   return editable ? (
+      //     <span>
+      //       <FontAwesomeIcon
+      //         // icon={faSave}
+      //         onClick={() => save(record.id)}
+      //         style={{ marginRight: "15px", cursor: "pointer" }}
+      //       />
+      //       <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
+      //         <FontAwesomeIcon icon={faTimes} style={{ cursor: "pointer" }} />
+      //       </Popconfirm>
+      //     </span>
+      //   ) : (
+      //     <>
+      //       <FontAwesomeIcon
+      //         icon={faPencilAlt}
+      //         onClick={() => edit(record)}
+      //         style={{
+      //           cursor: "pointer",
+      //           // opacity: editingKey === record.id ? 0.5 : 1,
+      //           color: editingKey === record.id ? "red" : "green",
+      //         }}
+      //         disabled={editingKey !== ""}
+      //       />
 
-            <FontAwesomeIcon
-              icon={faTrashAlt}
-              onClick={() => Delete(record)}
-              style={{
-                cursor: "pointer",
-                // opacity: editingKey === record.id ? 0.5 : 1,
-                color: "#F55E4C",
-                marginLeft: 20,
-              }}
-              disabled={editingKey !== ""}
-            />
-          </>
-        );
-      },
+      //       <FontAwesomeIcon
+      //         icon={faTrashAlt}
+      //         onClick={() => Delete(record)}
+      //         style={{
+      //           cursor: "pointer",
+      //           // opacity: editingKey === record.id ? 0.5 : 1,
+      //           color: "#F55E4C",
+      //           marginLeft: 20,
+      //         }}
+      //         disabled={editingKey !== ""
+      //       }
+      //       />
+      //     </>
+      //   );
+      // },
     },
->>>>>>> beephone_van_anh
   ];
 
   const mergedColumns = columns.map((col) => {
