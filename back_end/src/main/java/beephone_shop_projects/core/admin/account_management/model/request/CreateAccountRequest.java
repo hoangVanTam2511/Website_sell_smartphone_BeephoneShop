@@ -20,11 +20,23 @@ public class CreateAccountRequest {
 
     private String diaChi;
 
-    private Integer trangThai;
-
     private String matKhau;
 
     private String soDienThoai;
+
+    private String xaPhuong;
+
+    private String quanHuyen;
+
+    private String canCuocCongDan;
+
+    private String tinhThanhPho;
+
+    private Boolean gioiTinh;
+
+    private String anhDaiDien;
+
+    private Integer trangThai;
 
     private String idRole;
 

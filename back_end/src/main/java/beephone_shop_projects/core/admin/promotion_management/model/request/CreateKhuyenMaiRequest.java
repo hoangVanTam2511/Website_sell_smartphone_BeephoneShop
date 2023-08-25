@@ -13,27 +13,27 @@ import java.util.Date;
 @Setter
 public class CreateKhuyenMaiRequest {
 
-    @NotBlank
-    private String ma;
+//    @NotBlank
+//    private String ma;
 
-    @NotBlank
+    @NotBlank(message = "Tên khuyến mãi không được để trống !!!")
     private String tenKhuyenMai;
 
-    @NotNull
+    @NotNull(message = "Mức giảm giá theo phần trăm không được trống !!!")
     private BigDecimal mucGiamGiaTheoPhanTram;
 
-    @NotNull
+    @NotNull(message = "Mức giảm giá theo số tiền không được trống !!!")
     private BigDecimal mucGiamGiaTheoSoTien;
 
-    @NotNull
+    @NotNull(message = "Ngày bắt đầu không được trống !!!")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date ngayBatDau;
 
-    @NotNull
+    @NotNull(message = "Ngày kết thúc không được trống !!!")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date ngayKetThuc;
 
-    @NotBlank
+    @NotBlank(message = "Điều kiện giảm giá không được trống !!!")
     private String dieuKienGiamGia;
 
     private Boolean trangThai;

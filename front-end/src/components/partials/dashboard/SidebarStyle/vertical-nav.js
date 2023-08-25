@@ -1,168 +1,83 @@
-import React, { Fragment, memo, useContext, useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
-import { Accordion, AccordionContext, useAccordionButton } from 'react-bootstrap'
-
-
+import React, { useState, useContext, memo, Fragment } from "react";
+import { Link, useLocation } from "react-router-dom";
+import {
+  Accordion,
+  useAccordionButton,
+  AccordionContext,
+} from "react-bootstrap";
+import { faShoppingCart } from "@fortawesome/react-fontawesome";
 function CustomToggle({ children, eventKey, onClick }) {
-
   const { activeEventKey } = useContext(AccordionContext);
 
-  const decoratedOnClick = useAccordionButton(eventKey, (active) => onClick({ state: !active, eventKey: eventKey }));
+  const decoratedOnClick = useAccordionButton(eventKey, (active) =>
+    onClick({ state: !active, eventKey: eventKey })
+  );
 
   const isCurrentEventKey = activeEventKey === eventKey;
 
   return (
-    <Link to="#" aria-expanded={isCurrentEventKey ? 'true' : 'false'} className="nav-link" role="button"
+    <Link
+      to="#"
+      aria-expanded={isCurrentEventKey ? "true" : "false"}
+      className="nav-link"
+      role="button"
       onClick={(e) => {
-        decoratedOnClick(isCurrentEventKey)
-      }}>
+        decoratedOnClick(isCurrentEventKey);
+      }}
+    >
       {children}
     </Link>
   );
 }
 
 const VerticalNav = memo((props) => {
-  const [activeMenu, setActiveMenu] = useState(false)
-  const [active, setActive] = useState('')
+  const [activeMenu, setActiveMenu] = useState(false);
+  const [active, setActive] = useState("");
   //location
   let location = useLocation();
   return (
     <Fragment>
       <Accordion as="ul" className="navbar-nav iq-main-menu">
-
-        <li className="nav-item">
+        <li
+          className={`${location.pathname === "/" ? "active" : ""} nav-item `}
+        >
           <Link
-            className={`${location.pathname.includes("/dashboard/management-orders") ||
-              location.pathname.includes("/dashboard/order-detail")
-              ? "active"
-              : ""
-              } nav-link`}
-            to="/dashboard/management-orders"
+            className={`${location.pathname === "/" ? "active" : ""} nav-link `}
+            aria-current="page"
+            to="/"
+            onClick={() => { }}
           >
             <i className="icon">
-              <svg
-                width="25"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  opacity="0.4"
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M5.91064 20.5886C5.91064 19.7486 6.59064 19.0686 7.43064 19.0686C8.26064 19.0686 8.94064 19.7486 8.94064 20.5886C8.94064 21.4186 8.26064 22.0986 7.43064 22.0986C6.59064 22.0986 5.91064 21.4186 5.91064 20.5886ZM17.1606 20.5886C17.1606 19.7486 17.8406 19.0686 18.6806 19.0686C19.5106 19.0686 20.1906 19.7486 20.1906 20.5886C20.1906 21.4186 19.5106 22.0986 18.6806 22.0986C17.8406 22.0986 17.1606 21.4186 17.1606 20.5886Z"
-                  fill="currentColor"
-                />
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M20.1907 6.34909C20.8007 6.34909 21.2007 6.55909 21.6007 7.01909C22.0007 7.47909 22.0707 8.13909 21.9807 8.73809L21.0307 15.2981C20.8507 16.5591 19.7707 17.4881 18.5007 17.4881H7.59074C6.26074 17.4881 5.16074 16.4681 5.05074 15.1491L4.13074 4.24809L2.62074 3.98809C2.22074 3.91809 1.94074 3.52809 2.01074 3.12809C2.08074 2.71809 2.47074 2.44809 2.88074 2.50809L5.26574 2.86809C5.60574 2.92909 5.85574 3.20809 5.88574 3.54809L6.07574 5.78809C6.10574 6.10909 6.36574 6.34909 6.68574 6.34909H20.1907ZM14.1307 11.5481H16.9007C17.3207 11.5481 17.6507 11.2081 17.6507 10.7981C17.6507 10.3781 17.3207 10.0481 16.9007 10.0481H14.1307C13.7107 10.0481 13.3807 10.3781 13.3807 10.7981C13.3807 11.2081 13.7107 11.5481 14.1307 11.5481Z"
-                  fill="currentColor"
-                />
-              </svg>
+              <img
+                width={20}
+                color="#8888"
+                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAADNElEQVR4nO2aTU8TURSGHxdtZaFGxaULJWqiIh+icaERfoQfP0H/hMrOSCLFoIEFLnWFaDCwZU80GqULYKUbjQUjZSEtac1N3kluaof56J0yVd5kNsy5557DPV/3ncIe/j3kgCFgGJgBCsA6UAZqtAH6gUngpwz2e1KLXmC+ztivwBRwB7gOnEmzIx3AKLAtA38Dz4ErPvKpdOQU8EGGVeXA8YA19Y5s6TH5s6R8Mnk1qDxLHJeBHzLqi0InDOod2SmPjHMTQF+STpS02QLQGWFtvSNZIAMcBnqAG8Bj4KMlWwXeAt2uw8k7iVlgf8T1UXLkrJwqaU0FGHERch1WTizEcCJush8F8nLErH0PdNEERq2ciBJOrqpWP7Cs9d+Bgbh9oqJ4DZvYSZTfA8oXo2MDuBhVgdfsTIltBi76SAZ4YZ3MyShH6jW7oD4RBFcNMQPMSde7sAVg0tFpuO7sB4EV6XsUJJyzBkC/sSMKXI8oAxqPykF9ZsgaAPc52DiJWeuJ1dd8MSwhM8WSUkc6gU1VVDMdNMRrbXzX0aZJTb+j0vvMT6AggWZ6RyscOS+9a5rf/kJRAqcdbZjkfeSzdF9r9HIrYNSO+ySBvHTfb/Sy1kaO3JLuV7Q5euWICbG2RqccMfelQHg507Ay7DJy1kz4/zhSlLC5tbV1aBUkfIE2T/YZCd8kfbgt26bDCHtDpGE30oYx2XYvjPCghA3vlDYs7TSiNKoM61pgeKe0oFs2FXUNDoWJFIZXXjY9jbKoT5eYUkrK8LEwFys/eNySSbDdxrhseRM3Jit6DF20W7hkkQ/n4ioZ0X9iWQxgq3EIWJUND5tRlBM5VlOoha4WDpCx2M9FFwx9l2jLmmjMVjiTAV5qz2/ACZck2YYUz4kBTDKc5rXXrzgkdhhnvJNZiUv5h0jsVesknDthh5mXM9tiAON+R6nvE+PWl+NFl+Hkh5wIZe8XDpsizwzvFKfEm469KV1lVaeWfO21jZhVt61Z94S82A5zdziim2ZWE0Kv3o1ZA6B5qmp2sfuEC/SIxlyLQRkVNTv1kCJkNV4/0MXnkwz1fjBQ1N+mRbBdbXFf2gOtwB84n09GlR2llgAAAABJRU5ErkJggg==" />
             </i>
-            <span className="item-name" style={{ fontWeight: "" }}>
-              Quản Lý Đơn Hàng
-            </span>
+            <span className="item-name">Thống kê</span>
           </Link>
         </li>
 
-        <Accordion.Item as="li" className={`${activeMenu === '0' ? 'active' : ''}`} eventKey="sidebar-auth"
-          bsPrefix={`nav-item ${active === 'auth' ? 'active' : ''} `}
-          onClick={() => setActive('auth')}>
-          <CustomToggle eventKey="sidebar-auth" onClick={(activeKey) => setActiveMenu(activeKey)}>
-            <i className="icon">
-              <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path opacity="0.4"
-                  d="M2 11.0786C2.05 13.4166 2.19 17.4156 2.21 17.8566C2.281 18.7996 2.642 19.7526 3.204 20.4246C3.986 21.3676 4.949 21.7886 6.292 21.7886C8.148 21.7986 10.194 21.7986 12.181 21.7986C14.176 21.7986 16.112 21.7986 17.747 21.7886C19.071 21.7886 20.064 21.3566 20.836 20.4246C21.398 19.7526 21.759 18.7896 21.81 17.8566C21.83 17.4856 21.93 13.1446 21.99 11.0786H2Z"
-                  fill="currentColor"></path>
-                <path
-                  d="M11.2451 15.3843V16.6783C11.2451 17.0923 11.5811 17.4283 11.9951 17.4283C12.4091 17.4283 12.7451 17.0923 12.7451 16.6783V15.3843C12.7451 14.9703 12.4091 14.6343 11.9951 14.6343C11.5811 14.6343 11.2451 14.9703 11.2451 15.3843Z"
-                  fill="currentColor"></path>
-                <path fillRule="evenodd" clipRule="evenodd"
-                  d="M10.211 14.5565C10.111 14.9195 9.762 15.1515 9.384 15.1015C6.833 14.7455 4.395 13.8405 2.337 12.4815C2.126 12.3435 2 12.1075 2 11.8555V8.38949C2 6.28949 3.712 4.58149 5.817 4.58149H7.784C7.972 3.12949 9.202 2.00049 10.704 2.00049H13.286C14.787 2.00049 16.018 3.12949 16.206 4.58149H18.183C20.282 4.58149 21.99 6.28949 21.99 8.38949V11.8555C21.99 12.1075 21.863 12.3425 21.654 12.4815C19.592 13.8465 17.144 14.7555 14.576 15.1105C14.541 15.1155 14.507 15.1175 14.473 15.1175C14.134 15.1175 13.831 14.8885 13.746 14.5525C13.544 13.7565 12.821 13.1995 11.99 13.1995C11.148 13.1995 10.433 13.7445 10.211 14.5565ZM13.286 3.50049H10.704C10.031 3.50049 9.469 3.96049 9.301 4.58149H14.688C14.52 3.96049 13.958 3.50049 13.286 3.50049Z"
-                  fill="currentColor"></path>
-              </svg>
-            </i>
-            <span className="item-name">Sản phẩm</span>
-            <i className="right-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-              </svg>
-            </i>
-          </CustomToggle>
-          <Accordion.Collapse eventKey="sidebar-auth">
-            <ul className="sub-nav">
               <li className="nav-item">
                 <Link
-                  className={`${location.pathname === '/chi-tiet-san-pham' ? 'active' : ''} nav-link`}
-                  to="/chi-tiet-san-pham">
+                  className={`${
+                    location.pathname === "/camera" ? "active" : ""
+                  } nav-link`}
+                  to="/camera"
+                >
                   <i className="icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24"
-                      fill="currentColor">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="10"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
                       <g>
-                        <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
-                      </g>
-                    </svg>
-                  </i>
-                  <i className="sidenav-mini-icon"> L </i>
-                  <span className="item-name">Chi tiết sản phẩm</span>
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link className={`${location.pathname === '/mau-sac' ? 'active' : ''} nav-link`}
-                  to="/mau-sac">
-                  <i className="icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24"
-                      fill="currentColor">
-                      <g>
-                        <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
-                      </g>
-                    </svg>
-                  </i>
-                  <i className="sidenav-mini-icon"> L </i>
-                  <span className="item-name">Màu sắc</span>
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link className={`${location.pathname === '/chip' ? 'active' : ''} nav-link`}
-                  to="/chip">
-                  <i className="icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24"
-                      fill="currentColor">
-                      <g>
-                        <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
-                      </g>
-                    </svg>
-                  </i>
-                  <i className="sidenav-mini-icon"> R </i>
-                  <span className="item-name">Chip </span>
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link className={`${location.pathname === '/ram' ? 'active' : ''} nav-link`} to="/ram">
-                  <i className="icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24"
-                      fill="currentColor">
-                      <g>
-                        <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
-                      </g>
-                    </svg>
-                  </i>
-                  <i className="sidenav-mini-icon"> C </i>
-                  <span className="item-name">Ram</span>
-                </Link>
-              </li>
-
-              <li className="nav-item">
-                <Link className={`${location.pathname === '/camera' ? 'active' : ''} nav-link`}
-                  to="/camera">
-                  <i className="icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24"
-                      fill="currentColor">
-                      <g>
-                        <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="8"
+                          fill="currentColor"
+                        ></circle>
                       </g>
                     </svg>
                   </i>
@@ -171,14 +86,194 @@ const VerticalNav = memo((props) => {
                 </Link>
               </li>
 
+        <li
+          className={`${location.pathname === "/ban-hang-tai-quay" ? "active" : ""} nav-item `}
+        >
+          <Link
+            className={`${location.pathname === "/ban-hang-tai-quay" ? "active" : ""} nav-link `}
+            aria-current="page"
+            to="/ban-hang-tai-quay"
+            onClick={() => { }}
+          >
+            <i className="icon">
+              {/* icon */}
+              <img
+                width={20}
+                color="#8888"
+                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAABzklEQVR4nO2Yvy9DURiGn0bTtAZLzdj5BzqwsCOY1M4mqURsRFqV8AeolVWwMxBDWZn9bE0sorSVVE5yhy83Jb23557bJudJvqXJ+37v6Tn3nHMvWCwWS6eQA76AhlMfwBUwQxcQcQI3/qgsXUDWNQPuStFl9AFHYgAFupDUPzMSVn0Dm60OoBf46YDQDVep57Vl7jogcMNVt14GcCiEi4THkshx4EW4IoR7hEdB5Mh4EU4IYZHwuBY5xr0Ik0Kozoko5okCFZGj36vBkxAPY54R0f/Rj8GJMEhjngXR/9iPwbow2ME8u6K/yuKZKWFwhnnORf9JPwaDwuDdub2aIgK8if4Dfo2kiRqQKYZ0/XlyGtWSMsW0ruXb9oPkkw1dG0haGKlt1RSnou+8rsNEHWymeNZ1iPYAn+0c5z5Iin4VHdeYojCcJXjmdF8kc8JQ3Q7jBEccuNH9ZUTtyVVhegGMAgn0kQDGgEvRp9rOAeYmE8Ir5DKaWQPqBoLXgVUCQm2r+8ADUNMYugbcO95hvHtYQiEGbANloATknd+C0mkn32Qt5wPUaafcJMhrgDrtlJoEeQlQp51mS2ErQJ12Yk6Yko+HOO9DZ7FYLHQGv8aUfw/+DduBAAAAAElFTkSuQmCC" />
+            </i>
+            <span className="item-name">Bán hàng tại quầy</span>
+          </Link>
+        </li>
+
+        <Accordion.Item
+          as="li"
+          className={`${activeMenu === "0" ? "active" : ""}`}
+          eventKey="sidebar-auth"
+          bsPrefix={`nav-item ${active === "auth" ? "active" : ""} `}
+          onClick={() => setActive("auth")}
+        >
+          <CustomToggle
+            eventKey="sidebar-auth"
+            onClick={(activeKey) => setActiveMenu(activeKey)}
+          >
+            <i className="icon">
+              <img
+                width={20}
+                color="#8888"
+                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAAsTAAALEwEAmpwYAAACSklEQVR4nO2bW2oUURCGvzaGuAHjAnQBGl2Elw14WYSMGfDFwDwKmg4a3YCIqIsx8VV9igrRt5gFTCgooTg0CjOnunvg/+HAwEBduuvUdxpOQR01wBbwAJgAj5PWxH1suc/BdQnYA34C857XD6AFNodIvAGmwOkAiZfrD/Coz4q4ALzrCOQYeO9v5WnSat3Hrw7/b4GN7OSbjuQ/ATeBc/Qn83ULOOh4CKmVMC0cvgDOM5zM934Rk22HFG36fovJj0WvQlyn3pyra68o+0Xf/BWvpBJxU/9vEVkshyG+51RWU6DO9vyi+vaPjv5lCbu3g53vtXvBjaLbL9PwviY9gLWCDnZYqqb7wbBhaBlZme90IO4JcHlJ2x9DnHdJ6v7PGK92Q5zbNQ3PgmH7PValxTnTA0AVMNcWQD1griaIKDBjvBIG0TkAHYTQSRAdhdG3APoYYhX4WlnCIMIgwiDCIMIgwiDCIKvA18oSBhEGEQYRBhEGEQYRBlkFvlaWMIgwiDCIMIgwiDCIMMgq8LWy0uLczryIXFFt1rX5exWvymYq7ars9YqXpbNkl6V/hziv1TTe+JTWX+M2rjI23QnxHWWMzrTBwcHAozKl1oHP2X3qInASnLxkPHpdjNGljMzgnTUOOOwPXAnrRfK2HmY6bHw0LTo89HEVa0J9ac33fCx7W2/6cL7R8RDmPq7ywXtF1uxw66iL3T4mnz44GSthUozRDbVOssv+f7OEuz6l1XfiR97trTkPrsYPHnZitMrImh022+bjai3OnwF4eENmxJKIXwAAAABJRU5ErkJggg==" />
+            </i>
+            <span className="item-name">Sản phẩm</span>
+            <i className="right-icon">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </i>
+          </CustomToggle>
+          <Accordion.Collapse eventKey="sidebar-auth">
+            <ul className="sub-nav">
               <li className="nav-item">
-                <Link className={`${location.pathname === '/dong-san-pham' ? 'active' : ''} nav-link`}
-                  to="/dong-san-pham">
+                <Link
+                  className={`${location.pathname === "/chi-tiet-san-pham" ? "active" : ""
+                    } nav-link`}
+                  to="/chi-tiet-san-pham"
+                >
                   <i className="icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24"
-                      fill="currentColor">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="10"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
                       <g>
-                        <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="8"
+                          fill="currentColor"
+                        ></circle>
+                      </g>
+                    </svg>
+                  </i>
+                  <i className="sidenav-mini-icon"> L </i>
+                  <span className="item-name">Chi tiết sản phẩm</span>
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link
+                  className={`${location.pathname === "/mau-sac" ? "active" : ""
+                    } nav-link`}
+                  to="/mau-sac"
+                >
+                  <i className="icon">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="10"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <g>
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="8"
+                          fill="currentColor"
+                        ></circle>
+                      </g>
+                    </svg>
+                  </i>
+                  <i className="sidenav-mini-icon"> L </i>
+                  <span className="item-name">Màu sắc</span>
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link
+                  className={`${location.pathname === "/chip" ? "active" : ""
+                    } nav-link`}
+                  to="/chip"
+                >
+                  <i className="icon">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="10"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <g>
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="8"
+                          fill="currentColor"
+                        ></circle>
+                      </g>
+                    </svg>
+                  </i>
+                  <i className="sidenav-mini-icon"> R </i>
+                  <span className="item-name">Chip </span>
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link
+                  className={`${location.pathname === "/ram" ? "active" : ""
+                    } nav-link`}
+                  to="/ram"
+                >
+                  <i className="icon">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="10"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <g>
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="8"
+                          fill="currentColor"
+                        ></circle>
+                      </g>
+                    </svg>
+                  </i>
+                  <i className="sidenav-mini-icon"> C </i>
+                  <span className="item-name">Ram</span>
+                </Link>
+              </li>
+
+           
+
+              <li className="nav-item">
+                <Link
+                  className={`${location.pathname === "/dong-san-pham" ? "active" : ""
+                    } nav-link`}
+                  to="/dong-san-pham"
+                >
+                  <i className="icon">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="10"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <g>
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="8"
+                          fill="currentColor"
+                        ></circle>
                       </g>
                     </svg>
                   </i>
@@ -187,31 +282,28 @@ const VerticalNav = memo((props) => {
                 </Link>
               </li>
 
-              <li className="nav-item">
-                <Link
-                  className={`${location.pathname === '/hinh-thuc-san-pham' ? 'active' : ''} nav-link`}
-                  to="/hinh-thuc-san-pham">
-                  <i className="icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24"
-                      fill="currentColor">
-                      <g>
-                        <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
-                      </g>
-                    </svg>
-                  </i>
-                  <i className="sidenav-mini-icon"> C </i>
-                  <span className="item-name">Hình thức sản phẩm</span>
-                </Link>
-              </li>
+          
 
               <li className="nav-item">
-                <Link className={`${location.pathname === '/man-hinh' ? 'active' : ''} nav-link`}
-                  to="/man-hinh">
+                <Link
+                  className={`${location.pathname === "/man-hinh" ? "active" : ""
+                    } nav-link`}
+                  to="/man-hinh"
+                >
                   <i className="icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24"
-                      fill="currentColor">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="10"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
                       <g>
-                        <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="8"
+                          fill="currentColor"
+                        ></circle>
                       </g>
                     </svg>
                   </i>
@@ -221,13 +313,25 @@ const VerticalNav = memo((props) => {
               </li>
 
               <li className="nav-item">
-                <Link className={`${location.pathname === '/nha-san-xuat' ? 'active' : ''} nav-link`}
-                  to="/nha-san-xuat">
+                <Link
+                  className={`${location.pathname === "/nha-san-xuat" ? "active" : ""
+                    } nav-link`}
+                  to="/nha-san-xuat"
+                >
                   <i className="icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24"
-                      fill="currentColor">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="10"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
                       <g>
-                        <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="8"
+                          fill="currentColor"
+                        ></circle>
                       </g>
                     </svg>
                   </i>
@@ -237,12 +341,25 @@ const VerticalNav = memo((props) => {
               </li>
 
               <li className="nav-item">
-                <Link className={`${location.pathname === '/pin' ? 'active' : ''} nav-link`} to="/pin">
+                <Link
+                  className={`${location.pathname === "/pin" ? "active" : ""
+                    } nav-link`}
+                  to="/pin"
+                >
                   <i className="icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24"
-                      fill="currentColor">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="10"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
                       <g>
-                        <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="8"
+                          fill="currentColor"
+                        ></circle>
                       </g>
                     </svg>
                   </i>
@@ -252,12 +369,25 @@ const VerticalNav = memo((props) => {
               </li>
 
               <li className="nav-item">
-                <Link className={`${location.pathname === '/rom' ? 'active' : ''} nav-link`} to="/rom">
+                <Link
+                  className={`${location.pathname === "/rom" ? "active" : ""
+                    } nav-link`}
+                  to="/rom"
+                >
                   <i className="icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24"
-                      fill="currentColor">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="10"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
                       <g>
-                        <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="8"
+                          fill="currentColor"
+                        ></circle>
                       </g>
                     </svg>
                   </i>
@@ -266,72 +396,96 @@ const VerticalNav = memo((props) => {
                 </Link>
               </li>
 
-
-              <li className="nav-item">
-                <Link className={`${location.pathname === '/san-pham' ? 'active' : ''} nav-link`}
-                  to="/san-pham">
-                  <i className="icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24"
-                      fill="currentColor">
-                      <g>
-                        <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
-                      </g>
-                    </svg>
-                  </i>
-                  <i className="sidenav-mini-icon"> C </i>
-                  <span className="item-name">Sản phẩm</span>
-                </Link>
-              </li>
-
             </ul>
           </Accordion.Collapse>
         </Accordion.Item>
 
-
-        <Accordion.Item as="li" eventKey="sidebar-user"
-          bsPrefix={`nav-item ${active === 'user' ? 'active' : ''} `}
-          onClick={() => setActive('user')}>
-          <CustomToggle eventKey="sidebar-user" onClick={(activeKey) => setActiveMenu(activeKey)}>
+        <Accordion.Item
+          as="li"
+          eventKey="sidebar-user"
+          bsPrefix={`nav-item ${active === "user" ? "active" : ""} `}
+          onClick={() => setActive("user")}
+        >
+          <CustomToggle
+            eventKey="sidebar-user"
+            onClick={(activeKey) => setActiveMenu(activeKey)}
+          >
             <i className="icon">
-              <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg
+                width="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
                 <path
                   d="M11.9488 14.54C8.49884 14.54 5.58789 15.1038 5.58789 17.2795C5.58789 19.4562 8.51765 20.0001 11.9488 20.0001C15.3988 20.0001 18.3098 19.4364 18.3098 17.2606C18.3098 15.084 15.38 14.54 11.9488 14.54Z"
-                  fill="currentColor"></path>
-                <path opacity="0.4"
+                  fill="currentColor"
+                ></path>
+                <path
+                  opacity="0.4"
                   d="M11.949 12.467C14.2851 12.467 16.1583 10.5831 16.1583 8.23351C16.1583 5.88306 14.2851 4 11.949 4C9.61293 4 7.73975 5.88306 7.73975 8.23351C7.73975 10.5831 9.61293 12.467 11.949 12.467Z"
-                  fill="currentColor"></path>
-                <path opacity="0.4"
+                  fill="currentColor"
+                ></path>
+                <path
+                  opacity="0.4"
                   d="M21.0881 9.21923C21.6925 6.84176 19.9205 4.70654 17.664 4.70654C17.4187 4.70654 17.1841 4.73356 16.9549 4.77949C16.9244 4.78669 16.8904 4.802 16.8725 4.82902C16.8519 4.86324 16.8671 4.90917 16.8895 4.93889C17.5673 5.89528 17.9568 7.0597 17.9568 8.30967C17.9568 9.50741 17.5996 10.6241 16.9728 11.5508C16.9083 11.6462 16.9656 11.775 17.0793 11.7948C17.2369 11.8227 17.3981 11.8371 17.5629 11.8416C19.2059 11.8849 20.6807 10.8213 21.0881 9.21923Z"
-                  fill="currentColor"></path>
+                  fill="currentColor"
+                ></path>
                 <path
                   d="M22.8094 14.817C22.5086 14.1722 21.7824 13.73 20.6783 13.513C20.1572 13.3851 18.747 13.205 17.4352 13.2293C17.4155 13.232 17.4048 13.2455 17.403 13.2545C17.4003 13.2671 17.4057 13.2887 17.4316 13.3022C18.0378 13.6039 20.3811 14.916 20.0865 17.6834C20.074 17.8032 20.1698 17.9068 20.2888 17.8888C20.8655 17.8059 22.3492 17.4853 22.8094 16.4866C23.0637 15.9589 23.0637 15.3456 22.8094 14.817Z"
-                  fill="currentColor"></path>
-                <path opacity="0.4"
+                  fill="currentColor"
+                ></path>
+                <path
+                  opacity="0.4"
                   d="M7.04459 4.77973C6.81626 4.7329 6.58077 4.70679 6.33543 4.70679C4.07901 4.70679 2.30701 6.84201 2.9123 9.21947C3.31882 10.8216 4.79355 11.8851 6.43661 11.8419C6.60136 11.8374 6.76343 11.8221 6.92013 11.7951C7.03384 11.7753 7.09115 11.6465 7.02668 11.551C6.3999 10.6234 6.04263 9.50765 6.04263 8.30991C6.04263 7.05904 6.43303 5.89462 7.11085 4.93913C7.13234 4.90941 7.14845 4.86348 7.12696 4.82926C7.10906 4.80135 7.07593 4.78694 7.04459 4.77973Z"
-                  fill="currentColor"></path>
+                  fill="currentColor"
+                ></path>
                 <path
                   d="M3.32156 13.5127C2.21752 13.7297 1.49225 14.1719 1.19139 14.8167C0.936203 15.3453 0.936203 15.9586 1.19139 16.4872C1.65163 17.4851 3.13531 17.8066 3.71195 17.8885C3.83104 17.9065 3.92595 17.8038 3.91342 17.6832C3.61883 14.9167 5.9621 13.6046 6.56918 13.3029C6.59425 13.2885 6.59962 13.2677 6.59694 13.2542C6.59515 13.2452 6.5853 13.2317 6.5656 13.2299C5.25294 13.2047 3.84358 13.3848 3.32156 13.5127Z"
-                  fill="currentColor"></path>
+                  fill="currentColor"
+                ></path>
               </svg>
             </i>
             <span className="item-name">Tài khoản</span>
             <i className="right-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M9 5l7 7-7 7"
+                />
               </svg>
             </i>
           </CustomToggle>
           <Accordion.Collapse eventKey="sidebar-user">
             <ul className="sub-nav">
               <li className="nav-item">
-                <Link className={`${location.pathname === '/nhan-vien' ? 'active' : ''} nav-link`}
-                  to="/nhan-vien">
+                <Link
+                  className={`${location.pathname === "/nhan-vien" ? "active" : ""
+                    } nav-link`}
+                  to="/nhan-vien"
+                >
                   <i className="icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24"
-                      fill="currentColor">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="10"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
                       <g>
-                        <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="8"
+                          fill="currentColor"
+                        ></circle>
                       </g>
                     </svg>
                   </i>
@@ -340,13 +494,25 @@ const VerticalNav = memo((props) => {
                 </Link>
               </li>
               <li className="nav-item">
-                <Link className={`${location.pathname === '/khach-hang' ? 'active' : ''} nav-link`}
-                  to="/khach-hang">
+                <Link
+                  className={`${location.pathname === "/khach-hang" ? "active" : ""
+                    } nav-link`}
+                  to="/khach-hang"
+                >
                   <i className="icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24"
-                      fill="currentColor">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="10"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
                       <g>
-                        <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="8"
+                          fill="currentColor"
+                        ></circle>
                       </g>
                     </svg>
                   </i>
@@ -356,13 +522,25 @@ const VerticalNav = memo((props) => {
               </li>
 
               <li className="nav-item">
-                <Link className={`${location.pathname === '/chuc-vu' ? 'active' : ''} nav-link`}
-                  to="/chuc-vu">
+                <Link
+                  className={`${location.pathname === "/chuc-vu" ? "active" : ""
+                    } nav-link`}
+                  to="/chuc-vu"
+                >
                   <i className="icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="10" viewBox="0 0 24 24"
-                      fill="currentColor">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="10"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
                       <g>
-                        <circle cx="12" cy="12" r="8" fill="currentColor"></circle>
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="8"
+                          fill="currentColor"
+                        ></circle>
                       </g>
                     </svg>
                   </i>
@@ -374,6 +552,102 @@ const VerticalNav = memo((props) => {
           </Accordion.Collapse>
         </Accordion.Item>
 
+        <Accordion.Item
+          as="li"
+          eventKey="sidebar-voucher"
+          bsPrefix={`nav-item ${active === "voucher" ? "active" : ""} `}
+          onClick={() => setActive("voucher")}
+        >
+          <CustomToggle
+            eventKey="sidebar-voucher"
+            onClick={(activeKey) => setActiveMenu(activeKey)}
+          >
+            <i className="icon">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="1em"
+                viewBox="0 0 512 512"
+              >
+                <path d="M345 39.1L472.8 168.4c52.4 53 52.4 138.2 0 191.2L360.8 472.9c-9.3 9.4-24.5 9.5-33.9 .2s-9.5-24.5-.2-33.9L438.6 325.9c33.9-34.3 33.9-89.4 0-123.7L310.9 72.9c-9.3-9.4-9.2-24.6 .2-33.9s24.6-9.2 33.9 .2zM0 229.5V80C0 53.5 21.5 32 48 32H197.5c17 0 33.3 6.7 45.3 18.7l168 168c25 25 25 65.5 0 90.5L277.3 442.7c-25 25-65.5 25-90.5 0l-168-168C6.7 262.7 0 246.5 0 229.5zM144 144a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z" />
+              </svg>
+            </i>
+            <span className="item-name">Giảm Giá</span>
+            <i className="right-icon">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </i>
+          </CustomToggle>
+          <Accordion.Collapse eventKey="sidebar-voucher">
+            <ul className="sub-nav">
+              <li className="nav-item">
+                <Link
+                  className={`${location.pathname === "/voucher" ? "active" : ""
+                    } nav-link`}
+                  to="/voucher"
+                >
+                  <i className="icon">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="10"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <g>
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="8"
+                          fill="currentColor"
+                        ></circle>
+                      </g>
+                    </svg>
+                  </i>
+                  <i className="sidenav-mini-icon"> L </i>
+                  <span className="item-name">Voucher</span>
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link
+                  className={`${location.pathname === "/khuyen-mai" ? "active" : ""
+                    } nav-link`}
+                  to="/khuyen-mai"
+                >
+                  <i className="icon">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="10"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <g>
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="8"
+                          fill="currentColor"
+                        ></circle>
+                      </g>
+                    </svg>
+                  </i>
+                  <i className="sidenav-mini-icon"> L </i>
+                  <span className="item-name">Khuyến Mãi</span>
+                </Link>
+              </li>
+            </ul>
+          </Accordion.Collapse>
+        </Accordion.Item>
 
         {/* delete */}
         {/* <li><hr className="hr-horizontal"/></li>
@@ -987,7 +1261,7 @@ const VerticalNav = memo((props) => {
                 </Accordion.Item> */}
       </Accordion>
     </Fragment>
-  )
-})
+  );
+});
 
-export default VerticalNav
+export default VerticalNav;

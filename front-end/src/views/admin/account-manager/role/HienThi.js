@@ -1,13 +1,6 @@
 import React from "react";
 import {
-  //   Button,
-  //   Checkbox,
-  //   Form,
-  //   Input,
   Pagination,
-  //   Radio,
-  //   Select,
-  //   Space,
   Table,
 } from "antd";
 import { useEffect, useState } from "react";

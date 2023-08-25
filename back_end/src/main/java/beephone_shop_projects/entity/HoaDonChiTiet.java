@@ -1,8 +1,6 @@
 package beephone_shop_projects.entity;
 
-import beephone_shop_projects.entity.base.AuditEntity;
 import beephone_shop_projects.entity.base.PrimaryEntity;
-import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
@@ -28,7 +26,7 @@ public class HoaDonChiTiet extends PrimaryEntity implements Serializable {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_chi_tiet_san_pham")
-    private ChiTietSanPham idChiTietSanPham;
+    private SanPham idSanPham;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_hoa_don")

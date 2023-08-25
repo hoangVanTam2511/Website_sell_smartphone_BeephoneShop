@@ -32,28 +32,26 @@ import * as SettingSelector from "../../store/setting/selectors";
 
 // Redux Selector / Action
 import { useSelector } from "react-redux";
-import { Timeline, TimelineEvent } from "@mailtop/horizontal-timeline";
 
-
-// const Tour = () => {
-//   const tour = useContext(ShepherdTourContext);
-//   const { pathname } = useLocation();
-//   useEffect(() => {
-//     if (
-//       pathname === "/dashboard" &&
-//       sessionStorage.getItem("tour") !== "true"
-//     ) {
-//       tour?.start();
-//     }
-//   });
-//   return <Fragment></Fragment>;
-// };
+const Tour = () => {
+  const tour = useContext(ShepherdTourContext);
+  const { pathname } = useLocation();
+  useEffect(() => {
+    if (
+      pathname === "/dashboard" &&
+      sessionStorage.getItem("tour") !== "true"
+    ) {
+      tour?.start();
+    }
+  });
+  return <Fragment></Fragment>;
+};
 
 const Default = memo((props) => {
   // let location = useLocation();
   // const pageLayout = useSelector(SettingSelector.page_layout);
-  // const appName = useSelector(SettingSelector.app_name);
-  // useEffect(() => {});
+  const appName = useSelector(SettingSelector.app_name);
+  useEffect(() => {});
 
   // const closeTour = () => {
   //   sessionStorage.setItem("tour", "true");
@@ -159,7 +157,8 @@ const Default = memo((props) => {
   return (
     <Fragment>
       <Loader />
-      <Sidebar />
+      <Sidebar app_name={appName} />
+      <Tour />
       <main className="main-content">
         <div className="position-relative">
           <Header />
@@ -168,12 +167,11 @@ const Default = memo((props) => {
         <div className="py-0 conatiner-fluid content-inner mt-n5">
           {/* <DefaultRouter /> */}
           <Outlet />
-          <div style={{ display: "none" }}>
-            <Timeline>
-            </Timeline>
-          </div>
         </div>
+
+        <Footer />
       </main>
+      <SettingOffCanvas />
     </Fragment>
   );
 });
