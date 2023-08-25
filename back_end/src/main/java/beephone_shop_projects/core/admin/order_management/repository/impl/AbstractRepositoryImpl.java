@@ -1,6 +1,7 @@
 package beephone_shop_projects.core.admin.order_management.repository.impl;
 
 import beephone_shop_projects.core.admin.order_management.config.PersistenceConfiguration;
+import beephone_shop_projects.core.admin.order_management.utils.ConstantCodeEntityMapper;
 import beephone_shop_projects.core.admin.order_management.repository.GenericRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -30,7 +31,7 @@ import java.util.Optional;
 
 @SuppressWarnings("unchecked")
 public class AbstractRepositoryImpl<T, ID extends Serializable> implements GenericRepository<T, ID> {
-  private Logger logger = LoggerFactory.getLogger(AbstractRepositoryImpl.class);
+  private static final Logger logger = LoggerFactory.getLogger(AbstractRepositoryImpl.class);
 
   @PersistenceContext
   private EntityManager entityManager;
@@ -113,7 +114,7 @@ public class AbstractRepositoryImpl<T, ID extends Serializable> implements Gener
 
   @Override
   @Transactional
-  public T save(T entity) {
+  public T save(T entity) throws Exception {
     try (EntityManager entityManager = this.getEntityManager()) {
       T createdEntity = entityManager.merge(entity);
       return createdEntity;
@@ -125,7 +126,7 @@ public class AbstractRepositoryImpl<T, ID extends Serializable> implements Gener
 
   @Override
   @Transactional
-  public T update(T entity) {
+  public T update(T entity) throws Exception {
     try (EntityManager entityManager = this.getEntityManager()) {
       T mergedEntity = entityManager.merge(entity);
       return mergedEntity;
@@ -137,7 +138,7 @@ public class AbstractRepositoryImpl<T, ID extends Serializable> implements Gener
 
   @Override
   @Transactional
-  public void delete(T entity) {
+  public void delete(T entity) throws Exception {
     try (EntityManager entityManager = this.getEntityManager()) {
       entityManager.remove(entity);
     } catch (HibernateException e) {
@@ -148,7 +149,7 @@ public class AbstractRepositoryImpl<T, ID extends Serializable> implements Gener
 
   @Override
   @Transactional
-  public void deleteById(ID id) {
+  public void deleteById(ID id) throws Exception {
     try (EntityManager entityManager = this.getEntityManager()) {
       Optional<T> entity = this.findOneById(id);
       if (entity.isPresent()) {
@@ -161,21 +162,27 @@ public class AbstractRepositoryImpl<T, ID extends Serializable> implements Gener
   }
 
   @Override
-  public Long getMaxSuffixCode() {
+  public String getMaxEntityCode() {
     List<T> entityList = this.findAll();
-    Long result;
+    int countMax;
 
     String entityName = this.getPersistenceClass().getSimpleName();
-    String jpqlQuery = "SELECT MAX(CAST(SUBSTRING(e.ma, 3, LENGTH(e.ma) - 2) AS LONG)) + 1 FROM " + entityName + " e";
+    String jpqlQuery = "SELECT MAX(CAST(SUBSTRING(e.ma, 3, LENGTH(e.ma) - 2) AS INTEGER)) + 1 FROM " + entityName + " e";
+    String result = "";
 
     if (entityList.isEmpty()) {
-      result = 1L;
-      return result;
+      countMax = 1;
     }
 
     try (EntityManager entityManager = this.getEntityManager()) {
       Query query = entityManager.createQuery(jpqlQuery);
-      result = (Long) query.getSingleResult();
+      countMax = (int) query.getSingleResult();
+
+      ConstantCodeEntityMapper constantCodeEntityMapper = new ConstantCodeEntityMapper();
+      result = constantCodeEntityMapper.getConstantEntityCodeByClazz(this.getPersistenceClass()) + countMax;
+    } catch (HibernateException e) {
+      logger.error(e.getMessage(), e);
+      throw e;
     }
 
     return result;
