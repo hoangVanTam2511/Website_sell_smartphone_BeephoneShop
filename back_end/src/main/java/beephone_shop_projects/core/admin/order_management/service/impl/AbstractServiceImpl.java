@@ -9,9 +9,6 @@ import org.springframework.data.domain.Pageable;
 import java.io.Serializable;
 import java.util.Optional;
 
-import static beephone_shop_projects.core.admin.order_management.constant.SystemConstant.PREFIX_CODE_ORDER;
-import static beephone_shop_projects.core.admin.order_management.constant.SystemConstant.SUFFIX_CODE;
-
 public class AbstractServiceImpl<E, D, ID extends Serializable> implements GenericService<D, ID> {
 
   private GenericRepository<E, ID> repo;
@@ -35,33 +32,33 @@ public class AbstractServiceImpl<E, D, ID extends Serializable> implements Gener
   }
 
   @Override
-  public D save(D dto) {
+  public D save(D dto) throws Exception {
     E entity = converter.convertToEntity(dto);
     E createdEntity = repo.save(entity);
     return converter.convertToDto(createdEntity);
   }
 
   @Override
-  public D update(D dto) {
+  public D update(D dto) throws Exception {
     E entity = converter.convertToEntity(dto);
     E updatedEntity = repo.update(entity);
     return converter.convertToDto(updatedEntity);
   }
 
   @Override
-  public void delete(D dto) {
+  public void delete(D dto) throws Exception {
     E entity = converter.convertToEntity(dto);
     repo.delete(entity);
   }
 
   @Override
-  public void deleteById(ID id) {
+  public void deleteById(ID id) throws Exception {
     repo.deleteById(id);
   }
 
   @Override
   public String getCode() {
-    return PREFIX_CODE_ORDER + SUFFIX_CODE + repo.getMaxSuffixCode();
+    return repo.getMaxEntityCode();
   }
 
 }
