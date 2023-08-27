@@ -58,14 +58,15 @@ import NhapTuFileNV from "../views/admin/account-manager/nhanvien/NhapTuFile";
 
 import Role from "../views/admin/account-manager/role/HienThiRole";
 import AddRole from "../views/admin/account-manager/role/AddRole";
-
-
-
-
 //admin
 
+import Default from '../layouts/dashboard/default';
+import ManagementOrders from '../views/admin/order-manager/management-orders';
+import OrderDetail from '../views/admin/order-manager/order-detail';
+
+
+
 //voucher
-import Default from "../layouts/dashboard/default";
 
 //voucher
 import HienThiVoucher from "../views/admin/voucher-manager/quan-li-voucher";
@@ -245,6 +246,14 @@ export const DefaultRouter = [
       {
         path: "sua-khuyen-mai/:id",
         element: <SuaKhuyenMai />,
+      },
+       {
+        path: 'dashboard/management-orders',
+        element: <ManagementOrders />,
+      },
+      {
+        path: 'dashboard/order-detail/:id',
+        element: <OrderDetail />,
       },
     ],
   },
