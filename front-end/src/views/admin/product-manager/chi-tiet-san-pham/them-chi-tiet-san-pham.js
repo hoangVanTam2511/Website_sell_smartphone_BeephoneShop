@@ -1165,9 +1165,9 @@ const AnhForm = (props) => {
     const handleChange = (file) => {
         setFileList(file);
         uploadFile(file[0]);
-        
-       
-        listAll(ref(storage,props.idSanPhams.tenSanPham )).then(
+
+
+        listAll(ref(storage, props.idSanPhams.tenSanPham)).then(
             (responce) => {
                 responce.items.forEach((item) => {
 
@@ -1190,7 +1190,7 @@ const AnhForm = (props) => {
     }
 
     useEffect(() => {
-       
+
     }, [fileList])
 
 
@@ -1200,7 +1200,7 @@ const AnhForm = (props) => {
             <ImageList
                 sx={{
                     width: 500,
-                    display:'flex',
+                    display: 'flex',
                     // Promote the list into its own layer in Chrome. This costs memory, but helps keeping high FPS.
                     transform: 'translateZ(0)',
                 }}
@@ -1208,30 +1208,30 @@ const AnhForm = (props) => {
                 gap={1}
             >
 
-            {imageList.map((image)=>(
-                <ImageListItem>
-                    <img
-                        src={image}
-                    />
+                {imageList.map((image) => (
+                    <ImageListItem>
+                        <img
+                            src={image}
+                        />
 
-                    <ImageListItemBar
-                        sx={{
-                            background:
-                                'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, ' +
-                                'rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
-                        }}
-                        position="top"
-                        actionIcon={
-                            <IconButton
-                                sx={{ color: 'yellow' }}
-                            >
-                                <StarBorderIcon sx={{color:'yellow'}} />
-                            </IconButton>
-                        }
-                        actionPosition="left"
-                    />
-                </ImageListItem>
-))}
+                        <ImageListItemBar
+                            sx={{
+                                background:
+                                    'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, ' +
+                                    'rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
+                            }}
+                            position="top"
+                            actionIcon={
+                                <IconButton
+                                    sx={{ color: 'yellow' }}
+                                >
+                                    <StarBorderIcon sx={{ color: 'yellow' }} />
+                                </IconButton>
+                            }
+                            actionPosition="left"
+                        />
+                    </ImageListItem>
+                ))}
 
             </ImageList>
             <FileUploader
@@ -1247,6 +1247,7 @@ const AnhForm = (props) => {
 };
 const ImeiForm = (props) => {
 
+    // xử lý imei trong form này 
     const [, forceUpdate] = useReducer(x => x + 1, 0);
 
     const [data, setData] = useState([
@@ -1272,6 +1273,83 @@ const ImeiForm = (props) => {
                     const id = String(i + 1);
                     return {
                         label: `Cấu hình ${id}`,
+                        key: id,
+                        children: id == 1 ?
+
+                            <Row>
+
+                                <Col span={12}>
+                                    <Form.Group className="form-group">
+
+                                        <Form.Label htmlFor="pwd" style={{ width: 150, color: 'black' }} >Số lượng</Form.Label>
+                                        <Form.Control type="number"
+                                            className=" form-control d-inline-block"
+                                            style={{ width: 400 }}
+                                            placeholder='Nhập số sản phẩm'
+                                            name=''
+                                            // value={tenSanPham}
+                                            id="ten`" />
+                                    </Form.Group>
+                                </Col>
+                                <Col span={12}>
+                                    <Form.Group className="form-group">
+
+                                        <Form.Label htmlFor="pwd" style={{ width: 150, color: 'black' }} >Đơn giá </Form.Label>
+
+                                        <CurrencyInput
+                                            id="input-example"
+                                            name="input-name"
+                                            suffix=" VND"
+                                            className=" form-control d-inline-block"
+                                            style={{ width: 400 }}
+                                            placeholder="Vui lòng nhập số tiền "
+                                            defaultValue={1000}
+                                            decimalsLimit={2}
+                                        // onValueChange={
+                                        //     (value, name) => setchiTietSanPham({ ...chiTietSanPham, donGia: value })
+                                        // }
+                                        />
+
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+
+                            :
+                            <Row>
+                                <Col span={24}>
+                                    <Form.Group className="form-group">
+
+                                        <Form.Label htmlFor="pwd" style={{ width: 150, color: 'black' }} >Số lượng </Form.Label>
+
+                                        <CurrencyInput
+                                            id="input-example"
+                                            name="input-name"
+
+                                            className=" form-control d-inline-block"
+                                            style={{ width: 600 }}
+                                            placeholder="Vui lòng nhập số tiền "
+                                            defaultValue={1000}
+                                            decimalsLimit={2}
+                                        // onValueChange={
+                                        //     (value, name) => setchiTietSanPham({ ...chiTietSanPham, donGia: value })
+                                        // }
+                                        />
+
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+                        ,
+                    };
+                })}
+            />
+
+            <Tabs
+                defaultActiveKey="1"
+                centered
+                items={new Array(3).fill(null).map((_, i) => {
+                    const id = String(i + 1);
+                    return {
+                        label: `Nhập imei `,
                         key: id,
                         children: id == 1 ?
 
@@ -1376,11 +1454,11 @@ const ThemMauSac = () => {
 
     function getStepContent(step) {
         const getData = (e) => {
-             axios.get(`http://localhost:8080/san-pham/get-one/${e}`)
-            .then((res) => {
-                console.log(res.data)
-               setIdSanPham(res.data)
-            })
+            axios.get(`http://localhost:8080/san-pham/get-one/${e}`)
+                .then((res) => {
+                    console.log(res.data)
+                    setIdSanPham(res.data)
+                })
         }
 
         switch (step) {
@@ -1389,7 +1467,7 @@ const ThemMauSac = () => {
             case 1:
                 return <AnhForm idSanPhams={idSanPham} />;
             case 2:
-                return <ImeiForm idSanPhams={idSanPham}  />;
+                return <ImeiForm idSanPhams={idSanPham} />;
             default:
                 return "unknown step";
         }

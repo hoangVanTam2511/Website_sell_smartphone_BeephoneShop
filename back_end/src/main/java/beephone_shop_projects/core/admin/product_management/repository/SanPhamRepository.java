@@ -35,6 +35,7 @@ public interface SanPhamRepository extends ISanPhamRepository {
                                               c.ten_nha_san_xuat,
             	                              n.ten_chip,
                                               l.ten_dong_san_pham ,
+                                              
                                               m.delected
                                              FROM san_pham_chi_tiet a
                                              JOIN san_pham m on m.id = a.id_san_pham
