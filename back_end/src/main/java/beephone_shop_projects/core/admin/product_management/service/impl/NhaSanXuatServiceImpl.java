@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.admin.product_management.service.impl;
 
+import beephone_shop_projects.core.admin.product_management.model.request.CreateNhaSanXuat;
 import beephone_shop_projects.core.admin.product_management.repository.NhaSanXuatRepository;
 import beephone_shop_projects.core.admin.product_management.service.IService;
 import beephone_shop_projects.entity.NhaSanXuat;
@@ -24,6 +25,13 @@ public class NhaSanXuatServiceImpl implements IService<NhaSanXuat> {
 
     @Override
     public void insert(NhaSanXuat nhaSanXuat) {
+        nhaSanXuatRepository.save(nhaSanXuat);
+    }
+
+    public void insert(CreateNhaSanXuat req) {
+        NhaSanXuat nhaSanXuat = new NhaSanXuat();
+        nhaSanXuat.setMa(req.getMaNhaSanXuat());
+        nhaSanXuat.setTenNhaSanXuat(req.getTenNhaSanXuat());
         nhaSanXuatRepository.save(nhaSanXuat);
     }
 
