@@ -160,9 +160,13 @@ const AddressForm = ({
               onChange={handleDistrictChange}
               value={selectedDistrict}
               size="large"
-              className={
-                required && submitted && !selectedWard ? "error-select" : ""
-              }
+              // className={
+              //   required && submitted && !selectedWard ? "error-select" : ""
+              // }
+              style={{
+                backgroundColor:
+                  required && submitted && !selectedWard ? "red;" : "",
+              }}
             >
               {districts.map((district) => (
                 <MenuItem key={district.code} value={district.code}>

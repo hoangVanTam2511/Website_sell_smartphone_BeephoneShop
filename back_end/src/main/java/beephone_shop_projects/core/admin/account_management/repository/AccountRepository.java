@@ -63,7 +63,7 @@ public interface AccountRepository extends IAccountRepository {
             "OR a.email LIKE CONCAT('%', :tenKH, '%')\n" +
             "OR a.so_dien_thoai LIKE CONCAT('%', :tenKH, '%')\n" +
             "OR CAST(a.ngay_sinh AS CHAR) LIKE CONCAT('%', :tenKH, '%'))\n" +
-            "AND a.id_role = 'b68f6376-48c4-4fb0-83df-6743c5a818e8';\n",
+            "AND a.id_role = '00514722-3dab-46c3-912b-96d0926d05c6';\n",
             nativeQuery = true)
 
     Page<AccountResponse> searchAllKH(@Param("tenKH")Optional<String> tenKH, Pageable pageable);

@@ -17,12 +17,12 @@ import java.util.UUID;
 public interface KhachHangService {
     Page<AccountResponse> getAllKH(Integer pageNo);
 //    Page<AccountResponse> searchAllKHang(Integer pageable);
-    Account addKH(CreateKhachHangRequest request, List<DiaChi> diaChiList);
+    Account addKH(CreateKhachHangRequest request);
     Account getOne(UUID id);
     Account findAccount(String ma);
     void doiTrangThai(String id);
 
-    Account updateKH(Account request, String id);
+    Account updateKH(CreateKhachHangRequest request, String id);
     Page<AccountResponse> search(Optional<String> tenSearch, Integer pageNo);
     List<CreateAccountRequest> importExcelData(InputStream fileInputStream) throws IOException;
 }

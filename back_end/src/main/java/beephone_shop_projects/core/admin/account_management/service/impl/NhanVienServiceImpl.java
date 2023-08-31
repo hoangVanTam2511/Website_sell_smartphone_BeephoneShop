@@ -36,10 +36,11 @@ public class NhanVienServiceImpl implements NhanVienService {
         String code = String.format("NV%04d", number);
         Date date = null;
         try {
-            date = new SimpleDateFormat("YYYY-MM-DD").parse(request.getNgaySinh());
+            date = new SimpleDateFormat("yyyy-MM-dd").parse(request.getNgaySinh());
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
+
         String hoVaTen = request.getHoVaTen();
 
         String hoVaTenWithoutSpaces = hoVaTen.replaceAll("\\s+", ""); // Loại bỏ khoảng trắng
@@ -74,8 +75,14 @@ public class NhanVienServiceImpl implements NhanVienService {
     }
 
     @Override
-    public Account updateNV(Account request, String id) {
+    public Account updateNV(CreateAccountRequest request, String id) {
         Optional<Account> optional = accountRepository.findById(id);
+        Date date = null;
+        try {
+            date = new SimpleDateFormat("yyyy-MM-dd").parse(request.getNgaySinh());
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
         if (optional.isPresent()) {
             optional.get().setMa(request.getMa());
             optional.get().setId(id);
@@ -85,7 +92,7 @@ public class NhanVienServiceImpl implements NhanVienService {
             optional.get().setDiaChi(request.getDiaChi());
             optional.get().setIdRole(roleRepository.findByMa("role1"));
             optional.get().setMatKhau(request.getMatKhau());
-            optional.get().setNgaySinh(request.getNgaySinh());
+            optional.get().setNgaySinh(date);
             optional.get().setAnhDaiDien(request.getAnhDaiDien());
             optional.get().setCanCuocCongDan(request.getCanCuocCongDan());
             optional.get().setTinhThanhPho(request.getTinhThanhPho());

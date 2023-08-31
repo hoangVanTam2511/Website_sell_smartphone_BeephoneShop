@@ -1,6 +1,7 @@
 package beephone_shop_projects.core.admin.account_management.model.request;
 
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,9 +17,11 @@ public class CreateKhachHangRequest {
 
     private UUID id;
 
+    @NotBlank(message = "Họ và tên trống")
     private String hoVaTen;
 
     private String email;
+    @NotBlank(message = "Ngày sinh trống")
 
     private String ngaySinh;
 
