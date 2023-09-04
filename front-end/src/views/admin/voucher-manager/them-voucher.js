@@ -7,9 +7,13 @@ import axios from "axios";
 import { apiURLVoucher } from "../../../service/api";
 import TextField from "@mui/material/TextField";
 import "../../../assets/scss/HienThiNV.scss";
-import { Box, InputAdornment } from "@mui/material";
+import {
+  Box,
+  InputAdornment,
+  ToggleButton,
+  ToggleButtonGroup,
+} from "@mui/material";
 import "../../../assets/scss/addVoucher.scss";
-import Swal from "sweetalert2";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -23,23 +27,42 @@ const AddVoucher = () => {
   let [ten, setTen] = useState("");
   const [ngayBatDau, setNgayBatDau] = useState(dayjs());
   const [ngayKetThuc, setNgayKetThuc] = useState(dayjs());
-  const [giaTriVoucher, setGiaTriVoucher] = useState(0);
-  const [dieuKienApDung, setDieuKienApDung] = useState(0);
   const [dieuKienApDungConvert, setDieuKienApDungConvert] = useState(0);
   const [soLuong, setSoLuong] = useState("");
   const [validationMsg, setValidationMsg] = useState({});
   const [giaTriVoucherConvert, setGiaTriVoucherConvert] = useState(0);
   const [value, setValue] = React.useState();
   const [value1, setValue1] = React.useState();
+  const [value2, setValue2] = React.useState();
+  const [selectDiscount, setSeclectDiscount] = useState("1");
+  const [giaTriToiThieu, setGiaTriToiThieu] = useState(0);
+  const [giaTriToiDa, setGiaTriToiDa] = useState(0);
+  const [valueToiThieu, setValueToiThieu] = React.useState();
+  const [valueToiDa, setValueToiDa] = React.useState();
 
   const handleChange = (event) => {
-    const inputValue = event.target.value;
-    const numericValue = parseFloat(inputValue.replace(/[^0-9.-]+/g, ""));
-    const formattedValue = inputValue
-      .replace(/[^0-9]+/g, "")
-      .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    setValue(formattedValue);
-    setGiaTriVoucherConvert(numericValue);
+    if (selectDiscount === "1") {
+      const inputValue = event.target.value;
+      const numericValue = parseFloat(inputValue.replace(/[^0-9.-]+/g, ""));
+      const formattedValue = inputValue
+        .replace(/[^0-9]+/g, "")
+        .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      setValue(formattedValue);
+      setGiaTriVoucherConvert(numericValue);
+    }
+    if (selectDiscount === "2") {
+      let inputValue = event.target.value;
+      // Loại bỏ các ký tự không phải số
+      inputValue = inputValue.replace(/\D/g, "");
+      // Xử lý giới hạn giá trị từ 1 đến 100
+      if (isNaN(inputValue) || inputValue < 1) {
+        inputValue = 0;
+      } else if (inputValue > 100) {
+        inputValue = 100;
+      }
+      setValue(inputValue);
+      setGiaTriVoucherConvert(inputValue);
+    }
   };
 
   const handleChange1 = (event) => {
@@ -52,8 +75,27 @@ const AddVoucher = () => {
     setDieuKienApDungConvert(numericValue);
   };
 
+  const handleChangeGiaTriToiThieu = (event) => {
+    const inputValue = event.target.value;
+    const numericValue = parseFloat(inputValue.replace(/[^0-9.-]+/g, ""));
+    const formattedValue = inputValue
+      .replace(/[^0-9]+/g, "")
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    setValueToiThieu(formattedValue);
+    setGiaTriToiThieu(numericValue);
+  };
+
+  const handleChangeGiaTriToiDa = (event) => {
+    const inputValue = event.target.value;
+    const numericValue = parseFloat(inputValue.replace(/[^0-9.-]+/g, ""));
+    const formattedValue = inputValue
+      .replace(/[^0-9]+/g, "")
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    setValueToiDa(formattedValue);
+    setGiaTriToiDa(numericValue);
+  };
+
   const redirectToHienThiVoucher = () => {
-    // Thực hiện điều hướng tới trang "Hiển thị nhân viên"
     window.location.href = "/voucher";
   };
 
@@ -65,6 +107,9 @@ const AddVoucher = () => {
       ngayBatDau: ngayBatDau,
       ngayKetThuc: ngayKetThuc,
       giaTriVoucher: giaTriVoucherConvert,
+      giaTriToiThieu: giaTriToiThieu,
+      giaTriToiDa: giaTriToiDa,
+      loaiVoucher: selectDiscount,
     };
     toast
       .promise(axios.post(apiURLVoucher + "/addVoucher", obj), {
@@ -125,10 +170,37 @@ const AddVoucher = () => {
     addVoucher();
   };
 
+  const handleChangeToggleButtonDiscount = (event, newAlignment) => {
+    var oldAligment = selectDiscount;
+
+    if (newAlignment != null) {
+      setSeclectDiscount(newAlignment);
+      setValue2(null);
+    }
+
+    if (newAlignment == null) {
+      setSeclectDiscount(oldAligment);
+    }
+  };
+
+  const handleReset = () => {
+    setValue("");
+    setValueToiDa("");
+    setValueToiThieu("");
+  };
+
   return (
     <>
       <div className="add-voucher-container">
-        <h5 style={{ marginBottom: "3%" }}>Thêm Voucher</h5>
+        <h2
+          style={{
+            marginBottom: "2%",
+            paddingLeft: "20px",
+            paddingTop: "20px",
+          }}
+        >
+          Thêm Voucher
+        </h2>
         <div className="row-input">
           <div className="input-container">
             <TextField
@@ -138,33 +210,12 @@ const AddVoucher = () => {
               onChange={(e) => {
                 setTen(e.target.value);
               }}
-              style={{ width: "25em" }}
+              style={{ width: "65%" }}
             />
-
-            <span className="validate" style={{ color: "red" }}>
+            {/* <span className="validate" style={{ color: "red" }}>
               {validationMsg.ten}
-            </span>
+            </span> */}
           </div>
-          <div className="input-container">
-            <TextField
-              label="Nhập Giá Trị Voucher"
-              value={value}
-              onChange={handleChange}
-              id="outlined-start-adornment"
-              InputProps={{
-                inputMode: "numeric",
-                startAdornment: (
-                  <InputAdornment position="start">VND</InputAdornment>
-                ),
-              }}
-              style={{ width: "25em" }}
-            />
-            <span className="validate" style={{ color: "red" }}>
-              {validationMsg.value}
-            </span>
-          </div>
-        </div>
-        <div className="row-input">
           <div className="input-container">
             <TextField
               label="Số Lượng:"
@@ -173,16 +224,17 @@ const AddVoucher = () => {
               onChange={(e) => {
                 setSoLuong(e.target.value);
               }}
-              style={{ width: "25em" }}
+              style={{ width: "65%" }}
             />
-
-            <span className="validate" style={{ color: "red" }}>
+            {/* <span className="validate" style={{ color: "red" }}>
               {validationMsg.soLuong}
-            </span>
+            </span> */}
           </div>
+        </div>
+        <div className="row-input">
           <div className="input-container">
             <TextField
-              label="Điều Kiện Áp Dụng:"
+              label="Điều Kiện Áp Dụng Khi Mua Hàng Trên:"
               value={value1}
               onChange={handleChange1}
               id="outlined-start-adornment"
@@ -192,67 +244,136 @@ const AddVoucher = () => {
                   <InputAdornment position="start">VND</InputAdornment>
                 ),
               }}
-              style={{ width: "25em" }}
+              style={{ width: "65%" }}
             />
-            <span className="validate" style={{ color: "red" }}>
+            {/* <span className="validate" style={{ color: "red" }}>
               {validationMsg.value1}
-            </span>
+            </span> */}
           </div>
         </div>
         <div className="row-input">
-          <div className="input-container">
-            <Box
-              component="form"
-              sx={{
-                "& .MuiTextField-root": { width: "25em" },
-              }}
-              autoComplete="off"
+          <div className="select-value">
+            <ToggleButtonGroup
+              color="primary"
+              value={selectDiscount}
+              exclusive
+              onChange={handleChangeToggleButtonDiscount}
+              aria-label="Platform"
             >
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DemoContainer components={["DateTimePicker"]}>
-                  <DateTimePicker
-                    ampm={true}
-                    disablePast={true}
-                    label="Ngày Bắt Đầu"
-                    format="HH:mm DD/MM/YYYY"
-                    value={ngayBatDau}
-                    onChange={(e) => {
-                      setNgayBatDau(e);
-                    }}
-                  />
-                </DemoContainer>
-              </LocalizationProvider>
-            </Box>
-            <span className="validate" style={{ color: "red" }}>
+              <ToggleButton
+                style={{ height: "55px", borderRadius: "10px", width: "40px" }}
+                value="1"
+                onClick={() => handleReset()}
+              >
+                VND
+              </ToggleButton>
+              <ToggleButton
+                style={{ height: "55px", borderRadius: "10px", width: "40px" }}
+                value="2"
+                onClick={() => handleReset()}
+              >
+                %
+              </ToggleButton>
+            </ToggleButtonGroup>
+            <TextField
+              label="Nhập Giá Trị Voucher"
+              value={value}
+              onChange={handleChange}
+              id="outlined-start-adornment"
+              InputProps={{
+                inputMode: "numeric",
+                startAdornment: (
+                  <InputAdornment position="start">
+                    {selectDiscount === "1" ? "VND" : "%"}
+                  </InputAdornment>
+                ),
+              }}
+              style={{ marginLeft: "25px", width: "100%" }}
+            />
+            <TextField
+              label="Giá Trị Tối Thiểu:"
+              value={valueToiThieu}
+              id="outlined-start-adornment"
+              onChange={handleChangeGiaTriToiThieu}
+              InputProps={{
+                inputMode: "numeric",
+                startAdornment: (
+                  <InputAdornment position="start">VND</InputAdornment>
+                ),
+              }}
+              style={{
+                marginLeft: "25px",
+                width: "60%",
+                display: selectDiscount === "2" ? "block" : "none",
+                paddingRight: "25px",
+              }}
+            />
+
+            <TextField
+              label="Giá Trị Tối Đa:"
+              value={valueToiDa}
+              id="outlined-start-adornment"
+              onChange={handleChangeGiaTriToiDa}
+              InputProps={{
+                inputMode: "numeric",
+                startAdornment: (
+                  <InputAdornment position="start">VND</InputAdornment>
+                ),
+              }}
+              style={{
+                width: "60%",
+                display: selectDiscount === "2" ? "block" : "none",
+              }}
+            />
+          </div>
+        </div>
+        <div
+          className="row-input"
+          style={{ display: "flex", justifyContent: "center" }}
+        >
+          <div className="input-container">
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DemoContainer components={["DateTimePicker"]}>
+                <DateTimePicker
+                  ampm={true}
+                  disablePast={true}
+                  label="Ngày Bắt Đầu"
+                  format="HH:mm DD/MM/YYYY"
+                  value={ngayBatDau}
+                  onChange={(e) => {
+                    setNgayBatDau(e);
+                  }}
+                  sx={{
+                    width: "100%",
+                  }}
+                />
+              </DemoContainer>
+            </LocalizationProvider>
+            {/* <span className="validate" style={{ color: "red" }}>
               {validationMsg.ngayBatDau}
-            </span>
+            </span> */}
           </div>
           <div className="input-container">
-            <Box
-              component="form"
-              sx={{
-                "& .MuiTextField-root": { width: "25em" },
-              }}
-              autoComplete="off"
-            >
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DemoContainer components={["DateTimePicker"]}>
-                  <DateTimePicker
-                    ampm={true}
-                    label="Ngày Kết Thúc"
-                    value={ngayKetThuc}
-                    format="HH:mm DD/MM/YYYY"
-                    disablePast={true}
-                    onChange={(e) => {
-                      setNgayKetThuc(e);
-                    }}
-                  />
-                </DemoContainer>
-              </LocalizationProvider>
-            </Box>
-            <span className="validate" style={{ color: "red" }}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DemoContainer components={["DateTimePicker"]}>
+                <DateTimePicker
+                  ampm={true}
+                  label="Ngày Kết Thúc"
+                  value={ngayKetThuc}
+                  format="HH:mm DD/MM/YYYY"
+                  disablePast={true}
+                  onChange={(e) => {
+                    setNgayKetThuc(e);
+                  }}
+                  sx={{
+                    width: "100%",
+                  }}
+                />
+              </DemoContainer>
+            </LocalizationProvider>
+            {/* <span className="validate" style={{ color: "red" }}>
               {validationMsg.ngayKetThuc}
-            </span>
+            </span> */}
           </div>
         </div>
 

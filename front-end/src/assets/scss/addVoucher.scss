@@ -1,21 +1,26 @@
 .add-voucher-container {
-  width: 77%;
+  width: 100%;
   background-color: #fff;
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  text-align: start;
+  text-align: center;
 }
 
 .input-container {
+  text-align: center;
   // display: flex; /* Sử dụng flexbox để các phần tử nằm trên cùng một dòng */
-  // gap: 20px; /* Khoảng cách giữa các ô input */
-  // margin-bottom: 10px;
-  padding-left: 25px;
+  gap: 20px; /* Khoảng cách giữa các ô input */
+  margin-bottom: 15px;
+  // padding-left: 25px;
 }
-
+.can-giua-form {
+  text-align: center;
+}
 .row-input {
-  margin-bottom: 20px;
+  margin-bottom: 30px;
   display: flex;
+  justify-content: center;
+  text-align: center;
 }
 
 .btn-accept {
@@ -31,4 +36,10 @@
   font-size: 14px;
   text-align: start;
   color: red;
+}
+.select-value {
+  width: 83%;
+  padding-left: 225px;
+  display: flex;
+  justify-content: flex-start;
 }

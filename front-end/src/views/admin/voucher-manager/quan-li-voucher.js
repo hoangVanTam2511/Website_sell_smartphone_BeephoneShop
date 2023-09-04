@@ -25,7 +25,6 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { Box, Pagination } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { current } from "@reduxjs/toolkit";
 
 //show
 const HienThiVoucher = () => {
@@ -38,6 +37,7 @@ const HienThiVoucher = () => {
   const [searchTrangThai, setSearchTrangThai] = useState("");
   let [searchTatCa, setSearchTatCa] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
+  const [statusVoucher, setStatusVoucher] = useState([]);
   const navigate = useNavigate();
 
   // cutstom load data
@@ -64,13 +64,18 @@ const HienThiVoucher = () => {
 
   useEffect(() => {
     loadDataListVoucher(currentPage);
-    console.log(currentPage);
+    const intervalId = setInterval(() => {
+      loadDataListVoucher(currentPage);
+    }, 60000);
+    // Xóa interval khi component unmounted
+    return () => clearInterval(intervalId);
   }, [
     searchTatCa,
     searchTrangThai,
     searchNgayBatDau,
     searchNgayKetThuc,
     currentPage,
+    totalPages,
   ]);
 
   const handleReset = () => {
@@ -127,18 +132,21 @@ const HienThiVoucher = () => {
       title: "STT",
       dataIndex: "stt",
       width: "1%",
+      align: "center",
       render: (text) => <span>{text}</span>,
       sorter: (a, b) => a.stt - b.stt,
     },
     {
-      title: "Mã Voucher",
+      title: "Mã",
       dataIndex: "ma",
       width: "1%",
+      align: "center",
     },
     {
-      title: "Tên Voucher",
+      title: "Tên",
       dataIndex: "ten",
-      width: "25%",
+      width: "15%",
+      align: "center",
       render: (text, record) => (
         <span
           style={{
@@ -155,35 +163,67 @@ const HienThiVoucher = () => {
       title: "Số Lượng",
       dataIndex: "soLuong",
       width: "1%",
+      align: "center",
     },
+
     {
-      title: "Thời Gian Bắt Đầu - Kết Thúc Voucher",
-      dataIndex: "thoiGian",
-      width: "10%",
-      editable: true,
-      render: (text, record) => (
-        <>
-          {dayjs(record.ngayBatDau).format("HH:mm DD/MM/YYYY")} -{" "}
-          {dayjs(record.ngayKetThuc).format("HH:mm DD/MM/YYYY")}
-        </>
-      ),
-    },
-    {
-      title: "Giá Trị Voucher",
+      title: "Giá Trị",
       dataIndex: "giaTriVoucher",
       width: "10%",
-      // const formattedValue = inputValue
-      // .replace(/[^0-9]+/g, "")
-      // .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      render: (value) => {
-        const formattedValue = numeral(value).format("0,0 VND") + " VNĐ";
+      align: "center",
+      render: (value, record) => {
+        let formattedValue = value; // Mặc định là giữ nguyên giá trị
+
+        if (record.loaiVoucher === 1) {
+          formattedValue = numeral(value).format("0,0 VND") + " VNĐ";
+        } else if (record.loaiVoucher === 2) {
+          formattedValue = `${value} %`;
+        }
+
         return <span>{formattedValue}</span>;
       },
+    },
+    // {
+    //   title: "Giá Trị Tối Thiểu",
+    //   dataIndex: "giaTriToiThieu",
+    //   maxWidth: "1%",
+    //   whiteSpace: "pre-line",
+    //   overflow: "hidden",
+    //   width: "1%",
+    //   render: (value) => {
+    //     const formattedValue = numeral(value).format("0,0 VND") + " VNĐ";
+    //     return <span>{formattedValue}</span>;
+    //   },
+    // },
+    // {
+    //   title: "Giá Trị Tối Đa",
+    //   dataIndex: "giaTriToiDa",
+    //   maxWidth: "1%",
+    //   whiteSpace: "pre-line",
+    //   overflow: "hidden",
+    //   width: "1%",
+    //   render: (value) => {
+    //     const formattedValue = numeral(value).format("0,0 VND") + " VNĐ";
+    //     return <span>{formattedValue}</span>;
+    //   },
+    // },
+    {
+      title: "Thời Gian Bắt Đầu - Kết Thúc",
+      dataIndex: "thoiGian",
+      width: "10%",
+      align: "center",
+      render: (text, record) => (
+        <>
+          {dayjs(record.ngayBatDau).format("DD/MM/YYYY")} -{" "}
+          {dayjs(record.ngayKetThuc).format("DD/MM/YYYY")}
+        </>
+      ),
     },
     {
       title: "Trạng Thái",
       dataIndex: "trangThai",
       width: "1%",
+      align: "center",
       onFilter: (value, record) => record.trangThai == value,
       filterSearch: true,
       render: (text, record) => (
@@ -211,6 +251,30 @@ const HienThiVoucher = () => {
             >
               Hết Hiệu Lực
             </Button>
+          ) : record.trangThai === 3 ? (
+            <Button
+              type="primary"
+              style={{
+                borderRadius: "30px",
+                pointerEvents: "none",
+                cursor: "default",
+                background: "teal",
+              }}
+            >
+              Chưa Bắt Đầu
+            </Button>
+          ) : record.trangThai === 4 ? (
+            <Button
+              type="primary"
+              style={{
+                borderRadius: "30px",
+                pointerEvents: "none",
+                cursor: "default",
+                background: "olive",
+              }}
+            >
+              Hết Lượt Dùng
+            </Button>
           ) : (
             <Button
               type="primary"
@@ -218,9 +282,10 @@ const HienThiVoucher = () => {
                 borderRadius: "30px",
                 pointerEvents: "none",
                 cursor: "default",
+                background: "black",
               }}
             >
-              Không xác định
+              Không Xác Định
             </Button>
           )}
         </span>
@@ -230,6 +295,7 @@ const HienThiVoucher = () => {
       title: "Thao Tác",
       dataIndex: "operation",
       width: "1%",
+      align: "center",
       render: (_, record) => {
         return (
           <>
@@ -287,6 +353,7 @@ const HienThiVoucher = () => {
   });
 
   const chuyenTrang = (event, page) => {
+    setCurrentPage(page);
     loadDataListVoucher(page);
   };
 
@@ -315,7 +382,7 @@ const HienThiVoucher = () => {
           </span>
           <div className="btn-search"></div>
           {/* Search */}
-
+          &nbsp;&nbsp;&nbsp;
           <div className="btn-reset">
             <Button
               className="btn-search-reset"
