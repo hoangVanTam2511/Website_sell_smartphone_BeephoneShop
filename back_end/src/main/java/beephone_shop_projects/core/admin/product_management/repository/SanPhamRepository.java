@@ -32,11 +32,10 @@ public interface SanPhamRepository extends ISanPhamRepository {
 
     @Query(value = """
                                        	SELECT m.id,m.ten_san_pham,
-                                              c.ten_nha_san_xuat,
-            	                              n.ten_chip,
-                                              l.ten_dong_san_pham ,
-                                              
-                                              m.delected
+                                             c.ten_nha_san_xuat,
+            	                             n.ten_chip,
+                                             l.ten_dong_san_pham ,
+                                             m.delected
                                              FROM san_pham_chi_tiet a
                                              JOIN san_pham m on m.id = a.id_san_pham
                                              JOIN cau_hinh b on b.id = a.id_cau_hinh
@@ -48,18 +47,18 @@ public interface SanPhamRepository extends ISanPhamRepository {
                                              JOIN dong_san_pham l on l.id = m.id_dong_san_pham
                                              JOIN chip n on n.id = m.id_chip
                                              JOIN man_hinh o on o.id = b.id_man_hinh
-                                             WHERE  f.kich_thuoc LIKE :ram
-                                             AND  g.kich_thuoc LIKE :rom
-                                             AND  c.ten_nha_san_xuat LIKE :nha_san_xuat
-                                             AND  d.ten_mau_sac LIKE :mau_sac
-                                             AND   k.dung_luong LIKE :dung_luong
-                                             AND  l.ten_dong_san_pham LIKE :dong_san_pham
-            						    AND a.don_gia BETWEEN :donGiaMin and :donGiaMax
+                                             WHERE f.kich_thuoc LIKE :ram
+                                             AND g.kich_thuoc LIKE :rom
+                                             AND c.ten_nha_san_xuat LIKE :nha_san_xuat
+                                             AND d.ten_mau_sac LIKE :mau_sac
+                                             AND k.dung_luong LIKE :dung_luong
+                                             AND l.ten_dong_san_pham LIKE :dong_san_pham
+            						         AND a.don_gia BETWEEN :donGiaMin and :donGiaMax
                                              AND n.ten_chip LIKE :chip
                                              AND o.kich_thuoc LIKE :manHinh
                                              GROUP BY m.id,m.ten_san_pham,
                                               c.ten_nha_san_xuat,
-            	                        n.ten_chip,
+            	                              n.ten_chip,
                                               l.ten_dong_san_pham ,
                                               a.delected
             """, nativeQuery = true)

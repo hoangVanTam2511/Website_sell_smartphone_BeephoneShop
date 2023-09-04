@@ -10,11 +10,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 public interface VoucherService {
-
-//    Page<VoucherResponse> getAll(Pageable pageable);
 
     VoucherResponse getOne(String id);
 
@@ -27,6 +26,5 @@ public interface VoucherService {
     Boolean doiTrangThai(String id);
 
     Page<Voucher> getAll(FindVoucherRequest request);
-
 
 }

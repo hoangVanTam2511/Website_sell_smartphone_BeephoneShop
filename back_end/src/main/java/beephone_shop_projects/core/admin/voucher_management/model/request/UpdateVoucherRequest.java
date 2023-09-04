@@ -11,6 +11,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 @Getter
@@ -20,14 +21,21 @@ public class UpdateVoucherRequest {
     @NotBlank(message = "Không để trống Tên !!!")
     private String ten;
 
-    @NotNull(message = "Không để trống Điều Kiện Áp Dụng Voucher !!!")
-    private BigDecimal dieuKienApDung;
+    private BigDecimal giaTriToiThieu;
+
+    private BigDecimal giaTriToiDa;
 
     @NotNull(message = "Không để trống Số Lượng !!!")
     private Integer soLuong;
 
+    @NotNull(message = "Không để trống Loại Voucher !!!")
+    private Integer loaiVoucher;
+
+    @NotNull(message = "Không để trống Điều Kiện Áp Dung")
+    @Min(value = 0, message = "Giá Trị Tối Thiểu Là 0 !!!")
+    private BigDecimal dieuKienApDung;
+
     @NotNull(message = "Không để trống Ngày Bắt Đầu !!!")
-    @Past(message = "Không Được Chọn Ngày Nhỏ Hơn Ngày Hiện Tại !!!")
     private Date ngayBatDau;
 
     @NotNull(message = "Không để trống Ngày Kết Thúc !!!")
@@ -38,4 +46,5 @@ public class UpdateVoucherRequest {
     @Max(value = 100000, message = "Giá Trị Tối Đa là 100.000Đ")
     private BigDecimal giaTriVoucher;
 
+    private Integer trangThai;
 }

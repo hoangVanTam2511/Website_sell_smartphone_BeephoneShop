@@ -1,10 +1,10 @@
 package beephone_shop_projects.core.admin.voucher_management.model.response;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 public interface VoucherResponse {
@@ -23,6 +23,9 @@ public interface VoucherResponse {
     @Value("#{target.dieuKienApDung}")
     String getDieuKienApDung();
 
+    @Value("#{target.loaiVoucher}")
+    Integer getLoaiVoucher();
+
     @Value("#{target.ngayBatDau}")
     LocalDateTime getNgayBatDau();
 
@@ -31,6 +34,12 @@ public interface VoucherResponse {
 
     @Value("#{target.giaTriVoucher}")
     BigDecimal getGiaTriVoucher();
+
+    @Value("#{target.giaTriToiDa}")
+    BigDecimal getGiaTriToiDa();
+
+    @Value("#{target.giaTriToiThieu}")
+    BigDecimal getGiaTriToiThieu();
 
     @Value("#{target.trangThai}")
     Integer getTrangThai();

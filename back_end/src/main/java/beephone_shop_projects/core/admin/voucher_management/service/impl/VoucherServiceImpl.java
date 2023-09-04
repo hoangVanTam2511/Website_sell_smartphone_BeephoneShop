@@ -12,14 +12,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.security.SecureRandom;
-import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Service
 @Validated
+@Component
 public class VoucherServiceImpl implements VoucherService {
 
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -28,10 +33,32 @@ public class VoucherServiceImpl implements VoucherService {
     @Autowired
     private VoucherRepository voucherRepository;
 
-//    @Override
-//    public Page<VoucherResponse> getAll(Pageable pageable) {
-//        return voucherRepository.getAllVoucher(pageable);
-//    }
+    @Scheduled(fixedRate = 10000)
+    public List<Voucher> updateStatusVoucher() {
+        Date dateTime = new Date();
+        List<Voucher> listToUpdate = new ArrayList<>();
+
+        List<Voucher> list = voucherRepository.checkToStartAfterAndStatus(dateTime, 3);
+        List<Voucher> list1 = voucherRepository.checkEndDateAndStatus(dateTime, 2);
+        List<Voucher> list3 = voucherRepository.checkToStartBeforDateNowAndStatus(dateTime, 1);
+
+        listToUpdate.addAll(list);
+        listToUpdate.addAll(list1);
+        listToUpdate.addAll(list3);
+
+        for (Voucher v : listToUpdate) {
+            if (list.contains(v)) {
+                v.setTrangThai(3);
+            }
+            if (list1.contains(v)) {
+                v.setTrangThai(2);
+            }
+            if (list3.contains(v)) {
+                v.setTrangThai(1);
+            }
+        }
+        return voucherRepository.saveAll(listToUpdate);
+    }
 
     @Override
     public VoucherResponse getOne(String id) {
@@ -51,10 +78,14 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     public Voucher addVoucher(@Valid CreateVoucherRequest request) {
+
         Voucher voucher = Voucher.builder()
                 .ma(generateRandomCode())
                 .ten(request.getTen())
                 .dieuKienApDung(request.getDieuKienApDung())
+                .giaTriToiThieu(request.getGiaTriToiThieu())
+                .giaTriToiDa(request.getGiaTriToiDa())
+                .loaiVoucher(request.getLoaiVoucher())
                 .soLuong(request.getSoLuong())
                 .ngayBatDau(request.getNgayBatDau())
                 .ngayKetThuc(request.getNgayKetThuc())
@@ -67,9 +98,11 @@ public class VoucherServiceImpl implements VoucherService {
     @Override
     public Voucher updateVoucher(@Valid UpdateVoucherRequest request, String id) {
         Voucher voucher = voucherRepository.findById(id).get();
-        System.out.println(voucher);
         if (voucher != null) {
             voucher.setTen(request.getTen());
+            voucher.setGiaTriToiThieu(request.getGiaTriToiThieu());
+            voucher.setGiaTriToiDa(request.getGiaTriToiDa());
+            voucher.setLoaiVoucher(request.getLoaiVoucher());
             voucher.setDieuKienApDung(request.getDieuKienApDung());
             voucher.setSoLuong(request.getSoLuong());
             voucher.setNgayBatDau(request.getNgayBatDau());
@@ -102,17 +135,17 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     public Page<Voucher> getAll(FindVoucherRequest request) {
-        if (request.getPageNo() == null){
+        if (request.getPageNo() == null) {
             request.setPageNo(1);
         }
-        if (request.getPageSize() == null){
+        if (request.getPageSize() == null) {
             request.setPageSize(5);
         }
-        if (request.getKeyword() == null){
+        if (request.getKeyword() == null) {
             request.setKeyword("");
         }
         Pageable pageable = PageRequest.of(request.getPageNo() - 1, request.getPageSize());
-        Page<Voucher> vouchers = voucherRepository.findAll(pageable,request);
+        Page<Voucher> vouchers = voucherRepository.findAll(pageable, request);
         return vouchers;
     }
 
