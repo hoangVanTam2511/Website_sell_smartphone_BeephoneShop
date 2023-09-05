@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Table(name = "san_pham")
 public class SanPham extends PrimaryEntity implements IsIdentified {
+    private String ma;
 
     private String tenSanPham;
 
