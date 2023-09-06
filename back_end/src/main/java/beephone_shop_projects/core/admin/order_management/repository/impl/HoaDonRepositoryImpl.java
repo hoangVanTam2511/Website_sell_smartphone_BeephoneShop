@@ -29,7 +29,7 @@ import java.util.Map;
 
 @Repository
 public class HoaDonRepositoryImpl extends AbstractRepositoryImpl<HoaDon, String> implements HoaDonRepository {
-  private static final Logger logger = LoggerFactory.getLogger(HoaDonRepositoryImpl.class);
+  private Logger logger = LoggerFactory.getLogger(HoaDonRepositoryImpl.class);
 
   @Override
   @Transactional
@@ -66,10 +66,6 @@ public class HoaDonRepositoryImpl extends AbstractRepositoryImpl<HoaDon, String>
       PersistenceConfiguration<HoaDon> configuration = new PersistenceConfiguration<HoaDon>(criteriaBuilder, criteriaQuery, countQuery, root, countRoot);
 
       this.buildSortByPageable(configuration, pageable.getSort());
-      if (searchFilter.getSort() != null && searchFilter.getSort().equals("New")) {
-        criteriaQuery.orderBy(criteriaBuilder.asc(root.get("createdAt")));
-      }
-
       this.buildSelectAllAndCountEntity(configuration);
       this.buildWhereConditionByPredicates(configuration, buildPredicates(SearchOrderDto.class, searchFilter, configuration));
 
@@ -105,8 +101,6 @@ public class HoaDonRepositoryImpl extends AbstractRepositoryImpl<HoaDon, String>
     String fieldType = "loaiHoaDon";
     String dateFunction = "DATE";
 
-    Boolean isPending = searchFilter.getIsPending();
-
     if (!keyword.isBlank()) {
       Predicate searchPredicate = this.getPredicateContains(root, searchEntity, keyword, configuration);
       Predicate countSearchPredicate = this.getPredicateContains(countRoot, searchEntity, keyword, configuration);
@@ -140,18 +134,6 @@ public class HoaDonRepositoryImpl extends AbstractRepositoryImpl<HoaDon, String>
     if (type != null) {
       predicates.add(criteriaBuilder.equal(root.get(fieldType), type));
       countPredicates.add(criteriaBuilder.equal(countRoot.get(fieldType), type));
-    }
-
-    if (isPending != null && isPending) {
-      state = 5;
-      predicates.add(criteriaBuilder.equal(root.get(fieldState), state));
-      countPredicates.add(criteriaBuilder.equal(countRoot.get(fieldState), state));
-    }
-
-    if (isPending != null && !isPending && state == null) {
-      Integer[] states = {0, 1, 2, 3, 4, 6};
-      predicates.add(root.get(fieldState).in(states));
-      countPredicates.add(countRoot.get(fieldState).in(states));
     }
 
     if (sortType != null) {

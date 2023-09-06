@@ -7,18 +7,16 @@ import beephone_shop_projects.entity.Account;
 import beephone_shop_projects.entity.Voucher;
 import org.springframework.data.domain.Page;
 
+import java.lang.reflect.InvocationTargetException;
+
 public interface HoaDonService extends GenericService<OrderDto, String> {
 
   OrderDto getOrderDetailsById(String id);
 
   OrderDto placeOrder(Account account, Voucher voucher) throws Exception;
 
-  Page<OrderDto> findOrdersByMultipleCriteriaWithPagination(SearchFilterOrderDto searchFilterDTO) throws Exception;
+  Page<OrderDto> findOrdersByMultipleCriteriaWithPagination(SearchFilterOrderDto searchFilterDTO);
 
   OrderDto updateOrder(UpdateOrderDto updateOrder, OrderDto orderDto) throws Exception;
-
-  OrderDto createOrderPending() throws Exception;
-
-  OrderDto updateOrderPending(UpdateOrderDto updateOrderDto) throws Exception;
 
 }

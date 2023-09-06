@@ -2,9 +2,9 @@ package beephone_shop_projects.core.admin.order_management.repository.impl;
 
 import beephone_shop_projects.core.admin.order_management.config.PersistenceConfiguration;
 import beephone_shop_projects.core.admin.order_management.repository.GenericRepository;
-import beephone_shop_projects.core.admin.order_management.utils.ConstantCodeEntityMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -26,10 +26,11 @@ import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @SuppressWarnings("unchecked")
 public class AbstractRepositoryImpl<T, ID extends Serializable> implements GenericRepository<T, ID> {
-  private static final Logger logger = LoggerFactory.getLogger(AbstractRepositoryImpl.class);
+  private Logger logger = LoggerFactory.getLogger(AbstractRepositoryImpl.class);
 
   @PersistenceContext
   private EntityManager entityManager;
@@ -99,10 +100,10 @@ public class AbstractRepositoryImpl<T, ID extends Serializable> implements Gener
 
   @Override
   @Transactional
-  public T findOneById(ID id) {
-    T entity = null;
+  public Optional<T> findOneById(ID id) {
+    Optional<T> entity = null;
     try (EntityManager entityManager = this.getEntityManager()) {
-      entity = entityManager.find(this.getPersistenceClass(), id);
+      entity = Optional.ofNullable(entityManager.find(this.getPersistenceClass(), id));
     } catch (HibernateException e) {
       logger.error(e.getMessage(), e);
       throw e;
@@ -112,7 +113,7 @@ public class AbstractRepositoryImpl<T, ID extends Serializable> implements Gener
 
   @Override
   @Transactional
-  public T save(T entity) throws Exception {
+  public T save(T entity) {
     try (EntityManager entityManager = this.getEntityManager()) {
       T createdEntity = entityManager.merge(entity);
       return createdEntity;
@@ -124,7 +125,7 @@ public class AbstractRepositoryImpl<T, ID extends Serializable> implements Gener
 
   @Override
   @Transactional
-  public T update(T entity) throws Exception {
+  public T update(T entity) {
     try (EntityManager entityManager = this.getEntityManager()) {
       T mergedEntity = entityManager.merge(entity);
       return mergedEntity;
@@ -136,7 +137,7 @@ public class AbstractRepositoryImpl<T, ID extends Serializable> implements Gener
 
   @Override
   @Transactional
-  public void delete(T entity) throws Exception {
+  public void delete(T entity) {
     try (EntityManager entityManager = this.getEntityManager()) {
       entityManager.remove(entity);
     } catch (HibernateException e) {
@@ -147,10 +148,10 @@ public class AbstractRepositoryImpl<T, ID extends Serializable> implements Gener
 
   @Override
   @Transactional
-  public void deleteById(ID id) throws Exception {
+  public void deleteById(ID id) {
     try (EntityManager entityManager = this.getEntityManager()) {
-      T entity = this.findOneById(id);
-      if (entity != null) {
+      Optional<T> entity = this.findOneById(id);
+      if (entity.isPresent()) {
         entityManager.remove(entity);
       }
     } catch (HibernateException e) {
@@ -160,34 +161,24 @@ public class AbstractRepositoryImpl<T, ID extends Serializable> implements Gener
   }
 
   @Override
-  @Transactional
-  public String getMaxEntityCodeByClass() {
-    ConstantCodeEntityMapper mapper = new ConstantCodeEntityMapper();
-
-    Integer countMax;
-    String entityCodeFirst = mapper.getConstantEntityCodeByClazz(this.getPersistenceClass());
-
-    int startIndex = mapper.getStartIndex(entityCodeFirst);
+  public Long getMaxSuffixCode() {
+    List<T> entityList = this.findAll();
+    Long result;
 
     String entityName = this.getPersistenceClass().getSimpleName();
-    String jpqlQuery = "SELECT MAX(CAST(SUBSTRING(e.ma, " + startIndex + ") AS INTEGER)) + 1 FROM " + entityName + " e";
-    String entityCodeFinal = "";
+    String jpqlQuery = "SELECT MAX(CAST(SUBSTRING(e.ma, 3, LENGTH(e.ma) - 2) AS LONG)) + 1 FROM " + entityName + " e";
 
-    try (EntityManager entityManager = this.getEntityManager()) {
-      TypedQuery<Integer> typedQuery = (TypedQuery<Integer>) entityManager.createQuery(jpqlQuery);
-      countMax = typedQuery.getSingleResult();
-
-      if (countMax == null) {
-        countMax = 1;
-      }
-
-      entityCodeFinal = entityCodeFirst + countMax;
-    } catch (HibernateException e) {
-      logger.error(e.getMessage(), e);
-      throw e;
+    if (entityList.isEmpty()) {
+      result = 1L;
+      return result;
     }
 
-    return entityCodeFinal;
+    try (EntityManager entityManager = this.getEntityManager()) {
+      Query query = entityManager.createQuery(jpqlQuery);
+      result = (Long) query.getSingleResult();
+    }
+
+    return result;
   }
 
   protected Predicate getPredicateContains(Root<T> root, Class<?> entityDTO, String keyword, PersistenceConfiguration<T> configuration) {

@@ -4,14 +4,10 @@ import beephone_shop_projects.core.admin.order_management.converter.OrderConvert
 import beephone_shop_projects.core.admin.order_management.dto.OrderDto;
 import beephone_shop_projects.core.admin.order_management.dto.SearchFilterOrderDto;
 import beephone_shop_projects.core.admin.order_management.dto.UpdateOrderDto;
-import beephone_shop_projects.core.admin.order_management.repository.impl.GioHangRepositoryImpl;
-import beephone_shop_projects.core.admin.order_management.repository.impl.HinhThucThanhToanRepositoryImpl;
-import beephone_shop_projects.core.admin.order_management.repository.impl.HoaDonRepositoryImpl;
-import beephone_shop_projects.core.admin.order_management.repository.impl.LichSuHoaDonRepositoryImpl;
+import beephone_shop_projects.core.admin.order_management.repository.HoaDonRepository;
+import beephone_shop_projects.core.admin.order_management.repository.LichSuHoaDonRepository;
 import beephone_shop_projects.core.admin.order_management.service.HoaDonService;
 import beephone_shop_projects.entity.Account;
-import beephone_shop_projects.entity.GioHang;
-import beephone_shop_projects.entity.HinhThucThanhToan;
 import beephone_shop_projects.entity.HoaDon;
 import beephone_shop_projects.entity.LichSuHoaDon;
 import beephone_shop_projects.entity.Voucher;
@@ -22,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -29,35 +26,29 @@ import java.util.Date;
 public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderDto, String> implements HoaDonService {
 
   @Autowired
-  private HoaDonRepositoryImpl hoaDonRepository;
+  private HoaDonRepository hoaDonRepository;
 
   @Autowired
-  private LichSuHoaDonRepositoryImpl lichSuHoaDonRepository;
-
-  @Autowired
-  private GioHangRepositoryImpl gioHangRepository;
-
-  @Autowired
-  private HinhThucThanhToanRepositoryImpl hinhThucThanhToanRepository;
+  private LichSuHoaDonRepository lichSuHoaDonRepository;
 
   @Autowired
   private OrderConverter orderConverter;
 
-  public HoaDonServiceImpl(HoaDonRepositoryImpl repo, OrderConverter converter) {
+  public HoaDonServiceImpl(HoaDonRepository repo, OrderConverter converter) {
     super(repo, converter);
   }
 
   @Override
   public OrderDto getOrderDetailsById(String id) {
     HoaDon order = hoaDonRepository.getOrderDetailsById(id);
-    OrderDto orderDto = orderConverter.convertToDto(order);
-    return orderDto;
+    OrderDto dto = orderConverter.convertToDto(order);
+    return dto;
   }
 
   @Override
   public OrderDto placeOrder(Account account, Voucher voucher) throws Exception {
     HoaDon newOrder = new HoaDon();
-    newOrder.setMa(hoaDonRepository.getMaxEntityCodeByClass());
+    newOrder.setMa(this.getCode());
     newOrder.setAccount(null);
     newOrder.setVoucher(null);
     newOrder.setLoaiHoaDon(1);
@@ -80,25 +71,10 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderDto, Str
   }
 
   @Override
-  public Page<OrderDto> findOrdersByMultipleCriteriaWithPagination(SearchFilterOrderDto searchFilter) throws Exception {
-    if (searchFilter.getKeyword() == null) {
-      searchFilter.setKeyword("");
-    }
-    if (searchFilter.getCurrentPage() == null) {
-      searchFilter.setCurrentPage(1);
-    }
-    if (searchFilter.getPageSize() == null) {
-      searchFilter.setPageSize(5);
-    }
+  public Page<OrderDto> findOrdersByMultipleCriteriaWithPagination(SearchFilterOrderDto searchFilter) {
     Pageable pageable = PageRequest.of(searchFilter.getCurrentPage() - 1, searchFilter.getPageSize(), Sort.by("createdAt").descending());
-    Page<HoaDon> orders = hoaDonRepository.findOrdersByMultipleCriteriaWithPagination(pageable, searchFilter);
-    if (searchFilter.getIsPending() && searchFilter.getIsPending() != null) {
-      if (orders.isEmpty()) {
-        this.createOrderPending();
-        orders = hoaDonRepository.findOrdersByMultipleCriteriaWithPagination(pageable, searchFilter);
-      }
-    }
-    return orderConverter.convertToPageDto(orders);
+    Page<HoaDon> pageOrder = hoaDonRepository.findOrdersByMultipleCriteriaWithPagination(pageable, searchFilter);
+    return orderConverter.convertToPageDto(pageOrder);
   }
 
   @Override
@@ -113,59 +89,6 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderDto, Str
     orderHistory.setHoaDon(orderConverter.convertToEntity(updatedOrderDto));
     lichSuHoaDonRepository.save(orderHistory);
     return updatedOrderDto;
-  }
-
-  @Override
-  public OrderDto createOrderPending() throws Exception {
-    HoaDon newOrderPending = new HoaDon();
-    newOrderPending.setMa(hoaDonRepository.getMaxEntityCodeByClass());
-    newOrderPending.setCreatedAt(new Date());
-    newOrderPending.setTrangThai(5);
-    newOrderPending.setLoaiHoaDon(0);
-    newOrderPending.setTongTien(new BigDecimal(0));
-    GioHang cart = new GioHang();
-    cart.setMa(gioHangRepository.getMaxEntityCodeByClass());
-    GioHang createdCart = gioHangRepository.save(cart);
-    newOrderPending.setGioHang(createdCart);
-    HoaDon createdOrderPending = hoaDonRepository.save(newOrderPending);
-    LichSuHoaDon orderHistory = new LichSuHoaDon();
-    orderHistory.setHoaDon(createdOrderPending);
-    orderHistory.setCreatedAt(new Date());
-    orderHistory.setThaoTac("Tạo Đơn Hàng");
-    orderHistory.setMoTa("Nhân viên tạo đơn cho khách");
-    orderHistory.setLoaiThaoTac(0);
-    lichSuHoaDonRepository.save(orderHistory);
-    return orderConverter.convertToDto(createdOrderPending);
-  }
-
-  @Override
-  public OrderDto updateOrderPending(UpdateOrderDto updateOrderDto) throws Exception {
-    OrderDto orderDto = updateOrderDto.getOrderDto();
-    OrderDto updatedOrderPending = this.save(orderDto);
-
-    HinhThucThanhToan paymentMethod = new HinhThucThanhToan();
-    paymentMethod.setMa(hinhThucThanhToanRepository.getMaxEntityCodeByClass());
-    paymentMethod.setHoaDon(orderConverter.convertToEntity(updatedOrderPending));
-    paymentMethod.setGhiChu("");
-    paymentMethod.setTrangThai(1);
-    paymentMethod.setCreatedAt(new Date());
-    paymentMethod.setLoaiThanhToan(updateOrderDto.getPaymentMethod().getLoaiThanhToan());
-    paymentMethod.setNguoiXacNhan(updateOrderDto.getPaymentMethod().getNguoiXacNhan());
-    paymentMethod.setHinhThucThanhToan(updateOrderDto.getPaymentMethod().getHinhThucThanhToan());
-    paymentMethod.setSoTienThanhToan(updateOrderDto.getPaymentMethod().getSoTienThanhToan());
-
-    hinhThucThanhToanRepository.save(paymentMethod);
-
-    if (!updateOrderDto.getIsDelivery()) {
-      LichSuHoaDon orderHistory = new LichSuHoaDon();
-      orderHistory.setCreatedAt(updateOrderDto.getOrderHistory().getCreatedAt());
-      orderHistory.setMoTa(updateOrderDto.getOrderHistory().getMoTa());
-      orderHistory.setThaoTac(updateOrderDto.getOrderHistory().getThaoTac());
-      orderHistory.setLoaiThaoTac(updateOrderDto.getOrderHistory().getLoaiThaoTac());
-      orderHistory.setHoaDon(orderConverter.convertToEntity(updatedOrderPending));
-      lichSuHoaDonRepository.save(orderHistory);
-    }
-    return updatedOrderPending;
   }
 
 }

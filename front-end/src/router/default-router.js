@@ -26,8 +26,6 @@ import AddRole from '../views/admin/account-manager/role/hoho'
 import Default from '../layouts/dashboard/default';
 import ManagementOrders from '../views/admin/order-manager/management-orders';
 import OrderDetail from '../views/admin/order-manager/order-detail';
-import OrdersPending from '../views/admin/order-manager/ordes-pending';
-import PointOfSales from '../views/admin/order-manager/point-of-sales';
 
 
 export const DefaultRouter = [
@@ -38,14 +36,6 @@ export const DefaultRouter = [
       {
         path: 'dashboard/management-orders',
         element: <ManagementOrders />,
-      },
-      {
-        path: 'dashboard/orders-pending',
-        element: <OrdersPending />,
-      },
-      {
-        path: 'dashboard/point-of-sales',
-        element: <PointOfSales />,
       },
       {
         path: 'dashboard/order-detail/:id',

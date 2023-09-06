@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class AbstractConverter<D, E> implements GenericConverter<D, E> {
