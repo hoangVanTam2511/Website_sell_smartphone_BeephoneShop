@@ -2,10 +2,12 @@ package beephone_shop_projects.entity;
 
 import beephone_shop_projects.entity.base.IsIdentified;
 import beephone_shop_projects.entity.base.PrimaryEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,6 +16,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Getter
@@ -38,6 +41,8 @@ public class HoaDon extends PrimaryEntity implements IsIdentified {
   private BigDecimal tongTienSauKhiGiam;
 
   private String ghiChu;
+
+  private BigDecimal tienKhachTra;
 
   private Integer loaiHoaDon;
 
@@ -65,4 +70,10 @@ public class HoaDon extends PrimaryEntity implements IsIdentified {
   @JoinColumn(name = "id_voucher")
   private Voucher voucher;
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_gio_hang")
+  private GioHang gioHang;
+
+  @OneToMany(mappedBy = "hoaDon", cascade = CascadeType.REMOVE)
+  private List<LichSuHoaDon> orderHistories;
 }

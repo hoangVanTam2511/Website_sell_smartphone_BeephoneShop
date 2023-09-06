@@ -13,8 +13,8 @@ import java.util.Date;
 @Getter
 public class UpdateKhuyenMaiRequest {
 
-    @NotBlank
-    private String ma;
+//    @NotBlank
+//    private String ma;
 
     @NotBlank
     private String tenKhuyenMai;

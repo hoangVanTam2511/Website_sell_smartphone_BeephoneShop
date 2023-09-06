@@ -1,7 +1,6 @@
 package beephone_shop_projects.core.admin.product_management.controller;
 
 import beephone_shop_projects.core.admin.product_management.service.impl.DongSanPhamServiceImpl;
-import beephone_shop_projects.entity.Chip;
 import beephone_shop_projects.entity.DongSanPham;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+
 @RestController
 @RequestMapping("/dong-san-pham")
 @CrossOrigin(origins = "http://localhost:3000")
@@ -27,9 +28,14 @@ public class DongSanPhamRestController {
     private DongSanPhamServiceImpl dongSanPhamService;
 
     @GetMapping("/view-all")
-    public Page<DongSanPham> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
-        Pageable pageable = PageRequest.of(page-1,5);
+    public Page<DongSanPham> viewAll(@RequestParam(value = "page",defaultValue = "0") Integer page) {
+        Pageable pageable = PageRequest.of(page,5);
         return dongSanPhamService.getAll(pageable);
+    }
+
+    @GetMapping("/get-list")
+    public ArrayList<DongSanPham> getList(){
+        return this.dongSanPhamService.getDanhSachDongSanPham();
     }
 
     @DeleteMapping("/delete")
@@ -47,4 +53,8 @@ public class DongSanPhamRestController {
         dongSanPhamService.insert(anh);
     }
 
+    @GetMapping("/new-code")
+    public  String getNewCode(){
+        return this.dongSanPhamService.generateNewCode();
+    }
 }

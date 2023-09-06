@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.admin.product_management.controller;
 
+import beephone_shop_projects.core.admin.product_management.model.request.CreatePin;
 import beephone_shop_projects.core.admin.product_management.service.impl.PinServiceImpl;
 import beephone_shop_projects.entity.Pin;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+
 @RestController
 @RequestMapping("/pin")
 @CrossOrigin(origins = "http://localhost:3000")
@@ -26,9 +29,14 @@ public class PinRestController {
     private PinServiceImpl pinService;
 
     @GetMapping("/view-all")
-    public Page<Pin> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
-        Pageable pageable = PageRequest.of(page-1,5);
+    public Page<Pin> viewAll(@RequestParam(value = "page",defaultValue = "0") Integer page) {
+        Pageable pageable = PageRequest.of(page,5);
         return pinService.getAll(pageable);
+    }
+
+    @GetMapping("/get-list")
+    public ArrayList<Pin> getList(){
+        return this.pinService.getDanhSachPin();
     }
 
     @DeleteMapping("/delete")
@@ -41,8 +49,18 @@ public class PinRestController {
         pinService.insert(mauSac);
     }
 
+    @PostMapping("/save-second")
+    public void saveSecond(@RequestBody CreatePin mauSac) {
+        pinService.insert(mauSac);
+    }
+
     @PutMapping("/update/{id}")
     public void update(@RequestBody Pin mauSac,@PathVariable("id")String id) {
         pinService.insert(mauSac);
+    }
+
+    @GetMapping("/new-code")
+    public  String getNewCode(){
+        return this.pinService.generateNewCode();
     }
 }

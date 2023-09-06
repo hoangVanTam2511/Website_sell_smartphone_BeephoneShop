@@ -7,6 +7,9 @@ import java.util.Date;
 
 public interface KhuyenMaiResponse {
 
+    @Value("#{target.id}")
+    String getId();
+
     @Value("#{target.ma}")
     String getMa();
 

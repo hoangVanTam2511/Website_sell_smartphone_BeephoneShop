@@ -1,8 +1,8 @@
 package beephone_shop_projects.core.admin.product_management.controller;
 
-import beephone_shop_projects.core.admin.product_management.service.impl.HinhThucSanPhamServiceImpl;
-import beephone_shop_projects.entity.DongSanPham;
-import beephone_shop_projects.entity.HinhThucSanPham;
+import beephone_shop_projects.core.admin.product_management.repository.SanPhamRepository;
+import beephone_shop_projects.core.admin.product_management.service.impl.ImeiServiceImpl;
+import beephone_shop_projects.entity.Imei;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,32 +19,39 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/hinh-thuc-san-pham ")
+@RequestMapping("/imei")
 @CrossOrigin(origins = "http://localhost:3000")
-public class HinhThucSanPhamRestController {
+public class ImeiRestController {
 
     @Autowired
-    private HinhThucSanPhamServiceImpl hinhThucSanPhamService;
+    private ImeiServiceImpl imeiService;
 
-    @GetMapping("/view-all")
-    public Page<HinhThucSanPham> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
-        Pageable pageable = PageRequest.of(page-1,5);
-        return hinhThucSanPhamService.getAll(pageable);
+    @Autowired
+    private SanPhamRepository chiTietSanPhamRepository;
+
+    @GetMapping("/view-all/{id}")
+    public Page<Imei> viewAll(@PathVariable("id")String id,
+                              @RequestParam(value = "page",defaultValue = "0") Integer page) {
+        Pageable pageable = PageRequest.of(page,5);
+        return imeiService.getAllByIdChiTietSanPham(id,pageable);
     }
 
     @DeleteMapping("/delete")
     public void delete(@RequestParam("id")String id) {
-        hinhThucSanPhamService.delete(id);
+        imeiService.delete(id);
     }
 
-    @PostMapping("/save")
-    public void save(@RequestBody HinhThucSanPham anh) {
-        hinhThucSanPhamService.insert(anh);
+    @PostMapping("/save/{id}")
+    public void save(@PathVariable("id")String id,@RequestBody Imei imei) {
+//        imei.setIdSanPham(chiTietSanPhamReponsitory.findById(id).get());
+//        imei.setTrangThai(1);
+        imeiService.insert(imei);
     }
 
     @PutMapping("/update/{id}")
-    public void update(@RequestBody HinhThucSanPham anh ,@PathVariable("id")String id) {
-        hinhThucSanPhamService.insert(anh);
+    public void update(@RequestBody Imei imei ,@PathVariable("id")String id) {
+        imeiService.insert(imei);
     }
+
 
 }

@@ -3,7 +3,6 @@ package beephone_shop_projects.core.admin.product_management.service.impl;
 import beephone_shop_projects.core.admin.product_management.repository.ImeiRepository;
 import beephone_shop_projects.core.admin.product_management.service.IService;
 import beephone_shop_projects.entity.Imei;
-import beephone_shop_projects.entity.MauSac;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,7 +16,11 @@ public class ImeiServiceImpl implements IService<Imei> {
 
     @Override
     public Page<Imei> getAll(Pageable pageable) {
-        return imeiRepository.findAll(pageable);
+        return imeiRepository.findAllByDelected(true,pageable);
+    }
+
+    public Page<Imei> getAllByIdChiTietSanPham(String idChiTietSanPham,Pageable pageable) {
+        return imeiRepository.findAllByIdChiTietSanPhamAndDelected(idChiTietSanPham,1,pageable);
     }
 
     @Override
@@ -32,7 +35,7 @@ public class ImeiServiceImpl implements IService<Imei> {
 
     @Override
     public void delete(String id) {
-        imeiRepository.deleteById(id);
+        imeiRepository.updateDelected(false,id);
     }
 
     public Imei getOne(String id){

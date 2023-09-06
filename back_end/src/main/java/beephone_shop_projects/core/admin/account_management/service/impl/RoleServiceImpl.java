@@ -4,9 +4,6 @@ import beephone_shop_projects.core.admin.account_management.repository.RoleRepos
 import beephone_shop_projects.core.admin.account_management.service.RoleService;
 import beephone_shop_projects.entity.Role;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
