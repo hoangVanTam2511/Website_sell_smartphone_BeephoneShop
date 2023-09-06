@@ -6,7 +6,6 @@ import org.springframework.data.repository.NoRepositoryBean;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Optional;
 
 @NoRepositoryBean
 public interface GenericRepository<T, ID extends Serializable> {
@@ -15,7 +14,7 @@ public interface GenericRepository<T, ID extends Serializable> {
 
   List<T> findAll();
 
-  Optional<T> findOneById(ID id);
+  T findOneById(ID id);
 
   T save(T entity) throws Exception;
 
@@ -25,6 +24,5 @@ public interface GenericRepository<T, ID extends Serializable> {
 
   void deleteById(ID id) throws Exception;
 
-  String getMaxEntityCode();
-
+  String getMaxEntityCodeByClass();
 }
