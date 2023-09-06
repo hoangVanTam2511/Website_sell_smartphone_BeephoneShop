@@ -27,4 +27,6 @@ public class SearchFilterOrderDto {
   private Integer type;
 
   private String sort;
+
+  private Boolean isPending;
 }
