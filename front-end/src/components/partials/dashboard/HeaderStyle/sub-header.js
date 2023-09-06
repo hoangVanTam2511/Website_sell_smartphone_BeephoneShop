@@ -14,10 +14,7 @@ const SubHeader = memo((props) => {
 
 
   return (
-    <div>
-      <br />
-      <br />
-      <br />
+    <div style={{ height: "50px" }}>
 
     </div>
   )

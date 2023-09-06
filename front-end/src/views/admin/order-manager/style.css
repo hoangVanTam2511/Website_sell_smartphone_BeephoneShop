@@ -1,3 +1,54 @@
+.MuiTab-root:hover {
+  background-color: #EAEEF6;
+}.MuiTab-root {
+  outline: none !important;
+}
+.MuiTab-root.Mui-selected {
+  background-color: #EAEEF6;
+  color: #000000;
+}
+.number-input1 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 75px;
+    height: 28px;
+    border: 1px solid #ddd;
+    overflow: hidden;
+  border-radius: 5px;
+}
+
+.number-input1 button {
+    width: 60px;
+    height: 110%;
+    background-color: white;
+    /* color: #555; */
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    font-family: "Open Sans", sans-serif;
+}
+
+.number-input1 button:hover {
+    background-color: #e6e6e6;
+}
+
+.number-input1 button:active {
+    /* background-color: #d9d9d9; */
+}
+
+.number-input1 input[type=number] {
+    width: 100%;
+    height: 80%;
+    padding: 5px;
+    border: none;
+    outline: none;
+    font-size: 17px;
+    text-align: center;
+    font-family: "Open Sans", sans-serif;
+}
+
+
 .button-container {
     display: flex;
     justify-content: center;
@@ -16,38 +67,38 @@
 }
 
 .wrap-order-summary {
-    box-shadow: 0 0.1rem 0.4rem #00000080;
+    box-shadow: 0 0.1rem 0.4rem #00000060;
     height: auto;
     background-color: #ffffff;
 }
 
 .wrap-timeline {
-    box-shadow: 0 0.1rem 0.4rem #00000080;
+    box-shadow: 0 0.1rem 0.4rem #00000060;
     height: 375px;
     background-color: #ffffff;
 }
 
 .wrap-payment {
-    box-shadow: 0 0.1rem 0.4rem #00000080;
+    box-shadow: 0 0.1rem 0.4rem #00000060;
     height: auto;
     /* height: 300px; */
     background-color: #ffffff;
 }
 
 .wrap-order-detail {
-    box-shadow: 0 0.1rem 0.4rem #00000080;
-    height: 365px;
+    box-shadow: 0 0.1rem 0.4rem #00000060;
+    height: 340px;
     background-color: #ffffff;
 }
 
 .scroll-container1 {
     overflow-x: hidden;
     overflow-y: auto;
-    max-height: 245px;
+    max-height: 365px;
 }
 
 .scroll-container1::-webkit-scrollbar-track {
-    background-color: #f5f5f5;
+    background-color: transparent;
 }
 
 .scroll-container1::-webkit-scrollbar-thumb {
@@ -56,7 +107,7 @@
 }
 
 .scroll-container1::-webkit-scrollbar-track {
-    margin-top: 53.5px;
+    margin-top: 56.5px;
 }
 
 .scroll-container1::-webkit-scrollbar-thumb:hover {
@@ -65,12 +116,12 @@
 
 .scroll-container1::-webkit-scrollbar {
     display: none;
-    width: 8px;
+    width: 7px;
     display: block;
 }
 
 .scroll-container1:hover::-webkit-scrollbar {
-    width: 8px;
+    width: 7px;
 }
 
 .scroll-container {
@@ -105,6 +156,67 @@
 
 .scroll-container::-webkit-scrollbar-thumb:hover {
     background-color: #d9d9d9;
+}
+
+
+.scroll-container2 {
+    overflow-x: hidden;
+    overflow-y: scroll;
+    height: 685px;
+}
+
+/* .scroll-container2:hover::-webkit-scrollbar { */
+/*     height: 8px; */
+/* } */
+
+.scroll-container2::-webkit-scrollbar {
+    display: none;
+}
+
+.scroll-container2::-webkit-scrollbar-track {
+    background-color: #f5f5f5;
+}
+
+.scroll-container2::-webkit-scrollbar-thumb {
+    background-color: #d9d9d9;
+    border-radius: 2px;
+}
+
+.scroll-container2::-webkit-scrollbar-thumb:hover {
+    background-color: #d9d9d9;
+}
+
+.scroll-container3 {
+    overflow-x: hidden;
+    overflow-y: scroll;
+    max-height: 620px;
+}
+
+.scroll-container3::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+.scroll-container3::-webkit-scrollbar-thumb {
+    background-color: #999;
+    border-radius: 5px;
+}
+
+.scroll-container3::-webkit-scrollbar-track {
+    margin-top: 16px;
+}
+
+.scroll-container3::-webkit-scrollbar-thumb:hover {
+    background-color: #999;
+}
+
+.scroll-container3::-webkit-scrollbar {
+    /* display: none; */
+    width: 6.5px;
+    display: block;
+}
+
+.scroll-container3:hover::-webkit-scrollbar {
+    width: 6.5px;
 }
 
 .MuiOutlinedInput-notchedOutline {
@@ -273,12 +385,15 @@ input[type="number"]::-ms-outer-spin-button {
 .__add-cart0 {
     outline: none;
     color: white;
+    /* background: #3A57E8; */
+    /* border: 1px solid #3A57E8; */
+    border: 1px solid #212327;
     background: #212327;
     cursor: pointer;
+    border-radius: 10px;
     transition: all 0.3s ease;
-    width: 100%;
-    height: 60px;
-
+    width: 97%;
+    height: 55px;
 }
 
 .filter {

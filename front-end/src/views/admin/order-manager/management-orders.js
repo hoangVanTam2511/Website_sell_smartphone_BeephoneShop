@@ -36,6 +36,7 @@ const ManagementOrders = () => {
           keyword: keyword,
           fromDate: fromDate,
           toDate: toDate,
+          isPending: false,
         }
       })
       .then((response) => {
@@ -86,7 +87,7 @@ const ManagementOrders = () => {
     setFromDate(null);
     setToDate(null);
     setCurrentPage(1);
-    findOrdersByMultipleCriteriaWithPagination(1);
+    // findOrdersByMultipleCriteriaWithPagination(1);
     // handleRemoveStorage();
   }
 
@@ -154,22 +155,6 @@ const ManagementOrders = () => {
     alert("hello");
   };
 
-  const updateOrder = async (orderStatus, orderHistory) => {
-    const updateData = {
-      orderStatus: orderStatus,
-      orderHistory: orderHistory,
-    };
-    try {
-      await axios.put(`http://localhost:8080/api/orders/${1}`, updateData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      findOrdersByMultipleCriteriaWithPagination(currentPage);
-    } catch (error) {
-    }
-  };
-
   const [open, setOpen] = useState(false);
   const handleCloseNoAction = () => {
     setOpen(false);
@@ -201,8 +186,23 @@ const ManagementOrders = () => {
       dataIndex: "tenNguoiNhan",
       width: "15%",
       render: (text, record) =>
-        record.tenNguoiNhan == "" ? (
-          <span>Khách Lẻ</span>
+        record.tenNguoiNhan == null ? (
+          <div
+            className="rounded-pill mx-auto"
+            style={{
+              height: "38px",
+              width: "90px",
+              padding: "5px",
+              backgroundColor: "#e1e1e1",
+            }}
+          >
+            <span
+              className="text-dark"
+              style={{ fontSize: "14px" }}
+            >
+              Khách lẻ
+            </span>
+          </div>
         ) : (
           <span>{record.tenNguoiNhan}</span>
         ),
@@ -339,7 +339,23 @@ const ManagementOrders = () => {
                   Đã hủy
                 </span>
               </div>
-              : ""
+              : status == 6 ?
+                <div
+                  className="rounded-pill mx-auto bg-success"
+                  style={{
+                    height: "38px",
+                    width: "130px",
+                    padding: "5px",
+                  }}
+                >
+                  <span
+                    className="text-white"
+                    style={{ fontSize: "14px", fontWeight: "550" }}
+                  >
+                    Đã thanh toán
+                  </span>
+                </div>
+                : ""
       },
     },
     {
@@ -510,14 +526,15 @@ const ManagementOrders = () => {
                 type="primary"
                 style={{ height: "45px", width: "150px", fontSize: "15px" }}
               >
-                <PlusOutlined
+                <PlusOutlined className="ms-1"
                   style={{
-                    bottom: "15px",
-                    left: "15px",
+                    position: "absolute",
+                    bottom: "14.5px",
+                    left: "12px",
                   }}
                 />
                 <span
-                  className="ms-3"
+                  className="ms-3 ps-1"
                   style={{ fontWeight: "550", marginBottom: "3px" }}
                 >
                   Tạo đơn hàng
