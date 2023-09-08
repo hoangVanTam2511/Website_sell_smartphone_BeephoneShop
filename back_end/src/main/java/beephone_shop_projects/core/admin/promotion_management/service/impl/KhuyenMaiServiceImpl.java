@@ -12,14 +12,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
 @Validated
+@Component
 public class KhuyenMaiServiceImpl implements KhuyenMaiService {
 
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -27,6 +32,33 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
     @Autowired
     private KhuyenMaiRepository khuyenMaiRepository;
 
+
+    @Scheduled(fixedRate = 60000)
+    public List<KhuyenMai> updateStatusKhuyenMai() {
+        Date dateTime = new Date();
+        List<KhuyenMai> listToUpdate = new ArrayList<>();
+
+        List<KhuyenMai> list = khuyenMaiRepository.checkToStartAfterAndStatus(dateTime, 3);
+        List<KhuyenMai> list1 = khuyenMaiRepository.checkEndDateAndStatus(dateTime, 2);
+        List<KhuyenMai> list3 = khuyenMaiRepository.checkToStartBeforDateNowAndStatus(dateTime, 1);
+
+        listToUpdate.addAll(list);
+        listToUpdate.addAll(list1);
+        listToUpdate.addAll(list3);
+
+        for (KhuyenMai v : listToUpdate) {
+            if (list.contains(v)) {
+                v.setTrangThai(3);
+            }
+            if (list1.contains(v)) {
+                v.setTrangThai(2);
+            }
+            if (list3.contains(v)) {
+                v.setTrangThai(1);
+            }
+        }
+        return khuyenMaiRepository.saveAll(listToUpdate);
+    }
 
     @Override
     public Page<KhuyenMai> getAll(FindKhuyenMaiRequest request) {
@@ -64,12 +96,11 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
         KhuyenMai khuyenMai = KhuyenMai.builder()
                 .ma(generateRandomCode())
                 .tenKhuyenMai(request.getTenKhuyenMai())
-                .dieuKienGiamGia(request.getDieuKienGiamGia())
-                .mucGiamGiaTheoPhanTram(request.getMucGiamGiaTheoPhanTram())
-                .mucGiamGiaTheoSoTien(request.getMucGiamGiaTheoSoTien())
+                .giaTriKhuyenMai(request.getGiaTriKhuyenMai())
+                .loaiKhuyenMai(request.getLoaiKhuyenMai())
                 .ngayBatDau(request.getNgayBatDau())
                 .ngayKetThuc(request.getNgayKetThuc())
-                .trangThai(true)
+                .trangThai(1)
                 .build();
         return khuyenMaiRepository.save(khuyenMai);
     }
@@ -78,13 +109,11 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
     public KhuyenMai updateKhuyenMai(@Valid UpdateKhuyenMaiRequest request, String ma) {
         KhuyenMai khuyenMai = khuyenMaiRepository.findById(ma).get();
         if (khuyenMai != null) {
-//            khuyenMai.setMa(request.getMa());
             khuyenMai.setTenKhuyenMai(request.getTenKhuyenMai());
             khuyenMai.setNgayBatDau(request.getNgayBatDau());
-            khuyenMai.setDieuKienGiamGia(request.getDieuKienGiamGia());
             khuyenMai.setNgayKetThuc(request.getNgayKetThuc());
-            khuyenMai.setMucGiamGiaTheoPhanTram(request.getMucGiamGiaTheoPhanTram());
-            khuyenMai.setMucGiamGiaTheoSoTien(request.getMucGiamGiaTheoSoTien());
+            khuyenMai.setGiaTriKhuyenMai(request.getGiaTriKhuyenMai());
+            khuyenMai.setLoaiKhuyenMai(request.getLoaiKhuyenMai());
             return khuyenMaiRepository.save(khuyenMai);
         } else {
             return null;
@@ -92,7 +121,7 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
     }
 
     @Override
-    public Boolean deleteVoucher(String ma) {
+    public Boolean deleteKhuyenMai(String ma) {
         KhuyenMai findKhuyenMai = khuyenMaiRepository.findById(ma).get();
         if (findKhuyenMai != null) {
             khuyenMaiRepository.deleteById(ma);

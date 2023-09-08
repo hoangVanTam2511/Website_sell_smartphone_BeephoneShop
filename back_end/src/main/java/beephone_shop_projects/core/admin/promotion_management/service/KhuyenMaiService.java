@@ -19,7 +19,7 @@ public interface KhuyenMaiService {
 
     KhuyenMai updateKhuyenMai(@Valid UpdateKhuyenMaiRequest request, String ma);
 
-    Boolean deleteVoucher(String ma);
+    Boolean deleteKhuyenMai(String ma);
 
     Boolean doiTrangThai(String id);
 

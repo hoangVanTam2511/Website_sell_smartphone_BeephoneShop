@@ -39,7 +39,7 @@ public class KhuyenMaiController {
 
     @DeleteMapping("delete-khuyen-mai/{id}")
     public ResponseEntity deleteKhuyenMai(@PathVariable("id") String id) {
-        return new ResponseEntity(khuyenMaiService.deleteVoucher(id), HttpStatus.OK);
+        return new ResponseEntity(khuyenMaiService.deleteKhuyenMai(id), HttpStatus.OK);
     }
 
     @GetMapping("get-by-id/{id}")

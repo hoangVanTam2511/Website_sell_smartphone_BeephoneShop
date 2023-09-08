@@ -22,6 +22,7 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { Pagination } from "@mui/material";
+import numeral from "numeral";
 
 //show
 const HienThiKhuyenMai = () => {
@@ -35,9 +36,12 @@ const HienThiKhuyenMai = () => {
   const [searchTrangThai, setSearchTrangThai] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const handleReset = (clearFilters) => {
-    clearFilters();
+  const handleReset = () => {
+    loadDataListKhuyenMai(currentPage);
     setSearchTatCa("");
+    setSearchNgayBatDau("");
+    setSearchNgayKetThuc("");
+    setSearchTrangThai("");
   };
 
   // cutstom load data
@@ -112,6 +116,7 @@ const HienThiKhuyenMai = () => {
       title: "STT",
       dataIndex: "stt",
       width: "5%",
+      align: "center",
       render: (text) => <span>{text}</span>,
       sorter: (a, b) => a.stt - b.stt,
     },
@@ -119,48 +124,73 @@ const HienThiKhuyenMai = () => {
       title: "Mã",
       dataIndex: "ma",
       width: "10%",
+      align: "center",
     },
     {
-      title: "Giảm Giá (%)",
-      dataIndex: "mucGiamGiaTheoPhanTram",
-      width: "10%",
-    },
-    {
-      title: "Giảm Giá ($)",
-      dataIndex: "mucGiamGiaTheoSoTien",
-      width: "10%",
-    },
-    {
-      title: "Thời Gian",
-      dataIndex: "thoiGian",
-      width: "10%",
+      title: "Tên",
+      dataIndex: "tenKhuyenMai",
+      width: "20%",
+      align: "center",
       render: (text, record) => (
-        <div style={{ textAlign: "center" }}>
-          {dayjs(record.ngayBatDau).format("HH:mm DD-MM-YYYY")} -{" "}
-          {dayjs(record.ngayKetThuc).format("HH:mm DD-MM-YYYY")}
-        </div>
+        <span
+          style={{
+            maxWidth: "25%",
+            whiteSpace: "pre-line",
+            overflow: "hidden",
+          }}
+        >
+          {record.tenKhuyenMai}
+        </span>
       ),
     },
     {
-      title: "Điều Kiện Giảm Giá",
-      dataIndex: "dieuKienGiamGia",
+      title: "Giảm Giá",
+      dataIndex: "loaiGiamGia",
       width: "10%",
+      align: "center",
+      render: (value, record) => {
+        let formattedValue = value;
+        if (record.loaiKhuyenMai === 1) {
+          formattedValue =
+            numeral(record.giaTriKhuyenMai).format("0,0 VND") + " VNĐ";
+        } else if (record.loaiKhuyenMai === 2) {
+          formattedValue = `${record.giaTriKhuyenMai} %`;
+        }
+        return <span>{formattedValue}</span>;
+      },
+    },
+    {
+      title: "Thời Gian Bắt Đầu - Kết Thúc",
+      dataIndex: "thoiGian",
+      width: "10%",
+      align: "center",
+      render: (text, record) => (
+        <div style={{ textAlign: "center" }}>
+          {dayjs(record.ngayBatDau).format("DD/MM/YYYY")} -{" "}
+          {dayjs(record.ngayKetThuc).format("DD/MM/YYYY")}
+        </div>
+      ),
     },
     {
       title: "Trạng Thái",
       dataIndex: "trangThai",
       width: "15%",
+      align: "center",
       onFilter: (value, record) => record.trangThai == value,
       filterSearch: true,
       render: (text, record) => (
         <span>
-          {record.trangThai == true ? (
+          {record.trangThai == 1 ? (
             <Button type="primary" style={{ borderRadius: "30px" }}>
               Còn Hiệu Lực
             </Button>
-          ) : record.trangThai == false ? (
+          ) : record.trangThai == 2 ? (
             <Button type="primary" danger style={{ borderRadius: "30px" }}>
               Hết Hiệu Lực
+            </Button>
+          ) : record.trangThai == 3 ? (
+            <Button type="primary" danger style={{ borderRadius: "30px" }}>
+              Chưa bắt đầu
             </Button>
           ) : (
             <Button type="primary" style={{ borderRadius: "30px" }}>
@@ -174,6 +204,7 @@ const HienThiKhuyenMai = () => {
       title: "Thao Tác",
       dataIndex: "operation",
       width: "10%",
+      align: "center",
       render: (_, record) => {
         return (
           <>
@@ -181,7 +212,6 @@ const HienThiKhuyenMai = () => {
               style={{
                 display: "flex",
                 alignItems: "center",
-                paddingLeft: "15px",
               }}
             >
               <div style={{ textAlign: "center" }}>
@@ -190,7 +220,7 @@ const HienThiKhuyenMai = () => {
                     onClick={() => {
                       doiTrangThaiVoucher(record.id);
                     }}
-                    style={{ border: "none" }}
+                    style={{ border: "none", background: "none" }}
                   >
                     <FontAwesomeIcon icon={faRotateRight} />
                   </Button>{" "}
@@ -227,8 +257,8 @@ const HienThiKhuyenMai = () => {
   const handleSearchTrangThaiChange = (event) => {
     const selectedValue = event.target.value;
     setSearchTrangThai(selectedValue); // Cập nhật giá trị khi Select thay đổi
-    searchParams.set("trangThai", searchTrangThai);
-    setSearchParams(searchParams);
+    // searchParams.set("trangThai", searchTrangThai);
+    // setSearchParams(searchParams);
   };
 
   const handleSearchNgayBatDauChange = (selectedDate) => {
@@ -242,6 +272,7 @@ const HienThiKhuyenMai = () => {
   };
 
   const chuyenTrang = (event, page) => {
+    setCurrentPage(page);
     loadDataListKhuyenMai(page);
   };
 
@@ -270,7 +301,12 @@ const HienThiKhuyenMai = () => {
           </span>
           &nbsp;
           <div className="btn-reset">
-            <Button className="btn-search-reset">
+            <Button
+              className="btn-search-reset"
+              onClick={() => {
+                handleReset();
+              }}
+            >
               <FontAwesomeIcon icon={faArrowsRotate} />
               &nbsp; Làm Mới{" "}
             </Button>
@@ -318,8 +354,9 @@ const HienThiKhuyenMai = () => {
                 <MenuItem value="">
                   <em>Tất cả</em>
                 </MenuItem>
-                <MenuItem value={true}>Còn Hiệu lực</MenuItem>
-                <MenuItem value={false}>Hết Hiệu lực</MenuItem>
+                <MenuItem value={1}>Còn Hiệu lực</MenuItem>
+                <MenuItem value={2}>Hết Hiệu lực</MenuItem>
+                <MenuItem value={3}>Chưa Bắt Đầu</MenuItem>
               </Select>
             </FormControl>
           </div>

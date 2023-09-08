@@ -15,20 +15,15 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "anh")
-public class Anh  extends PrimaryEntity implements IsIdentified {
+@AllArgsConstructor
+@Table(name = "linh_su_hoa_don")
+public class LinhSuHoaDon extends PrimaryEntity implements IsIdentified {
 
-    private  String ma;
-
-    private String tenAnh;
-
-    private String duongDan;
-
-    private Integer trangThai;
+    private Integer trangThaiHoaDon;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_chi_tiet_san_pham")
-    private SanPhamChiTiet idSanPhamChiTiet;
+    @JoinColumn(name = "hoa_don_id")
+    private HoaDon  hoa_don_id;
+
 }

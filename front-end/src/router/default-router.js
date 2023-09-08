@@ -2,8 +2,6 @@ import React from "react";
 import Index from "../views/index";
 // san pham
 
-
-
 // chip
 import Chip from "../views/admin/product-manager/chip/chip";
 import ThemChip from "../views/admin/product-manager/chip/them-chip";
@@ -11,7 +9,6 @@ import ThemChip from "../views/admin/product-manager/chip/them-chip";
 // dong-san-pham
 import DongSanPham from "../views/admin/product-manager/dong-san-pham/dong-san-pham";
 import ThemDongSanPham from "../views/admin/product-manager/dong-san-pham/them-dong-san-pham";
-
 
 // man-hinh
 import ManHinh from "../views/admin/product-manager/man-hinh/man-hinh";
@@ -33,16 +30,13 @@ import ThemNhaSanXuat from "../views/admin/product-manager/nha-san-xuat/them-nha
 import Rom from "../views/admin/product-manager/rom/rom";
 import ThemRom from "../views/admin/product-manager/rom/them-rom";
 
-
 // chi-tiet-san-pham
-import ChiTietSanPham from '../views/admin/product-manager/chi-tiet-san-pham/chi-tiet-san-pham';
-import ThemChiTietSanPham from '../views/admin/product-manager/chi-tiet-san-pham/them-chi-tiet-san-pham';
-
+import ChiTietSanPham from "../views/admin/product-manager/chi-tiet-san-pham/chi-tiet-san-pham";
+import ThemChiTietSanPham from "../views/admin/product-manager/chi-tiet-san-pham/them-chi-tiet-san-pham";
 
 // // imei
-import Imei from '../views/admin/product-manager/imei/imei';
-import ThemImei from '../views/admin/product-manager/imei/them-imei'
-
+import Imei from "../views/admin/product-manager/imei/imei";
+import ThemImei from "../views/admin/product-manager/imei/them-imei";
 
 // khach hang
 import KhachHang from "../views/admin/account-manager/khachhang/HienThiKH";
@@ -60,11 +54,9 @@ import Role from "../views/admin/account-manager/role/HienThiRole";
 import AddRole from "../views/admin/account-manager/role/AddRole";
 //admin
 
-import Default from '../layouts/dashboard/default';
-import ManagementOrders from '../views/admin/order-manager/management-orders';
-import OrderDetail from '../views/admin/order-manager/order-detail';
-
-
+import Default from "../layouts/dashboard/default";
+import ManagementOrders from "../views/admin/order-manager/management-orders";
+import OrderDetail from "../views/admin/order-manager/order-detail";
 
 //voucher
 
@@ -79,7 +71,6 @@ import AddressForm from "../views/admin/account-manager/khachhang/DiaChi";
 import { ToastContainer } from "react-toastify";
 import UpdateKH from "../views/admin/account-manager/khachhang/UpdateKH";
 import UpdateNV from "../views/admin/account-manager/nhanvien/UpdateNV";
-
 
 import SuaKhuyenMai from "../views/admin/promotion-manager/sua-promotion";
 
@@ -167,7 +158,7 @@ export const DefaultRouter = [
         path: "khach-hang",
         element: <KhachHang />,
       },
-      
+
       {
         path: "them-khach-hang",
         element: <AddKH />,
@@ -206,7 +197,6 @@ export const DefaultRouter = [
         element: <ThemImei />,
       },
       {
-
         path: "nhap-excel-nhan-vien",
         element: <NhapTuFileNV />,
       },
@@ -243,16 +233,20 @@ export const DefaultRouter = [
         path: "them-khuyen-mai",
         element: <AddKhuyenMai />,
       },
+      // {
+      //   path: "san-pham-chi-tiet-1/:id",
+      //   element: <AddKhuyenMai />,
+      // },
       {
         path: "sua-khuyen-mai/:id",
         element: <SuaKhuyenMai />,
       },
-       {
-        path: 'dashboard/management-orders',
+      {
+        path: "dashboard/management-orders",
         element: <ManagementOrders />,
       },
       {
-        path: 'dashboard/order-detail/:id',
+        path: "dashboard/order-detail/:id",
         element: <OrderDetail />,
       },
     ],
