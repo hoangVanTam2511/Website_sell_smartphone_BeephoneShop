@@ -43,7 +43,7 @@ public class NhanVienRestcontroller {
     }
 
     @PutMapping("update/{id}")
-    public ResponseEntity updateNV(@RequestBody Account request,
+    public ResponseEntity updateNV(@RequestBody CreateAccountRequest request,
                                    @PathVariable("id") String id) {
         return new ResponseEntity(accService.updateNV(request, id), HttpStatus.OK);
     }

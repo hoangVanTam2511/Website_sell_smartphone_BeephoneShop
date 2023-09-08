@@ -1,10 +1,7 @@
 package beephone_shop_projects.core.admin.account_management.model.request;
 
-import beephone_shop_projects.entity.Role;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.Date;
 
 @Getter
 @Setter

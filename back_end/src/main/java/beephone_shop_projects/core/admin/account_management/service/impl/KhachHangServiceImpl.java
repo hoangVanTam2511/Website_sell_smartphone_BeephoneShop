@@ -49,20 +49,21 @@ public class KhachHangServiceImpl implements KhachHangService {
 //    }
 
     @Override
-    public Account addKH(CreateKhachHangRequest request, List<DiaChi> diaChiList) {
+    public Account addKH(CreateKhachHangRequest request) {
         Random random = new Random();
+
+        String hoVaTen = request.getHoVaTen();
         int number = random.nextInt(10000);
         String code = String.format("KH%04d", number);
+        String hoVaTenWithoutSpaces = hoVaTen.replaceAll("\\s+", "");
         Date date = null;
         try {
-            date = new SimpleDateFormat("yyyy-mm-dd").parse(request.getNgaySinh());
+            date = new SimpleDateFormat("yyyy-MM-dd").parse(request.getNgaySinh());
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
-        String hoVaTen = request.getHoVaTen();
-        String hoVaTenWithoutSpaces = hoVaTen.replaceAll("\\s+", ""); // Loại bỏ khoảng trắng
-        String hoVaTenWithoutDiacritics = removeDiacritics(hoVaTenWithoutSpaces);
 
+        String hoVaTenWithoutDiacritics = removeDiacritics(hoVaTenWithoutSpaces);
         String[] specialCharsArray = {"!", "@", "#", "$", "%", "^", "&", "*", "+", "-"};
         String specialChars = getRandomSpecialChars(specialCharsArray);
         String matKhau = hoVaTenWithoutDiacritics + specialChars + code;
@@ -77,20 +78,21 @@ public class KhachHangServiceImpl implements KhachHangService {
                 .ma(code)
                 .matKhau(matKhau)
                 .soDienThoai(request.getSoDienThoai())
-                .diaChiList(diaChiList)
                 .build();
-        Account khachHang = addKH(request, diaChiList);
+//        Account khachHang = addKH(request);
 
-        // Thêm nhiều địa chỉ vào khách hàng
-        for (DiaChi diaChi : diaChiList) {
-            addDiaChiToKhachHang(khachHang, diaChi);
-        }
+////        // Thêm nhiều địa chỉ vào khách hàng
+//        for (DiaChi diaChi : diaChiList) {
+//            addDiaChiToKhachHang(khachHang, diaChi);
+//        }
         return accountRepository.save(kh);
     }
+
     public void addDiaChiToKhachHang(Account khachHang, DiaChi diaChi) {
         khachHang.getDiaChiList().add(diaChi);  // Thêm địa chỉ vào danh sách địa chỉ của khách hàng
         accountRepository.save(khachHang);      // Lưu cập nhật vào cơ sở dữ liệu
     }
+
     @Override
     public Account getOne(UUID id) {
         return accountRepository.findById(String.valueOf(id)).get();
@@ -102,25 +104,26 @@ public class KhachHangServiceImpl implements KhachHangService {
     }
 
     @Override
-    public Account updateKH(Account request, String id) {
+    public Account updateKH(CreateKhachHangRequest request, String id) {
         Optional<Account> optional = accountRepository.findById(id);
+        Date date = null;
+        try {
+            date = new SimpleDateFormat("yyyy-MM-dd").parse(request.getNgaySinh());
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
         if (optional.isPresent()) {
             optional.get().setId(id);
             optional.get().setMa(request.getMa());
             optional.get().setMatKhau(request.getMatKhau());
             optional.get().setEmail(request.getEmail());
-            optional.get().setDiaChi(request.getDiaChi());
             optional.get().setTrangThai(request.getTrangThai());
-            optional.get().setDiaChi(request.getDiaChi());
             optional.get().setIdRole(roleRepository.findByMa("role2"));
-            optional.get().setTinhThanhPho(request.getTinhThanhPho());
-            optional.get().setNgaySinh(request.getNgaySinh());
+            optional.get().setNgaySinh(date);
             optional.get().setAnhDaiDien(request.getAnhDaiDien());
-            optional.get().setXaPhuong(request.getXaPhuong());
             optional.get().setGioiTinh(request.getGioiTinh());
             optional.get().setHoVaTen(request.getHoVaTen());
             optional.get().setSoDienThoai(request.getSoDienThoai());
-            optional.get().setQuanHuyen(request.getQuanHuyen());
             accountRepository.save(optional.get());
             return accountRepository.save(optional.get());
         }
@@ -130,7 +133,7 @@ public class KhachHangServiceImpl implements KhachHangService {
     @Override
     public Page<AccountResponse> search(Optional<String> tenSearch, Integer pageNo) {
         Pageable pageable = PageRequest.of(pageNo, 20);
-        return accountRepository.searchAllKH(tenSearch,pageable);
+        return accountRepository.searchAllKH(tenSearch, pageable);
     }
 
     @Override

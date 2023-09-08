@@ -1,24 +1,21 @@
 package beephone_shop_projects.core.admin.account_management.service.impl;
 
-import beephone_shop_projects.core.admin.account_management.model.request.CreateAccountRequest;
-import beephone_shop_projects.core.admin.account_management.model.request.CreateKhachHangRequest;
 import beephone_shop_projects.core.admin.account_management.model.request.DiaChiKhachHangRequest;
 import beephone_shop_projects.core.admin.account_management.repository.AccountRepository;
 import beephone_shop_projects.core.admin.account_management.repository.DiaChiRepository;
-import beephone_shop_projects.core.admin.account_management.repository.RoleRepository;
 import beephone_shop_projects.core.admin.account_management.service.DiaChiService;
 import beephone_shop_projects.entity.Account;
 import beephone_shop_projects.entity.DiaChi;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.Normalizer;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
+
 @Service
 public class DiaChiServiceImpl implements DiaChiService {
     @Autowired
@@ -26,9 +23,10 @@ public class DiaChiServiceImpl implements DiaChiService {
 
     @Autowired
     private DiaChiRepository diaChiRepository;
+
     @Override
-    public List<DiaChi> getAllDiaChi() {
-        return diaChiRepository.findAll();
+    public List<DiaChi> getAllDiaChi(String id) {
+        return diaChiRepository.getAllDiaChi(id);
     }
 
     @Override
@@ -37,39 +35,118 @@ public class DiaChiServiceImpl implements DiaChiService {
     }
 
     @Override
-    public DiaChi addDiaChi(DiaChiKhachHangRequest diaChiKhachHangRequest, UUID id) {
-        DiaChi newDC=DiaChi.builder()
-                .trangThai(diaChiKhachHangRequest.getTrangThai())
+    @Transactional
+    public DiaChi addDiaChi(DiaChiKhachHangRequest diaChiKhachHangRequest, String id) {
+        Account account = accountRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Không tìm thấy tài khoản"));
+
+        Integer newTrangThai = diaChiKhachHangRequest.getTrangThai();
+
+        if (newTrangThai == null || newTrangThai != 1) {
+            newTrangThai = 0;
+        } else {
+            for (DiaChi existingDiaChi : account.getDiaChiList()) {
+                existingDiaChi.setTrangThai(0);
+            }
+        }
+
+        DiaChi newDC = DiaChi.builder()
+                .trangThai(newTrangThai)
                 .tinhThanhPho(diaChiKhachHangRequest.getTinhThanhPho())
-                .account(accountRepository.findById(String.valueOf(id)).get())
+                .account(account)
                 .xaPhuong(diaChiKhachHangRequest.getXaPhuong())
+                .quanHuyen(diaChiKhachHangRequest.getQuanHuyen())
+                .soDienThoaiKhachHang(diaChiKhachHangRequest.getSoDienThoaiKhachHang())
                 .diaChi(diaChiKhachHangRequest.getDiaChi())
                 .hoTenKH(diaChiKhachHangRequest.getHoTenKH())
                 .build();
-        accountRepository.findById(String.valueOf(id)).get().getDiaChiList().add(newDC);
-        return diaChiRepository.save(newDC);
+
+        DiaChi addedDiaChi = diaChiRepository.save(newDC);
+
+        if (newTrangThai == 1) {
+            diaChiRepository.updateTrangThaiAndAddDiaChi(addedDiaChi.getId(), newTrangThai, id);
+        }
+
+        return addedDiaChi;
+    }
+
+    @Override
+    @Transactional
+    public void doiTrangThai(String id, String account) {
+        Account account1 = accountRepository.findById(account)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy tài khoản"));
+
+        for (DiaChi existingDiaChi : account1.getDiaChiList()) {
+            if (existingDiaChi.getId().equals(id)) {
+                existingDiaChi.setTrangThai(1);
+            } else {
+                existingDiaChi.setTrangThai(0);
+            }
+        }
+
+        diaChiRepository.updateTrangThai(id, account);
+
     }
 
 
     @Override
-    public DiaChi addKH(DiaChiKhachHangRequest request) {
-
-        DiaChi kh = new DiaChi().builder()
-                .account(accountRepository.findById(request.getAccount()).get())
-                .hoTenKH(request.getHoTenKH())
-                .quanHuyen(request.getQuanHuyen())
-                .xaPhuong(request.getXaPhuong())
-                .tinhThanhPho(request.getTinhThanhPho())
-                .soDienThoai(request.getSoDienThoai())
-                .diaChi(request.getDiaChi())
-                .build();
-        return diaChiRepository.save(kh);
+    public void xoaDiaChi(String id) {
+        diaChiRepository.deleteById(id);
     }
 
     @Override
-    public DiaChi updateDiaChi(DiaChiKhachHangRequest diaChiKhachHangRequest, UUID id) {
+    public DiaChi updateDiaChi(DiaChiKhachHangRequest diaChiKhachHangRequest, String id) {
+        Optional<DiaChi> optional = diaChiRepository.findById(id);
+        Integer newTrangThai = diaChiKhachHangRequest.getTrangThai();
+        Account account = accountRepository.findById(diaChiKhachHangRequest.getAccount()).orElseThrow(() -> new IllegalArgumentException("Không tìm thấy tài khoản"));
+
+        if (newTrangThai == null || newTrangThai != 1) {
+            newTrangThai = 0;
+        } else {
+            for (DiaChi existingDiaChi : account.getDiaChiList()) {
+                existingDiaChi.setTrangThai(0);
+            }
+        }
+        if (optional.isPresent()) {
+
+
+            DiaChi diaChiToUpdate = optional.get();
+            if (diaChiKhachHangRequest.getDiaChi() != null) {
+                diaChiToUpdate.setDiaChi(diaChiKhachHangRequest.getDiaChi());
+            }
+            if (diaChiKhachHangRequest.getSoDienThoaiKhachHang() != null) {
+                diaChiToUpdate.setSoDienThoaiKhachHang(diaChiKhachHangRequest.getSoDienThoaiKhachHang());
+            }
+            if (diaChiKhachHangRequest.getHoTenKH() != null) {
+                diaChiToUpdate.setHoTenKH(diaChiKhachHangRequest.getHoTenKH());
+            }
+            if (diaChiKhachHangRequest.getTrangThai() != null) {
+                diaChiToUpdate.setTrangThai(newTrangThai);
+            }
+            if (diaChiKhachHangRequest.getAccount() != null) {
+                diaChiToUpdate.setAccount(accountRepository.findById(diaChiKhachHangRequest.getAccount()).orElse(null));
+            }
+            if (diaChiKhachHangRequest.getTinhThanhPho() != null) {
+                diaChiToUpdate.setTinhThanhPho(diaChiKhachHangRequest.getTinhThanhPho());
+            }
+            if (diaChiKhachHangRequest.getXaPhuong() != null) {
+                diaChiToUpdate.setXaPhuong(diaChiKhachHangRequest.getXaPhuong());
+            }
+            if (diaChiKhachHangRequest.getQuanHuyen() != null) {
+                diaChiToUpdate.setQuanHuyen(diaChiKhachHangRequest.getQuanHuyen());
+            }
+
+            diaChiRepository.save(diaChiToUpdate);
+            return diaChiToUpdate;
+        }
         return null;
     }
+
+    @Override
+    public DiaChi getOneDiaChi(String id, String account) {
+        return diaChiRepository.getOneDiaChi(id,account);
+    }
+
+
     public static String getRandomSpecialChars(String[] specialCharsArray) {
 
         StringBuilder sb = new StringBuilder();
@@ -81,10 +158,9 @@ public class DiaChiServiceImpl implements DiaChiService {
 
         return sb.toString();
     }
+
     public static String removeDiacritics(String str) {
-        return Normalizer.normalize(str, Normalizer.Form.NFD)
-                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
-                .replaceAll("[^\\p{Alnum}]+", "");
+        return Normalizer.normalize(str, Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "").replaceAll("[^\\p{Alnum}]+", "");
     }
 
 }
