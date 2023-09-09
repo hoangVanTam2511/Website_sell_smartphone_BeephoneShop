@@ -61,36 +61,19 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
-    public VoucherResponse getOne(String id) {
-        return voucherRepository.getOneVoucher(id);
-    }
-
-    public String generateRandomCode() {
-        SecureRandom random = new SecureRandom();
-        StringBuilder code = new StringBuilder(CODE_LENGTH);
-        for (int i = 0; i < CODE_LENGTH; i++) {
-            int randomIndex = random.nextInt(CHARACTERS.length());
-            char randomChar = CHARACTERS.charAt(randomIndex);
-            code.append(randomChar);
-        }
-        return code.toString();
+    public VoucherResponse getOne(String ma) {
+        return voucherRepository.getOneVoucher(ma);
     }
 
     @Override
     public Voucher addVoucher(@Valid CreateVoucherRequest request) {
-
         Voucher voucher = Voucher.builder()
-                .ma(generateRandomCode())
+                .ma(request.getMa())
                 .ten(request.getTen())
-                .dieuKienApDung(request.getDieuKienApDung())
-                .giaTriToiThieu(request.getGiaTriToiThieu())
-                .giaTriToiDa(request.getGiaTriToiDa())
-                .loaiVoucher(request.getLoaiVoucher())
-                .soLuong(request.getSoLuong())
                 .ngayBatDau(request.getNgayBatDau())
                 .ngayKetThuc(request.getNgayKetThuc())
                 .giaTriVoucher(request.getGiaTriVoucher())
-                .trangThai(1)
+                .trangThai(request.getTrangThai())
                 .build();
         return voucherRepository.save(voucher);
     }
@@ -98,16 +81,14 @@ public class VoucherServiceImpl implements VoucherService {
     @Override
     public Voucher updateVoucher(@Valid UpdateVoucherRequest request, String id) {
         Voucher voucher = voucherRepository.findById(id).get();
+        System.out.println(voucher);
         if (voucher != null) {
+            voucher.setMa(request.getMa());
             voucher.setTen(request.getTen());
-            voucher.setGiaTriToiThieu(request.getGiaTriToiThieu());
-            voucher.setGiaTriToiDa(request.getGiaTriToiDa());
-            voucher.setLoaiVoucher(request.getLoaiVoucher());
-            voucher.setDieuKienApDung(request.getDieuKienApDung());
-            voucher.setSoLuong(request.getSoLuong());
             voucher.setNgayBatDau(request.getNgayBatDau());
             voucher.setNgayKetThuc(request.getNgayKetThuc());
             voucher.setGiaTriVoucher(request.getGiaTriVoucher());
+            voucher.setTrangThai(request.getTrangThai());
             return voucherRepository.save(voucher);
         }
         return null;
@@ -125,29 +106,12 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     public Boolean doiTrangThai(String id) {
-        Voucher voucher = voucherRepository.findById(id).get();
-        if (voucher != null) {
-            voucherRepository.doiTrangThai(id);
-            return true;
-        }
-        return false;
+        return null;
     }
 
     @Override
     public Page<Voucher> getAll(FindVoucherRequest request) {
-        if (request.getPageNo() == null) {
-            request.setPageNo(1);
-        }
-        if (request.getPageSize() == null) {
-            request.setPageSize(5);
-        }
-        if (request.getKeyword() == null) {
-            request.setKeyword("");
-        }
-        Pageable pageable = PageRequest.of(request.getPageNo() - 1, request.getPageSize());
-        Page<Voucher> vouchers = voucherRepository.findAll(pageable, request);
-        return vouchers;
+        return null;
     }
-
 
 }

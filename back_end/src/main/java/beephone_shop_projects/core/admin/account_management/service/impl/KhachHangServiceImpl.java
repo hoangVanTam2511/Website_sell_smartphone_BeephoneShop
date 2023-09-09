@@ -100,7 +100,8 @@ public class KhachHangServiceImpl implements KhachHangService {
 
     @Override
     public Account findAccount(String ma) {
-        return accountRepository.findByMa(ma);
+//        return accountRepository.findByMa(ma);
+        return null;
     }
 
     @Override

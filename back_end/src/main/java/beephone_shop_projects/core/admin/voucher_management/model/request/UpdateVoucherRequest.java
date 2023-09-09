@@ -18,6 +18,8 @@ import java.util.Date;
 @Setter
 public class UpdateVoucherRequest {
 
+    private String ma;
+
     @NotBlank(message = "Không để trống Tên !!!")
     private String ten;
 
@@ -47,4 +49,12 @@ public class UpdateVoucherRequest {
     private BigDecimal giaTriVoucher;
 
     private Integer trangThai;
+
+    public String getMa() {
+        return ma;
+    }
+
+    public void setMa(String ma) {
+        this.ma = ma;
+    }
 }

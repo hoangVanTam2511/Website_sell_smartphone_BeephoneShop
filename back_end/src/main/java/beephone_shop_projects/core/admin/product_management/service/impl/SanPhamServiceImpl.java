@@ -2,17 +2,15 @@ package beephone_shop_projects.core.admin.product_management.service.impl;
 
 import beephone_shop_projects.core.admin.product_management.model.request.CreateChiTietSanPhamRequest;
 import beephone_shop_projects.core.admin.product_management.model.request.SearchChiTietSanPhamRequest;
-import beephone_shop_projects.core.admin.product_management.model.responce.CauHinhResponce;
-import beephone_shop_projects.core.admin.product_management.model.responce.ChiTietSanPhamResponce;
 import beephone_shop_projects.core.admin.product_management.model.responce.SanPhamResponce;
 import beephone_shop_projects.core.admin.product_management.repository.SanPhamRepository;
 import beephone_shop_projects.core.admin.product_management.repository.ChipRepository;
 import beephone_shop_projects.core.admin.product_management.repository.DongSanPhamRepository;
 import beephone_shop_projects.core.admin.product_management.repository.NhaSanXuatRepository;
-import beephone_shop_projects.entity.SanPham;
 import beephone_shop_projects.entity.Chip;
 import beephone_shop_projects.entity.DongSanPham;
 import beephone_shop_projects.entity.NhaSanXuat;
+import beephone_shop_projects.entity.SanPham;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -93,4 +91,6 @@ public class SanPhamServiceImpl {
     public SanPham getOne(String id) {
        return this.chiTietSanPhamRepository.findById(id).get();
     }
+
+
 }

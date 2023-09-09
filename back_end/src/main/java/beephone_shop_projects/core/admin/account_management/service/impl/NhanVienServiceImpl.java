@@ -76,10 +76,14 @@ public class NhanVienServiceImpl implements NhanVienService {
 
     @Override
     public Account updateNV(CreateAccountRequest request, String id) {
+        return null;
+    }
+
+    public Account updateNV(Account request, String id) {
         Optional<Account> optional = accountRepository.findById(id);
         Date date = null;
         try {
-            date = new SimpleDateFormat("yyyy-MM-dd").parse(request.getNgaySinh());
+            date = new SimpleDateFormat("yyyy-MM-dd").parse(String.valueOf(request.getNgaySinh()));
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }

@@ -64,14 +64,5 @@ public class ChiTietSanPham extends PrimaryEntity implements IsIdentified {
     @JoinColumn(name = "id_man_hinh")
     private ManHinh idManHinh;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_camera")
-    private Camera idCamera;
-
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_hinh_thuc")
-    private HinhThucSanPham idHinhThuc;
-
 
 }

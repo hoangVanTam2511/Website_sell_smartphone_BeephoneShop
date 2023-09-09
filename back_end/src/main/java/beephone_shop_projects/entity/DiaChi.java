@@ -17,12 +17,19 @@ import lombok.*;
 public class DiaChi extends PrimaryEntity implements IsIdentified {
 
     private String hoTenKH;
+
     private String soDienThoaiKhachHang;
+
     private String diaChi;
+
     private String tinhThanhPho;
+
     private String quanHuyen;
+
     private String xaPhuong;
+
     private Integer trangThai;
+
     @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_account")

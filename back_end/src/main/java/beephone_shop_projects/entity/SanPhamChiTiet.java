@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Entity
@@ -19,11 +20,11 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "san_pham_chi_tiet")
-public class SanPhamChiTiet extends PrimaryEntity {
+public class SanPhamChiTiet extends PrimaryEntity implements Serializable{
 
     private BigDecimal donGia;
 
-    private int soLuong;
+    private Integer soLuongTonKho;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_san_pham")

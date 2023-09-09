@@ -57,6 +57,3 @@ public interface VoucherRepository extends IVoucherRepository, CustomVoucherRepo
     List<Voucher> checkToStartAfterAndStatus(@Param("dateTime") Date dateTime, Integer status);
 
 }
-
-
-

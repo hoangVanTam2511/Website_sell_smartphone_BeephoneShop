@@ -1,10 +1,19 @@
 import React, { Fragment, useState, useEffect } from "react";
+import { styled } from '@mui/material/styles';
 import { Row, Col } from "react-bootstrap";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button, Input, Select, Table } from "antd";
 import axios from "axios";
 import { FaTruck, FaRegCalendarCheck, FaRegFileAlt } from "react-icons/fa";
 import { MdCancelPresentation } from "react-icons/md";
+import { Table as TableMui } from '@mui/material';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+import EditIcon from '@mui/icons-material/Edit';
 import {
   Dialog,
   Select as SelectMui,
@@ -58,9 +67,10 @@ const OrderDetail = () => {
   const [order, setOrder] = useState({});
   const [orderHistories, setOrderHistories] = useState([]);
   const [status, setStatus] = useState();
+  const [paymentHistorys, setPaymentHistorys] = useState([]);
   const { id } = useParams();
 
-  const getOrders = () => {
+  const getOrderById = () => {
     axios
       .get(`http://localhost:8080/api/orders/${id}`)
       .then((response) => {
@@ -71,6 +81,16 @@ const OrderDetail = () => {
       });
   }
 
+  const getPaymentMethodsById = () => {
+    axios
+      .get(`http://localhost:8080/api/payments/${id}`)
+      .then((response) => {
+        setPaymentHistorys(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
   const getOrderHisoriesByOrderId = () => {
     axios
       .get(`http://localhost:8080/api/orders/${id}/orderHistory`)
@@ -83,36 +103,50 @@ const OrderDetail = () => {
   }
 
   useEffect(() => {
-    getOrders();
+    getOrderById();
     getOrderHisoriesByOrderId();
+    getPaymentMethodsById();
   }, []);
+
+  const IconTrash = () => {
+    return (
+      <>
+        <svg fill="none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M20.2871 5.24297C20.6761 5.24297 21 5.56596 21 5.97696V6.35696C21 6.75795 20.6761 7.09095 20.2871 7.09095H3.71385C3.32386 7.09095 3 6.75795 3 6.35696V5.97696C3 5.56596 3.32386 5.24297 3.71385 5.24297H6.62957C7.22185 5.24297 7.7373 4.82197 7.87054 4.22798L8.02323 3.54598C8.26054 2.61699 9.0415 2 9.93527 2H14.0647C14.9488 2 15.7385 2.61699 15.967 3.49699L16.1304 4.22698C16.2627 4.82197 16.7781 5.24297 17.3714 5.24297H20.2871ZM18.8058 19.134C19.1102 16.2971 19.6432 9.55712 19.6432 9.48913C19.6626 9.28313 19.5955 9.08813 19.4623 8.93113C19.3193 8.78413 19.1384 8.69713 18.9391 8.69713H5.06852C4.86818 8.69713 4.67756 8.78413 4.54529 8.93113C4.41108 9.08813 4.34494 9.28313 4.35467 9.48913C4.35646 9.50162 4.37558 9.73903 4.40755 10.1359C4.54958 11.8992 4.94517 16.8102 5.20079 19.134C5.38168 20.846 6.50498 21.922 8.13206 21.961C9.38763 21.99 10.6811 22 12.0038 22C13.2496 22 14.5149 21.99 15.8094 21.961C17.4929 21.932 18.6152 20.875 18.8058 19.134Z" fill="currentColor" />
+        </svg>
+      </>
+    )
+  }
 
   const updateOrder = async (orderStatus, orderHistory) => {
     const updateData = {
       orderStatus: orderStatus,
       orderHistory: orderHistory,
+      orderDto: null,
     };
     try {
       await axios.put(`http://localhost:8080/api/orders/${id}`, updateData, {
         headers: {
           "Content-Type": "application/json",
         },
+        params: {
+          isPending: false,
+        }
       });
-      getOrders();
+      getOrderById();
       getOrderHisoriesByOrderId();
     } catch (error) { }
   };
 
   const soTienThanhToan = 15000000;
-  const [paymentHistorys, setPaymentHistorys] = useState([]);
   const handleAddPayment = () => {
     const newPayment = {
       ma: "20219128391",
-      loaiGiaoDich: 1,
-      phuongThucThanhToan: 1,
-      trangThai: 0,
-      thoiGian: new Date(),
-      soTien: 20000000,
+      loaiThanhToan: 0,
+      hinhThucThanhToan: 0,
+      trangThai: 1,
+      createdAt: new Date(),
+      soTienThanhToan: 20000000,
       nguoiXacNhan: "Admin",
     };
     setPaymentHistorys((p) => {
@@ -124,9 +158,23 @@ const OrderDetail = () => {
       title: "",
       align: "center",
       width: "15%",
-      dataIndex: "ma",
+      dataIndex: "loaiThaoTac",
       render: (text, record) => (
-        <span style={{ fontWeight: "550" }}>{record.loaiThaoTac}</span>
+        <span style={{ fontWeight: "550" }}>{
+          record.loaiThaoTac == 0
+            ? FaRegFileAlt
+            : record.loaiThaoTac == 1
+              ? FaRegFileAlt
+              : record.loaiThaoTac == 2
+                ? FaTruck
+                : record.loaiThaoTac == 3
+                  ? FaRegCalendarCheck
+                  : record.loaiThaoTac == 4
+                    ? MdCancelPresentation
+                    : record.loaiThaoTac == 5
+                      ? MdCancelPresentation
+                      : ""
+        }</span>
       ),
     },
     {
@@ -152,7 +200,7 @@ const OrderDetail = () => {
       dataIndex: "nguoiXacNhan",
       width: "10%",
       render: (text, record) => (
-        <span style={{ fontWeight: "550" }}>Gọi Rồng</span>
+        <span style={{ fontWeight: "550" }}>Admin</span>
       ),
     },
     {
@@ -175,10 +223,10 @@ const OrderDetail = () => {
     {
       title: "Loại Giao Dịch",
       align: "center",
-      dataIndex: "loaiGiaoDich",
+      dataIndex: "loaiThanhToan",
       width: "10%",
       render: (type) =>
-        type == 0 ? (
+        type == 1 ? (
           <div
             className="rounded-pill mx-auto"
             style={{
@@ -195,7 +243,7 @@ const OrderDetail = () => {
               Hoàn tiền
             </span>
           </div>
-        ) : type == 1 ? (
+        ) : type == 0 ? (
           <div
             className="rounded-pill bg-primary mx-auto"
             style={{ height: "38px", width: "100px", padding: "5px" }}
@@ -215,14 +263,14 @@ const OrderDetail = () => {
       title: "Phương Thức Thanh Toán",
       align: "center",
       width: "10%",
-      dataIndex: "phuongThucThanhToan",
-      render: (type) =>
-        type == 0 ? (
+      dataIndex: "hinhThucThanhToan",
+      render: (text, record) =>
+        record.hinhThucThanhToan == 0 ? (
           <div
             className="rounded-pill mx-auto"
             style={{
               height: "38px",
-              width: "100px",
+              width: "120px",
               padding: "5px",
               backgroundColor: "#26A65B",
             }}
@@ -234,7 +282,7 @@ const OrderDetail = () => {
               Chuyển khoản
             </span>
           </div>
-        ) : type == 1 ? (
+        ) : record.hinhThucThanhToan == 1 ? (
           <div
             className="rounded-pill bg-primary mx-auto"
             style={{ height: "38px", width: "90px", padding: "5px" }}
@@ -256,12 +304,12 @@ const OrderDetail = () => {
       width: "10%",
       dataIndex: "trangThai",
       render: (status) =>
-        status == 0 ? (
+        status == 1 ? (
           <div
             className="rounded-pill bg-success mx-auto"
             style={{
               height: "38px",
-              width: "100px",
+              width: "110px",
               padding: "5px",
               backgroundColor: "#26A65B",
             }}
@@ -281,24 +329,29 @@ const OrderDetail = () => {
       title: "Thời Gian",
       align: "center",
       width: "15%",
-      dataIndex: "thoiGian",
+      dataIndex: "createdAt",
       render: (text, record) => (
         <span style={{ fontWeight: "normal" }}>
-          {format(record.thoiGian, "HH:mm:ss - dd/MM/yyyy")}
+          {format(new Date(record.createdAt), "HH:mm:ss - dd/MM/yyyy")}
         </span>
       ),
     },
     {
       title: "Số Tiền",
       align: "center",
-      dataIndex: "soTien",
+      dataIndex: "soTienThanhToan",
       width: "10%",
       render: (text, record) => (
-        <span style={{ color: "#dc1111", fontWeight: "550" }}>
-          {record.soTien.toLocaleString("vi-VN", {
-            style: "currency",
-            currency: "VND",
-          })}
+        <span
+          className=""
+          style={{ fontSize: "17px", color: "#dc3333" }}
+        >
+          {record &&
+            record.soTienThanhToan &&
+            record.soTienThanhToan.toLocaleString("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            })}
         </span>
       ),
     },
@@ -409,212 +462,226 @@ const OrderDetail = () => {
     setOpenDialogPayment(false);
   };
 
-  return (
-    <>
-      <div className="wrap-timeline">
-        <div class="scroll-container mt-2">
-          <Card>
-            <Card.Body>
-              <div className="time-line">
-                <Timeline minEvents={6 + orderHistories.length} placeholder>
-                  {orderHistories.map((item, index) => (
-                    <TimelineEvent
-                      icon={
-                        item.loaiThaoTac == 0
-                          ? FaRegFileAlt
-                          : item.loaiThaoTac == 1
-                            ? FaRegFileAlt
-                            : item.loaiThaoTac == 2
-                              ? FaTruck
-                              : item.loaiThaoTac == 3
-                                ? FaRegCalendarCheck
-                                : item.loaiThaoTac == 4
-                                  ? MdCancelPresentation
-                                  : item.loaiThaoTac == 5
-                                    ? MdCancelPresentation
-                                    : ""
-                      }
-                      title={
-                        <div className="mt-1">
-                          <span
-                            style={{ whiteSpace: "pre-line", fontSize: "20px" }}
-                          >
-                            {item.thaoTac}
-                          </span>
-                        </div>
-                      }
-                      subtitle={format(
-                        new Date(item.createdAt),
-                        "HH:mm:ss - dd/MM/yyyy"
-                      )}
-                      color={
-                        item.loaiThaoTac == 0
-                          ? "#26A65B"
-                          : item.loaiThaoTac == 1
-                            ? "#26A65B"
-                            : item.loaiThaoTac == 2
-                              ? "#26A65B"
-                              : item.loaiThaoTac == 3
-                                ? "#26A65B"
-                                : item.loaiThaoTac == 4
-                                  ? "#dc3333"
-                                  : ""
-                      }
-                    />
-                  ))}
-                </Timeline>
-              </div>
-            </Card.Body>
-          </Card>
-        </div>
-        <ConfirmDialog
-          open={openCommon}
-          status={status}
-          confirmOrderInfo={handleConfirmOrderInfo}
-          confirmDelivery={handleConfirmDelivery}
-          confirmFinish={handleConfirmOrderFinish}
-          confirmCancel={handleConfirmOrderCancel}
-          onCloseNoAction={handleCloseNoActionCommon}
-        />
-        <div className="d-flex justify-content-between mt-2 p-3">
-          <div className="d-flex">
-            {order.trangThai == 0 ? (
-              <div>
-                <Button
-                  onClick={() => handleOpenDialogConfirmOrder(order.trangThai, false)}
-                  className="rounded-2 ms-2"
-                  type="primary"
-                  style={{
-                    height: "50px",
-                    width: "auto",
-                    fontSize: "16px",
-                    backgroundColor: "#3A57E8",
-                  }}
-                >
+  const StyledTableContainer = styled(TableContainer)({
+    boxShadow: 'none',
+  });
+
+  const StyledTableHead = styled(TableHead)`
+  & tr:hover th{
+    background-color: white !important;
+  }
+`;
+
+  const StyledTableBody = styled(TableBody)`
+  & tr:hover td{
+    background-color: white !important;
+  }
+`;
+
+
+  const useStyles = () => ({
+  });
+
+  const classes = useStyles();
+
+  const TimeLine = () => {
+    return (
+      <div className="time-line">
+        <Timeline minEvents={6 + orderHistories.length} placeholder>
+          {orderHistories.map((item, index) => (
+            <TimelineEvent
+              icon={
+                item.loaiThaoTac == 0
+                  ? FaRegFileAlt
+                  : item.loaiThaoTac == 1
+                    ? FaRegFileAlt
+                    : item.loaiThaoTac == 2
+                      ? FaTruck
+                      : item.loaiThaoTac == 3
+                        ? FaRegCalendarCheck
+                        : item.loaiThaoTac == 4
+                          ? MdCancelPresentation
+                          : item.loaiThaoTac == 5
+                            ? MdCancelPresentation
+                            : ""
+              }
+              title={
+                <div className="mt-1">
                   <span
-                    className=""
-                    style={{ fontWeight: "550", marginBottom: "2px" }}
+                    style={{ whiteSpace: "pre-line", fontSize: "20px" }}
                   >
-                    XÁC NHẬN
+                    {item.thaoTac}
                   </span>
-                </Button>
-              </div>
-            ) : order.trangThai == 1 ? (
-              <div>
-                <Button
-                  onClick={() => handleOpenDialogConfirmOrder(order.trangThai, false)}
-                  className="rounded-2 ms-2"
-                  type="primary"
-                  style={{
-                    height: "50px",
-                    width: "auto",
-                    fontSize: "16px",
-                    backgroundColor: "#3A57E8",
-                  }}
-                >
-                  <span
-                    className=""
-                    style={{ fontWeight: "550", marginBottom: "2px" }}
-                  >
-                    GIAO HÀNG
-                  </span>
-                </Button>
-              </div>
-            ) : isDone == true && order.trangThai == 2 ? (
-              <div>
-                <Button
-                  onClick={() => handleOpenDialogConfirmOrder(order.trangThai, false)}
-                  className="rounded-2 ms-2"
-                  type="primary"
-                  style={{
-                    height: "50px",
-                    width: "auto",
-                    fontSize: "16px",
-                    backgroundColor: "#3A57E8",
-                  }}
-                >
-                  <span
-                    className=""
-                    style={{ fontWeight: "550", marginBottom: "2px" }}
-                  >
-                    HOÀN THÀNH
-                  </span>
-                </Button>
-              </div>
-            ) : (
-              ""
-            )}
-            {order.trangThai != 3 && order.trangThai != 4 ? (
-              <div className="ms-1">
-                <Button
-                  onClick={() => handleOpenDialogConfirmOrder(null, true)}
-                  danger
-                  className="rounded-2 ms-2"
-                  type="primary"
-                  style={{
-                    height: "50px",
-                    width: "auto",
-                    fontSize: "16px",
-                    backgroundColor: "#dc3333",
-                  }}
-                >
-                  <span
-                    className=""
-                    style={{ fontWeight: "550", marginBottom: "2px" }}
-                  >
-                    HỦY ĐƠN
-                  </span>
-                </Button>
-              </div>
-            ) : (
-              ""
-            )}
-          </div>
-          <div>
-            <Button
-              onClick={handleClickOpenDialogDetailOrderHistories}
-              className="rounded-2 me-2"
-              type="primary"
-              style={{
-                height: "50px",
-                width: "100px",
-                fontSize: "16px",
-                backgroundColor: "#F5A524",
-              }}
-            >
-              <span
-                className="text-dark"
-                style={{ fontWeight: "550", marginBottom: "2px" }}
-              >
-                Chi Tiết
-              </span>
-            </Button>
-            <OrderHistoryDialog
-              columns={columnsTableOrderHistories}
-              open={openDialogDetailOrderHistories}
-              onClose={handleCloseDialogDetailOrderHistories}
-              dataSource={orderHistories}
+                </div>
+              }
+              subtitle={format(
+                new Date(item.createdAt),
+                "HH:mm:ss - dd/MM/yyyy"
+              )}
+              color={
+                item.loaiThaoTac == 0
+                  ? "#26A65B"
+                  : item.loaiThaoTac == 1
+                    ? "#26A65B"
+                    : item.loaiThaoTac == 2
+                      ? "#26A65B"
+                      : item.loaiThaoTac == 3
+                        ? "#26A65B"
+                        : item.loaiThaoTac == 4
+                          ? "#dc3333"
+                          : ""
+              }
             />
-          </div>
+          ))}
+        </Timeline>
+      </div>
+
+    )
+  }
+
+  const ProcessOrder = () => {
+    return (
+      <div className="d-flex justify-content-between mt-2 p-3">
+        <div className="d-flex order-info">
+          {order.trangThai == 0 && order.loaiHoaDon == 1 ? (
+            <div>
+              <Button
+                onClick={() => handleOpenDialogConfirmOrder(order.trangThai, false)}
+                className="rounded-2 ms-2"
+                type="primary"
+                style={{
+                  height: "50px",
+                  width: "auto",
+                  fontSize: "16px",
+                  backgroundColor: "#3A57E8",
+                }}
+              >
+                <span
+                  className=""
+                  style={{ fontWeight: "550", marginBottom: "2px" }}
+                >
+                  XÁC NHẬN
+                </span>
+              </Button>
+            </div>
+          ) : order.trangThai == 1 && order.loaiHoaDon == 1 ? (
+            <div>
+              <Button
+                onClick={() => handleOpenDialogConfirmOrder(order.trangThai, false)}
+                className="rounded-2 ms-2"
+                type="primary"
+                style={{
+                  height: "50px",
+                  width: "auto",
+                  fontSize: "16px",
+                  backgroundColor: "#3A57E8",
+                }}
+              >
+                <span
+                  className=""
+                  style={{ fontWeight: "550", marginBottom: "2px" }}
+                >
+                  GIAO HÀNG
+                </span>
+              </Button>
+            </div>
+          ) : isDone == true && order.trangThai == 2 && order.loaiHoaDon == 1 ? (
+            <div>
+              <Button
+                onClick={() => handleOpenDialogConfirmOrder(order.trangThai, false)}
+                className="rounded-2 ms-2"
+                type="primary"
+                style={{
+                  height: "50px",
+                  width: "auto",
+                  fontSize: "16px",
+                  backgroundColor: "#3A57E8",
+                }}
+              >
+                <span
+                  className=""
+                  style={{ fontWeight: "550", marginBottom: "2px" }}
+                >
+                  HOÀN THÀNH
+                </span>
+              </Button>
+            </div>
+          ) : (
+            ""
+          )}
+          {order.trangThai != 3 && order.trangThai != 4 && order.loaiHoaDon == 1 ? (
+            <div className="ms-1">
+              <Button
+                onClick={() => handleOpenDialogConfirmOrder(null, true)}
+                danger
+                className="rounded-2 ms-2"
+                type="primary"
+                style={{
+                  height: "50px",
+                  width: "auto",
+                  fontSize: "16px",
+                  backgroundColor: "#dc3333",
+                }}
+              >
+                <span
+                  className=""
+                  style={{ fontWeight: "550", marginBottom: "2px" }}
+                >
+                  HỦY ĐƠN
+                </span>
+              </Button>
+            </div>
+          ) : (
+            ""
+          )}
+        </div>
+        <div>
+          <Button
+            onClick={handleClickOpenDialogDetailOrderHistories}
+            className="rounded-2 me-2"
+            type="primary"
+            style={{
+              height: "50px",
+              width: "100px",
+              fontSize: "16px",
+              backgroundColor: "#F5A524",
+            }}
+          >
+            <span
+              className="text-dark"
+              style={{ fontWeight: "550", marginBottom: "2px" }}
+            >
+              Chi Tiết
+            </span>
+          </Button>
+          <OrderHistoryDialog
+            columns={columnsTableOrderHistories}
+            open={openDialogDetailOrderHistories}
+            onClose={handleCloseDialogDetailOrderHistories}
+            dataSource={orderHistories}
+          />
         </div>
       </div>
 
-      <div className="wrap-order-detail mt-3">
-        <div
-          className="d-flex justify-content-between"
-          style={{ position: "relative" }}
-        >
-          <div className="ms-4 mt-4">
-            <span style={{ fontSize: "27.5px" }}>THÔNG TIN ĐƠN HÀNG</span>
-          </div>
-          <div className="me-4 mt-3">
-            <Link to={""} className="">
+    )
+  }
+
+  const OrderInfo = () => {
+    return (
+
+      <div className="wrap-order-detail mt-4">
+        <div className="p-3">
+          <div className="d-flex justify-content-between">
+            <div className="ms-2" style={{ marginTop: "5px" }}>
+              <span className='' style={{ fontSize: "25px" }}>THÔNG TIN ĐƠN HÀNG</span>
+            </div>
+            <div className="">
               <Button
                 onClick={handleClickOpenDialogUpdateRecipientOrder}
                 className="rounded-2 ms-2"
                 type="primary"
                 style={{
-                  height: "50px",
+                  height: "45px",
                   fontSize: "16px",
                   backgroundColor: "#3A57E8",
                   width: "100px",
@@ -622,9 +689,9 @@ const OrderDetail = () => {
               >
                 <span
                   className=""
-                  style={{ fontWeight: "550", marginBottom: "2px" }}
+                  style={{ fontWeight: "550", marginBottom: "3px" }}
                 >
-                  Thay Đổi
+                  Cập nhật
                 </span>
               </Button>
               <UpdateRecipientOrderDialog
@@ -632,14 +699,14 @@ const OrderDetail = () => {
                 onClose={handleCloseDialogUpdateRecipientOrder}
                 onCloseNoAction={handleCloseNoActionDialogUpdateRecipientOrder}
               />
-            </Link>
+            </div>
           </div>
+          <div className='ms-2 mt-2' style={{ borderBottom: "2px solid #C7C7C7", width: "99.2%", borderWidth: "2px" }}></div>
         </div>
-        <hr className="mx-auto" style={{ borderWidth: "2px", width: "96%" }} />
 
         <Row>
           <Col sm="5">
-            <div className="ms-4 mt-2 d-flex" style={{ height: "30px" }}>
+            <div className="ms-4 mt-3 d-flex" style={{ height: "30px" }}>
               <div className="ms-2" style={{ width: "130px" }}>
                 <span style={{ fontSize: "17px" }}>Mã Đơn Hàng</span>
               </div>
@@ -669,7 +736,7 @@ const OrderDetail = () => {
                     className="rounded-pill"
                     style={{
                       height: "31px",
-                      width: "92px",
+                      width: "auto",
                       padding: "5px",
                       backgroundColor: "#26A65B",
                     }}
@@ -686,7 +753,7 @@ const OrderDetail = () => {
                     className="rounded-pill bg-primary"
                     style={{
                       height: "31px",
-                      width: "92px",
+                      width: "auto",
                       padding: "5px",
                     }}
                   >
@@ -787,9 +854,26 @@ const OrderDetail = () => {
                       Đã hủy
                     </span>
                   </div>
-                ) : (
-                  ""
-                )}
+                ) : order.trangThai == 6 && order.loaiHoaDon == 0 ?
+
+                  <div
+                    className="rounded-pill bg-primary"
+                    style={{
+                      height: "31px",
+                      width: "auto",
+                      padding: "5px",
+                    }}
+                  >
+                    <span
+                      className="text-white p-2"
+                      style={{ fontSize: "14px" }}
+                    >
+                      Đã thanh toán
+                    </span>
+                  </div>
+                  : ""
+
+                }
               </div>
             </div>
             <div className="ms-4 mt-4 d-flex" style={{ height: "30px" }}>
@@ -819,14 +903,27 @@ const OrderDetail = () => {
             </div>
           </Col>
           <Col sm="6" className="ms-5">
-            <div className="ms-4 mt-2 d-flex" style={{ height: "30px" }}>
+            <div className="ms-4 mt-3 d-flex" style={{ height: "30px" }}>
               <div className="ms-2" style={{ width: "130px" }}>
                 <span style={{ fontSize: "17px" }}>Tên Khách Hàng</span>
               </div>
               <div className="ms-5 ps-5">
-                <span className="text-dark" style={{ fontSize: "17px" }}>
-                  {order.tenNguoiNhan}
-                </span>
+                {order.tenNguoiNhan == null ?
+                  <div
+                    className="rounded-pill"
+                    style={{
+                      height: "31px",
+                      width: "auto",
+                      padding: "5px",
+                      backgroundColor: "#e1e1e1",
+                    }}
+                  >
+                    <span className="text-dark p-2" style={{ fontSize: "14px" }}>
+                      Khách Hàng Lẻ
+                    </span>
+                  </div>
+                  : order.tenNguoiNhan
+                }
               </div>
             </div>
             <div className="ms-4 mt-4 d-flex" style={{ height: "30px" }}>
@@ -834,8 +931,8 @@ const OrderDetail = () => {
                 <span style={{ fontSize: "17px" }}>Số Điện Thoại</span>
               </div>
               <div className="ms-5 ps-5">
-                <span className="text-dark" style={{ fontSize: "17px" }}>
-                  {order.soDienThoaiNguoiNhan}
+                <span className="text-dark ms-1" style={{ fontSize: "17px" }}>
+                  {order.soDienThoaiNguoiNhan == null ? "0123901293" : order.soDienThoaiNguoiNhan}
                 </span>
               </div>
             </div>
@@ -844,7 +941,7 @@ const OrderDetail = () => {
                 <span style={{ fontSize: "17px" }}>Email</span>
               </div>
               <div className="ms-5 ps-5">
-                <span className="text-dark" style={{ fontSize: "17px" }}>
+                <span className="text-dark ms-1" style={{ fontSize: "17px" }}>
                   haog@gmail.com
                 </span>
               </div>
@@ -857,8 +954,8 @@ const OrderDetail = () => {
                 className="ms-5 ps-5"
                 style={{ whiteSpace: "pre-line", flex: "1" }}
               >
-                <span className="text-dark" style={{ fontSize: "17px" }}>
-                  {order.diaChiNguoiNhan}
+                <span className="text-dark ms-1" style={{ fontSize: "17px" }}>
+                  {order.diaChiNguoiNhan == null ? "ABCXYZ" : order.diaChiNguoiNhan}
                 </span>
               </div>
             </div>
@@ -866,19 +963,25 @@ const OrderDetail = () => {
         </Row>
       </div>
 
-      <div className="wrap-payment mt-3">
-        <div className="d-flex justify-content-between">
-          <div className="ms-4 mt-4">
-            <span style={{ fontSize: "27.5px" }}>LỊCH SỬ THANH TOÁN</span>
-          </div>
-          <div className="me-4 mt-3">
-            <Link to={""} className="">
+    )
+  }
+
+  const PaymentHistories = () => {
+    return (
+
+      <div className="wrap-payment mt-4 p-3">
+        <div className="">
+          <div className="d-flex justify-content-between">
+            <div className="ms-2" style={{ marginTop: "5px" }}>
+              <span className='' style={{ fontSize: "25px" }}>LỊCH SỬ THANH TOÁN</span>
+            </div>
+            <div className="">
               <Button
                 onClick={handleClickOpenDialogPayment}
                 className="rounded-2 ms-2"
                 type="primary"
                 style={{
-                  height: "50px",
+                  height: "45px",
                   fontSize: "16px",
                   backgroundColor: "#3A57E8",
                   width: "193px",
@@ -886,9 +989,9 @@ const OrderDetail = () => {
               >
                 <span
                   className=""
-                  style={{ fontWeight: "550", marginBottom: "2px" }}
+                  style={{ fontWeight: "550", marginBottom: "3px" }}
                 >
-                  Tiến Hành Thanh Toán
+                  Tiến hành thanh toán
                 </span>
               </Button>
               <PaymentDialog
@@ -897,12 +1000,13 @@ const OrderDetail = () => {
                 onCloseNoAction={handleCloseNoActionDialogPayment}
                 addPayment={handleAddPayment}
               />
-            </Link>
+            </div>
           </div>
+          <div className='ms-2 mt-2' style={{ borderBottom: "2px solid #C7C7C7", width: "99.2%", borderWidth: "2px" }}></div>
+
         </div>
-        <hr className="mx-auto" style={{ borderWidth: "2px", width: "96%" }} />
-        <div>
-          {paymentHistorys.length == 0 ? (
+        <div className="mt-3">
+          {paymentHistorys.length <= 0 ? (
             <EmptyData />
           ) : (
             <>
@@ -912,6 +1016,7 @@ const OrderDetail = () => {
                 dataSource={paymentHistorys}
                 pagination={false}
               />
+              {/*
               <div className="d-flex justify-content-between p-3">
                 <div className="ms-1 mt-2">
                   <div className="" style={{ marginTop: "1px" }}>
@@ -947,183 +1052,179 @@ const OrderDetail = () => {
                   </div>
                 </div>
               </div>
+*/}
             </>
           )}
         </div>
       </div>
-      <div className="wrap-order-summary mt-3">
+    )
+  }
+
+  const OrderSummary = () => {
+    return (
+      <div className="wrap-order-summary mt-4 p-3">
+        <div className="">
+          <div className="d-flex justify-content-between">
+            <div className="ms-2" style={{ marginTop: "5px" }}>
+              <span className='' style={{ fontSize: "25px" }}>SẢN PHẨM ĐÃ MUA</span>
+            </div>
+            <div className="">
+              <Button
+                // onClick={handleOpenDialogProducts}
+                className="rounded-2 bg-primary"
+                type="primary"
+                style={{ height: "45px", width: "145px", fontSize: "16px" }}
+              >
+                <span
+                  className="text-white"
+                  style={{ marginBottom: "3px", fontWeight: "550" }}
+                >
+                  Thêm sản phẩm
+                </span>
+              </Button>
+            </div>
+          </div>
+          <div className='ms-2 mt-2' style={{ borderBottom: "2px solid #C7C7C7", width: "99.2%", borderWidth: "2px" }}></div>
+        </div>
+
         <div className="wrap-cart-order" style={{ height: "auto" }}>
           <Row className="">
             <div className="">
-              {list.slice(0, 3).map((l, index) => (
-                <Col sm="12">
-                  <div className="d-flex cart-item mt-3 ms-3 p-3">
-                    <div className="item-img">
-                      <img
-                        style={{ width: "205px", height: "180px" }}
-                        src={l.img}
-                      />
-                    </div>
-                    <div className="item-info ms-4">
-                      <div className="d-flex justify-content-between">
-                        <div
-                          className="wrap-item-name"
-                          style={{
-                            width: "900px",
-                            whiteSpace: "normal",
-                            height: "50px",
-                          }}
+              <div className='' style={{ height: "auto" }}>
+                <StyledTableContainer component={Paper}>
+                  <TableMui sx={{ minWidth: 650, boxShadow: "none" }} aria-label="simple table" className={classes.tableContainer}>
+                    <StyledTableHead>
+                      <TableRow>
+                      </TableRow>
+                    </StyledTableHead>
+                    <StyledTableBody>
+                      {list.slice(0, 2).map((item, index) => (
+                        <TableRow
+                          key={index}
+                          sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                         >
-                          <span
-                            className="text-dark item-name"
-                            style={{ fontSize: "25px" }}
-                          >
-                            {l.title}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="item-detail">
-                        <div className="d-flex">
-                          <span
-                            className=""
-                            style={{ fontSize: "15px", color: "#666" }}
-                          >
-                            Màu sắc: Gray
-                          </span>
-                        </div>
-                        <div
-                          className="d-flex mt-1"
-                          style={{ position: "relative" }}
-                        >
-                          <div style={{ width: "550px" }}>
-                            <span
-                              className=""
-                              style={{ fontSize: "15px", color: "#666" }}
-                            >
-                              RAM: 8GB,{" "}
-                            </span>
-                            <span
-                              className="ms-2"
-                              style={{ fontSize: "15px", color: "#666" }}
-                            >
-                              {" "}
-                              ROM: 64GB
-                            </span>
-                          </div>
-                          <div
-                            className="d-flex"
-                            style={{
-                              position: "absolute",
-                              left: "530px",
-                              bottom: "-8px",
-                            }}
-                          >
-                            <div className="mt-2">
-                              <span
-                                className="fw-bold"
-                                style={{ fontSize: "17.5px", color: "#dc1111" }}
-                              >
-                                12.000.000₫
+                          <TableCell align='center'>
+                            <img src={item.img} class='' alt="" style={{ width: "155px", height: "155px" }} />
+                          </TableCell>
+                          <TableCell align="center">
+                            <div>
+                              <span className='' style={{ whiteSpace: "pre-line", fontSize: "18px" }}>{item.title}</span>
+                            </div>
+                            <div className='mt-2'>
+                              <span style={{ color: "#dc1111", fontSize: "17px" }}>
+                                {item && item.price ? item.price.toLocaleString("vi-VN", {
+                                  style: "currency",
+                                  currency: "VND",
+                                }) : ""}
                               </span>
                             </div>
-                            <div className="ms-4">
-                              <Button
-                                className="rounded-2 ms-4 bg-primary"
-                                type="primary"
+                            <div className='mt-2 pt-1 d-flex justify-content-around mx-auto'>
+                              <div></div>
+                              <div></div>
+                              <div></div>
+                              <div></div>
+                              <div></div>
+                              <div></div>
+                              <div></div>
+                              <div></div>
+                              <div></div>
+                              <div></div>
+                              <div
+                                className="rounded-pill"
                                 style={{
-                                  height: "40px",
+                                  height: "31px",
                                   width: "auto",
-                                  fontSize: "14px",
+                                  padding: "5px",
+                                  backgroundColor: "#e1e1e1",
                                 }}
                               >
-                                <span
-                                  className=""
-                                  style={{
-                                    fontWeight: "550",
-                                    marginBottom: "2px",
-                                  }}
-                                >
-                                  Thay Đổi
+                                <span className="text-dark p-2" style={{ fontSize: "14px" }}>
+                                  12/256GB
                                 </span>
-                              </Button>
-                              <Button
-                                className="rounded-2 ms-3"
-                                type="primary"
+                              </div>
+                              <div
+                                className="rounded-pill"
                                 style={{
-                                  height: "40px",
+                                  marginLeft: "10px",
+                                  height: "31px",
                                   width: "auto",
-                                  fontSize: "14px",
-                                  backgroundColor: "#dc3333",
+                                  padding: "5px",
+                                  backgroundColor: "#e1e1e1",
                                 }}
                               >
-                                <span
-                                  className=""
-                                  style={{
-                                    fontWeight: "550",
-                                    marginBottom: "2px",
-                                  }}
-                                >
-                                  Xóa
+                                <span className="text-dark p-2" style={{ fontSize: "14px" }}>
+                                  Rose Pine
                                 </span>
-                              </Button>
+                              </div>
+                              <div></div>
+                              <div></div>
+                              <div></div>
+                              <div></div>
+                              <div></div>
+                              <div></div>
+                              <div></div>
+                              <div></div>
+                              <div></div>
+                              <div></div>
                             </div>
-                          </div>
-                        </div>
-                        <div className="d-flex mt-1">
-                          <span
-                            className=""
-                            style={{ fontSize: "15px", color: "#666" }}
-                          >
-                            Số lượng: x1
-                          </span>
-                        </div>
-                      </div>
-                      <div className="d-flex" style={{ height: "28px" }}></div>
-                      <div className="d-flex justify-content-between">
-                        <div
-                          className="wrap-item-price"
-                          style={{ width: "70px" }}
-                        >
-                          <span
-                            className="item-price"
-                            style={{
-                              fontSize: "16px",
-                              color: "#dc1111",
-                              fontWeight: "550",
-                            }}
-                          >
-                            {l.price}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <hr
-                    className="mx-auto"
-                    style={{ borderWidth: "2px", width: "96%" }}
-                  />
-                </Col>
-              ))}
+                          </TableCell>
+                          <TableCell align="center" style={{ width: "100px" }}>
+                            {/*
+*/}
+                            <div class="number-input1">
+                              <button style={{ marginBottom: "1px" }}
+                                class="minus">-
+                              </button>
+                              <input value={1} min="1" max="100"
+                                name="quantity" class="quantity"
+                                type="number" />
+                              <button class="" style={{ marginTop: "2.3px" }} >+
+                              </button>
+                            </div>
+                          </TableCell>
+                          <TableCell align="center" style={{ color: "#dc1111", fontSize: "15px", width: "200px" }}>
+                            <span style={{ color: "#dc1111", fontSize: "17.5px" }}>
+                              {item && item.price ? item.price.toLocaleString("vi-VN", {
+                                style: "currency",
+                                currency: "VND",
+                              }) : ""}
+                            </span>
+                          </TableCell>
+                          <TableCell align="center" className='' style={{ width: "200px" }}>
+                            <Button className=''
+                              icon={
+                                <EditIcon />
+                              }
+                              type="primary"
+                              style={{ fontSize: "13px" }}
+                            >
+                            </Button>
+                            <Button className='ms-2'
+                              // onClick={() => handleDeleteCartDetailsById(item.id)}
+                              icon={
+                                <IconTrash />
+                              }
+                              type="primary"
+                              style={{ fontSize: "13px", backgroundColor: "#dc3333" }}
+                            >
+                            </Button>
+
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </StyledTableBody>
+                  </TableMui>
+                </StyledTableContainer>
+              </div>
             </div>
           </Row>
         </div>
 
-        <div className="me-4 d-flex">
-          <Button
-            className="rounded-2 ms-4 bg-primary"
-            type="primary"
-            style={{ height: "50px", width: "auto", fontSize: "16px" }}
-          >
-            <span
-              className=""
-              style={{ fontWeight: "550", marginBottom: "2px" }}
-            >
-              Thêm Sản Phẩm
-            </span>
-          </Button>
+        <div className='ms-2 mt-2' style={{ borderBottom: "2px solid #C7C7C7", width: "99.2%", borderWidth: "2px" }}></div>
+        <div className="d-flex mt-3">
           <div
             style={{
-              backgroundColor: "whitesmoke",
+              // backgroundColor: "whitesmoke",
               height: "auto",
               width: "400px",
             }}
@@ -1131,7 +1232,7 @@ const OrderDetail = () => {
           >
             <div className="p-4">
               <div className="d-flex justify-content-between">
-                <span className="" style={{ fontSize: "15px", color: "#777" }}>
+                <span className="" style={{ fontSize: "15px", color: "" }}>
                   Tổng Tiền Hàng
                 </span>
                 <span
@@ -1142,25 +1243,25 @@ const OrderDetail = () => {
                 </span>
               </div>
               <div className="d-flex justify-content-between mt-3">
-                <span className="" style={{ fontSize: "15px", color: "#777" }}>
+                <span className="" style={{ fontSize: "15px", color: "" }}>
                   Giảm Giá
                 </span>
                 <span
                   className="fw-bold text-dark"
                   style={{ fontSize: "16px" }}
                 >
-                  -190.000 ₫
+                  0 ₫
                 </span>
               </div>
               <div className="d-flex justify-content-between mt-3">
-                <span className="" style={{ fontSize: "15px", color: "#777" }}>
+                <span className="" style={{ fontSize: "15px", color: "" }}>
                   Phí Vận Chuyển
                 </span>
                 <span
                   className="fw-bold text-dark"
                   style={{ fontSize: "16px" }}
                 >
-                  30.000 ₫
+                  0 ₫
                 </span>
               </div>
               <hr
@@ -1174,7 +1275,7 @@ const OrderDetail = () => {
               <div className="d-flex justify-content-between mt-4">
                 <span
                   className="fw-bold text-dark"
-                  style={{ fontSize: "18px", color: "#777" }}
+                  style={{ fontSize: "18px", color: "" }}
                 >
                   Tổng cộng
                 </span>
@@ -1193,8 +1294,38 @@ const OrderDetail = () => {
             </div>
           </div>
         </div>
-        <div style={{ height: "30px" }}></div>
+        <div style={{ height: "10px" }}></div>
       </div>
+    )
+  }
+
+  return (
+    <>
+      <div className="wrap-timeline mt-4">
+        <div class="scroll-container mt-2">
+          <Card>
+            <Card.Body>
+              <TimeLine />
+            </Card.Body>
+          </Card>
+        </div>
+        <ConfirmDialog
+          open={openCommon}
+          status={status}
+          confirmOrderInfo={handleConfirmOrderInfo}
+          confirmDelivery={handleConfirmDelivery}
+          confirmFinish={handleConfirmOrderFinish}
+          confirmCancel={handleConfirmOrderCancel}
+          onCloseNoAction={handleCloseNoActionCommon}
+        />
+        <ProcessOrder />
+      </div>
+
+      <OrderInfo />
+      <PaymentHistories />
+      <OrderSummary />
+
+
 
       <div className="mt-5"></div>
     </>

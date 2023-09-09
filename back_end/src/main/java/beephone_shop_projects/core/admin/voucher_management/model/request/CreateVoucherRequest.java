@@ -20,6 +20,11 @@ import java.util.Date;
 @Setter
 public class CreateVoucherRequest {
 
+    private String ma;
+
+    private Integer trangThai;
+
+
     @NotBlank(message = "Không để trống Tên !!!")
     private String ten;
 
@@ -48,4 +53,20 @@ public class CreateVoucherRequest {
     @Max(value = 1000000, message = "Giá Trị Tối Đa là 1.000.000 VNĐ !!!")
     private BigDecimal giaTriVoucher;
 
+
+    public String getMa() {
+        return ma;
+    }
+
+    public void setMa(String ma) {
+        this.ma = ma;
+    }
+
+    public Integer getTrangThai() {
+        return trangThai;
+    }
+
+    public void setTrangThai(Integer trangThai) {
+        this.trangThai = trangThai;
+    }
 }
