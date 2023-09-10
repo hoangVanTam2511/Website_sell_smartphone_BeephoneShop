@@ -1,7 +1,7 @@
 package beephone_shop_projects.core.admin.product_management.controller;
 
+import beephone_shop_projects.core.admin.product_management.model.request.CreateManHinh;
 import beephone_shop_projects.core.admin.product_management.service.impl.ManHinhServiceImpl;
-import beephone_shop_projects.entity.HinhThucSanPham;
 import beephone_shop_projects.entity.ManHinh;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+
 @RestController
 @RequestMapping("/man-hinh")
 @CrossOrigin(origins = "http://localhost:3000")
@@ -27,11 +29,15 @@ public class ManHinhRestController {
     private ManHinhServiceImpl manHinhService;
 
     @GetMapping("/view-all")
-    public Page<ManHinh> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
-        Pageable pageable = PageRequest.of(page-1,5);
+    public Page<ManHinh> viewAll(@RequestParam(value = "page",defaultValue = "0") Integer page) {
+        Pageable pageable = PageRequest.of(page,5);
         return manHinhService.getAll(pageable);
     }
 
+    @GetMapping("/get-list")
+    public ArrayList<ManHinh> getList(){
+        return this.manHinhService.getDanhSachManHinh();
+    }
     @DeleteMapping("/delete")
     public void delete(@RequestParam("id")String id) {
         manHinhService.delete(id);
@@ -42,8 +48,18 @@ public class ManHinhRestController {
         manHinhService.insert(anh);
     }
 
+    @PostMapping("/save-second")
+    public void saveSecond(@RequestBody CreateManHinh anh) {
+        manHinhService.insert(anh);
+    }
+
     @PutMapping("/update/{id}")
     public void update(@RequestBody ManHinh anh ,@PathVariable("id")String id) {
         manHinhService.insert(anh);
+    }
+
+    @GetMapping("/new-code")
+    public  String getNewCode(){
+        return this.manHinhService.generateNewCode();
     }
 }

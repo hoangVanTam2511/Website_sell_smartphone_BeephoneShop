@@ -1,0 +1,41 @@
+/* YourComponent.css */
+.your-component-container {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.search-component-container {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 25px;
+}
+
+.btn-add {
+  margin-right: 20px;
+  margin-top: 20px;
+  .bl-add {
+    float: right;
+    padding-left: 10px;
+  }
+  .btn-add-promotion {
+    background-color: rgb(69 88 255);
+    color: white;
+    border-radius: 10px;
+    margin-left: 20px;
+    margin-right: 10px;
+    &:hover {
+      background-color: rgba(163, 224, 255, 0.667);
+      color: rgb(232, 36, 36);
+      border-radius: 10px;
+    }
+  }
+}
+.boloc-promotion {
+  padding-top: 20px;
+  display: flex;
+  margin-left: 2em;
+}

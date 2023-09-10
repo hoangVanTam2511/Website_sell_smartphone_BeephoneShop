@@ -149,6 +149,7 @@ const Header = memo((props) => {
                         <h5 className="mb-0 text-white">All Notifications</h5>
                       </div>
                     </div>
+
                     <div className="p-0 card-body">
                       <Link to="#" className="iq-sub-card">
                         <div className="d-flex align-items-center">

@@ -26,5 +26,5 @@ public class Imei extends PrimaryEntity implements IsIdentified {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_chi_tiet_san_pham")
-    private ChiTietSanPham idChiTietSanPham;
+    private SanPhamChiTiet idSanPhamChiTiet;
 }

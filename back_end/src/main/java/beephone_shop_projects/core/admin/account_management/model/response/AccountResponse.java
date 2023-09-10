@@ -29,6 +29,7 @@ public interface AccountResponse {
     @Value("#{target.trang_thai}")
     String getTrangThai();
 
+
     @Value("#{target.so_dien_thoai}")
     String getSoDienThoai();
 //    @Temporal(TemporalType.DATE)

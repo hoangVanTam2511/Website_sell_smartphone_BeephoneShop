@@ -132,6 +132,7 @@ const HienThiNV = () => {
           ...item,
           stt: index + 1,
         }));
+        console.log(modifiedData);
         // console.log(modifiedData);
         setListNV(modifiedData);
         setCurrentPage(response.data.number);
@@ -348,12 +349,80 @@ const HienThiNV = () => {
 
   return (
     <>
+      <div className="btn-add">
+        <span>
+          <Form style={{ width: "20em", display: "inline-block" }}>
+            <Input
+              placeholder="Search by Mã, Tên,..."
+              // value={searchValue}
+              // onChange={handleChange}
+            />
+          </Form>
+        </span>
+        {/* Search */}
+        <FontAwesomeIcon
+          // icon={faMagnifyingGlass}
+          style={{ marginLeft: "5px" }}
+        />
+        <span className="bl-add">
+          Trạng thái{" "}
+          <Select
+            defaultValue="Tất cả"
+            style={{
+              width: 120,
+            }}
+            onChange={handleFilter}
+          >
+            {" "}
+            <Option value="">Tất cả</Option>
+            <Option value={1}>Làm việc</Option>
+            <Option value={2}>Đã nghỉ</Option>
+          </Select>
+          <Link to="/them-nhan-vien">
+            <Button className="btn-them-tk">+ Thêm Tài khoản</Button>
+          </Link>
+          <Button className="btn-them-tu-file">
+            <NhapTuFile />
+          </Button>
+        </span>
+      </div>
+      <div className="form-tbl">
+        <Form
+          form={form}
+          component={false}
+          initialValues={ {}}
+        >
+          <Table
+            components={{
+              body: {
+                cell: EditableCell,
+              },
+            }}
+            bordered
+            dataSource={filteredDataSource}
+            columns={mergedColumns}
+            rowClassName="editable-row"
+            pagination={false}
+            // {{
+            //   pageSize: 10,
+            //   current: currentPage + 1,
+            //   total: totalPages * 10,
+            //   showSizeChanger: false,
+            //   onChange: (value) => {
+            //     setCurrentPage(value - 1);
+            //   },
+            // }}
+            rowKey="id"
+            style={{ marginBottom: "20px" }}
+          />
+
       <Card>
         {/* <h5 style={{ marginBottom: "10px" }}>
           {" "}
           <FontAwesomeIcon icon={faFilter} />
           &nbsp;Lọc
         </h5> */}
+
 
         <div className="btn-add">
           <span>
@@ -457,6 +526,9 @@ const HienThiNV = () => {
           </Form>
         </div>
       </Card>
+      </Form>
+    
+     </div>
     </>
   );
 };

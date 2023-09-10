@@ -9,6 +9,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Service
 public class AnhServiceImpl implements IService<Anh> {
@@ -19,7 +22,7 @@ public class AnhServiceImpl implements IService<Anh> {
 
     @Override
     public Page<Anh> getAll(Pageable pageable) {
-        return anhRepository.findAll(pageable);
+        return anhRepository.findAllByDelected(true,pageable);
     }
 
     @Override
@@ -34,10 +37,14 @@ public class AnhServiceImpl implements IService<Anh> {
 
     @Override
     public void delete(String id) {
-        anhRepository.deleteById(id);
+        anhRepository.updateDelected(false,id);
     }
 
     public Anh getOne(String id){
         return anhRepository.findById(id).get();
+    }
+
+    public ArrayList<Anh> getListAnh(){
+        return (ArrayList<Anh>) this.anhRepository.findAll();
     }
 }

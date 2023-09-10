@@ -2,15 +2,16 @@ package beephone_shop_projects.core.admin.promotion_management.service;
 
 import beephone_shop_projects.core.admin.promotion_management.model.reponse.KhuyenMaiResponse;
 import beephone_shop_projects.core.admin.promotion_management.model.request.CreateKhuyenMaiRequest;
+import beephone_shop_projects.core.admin.promotion_management.model.request.FindKhuyenMaiRequest;
 import beephone_shop_projects.core.admin.promotion_management.model.request.UpdateKhuyenMaiRequest;
 import beephone_shop_projects.entity.KhuyenMai;
 import jakarta.validation.Valid;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface KhuyenMaiService {
 
-    List<KhuyenMaiResponse> getAll();
+    Page<KhuyenMai> getAll(FindKhuyenMaiRequest request);
 
     KhuyenMaiResponse getOne(String ma);
 
@@ -18,6 +19,8 @@ public interface KhuyenMaiService {
 
     KhuyenMai updateKhuyenMai(@Valid UpdateKhuyenMaiRequest request, String ma);
 
-    Boolean deleteVoucher(String ma);
+    Boolean deleteKhuyenMai(String ma);
+
+    Boolean doiTrangThai(String id);
 
 }

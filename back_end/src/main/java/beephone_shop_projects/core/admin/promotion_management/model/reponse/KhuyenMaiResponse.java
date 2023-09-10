@@ -7,17 +7,20 @@ import java.util.Date;
 
 public interface KhuyenMaiResponse {
 
+    @Value("#{target.id}")
+    String getId();
+
     @Value("#{target.ma}")
     String getMa();
 
     @Value("#{target.ten_khuyen_mai}")
     String getTenKhuyenMai();
 
-    @Value("#{target.muc_giam_gia_theo_phan_tram}")
-    BigDecimal getMucGiamGiaTheoPhanTram();
+    @Value("#{target.gia_tri_khuyen_mai}")
+    BigDecimal getGiaTriKhuyenMai();
 
-    @Value("#{target.muc_giam_gia_theo_so_tien}")
-    BigDecimal getMucGiamGiaTheoSoTien();
+    @Value("#{target.loai_khuyen_mai}")
+    Integer getLoaiKhuyenMai();
 
     @Value("#{target.ngay_bat_dau}")
     Date getNgayBatDau();
@@ -25,10 +28,7 @@ public interface KhuyenMaiResponse {
     @Value("#{target.ngay_ket_thuc}")
     Date getNgayKetThuc();
 
-    @Value("#{target.dieu_kien_giam_gia}")
-    String getDieuKienGiamGia();
-
     @Value("#{target.trang_thai}")
-    Boolean getTrangThai();
+    Integer getTrangThai();
 
 }
