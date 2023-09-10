@@ -22,6 +22,7 @@ import {
 import {
     FontAwesomeIcon
 } from "@fortawesome/react-fontawesome";
+import "../../../../assets/scss/addProduct.scss";
 const { TextArea } = Input;
 let index = 0;
 const ThemSanPham = () => {
@@ -523,7 +524,7 @@ const ThemSanPham = () => {
                                 </Form.Label>
                                 <Select
                                     mode="multiple"
-                                    tagRender={cyan}
+                                    tagRender={'cyan'}
                                     style={{
                                         width: '100%',
                                         height: 36
@@ -540,7 +541,7 @@ const ThemSanPham = () => {
                                 </Form.Label>
                                 <Select
                                     mode="multiple"
-                                    tagRender={cyan}
+                                    tagRender={'cyan'}
                                     style={{
                                         width: '100%',
                                         height: 36
