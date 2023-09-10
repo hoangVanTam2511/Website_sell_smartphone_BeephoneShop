@@ -43,7 +43,7 @@ public class NhanVienRestcontroller {
     }
 
     @PutMapping("update/{id}")
-    public ResponseEntity updateNV(@RequestBody Account request,
+    public ResponseEntity updateNV(@RequestBody CreateAccountRequest request,
                                    @PathVariable("id") String id) {
         return new ResponseEntity(accService.updateNV(request, id), HttpStatus.OK);
     }
@@ -61,14 +61,11 @@ public class NhanVienRestcontroller {
         return accService.search(opTen, pageNo);
     }
     @GetMapping(value = "/export", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    public ResponseEntity<byte[]> exportExcel(@RequestParam(name = "page", defaultValue = "0") Integer pageNo) throws IOException {
-        byte[] excelBytes = excelExportService.exportExcelData(pageNo);
-
+    public ResponseEntity<byte[]> exportExcel() throws IOException {
+        byte[] excelBytes = excelExportService.exportExcelDataNV();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
         headers.setContentDispositionFormData("attachment", "Thông tin nhân viên.xlsx");
-
         return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);
-
     }
 }

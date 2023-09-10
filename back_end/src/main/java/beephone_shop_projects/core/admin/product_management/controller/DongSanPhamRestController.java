@@ -2,7 +2,6 @@ package beephone_shop_projects.core.admin.product_management.controller;
 
 import beephone_shop_projects.core.admin.product_management.model.request.CreateDongSanPham;
 import beephone_shop_projects.core.admin.product_management.service.impl.DongSanPhamServiceImpl;
-import beephone_shop_projects.entity.Chip;
 import beephone_shop_projects.entity.DongSanPham;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

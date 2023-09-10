@@ -1,8 +1,7 @@
-import React from "react";
-import Index from "../views/index";
+import React from 'react'
+import Index from '../views/index'
+import { ToastContainer } from "react-toastify";
 // san pham
-
-
 
 // chip
 import Chip from "../views/admin/product-manager/chip/chip";
@@ -11,7 +10,6 @@ import ThemChip from "../views/admin/product-manager/chip/them-chip";
 // dong-san-pham
 import DongSanPham from "../views/admin/product-manager/dong-san-pham/dong-san-pham";
 import ThemDongSanPham from "../views/admin/product-manager/dong-san-pham/them-dong-san-pham";
-
 
 // man-hinh
 import ManHinh from "../views/admin/product-manager/man-hinh/man-hinh";
@@ -33,16 +31,13 @@ import ThemNhaSanXuat from "../views/admin/product-manager/nha-san-xuat/them-nha
 import Rom from "../views/admin/product-manager/rom/rom";
 import ThemRom from "../views/admin/product-manager/rom/them-rom";
 
-
 // chi-tiet-san-pham
-import ChiTietSanPham from '../views/admin/product-manager/chi-tiet-san-pham/chi-tiet-san-pham';
-import ThemChiTietSanPham from '../views/admin/product-manager/chi-tiet-san-pham/them-chi-tiet-san-pham';
-
+import ChiTietSanPham from "../views/admin/product-manager/chi-tiet-san-pham/chi-tiet-san-pham";
+import ThemChiTietSanPham from "../views/admin/product-manager/chi-tiet-san-pham/them-san-pham";
 
 // // imei
-import Imei from '../views/admin/product-manager/imei/imei';
-import ThemImei from '../views/admin/product-manager/imei/them-imei'
-
+import Imei from "../views/admin/product-manager/imei/imei";
+import ThemImei from "../views/admin/product-manager/imei/them-imei";
 
 // khach hang
 import KhachHang from "../views/admin/account-manager/khachhang/HienThiKH";
@@ -58,13 +53,12 @@ import NhapTuFileNV from "../views/admin/account-manager/nhanvien/NhapTuFile";
 
 import Role from "../views/admin/account-manager/role/HienThiRole";
 import AddRole from "../views/admin/account-manager/role/AddRole";
+
 //admin
 
-import Default from '../layouts/dashboard/default';
-import ManagementOrders from '../views/admin/order-manager/management-orders';
-import OrderDetail from '../views/admin/order-manager/order-detail';
-
-
+import Default from "../layouts/dashboard/default";
+import ManagementOrders from "../views/admin/order-manager/management-orders";
+import OrderDetail from "../views/admin/order-manager/order-detail";
 
 //voucher
 
@@ -76,180 +70,196 @@ import AddVoucher from "../views/admin/voucher-manager/them-voucher";
 import HienThiKhuyenMai from "../views/admin/promotion-manager/quan-li-promotion";
 import AddKhuyenMai from "../views/admin/promotion-manager/them-promotion";
 import AddressForm from "../views/admin/account-manager/khachhang/DiaChi";
-import { ToastContainer } from "react-toastify";
+
 import UpdateKH from "../views/admin/account-manager/khachhang/UpdateKH";
 import UpdateNV from "../views/admin/account-manager/nhanvien/UpdateNV";
 
-
 import SuaKhuyenMai from "../views/admin/promotion-manager/sua-promotion";
+
 
 //khuyenMai
 import UpdateVoucher from "../views/admin/voucher-manager/sua-voucher";
+
+import OrdersPending from "../views/admin/order-manager/ordes-pending"
+
+import PointOfSales from "../views/admin/order-manager/point-of-sales"
+
 
 export const DefaultRouter = [
   {
     path: "/",
     element: <Default />,
     children: [
-      {
-        path: "",
-        element: <Index />,
-      },
-      {
-        path: "chip",
-        element: <Chip />,
-      },
-      {
-        path: "them-chip",
-        element: <ThemChip />,
-      },
-      {
-        path: "dong-san-pham",
-        element: <DongSanPham />,
-      },
-      {
-        path: "them-dong-san-pham",
-        element: <ThemDongSanPham />,
-      },
-      {
-        path: "nha-san-xuat",
-        element: <NhaSanXuat />,
-      },
-      {
-        path: "them-nha-san-xuat",
-        element: <ThemNhaSanXuat />,
-      },
-      {
-        path: "man-hinh",
-        element: <ManHinh />,
-      },
-      {
-        path: "them-man-hinh",
-        element: <ThemManHinh />,
-      },
-      {
-        path: "pin",
-        element: <Pin />,
-      },
-      {
-        path: "them-pin",
-        element: <ThemPin />,
-      },
-      {
-        path: "ram",
-        element: <Ram />,
-      },
-      {
-        path: "them-ram",
-        element: <ThemRam />,
-      },
-      {
-        path: "rom",
-        element: <Rom />,
-      },
-      {
-        path: "them-rom",
-        element: <ThemRom />,
-      },
-      {
-        path: "chi-tiet-san-pham",
-        element: <ChiTietSanPham />,
-      },
-      {
-        path: "them-chi-tiet-san-pham",
-        element: <ThemChiTietSanPham />,
-      },
-      {
-        path: "khach-hang",
-        element: <KhachHang />,
-      },
-      {
-        path: "khach-hang",
-        element: <KhachHang />,
-      },
-      
-      {
-        path: "them-khach-hang",
-        element: <AddKH />,
-      },
-      {
-        path: "/update-khach-hang/:id",
-        element: <UpdateKH />,
-      },
-      {
-        path: "/update-nhan-vien/:id",
-        element: <UpdateNV />,
-      },
-      {
-        path: "diachi-khach-hang",
-        element: <AddressForm />,
-      },
-      ,
-      {
-        path: "nhap-excel-khach-hang",
-        element: <NhapTuFileKH />,
-      },
-      {
-        path: "nhan-vien",
-        element: <NhanVien />,
-      },
-      {
-        path: "them-nhan-vien",
-        element: <AddNv />,
-      },
-      {
-        path: "imei/:idChiTietSanPham",
-        element: <Imei />,
-      },
-      {
-        path: "them-imei",
-        element: <ThemImei />,
-      },
-      {
+        {
+            path: "",
+            element: <Index />,
+        },
+        {
+            path: "chip",
+            element: <Chip />,
+        },
+        {
+            path: "them-chip",
+            element: <ThemChip />,
+        },
+        {
+            path: "dong-san-pham",
+            element: <DongSanPham />,
+        },
+        {
+            path: "them-dong-san-pham",
+            element: <ThemDongSanPham />,
+        },
+        {
+            path: "nha-san-xuat",
+            element: <NhaSanXuat />,
+        },
+        {
+            path: "them-nha-san-xuat",
+            element: <ThemNhaSanXuat />,
+        },
+        {
+            path: "man-hinh",
+            element: <ManHinh />,
+        },
+        {
+            path: "them-man-hinh",
+            element: <ThemManHinh />,
+        },
+        {
+            path: "pin",
+            element: <Pin />,
+        },
+        {
+            path: "them-pin",
+            element: <ThemPin />,
+        },
+        {
+            path: "ram",
+            element: <Ram />,
+        },
+        {
+            path: "them-ram",
+            element: <ThemRam />,
+        },
+        {
+            path: "rom",
+            element: <Rom />,
+        },
+        {
+            path: "them-rom",
+            element: <ThemRom />,
+        },
+        {
+            path: "chi-tiet-san-pham",
+            element: <ChiTietSanPham />,
+        },
+        {
+            path: "them-chi-tiet-san-pham",
+            element: <ThemChiTietSanPham />,
+        },
+        {
+            path: "khach-hang",
+            element: <KhachHang />,
+        },
+        {
+            path: "khach-hang",
+            element: <KhachHang />,
+        },
 
-        path: "nhap-excel-nhan-vien",
-        element: <NhapTuFileNV />,
-      },
-      {
-        path: "chuc-vu",
-        element: <Role />,
-      },
-      {
-        path: "them-chuc-vu",
-        element: <AddRole />,
-      },
-      {
-        path: "them-voucher",
-        element: <AddVoucher />,
-      },
+        {
+            path: "them-khach-hang",
+            element: <AddKH />,
+        },
+        {
+            path: "/update-khach-hang/:id",
+            element: <UpdateKH />,
+        },
+        {
+            path: "/update-nhan-vien/:id",
+            element: <UpdateNV />,
+        },
+        {
+            path: "diachi-khach-hang",
+            element: <AddressForm />,
+        },
+        ,
+        {
+            path: "nhap-excel-khach-hang",
+            element: <NhapTuFileKH />,
+        },
+        {
+            path: "nhan-vien",
+            element: <NhanVien />,
+        },
+        {
+            path: "them-nhan-vien",
+            element: <AddNv />,
+        },
+        {
+            path: "imei/:idChiTietSanPham",
+            element: <Imei />,
+        },
+        {
+            path: "them-imei",
+            element: <ThemImei />,
+        },
+        {
+            path: "nhap-excel-nhan-vien",
+            element: <NhapTuFileNV />,
+        },
+        {
+            path: "chuc-vu",
+            element: <Role />,
+        },
+        {
+            path: "them-chuc-vu",
+            element: <AddRole />,
+        },
+        {
+            path: "them-voucher",
+            element: <AddVoucher />,
+        },
 
+        {
+            path: "voucher",
+            element: <HienThiVoucher />,
+        },
+        {
+            path: "them-voucher",
+            element: <AddVoucher />,
+        },
+        {
+            path: "sua-voucher/:id",
+            element: <UpdateVoucher />,
+        },
+        {
+            path: "khuyen-mai",
+            element: <HienThiKhuyenMai />,
+        },
+        {
+            path: "them-khuyen-mai",
+            element: <AddKhuyenMai />,
+        },
+        // {
+        //   path: "san-pham-chi-tiet-1/:id",
+        //   element: <AddKhuyenMai />,
+        // },
+        {
+            path: "sua-khuyen-mai/:id",
+            element: <SuaKhuyenMai />,
+        },
       {
-        path: "voucher",
-        element: <HienThiVoucher />,
-      },
-      {
-        path: "them-voucher",
-        element: <AddVoucher />,
-      },
-      {
-        path: "sua-voucher/:id",
-        element: <UpdateVoucher />,
-      },
-      {
-        path: "khuyen-mai",
-        element: <HienThiKhuyenMai />,
-      },
-      {
-        path: "them-khuyen-mai",
-        element: <AddKhuyenMai />,
-      },
-      {
-        path: "sua-khuyen-mai/:id",
-        element: <SuaKhuyenMai />,
-      },
-       {
         path: 'dashboard/management-orders',
         element: <ManagementOrders />,
+      },
+      {
+        path: 'dashboard/orders-pending',
+        element: <OrdersPending />,
+      },
+      {
+        path: 'dashboard/point-of-sales',
+        element: <PointOfSales />,
       },
       {
         path: 'dashboard/order-detail/:id',

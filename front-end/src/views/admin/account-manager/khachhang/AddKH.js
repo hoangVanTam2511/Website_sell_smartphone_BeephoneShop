@@ -1,4 +1,6 @@
-import { Button, Modal, Card, Checkbox } from "antd";
+import { Button, Modal, Card, Checkbox, message } from "antd";
+// import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+// import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import React, { useEffect } from "react";
 import { useState } from "react";
 // import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -7,23 +9,20 @@ import axios from "axios";
 import { apiURLKH } from "../../../../service/api";
 import TextField from "@mui/material/TextField";
 import "../../../../assets/scss/HienThiNV.scss";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
   Box,
   FormControl,
   FormControlLabel,
-  // FormLabel,
   Grid,
   Radio,
   RadioGroup,
 } from "@mui/material";
 import AddressForm from "./DiaChi";
 import ImageUploadComponent from "./Anh";
-import { Collapse } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFloppyDisk, faPlus } from "@fortawesome/free-solid-svg-icons";
-const { Panel } = Collapse;
+import { faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
 const AddKH = () => {
   let [listKH, setListKH] = useState([]);
   let [hoVaTen, setTen] = useState("");
@@ -32,55 +31,140 @@ const AddKH = () => {
   let [email, setEmail] = useState("");
   let [gioiTinh, setGioiTinh] = useState(true);
   let [anhDaiDien, setAnhDaiDien] = useState("");
+  let [hoTenKH, setHoTenKH] = useState("");
+  let [quanHuyen, setQuanHuyen] = useState("");
+  let [tinhThanhPho, setTinhThanhPho] = useState("");
+  let [diaChi, setDiaChi] = useState("");
+  let [soDienThoaiKhachHang, setSoDienThoaiKhachHang] = useState("");
+  let [xaPhuong, setXaPhuong] = useState("");
+  let [trangThaiKH, setTrangThaiKH] = useState(1);
   const [diaChiList, setDiaChiList] = useState([
     {
       diaChi: "",
       xaPhuong: "",
       tinhThanhPho: "",
       quanHuyen: "",
-      soDienThoai: "",
+      soDienThoaiKhachHang: "",
       hoTenKH: "",
       account: "",
+      id: "",
+      trangThaiKH: "",
     },
   ]);
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [showCollapse, setShowCollapse] = useState(true);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [hoVaTenError, setHoVaTenError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [diaChiError, setDiaChiError] = useState("");
+  const [sdtError, setSDTError] = useState("");
+  const [sdtkhError, setSDTKHError] = useState("");
+  const [hoTenKHErr, setHoTenKHErr] = useState("");
 
-  const [isModalVisible, setIsModalVisible] = useState(false);
-
-  // Handle closing the modal
-  const handleAddDiaChi = () => {
-    const newAddress = {
-      diaChi: "",
-      xaPhuong: "",
-      tinhThanhPho: "",
-      quanHuyen: "",
-      soDienThoai: "",
-      hoTenKH: "",
-      account: "",
-    };
-
-    setDiaChiList([...diaChiList, newAddress]);
+  const showConfirm = () => {
+    setShowConfirmModal(true);
+  };
+  const handleHoVaTenChange = (e) => {
+    const value = e.target.value.trim();
+    const specialCharPattern = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+    const trimmedValue = value.replace(/\s/g, "");
+    setTen(value);
+    if (!value.trim()) {
+      setHoVaTenError("Họ và tên không được trống");
+    } else if (specialCharPattern.test(value)) {
+      setHoVaTenError("Họ và tên không được chứa ký tự đặc biệt");
+    } else if (trimmedValue.length < 5) {
+      setHoVaTenError("Họ và tên phải có ít nhất 5 ký tự");
+    } else {
+      setHoVaTenError("");
+    }
+  };
+  const handleHoVaTenKH = (e) => {
+    const value = e.target.value.trim();
+    const specialCharPattern = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+    const trimmedValue = value.replace(/\s/g, "");
+    setHoTenKH(value);
+    if (!value.trim()) {
+      setHoTenKHErr("Họ và tên không được trống");
+    } else if (specialCharPattern.test(value)) {
+      setHoTenKHErr("Họ và tên không được chứa ký tự đặc biệt");
+    } else if (trimmedValue.length < 5) {
+      setHoTenKHErr("Họ và tên phải có ít nhất 5 ký tự");
+    } else {
+      setHoTenKHErr("");
+    }
+  };
+  const handleEmailChange = (e) => {
+    const value = e.target.value.trim();
+    const parn = /^[a-zA-Z0-9._-]+@gmail\.com$/i;
+    setEmail(value);
+    if (!value.trim()) {
+      setEmailError("Email không được trống");
+    } else if (!parn.test(value)) {
+      setEmailError("Email sai định dạng hoặc không phải là Gmail");
+    } else {
+      setEmailError("");
+    }
+  };
+  const handleDiaChi = (e) => {
+    const value = e.target.value.trim();
+    setDiaChi(value);
+    const trimmedValue = value.replace(/\s/g, "");
+    if (!value.trim()) {
+      setDiaChiError("Địa chỉ không được trống");
+    } else if (trimmedValue.length < 5) {
+      setDiaChiError("Địa chỉ phải có ít nhất 5 ký tự");
+    } else {
+      setDiaChiError("");
+    }
+  };
+  const handleSDT = (e) => {
+    const value = e.target.value.trim();
+    const parn = /^(?:\+84|0)[1-9]\d{8}$/;
+    setSdt(value);
+    if (!value.trim()) {
+      setSDTError("Số điện thoại không được trống");
+    } else if (!parn.test(value)) {
+      setSDTError("Sai định dạng số điện thoại");
+    } else {
+      setSDTError("");
+    }
+  };
+  const handleSDTKH = (e) => {
+    const value = e.target.value.trim();
+    const parn = /^(?:\+84|0)[1-9]\d{8}$/;
+    setSoDienThoaiKhachHang(value);
+    if (!value.trim()) {
+      setSDTKHError("Số điện thoại không được trống");
+    } else if (!parn.test(value)) {
+      setSDTKHError("Sai định dạng số điện thoại");
+    } else {
+      setSDTKHError("");
+    }
+  };
+  const redirectToHienThiKH = (generatedMaKhachHang) => {
+    window.location.href = "/update-khach-hang/" + generatedMaKhachHang;
+  };
+  const handleAddressChange = (result) => {
+    setDiaChi(result);
+  };
+  const handleProvinceChange = (value) => {
+    setTinhThanhPho(value);
   };
 
-  const handleCloseModal = () => {
-    setIsModalVisible(false);
+  const handleDistrictChange = (value) => {
+    setQuanHuyen(value);
   };
-  const redirectToHienThiKH = () => {
-    // Thực hiện điều hướng tới trang "Hiển thị nhân viên"
-    window.location.href = "/khach-hang";
+
+  const handleWardChange = (value) => {
+    setXaPhuong(value);
   };
-  const handleAddressChange = (index, field, value) => {
-    const updatedDiaChiList = diaChiList.map((address, idx) => {
-      if (idx === index) {
-        return { ...address, [field]: value };
-      }
-      return address;
-    });
-    setDiaChiList(updatedDiaChiList);
+  const handleAnhDaiDienChange = (imageURL) => {
+    setAnhDaiDien(imageURL);
   };
   const AddKH = async () => {
+    setSubmitted(true);
+    setFormSubmitted(true);
     try {
       // Tạo khách hàng mới với thông tin đã nhập
       const khachHangData = {
@@ -92,7 +176,18 @@ const AddKH = () => {
         email: email,
         anhDaiDien: anhDaiDien,
       };
-
+      if (
+        !hoVaTen ||
+        ngaySinh == null ||
+        !email ||
+        !soDienThoai ||
+        !diaChi ||
+        !xaPhuong
+      ) {
+        message.error("Vui lòng điền đủ thông tin");
+        setShowConfirmModal(false);
+        return;
+      }
       // Gọi API tạo khách hàng mới
       const khachHangResponse = await axios.post(
         apiURLKH + "/add",
@@ -100,10 +195,9 @@ const AddKH = () => {
       );
 
       // Lấy mã khách hàng từ response
-      const generatedMaKhachHang = khachHangResponse.data.ma;
-
-      // Thêm các địa chỉ mặc định cho khách hàng
-      await addDiaChiList(generatedMaKhachHang);
+      const generatedMaKhachHang = khachHangResponse.data.id;
+      addDiaChiList(generatedMaKhachHang);
+      redirectToHienThiKH(generatedMaKhachHang);
 
       // Cập nhật danh sách khách hàng và hiển thị thông báo
       const newKhachHangResponse = {
@@ -111,24 +205,15 @@ const AddKH = () => {
         ngaySinh: ngaySinh,
         soDienThoai: soDienThoai,
         gioiTinh: gioiTinh,
-        diaChiList: [], // Không cần thêm địa chỉ ở đây vì đã thêm ở bước trước
+        diaChiList: [],
         email: email,
         anhDaiDien: anhDaiDien,
       };
 
       setListKH([newKhachHangResponse, ...listKH]);
-      toast.info("Thêm khách hàng và địa chỉ thành công!", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
+      message.success({
+        content: "Thêm khách hàng thành công",
       });
-
-      redirectToHienThiKH();
     } catch (error) {
       // Xử lý lỗi
       alert("Thêm khách hàng thất bại");
@@ -136,83 +221,46 @@ const AddKH = () => {
     }
   };
 
-  const addDiaChiList = async (generatedMaKhachHang) => {
-    const newDiaChiList = diaChiList.map((diaChi) => ({
-      diaChi: diaChi.diaChi,
-      xaPhuong: diaChi.xaPhuong,
-      tinhThanhPho: diaChi.tinhThanhPho,
-      quanHuyen: diaChi.quanHuyen,
-      hoTenKH: diaChi.hoTenKH,
-      soDienThoai: diaChi.soDienThoai,
-      account: generatedMaKhachHang.ma,
-    }));
-
-    const diaChiData = {
-      diaChiList: newDiaChiList,
+  const addDiaChiList = (generatedMaKhachHang) => {
+    //day
+    setSubmitted(true);
+    setFormSubmitted(true);
+    let newAddress = {
+      diaChi: diaChi,
+      xaPhuong: xaPhuong,
+      quanHuyen: quanHuyen,
+      tinhThanhPho: tinhThanhPho,
+      soDienThoaiKhachHang: soDienThoaiKhachHang,
+      hoTenKH: hoTenKH,
+      account: generatedMaKhachHang,
+      trangThai: trangThaiKH,
     };
-
-    try {
-      // Gửi danh sách địa chỉ mới
-      await axios.post(
-        apiURLKH + "/dia-chi/add?ma=" + generatedMaKhachHang.ma,
-        diaChiData
-      );
-
-      // Thành công: cập nhật danh sách địa chỉ và hiển thị thông báo
-      setDiaChiList(newDiaChiList);
-      toast.info("Thêm địa chỉ thành công!", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
+    axios
+      .post(`${apiURLKH}/dia-chi/add?id=${generatedMaKhachHang}`, newAddress)
+      .then((response) => {
+        let newKhachHangResponse = {
+          diaChi: diaChi,
+          xaPhuong: xaPhuong,
+          quanHuyen: quanHuyen,
+          tinhThanhPho: tinhThanhPho,
+          soDienThoaiKhachHang: soDienThoaiKhachHang,
+          hoTenKH: hoTenKH,
+          account: generatedMaKhachHang,
+          trangThai: trangThaiKH,
+        };
+        setDiaChiList([newKhachHangResponse, ...diaChiList]);
+      })
+      .catch((error) => {
+        alert("Thêm thất bại");
       });
-    } catch (error) {
-      // Xử lý lỗi
-      alert("Thêm địa chỉ thất bại");
-      console.log(error);
-    }
   };
-  // const handleAddDiaChi = (newDiaChi) => {
-  //   setDiaChiList([...diaChiList, newDiaChi]);
-  // };
-  const handleProvinceChange = (index, value) => {
-    handleAddressChange(index, "tinhThanhPho", value);
-  };
-  const handleDistrictChange = (index, value) => {
-    handleAddressChange(index, "quanHuyen", value);
-  };
-  const handleWardChange = (index, value) => {
-    handleAddressChange(index, "xaPhuong", value);
-    // ... (rest of the function)
-  };
-  const handleAnhDaiDienChange = (imageURL) => {
-    setAnhDaiDien(imageURL);
-  };
-  // const checkCollapse1Filled = () => {
-  //   for (let i = 0; i < diaChiList.length - 1; i++) {
-  //     if (
-  //       !diaChiList[i].hoTenKH ||
-  //       !diaChiList[i].soDienThoai ||
-  //       !diaChiList[i].diaChi
-  //     ) {
-  //       return false; // If any collapse is not filled, return false
-  //     }
-  //   }
-  //   return true;
-  // };
-  // useEffect(() => {
-  //   setIsCollapse1Filled(checkCollapse1Filled());
-  // }, [diaChiList]);
+
   return (
     <>
       <Card bordered="false" style={{ width: "100%" }}>
         <Grid container justifyContent="space-between">
           {/* Left column */}
-          <Grid item xs={5.4}>
+          <Grid item xs={5.3}>
             <Card
               title={
                 <span style={{ color: "gray" }}>Thông tin Khách Hàng</span>
@@ -220,38 +268,41 @@ const AddKH = () => {
               bordered="false"
               headStyle={{ borderLeft: "4px solid #e2e2e2", borderRadius: 0 }}
             >
-              {/* <Grid item xs={8}> */}
-
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  marginBottom: "20px",
-                  width: "100%",
-                }}
-              >
-                <ImageUploadComponent
-                  setAnhDaiDien={handleAnhDaiDienChange}
-                  hoten={hoVaTen}
-                />
-              </div>
-              {/* </Grid> */}
-              <div style={{ width: "100%", float: "left" }}>
+              <div style={{ width: "90%", margin: "0 auto" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    marginBottom: "20px",
+                    width: "100%",
+                  }}
+                >
+                  <ImageUploadComponent
+                    setAnhDaiDien={handleAnhDaiDienChange}
+                    hoten={hoVaTen}
+                  />
+                </div>
                 <div
                   className="text-f"
-                  style={{ textAlign: "center", marginBottom: "20px" }}
+                  style={{
+                    textAlign: "center",
+                    marginBottom: "20px",
+                    marginTop: "20px",
+                  }}
                 >
                   <TextField
                     label="Họ và tên"
                     value={hoVaTen}
                     id="fullWidth"
-                    onChange={(e) => {
-                      setTen(e.target.value);
-                    }}
-                    error={formSubmitted && !hoVaTen}
-                    helperText={formSubmitted && !hoVaTen && "Họ và tên trống"}
+                    onChange={handleHoVaTenChange}
+                    error={(formSubmitted && !hoVaTen) || !!hoVaTenError}
+                    helperText={
+                      hoVaTenError ||
+                      (formSubmitted && !hoVaTen && "Họ và tên trống")
+                    }
                     style={{ width: "100%" }}
+                    maxLength={30}
                   />
                 </div>
                 <div style={{ display: "flex", alignItems: "right" }}>
@@ -263,7 +314,6 @@ const AddKH = () => {
                       width: "47%",
                     }}
                   >
-                    {/* Ngày sinh */}
                     <Box
                       component="form"
                       sx={{
@@ -288,7 +338,7 @@ const AddKH = () => {
                         }}
                         error={formSubmitted && !ngaySinh} // Show error if form submitted and hoVaTen is empty
                         helperText={
-                          formSubmitted && !ngaySinh && "Ngày sinh trống"
+                          formSubmitted && !ngaySinh && "Chưa chọn ngày sinh"
                         }
                       />
                     </Box>
@@ -335,11 +385,11 @@ const AddKH = () => {
                     label="Email"
                     value={email}
                     // id="fullWidth"
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                    }}
-                    error={formSubmitted && !email} // Show error if form submitted and hoVaTen is empty
-                    helperText={formSubmitted && !email && "Email trống"}
+                    onChange={handleEmailChange}
+                    error={(formSubmitted && !email) || !!emailError}
+                    helperText={
+                      emailError || (formSubmitted && !email && "Email trống")
+                    }
                     style={{ width: "100%" }}
                   />
                 </div>
@@ -351,12 +401,11 @@ const AddKH = () => {
                     label="Số điện thoại"
                     id="fullWidth"
                     value={soDienThoai}
-                    onChange={(e) => {
-                      setSdt(e.target.value);
-                    }}
-                    error={formSubmitted && !soDienThoai} // Show error if form submitted and hoVaTen is empty
+                    onChange={handleSDT}
+                    error={(formSubmitted && !soDienThoai) || !!sdtError} // Show error if form submitted and hoVaTen is empty
                     helperText={
-                      formSubmitted && !soDienThoai && "Số điện thoại trống"
+                      sdtError ||
+                      (formSubmitted && !soDienThoai && "Số điện thoại trống")
                     }
                     style={{ width: "100%" }}
                   />
@@ -366,219 +415,109 @@ const AddKH = () => {
                       flexDirection: "column",
                       width: "100%",
                       alignItems: "center",
-                      // marginLeft: "10px",
                     }}
-                  >
-                    {/* <ImageUploadComponent
-                      setAnhDaiDien={handleAnhDaiDienChange}
-                    /> */}
-                  </div>
+                  ></div>
                 </div>
               </div>
             </Card>
           </Grid>
           <Grid item xs={6}>
             <Card
-              title={<span style={{ color: "gray" }}>Thông tin Địa Chỉ </span>}
+              title={
+                <span style={{ color: "gray" }}>
+                  Thông tin Địa chỉ mặc định
+                </span>
+              }
               bordered="false"
               headStyle={{
-                // backgroundColor: "#d5dbfa",
                 borderLeft: "4px solid #e2e2e2",
                 borderRadius: 0,
               }}
               style={{ borderRadius: 0 }}
             >
-              <Button
-                style={{
-                  backgroundColor: "#4b69ff",
-                  color: "white",
-                  float: "right",
-                }}
-                size="large"
-                onClick={() => {
-                  setIsModalVisible(true);
-                  handleAddDiaChi(); // Open the modal when the button is clicked
-                }}
-              >
-                <FontAwesomeIcon icon={faPlus} /> &nbsp; Thêm địa chỉ
-              </Button>
+              {/* <h4 style={{ color: "gray" }}>Địa chỉ mặc định</h4> */}
 
-              <Modal
-                closable={false}
-                open={isModalVisible}
-                onCancel={() => {
-                  setIsModalVisible(false); // Close the modal when cancel is clicked
-                }}
-                footer={[
-                  <React.Fragment key="modal-footer">
-                    <Button
-                      onClick={handleCloseModal}
-                      size="large"
-                      type="text"
-                      style={{
-                        borderRadius: 0,
-                      }}
-                    >
-                      Hủy
-                    </Button>
-                    <Button
-                      onClick={(generatedMaKhachHang) => {
-                        const newDiaChi = {
-                          diaChi: diaChiList[diaChiList.length - 1].diaChi,
-                          xaPhuong: diaChiList[diaChiList.length - 1].xaPhuong,
-                          tinhThanhPho:
-                            diaChiList[diaChiList.length - 1].tinhThanhPho,
-                          quanHuyen:
-                            diaChiList[diaChiList.length - 1].quanHuyen,
-                          hoTenKH: diaChiList[diaChiList.length - 1].hoTenKH,
-                          soDienThoai:
-                            diaChiList[diaChiList.length - 1].soDienThoai,
-                          account: generatedMaKhachHang.ma,
-                        };
-                        handleAddDiaChi(newDiaChi);
-                        addDiaChiList([...diaChiList]);
-                        setIsModalVisible(false); // Đóng modal sau khi thêm
-                      }}
-                      size="large"
-                      style={{
-                        marginRight: "10px",
-
-                        borderRadius: 0,
-                        backgroundColor: "#4b69ff",
-                        color: "white",
-                      }}
-                      bordered="false"
-                    >
-                      Lưu
-                    </Button>
-                  </React.Fragment>,
-                ]} // Hide default footer buttons
-              >
-                <div>
-                  <h4 style={{ color: "gray" }}>Địa chỉ mới</h4>
-                  <div
-                    className="text-f"
-                    style={{ marginBottom: "30px", marginTop: "25px" }}
-                  >
-                    <TextField
-                      label="Họ và tên"
-                      value={diaChiList[diaChiList.length - 1].hoTenKH}
-                      id="fullWidth"
-                      onChange={(e) => {
-                        const updatedDiaChiList = [...diaChiList];
-                        updatedDiaChiList[diaChiList.length - 1].hoTenKH =
-                          e.target.value;
-                        setDiaChiList(updatedDiaChiList);
-                      }}
-                      error={
-                        formSubmitted &&
-                        !diaChiList[diaChiList.length - 1].hoTenKH
-                      }
-                      helperText={
-                        formSubmitted &&
-                        !diaChiList[diaChiList.length - 1].hoTenKH &&
-                        "Họ và tên trống"
-                      }
-                      style={{ width: "100%" }}
-                    />
-                  </div>
-                  <div className="text-f" style={{ marginBottom: "30px" }}>
-                    <TextField
-                      label="Số điện thoại"
-                      id="fullWidth"
-                      value={diaChiList[diaChiList.length - 1].soDienThoai}
-                      onChange={(e) => {
-                        const updatedDiaChiList = [...diaChiList];
-                        updatedDiaChiList[diaChiList.length - 1].soDienThoai =
-                          e.target.value;
-                        setDiaChiList(updatedDiaChiList);
-                      }}
-                      error={
-                        formSubmitted &&
-                        !diaChiList[diaChiList.length - 1].soDienThoai
-                      }
-                      helperText={
-                        formSubmitted &&
-                        !diaChiList[diaChiList.length - 1].soDienThoai &&
-                        "Số điện thoại trống"
-                      }
-                      style={{ width: "100%" }}
-                    />
-                  </div>
-                  <div className="text-f" style={{ marginBottom: "30px" }}>
-                    <TextField
-                      label="Địa chỉ"
-                      id="fullWidth"
-                      value={diaChiList[diaChiList.length - 1].diaChi}
-                      onChange={(e) => {
-                        const updatedDiaChiList = [...diaChiList];
-                        updatedDiaChiList[diaChiList.length - 1].diaChi =
-                          e.target.value;
-                        setDiaChiList(updatedDiaChiList);
-                      }}
-                      error={
-                        formSubmitted &&
-                        !diaChiList[diaChiList.length - 1].diaChi
-                      }
-                      helperText={
-                        formSubmitted &&
-                        !diaChiList[diaChiList.length - 1].diaChi &&
-                        "Địa chỉ trống"
-                      }
-                      style={{ width: "100%" }}
-                    />
-                  </div>
-                  <div style={{ marginBottom: "20px" }}>
-                    <AddressForm
-                      onDiaChiChange={handleAddressChange}
-                      required={true}
-                      submitted={submitted}
-                      onProvinceChange={(value) =>
-                        handleProvinceChange(diaChiList.length - 1, value)
-                      }
-                      onDistrictChange={(value) =>
-                        handleDistrictChange(diaChiList.length - 1, value)
-                      }
-                      onWardChange={(value) =>
-                        handleWardChange(diaChiList.length - 1, value)
-                      }
-                      selectedTinhThanhPho={
-                        diaChiList[diaChiList.length - 1].tinhThanhPho
-                      }
-                      selectedQuanHuyen={
-                        diaChiList[diaChiList.length - 1].quanHuyen
-                      }
-                      selectedXaPhuong={
-                        diaChiList[diaChiList.length - 1].xaPhuong
-                      }
-                    />
-                  </div>
-                  <Checkbox
-                    size="large"
-                    style={{
-                      fontSize: "16px",
-                      marginBottom: "20px",
-                    }}
-                  >
-                    Địa chỉ mặc định
-                  </Checkbox>{" "}
+              <div style={{ width: "95%", margin: "0 auto" }}>
+                <div
+                  className="text-f"
+                  style={{ marginBottom: "30px", marginTop: "20px" }}
+                >
+                  <TextField
+                    label="Họ và tên khách hàng (cho địa chỉ)"
+                    value={hoTenKH}
+                    id="fullWidth"
+                    onChange={handleHoVaTenKH}
+                    error={(formSubmitted && hoTenKH) || !!hoTenKHErr}
+                    helperText={
+                      hoTenKHErr ||
+                      (formSubmitted && hoTenKH && "Họ và tên trống")
+                    }
+                    style={{ width: "100%" }}
+                  />
                 </div>
-              </Modal>
-              <div
-                className=""
-                style={{ marginBottom: "20px", float: "right" }}
-              ></div>
+                <div className="text-f" style={{ marginBottom: "30px" }}>
+                  <TextField
+                    label="Số điện thoại khách hàng"
+                    id="fullWidth"
+                    value={soDienThoaiKhachHang}
+                    onChange={handleSDTKH}
+                    error={
+                      (formSubmitted && !soDienThoaiKhachHang) || !!sdtkhError
+                    }
+                    helperText={
+                      sdtkhError ||
+                      (formSubmitted &&
+                        !soDienThoaiKhachHang &&
+                        "Số điện thoại khách hàng trống")
+                    }
+                    style={{ width: "100%" }}
+                  />
+                </div>
+                <div className="text-f" style={{ marginBottom: "30px" }}>
+                  <TextField
+                    label="Địa chỉ"
+                    id="fullWidth"
+                    value={diaChi}
+                    onChange={handleDiaChi}
+                    error={(formSubmitted && !diaChi) || !!diaChiError}
+                    helperText={
+                      diaChiError ||
+                      (formSubmitted && !diaChi && "Địa chỉ trống")
+                    }
+                    style={{ width: "100%" }}
+                  />
+                </div>
+                <div style={{ marginBottom: "20px" }}>
+                  <AddressForm
+                    onDiaChiChange={handleAddressChange}
+                    required={true}
+                    submitted={submitted}
+                    onProvinceChange={handleProvinceChange}
+                    onDistrictChange={handleDistrictChange}
+                    onWardChange={handleWardChange}
+                    formSubmitted={formSubmitted}
+                  />
+                </div>
+              </div>
             </Card>
           </Grid>{" "}
         </Grid>
         <div style={{ marginRight: "20px", float: "right" }}>
-          <Button type="primary" onClick={AddKH} size={"large"}>
+          <Button type="primary" onClick={showConfirm} size={"large"}>
             <FontAwesomeIcon
               icon={faFloppyDisk}
               style={{ paddingRight: "5px" }}
             />
             Lưu Khách Hàng{" "}
           </Button>
+          <Modal
+            title="Xác nhận"
+            open={showConfirmModal}
+            onOk={AddKH}
+            onCancel={() => setShowConfirmModal(false)}
+          >
+            Bạn có chắc muốn lưu khách hàng?
+          </Modal>
         </div>
         <ToastContainer
           position="top-right"

@@ -14,6 +14,8 @@ public class OrderDto {
 
   private String ma;
 
+  private String ghiChu;
+
   private String tenNguoiNhan;
 
   private String soDienThoaiNguoiNhan;
@@ -27,5 +29,7 @@ public class OrderDto {
   private Integer trangThai;
 
   private Date createdAt;
+
+  private CartDto gioHang;
 
 }

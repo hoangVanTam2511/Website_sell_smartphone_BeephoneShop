@@ -22,4 +22,7 @@ public class ManHinh extends PrimaryEntity implements IsIdentified {
     private String ma;
 
     private BigDecimal kichThuoc;
+
+    private String doPhanGiai;
+    
 }

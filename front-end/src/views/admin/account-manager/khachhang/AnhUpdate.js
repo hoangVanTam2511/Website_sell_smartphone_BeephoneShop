@@ -104,7 +104,9 @@ const ImageUploadComponent = ({ setAnhDaiDien, existingImageUrl, hoten }) => {
             }}
             onLoad={(e) => {
               const imgElement = e.target;
-              setImageSize(calculateImageSize(imgElement));
+              setImageSize(
+                calculateImageSize(imgElement.width, imgElement.height)
+              );
             }}
           />
         ) : (

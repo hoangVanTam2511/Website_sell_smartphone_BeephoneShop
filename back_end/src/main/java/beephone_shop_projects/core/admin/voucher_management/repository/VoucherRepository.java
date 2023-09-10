@@ -71,6 +71,3 @@ public interface VoucherRepository extends IVoucherRepository, CustomVoucherRepo
     Page<VoucherResponse> getVoucherStatusIsActive(Pageable pageable, FindVoucherRequest request);
 
 }
-
-
-

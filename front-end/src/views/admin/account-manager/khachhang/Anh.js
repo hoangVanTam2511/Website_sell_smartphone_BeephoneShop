@@ -141,8 +141,6 @@ const ImageUploadComponent = ({ setAnhDaiDien, hoten }) => {
           </div>
         )}
       </div>
-
-      {/* Chọn ảnh từ máy tính cá nhân */}
       <div
         style={{
           position: "absolute",
