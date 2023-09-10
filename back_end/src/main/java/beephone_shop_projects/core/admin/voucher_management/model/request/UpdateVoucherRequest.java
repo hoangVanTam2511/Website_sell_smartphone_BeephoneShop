@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.PastOrPresent;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -21,8 +22,6 @@ public class UpdateVoucherRequest {
     @NotBlank(message = "Không để trống Tên !!!")
     private String ten;
 
-    private BigDecimal giaTriToiThieu;
-
     private BigDecimal giaTriToiDa;
 
     @NotNull(message = "Không để trống Số Lượng !!!")
@@ -35,9 +34,13 @@ public class UpdateVoucherRequest {
     @Min(value = 0, message = "Giá Trị Tối Thiểu Là 0 !!!")
     private BigDecimal dieuKienApDung;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Past(message = "Không chọn ngày quá khứ !!!")
     @NotNull(message = "Không để trống Ngày Bắt Đầu !!!")
     private Date ngayBatDau;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Past(message = "Không chọn ngày quá khứ !!!")
     @NotNull(message = "Không để trống Ngày Kết Thúc !!!")
     private Date ngayKetThuc;
 

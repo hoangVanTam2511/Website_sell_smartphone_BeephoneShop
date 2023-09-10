@@ -4,8 +4,6 @@ import org.springframework.beans.factory.annotation.Value;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-import java.util.Date;
 
 public interface VoucherResponse {
     @Value("#{target.id}")
@@ -37,9 +35,6 @@ public interface VoucherResponse {
 
     @Value("#{target.giaTriToiDa}")
     BigDecimal getGiaTriToiDa();
-
-    @Value("#{target.giaTriToiThieu}")
-    BigDecimal getGiaTriToiThieu();
 
     @Value("#{target.trangThai}")
     Integer getTrangThai();

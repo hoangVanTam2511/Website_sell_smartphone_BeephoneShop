@@ -83,7 +83,6 @@ public class VoucherServiceImpl implements VoucherService {
                 .ma(generateRandomCode())
                 .ten(request.getTen())
                 .dieuKienApDung(request.getDieuKienApDung())
-                .giaTriToiThieu(request.getGiaTriToiThieu())
                 .giaTriToiDa(request.getGiaTriToiDa())
                 .loaiVoucher(request.getLoaiVoucher())
                 .soLuong(request.getSoLuong())
@@ -100,7 +99,6 @@ public class VoucherServiceImpl implements VoucherService {
         Voucher voucher = voucherRepository.findById(id).get();
         if (voucher != null) {
             voucher.setTen(request.getTen());
-            voucher.setGiaTriToiThieu(request.getGiaTriToiThieu());
             voucher.setGiaTriToiDa(request.getGiaTriToiDa());
             voucher.setLoaiVoucher(request.getLoaiVoucher());
             voucher.setDieuKienApDung(request.getDieuKienApDung());
@@ -149,5 +147,40 @@ public class VoucherServiceImpl implements VoucherService {
         return vouchers;
     }
 
+    @Override
+    public String checkVoucher(String input) {
+        if (input == null || input.isBlank()) {
+            return null;
+        } else {
+            Voucher voucher = voucherRepository.findCodeVoucher(input);
+            if (voucher != null) {
+                if (voucher.getMa().equals(input) && voucher.getSoLuong() > 0 && voucher.getTrangThai() == 1) {
+                    return "Found";
+                } else if (!voucher.getMa().equals(input) || voucher.getTrangThai() != 1) {
+                    return "Mã giảm giá " + input + " không tồn tại.";
+                } else if (voucher.getMa().equals(input) && voucher.getSoLuong() <= 0) {
+                    return "Hết lượt sử dụng.";
+                } else {
+                    return "Mã giảm giá " + input + " không tồn tại.";
+                }
+            } else {
+                return "Mã giảm giá " + input + " không tồn tại.";
+            }
+        }
+    }
 
+    @Override
+    public Page<Voucher> getVoucherStatusIsActive(FindVoucherRequest request) {
+        if (request.getPageNo() == null) {
+            request.setPageNo(1);
+        }
+        if (request.getPageSize() == null) {
+            request.setPageSize(5);
+        }
+        if (request.getKeyword() == null) {
+            request.setKeyword("");
+        }
+        Pageable pageable = PageRequest.of(request.getPageNo() - 1, request.getPageSize());
+        return voucherRepository.getVoucherStatusIsActive(pageable,request);
+    }
 }

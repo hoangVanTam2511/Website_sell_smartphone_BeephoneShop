@@ -66,7 +66,7 @@ const HienThiVoucher = () => {
     loadDataListVoucher(currentPage);
     const intervalId = setInterval(() => {
       loadDataListVoucher(currentPage);
-    }, 60000);
+    }, 10000);
     // Xóa interval khi component unmounted
     return () => clearInterval(intervalId);
   }, [
@@ -183,30 +183,6 @@ const HienThiVoucher = () => {
         return <span>{formattedValue}</span>;
       },
     },
-    // {
-    //   title: "Giá Trị Tối Thiểu",
-    //   dataIndex: "giaTriToiThieu",
-    //   maxWidth: "1%",
-    //   whiteSpace: "pre-line",
-    //   overflow: "hidden",
-    //   width: "1%",
-    //   render: (value) => {
-    //     const formattedValue = numeral(value).format("0,0 VND") + " VNĐ";
-    //     return <span>{formattedValue}</span>;
-    //   },
-    // },
-    // {
-    //   title: "Giá Trị Tối Đa",
-    //   dataIndex: "giaTriToiDa",
-    //   maxWidth: "1%",
-    //   whiteSpace: "pre-line",
-    //   overflow: "hidden",
-    //   width: "1%",
-    //   render: (value) => {
-    //     const formattedValue = numeral(value).format("0,0 VND") + " VNĐ";
-    //     return <span>{formattedValue}</span>;
-    //   },
-    // },
     {
       title: "Thời Gian Bắt Đầu - Kết Thúc",
       dataIndex: "thoiGian",

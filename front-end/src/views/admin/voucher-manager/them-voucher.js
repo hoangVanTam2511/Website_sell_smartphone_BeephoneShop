@@ -21,7 +21,7 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import dayjs from "dayjs"; // Import thư viện Day.js
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { isEmpty, isBefore, isAfter, equals } from "validator";
+import { isEmpty, isAfter, equals } from "validator";
 
 const AddVoucher = () => {
   let [ten, setTen] = useState("");
@@ -35,7 +35,6 @@ const AddVoucher = () => {
   const [value1, setValue1] = React.useState();
   const [value2, setValue2] = React.useState();
   const [selectDiscount, setSeclectDiscount] = useState("1");
-  const [giaTriToiThieu, setGiaTriToiThieu] = useState(0);
   const [giaTriToiDa, setGiaTriToiDa] = useState(0);
   const [valueToiThieu, setValueToiThieu] = React.useState();
   const [valueToiDa, setValueToiDa] = React.useState();
@@ -75,16 +74,6 @@ const AddVoucher = () => {
     setDieuKienApDungConvert(numericValue);
   };
 
-  const handleChangeGiaTriToiThieu = (event) => {
-    const inputValue = event.target.value;
-    const numericValue = parseFloat(inputValue.replace(/[^0-9.-]+/g, ""));
-    const formattedValue = inputValue
-      .replace(/[^0-9]+/g, "")
-      .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    setValueToiThieu(formattedValue);
-    setGiaTriToiThieu(numericValue);
-  };
-
   const handleChangeGiaTriToiDa = (event) => {
     const inputValue = event.target.value;
     const numericValue = parseFloat(inputValue.replace(/[^0-9.-]+/g, ""));
@@ -107,7 +96,6 @@ const AddVoucher = () => {
       ngayBatDau: ngayBatDau,
       ngayKetThuc: ngayKetThuc,
       giaTriVoucher: giaTriVoucherConvert,
-      giaTriToiThieu: giaTriToiThieu,
       giaTriToiDa: giaTriToiDa,
       loaiVoucher: selectDiscount,
     };
@@ -132,31 +120,17 @@ const AddVoucher = () => {
 
   const validationAll = () => {
     const msg = {};
-    if (isEmpty(ten)) {
-      msg.ten = "Không để trống Tên !!!";
-    }
-    if (isEmpty(value)) {
-      msg.value = "Không để trống Giá Trị Voucher !!!";
-    }
 
-    if (isEmpty(soLuong)) {
-      msg.soLuong = "Không để trống Số Lượng !!!";
-    }
-
-    if (isEmpty(value1)) {
-      msg.value1 = "Không để trống Điều Kiện Voucher !!!";
-    }
-
-    if (isAfter(String(ngayBatDau), String(ngayKetThuc))) {
+    if (ngayBatDau.isAfter(ngayKetThuc)) {
       msg.ngayBatDau = "Ngày Bắt Đầu phải nhỏ hơn ngày kết thúc !!!";
     }
 
-    if (isAfter(String(ngayBatDau), String(ngayKetThuc))) {
-      msg.ngayBatDau = "Ngày Bắt Đầu phải nhỏ hơn ngày kết thúc !!!";
+    if (ngayKetThuc.isBefore(ngayBatDau)) {
+      msg.ngayKetThuc = "Ngày kết thúc phải lớn hơn ngày bắt đầu !!!";
     }
 
-    if (equals(String(ngayBatDau), String(ngayKetThuc))) {
-      msg.ngayKetThuc = "Ngày Kết Thúc phải lớn hơn Ngày Bắt Đầu !!!";
+    if (ngayBatDau.isBefore(dayjs())) {
+      msg.ngayBatDau = "Ngày bắt đầu phải lớn hơn ngày hiện tại !!!";
     }
 
     setValidationMsg(msg);
@@ -290,24 +264,6 @@ const AddVoucher = () => {
               }}
               style={{ marginLeft: "25px", width: "100%" }}
             />
-            <TextField
-              label="Giá Trị Tối Thiểu:"
-              value={valueToiThieu}
-              id="outlined-start-adornment"
-              onChange={handleChangeGiaTriToiThieu}
-              InputProps={{
-                inputMode: "numeric",
-                startAdornment: (
-                  <InputAdornment position="start">VND</InputAdornment>
-                ),
-              }}
-              style={{
-                marginLeft: "25px",
-                width: "60%",
-                display: selectDiscount === "2" ? "block" : "none",
-                paddingRight: "25px",
-              }}
-            />
 
             <TextField
               label="Giá Trị Tối Đa:"
@@ -349,9 +305,9 @@ const AddVoucher = () => {
                 />
               </DemoContainer>
             </LocalizationProvider>
-            {/* <span className="validate" style={{ color: "red" }}>
+            <span className="validate" style={{ color: "red" }}>
               {validationMsg.ngayBatDau}
-            </span> */}
+            </span>
           </div>
           <div className="input-container">
             <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -371,9 +327,9 @@ const AddVoucher = () => {
                 />
               </DemoContainer>
             </LocalizationProvider>
-            {/* <span className="validate" style={{ color: "red" }}>
+            <span className="validate" style={{ color: "red" }}>
               {validationMsg.ngayKetThuc}
-            </span> */}
+            </span>
           </div>
         </div>
 

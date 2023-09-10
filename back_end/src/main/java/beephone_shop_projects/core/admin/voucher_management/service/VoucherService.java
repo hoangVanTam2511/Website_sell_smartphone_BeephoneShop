@@ -7,10 +7,7 @@ import beephone_shop_projects.core.admin.voucher_management.model.response.Vouch
 import beephone_shop_projects.entity.Voucher;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
-import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 public interface VoucherService {
@@ -26,5 +23,9 @@ public interface VoucherService {
     Boolean doiTrangThai(String id);
 
     Page<Voucher> getAll(FindVoucherRequest request);
+
+    String checkVoucher(String input);
+
+    Page<Voucher> getVoucherStatusIsActive(FindVoucherRequest request);
 
 }
