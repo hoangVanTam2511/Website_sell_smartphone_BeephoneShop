@@ -23,6 +23,7 @@ import MenuItem from "@mui/material/MenuItem";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { Pagination } from "@mui/material";
 import numeral from "numeral";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 
 //show
 const HienThiKhuyenMai = () => {
@@ -316,12 +317,18 @@ const HienThiKhuyenMai = () => {
           <div className="search1">
             <span className="boloc-nho">
               <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  label="Ngày Bắt Đầu"
-                  value={dayjs(searchNgayBatDau, "DD/MM/YYYY")}
-                  format="DD/MM/YYYY"
-                  onChange={handleSearchNgayBatDauChange}
-                />
+                <DemoContainer components={["DatePicker"]}>
+                  <DatePicker
+                    label="Ngày Bắt Đầu"
+                    value={
+                      searchNgayBatDau
+                        ? dayjs(searchNgayBatDau, "DD/MM/YYYY")
+                        : null
+                    }
+                    format="DD/MM/YYYY"
+                    onChange={handleSearchNgayBatDauChange}
+                  />
+                </DemoContainer>
               </LocalizationProvider>
             </span>
           </div>
@@ -329,12 +336,18 @@ const HienThiKhuyenMai = () => {
           <div className="search1">
             <span className="boloc-nho">
               <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  label="Ngày Kết Thúc"
-                  value={dayjs(searchNgayKetThuc, "DD/MM/YYYY")}
-                  format="DD/MM/YYYY"
-                  onChange={handleSearchNgayKetThucChange}
-                />
+                <DemoContainer components={["DatePicker"]}>
+                  <DatePicker
+                    label="Ngày Kết Thúc"
+                    value={
+                      searchNgayKetThuc
+                        ? dayjs(searchNgayKetThuc, "DD/MM/YYYY")
+                        : null
+                    }
+                    format="DD/MM/YYYY"
+                    onChange={handleSearchNgayKetThucChange}
+                  />
+                </DemoContainer>
               </LocalizationProvider>
             </span>
           </div>
