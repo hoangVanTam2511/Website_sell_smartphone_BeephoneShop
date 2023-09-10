@@ -6,13 +6,8 @@ import { faArrowLeft, faCheck } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { apiURLVoucher } from "../../../service/api";
 import TextField from "@mui/material/TextField";
-import "../../../assets/scss/HienThiNV.scss";
-import {
-  Box,
-  InputAdornment,
-  ToggleButton,
-  ToggleButtonGroup,
-} from "@mui/material";
+// import "../../../assets/scss/HienThiNV.scss";
+import { InputAdornment, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import "../../../assets/scss/addVoucher.scss";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -121,8 +116,24 @@ const AddVoucher = () => {
   const validationAll = () => {
     const msg = {};
 
+    if (!ten) {
+      msg.ten = "Tên không được để trống !!!";
+    }
+
+    if (!soLuong) {
+      msg.soLuong = "Số lượng không được để trống !!!";
+    }
+
+    if (!dieuKienApDungConvert) {
+      msg.dieuKienApDungConvert = "Điều kiện áp dụng không được để trống !!!";
+    }
+
     if (ngayBatDau.isAfter(ngayKetThuc)) {
-      msg.ngayBatDau = "Ngày Bắt Đầu phải nhỏ hơn ngày kết thúc !!!";
+      msg.ngayBatDau = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc !!!";
+    }
+
+    if (!giaTriVoucherConvert) {
+      msg.giaTriVoucherConvert = "Giá trị voucher không được để trống !!!";
     }
 
     if (ngayKetThuc.isBefore(ngayBatDau)) {
@@ -186,9 +197,9 @@ const AddVoucher = () => {
               }}
               style={{ width: "65%" }}
             />
-            {/* <span className="validate" style={{ color: "red" }}>
+            <span className="validate" style={{ color: "red" }}>
               {validationMsg.ten}
-            </span> */}
+            </span>
           </div>
           <div className="input-container">
             <TextField
@@ -200,9 +211,9 @@ const AddVoucher = () => {
               }}
               style={{ width: "65%" }}
             />
-            {/* <span className="validate" style={{ color: "red" }}>
+            <span className="validate" style={{ color: "red" }}>
               {validationMsg.soLuong}
-            </span> */}
+            </span>
           </div>
         </div>
         <div className="row-input">
@@ -220,67 +231,83 @@ const AddVoucher = () => {
               }}
               style={{ width: "65%" }}
             />
-            {/* <span className="validate" style={{ color: "red" }}>
-              {validationMsg.value1}
-            </span> */}
+            <span className="validate" style={{ color: "red" }}>
+              {validationMsg.dieuKienApDungConvert}
+            </span>
           </div>
         </div>
         <div className="row-input">
           <div className="select-value">
-            <ToggleButtonGroup
-              color="primary"
-              value={selectDiscount}
-              exclusive
-              onChange={handleChangeToggleButtonDiscount}
-              aria-label="Platform"
-            >
-              <ToggleButton
-                style={{ height: "55px", borderRadius: "10px", width: "40px" }}
-                value="1"
-                onClick={() => handleReset()}
+            <div className="">
+              <ToggleButtonGroup
+                color="primary"
+                value={selectDiscount}
+                exclusive
+                onChange={handleChangeToggleButtonDiscount}
+                aria-label="Platform"
               >
-                VND
-              </ToggleButton>
-              <ToggleButton
-                style={{ height: "55px", borderRadius: "10px", width: "40px" }}
-                value="2"
-                onClick={() => handleReset()}
-              >
-                %
-              </ToggleButton>
-            </ToggleButtonGroup>
-            <TextField
-              label="Nhập Giá Trị Voucher"
-              value={value}
-              onChange={handleChange}
-              id="outlined-start-adornment"
-              InputProps={{
-                inputMode: "numeric",
-                startAdornment: (
-                  <InputAdornment position="start">
-                    {selectDiscount === "1" ? "VND" : "%"}
-                  </InputAdornment>
-                ),
-              }}
-              style={{ marginLeft: "25px", width: "100%" }}
-            />
-
-            <TextField
-              label="Giá Trị Tối Đa:"
-              value={valueToiDa}
-              id="outlined-start-adornment"
-              onChange={handleChangeGiaTriToiDa}
-              InputProps={{
-                inputMode: "numeric",
-                startAdornment: (
-                  <InputAdornment position="start">VND</InputAdornment>
-                ),
-              }}
-              style={{
-                width: "60%",
-                display: selectDiscount === "2" ? "block" : "none",
-              }}
-            />
+                <ToggleButton
+                  style={{
+                    height: "55px",
+                    borderRadius: "10px",
+                    width: "40px",
+                  }}
+                  value="1"
+                  onClick={() => handleReset()}
+                >
+                  VND
+                </ToggleButton>
+                <ToggleButton
+                  style={{
+                    height: "55px",
+                    borderRadius: "10px",
+                    width: "40px",
+                  }}
+                  value="2"
+                  onClick={() => handleReset()}
+                >
+                  %
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </div>
+            <div className="">
+              <TextField
+                label="Nhập Giá Trị Voucher"
+                value={value}
+                onChange={handleChange}
+                id="outlined-start-adornment"
+                InputProps={{
+                  inputMode: "numeric",
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      {selectDiscount === "1" ? "VND" : "%"}
+                    </InputAdornment>
+                  ),
+                }}
+                style={{
+                  marginLeft: "18px",
+                  width: selectDiscount === "1" ? "660px" : "390px",
+                }}
+              />
+            </div>
+            <div className="ms-4">
+              <TextField
+                label="Giá Trị Tối Đa:"
+                value={valueToiDa}
+                id="outlined-start-adornment"
+                onChange={handleChangeGiaTriToiDa}
+                InputProps={{
+                  inputMode: "numeric",
+                  startAdornment: (
+                    <InputAdornment position="start">VND</InputAdornment>
+                  ),
+                }}
+                style={{
+                  width: "250px",
+                  display: selectDiscount === "2" ? "block" : "none",
+                }}
+              />
+            </div>
           </div>
         </div>
         <div
@@ -300,12 +327,12 @@ const AddVoucher = () => {
                     setNgayBatDau(e);
                   }}
                   sx={{
-                    width: "100%",
+                    width: "368px",
                   }}
                 />
               </DemoContainer>
             </LocalizationProvider>
-            <span className="validate" style={{ color: "red" }}>
+            <span className="validate-date" style={{ color: "red" }}>
               {validationMsg.ngayBatDau}
             </span>
           </div>
@@ -322,12 +349,12 @@ const AddVoucher = () => {
                     setNgayKetThuc(e);
                   }}
                   sx={{
-                    width: "100%",
+                    width: "368px",
                   }}
                 />
               </DemoContainer>
             </LocalizationProvider>
-            <span className="validate" style={{ color: "red" }}>
+            <span className="validate-date" style={{ color: "red" }}>
               {validationMsg.ngayKetThuc}
             </span>
           </div>

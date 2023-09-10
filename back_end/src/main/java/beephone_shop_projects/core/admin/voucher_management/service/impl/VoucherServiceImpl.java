@@ -3,6 +3,7 @@ package beephone_shop_projects.core.admin.voucher_management.service.impl;
 import beephone_shop_projects.core.admin.voucher_management.model.request.CreateVoucherRequest;
 import beephone_shop_projects.core.admin.voucher_management.model.request.FindVoucherRequest;
 import beephone_shop_projects.core.admin.voucher_management.model.request.UpdateVoucherRequest;
+import beephone_shop_projects.core.admin.voucher_management.model.response.CheckVoucherResponse;
 import beephone_shop_projects.core.admin.voucher_management.model.response.VoucherResponse;
 import beephone_shop_projects.core.admin.voucher_management.repository.VoucherRepository;
 import beephone_shop_projects.core.admin.voucher_management.service.VoucherService;
@@ -148,29 +149,32 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
-    public String checkVoucher(String input) {
+    public CheckVoucherResponse checkVoucher(String input) {
+        CheckVoucherResponse response = new CheckVoucherResponse();
         if (input == null || input.isBlank()) {
             return null;
         } else {
-            Voucher voucher = voucherRepository.findCodeVoucher(input);
+            VoucherResponse voucher = voucherRepository.findCodeVoucher(input);
             if (voucher != null) {
                 if (voucher.getMa().equals(input) && voucher.getSoLuong() > 0 && voucher.getTrangThai() == 1) {
-                    return "Found";
+                    response.setVoucher(voucher);
+                    response.setMessageError("Found !!!");
                 } else if (!voucher.getMa().equals(input) || voucher.getTrangThai() != 1) {
-                    return "Mã giảm giá " + input + " không tồn tại.";
+                    response.setMessageError("Mã giảm giá " + input + " không tồn tại.");
                 } else if (voucher.getMa().equals(input) && voucher.getSoLuong() <= 0) {
-                    return "Hết lượt sử dụng.";
+                    response.setMessageError("Hết lượt sử dụng.");
                 } else {
-                    return "Mã giảm giá " + input + " không tồn tại.";
+                    response.setMessageError("Mã giảm giá " + input + " không tồn tại.");
                 }
             } else {
-                return "Mã giảm giá " + input + " không tồn tại.";
+                response.setMessageError("Mã giảm giá " + input + " không tồn tại.");
             }
         }
+        return response;
     }
 
     @Override
-    public Page<Voucher> getVoucherStatusIsActive(FindVoucherRequest request) {
+    public Page<VoucherResponse> getVoucherStatusIsActive(FindVoucherRequest request) {
         if (request.getPageNo() == null) {
             request.setPageNo(1);
         }
@@ -181,6 +185,6 @@ public class VoucherServiceImpl implements VoucherService {
             request.setKeyword("");
         }
         Pageable pageable = PageRequest.of(request.getPageNo() - 1, request.getPageSize());
-        return voucherRepository.getVoucherStatusIsActive(pageable,request);
+        return voucherRepository.getVoucherStatusIsActive(pageable, request);
     }
 }

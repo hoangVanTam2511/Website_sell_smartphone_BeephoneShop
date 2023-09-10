@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 public interface VoucherResponse {
     @Value("#{target.id}")
@@ -16,19 +17,19 @@ public interface VoucherResponse {
     String getTen();
 
     @Value("#{target.soLuong}")
-    String getSoLuong();
+    Integer getSoLuong();
 
     @Value("#{target.dieuKienApDung}")
-    String getDieuKienApDung();
+    BigDecimal getDieuKienApDung();
 
     @Value("#{target.loaiVoucher}")
     Integer getLoaiVoucher();
 
     @Value("#{target.ngayBatDau}")
-    LocalDateTime getNgayBatDau();
+    Date getNgayBatDau();
 
     @Value("#{target.ngayKetThuc}")
-    LocalDateTime getNgayKetThuc();
+    Date getNgayKetThuc();
 
     @Value("#{target.giaTriVoucher}")
     BigDecimal getGiaTriVoucher();

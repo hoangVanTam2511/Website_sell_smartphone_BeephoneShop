@@ -59,10 +59,10 @@ public interface VoucherRepository extends IVoucherRepository, CustomVoucherRepo
     List<Voucher> checkToStartAfterAndStatus(Date dateTime, Integer status);
 
     @Query(value = """
-            SELECT * FROM Voucher  
-            WHERE ma = ?1
-            """, nativeQuery = true)
-    Voucher findCodeVoucher(String code);
+            SELECT v FROM Voucher  v
+            WHERE v.ma = ?1
+            """)
+    VoucherResponse findCodeVoucher(String code);
 
 
     @Query(value = """
