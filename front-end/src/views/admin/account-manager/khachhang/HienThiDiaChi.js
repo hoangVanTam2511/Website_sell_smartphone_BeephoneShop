@@ -135,7 +135,6 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
       .then((response) => {
         if (response.ok) {
           message.success("Thiết lập địa chỉ mặc định thành công");
-          // Cập nhật diaChiList bằng cách gọi callback function
           const updatedDiaChiList = diaChiList.map((address) =>
             address.id === id
               ? { ...address, trangThai: 1 }
@@ -159,10 +158,6 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
     setSoDienThoaiKhachHang(e.target.value);
   };
 
-  const handleDiaChiChange = (e) => {
-    setDiaChi(e.target.value);
-  };
-
   const handleProvinceChange = (value) => {
     setTinhThanhPho(value);
   };
@@ -174,11 +169,6 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
   const handleWardChange = (value) => {
     setXaPhuong(value);
   };
-
-  // const handleCheckboxChange = (e) => {
-  //   setTrangThaiKH(e.target.checked ? 1 : 0);
-  // };
-
   return (
     <div className="address-container">
       <Collapse accordion bordered={false}>

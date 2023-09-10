@@ -27,9 +27,6 @@ const AddressForm = ({
   }, []);
 
   const callAPI = (api) => {
-    // setFormSubmitted(true); // Set formSubmitted to true when the user clicks the "Xác nhận" button
-
-    // Check if required fields are empty
     if (!selectedProvince) {
       setProvinceError(true);
     }
@@ -78,18 +75,19 @@ const AddressForm = ({
   };
 
   const handleProvinceChange = (value) => {
+    if (submitted) {
+      // Nếu đã ấn nút "Lưu" thì kiểm tra trạng thái select
+      if (!value.target.value) {
+        setProvinceError(true);
+        setSelectedProvince("");
+      }
+    }
     setSelectedProvince(value.target.value);
     setSelectedDistrict("");
     setSelectedWard("");
     fetchDistricts(value.target.value);
     onProvinceChange(value.target.value);
     setProvinceError(false);
-    if (submitted) {
-      // Nếu đã ấn nút "Lưu" thì kiểm tra trạng thái select
-      if (!value.target.value) {
-        setProvinceError(true);
-      }
-    }
   };
 
   const handleDistrictChange = (value) => {
@@ -242,6 +240,8 @@ const AddressForm = ({
                 style={{
                   color: " #d32f2f",
                   fontSize: "12px",
+                  textAlign: "left",
+                  paddingLeft: "15px",
                 }}
               >
                 Vui lòng chọn

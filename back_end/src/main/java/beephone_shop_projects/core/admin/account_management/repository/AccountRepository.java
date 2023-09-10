@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -21,6 +22,10 @@ public interface AccountRepository extends IAccountRepository {
                 SELECT  kh FROM Account kh where kh.idRole.ma='role1'
             """)
     Page<Account> getAllNV(Pageable pageable);
+    @Query(value = """
+                SELECT  kh FROM Account kh where kh.idRole.ma='role1'
+            """)
+    List<Account> getAllNVienNoPage();
 
     @Query(value = """
         SELECT  a.ma AS ma,a.id,a.email,a.ho_va_ten, a.trang_thai,a.mat_khau , a.so_dien_thoai , a.ngay_sinh ,a.id_role

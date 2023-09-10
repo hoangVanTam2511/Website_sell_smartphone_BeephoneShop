@@ -1,21 +1,22 @@
-import { Button, Card, Modal } from "antd";
-import React, { useEffect } from "react";
+import { Button, Card, Modal, message } from "antd";
+import React from "react";
 import { useState } from "react";
 // import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 // import { faCheck } from "@fortawesome/free-solid-svg-icons";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import axios from "axios";
 import { apiURLNV } from "../../../../service/api";
 import TextField from "@mui/material/TextField";
 import "../../../../assets/scss/HienThiNV.scss";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { ExclamationCircleOutlined } from "@ant-design/icons";
 
 import {
   Box,
   FormControl,
   FormControlLabel,
-  // FormLabel,
   Grid,
   Radio,
   RadioGroup,
@@ -23,7 +24,6 @@ import {
 import AddressForm from "./DiaChi";
 import ImageUploadComponent from "./Anh";
 import IDScan from "./QuetCanCuoc";
-// import Haha from "./DiaChi.hah";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faExclamationCircle,
@@ -32,7 +32,8 @@ import {
 const AddNV = () => {
   let [listKH, setListKH] = useState([]);
   let [hoVaTen, setTen] = useState("");
-  let [ngaySinh, setNgaySinh] = useState("");
+  // let [id, setID] = useState("");
+  let [ngaySinh, setNgaySinh] = useState(null);
   let [soDienThoai, setSdt] = useState("");
   let [email, setEmail] = useState("");
   let [xaPhuong, setXaPhuong] = useState("");
@@ -43,10 +44,15 @@ const AddNV = () => {
   let [cccd, setCCCD] = useState("");
   let [anhDaiDien, setAnhDaiDien] = useState("");
   const [isConfirmVisible, setIsConfirmVisible] = useState(false);
-
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [hoVaTenError, setHoVaTenError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [cccdError, setCCCDError] = useState("");
+  const [diaChiError, setDiaChiError] = useState("");
+  const [sdtError, setSDTError] = useState("");
 
+  //Scan
   const handleScanData = (data) => {
     if (data) {
       setTen(data.hoVaTen);
@@ -56,48 +62,107 @@ const AddNV = () => {
       setXaPhuong(data.xaPhuong);
       setCCCD(data.cccd);
       setGioiTinh(data.gioiTinh);
-      console.log(data);
     }
-    // setIsScanning(false); // Ẩn modal sau khi quét xong
   };
+  const handleHoVaTenChange = (e) => {
+    const value = e.target.value.trim();
+    const specialCharPattern = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+    const trimmedValue = value.replace(/\s/g, "");
+    setTen(value);
+    if (!value.trim()) {
+      setHoVaTenError("Họ và tên không được trống");
+    } else if (specialCharPattern.test(value)) {
+      setHoVaTenError("Họ và tên không được chứa ký tự đặc biệt");
+    } else if (trimmedValue.length < 5) {
+      setHoVaTenError("Họ và tên phải có ít nhất 5 ký tự");
+    } else {
+      setHoVaTenError("");
+    }
+  };
+  const handleEmailChange = (e) => {
+    const value = e.target.value.trim();
+    const parn = /^[a-zA-Z0-9._-]+@gmail\.com$/i;
+    setEmail(value);
+    if (!value.trim()) {
+      setEmailError("Email không được trống");
+    } else if (!parn.test(value)) {
+      setEmailError("Email sai định dạng hoặc không phải là Gmail");
+    } else {
+      setEmailError("");
+    }
+  };
+  const handleCCCDChange = (e) => {
+    const value = e.target.value.trim();
+    const parn = /^[0-9]{9}$|^[0-9]{12}$/;
+    setCCCD(value);
+    if (!value.trim()) {
+      setCCCDError("CCCD không được trống");
+    } else if (!parn.test(value)) {
+      setCCCDError("CCCD gồm 9-12 số");
+    } else {
+      setCCCDError("");
+    }
+  };
+  const handleDiaChi = (e) => {
+    const value = e.target.value.trim();
+    setDiaChi(value);
+    const trimmedValue = value.replace(/\s/g, "");
+    if (!value.trim()) {
+      setDiaChiError("Địa chỉ không được trống");
+    } else if (trimmedValue.length < 5) {
+      setDiaChiError("Địa chỉ phải có ít nhất 5 ký tự");
+    } else {
+      setDiaChiError("");
+    }
+  };
+  const handleSDT = (e) => {
+    const value = e.target.value.trim();
+    const parn = /^(?:\+84|0)[1-9]\d{8}$/;
+    setSdt(value);
+    if (!value.trim()) {
+      setSDTError("Số điện thoại không được trống");
+    } else if (!parn.test(value)) {
+      setSDTError("Sai định dạng số điện thoại");
+    } else {
+      setSDTError("");
+    }
+  };
+  //Choose diaChi
   const handleProvinceChange = (value) => {
     setTinhThanhPho(value);
-    console.log("Selected Province:", value);
   };
 
   const handleDistrictChange = (value) => {
     setQuanHuyen(value);
-    // Truyền thông tin quận/huyện vào component khác (ở đây ví dụ là console.log)
-    console.log("Selected District:", value);
   };
 
   const handleWardChange = (value) => {
     setXaPhuong(value);
-    // Truyền thông tin xã vào component khác (ở đây ví dụ là console.log)
-    console.log("Selected Ward:", value);
   };
   const handleDiaChiChange = (result) => {
-    setDiaChi(result); // Cập nhật giá trị diaChi trong thành phần cha
+    setDiaChi(result);
   };
+  //Choose Anh
   const handleAnhDaiDienChange = (imageURL) => {
     setAnhDaiDien(imageURL);
   };
-  const redirectToHienThiKH = () => {
-    // Thực hiện điều hướng tới trang "Hiển thị nhân viên"
-    window.location.href = "/nhan-vien";
+  const redirectToHienThiKH = (generatedMaKhachHang) => {
+    window.location.href = "/update-nhan-vien/" + generatedMaKhachHang;
   };
   const showConfirm = () => {
-    setIsConfirmVisible(true); // Mở hộp thoại xác nhận
+    setIsConfirmVisible(true);
   };
 
   const handleCancel = () => {
-    setIsConfirmVisible(false); // Đóng hộp thoại xác nhận khi người dùng hủy
+    setIsConfirmVisible(false);
   };
+  // add
   const AddNV = () => {
     setSubmitted(true);
     setFormSubmitted(true);
     let obj = {
       hoVaTen: hoVaTen,
+      // id: id,
       ngaySinh: ngaySinh,
       soDienThoai: soDienThoai,
       xaPhuong: xaPhuong,
@@ -109,26 +174,26 @@ const AddNV = () => {
       anhDaiDien: anhDaiDien,
       canCuocCongDan: cccd,
     };
-    if (!hoVaTen || !ngaySinh || !email || !soDienThoai || !diaChi) {
-      toast.error("Please fill in all required fields.", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
-      return; // Stop form submission if any required field is empty
+    if (
+      !hoVaTen ||
+      ngaySinh == null ||
+      !email ||
+      !soDienThoai ||
+      !diaChi ||
+      !xaPhuong
+    ) {
+      message.error("Vui lòng điền đủ thông tin");
+      setIsConfirmVisible(false);
+      return;
     }
+
     axios
       .post(apiURLNV + "/add", obj)
       .then((response) => {
-        // let res = response.data;
         let newKhachHangResponse = {
           hoVaTen: hoVaTen,
           ngaySinh: ngaySinh,
+          // id: id,
           soDienThoai: soDienThoai,
           xaPhuong: xaPhuong,
           quanHuyen: quanHuyen,
@@ -139,23 +204,13 @@ const AddNV = () => {
           anhDaiDien: anhDaiDien,
           canCuocCongDan: cccd,
         };
-
+        const generatedMaKhachHang = response.data.id;
         setListKH([newKhachHangResponse, ...listKH]);
-        toast.info("Add success!", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        });
-        redirectToHienThiKH();
+        message.success("Thêm nhân viên thành công");
+        redirectToHienThiKH(generatedMaKhachHang);
       })
       .catch((error) => {
         alert("Thêm thất bại");
-        console.log("hahah");
       });
   };
   return (
@@ -204,21 +259,22 @@ const AddNV = () => {
                   label="Họ và tên"
                   value={hoVaTen}
                   id="fullWidth"
-                  onChange={(e) => {
-                    setTen(e.target.value);
-                  }}
-                  error={formSubmitted && !hoVaTen}
-                  helperText={formSubmitted && !hoVaTen && "Họ và tên trống"}
+                  onChange={handleHoVaTenChange}
+                  error={(formSubmitted && !hoVaTen) || !!hoVaTenError}
+                  helperText={
+                    hoVaTenError ||
+                    (formSubmitted && !hoVaTen && "Họ và tên trống")
+                  }
                   style={{ width: "100%" }}
+                  maxLength={30}
                 />
               </div>
               <div style={{ display: "flex", alignItems: "center" }}>
                 <div
                   className="text-f"
                   style={{
-                    textAlign: "center",
-                    marginBottom: "15px",
-                    width: "60%",
+                    marginBottom: "20px",
+                    width: "65%",
                   }}
                 >
                   {/* Ngày sinh */}
@@ -227,8 +283,8 @@ const AddNV = () => {
                     sx={{
                       "& .MuiTextField-root": {
                         mt: 2,
-                        mb: 2,
                         width: "100%",
+                        mb: 2,
                       },
                     }}
                     noValidate
@@ -246,7 +302,7 @@ const AddNV = () => {
                       }}
                       error={formSubmitted && !ngaySinh} // Show error if form submitted and hoVaTen is empty
                       helperText={
-                        formSubmitted && !ngaySinh && "Ngày sinh trống"
+                        formSubmitted && !ngaySinh && "Chưa chọn ngày sinh"
                       }
                     />
                   </Box>
@@ -292,11 +348,11 @@ const AddNV = () => {
                   label="Email"
                   value={email}
                   // id="fullWidth"
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                  }}
-                  error={formSubmitted && !email} // Show error if form submitted and hoVaTen is empty
-                  helperText={formSubmitted && !email && "Email trống"}
+                  onChange={handleEmailChange}
+                  error={(formSubmitted && !email) || !!emailError}
+                  helperText={
+                    emailError || (formSubmitted && !email && "Email trống")
+                  }
                   style={{ width: "100%" }}
                 />
               </div>
@@ -308,11 +364,11 @@ const AddNV = () => {
                   label="Căn cước công dân"
                   value={cccd}
                   // id="fullWidth"
-                  onChange={(e) => {
-                    setCCCD(e.target.value);
-                  }}
-                  error={formSubmitted && !cccd} // Show error if form submitted and hoVaTen is empty
-                  helperText={formSubmitted && !cccd && "CCCD trống"}
+                  onChange={handleCCCDChange}
+                  error={(formSubmitted && !cccd) || !!cccdError} // Show error if form submitted and hoVaTen is empty
+                  helperText={
+                    cccdError || (formSubmitted && !cccd && "CCCD trống")
+                  }
                   style={{ width: "100%" }}
                 />
               </div>
@@ -324,12 +380,11 @@ const AddNV = () => {
                   label="Số điện thoại"
                   id="fullWidth"
                   value={soDienThoai}
-                  onChange={(e) => {
-                    setSdt(e.target.value);
-                  }}
-                  error={formSubmitted && !soDienThoai} // Show error if form submitted and hoVaTen is empty
+                  onChange={handleSDT}
+                  error={(formSubmitted && !soDienThoai) || !!sdtError} // Show error if form submitted and hoVaTen is empty
                   helperText={
-                    formSubmitted && !soDienThoai && "Số điện thoại trống"
+                    sdtError ||
+                    (formSubmitted && !soDienThoai && "Số điện thoại trống")
                   }
                   style={{ width: "100%" }}
                 />
@@ -342,11 +397,11 @@ const AddNV = () => {
                   label="Địa chỉ"
                   id="fullWidth"
                   value={diaChi}
-                  onChange={(e) => {
-                    setDiaChi(e.target.value);
-                  }}
-                  error={formSubmitted && !diaChi} // Show error if form submitted and hoVaTen is empty
-                  helperText={formSubmitted && !diaChi && "Địa chỉ trống"}
+                  onChange={handleDiaChi}
+                  error={(formSubmitted && !diaChi) || !!diaChiError} // Show error if form submitted and hoVaTen is empty
+                  helperText={
+                    diaChiError || (formSubmitted && !diaChi && "Địa chỉ trống")
+                  }
                   style={{ width: "100%" }}
                 />
               </div>
@@ -364,11 +419,8 @@ const AddNV = () => {
                   onDistrictChange={handleDistrictChange}
                   onWardChange={handleWardChange}
                   tinhThanhPho={handleScanData.tinhThanhPho}
-                  // provinces={provinces}
-                  // districts={districts}
-                  // wards={wards}
+                  formSubmitted={formSubmitted}
                 />
-                {/* <Haha onDiaChiChange={handleDiaChiChange} /> */}
               </div>
             </div>
           </Grid>
@@ -391,7 +443,7 @@ const AddNV = () => {
           <Modal
             title="Xác nhận"
             open={isConfirmVisible}
-            icon={<FontAwesomeIcon icon={faExclamationCircle} size="3px" />}
+            icon={<FontAwesomeIcon icon={faExclamationCircle} />}
             onOk={AddNV}
             onCancel={handleCancel}
           >
