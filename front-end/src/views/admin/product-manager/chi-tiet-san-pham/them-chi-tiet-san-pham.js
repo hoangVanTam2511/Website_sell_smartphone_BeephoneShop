@@ -9,7 +9,7 @@ import {
     Row,
     Input,
     Upload,
-    Tabs,
+    Tabs,Space,
     Divider, Table,
     Button, Modal
 } from "antd";
@@ -28,6 +28,7 @@ import {
 import {
     FontAwesomeIcon
 } from "@fortawesome/react-fontawesome";
+
 import { faPlus, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 import { storage } from "./firebase"
 import { ref, uploadBytes, listAll, getDownloadURL } from 'firebase/storage'
@@ -38,6 +39,8 @@ import ImageListItem from '@mui/material/ImageListItem';
 import ImageListItemBar from '@mui/material/ImageListItemBar';
 import IconButton from '@mui/material/IconButton';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
+import { PlusOutlined } from '@ant-design/icons';
+
 const { forwardRef, useRef, useImperativeHandle } = React;
 const useStyles = makeStyles((theme) => ({
     button: {
@@ -647,41 +650,6 @@ const ChiTietSanPhamForm = forwardRef((props, ref) => {
                         <Form.Group className="form-group">
 
                             <Form.Label htmlFor="pwd" style={{ width: 150, color: 'black' }} >Nhà sản xuất
-                                <Button style={{ width: 15, height: 22, marginLeft: 10, transform: `translateX(${-4}px) translateY(${10}px)` }} type="primary" onClick={showModal}>
-                                    <FontAwesomeIcon
-                                        style={{ width: 15, height: 23, transform: `translateX(${-8}px) translateY(${-5}px)` }}
-                                        icon={faPlus} />
-                                </Button>
-                                <Modal
-                                    title="Thêm nhà sản xuất"
-                                    open={open}
-                                    onOk={handleOk}
-                                    confirmLoading={confirmLoading}
-                                    onCancel={handleCancel}
-                                >
-                                    <p>
-                                        <Form >
-                                            <Form.Group className="form-group">
-                                                <Form.Label htmlFor="email">Mã</Form.Label>
-                                                <Form.Control type="text"
-                                                    placeholder='Nhập mã '
-                                                    name='maNhaSanXuat'
-                                                    value={maNhaSanXuat}
-                                                    disabled='true'
-                                                    id="maNhaSanXuat" />
-                                            </Form.Group>
-                                            <Form.Group className="form-group">
-                                                <Form.Label htmlFor="pwd">Tên nhà sản xuất</Form.Label>
-                                                <Form.Control type="text"
-                                                    placeholder='Nhập tên nhà sản xuất)'
-                                                    name='tenNhaSanXuat'
-                                                    value={tenNhaSanXuat}
-                                                    onChange={(e) => onInputChangeFormNhaSanXuat(e)}
-                                                    id="ten`" />
-                                            </Form.Group>
-                                        </Form>
-                                    </p>
-                                </Modal>
                             </Form.Label>
                             <Select
                                 defaultValue="Chọn nhà sản xuất"
@@ -701,41 +669,7 @@ const ChiTietSanPhamForm = forwardRef((props, ref) => {
                         <Form.Group className="form-group">
 
                             <Form.Label htmlFor="pwd" style={{ width: 150, color: 'black' }} >Chip
-                                <Button style={{ width: 15, height: 22, marginLeft: 10, transform: `translateX(${-4}px) translateY(${10}px)` }} type="primary" onClick={showModalFormChip}>
-                                    <FontAwesomeIcon
-                                        style={{ width: 15, height: 23, transform: `translateX(${-8}px) translateY(${-5}px)` }}
-                                        icon={faPlus} />
-                                </Button>
-                                <Modal
-                                    title="Thêm chip"
-                                    open={openFormChip}
-                                    onOk={handleOkFormChip}
-                                    confirmLoading={confirmLoading}
-                                    onCancel={handleCancel}
-                                >
-                                    <p>
-                                        <Form >
-                                            <Form.Group className="form-group">
-                                                <Form.Label htmlFor="email">Mã</Form.Label>
-                                                <Form.Control type="text"
-                                                    placeholder='Nhập mã sản phẩm'
-                                                    name='maNhaSanXuat'
-                                                    value={maChip}
-                                                    disabled='true'
-                                                    id="maNhaSanXuat" />
-                                            </Form.Group>
-                                            <Form.Group className="form-group">
-                                                <Form.Label htmlFor="pwd">Tên chip</Form.Label>
-                                                <Form.Control type="text"
-                                                    placeholder='Nhập chip'
-                                                    name='tenChip'
-                                                    value={tenChip}
-                                                    onChange={(e) => onInputChangeFormChip(e)}
-                                                    id="tenChip`" />
-                                            </Form.Group>
-                                        </Form>
-                                    </p>
-                                </Modal></Form.Label>
+                               </Form.Label>
                             <Select
                                 defaultValue="Chọn chip"
                                 style={{ width: 200 }}
@@ -754,41 +688,6 @@ const ChiTietSanPhamForm = forwardRef((props, ref) => {
                         <Form.Group className="form-group">
 
                             <Form.Label htmlFor="pwd" style={{ width: 150, color: 'black' }}>  Dòng sản phẩm
-                                <Button style={{ width: 15, height: 22, marginLeft: 10, transform: `translateX(${-4}px) translateY(${10}px)` }} type="primary" onClick={showModalFormDongSanPham}>
-                                    <FontAwesomeIcon
-                                        style={{ width: 15, height: 23, transform: `translateX(${-8}px) translateY(${-5}px)` }}
-                                        icon={faPlus} />
-                                </Button>
-                                <Modal
-                                    title="Thêm dòng sản phẩm mới"
-                                    open={openFormDongSanPham}
-                                    onOk={handleOkFormDongSanPham}
-                                    confirmLoading={confirmLoading}
-                                    onCancel={handleCancel}
-                                >
-                                    <p>
-                                        <Form >
-                                            <Form.Group className="form-group">
-                                                <Form.Label htmlFor="email">Mã</Form.Label>
-                                                <Form.Control type="text"
-                                                    placeholder='Nhập mã dòng sản phẩm'
-                                                    name='maDongSanPham'
-                                                    value={maDongSanPham}
-                                                    onChange={(e) => onInputChangeFormDongSanPham(e)}
-                                                    id="maDongSanPham" />
-                                            </Form.Group>
-                                            <Form.Group className="form-group">
-                                                <Form.Label htmlFor="pwd">Tên nhà sản xuất</Form.Label>
-                                                <Form.Control type="text"
-                                                    placeholder='Nhập tên nhà sản xuất)'
-                                                    name='tenDongSanPham'
-                                                    value={tenDongSanPham}
-                                                    onChange={(e) => onInputChangeFormDongSanPham(e)}
-                                                    id="ten`" />
-                                            </Form.Group>
-                                        </Form>
-                                    </p>
-                                </Modal>
                             </Form.Label>
                             <Select
                                 defaultValue="Chọn dòng sản phẩm"
@@ -841,41 +740,6 @@ const ChiTietSanPhamForm = forwardRef((props, ref) => {
                                                                 <Form.Group className="form-group">
 
                                                                     <Form.Label htmlFor="pwd" style={{ width: 150 }} >Pin
-                                                                        <Button style={{ width: 15, height: 22, marginLeft: 10, transform: `translateX(${-4}px) translateY(${10}px)` }} type="primary" onClick={showModalFormpin}>
-                                                                            <FontAwesomeIcon
-                                                                                style={{ width: 15, height: 23, transform: `translateX(${-8}px) translateY(${-5}px)` }}
-                                                                                icon={faPlus} />
-                                                                        </Button>
-                                                                        <Modal
-                                                                            title="Thêm dung lượng pin"
-                                                                            open={openFormpin}
-                                                                            onOk={handleOkFormpin}
-                                                                            confirmLoading={confirmLoading}
-                                                                            onCancel={handleCancel}
-                                                                        >
-                                                                            <p>
-                                                                                <Form >
-                                                                                    <Form.Group className="form-group">
-                                                                                        <Form.Label htmlFor="email">Mã pin</Form.Label>
-                                                                                        <Form.Control type="text"
-                                                                                            placeholder='Nhập pin'
-                                                                                            name='mapin'
-                                                                                            value={mapin}
-                                                                                            disabled='true'
-                                                                                            id="mapin" />
-                                                                                    </Form.Group>
-                                                                                    <Form.Group className="form-group">
-                                                                                        <Form.Label htmlFor="pwd">Dung luợng pin</Form.Label>
-                                                                                        <Form.Control type="text"
-                                                                                            placeholder='Nhập dung lượng pin)'
-                                                                                            name='tenpin'
-                                                                                            value={tenpin}
-                                                                                            onChange={(e) => onInputChangeFormpin(e)}
-                                                                                            id="ten`" />
-                                                                                    </Form.Group>
-                                                                                </Form>
-                                                                            </p>
-                                                                        </Modal>
                                                                     </Form.Label>
                                                                     <Select
                                                                         defaultValue="Chọn dung lượng pin"
@@ -895,40 +759,6 @@ const ChiTietSanPhamForm = forwardRef((props, ref) => {
                                                                 <Form.Group className="form-group">
 
                                                                     <Form.Label htmlFor="pwd" style={{ width: 150 }}> Ram
-                                                                        <Button style={{ width: 15, height: 22, marginLeft: 10, transform: `translateX(${-4}px) translateY(${10}px)` }} type="primary" onClick={showModalFormram}>
-                                                                            <FontAwesomeIcon
-                                                                                style={{ width: 15, height: 23, transform: `translateX(${-8}px) translateY(${-5}px)` }}
-                                                                                icon={faPlus} />
-                                                                        </Button>
-                                                                        <Modal
-                                                                            title="Thêm dung lượng ram"
-                                                                            open={openFormram}
-                                                                            onOk={handleOkFormram}
-                                                                            confirmLoading={confirmLoading}
-                                                                            onCancel={handleCancel}
-                                                                        >
-                                                                            <p>
-                                                                                <Form >
-                                                                                    <Form.Group className="form-group">
-                                                                                        <Form.Label htmlFor="email">Mã</Form.Label>
-                                                                                        <Form.Control type="text"
-                                                                                            name='maram'
-                                                                                            value={maram}
-                                                                                            disabled='true'
-                                                                                            id="maram" />
-                                                                                    </Form.Group>
-                                                                                    <Form.Group className="form-group">
-                                                                                        <Form.Label htmlFor="pwd">Dung lượng ram</Form.Label>
-                                                                                        <Form.Control type="text"
-                                                                                            placeholder='Nhập dung lượng ram'
-                                                                                            name='tenram'
-                                                                                            value={tenram}
-                                                                                            onChange={(e) => onInputChangeFormram(e)}
-                                                                                            id="ten`" />
-                                                                                    </Form.Group>
-                                                                                </Form>
-                                                                            </p>
-                                                                        </Modal>
                                                                     </Form.Label>
 
                                                                     <Select
@@ -951,40 +781,6 @@ const ChiTietSanPhamForm = forwardRef((props, ref) => {
                                                                 <Form.Group className="form-group">
 
                                                                     <Form.Label htmlFor="pwd" style={{ width: 150 }} >Rom
-                                                                        <Button style={{ width: 15, height: 22, marginLeft: 10, transform: `translateX(${-4}px) translateY(${10}px)` }} type="primary" onClick={showModalFormrom}>
-                                                                            <FontAwesomeIcon
-                                                                                style={{ width: 15, height: 23, transform: `translateX(${-8}px) translateY(${-5}px)` }}
-                                                                                icon={faPlus} />
-                                                                        </Button>
-                                                                        <Modal
-                                                                            title="Thêm rom"
-                                                                            open={openFormrom}
-                                                                            onOk={handleOkFormrom}
-                                                                            confirmLoading={confirmLoading}
-                                                                            onCancel={handleCancel}
-                                                                        >
-                                                                            <p>
-                                                                                <Form >
-                                                                                    <Form.Group className="form-group">
-                                                                                        <Form.Label htmlFor="email">Mã</Form.Label>
-                                                                                        <Form.Control type="text"
-                                                                                            name='marom'
-                                                                                            value={marom}
-                                                                                            disabled='true'
-                                                                                            id="marom" />
-                                                                                    </Form.Group>
-                                                                                    <Form.Group className="form-group">
-                                                                                        <Form.Label htmlFor="pwd">Dung lượng ROM</Form.Label>
-                                                                                        <Form.Control type="text"
-                                                                                            placeholder='Nhập dung lượng rom'
-                                                                                            name='tenrom'
-                                                                                            value={tenrom}
-                                                                                            onChange={(e) => onInputChangeFormrom(e)}
-                                                                                            id="ten`" />
-                                                                                    </Form.Group>
-                                                                                </Form>
-                                                                            </p>
-                                                                        </Modal>
                                                                     </Form.Label>
                                                                     <Select
                                                                         defaultValue="Chọn dung lượng rom"
@@ -1003,40 +799,6 @@ const ChiTietSanPhamForm = forwardRef((props, ref) => {
                                                                 <Form.Group className="form-group">
 
                                                                     <Form.Label htmlFor="pwd" style={{ width: 150 }} >Màn hình
-                                                                        <Button style={{ width: 15, height: 22, marginLeft: 10, transform: `translateX(${-4}px) translateY(${10}px)` }} type="primary" onClick={showModalFormmanHinh}>
-                                                                            <FontAwesomeIcon
-                                                                                style={{ width: 15, height: 23, transform: `translateX(${-8}px) translateY(${-5}px)` }}
-                                                                                icon={faPlus} />
-                                                                        </Button>
-                                                                        <Modal
-                                                                            title="Thêm màn hình"
-                                                                            open={openFormmanHinh}
-                                                                            onOk={handleOkFormmanHinh}
-                                                                            confirmLoading={confirmLoading}
-                                                                            onCancel={handleCancel}
-                                                                        >
-                                                                            <p>
-                                                                                <Form >
-                                                                                    <Form.Group className="form-group">
-                                                                                        <Form.Label htmlFor="email">Mã</Form.Label>
-                                                                                        <Form.Control type="text"
-                                                                                            disabled='true'
-                                                                                            name='mamanHinh'
-                                                                                            value={mamanHinh}
-                                                                                            id="mamanHinh" />
-                                                                                    </Form.Group>
-                                                                                    <Form.Group className="form-group">
-                                                                                        <Form.Label htmlFor="pwd">Kích thước màn hình:</Form.Label>
-                                                                                        <Form.Control type="text"
-                                                                                            placeholder='Nhập kích cỡ màn hình'
-                                                                                            name='tenmanHinh'
-                                                                                            value={tenmanHinh}
-                                                                                            onChange={(e) => onInputChangeFormmanHinh(e)}
-                                                                                            id="ten`" />
-                                                                                    </Form.Group>
-                                                                                </Form>
-                                                                            </p>
-                                                                        </Modal>
                                                                     </Form.Label>
                                                                     <Select
                                                                         defaultValue="Chọn kích cỡ màn hình"
@@ -1059,40 +821,6 @@ const ChiTietSanPhamForm = forwardRef((props, ref) => {
                                                                 <Form.Group className="form-group">
 
                                                                     <Form.Label htmlFor="pwd" style={{ width: 150, color: 'black' }}> Màu sắc
-                                                                        <Button style={{ width: 15, height: 22, marginLeft: 10, transform: `translateX(${-4}px) translateY(${10}px)` }} type="primary" onClick={showModalFormmauSac}>
-                                                                            <FontAwesomeIcon
-                                                                                style={{ width: 15, height: 23, transform: `translateX(${-8}px) translateY(${-5}px)` }}
-                                                                                icon={faPlus} />
-                                                                        </Button>
-                                                                        <Modal
-                                                                            title="Thêm màu sắc"
-                                                                            open={openFormmauSac}
-                                                                            onOk={handleOkFormmauSac}
-                                                                            confirmLoading={confirmLoading}
-                                                                            onCancel={handleCancel}
-                                                                        >
-                                                                            <p>
-                                                                                <Form >
-                                                                                    <Form.Group className="form-group">
-                                                                                        <Form.Label htmlFor="email">Mã</Form.Label>
-                                                                                        <Form.Control type="text"
-                                                                                            disabled='true'
-                                                                                            name='mamauSac'
-                                                                                            value={mamauSac}
-                                                                                            id="mamauSac" />
-                                                                                    </Form.Group>
-                                                                                    <Form.Group className="form-group">
-                                                                                        <Form.Label htmlFor="pwd">Tên màu sắc </Form.Label>
-                                                                                        <Form.Control type="text"
-                                                                                            placeholder='Nhập tên màu sắc'
-                                                                                            name='tenmauSac'
-                                                                                            value={tenmauSac}
-                                                                                            onChange={(e) => onInputChangeFormmauSac(e)}
-                                                                                            id="ten`" />
-                                                                                    </Form.Group>
-                                                                                </Form>
-                                                                            </p>
-                                                                        </Modal>
                                                                     </Form.Label>
                                                                     <Select
                                                                         defaultValue="Chọn màu sắc"

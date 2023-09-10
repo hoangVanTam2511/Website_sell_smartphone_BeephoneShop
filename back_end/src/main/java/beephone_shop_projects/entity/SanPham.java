@@ -21,9 +21,16 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Table(name = "san_pham")
 public class SanPham extends PrimaryEntity implements IsIdentified {
+
     private String ma;
 
     private String tenSanPham;
+
+    private String heDieuHanh;
+
+    private Integer sim;
+
+    private String congSac;
 
     private String moTa;
 
@@ -39,6 +46,14 @@ public class SanPham extends PrimaryEntity implements IsIdentified {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_chip")
     private Chip idChip;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_man_hinh")
+    private ManHinh idManHinh;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_pin")
+    private Pin idPin;
 
 
 }

@@ -22,6 +22,8 @@ import java.math.BigDecimal;
 @Table(name = "san_pham_chi_tiet")
 public class SanPhamChiTiet extends PrimaryEntity implements Serializable{
 
+    private String ma;     
+
     private BigDecimal donGia;
 
     private Integer soLuongTonKho;
