@@ -18,6 +18,7 @@ import {
   faPencilAlt,
   faArrowsRotate,
   faRectangleList,
+  faList,
 } from "@fortawesome/free-solid-svg-icons";
 import "../../../../assets/scss/HienThiNV.scss";
 import { Link, useNavigate } from "react-router-dom";
@@ -366,8 +367,7 @@ const HienThiKH = () => {
         {" "}
         <div className="btn-add">
           <h5>
-            <FontAwesomeIcon icon={faRectangleList} /> &nbsp;Danh sách Khách
-            Hàng
+            <FontAwesomeIcon icon={faList} /> &nbsp;Danh sách Khách Hàng
             <span className="bl-add">
               <Link to="/them-khach-hang">
                 <Button className="btn-them-tk">+ Thêm Tài khoản</Button>

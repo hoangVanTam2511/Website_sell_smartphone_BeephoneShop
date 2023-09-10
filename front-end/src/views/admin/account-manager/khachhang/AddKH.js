@@ -1,4 +1,6 @@
 import { Button, Modal, Card, Checkbox, message } from "antd";
+// import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+// import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import React, { useEffect } from "react";
 import { useState } from "react";
 // import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -7,23 +9,20 @@ import axios from "axios";
 import { apiURLKH } from "../../../../service/api";
 import TextField from "@mui/material/TextField";
 import "../../../../assets/scss/HienThiNV.scss";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
   Box,
   FormControl,
   FormControlLabel,
-  // FormLabel,
   Grid,
   Radio,
   RadioGroup,
 } from "@mui/material";
 import AddressForm from "./DiaChi";
 import ImageUploadComponent from "./Anh";
-import { Collapse } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFloppyDisk, faPlus } from "@fortawesome/free-solid-svg-icons";
-const { Panel } = Collapse;
+import { faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
 const AddKH = () => {
   let [listKH, setListKH] = useState([]);
   let [hoVaTen, setTen] = useState("");
@@ -37,10 +36,8 @@ const AddKH = () => {
   let [tinhThanhPho, setTinhThanhPho] = useState("");
   let [diaChi, setDiaChi] = useState("");
   let [soDienThoaiKhachHang, setSoDienThoaiKhachHang] = useState("");
-  let [id1, setId] = useState("");
   let [xaPhuong, setXaPhuong] = useState("");
-  let [trangThaiKH, setTrangThaiKH] = useState(1); // Khởi tạo mặc định là 0
-
+  let [trangThaiKH, setTrangThaiKH] = useState(1);
   const [diaChiList, setDiaChiList] = useState([
     {
       diaChi: "",
@@ -57,17 +54,99 @@ const AddKH = () => {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [hoVaTenError, setHoVaTenError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [diaChiError, setDiaChiError] = useState("");
+  const [sdtError, setSDTError] = useState("");
+  const [sdtkhError, setSDTKHError] = useState("");
+  const [hoTenKHErr, setHoTenKHErr] = useState("");
 
   const showConfirm = () => {
     setShowConfirmModal(true);
   };
-
+  const handleHoVaTenChange = (e) => {
+    const value = e.target.value.trim();
+    const specialCharPattern = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+    const trimmedValue = value.replace(/\s/g, "");
+    setTen(value);
+    if (!value.trim()) {
+      setHoVaTenError("Họ và tên không được trống");
+    } else if (specialCharPattern.test(value)) {
+      setHoVaTenError("Họ và tên không được chứa ký tự đặc biệt");
+    } else if (trimmedValue.length < 5) {
+      setHoVaTenError("Họ và tên phải có ít nhất 5 ký tự");
+    } else {
+      setHoVaTenError("");
+    }
+  };
+  const handleHoVaTenKH = (e) => {
+    const value = e.target.value.trim();
+    const specialCharPattern = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+    const trimmedValue = value.replace(/\s/g, "");
+    setHoTenKH(value);
+    if (!value.trim()) {
+      setHoTenKHErr("Họ và tên không được trống");
+    } else if (specialCharPattern.test(value)) {
+      setHoTenKHErr("Họ và tên không được chứa ký tự đặc biệt");
+    } else if (trimmedValue.length < 5) {
+      setHoTenKHErr("Họ và tên phải có ít nhất 5 ký tự");
+    } else {
+      setHoTenKHErr("");
+    }
+  };
+  const handleEmailChange = (e) => {
+    const value = e.target.value.trim();
+    const parn = /^[a-zA-Z0-9._-]+@gmail\.com$/i;
+    setEmail(value);
+    if (!value.trim()) {
+      setEmailError("Email không được trống");
+    } else if (!parn.test(value)) {
+      setEmailError("Email sai định dạng hoặc không phải là Gmail");
+    } else {
+      setEmailError("");
+    }
+  };
+  const handleDiaChi = (e) => {
+    const value = e.target.value.trim();
+    setDiaChi(value);
+    const trimmedValue = value.replace(/\s/g, "");
+    if (!value.trim()) {
+      setDiaChiError("Địa chỉ không được trống");
+    } else if (trimmedValue.length < 5) {
+      setDiaChiError("Địa chỉ phải có ít nhất 5 ký tự");
+    } else {
+      setDiaChiError("");
+    }
+  };
+  const handleSDT = (e) => {
+    const value = e.target.value.trim();
+    const parn = /^(?:\+84|0)[1-9]\d{8}$/;
+    setSdt(value);
+    if (!value.trim()) {
+      setSDTError("Số điện thoại không được trống");
+    } else if (!parn.test(value)) {
+      setSDTError("Sai định dạng số điện thoại");
+    } else {
+      setSDTError("");
+    }
+  };
+  const handleSDTKH = (e) => {
+    const value = e.target.value.trim();
+    const parn = /^(?:\+84|0)[1-9]\d{8}$/;
+    setSoDienThoaiKhachHang(value);
+    if (!value.trim()) {
+      setSDTKHError("Số điện thoại không được trống");
+    } else if (!parn.test(value)) {
+      setSDTKHError("Sai định dạng số điện thoại");
+    } else {
+      setSDTKHError("");
+    }
+  };
   const redirectToHienThiKH = (generatedMaKhachHang) => {
-    // Thực hiện điều hướng tới trang "Hiển thị nhân viên"
     window.location.href = "/update-khach-hang/" + generatedMaKhachHang;
   };
   const handleAddressChange = (result) => {
-    setDiaChi(result); // Cập nhật giá trị diaChi trong thành phần cha
+    setDiaChi(result);
   };
   const handleProvinceChange = (value) => {
     setTinhThanhPho(value);
@@ -80,7 +159,12 @@ const AddKH = () => {
   const handleWardChange = (value) => {
     setXaPhuong(value);
   };
+  const handleAnhDaiDienChange = (imageURL) => {
+    setAnhDaiDien(imageURL);
+  };
   const AddKH = async () => {
+    setSubmitted(true);
+    setFormSubmitted(true);
     try {
       // Tạo khách hàng mới với thông tin đã nhập
       const khachHangData = {
@@ -92,7 +176,18 @@ const AddKH = () => {
         email: email,
         anhDaiDien: anhDaiDien,
       };
-
+      if (
+        !hoVaTen ||
+        ngaySinh == null ||
+        !email ||
+        !soDienThoai ||
+        !diaChi ||
+        !xaPhuong
+      ) {
+        message.error("Vui lòng điền đủ thông tin");
+        setShowConfirmModal(false);
+        return;
+      }
       // Gọi API tạo khách hàng mới
       const khachHangResponse = await axios.post(
         apiURLKH + "/add",
@@ -101,9 +196,7 @@ const AddKH = () => {
 
       // Lấy mã khách hàng từ response
       const generatedMaKhachHang = khachHangResponse.data.id;
-
-      // Thêm các địa chỉ mặc định cho khách hàng
-      await addDiaChiList(generatedMaKhachHang);
+      addDiaChiList(generatedMaKhachHang);
       redirectToHienThiKH(generatedMaKhachHang);
 
       // Cập nhật danh sách khách hàng và hiển thị thông báo
@@ -112,7 +205,7 @@ const AddKH = () => {
         ngaySinh: ngaySinh,
         soDienThoai: soDienThoai,
         gioiTinh: gioiTinh,
-        diaChiList: [], // Không cần thêm địa chỉ ở đây vì đã thêm ở bước trước
+        diaChiList: [],
         email: email,
         anhDaiDien: anhDaiDien,
       };
@@ -121,8 +214,6 @@ const AddKH = () => {
       message.success({
         content: "Thêm khách hàng thành công",
       });
-
-      // redirectToHienThiKH();
     } catch (error) {
       // Xử lý lỗi
       alert("Thêm khách hàng thất bại");
@@ -131,6 +222,9 @@ const AddKH = () => {
   };
 
   const addDiaChiList = (generatedMaKhachHang) => {
+    //day
+    setSubmitted(true);
+    setFormSubmitted(true);
     let newAddress = {
       diaChi: diaChi,
       xaPhuong: xaPhuong,
@@ -144,7 +238,6 @@ const AddKH = () => {
     axios
       .post(`${apiURLKH}/dia-chi/add?id=${generatedMaKhachHang}`, newAddress)
       .then((response) => {
-        // let res = response.data;
         let newKhachHangResponse = {
           diaChi: diaChi,
           xaPhuong: xaPhuong,
@@ -156,27 +249,12 @@ const AddKH = () => {
           trangThai: trangThaiKH,
         };
         setDiaChiList([newKhachHangResponse, ...diaChiList]);
-        setId(response.data.id);
-        // toast.info("Add success!", {
-        //   position: "top-right",
-        //   autoClose: 5000,
-        //   hideProgressBar: false,
-        //   closeOnClick: true,
-        //   pauseOnHover: true,
-        //   draggable: true,
-        //   progress: undefined,
-        //   theme: "colored",
-        // });
       })
       .catch((error) => {
         alert("Thêm thất bại");
-        console.log("hahah");
       });
   };
 
-  const handleAnhDaiDienChange = (imageURL) => {
-    setAnhDaiDien(imageURL);
-  };
   return (
     <>
       <Card bordered="false" style={{ width: "100%" }}>
@@ -217,12 +295,14 @@ const AddKH = () => {
                     label="Họ và tên"
                     value={hoVaTen}
                     id="fullWidth"
-                    onChange={(e) => {
-                      setTen(e.target.value);
-                    }}
-                    error={formSubmitted && !hoVaTen}
-                    helperText={formSubmitted && !hoVaTen && "Họ và tên trống"}
+                    onChange={handleHoVaTenChange}
+                    error={(formSubmitted && !hoVaTen) || !!hoVaTenError}
+                    helperText={
+                      hoVaTenError ||
+                      (formSubmitted && !hoVaTen && "Họ và tên trống")
+                    }
                     style={{ width: "100%" }}
+                    maxLength={30}
                   />
                 </div>
                 <div style={{ display: "flex", alignItems: "right" }}>
@@ -234,7 +314,6 @@ const AddKH = () => {
                       width: "47%",
                     }}
                   >
-                    {/* Ngày sinh */}
                     <Box
                       component="form"
                       sx={{
@@ -259,7 +338,7 @@ const AddKH = () => {
                         }}
                         error={formSubmitted && !ngaySinh} // Show error if form submitted and hoVaTen is empty
                         helperText={
-                          formSubmitted && !ngaySinh && "Ngày sinh trống"
+                          formSubmitted && !ngaySinh && "Chưa chọn ngày sinh"
                         }
                       />
                     </Box>
@@ -306,11 +385,11 @@ const AddKH = () => {
                     label="Email"
                     value={email}
                     // id="fullWidth"
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                    }}
-                    error={formSubmitted && !email} // Show error if form submitted and hoVaTen is empty
-                    helperText={formSubmitted && !email && "Email trống"}
+                    onChange={handleEmailChange}
+                    error={(formSubmitted && !email) || !!emailError}
+                    helperText={
+                      emailError || (formSubmitted && !email && "Email trống")
+                    }
                     style={{ width: "100%" }}
                   />
                 </div>
@@ -322,12 +401,11 @@ const AddKH = () => {
                     label="Số điện thoại"
                     id="fullWidth"
                     value={soDienThoai}
-                    onChange={(e) => {
-                      setSdt(e.target.value);
-                    }}
-                    error={formSubmitted && !soDienThoai} // Show error if form submitted and hoVaTen is empty
+                    onChange={handleSDT}
+                    error={(formSubmitted && !soDienThoai) || !!sdtError} // Show error if form submitted and hoVaTen is empty
                     helperText={
-                      formSubmitted && !soDienThoai && "Số điện thoại trống"
+                      sdtError ||
+                      (formSubmitted && !soDienThoai && "Số điện thoại trống")
                     }
                     style={{ width: "100%" }}
                   />
@@ -365,33 +443,32 @@ const AddKH = () => {
                   style={{ marginBottom: "30px", marginTop: "20px" }}
                 >
                   <TextField
-                    label="Họ và tên"
+                    label="Họ và tên khách hàng (cho địa chỉ)"
                     value={hoTenKH}
                     id="fullWidth"
-                    onChange={(e) => {
-                      setHoTenKH(e.target.value);
-                    }}
-                    error={formSubmitted && hoTenKH}
-                    helperText={formSubmitted && hoTenKH && "Họ và tên trống"}
+                    onChange={handleHoVaTenKH}
+                    error={(formSubmitted && hoTenKH) || !!hoTenKHErr}
+                    helperText={
+                      hoTenKHErr ||
+                      (formSubmitted && hoTenKH && "Họ và tên trống")
+                    }
                     style={{ width: "100%" }}
                   />
                 </div>
                 <div className="text-f" style={{ marginBottom: "30px" }}>
                   <TextField
-                    label="Số điện thoại"
+                    label="Số điện thoại khách hàng"
                     id="fullWidth"
                     value={soDienThoaiKhachHang}
-                    onChange={(e) => {
-                      setSoDienThoaiKhachHang(e.target.value);
-                    }}
+                    onChange={handleSDTKH}
                     error={
-                      formSubmitted &&
-                      !diaChiList[diaChiList.length - 1].soDienThoai
+                      (formSubmitted && !soDienThoaiKhachHang) || !!sdtkhError
                     }
                     helperText={
-                      formSubmitted &&
-                      !diaChiList[diaChiList.length - 1].soDienThoai &&
-                      "Số điện thoại trống"
+                      sdtkhError ||
+                      (formSubmitted &&
+                        !soDienThoaiKhachHang &&
+                        "Số điện thoại khách hàng trống")
                     }
                     style={{ width: "100%" }}
                   />
@@ -401,11 +478,12 @@ const AddKH = () => {
                     label="Địa chỉ"
                     id="fullWidth"
                     value={diaChi}
-                    onChange={(e) => {
-                      setDiaChi(e.target.value);
-                    }}
-                    error={formSubmitted && !diaChi}
-                    helperText={formSubmitted && !diaChi && "Địa chỉ trống"}
+                    onChange={handleDiaChi}
+                    error={(formSubmitted && !diaChi) || !!diaChiError}
+                    helperText={
+                      diaChiError ||
+                      (formSubmitted && !diaChi && "Địa chỉ trống")
+                    }
                     style={{ width: "100%" }}
                   />
                 </div>
@@ -417,18 +495,9 @@ const AddKH = () => {
                     onProvinceChange={handleProvinceChange}
                     onDistrictChange={handleDistrictChange}
                     onWardChange={handleWardChange}
+                    formSubmitted={formSubmitted}
                   />
                 </div>
-                {/* <Checkbox
-                  size="large"
-                  style={{
-                    fontSize: "16px",
-                    marginBottom: "20px",
-                  }}
-                  // onChange={handleCheckboxChange}
-                >
-                  Địa chỉ mặc định
-                </Checkbox>{" "} */}
               </div>
             </Card>
           </Grid>{" "}

@@ -1,4 +1,4 @@
-import { Button, Card, Modal } from "antd";
+import { Button, Card, Modal, message } from "antd";
 import React, { useEffect } from "react"; // , { useEffect }
 import { useState } from "react";
 // import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -26,7 +26,6 @@ import { useParams } from "react-router-dom";
 import AddressFormUpdate from "./DiaChiUpdate";
 const UpdateNV = () => {
   const { id } = useParams();
-  let [listNV, setListNV] = useState([]);
   let [hoVaTen, setTen] = useState("");
   let [ngaySinh, setNgaySinh] = useState("");
   let [soDienThoai, setSdt] = useState("");
@@ -52,6 +51,13 @@ const UpdateNV = () => {
   };
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [hoVaTenError, setHoVaTenError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [cccdError, setCCCDError] = useState("");
+  const [diaChiError, setDiaChiError] = useState("");
+  const [sdtError, setSDTError] = useState("");
+
+  //call KH
   useEffect(() => {
     getKHById(id);
   }, [id]);
@@ -96,9 +102,86 @@ const UpdateNV = () => {
   const handleAnhDaiDienChange = (imageURL) => {
     setAnhDaiDien(imageURL);
   };
+  const handleHoVaTenChange = (e) => {
+    const value = e.target.value.trim();
+    const specialCharPattern = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+    const trimmedValue = value.replace(/\s/g, "");
+    setTen(value);
+    if (!value.trim()) {
+      setHoVaTenError("Họ và tên không được trống");
+    } else if (specialCharPattern.test(value)) {
+      setHoVaTenError("Họ và tên không được chứa ký tự đặc biệt");
+    } else if (trimmedValue.length < 5) {
+      setHoVaTenError("Họ và tên phải có ít nhất 5 ký tự");
+    } else {
+      setHoVaTenError("");
+    }
+  };
+  const handleEmailChange = (e) => {
+    const value = e.target.value;
+    const parn = /^[a-zA-Z0-9._-]+@gmail\.com$/i;
+    setEmail(value);
+    if (!value.trim()) {
+      setEmailError("Email không được trống");
+    } else if (!parn.test(value)) {
+      setEmailError("Email sai định dạng hoặc không phải là Gmail");
+    } else {
+      setEmailError("");
+    }
+  };
+  const handleCCCDChange = (e) => {
+    const value = e.target.value;
+    const parn = /^[0-9]{9}$|^[0-9]{12}$/;
+    setCCCD(value);
+    if (!value.trim()) {
+      setCCCDError("CCCD không được trống");
+    } else if (!parn.test(value)) {
+      setCCCDError("CCCD gồm 9-12 số");
+    } else {
+      setCCCDError("");
+    }
+  };
+  const handleDiaChi = (e) => {
+    const value = e.target.value.trim();
+    setDiaChi(value);
+    const trimmedValue = value.replace(/\s/g, "");
+    if (!value.trim()) {
+      setDiaChiError("Địa chỉ không được trống");
+    } else if (trimmedValue.length < 5) {
+      setDiaChiError("Địa chỉ phải có ít nhất 5 ký tự");
+    } else {
+      setDiaChiError("");
+    }
+  };
+  const handleSDT = (e) => {
+    const value = e.target.value.trim();
+    const parn = /^(?:\+84|0)[1-9]\d{8}$/;
+    setSdt(value);
+    if (!value.trim()) {
+      setSDTError("Số điện thoại không được trống");
+    } else if (!parn.test(value)) {
+      setSDTError("Sai định dạng số điện thoại");
+    } else {
+      setSDTError("");
+    }
+  };
   const save = async (id) => {
+    setSubmitted(true);
+    setFormSubmitted(true);
+    if (
+      !hoVaTen ||
+      ngaySinh == null ||
+      !email ||
+      !soDienThoai ||
+      !diaChi ||
+      !xaPhuong
+    ) {
+      message.error("Vui lòng điền đủ thông tin trước khi lưu.");
+      setIsConfirmVisible(false);
+      return;
+    }
     try {
-      const updatedItem = {
+      let updatedItem = {
         ma: ma,
         hoVaTen: hoVaTen,
         ngaySinh: ngaySinh,
@@ -120,16 +203,12 @@ const UpdateNV = () => {
         .then((response) => {
           if (response.status === 200) {
             setIsConfirmVisible(false);
-            toast.success("Customer information updated successfully!");
+            message.success("Sửa thành công");
           } else {
-            // Show an error message using react-toastify
-            toast.error("Failed to update customer information.");
+            message.error("Sửa thất bại");
           }
         })
         .catch((error) => {
-          console.error("Failed to update customer information:", error);
-
-          // Show an error message using react-toastify
           toast.error("An error occurred while updating customer information.");
         });
     } catch (errInfo) {
@@ -159,7 +238,6 @@ const UpdateNV = () => {
                 flexDirection: "column",
                 width: "100%",
                 alignItems: "center",
-                // marginLeft: "10px",
               }}
             >
               <ImageUploadComponent
@@ -180,21 +258,22 @@ const UpdateNV = () => {
                   label="Họ và tên"
                   value={hoVaTen}
                   id="fullWidth"
-                  onChange={(e) => {
-                    setTen(e.target.value);
-                  }}
-                  error={formSubmitted && !hoVaTen}
-                  helperText={formSubmitted && !hoVaTen && "Họ và tên trống"}
+                  onChange={handleHoVaTenChange}
+                  error={(formSubmitted && !hoVaTen) || !!hoVaTenError}
+                  helperText={
+                    hoVaTenError ||
+                    (formSubmitted && !hoVaTen && "Họ và tên trống")
+                  }
                   style={{ width: "100%" }}
+                  maxLength={30}
                 />
               </div>
               <div style={{ display: "flex", alignItems: "center" }}>
                 <div
                   className="text-f"
                   style={{
-                    textAlign: "center",
-                    marginBottom: "15px",
-                    width: "60%",
+                    marginBottom: "20px",
+                    width: "65%",
                   }}
                 >
                   {/* Ngày sinh */}
@@ -203,8 +282,8 @@ const UpdateNV = () => {
                     sx={{
                       "& .MuiTextField-root": {
                         mt: 2,
-                        mb: 2,
                         width: "100%",
+                        mb: 2,
                       },
                     }}
                     noValidate
@@ -222,7 +301,7 @@ const UpdateNV = () => {
                       }}
                       error={formSubmitted && !ngaySinh} // Show error if form submitted and hoVaTen is empty
                       helperText={
-                        formSubmitted && !ngaySinh && "Ngày sinh trống"
+                        formSubmitted && !ngaySinh && "Chưa chọn ngày sinh"
                       }
                     />
                   </Box>
@@ -268,11 +347,11 @@ const UpdateNV = () => {
                   label="Email"
                   value={email}
                   // id="fullWidth"
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                  }}
-                  error={formSubmitted && !email} // Show error if form submitted and hoVaTen is empty
-                  helperText={formSubmitted && !email && "Email trống"}
+                  onChange={handleEmailChange}
+                  error={(formSubmitted && !email) || !!emailError}
+                  helperText={
+                    emailError || (formSubmitted && !email && "Email trống")
+                  }
                   style={{ width: "100%" }}
                 />
               </div>
@@ -284,11 +363,11 @@ const UpdateNV = () => {
                   label="Căn cước công dân"
                   value={cccd}
                   // id="fullWidth"
-                  onChange={(e) => {
-                    setCCCD(e.target.value);
-                  }}
-                  error={formSubmitted && !cccd} // Show error if form submitted and hoVaTen is empty
-                  helperText={formSubmitted && !cccd && "CCCD trống"}
+                  onChange={handleCCCDChange}
+                  error={(formSubmitted && !cccd) || !!cccdError} // Show error if form submitted and hoVaTen is empty
+                  helperText={
+                    cccdError || (formSubmitted && !cccd && "CCCD trống")
+                  }
                   style={{ width: "100%" }}
                 />
               </div>
@@ -300,12 +379,11 @@ const UpdateNV = () => {
                   label="Số điện thoại"
                   id="fullWidth"
                   value={soDienThoai}
-                  onChange={(e) => {
-                    setSdt(e.target.value);
-                  }}
-                  error={formSubmitted && !soDienThoai} // Show error if form submitted and hoVaTen is empty
+                  onChange={handleSDT}
+                  error={(formSubmitted && !soDienThoai) || !!sdtError} // Show error if form submitted and hoVaTen is empty
                   helperText={
-                    formSubmitted && !soDienThoai && "Số điện thoại trống"
+                    sdtError ||
+                    (formSubmitted && !soDienThoai && "Số điện thoại trống")
                   }
                   style={{ width: "100%" }}
                 />
@@ -318,11 +396,11 @@ const UpdateNV = () => {
                   label="Địa chỉ"
                   id="fullWidth"
                   value={diaChi}
-                  onChange={(e) => {
-                    setDiaChi(e.target.value);
-                  }}
-                  error={formSubmitted && !diaChi} // Show error if form submitted and hoVaTen is empty
-                  helperText={formSubmitted && !diaChi && "Địa chỉ trống"}
+                  onChange={handleDiaChi}
+                  error={(formSubmitted && !diaChi) || !!diaChiError} // Show error if form submitted and hoVaTen is empty
+                  helperText={
+                    diaChiError || (formSubmitted && !diaChi && "Địa chỉ trống")
+                  }
                   style={{ width: "100%" }}
                 />
               </div>

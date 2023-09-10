@@ -30,6 +30,11 @@ public class NhanVienServiceImpl implements NhanVienService {
     }
 
     @Override
+    public List<Account> getAllNVienNoPage() {
+        return accountRepository.getAllNVienNoPage();
+    }
+
+    @Override
     public Account addNV(CreateAccountRequest request) {
         Random random = new Random();
         int number = random.nextInt(10000);
