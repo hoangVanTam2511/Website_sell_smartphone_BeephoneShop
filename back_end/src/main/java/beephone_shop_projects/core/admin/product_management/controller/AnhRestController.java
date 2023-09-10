@@ -1,9 +1,7 @@
 package beephone_shop_projects.core.admin.product_management.controller;
 
-import beephone_shop_projects.core.admin.product_management.repository.AnhRepository;
 import beephone_shop_projects.core.admin.product_management.service.impl.AnhServiceImpl;
 import beephone_shop_projects.entity.Anh;
-import beephone_shop_projects.entity.MauSac;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

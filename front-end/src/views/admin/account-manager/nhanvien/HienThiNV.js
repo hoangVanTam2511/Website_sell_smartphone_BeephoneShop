@@ -127,7 +127,7 @@ const HienThiNV = () => {
     axios
       .get(apiURLNV + "/hien-thi?page=" + currentPage)
       .then((response) => {
-        console.log(response);
+        // console.log(response);
         const modifiedData = response.data.content.map((item, index) => ({
           ...item,
           stt: index + 1,
@@ -170,7 +170,7 @@ const HienThiNV = () => {
       .put(apiURLNV + `/${id}/doi-tt`)
       .then((response) => {
         loadDataListRole(currentPage);
-        console.log("Trạng thái đã được thay đổi");
+        // console.log("Trạng thái đã được thay đổi");
       })
       .catch((error) => {
         // Xử lý lỗi

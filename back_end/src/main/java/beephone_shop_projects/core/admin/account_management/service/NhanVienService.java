@@ -10,9 +10,10 @@ import java.util.UUID;
 
 public interface NhanVienService {
     Page<Account> getAllNV(Integer pageNo);
+    List<Account> getAllNVienNoPage();
     Account addNV(CreateAccountRequest request);
     void doiTrangThai(String id);
-    Account updateNV(Account request,String id);
+    Account updateNV(CreateAccountRequest request,String id);
     Page<Account> search(Optional<String> tenSearch, Integer pageNo);
     Account getOne(UUID id);
 }

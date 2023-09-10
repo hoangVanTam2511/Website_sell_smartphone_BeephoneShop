@@ -2,8 +2,6 @@ package beephone_shop_projects.core.admin.product_management.controller;
 
 import beephone_shop_projects.core.admin.product_management.model.request.CreateChiTietSanPhamRequest;
 import beephone_shop_projects.core.admin.product_management.model.request.SearchChiTietSanPhamRequest;
-import beephone_shop_projects.core.admin.product_management.model.responce.CauHinhResponce;
-import beephone_shop_projects.core.admin.product_management.model.responce.ChiTietSanPhamResponce;
 import beephone_shop_projects.core.admin.product_management.model.responce.SanPhamResponce;
 import beephone_shop_projects.core.admin.product_management.service.impl.SanPhamServiceImpl;
 import beephone_shop_projects.entity.SanPham;

@@ -1,15 +1,17 @@
 package beephone_shop_projects.entity;
 
-import beephone_shop_projects.entity.base.AuditEntity;
-import jakarta.persistence.EmbeddedId;
+import beephone_shop_projects.entity.base.PrimaryEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.naming.Name;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -19,15 +21,19 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "gio_hang_chi_tiet")
-public class GioHangChiTiet extends AuditEntity implements Serializable {
+public class GioHangChiTiet extends PrimaryEntity implements Serializable {
 
-    @EmbeddedId
-    private GioHangChiTietId gioHangChiTietId;
+  private Integer soLuong;
 
+  private BigDecimal donGia;
 
-    private Integer soLuong;
+  @JsonIgnore
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_gio_hang")
+  private GioHang gioHang;
 
-    private BigDecimal donGia;
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "id_chi_tiet_san_pham")
+  private SanPhamChiTiet sanPhamChiTiet;
 
-    private BigDecimal donGiaSauKhuyenMai;
 }

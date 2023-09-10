@@ -8,10 +8,10 @@ import java.util.List;
 
 public interface KhuyenMaiChiTietRepository extends IKhuyenMaiChiTietRepository {
 
-    @Query(value = """
-            SELECT kc.don_gia, kc.don_gia_sau_khuyen_mai FROM khuyen_mai_chi_tiet kc
-            """, nativeQuery = true)
-    List<KhuyenMaiChiTietResponse> getAllKhuyenMaiChiTiet();
+//    @Query(value = """
+//            SELECT kc.don_gia, kc.don_gia_sau_khuyen_mai FROM khuyen_mai_chi_tiet kc
+//            """, nativeQuery = true)
+//    List<KhuyenMaiChiTietResponse> getAllKhuyenMaiChiTiet();
 
 //    @Query(value = """
 //            SELECT kc.don_gia, kc.don_gia_sau_khuyen_mai FROM khuyen_mai_chi_tiet kc WHERE kc. = ?1

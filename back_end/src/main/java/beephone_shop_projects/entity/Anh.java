@@ -29,6 +29,6 @@ public class Anh  extends PrimaryEntity implements IsIdentified {
     private Integer trangThai;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_san_pham")
-    private SanPham idSanPham;
+    @JoinColumn(name = "id_chi_tiet_san_pham")
+    private SanPhamChiTiet idSanPhamChiTiet;
 }

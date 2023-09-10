@@ -4,7 +4,6 @@ import beephone_shop_projects.core.admin.product_management.model.request.Create
 import beephone_shop_projects.core.admin.product_management.repository.RamRepository;
 import beephone_shop_projects.core.admin.product_management.service.IService;
 import beephone_shop_projects.entity.Ram;
-import beephone_shop_projects.entity.Rom;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

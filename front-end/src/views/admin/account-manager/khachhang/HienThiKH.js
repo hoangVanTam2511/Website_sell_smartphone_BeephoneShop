@@ -10,12 +10,7 @@ import {
   Select,
 } from "antd";
 import moment from "moment";
-import {
-  useState,
-  useEffect,
-  useRef,
-  // useRef
-} from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { apiURLKH } from "../../../../service/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -23,6 +18,7 @@ import {
   faPencilAlt,
   faArrowsRotate,
   faRectangleList,
+  faList,
 } from "@fortawesome/free-solid-svg-icons";
 import "../../../../assets/scss/HienThiNV.scss";
 import { Link, useNavigate } from "react-router-dom";
@@ -41,7 +37,7 @@ const EditableCell = ({
   children,
   ...restProps
 }) => {
-  const inputRef = useRef(null);
+  // const inputRef = useRef();
   const [editingAddresses, setEditingAddresses] = useState({});
   const addressList = editingAddresses[record?.id] || [];
   return (
@@ -371,8 +367,7 @@ const HienThiKH = () => {
         {" "}
         <div className="btn-add">
           <h5>
-            <FontAwesomeIcon icon={faRectangleList} /> &nbsp;Danh sách Khách
-            Hàng
+            <FontAwesomeIcon icon={faList} /> &nbsp;Danh sách Khách Hàng
             <span className="bl-add">
               <Link to="/them-khach-hang">
                 <Button className="btn-them-tk">+ Thêm Tài khoản</Button>

@@ -14,7 +14,7 @@ import java.util.List;
 
 @Repository
 public class LichSuHoaDonRepositoryImpl extends AbstractRepositoryImpl<LichSuHoaDon, String> implements LichSuHoaDonRepository {
-  private Logger logger = LoggerFactory.getLogger(LichSuHoaDonRepositoryImpl.class);
+  private static final Logger logger = LoggerFactory.getLogger(LichSuHoaDonRepositoryImpl.class);
 
   @Override
   @Transactional

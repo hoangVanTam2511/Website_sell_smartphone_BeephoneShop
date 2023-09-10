@@ -17,4 +17,6 @@ public class OrderHistoryDto {
 
   private Date createdAt;
 
+  private OrderDto hoaDon;
+
 }

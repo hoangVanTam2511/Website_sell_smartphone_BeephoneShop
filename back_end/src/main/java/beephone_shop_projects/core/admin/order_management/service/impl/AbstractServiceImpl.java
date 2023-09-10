@@ -7,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.io.Serializable;
-import java.util.Optional;
 
 public class AbstractServiceImpl<E, D, ID extends Serializable> implements GenericService<D, ID> {
 
@@ -26,9 +25,9 @@ public class AbstractServiceImpl<E, D, ID extends Serializable> implements Gener
   }
 
   @Override
-  public Optional<D> findOneById(ID id) {
-    Optional<E> entity = repo.findOneById(id);
-    return (Optional<D>) converter.convertToDto((E) entity);
+  public D findOneById(ID id) {
+    E entity = repo.findOneById(id);
+    return converter.convertToDto(entity);
   }
 
   @Override
@@ -54,11 +53,6 @@ public class AbstractServiceImpl<E, D, ID extends Serializable> implements Gener
   @Override
   public void deleteById(ID id) throws Exception {
     repo.deleteById(id);
-  }
-
-  @Override
-  public String getCode() {
-    return repo.getMaxEntityCode();
   }
 
 }

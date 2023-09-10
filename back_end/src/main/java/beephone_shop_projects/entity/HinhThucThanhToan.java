@@ -2,6 +2,7 @@ package beephone_shop_projects.entity;
 
 import beephone_shop_projects.entity.base.IsIdentified;
 import beephone_shop_projects.entity.base.PrimaryEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
@@ -23,18 +24,23 @@ import java.math.BigDecimal;
 @Table(name = "hinh_thuc_thanh_toan")
 public class HinhThucThanhToan extends PrimaryEntity implements IsIdentified {
 
-    private String ma;
+  private String ma;
 
-    private String tenHinhThucThanhToan;
+  private Integer loaiThanhToan;
 
-    private BigDecimal soTienThanhToan;
+  private Integer hinhThucThanhToan;
 
-    private String ghiChu;
+  private BigDecimal soTienThanhToan;
 
-    private Integer trangThai;
+  private String ghiChu;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_hoa_don")
-    private HoaDon idHoaDon;
+  private Integer trangThai;
+
+  private String nguoiXacNhan;
+
+  @JsonIgnore
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_hoa_don")
+  private HoaDon hoaDon;
 
 }

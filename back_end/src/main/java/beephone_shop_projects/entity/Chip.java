@@ -23,4 +23,5 @@ public class Chip extends PrimaryEntity implements IsIdentified {
     private String ma;
 
     private String tenChip;
+
 }
