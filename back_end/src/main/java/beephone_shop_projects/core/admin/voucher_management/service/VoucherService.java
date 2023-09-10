@@ -26,6 +26,6 @@ public interface VoucherService {
 
     String checkVoucher(String input);
 
-    Page<Voucher> getVoucherStatusIsActive(FindVoucherRequest request);
+    Page<VoucherResponse> getVoucherStatusIsActive(FindVoucherRequest request);
 
 }
