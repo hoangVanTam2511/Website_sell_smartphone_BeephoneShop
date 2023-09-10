@@ -45,13 +45,14 @@ const VerticalNav = memo((props) => {
             className={`${location.pathname === "/" ? "active" : ""} nav-link `}
             aria-current="page"
             to="/"
-            onClick={() => { }}
+            onClick={() => {}}
           >
             <i className="icon">
               <img
                 width={20}
                 color="#8888"
-                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAADNElEQVR4nO2aTU8TURSGHxdtZaFGxaULJWqiIh+icaERfoQfP0H/hMrOSCLFoIEFLnWFaDCwZU80GqULYKUbjQUjZSEtac1N3kluaof56J0yVd5kNsy5557DPV/3ncIe/j3kgCFgGJgBCsA6UAZqtAH6gUngpwz2e1KLXmC+ztivwBRwB7gOnEmzIx3AKLAtA38Dz4ErPvKpdOQU8EGGVeXA8YA19Y5s6TH5s6R8Mnk1qDxLHJeBHzLqi0InDOod2SmPjHMTQF+STpS02QLQGWFtvSNZIAMcBnqAG8Bj4KMlWwXeAt2uw8k7iVlgf8T1UXLkrJwqaU0FGHERch1WTizEcCJush8F8nLErH0PdNEERq2ciBJOrqpWP7Cs9d+Bgbh9oqJ4DZvYSZTfA8oXo2MDuBhVgdfsTIltBi76SAZ4YZ3MyShH6jW7oD4RBFcNMQPMSde7sAVg0tFpuO7sB4EV6XsUJJyzBkC/sSMKXI8oAxqPykF9ZsgaAPc52DiJWeuJ1dd8MSwhM8WSUkc6gU1VVDMdNMRrbXzX0aZJTb+j0vvMT6AggWZ6RyscOS+9a5rf/kJRAqcdbZjkfeSzdF9r9HIrYNSO+ySBvHTfb/Sy1kaO3JLuV7Q5euWICbG2RqccMfelQHg507Ay7DJy1kz4/zhSlLC5tbV1aBUkfIE2T/YZCd8kfbgt26bDCHtDpGE30oYx2XYvjPCghA3vlDYs7TSiNKoM61pgeKe0oFs2FXUNDoWJFIZXXjY9jbKoT5eYUkrK8LEwFys/eNySSbDdxrhseRM3Jit6DF20W7hkkQ/n4ioZ0X9iWQxgq3EIWJUND5tRlBM5VlOoha4WDpCx2M9FFwx9l2jLmmjMVjiTAV5qz2/ACZck2YYUz4kBTDKc5rXXrzgkdhhnvJNZiUv5h0jsVesknDthh5mXM9tiAON+R6nvE+PWl+NFl+Hkh5wIZe8XDpsizwzvFKfEm469KV1lVaeWfO21jZhVt61Z94S82A5zdziim2ZWE0Kv3o1ZA6B5qmp2sfuEC/SIxlyLQRkVNTv1kCJkNV4/0MXnkwz1fjBQ1N+mRbBdbXFf2gOtwB84n09GlR2llgAAAABJRU5ErkJggg==" />
+                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAADNElEQVR4nO2aTU8TURSGHxdtZaFGxaULJWqiIh+icaERfoQfP0H/hMrOSCLFoIEFLnWFaDCwZU80GqULYKUbjQUjZSEtac1N3kluaof56J0yVd5kNsy5557DPV/3ncIe/j3kgCFgGJgBCsA6UAZqtAH6gUngpwz2e1KLXmC+ztivwBRwB7gOnEmzIx3AKLAtA38Dz4ErPvKpdOQU8EGGVeXA8YA19Y5s6TH5s6R8Mnk1qDxLHJeBHzLqi0InDOod2SmPjHMTQF+STpS02QLQGWFtvSNZIAMcBnqAG8Bj4KMlWwXeAt2uw8k7iVlgf8T1UXLkrJwqaU0FGHERch1WTizEcCJush8F8nLErH0PdNEERq2ciBJOrqpWP7Cs9d+Bgbh9oqJ4DZvYSZTfA8oXo2MDuBhVgdfsTIltBi76SAZ4YZ3MyShH6jW7oD4RBFcNMQPMSde7sAVg0tFpuO7sB4EV6XsUJJyzBkC/sSMKXI8oAxqPykF9ZsgaAPc52DiJWeuJ1dd8MSwhM8WSUkc6gU1VVDMdNMRrbXzX0aZJTb+j0vvMT6AggWZ6RyscOS+9a5rf/kJRAqcdbZjkfeSzdF9r9HIrYNSO+ySBvHTfb/Sy1kaO3JLuV7Q5euWICbG2RqccMfelQHg507Ay7DJy1kz4/zhSlLC5tbV1aBUkfIE2T/YZCd8kfbgt26bDCHtDpGE30oYx2XYvjPCghA3vlDYs7TSiNKoM61pgeKe0oFs2FXUNDoWJFIZXXjY9jbKoT5eYUkrK8LEwFys/eNySSbDdxrhseRM3Jit6DF20W7hkkQ/n4ioZ0X9iWQxgq3EIWJUND5tRlBM5VlOoha4WDpCx2M9FFwx9l2jLmmjMVjiTAV5qz2/ACZck2YYUz4kBTDKc5rXXrzgkdhhnvJNZiUv5h0jsVesknDthh5mXM9tiAON+R6nvE+PWl+NFl+Hkh5wIZe8XDpsizwzvFKfEm469KV1lVaeWfO21jZhVt61Z94S82A5zdziim2ZWE0Kv3o1ZA6B5qmp2sfuEC/SIxlyLQRkVNTv1kCJkNV4/0MXnkwz1fjBQ1N+mRbBdbXFf2gOtwB84n09GlR2llgAAAABJRU5ErkJggg=="
+              />
             </i>
             <span className="item-name">Thống kê</span>
           </Link>
@@ -59,11 +60,12 @@ const VerticalNav = memo((props) => {
 
         <li className="nav-item">
           <Link
-            className={`${location.pathname.includes("/dashboard/point-of-sales") ||
+            className={`${
+              location.pathname.includes("/dashboard/point-of-sales") ||
               location.pathname.includes("/dashboard/order-pending")
-              ? "active"
-              : ""
-              } nav-link`}
+                ? "active"
+                : ""
+            } nav-link`}
             to="/dashboard/point-of-sales"
           >
             <i className="icon">
@@ -95,11 +97,12 @@ const VerticalNav = memo((props) => {
         </li>
         <li className="nav-item">
           <Link
-            className={`${location.pathname.includes("/dashboard/management-orders") ||
+            className={`${
+              location.pathname.includes("/dashboard/management-orders") ||
               location.pathname.includes("/dashboard/order-detail")
-              ? "active"
-              : ""
-              } nav-link`}
+                ? "active"
+                : ""
+            } nav-link`}
             to="/dashboard/management-orders"
           >
             <i className="icon">
@@ -158,8 +161,6 @@ const VerticalNav = memo((props) => {
           </Link>
         </li> */}
 
-      
-
         <Accordion.Item
           as="li"
           className={`${activeMenu === "0" ? "active" : ""}`}
@@ -175,7 +176,8 @@ const VerticalNav = memo((props) => {
               <img
                 width={20}
                 color="#8888"
-                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAAsTAAALEwEAmpwYAAACSklEQVR4nO2bW2oUURCGvzaGuAHjAnQBGl2Elw14WYSMGfDFwDwKmg4a3YCIqIsx8VV9igrRt5gFTCgooTg0CjOnunvg/+HAwEBduuvUdxpOQR01wBbwAJgAj5PWxH1suc/BdQnYA34C857XD6AFNodIvAGmwOkAiZfrD/Coz4q4ALzrCOQYeO9v5WnSat3Hrw7/b4GN7OSbjuQ/ATeBc/Qn83ULOOh4CKmVMC0cvgDOM5zM934Rk22HFG36fovJj0WvQlyn3pyra68o+0Xf/BWvpBJxU/9vEVkshyG+51RWU6DO9vyi+vaPjv5lCbu3g53vtXvBjaLbL9PwviY9gLWCDnZYqqb7wbBhaBlZme90IO4JcHlJ2x9DnHdJ6v7PGK92Q5zbNQ3PgmH7PValxTnTA0AVMNcWQD1griaIKDBjvBIG0TkAHYTQSRAdhdG3APoYYhX4WlnCIMIgwiDCIMIgwiDCIKvA18oSBhEGEQYRBhEGEQYRBlkFvlaWMIgwiDCIMIgwiDCIMMgq8LWy0uLczryIXFFt1rX5exWvymYq7ars9YqXpbNkl6V/hziv1TTe+JTWX+M2rjI23QnxHWWMzrTBwcHAozKl1oHP2X3qInASnLxkPHpdjNGljMzgnTUOOOwPXAnrRfK2HmY6bHw0LTo89HEVa0J9ac33fCx7W2/6cL7R8RDmPq7ywXtF1uxw66iL3T4mnz44GSthUozRDbVOssv+f7OEuz6l1XfiR97trTkPrsYPHnZitMrImh022+bjai3OnwF4eENmxJKIXwAAAABJRU5ErkJggg==" />
+                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAAsTAAALEwEAmpwYAAACSklEQVR4nO2bW2oUURCGvzaGuAHjAnQBGl2Elw14WYSMGfDFwDwKmg4a3YCIqIsx8VV9igrRt5gFTCgooTg0CjOnunvg/+HAwEBduuvUdxpOQR01wBbwAJgAj5PWxH1suc/BdQnYA34C857XD6AFNodIvAGmwOkAiZfrD/Coz4q4ALzrCOQYeO9v5WnSat3Hrw7/b4GN7OSbjuQ/ATeBc/Qn83ULOOh4CKmVMC0cvgDOM5zM934Rk22HFG36fovJj0WvQlyn3pyra68o+0Xf/BWvpBJxU/9vEVkshyG+51RWU6DO9vyi+vaPjv5lCbu3g53vtXvBjaLbL9PwviY9gLWCDnZYqqb7wbBhaBlZme90IO4JcHlJ2x9DnHdJ6v7PGK92Q5zbNQ3PgmH7PValxTnTA0AVMNcWQD1griaIKDBjvBIG0TkAHYTQSRAdhdG3APoYYhX4WlnCIMIgwiDCIMIgwiDCIKvA18oSBhEGEQYRBhEGEQYRBlkFvlaWMIgwiDCIMIgwiDCIMMgq8LWy0uLczryIXFFt1rX5exWvymYq7ars9YqXpbNkl6V/hziv1TTe+JTWX+M2rjI23QnxHWWMzrTBwcHAozKl1oHP2X3qInASnLxkPHpdjNGljMzgnTUOOOwPXAnrRfK2HmY6bHw0LTo89HEVa0J9ac33fCx7W2/6cL7R8RDmPq7ywXtF1uxw66iL3T4mnz44GSthUozRDbVOssv+f7OEuz6l1XfiR97trTkPrsYPHnZitMrImh022+bjai3OnwF4eENmxJKIXwAAAABJRU5ErkJggg=="
+              />
             </i>
             <span className="item-name">Sản phẩm</span>
             <i className="right-icon">
@@ -199,8 +201,9 @@ const VerticalNav = memo((props) => {
             <ul className="sub-nav">
               <li className="nav-item">
                 <Link
-                  className={`${location.pathname === "/chi-tiet-san-pham" ? "active" : ""
-                    } nav-link`}
+                  className={`${
+                    location.pathname === "/chi-tiet-san-pham" ? "active" : ""
+                  } nav-link`}
                   to="/chi-tiet-san-pham"
                 >
                   <i className="icon">
@@ -226,8 +229,9 @@ const VerticalNav = memo((props) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`${location.pathname === "/mau-sac" ? "active" : ""
-                    } nav-link`}
+                  className={`${
+                    location.pathname === "/mau-sac" ? "active" : ""
+                  } nav-link`}
                   to="/mau-sac"
                 >
                   <i className="icon">
@@ -253,8 +257,9 @@ const VerticalNav = memo((props) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`${location.pathname === "/chip" ? "active" : ""
-                    } nav-link`}
+                  className={`${
+                    location.pathname === "/chip" ? "active" : ""
+                  } nav-link`}
                   to="/chip"
                 >
                   <i className="icon">
@@ -280,8 +285,9 @@ const VerticalNav = memo((props) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`${location.pathname === "/ram" ? "active" : ""
-                    } nav-link`}
+                  className={`${
+                    location.pathname === "/ram" ? "active" : ""
+                  } nav-link`}
                   to="/ram"
                 >
                   <i className="icon">
@@ -306,12 +312,11 @@ const VerticalNav = memo((props) => {
                 </Link>
               </li>
 
-
-
               <li className="nav-item">
                 <Link
-                  className={`${location.pathname === "/dong-san-pham" ? "active" : ""
-                    } nav-link`}
+                  className={`${
+                    location.pathname === "/dong-san-pham" ? "active" : ""
+                  } nav-link`}
                   to="/dong-san-pham"
                 >
                   <i className="icon">
@@ -336,12 +341,11 @@ const VerticalNav = memo((props) => {
                 </Link>
               </li>
 
-
-
               <li className="nav-item">
                 <Link
-                  className={`${location.pathname === "/man-hinh" ? "active" : ""
-                    } nav-link`}
+                  className={`${
+                    location.pathname === "/man-hinh" ? "active" : ""
+                  } nav-link`}
                   to="/man-hinh"
                 >
                   <i className="icon">
@@ -368,8 +372,9 @@ const VerticalNav = memo((props) => {
 
               <li className="nav-item">
                 <Link
-                  className={`${location.pathname === "/nha-san-xuat" ? "active" : ""
-                    } nav-link`}
+                  className={`${
+                    location.pathname === "/nha-san-xuat" ? "active" : ""
+                  } nav-link`}
                   to="/nha-san-xuat"
                 >
                   <i className="icon">
@@ -396,8 +401,9 @@ const VerticalNav = memo((props) => {
 
               <li className="nav-item">
                 <Link
-                  className={`${location.pathname === "/pin" ? "active" : ""
-                    } nav-link`}
+                  className={`${
+                    location.pathname === "/pin" ? "active" : ""
+                  } nav-link`}
                   to="/pin"
                 >
                   <i className="icon">
@@ -424,8 +430,9 @@ const VerticalNav = memo((props) => {
 
               <li className="nav-item">
                 <Link
-                  className={`${location.pathname === "/rom" ? "active" : ""
-                    } nav-link`}
+                  className={`${
+                    location.pathname === "/rom" ? "active" : ""
+                  } nav-link`}
                   to="/rom"
                 >
                   <i className="icon">
@@ -449,7 +456,6 @@ const VerticalNav = memo((props) => {
                   <span className="item-name">Rom</span>
                 </Link>
               </li>
-
             </ul>
           </Accordion.Collapse>
         </Accordion.Item>
@@ -522,8 +528,9 @@ const VerticalNav = memo((props) => {
             <ul className="sub-nav">
               <li className="nav-item">
                 <Link
-                  className={`${location.pathname === "/nhan-vien" ? "active" : ""
-                    } nav-link`}
+                  className={`${
+                    location.pathname === "/nhan-vien" ? "active" : ""
+                  } nav-link`}
                   to="/nhan-vien"
                 >
                   <i className="icon">
@@ -549,8 +556,9 @@ const VerticalNav = memo((props) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`${location.pathname === "/khach-hang" ? "active" : ""
-                    } nav-link`}
+                  className={`${
+                    location.pathname === "/khach-hang" ? "active" : ""
+                  } nav-link`}
                   to="/khach-hang"
                 >
                   <i className="icon">
@@ -572,34 +580,6 @@ const VerticalNav = memo((props) => {
                   </i>
                   <i className="sidenav-mini-icon"> L </i>
                   <span className="item-name">Khách hàng</span>
-                </Link>
-              </li>
-
-              <li className="nav-item">
-                <Link
-                  className={`${location.pathname === "/chuc-vu" ? "active" : ""
-                    } nav-link`}
-                  to="/chuc-vu"
-                >
-                  <i className="icon">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="10"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                    >
-                      <g>
-                        <circle
-                          cx="12"
-                          cy="12"
-                          r="8"
-                          fill="currentColor"
-                        ></circle>
-                      </g>
-                    </svg>
-                  </i>
-                  <i className="sidenav-mini-icon"> L </i>
-                  <span className="item-name">Chức vụ</span>
                 </Link>
               </li>
             </ul>
@@ -647,8 +627,9 @@ const VerticalNav = memo((props) => {
             <ul className="sub-nav">
               <li className="nav-item">
                 <Link
-                  className={`${location.pathname === "/voucher" ? "active" : ""
-                    } nav-link`}
+                  className={`${
+                    location.pathname === "/voucher" ? "active" : ""
+                  } nav-link`}
                   to="/voucher"
                 >
                   <i className="icon">
@@ -674,8 +655,9 @@ const VerticalNav = memo((props) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`${location.pathname === "/khuyen-mai" ? "active" : ""
-                    } nav-link`}
+                  className={`${
+                    location.pathname === "/khuyen-mai" ? "active" : ""
+                  } nav-link`}
                   to="/khuyen-mai"
                 >
                   <i className="icon">

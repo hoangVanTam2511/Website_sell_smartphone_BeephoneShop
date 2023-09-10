@@ -65,7 +65,7 @@ const AddKH = () => {
     setShowConfirmModal(true);
   };
   const handleHoVaTenChange = (e) => {
-    const value = e.target.value.trim();
+    const value = e.target.value;
     const specialCharPattern = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
     const trimmedValue = value.replace(/\s/g, "");
     setTen(value);
@@ -80,7 +80,7 @@ const AddKH = () => {
     }
   };
   const handleHoVaTenKH = (e) => {
-    const value = e.target.value.trim();
+    const value = e.target.value;
     const specialCharPattern = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
     const trimmedValue = value.replace(/\s/g, "");
     setHoTenKH(value);
@@ -107,7 +107,7 @@ const AddKH = () => {
     }
   };
   const handleDiaChi = (e) => {
-    const value = e.target.value.trim();
+    const value = e.target.value;
     setDiaChi(value);
     const trimmedValue = value.replace(/\s/g, "");
     if (!value.trim()) {
@@ -447,10 +447,10 @@ const AddKH = () => {
                     value={hoTenKH}
                     id="fullWidth"
                     onChange={handleHoVaTenKH}
-                    error={(formSubmitted && hoTenKH) || !!hoTenKHErr}
+                    error={(formSubmitted && !hoTenKH) || !!hoTenKHErr}
                     helperText={
                       hoTenKHErr ||
-                      (formSubmitted && hoTenKH && "Họ và tên trống")
+                      (formSubmitted && !hoTenKH && "Họ và tên trống")
                     }
                     style={{ width: "100%" }}
                   />
