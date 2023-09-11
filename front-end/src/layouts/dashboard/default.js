@@ -32,7 +32,6 @@ import * as SettingSelector from "../../store/setting/selectors";
 
 // Redux Selector / Action
 import { useSelector } from "react-redux";
-import { Timeline, TimelineEvent } from "@mailtop/horizontal-timeline";
 
 const Tour = () => {
   const tour = useContext(ShepherdTourContext);
@@ -167,9 +166,6 @@ const Default = memo((props) => {
         </div>
         <div className="py-0 conatiner-fluid content-inner mt-n5">
           {/* <DefaultRouter /> */}
-          <div style={{display: "none"}}>
-            <Timeline></Timeline>
-          </div>
           <Outlet />
         </div>
 
