@@ -3,14 +3,15 @@ package beephone_shop_projects.core.admin.voucher_management.service;
 import beephone_shop_projects.core.admin.voucher_management.model.request.CreateVoucherRequest;
 import beephone_shop_projects.core.admin.voucher_management.model.request.FindVoucherRequest;
 import beephone_shop_projects.core.admin.voucher_management.model.request.UpdateVoucherRequest;
+import beephone_shop_projects.core.admin.voucher_management.model.response.CheckVoucherResponse;
 import beephone_shop_projects.core.admin.voucher_management.model.response.VoucherResponse;
 import beephone_shop_projects.entity.Voucher;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 
-public interface VoucherService {
+import java.util.List;
 
-//    Page<VoucherResponse> getAll(Pageable pageable);
+public interface VoucherService {
 
     VoucherResponse getOne(String id);
 
@@ -24,5 +25,8 @@ public interface VoucherService {
 
     Page<Voucher> getAll(FindVoucherRequest request);
 
+    CheckVoucherResponse checkVoucher(String input);
+
+    Page<VoucherResponse> getVoucherStatusIsActive(FindVoucherRequest request);
 
 }

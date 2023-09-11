@@ -26,15 +26,13 @@ public class KhuyenMai extends PrimaryEntity implements IsIdentified {
 
     private String tenKhuyenMai;
 
-    private BigDecimal mucGiamGiaTheoPhanTram;
+    private BigDecimal giaTriKhuyenMai;
 
-    private BigDecimal mucGiamGiaTheoSoTien;
+    private Integer loaiKhuyenMai;
 
     private Date ngayBatDau;
 
     private Date ngayKetThuc;
 
-    private String dieuKienGiamGia;
-
-    private Boolean trangThai;
+    private Integer trangThai;
 }

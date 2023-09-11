@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.admin.product_management.model.responce;
 
+import beephone_shop_projects.entity.SanPham;
 import beephone_shop_projects.entity.Chip;
 import beephone_shop_projects.entity.DongSanPham;
 import beephone_shop_projects.entity.ManHinh;
@@ -7,7 +8,6 @@ import beephone_shop_projects.entity.MauSac;
 import beephone_shop_projects.entity.Pin;
 import beephone_shop_projects.entity.Ram;
 import beephone_shop_projects.entity.Rom;
-import beephone_shop_projects.entity.SanPham;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.core.config.Projection;
 

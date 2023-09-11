@@ -3,6 +3,7 @@ package beephone_shop_projects.core.admin.voucher_management.service.impl;
 import beephone_shop_projects.core.admin.voucher_management.model.request.CreateVoucherRequest;
 import beephone_shop_projects.core.admin.voucher_management.model.request.FindVoucherRequest;
 import beephone_shop_projects.core.admin.voucher_management.model.request.UpdateVoucherRequest;
+import beephone_shop_projects.core.admin.voucher_management.model.response.CheckVoucherResponse;
 import beephone_shop_projects.core.admin.voucher_management.model.response.VoucherResponse;
 import beephone_shop_projects.core.admin.voucher_management.repository.VoucherRepository;
 import beephone_shop_projects.core.admin.voucher_management.service.VoucherService;
@@ -12,13 +13,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Service
 @Validated
+@Component
 public class VoucherServiceImpl implements VoucherService {
 
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -27,10 +34,32 @@ public class VoucherServiceImpl implements VoucherService {
     @Autowired
     private VoucherRepository voucherRepository;
 
-//    @Override
-//    public Page<VoucherResponse> getAll(Pageable pageable) {
-//        return voucherRepository.getAllVoucher(pageable);
-//    }
+    @Scheduled(fixedRate = 5000, initialDelay = 30000)
+    public List<Voucher> updateStatusVoucher() {
+        Date dateTime = new Date();
+        List<Voucher> listToUpdate = new ArrayList<>();
+
+        List<Voucher> list = voucherRepository.checkToStartAfterAndStatus(dateTime, 3);
+        List<Voucher> list1 = voucherRepository.checkEndDateAndStatus(dateTime, 2);
+        List<Voucher> list3 = voucherRepository.checkToStartBeforDateNowAndStatus(dateTime, 1);
+
+        listToUpdate.addAll(list);
+        listToUpdate.addAll(list1);
+        listToUpdate.addAll(list3);
+
+        for (Voucher v : listToUpdate) {
+            if (list.contains(v)) {
+                v.setTrangThai(3);
+            }
+            if (list1.contains(v)) {
+                v.setTrangThai(2);
+            }
+            if (list3.contains(v)) {
+                v.setTrangThai(1);
+            }
+        }
+        return voucherRepository.saveAll(listToUpdate);
+    }
 
     @Override
     public VoucherResponse getOne(String id) {
@@ -50,15 +79,28 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     public Voucher addVoucher(@Valid CreateVoucherRequest request) {
+        Integer status = 0;
+        Date dateTime = new Date();
+        if (request.getNgayBatDau().after(dateTime) && request.getNgayKetThuc().before(dateTime)){
+            status = 1;
+        }
+        if (request.getNgayBatDau().before(dateTime)){
+            status = 2;
+        }
+        if (request.getNgayKetThuc().after(dateTime)){
+            status = 3;
+        }
         Voucher voucher = Voucher.builder()
                 .ma(generateRandomCode())
                 .ten(request.getTen())
                 .dieuKienApDung(request.getDieuKienApDung())
+                .giaTriToiDa(request.getGiaTriToiDa())
+                .loaiVoucher(request.getLoaiVoucher())
                 .soLuong(request.getSoLuong())
                 .ngayBatDau(request.getNgayBatDau())
                 .ngayKetThuc(request.getNgayKetThuc())
                 .giaTriVoucher(request.getGiaTriVoucher())
-                .trangThai(1)
+                .trangThai(status)
                 .build();
         return voucherRepository.save(voucher);
     }
@@ -66,9 +108,10 @@ public class VoucherServiceImpl implements VoucherService {
     @Override
     public Voucher updateVoucher(@Valid UpdateVoucherRequest request, String id) {
         Voucher voucher = voucherRepository.findById(id).get();
-        System.out.println(voucher);
         if (voucher != null) {
             voucher.setTen(request.getTen());
+            voucher.setGiaTriToiDa(request.getGiaTriToiDa());
+            voucher.setLoaiVoucher(request.getLoaiVoucher());
             voucher.setDieuKienApDung(request.getDieuKienApDung());
             voucher.setSoLuong(request.getSoLuong());
             voucher.setNgayBatDau(request.getNgayBatDau());
@@ -101,19 +144,57 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     public Page<Voucher> getAll(FindVoucherRequest request) {
-        if (request.getPageNo() == null){
+        if (request.getPageNo() == null) {
             request.setPageNo(1);
         }
-        if (request.getPageSize() == null){
+        if (request.getPageSize() == null) {
             request.setPageSize(5);
         }
-        if (request.getKeyword() == null){
+        if (request.getKeyword() == null) {
             request.setKeyword("");
         }
         Pageable pageable = PageRequest.of(request.getPageNo() - 1, request.getPageSize());
-        Page<Voucher> vouchers = voucherRepository.findAll(pageable,request);
+        Page<Voucher> vouchers = voucherRepository.findAll(pageable, request);
         return vouchers;
     }
 
+    @Override
+    public CheckVoucherResponse checkVoucher(String input) {
+        CheckVoucherResponse response = new CheckVoucherResponse();
+        if (input == null || input.isBlank()) {
+            return null;
+        } else {
+            VoucherResponse voucher = voucherRepository.findCodeVoucher(input);
+            if (voucher != null) {
+                if (voucher.getMa().equals(input) && voucher.getSoLuong() > 0 && voucher.getTrangThai() == 1) {
+                    response.setVoucher(voucher);
+                    response.setMessageError("Found !!!");
+                } else if (!voucher.getMa().equals(input) || voucher.getTrangThai() != 1) {
+                    response.setMessageError("Mã giảm giá " + input + " không tồn tại.");
+                } else if (voucher.getMa().equals(input) && voucher.getSoLuong() <= 0) {
+                    response.setMessageError("Hết lượt sử dụng.");
+                } else {
+                    response.setMessageError("Mã giảm giá " + input + " không tồn tại.");
+                }
+            } else {
+                response.setMessageError("Mã giảm giá " + input + " không tồn tại.");
+            }
+        }
+        return response;
+    }
 
+    @Override
+    public Page<VoucherResponse> getVoucherStatusIsActive(FindVoucherRequest request) {
+        if (request.getPageNo() == null) {
+            request.setPageNo(1);
+        }
+        if (request.getPageSize() == null) {
+            request.setPageSize(5);
+        }
+        if (request.getKeyword() == null) {
+            request.setKeyword("");
+        }
+        Pageable pageable = PageRequest.of(request.getPageNo() - 1, request.getPageSize());
+        return voucherRepository.getVoucherStatusIsActive(pageable, request);
+    }
 }

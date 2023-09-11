@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.admin.product_management.controller;
 
+import beephone_shop_projects.core.admin.product_management.model.request.CreateChip;
 import beephone_shop_projects.core.admin.product_management.service.impl.ChipServiceImpl;
 import beephone_shop_projects.entity.Chip;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +46,7 @@ public class ChipRestController {
     }
 
     @PostMapping("/save")
-    public void save(@RequestBody Chip anh) {
+    public void save(@RequestBody CreateChip anh) {
         chipService.insert(anh);
     }
 

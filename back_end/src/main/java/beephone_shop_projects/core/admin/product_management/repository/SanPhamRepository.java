@@ -1,5 +1,7 @@
 package beephone_shop_projects.core.admin.product_management.repository;
 
+import beephone_shop_projects.core.admin.product_management.model.responce.CauHinhResponce;
+import beephone_shop_projects.core.admin.product_management.model.responce.ChiTietSanPhamResponce;
 import beephone_shop_projects.core.admin.product_management.model.responce.SanPhamResponce;
 import beephone_shop_projects.entity.SanPham;
 import beephone_shop_projects.repository.ISanPhamRepository;
@@ -27,6 +29,24 @@ public interface SanPhamRepository extends ISanPhamRepository {
              order by a.created_at desc
              """, nativeQuery = true)
     Page<SanPhamResponce> findAllChiTietSanPham(Pageable pageable);
+
+
+    @Modifying
+    @Transactional
+    @Query(value = """
+             UPDATE  san_pham SET delected = :delected 
+             where id = :id
+            """, nativeQuery = true)
+    void updateDelected(@Param("delected") Boolean delected, @Param("id") String id);
+
+
+    List<SanPham> findAllByDelected(Boolean delected);
+
+
+    @Query(value = """
+              SELECT Max(don_gia) FROM san_pham_chi_tiet
+            """, nativeQuery = true)
+    Double getDonGiaLonNhat();
 
     @Query(value = """
                                        	SELECT m.id,m.ten_san_pham,
@@ -61,7 +81,7 @@ public interface SanPhamRepository extends ISanPhamRepository {
                                               a.delected
             """, nativeQuery = true)
     Page<SanPhamResponce> searchByAllPosition(Pageable pageable
-                                           , @Param("ram") String ram,
+            , @Param("ram") String ram,
                                               @Param("rom") String rom,
                                               @Param("nha_san_xuat") String nhaSanXuat,
                                               @Param("mau_sac") String mauSac,
@@ -72,23 +92,4 @@ public interface SanPhamRepository extends ISanPhamRepository {
                                               @Param("chip") String chip,
                                               @Param("manHinh") String manHinh
     );
-
-    @Modifying
-    @Transactional
-    @Query(value = """
-             UPDATE  san_pham SET delected = :delected 
-             where id = :id
-            """, nativeQuery = true)
-    void updateDelected(@Param("delected") Boolean delected, @Param("id") String id);
-
-
-    List<SanPham> findAllByDelected(Boolean delected);
-
-
-    @Query(value = """
-              SELECT Max(don_gia) FROM san_pham_chi_tiet
-            """, nativeQuery = true)
-    Double getDonGiaLonNhat();
-
-
 }

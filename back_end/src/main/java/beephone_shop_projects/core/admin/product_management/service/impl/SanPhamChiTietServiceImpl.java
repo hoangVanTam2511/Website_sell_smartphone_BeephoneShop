@@ -27,7 +27,7 @@ public class SanPhamChiTietServiceImpl  {
         listId.forEach((item) -> {
             SanPhamChiTiet sanPhamChiTiet = new SanPhamChiTiet();
             sanPhamChiTiet.setIdSanPham(sanPham);
-//            sanPhamChiTiet.setIdCauHinh(cauHinhRepository.findById(item).get());
+            sanPhamChiTiet.setIdCauHinh(cauHinhRepository.findById(item).get());
             sanPhamChiTietRepository.save(sanPhamChiTiet);
         });
 

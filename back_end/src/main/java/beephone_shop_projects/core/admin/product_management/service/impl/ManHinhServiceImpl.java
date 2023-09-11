@@ -4,11 +4,13 @@ import beephone_shop_projects.core.admin.product_management.model.request.Create
 import beephone_shop_projects.core.admin.product_management.repository.ManHinhRepository;
 import beephone_shop_projects.core.admin.product_management.service.IService;
 import beephone_shop_projects.entity.ManHinh;
+import beephone_shop_projects.entity.MauSac;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.security.PrivateKey;
 import java.util.ArrayList;
 
 @Service
@@ -29,7 +31,7 @@ public class ManHinhServiceImpl implements IService<ManHinh> {
     }
 
     public void insert(CreateManHinh req) {
-        ManHinh manHinh = new ManHinh(req.getMamanHinh(),req.getTenmanHinh());
+        ManHinh manHinh = new ManHinh(req.getMamanHinh(),req.getTenmanHinh(),req.getDoPhanGiai());
         manHinhRepository.save(manHinh);
     }
 

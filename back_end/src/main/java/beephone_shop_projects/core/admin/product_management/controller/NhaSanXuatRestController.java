@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.admin.product_management.controller;
 
+import beephone_shop_projects.core.admin.product_management.model.request.CreateNhaSanXuat;
 import beephone_shop_projects.core.admin.product_management.service.impl.NhaSanXuatServiceImpl;
 import beephone_shop_projects.entity.NhaSanXuat;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +46,7 @@ public class NhaSanXuatRestController {
     }
 
     @PostMapping("/save")
-    public void save(@RequestBody NhaSanXuat mauSac) {
+    public void save(@RequestBody CreateNhaSanXuat mauSac) {
         nhaSanXuatService.insert(mauSac);
     }
 

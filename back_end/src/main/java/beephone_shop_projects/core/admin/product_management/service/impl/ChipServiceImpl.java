@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.admin.product_management.service.impl;
 
+import beephone_shop_projects.core.admin.product_management.model.request.CreateChip;
 import beephone_shop_projects.core.admin.product_management.repository.ChipRepository;
 import beephone_shop_projects.core.admin.product_management.service.IService;
 import beephone_shop_projects.entity.Chip;
@@ -25,6 +26,13 @@ public class ChipServiceImpl implements IService<Chip> {
     @Override
     public void insert(Chip chip) {
        chipRepository.save(chip);
+    }
+
+    public void insert(CreateChip req) {
+        Chip chip = new Chip();
+        chip.setTenChip(req.getTenChip());
+        chip.setMa(req.getMaChip());
+        chipRepository.save(chip);
     }
 
     @Override

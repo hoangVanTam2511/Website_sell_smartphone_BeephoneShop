@@ -27,7 +27,7 @@ public class FindKhuyenMaiRequest {
 
     private String dieuKienGiamGia;
 
-    private Boolean trangThai;
+    private Integer trangThai;
 
     private String keyword;
 

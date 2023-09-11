@@ -795,7 +795,7 @@ export function OrderHistoryDialog(props) {
       >
         <DialogContent>
           <div style={{ width: "1100px", maxHeight: "400px" }}>
-            <TableAntd
+            <Table
               className=""
               columns={columns}
               dataSource={dataSource}

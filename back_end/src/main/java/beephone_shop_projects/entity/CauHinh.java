@@ -30,15 +30,7 @@ public class CauHinh extends PrimaryEntity implements Serializable {
     private Rom idRom;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_pin")
-    private Pin idPin;
-
-    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_mau_sac")
     private MauSac idMauSac;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_man_hinh")
-    private ManHinh idManHinh;
 
 }

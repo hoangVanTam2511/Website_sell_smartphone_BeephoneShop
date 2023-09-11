@@ -8,6 +8,8 @@ import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.springframework.data.domain.Page;
@@ -15,6 +17,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.lang.reflect.Field;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -34,6 +38,10 @@ public class CustomVoucherRepositoryImpl implements CustomVoucherRepository {
             Root<Voucher> root = criteriaQuery.from(Voucher.class);
             criteriaQuery.select(root);
 
+            Path<Object> sortByField = root.get("createdAt");
+            Order orderByAscending = criteriaBuilder.desc(sortByField);
+            criteriaQuery.orderBy(orderByAscending);
+
             CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(long.class);
             Root<Voucher> countRoot = countQuery.from(Voucher.class);
 
@@ -50,6 +58,11 @@ public class CustomVoucherRepositoryImpl implements CustomVoucherRepository {
             if (request.getTrangThai() != null) {
                 predicates.add(criteriaBuilder.equal(root.get("trangThai"), request.getTrangThai()));
                 countPredicates.add(criteriaBuilder.equal(countRoot.get("trangThai"), request.getTrangThai()));
+            }
+
+            if (request.getSoLuong() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("soLuong"), request.getSoLuong()));
+                countPredicates.add(criteriaBuilder.equal(countRoot.get("soLuong"), request.getSoLuong()));
             }
 
             Expression<Date> expression2 = criteriaBuilder.function("DATE", Date.class, countRoot.get("ngayBatDau"));

@@ -1,0 +1,83 @@
+.add-promotion-container {
+  width: 100%;
+  height: auto;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.table-container {
+  width: 100%;
+  height: auto;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.input-container {
+  text-align: center;
+  margin-right: 27px;
+  margin-top: 10px;
+}
+
+.row-input {
+  margin-bottom: 10px;
+  display: block;
+}
+.row-input-date {
+  margin-bottom: 10px;
+  display: block;
+  padding-left: 25px;
+}
+
+.btn-accept {
+  margin-right: 60px;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.input-container-dieukiengiamgia {
+  margin-bottom: 15px;
+  text-align: center;
+}
+.title-promotion {
+  padding-top: 20px;
+  padding-left: 20px;
+  display: flex;
+}
+.validate {
+  display: block; /* Hiển thị thông báo lỗi ở dưới input */
+  margin-top: 5px; /* Khoảng cách từ input */
+  padding-left: 25px;
+  font-size: 14px;
+  text-align: start;
+  color: red;
+}
+.selected-row {
+  background-color: #f0f0f0; /* Màu nền khi dòng được chọn */
+}
+/* Để tùy chỉnh phần tiêu đề của modal */
+.ant-modal-title {
+  color: white; /* Màu chữ tiêu đề */
+  font-size: 24px; /* Kích thước chữ tiêu đề */
+  border-radius: 10px 10px 0 0; /* Bo góc trên của tiêu đề */
+  padding: 10px 20px; /* Khoảng cách giữa nền và nội dung tiêu đề */
+  text-align: center; /* Căn giữa tiêu đề */
+}
+
+/* Để tùy chỉnh các nút đóng và thu nhỏ trên tiêu đề */
+.ant-modal-close-x,
+.ant-modal-close-icon {
+  color: black; /* Màu của nút đóng và thu nhỏ */
+  font-size: 20px; /* Kích thước của nút đóng và thu nhỏ */
+  line-height: 1; /* Độ dày của đường viền xung quanh nút */
+}
+
+/* Để thay đổi màu của nút đóng và thu nhỏ khi rê chuột qua */
+.ant-modal-close-x:hover,
+.ant-modal-close-icon:hover {
+  color: #f5222d; /* Màu khi rê chuột qua */
+}

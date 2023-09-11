@@ -1,0 +1,111 @@
+/* YourComponent.css */
+.your-component-container {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.boloc-voucher {
+  margin-bottom: 10px;
+  margin-right: 3px;
+}
+
+.row-search {
+  margin-left: 30px;
+  display: flex;
+}
+
+.search-component-container {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 25px;
+  margin-top: 10px;
+}
+
+.btn-search {
+  .btn-search-voucher {
+    background-color: rgb(69 88 255);
+    color: white;
+    border-radius: 10px;
+    margin-left: 20px;
+    margin-right: 10px;
+    margin-top: 10px;
+    &:hover {
+      background-color: rgba(163, 224, 255, 0.667);
+      color: rgb(232, 36, 36);
+      border-radius: 10px;
+    }
+  }
+}
+
+.btn-reset {
+  .btn-search-reset {
+    background-color: rgb(69 88 255);
+    color: white;
+    border-radius: 10px;
+    margin-right: 10px;
+    &:hover {
+      background-color: rgba(163, 224, 255, 0.667);
+      color: rgb(232, 36, 36);
+      border-radius: 10px;
+    }
+  }
+}
+
+.btn-add {
+  margin-right: 20px;
+  margin-top: 20px;
+  .bl-add {
+    float: right;
+    padding-left: 10px;
+  }
+  .btn-add-voucher {
+    background-color: rgb(69 88 255);
+    color: white;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    margin-left: 20px;
+    margin-right: 10px;
+    &:hover {
+      background-color: rgba(163, 224, 255, 0.667);
+      color: rgb(232, 36, 36);
+      border-radius: 10px;
+    }
+  }
+}
+
+.phan-trang {
+  display: flex;
+  justify-content: center;
+}
+
+.boloc-trangThai {
+  padding-top: 20px;
+  display: flex;
+  margin-left: 6em;
+}
+
+.boloc-maVoucher {
+  padding-left: 20px;
+  display: flex;
+  margin-left: 28px;
+}
+.search1 {
+  padding-right: 5em;
+}
+.boloc-nho {
+  padding-top: 7px;
+  height: 50%;
+}
+
+h6 {
+  font-weight: normal;
+}
+
+.detail-voucher {
+  padding: 15px;
+}

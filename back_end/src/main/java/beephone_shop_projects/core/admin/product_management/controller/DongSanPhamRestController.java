@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.admin.product_management.controller;
 
+import beephone_shop_projects.core.admin.product_management.model.request.CreateDongSanPham;
 import beephone_shop_projects.core.admin.product_management.service.impl.DongSanPhamServiceImpl;
 import beephone_shop_projects.entity.DongSanPham;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +45,7 @@ public class DongSanPhamRestController {
     }
 
     @PostMapping("/save")
-    public void save(@RequestBody DongSanPham anh) {
+    public void save(@RequestBody CreateDongSanPham anh) {
         dongSanPhamService.insert(anh);
     }
 

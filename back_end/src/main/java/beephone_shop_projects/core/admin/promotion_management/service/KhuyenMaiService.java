@@ -7,6 +7,7 @@ import beephone_shop_projects.core.admin.promotion_management.model.request.Upda
 import beephone_shop_projects.entity.KhuyenMai;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface KhuyenMaiService {
 
@@ -18,7 +19,7 @@ public interface KhuyenMaiService {
 
     KhuyenMai updateKhuyenMai(@Valid UpdateKhuyenMaiRequest request, String ma);
 
-    Boolean deleteVoucher(String ma);
+    Boolean deleteKhuyenMai(String ma);
 
     Boolean doiTrangThai(String id);
 

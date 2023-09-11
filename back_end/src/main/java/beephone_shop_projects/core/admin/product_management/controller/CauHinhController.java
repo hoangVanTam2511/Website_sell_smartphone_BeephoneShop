@@ -3,6 +3,8 @@ package beephone_shop_projects.core.admin.product_management.controller;
 import beephone_shop_projects.core.admin.product_management.model.request.CreateCauHinhRequest;
 import beephone_shop_projects.core.admin.product_management.model.responce.CauHinhResponce;
 import beephone_shop_projects.core.admin.product_management.service.impl.CauHinhServiceImpl;
+import beephone_shop_projects.entity.CauHinh;
+import beephone_shop_projects.entity.Chip;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

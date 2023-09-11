@@ -1,0 +1,68 @@
+/* Định dạng collapse panel */
+.collapse-panel {
+  .ant-collapse-header {
+    background-color: #ffffff;
+    border: none;
+  }
+
+  .ant-collapse-content-box {
+    border: 0px;
+    border-top: none;
+    background-color: #fff;
+    padding: 10px;
+  }
+
+  /* Định dạng nút Sửa và Xóa trong collapse panel */
+  //   .edit-button,
+  //   .delete-button {
+  //     display: block;
+  //     float: right;
+  //   }
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+/* Định dạng chung cho mỗi địa chỉ */
+.address-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+.address-content {
+  flex-grow: 1;
+}
+
+/* Định dạng chung cho mỗi địa chỉ */
+/* ... */
+
+/* Định dạng nút Sửa và Xóa */
+.address-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.edit-button,
+.delete-button {
+  background-color: #4b69ff;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.delete-button {
+  background-color: #ff4b4b;
+}
+
+/* Định dạng phần thông tin địa chỉ */
+.address-content {
+  flex-grow: 1;
+}
