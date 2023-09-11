@@ -5,6 +5,7 @@ import beephone_shop_projects.core.admin.order_management.repository.GioHangChiT
 import beephone_shop_projects.core.admin.order_management.repository.impl.GioHangRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.repository.impl.HinhThucThanhToanRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.repository.impl.HoaDonRepositoryImpl;
+import beephone_shop_projects.core.admin.order_management.service.GiaoHangNhanhService;
 import beephone_shop_projects.core.admin.product_management.repository.SanPhamChiTietRepository;
 import beephone_shop_projects.entity.GioHang;
 import beephone_shop_projects.entity.GioHangChiTiet;
@@ -45,6 +46,9 @@ public class TestController {
   @Autowired
   private HinhThucThanhToanRepositoryImpl hinhThucThanhToanRepository;
 
+  @Autowired
+  private GiaoHangNhanhService giaoHangNhanhService;
+
   @GetMapping("/products")
   public ResponseEntity<?> home1() {
     return new ResponseEntity<>(sanPhamChiTietRepository.getAll(), HttpStatus.OK);
@@ -79,13 +83,18 @@ public class TestController {
 
     gioHangChiTietRepository.save(cartDetail);
 
-    return new ResponseEntity<>(HttpStatus.OK);
+    return new ResponseEntity<>(gioHang, HttpStatus.OK);
   }
 
   @GetMapping("/payments/{id}")
   public ResponseEntity<?> home(@PathVariable("id") String id) {
     List<HinhThucThanhToan> list = hinhThucThanhToanRepository.getPaymentMethodsByOrderId(id);
     return new ResponseEntity<>(list, HttpStatus.OK);
+  }
+
+  @GetMapping("/province")
+  public ResponseEntity<?> home7() {
+    return new ResponseEntity<>(giaoHangNhanhService.getListProvince(), HttpStatus.OK);
   }
 
 }
