@@ -25,7 +25,7 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import dayjs from "dayjs"; // Import thư viện Day.js
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { isEmpty, isBefore, isAfter, equals } from "validator";
+import { isEmpty, isAfter, equals } from "validator";
 
 const UpdateVoucher = () => {
   let [voucher, setVoucher] = useState({});
@@ -43,7 +43,6 @@ const UpdateVoucher = () => {
   const { id } = useParams();
   const [value2, setValue2] = React.useState();
   const [selectDiscount, setSeclectDiscount] = useState("1");
-  const [giaTriToiThieu, setGiaTriToiThieu] = useState(0);
   const [giaTriToiDa, setGiaTriToiDa] = useState(0);
   const [valueToiThieu, setValueToiThieu] = React.useState();
   const [valueToiDa, setValueToiDa] = React.useState();
@@ -75,14 +74,6 @@ const UpdateVoucher = () => {
   };
 
   const handleChange = (event) => {
-    // const inputValue = event.target.value;
-    // const numericValue = parseFloat(inputValue.replace(/[^0-9.-]+/g, ""));
-    // const formattedValue = inputValue
-    //   .replace(/[^0-9]+/g, "")
-    //   .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    // setValue(numericValue);
-    // setGiaTriVoucher(formattedValue);
-
     if (selectDiscount === "1") {
       const inputValue = event.target.value;
       const numericValue = parseFloat(inputValue.replace(/[^0-9.-]+/g, ""));
@@ -117,16 +108,6 @@ const UpdateVoucher = () => {
     setDieuKienApDung(formattedValue);
   };
 
-  const handleChangeGiaTriToiThieu = (event) => {
-    const inputValue = event.target.value;
-    const numericValue = parseFloat(inputValue.replace(/[^0-9.-]+/g, ""));
-    const formattedValue = inputValue
-      .replace(/[^0-9]+/g, "")
-      .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    setValueToiThieu(numericValue);
-    setGiaTriToiThieu(formattedValue);
-  };
-
   const handleChangeGiaTriToiDa = (event) => {
     const inputValue = event.target.value;
     const numericValue = parseFloat(inputValue.replace(/[^0-9.-]+/g, ""));
@@ -157,12 +138,12 @@ const UpdateVoucher = () => {
   };
 
   useEffect(() => {
+    detailVoucher();
     setTen(() => voucher.ten);
     setSoLuong(() => voucher.soLuong);
     setNgayBatDau(() => voucher.ngayBatDau);
     setNgayKetThuc(() => voucher.ngayKetThuc);
     setGiaTriToiDa(() => voucher.giaTriToiDa);
-    setGiaTriToiThieu(() => voucher.giaTriToiThieu);
     setSeclectDiscount(() => voucher.loaiVoucher);
     convertTien();
   }, [voucher]);
@@ -177,10 +158,6 @@ const UpdateVoucher = () => {
       })
       .catch((error) => {});
   };
-
-  useEffect(() => {
-    detailVoucher();
-  }, []);
 
   let isToastVisible = false;
 
@@ -357,24 +334,6 @@ const UpdateVoucher = () => {
                   ),
                 }}
                 style={{ marginLeft: "25px", width: "100%" }}
-              />
-              <TextField
-                label="Giá Trị Tối Thiểu:"
-                value={giaTriToiThieu}
-                id="outlined-start-adornment"
-                onChange={handleChangeGiaTriToiThieu}
-                InputProps={{
-                  inputMode: "numeric",
-                  startAdornment: (
-                    <InputAdornment position="start">VND</InputAdornment>
-                  ),
-                }}
-                style={{
-                  marginLeft: "25px",
-                  width: "60%",
-                  display: selectDiscount === "2" ? "block" : "none",
-                  paddingRight: "25px",
-                }}
               />
 
               <TextField

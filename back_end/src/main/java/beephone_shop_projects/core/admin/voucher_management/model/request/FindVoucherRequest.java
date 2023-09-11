@@ -27,8 +27,6 @@ public class FindVoucherRequest {
 
     private BigDecimal dieuKienApDung;
 
-    private BigDecimal giaTriToiThieu;
-
     private BigDecimal giaTriVoucher;
 
     private BigDecimal giaTriToiDa;

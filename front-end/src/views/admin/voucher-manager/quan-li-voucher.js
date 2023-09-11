@@ -25,6 +25,9 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { Box, Pagination } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
+import AddIcon from "@mui/icons-material/Add";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 
 //show
 const HienThiVoucher = () => {
@@ -53,11 +56,7 @@ const HienThiVoucher = () => {
         },
       })
       .then((response) => {
-        const modifiedData = response.data.content.map((item, index) => ({
-          ...item,
-          stt: index + 1,
-        }));
-        setListVoucher(modifiedData);
+        setListVoucher(response.data.content);
         setTotalPages(response.data.totalPages);
       });
   };
@@ -66,7 +65,7 @@ const HienThiVoucher = () => {
     loadDataListVoucher(currentPage);
     const intervalId = setInterval(() => {
       loadDataListVoucher(currentPage);
-    }, 60000);
+    }, 10000);
     // Xóa interval khi component unmounted
     return () => clearInterval(intervalId);
   }, [
@@ -79,11 +78,11 @@ const HienThiVoucher = () => {
   ]);
 
   const handleReset = () => {
-    loadDataListVoucher(currentPage);
     setSearchTatCa("");
-    setSearchNgayBatDau("");
-    setSearchNgayKetThuc("");
+    setSearchNgayBatDau(null);
+    setSearchNgayKetThuc(null);
     setSearchTrangThai("");
+    setCurrentPage(1);
   };
 
   const doiTrangThaiVoucher = (id) => {
@@ -133,7 +132,7 @@ const HienThiVoucher = () => {
       dataIndex: "stt",
       width: "1%",
       align: "center",
-      render: (text) => <span>{text}</span>,
+      render: (text, record) => <span>{listVoucher.indexOf(record) + 1}</span>,
       sorter: (a, b) => a.stt - b.stt,
     },
     {
@@ -183,30 +182,6 @@ const HienThiVoucher = () => {
         return <span>{formattedValue}</span>;
       },
     },
-    // {
-    //   title: "Giá Trị Tối Thiểu",
-    //   dataIndex: "giaTriToiThieu",
-    //   maxWidth: "1%",
-    //   whiteSpace: "pre-line",
-    //   overflow: "hidden",
-    //   width: "1%",
-    //   render: (value) => {
-    //     const formattedValue = numeral(value).format("0,0 VND") + " VNĐ";
-    //     return <span>{formattedValue}</span>;
-    //   },
-    // },
-    // {
-    //   title: "Giá Trị Tối Đa",
-    //   dataIndex: "giaTriToiDa",
-    //   maxWidth: "1%",
-    //   whiteSpace: "pre-line",
-    //   overflow: "hidden",
-    //   width: "1%",
-    //   render: (value) => {
-    //     const formattedValue = numeral(value).format("0,0 VND") + " VNĐ";
-    //     return <span>{formattedValue}</span>;
-    //   },
-    // },
     {
       title: "Thời Gian Bắt Đầu - Kết Thúc",
       dataIndex: "thoiGian",
@@ -310,15 +285,11 @@ const HienThiVoucher = () => {
               <div>
                 <Tooltip title="Change">
                   <Button
-                    onClick={() => doiTrangThaiVoucher(record.id)}
+                    onClick={() => {}}
                     style={{ border: "none", background: "none", padding: "0" }}
                   >
-                    <FontAwesomeIcon
-                      icon={faRotateRight}
-                      style={{
-                        color: record.trangThai === 1 ? "green" : "red",
-                      }}
-                    />
+                    {/* <FontAwesomeIcon icon={faRotateRight} /> */}
+                    <RemoveRedEyeIcon fontSize="small" />
                   </Button>
                   <ToastContainer />
                 </Tooltip>
@@ -337,20 +308,6 @@ const HienThiVoucher = () => {
       },
     },
   ];
-
-  const mergedColumns = columns.map((col) => {
-    if (!col.editable) {
-      return col;
-    }
-    return {
-      ...col,
-      onCell: (record) => ({
-        record,
-        dataIndex: col.dataIndex,
-        title: col.title,
-      }),
-    };
-  });
 
   const chuyenTrang = (event, page) => {
     setCurrentPage(page);
@@ -400,12 +357,18 @@ const HienThiVoucher = () => {
           <div className="search1">
             <span className="boloc-nho">
               <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  label="Ngày Bắt Đầu"
-                  value={dayjs(searchNgayBatDau, "DD/MM/YYYY")}
-                  format="DD/MM/YYYY"
-                  onChange={handleSearchNgayBatDauChange}
-                />
+                <DemoContainer components={["DatePicker"]}>
+                  <DatePicker
+                    label="Ngày Bắt Đầu"
+                    value={
+                      searchNgayBatDau
+                        ? dayjs(searchNgayBatDau, "DD/MM/YYYY")
+                        : null
+                    }
+                    format="DD/MM/YYYY"
+                    onChange={handleSearchNgayBatDauChange}
+                  />
+                </DemoContainer>
               </LocalizationProvider>
             </span>
           </div>
@@ -413,36 +376,40 @@ const HienThiVoucher = () => {
           <div className="search1">
             <span className="boloc-nho">
               <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  label="Ngày Kết Thúc"
-                  value={dayjs(searchNgayKetThuc, "DD/MM/YYYY")}
-                  format="DD/MM/YYYY"
-                  onChange={handleSearchNgayKetThucChange}
-                />
+                <DemoContainer components={["DatePicker"]}>
+                  <DatePicker
+                    label="Ngày Kết Thúc"
+                    value={
+                      searchNgayKetThuc
+                        ? dayjs(searchNgayKetThuc, "DD/MM/YYYY")
+                        : null
+                    }
+                    format="DD/MM/YYYY"
+                    onChange={handleSearchNgayKetThucChange}
+                  />
+                </DemoContainer>
               </LocalizationProvider>
             </span>
           </div>
           <div className="search1">
-            <span className="boloc-nho"></span>
-            <FormControl sx={{ width: "15em" }}>
-              <InputLabel id="demo-select-small-label">
-                Chọn Trạng Thái
-              </InputLabel>
-              <Select
-                labelId="demo-select-small-label"
-                id="demo-select-small"
-                value={searchTrangThai}
-                label="Chọn Trạng Thái"
-                onChange={handleSearchTrangThaiChange}
-              >
-                {/* <MenuItem value="">
-                  <em>Tất cả</em>
-                </MenuItem> */}
-                <MenuItem value={parseInt(1)}>Còn Hiệu lực</MenuItem>
-                <MenuItem value={parseInt(2)}>Hết Hiệu lực</MenuItem>
-                <MenuItem value={parseInt(3)}>Chưa Bắt Đầu</MenuItem>
-              </Select>
-            </FormControl>
+            <span className="boloc-nho">
+              <FormControl sx={{ width: "15em", marginTop: "7px" }}>
+                <InputLabel id="demo-select-small-label">
+                  Chọn Trạng Thái
+                </InputLabel>
+                <Select
+                  labelId="demo-select-small-label"
+                  id="demo-select-small"
+                  value={searchTrangThai}
+                  label="Chọn Trạng Thái"
+                  onChange={handleSearchTrangThaiChange}
+                >
+                  <MenuItem value={parseInt(1)}>Còn Hiệu lực</MenuItem>
+                  <MenuItem value={parseInt(2)}>Hết Hiệu lực</MenuItem>
+                  <MenuItem value={parseInt(3)}>Chưa Bắt Đầu</MenuItem>
+                </Select>
+              </FormControl>
+            </span>
           </div>
         </div>
       </div>
@@ -463,7 +430,8 @@ const HienThiVoucher = () => {
           <span className="bl-add">
             <Link to="/them-voucher">
               <Button className="btn-add-voucher">
-                <FontAwesomeIcon icon={faPlus} />
+                {/* <FontAwesomeIcon icon={faPlus} /> */}
+                <AddIcon fontSize="small" />
                 &nbsp; Thêm voucher{" "}
               </Button>
             </Link>
@@ -474,7 +442,7 @@ const HienThiVoucher = () => {
             <Table
               bordered
               dataSource={listVoucher}
-              columns={mergedColumns}
+              columns={columns}
               rowClassName="editable-row"
               pagination={false}
               rowKey="id"

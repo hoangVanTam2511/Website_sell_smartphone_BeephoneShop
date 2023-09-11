@@ -161,6 +161,8 @@ const VerticalNav = memo((props) => {
           </Link>
         </li> */}
 
+      
+
         <Accordion.Item
           as="li"
           className={`${activeMenu === "0" ? "active" : ""}`}
@@ -257,9 +259,8 @@ const VerticalNav = memo((props) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/chip" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/chip" ? "active" : ""
+                    } nav-link`}
                   to="/chip"
                 >
                   <i className="icon">
@@ -285,9 +286,8 @@ const VerticalNav = memo((props) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/ram" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/ram" ? "active" : ""
+                    } nav-link`}
                   to="/ram"
                 >
                   <i className="icon">
@@ -312,11 +312,12 @@ const VerticalNav = memo((props) => {
                 </Link>
               </li>
 
+
+
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/dong-san-pham" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/dong-san-pham" ? "active" : ""
+                    } nav-link`}
                   to="/dong-san-pham"
                 >
                   <i className="icon">
@@ -341,11 +342,12 @@ const VerticalNav = memo((props) => {
                 </Link>
               </li>
 
+
+
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/man-hinh" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/man-hinh" ? "active" : ""
+                    } nav-link`}
                   to="/man-hinh"
                 >
                   <i className="icon">
@@ -372,9 +374,8 @@ const VerticalNav = memo((props) => {
 
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/nha-san-xuat" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/nha-san-xuat" ? "active" : ""
+                    } nav-link`}
                   to="/nha-san-xuat"
                 >
                   <i className="icon">
@@ -401,9 +402,8 @@ const VerticalNav = memo((props) => {
 
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/pin" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/pin" ? "active" : ""
+                    } nav-link`}
                   to="/pin"
                 >
                   <i className="icon">
@@ -430,9 +430,8 @@ const VerticalNav = memo((props) => {
 
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/rom" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/rom" ? "active" : ""
+                    } nav-link`}
                   to="/rom"
                 >
                   <i className="icon">
@@ -456,6 +455,7 @@ const VerticalNav = memo((props) => {
                   <span className="item-name">Rom</span>
                 </Link>
               </li>
+
             </ul>
           </Accordion.Collapse>
         </Accordion.Item>
@@ -528,9 +528,8 @@ const VerticalNav = memo((props) => {
             <ul className="sub-nav">
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/nhan-vien" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/nhan-vien" ? "active" : ""
+                    } nav-link`}
                   to="/nhan-vien"
                 >
                   <i className="icon">
@@ -556,9 +555,8 @@ const VerticalNav = memo((props) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/khach-hang" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/khach-hang" ? "active" : ""
+                    } nav-link`}
                   to="/khach-hang"
                 >
                   <i className="icon">
@@ -655,9 +653,8 @@ const VerticalNav = memo((props) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/khuyen-mai" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/khuyen-mai" ? "active" : ""
+                    } nav-link`}
                   to="/khuyen-mai"
                 >
                   <i className="icon">
