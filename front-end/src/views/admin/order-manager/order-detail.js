@@ -1,7 +1,7 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { styled } from '@mui/material/styles';
 import { Row, Col } from "react-bootstrap";
-import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button, Input, Select, Table } from "antd";
 import axios from "axios";
 import { FaTruck, FaRegCalendarCheck, FaRegFileAlt } from "react-icons/fa";
@@ -18,11 +18,13 @@ import {
   Dialog,
   Select as SelectMui,
   IconButton,
+  Slide,
   Button as MuiButton,
   TextField,
   FormControl,
   InputLabel,
   MenuItem,
+  FormHelperText,
   CardActionArea,
   CardMedia,
   CardContent,
@@ -59,34 +61,9 @@ import {
 import list from "./data";
 import useFormItemStatus from "antd/es/form/hooks/useFormItemStatus";
 import LocalShippingOutlined from "@mui/icons-material/LocalShippingOutlined";
-import AddCircleOutline from '@mui/icons-material/AddCircleOutline';
-import { Alert, AlertTitle, FormHelperText, Slide } from '@mui/material';
-import { TextareaAutosize } from '@mui/base/TextareaAutosize';
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert from '@mui/material/Alert';
 
-const Transition = (props) => {
-  return <Slide {...props} direction="left" />;
-};
-
-const OrderDetail = (props) => {
-  const location = useLocation();
-  const { data } = location.state;
-  const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  const [open1, setOpen1] = React.useState(true);
-
-  const handleClick1 = () => {
-    setOpen1(true);
-  };
-
-  const handleClose1 = () => {
-    setOpen1(false);
-  };
-
+const OrderDetail = () => {
   const [isDone, setIsDone] = useState(false);
-  // let [message, setMessage] = useState(data.message);
   const [order, setOrder] = useState({});
   const [orderHistories, setOrderHistories] = useState([]);
   const [status, setStatus] = useState();
@@ -129,9 +106,6 @@ const OrderDetail = (props) => {
     getOrderById();
     getOrderHisoriesByOrderId();
     getPaymentMethodsById();
-
-    // delete location.state.data;
-
   }, []);
 
   const IconTrash = () => {
@@ -513,21 +487,21 @@ const OrderDetail = (props) => {
   const TimeLine = () => {
     return (
       <div className="time-line">
-        <Timeline minEvents={orderHistories && 5 + orderHistories.length} placeholder>
-          {orderHistories && orderHistories.map((item, index) => (
+        <Timeline minEvents={6 + orderHistories.length} placeholder>
+          {orderHistories.map((item, index) => (
             <TimelineEvent
               icon={
-                item.loaiThaoTac === 0
+                item.loaiThaoTac == 0
                   ? FaRegFileAlt
-                  : item.loaiThaoTac === 1
+                  : item.loaiThaoTac == 1
                     ? FaRegFileAlt
-                    : item.loaiThaoTac === 2
+                    : item.loaiThaoTac == 2
                       ? FaTruck
-                      : item.loaiThaoTac === 3
+                      : item.loaiThaoTac == 3
                         ? FaRegCalendarCheck
-                        : item.loaiThaoTac === 4
+                        : item.loaiThaoTac == 4
                           ? MdCancelPresentation
-                          : item.loaiThaoTac === 5
+                          : item.loaiThaoTac == 5
                             ? MdCancelPresentation
                             : ""
               }
@@ -1354,16 +1328,6 @@ const OrderDetail = (props) => {
 
 
       <div className="mt-5"></div>
-      {data.message &&
-        <Snackbar anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }} TransitionComponent={Transition} open={open1} autoHideDuration={3000} onClose={handleClose1}>
-          <Alert variant="filled" onClose={handleClose1} sx={{ width: '100%', backgroundColor: "#26A65B" }}>
-            {data.message}
-          </Alert>
-        </Snackbar>
-      }
     </>
   );
 };

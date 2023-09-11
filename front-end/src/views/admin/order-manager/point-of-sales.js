@@ -1,5 +1,4 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react'
-import { makeStyles } from "@material-ui/core/styles";
 import { Row, Col, Container } from 'react-bootstrap'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { styled } from '@mui/material/styles';
@@ -22,10 +21,9 @@ import Box from '@mui/material/Box';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import { TextareaAutosize } from '@mui/base/TextareaAutosize';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
-import { Alert, AlertTitle, FormHelperText, Slide } from '@mui/material';
+import { Alert, AlertTitle } from '@mui/material';
 import DiscountOutlinedIcon from '@mui/icons-material/DiscountOutlined';
 import CreditScoreOutlinedIcon from '@mui/icons-material/CreditScoreOutlined';
 import { ImCreditCard } from "react-icons/im";
@@ -39,13 +37,12 @@ import Badge from '@mui/joy/Badge';
 import Typography from '@mui/joy/Typography';
 import ChecklistIcon from '@mui/icons-material/Checklist';
 import Tabs, { tabsClasses } from '@mui/material/Tabs';
-import LocalMallOutlinedIcon from '@mui/icons-material/LocalMallOutlined';
 import Tab from '@mui/material/Tab';
 import { Button } from 'antd'
 
 import FormControl from '@mui/joy/FormControl';
-import Autocomplete from '@mui/material/Autocomplete';
-import { Input, Backdrop, FormControlLabel, InputAdornment, IconButton } from '@mui/material'
+import Autocomplete from '@mui/joy/Autocomplete';
+import { Input, FormControlLabel, InputAdornment, IconButton } from '@mui/material'
 import TextField from '@mui/material/TextField';
 import style from './style.css'
 import data from './data.js'
@@ -55,7 +52,6 @@ import { CustomerDialog, OrderPendingConfirmCloseDialog, ProductsDialog, ShipFee
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
-import CircularProgress from '@mui/material/CircularProgress';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
@@ -64,37 +60,27 @@ import EditIcon from '@mui/icons-material/Edit';
 import axios from 'axios';
 import { FaMoneyCheck, FaMoneyCheckAlt, FaRegCreditCard, FaRegMoneyBillAlt } from 'react-icons/fa';
 import { CheckCircleOutlined } from '@ant-design/icons';
-import { isNaN, map, parseInt } from 'lodash';
 import AddCircleOutline from '@mui/icons-material/AddCircleOutline';
-import OrderDetail from './order-detail';
+import { map } from 'lodash';
 
-const Transition = (props) => {
-  return <Slide {...props} direction="left" />;
-};
 const PointOfSales = () => {
 
 
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
-  const [selectDiscount, setSelectDiscount] = useState('VND');
+  const [selectDiscount, setSeclectDiscount] = useState('VND');
   const [delivery, setDelivery] = React.useState(false);
-  const [paymentWhenReceive, setPaymentWhenReceive] = useState(false);
-  const [discountNumber, setDiscountNumber] = useState(0);
-  const [discountInput, setDiscountInput] = useState(0);
+  const [paymentWhenReceive, setPaymentWhenReceive] = useState(true);
+  const [discountNumber, setDiscountNumber] = useState();
+  const [discountInput, setDiscountInput] = useState();
   const [description, setDescription] = useState('');
 
   const [products, setProducts] = useState([]);
   const [productsInCart, setProductsInCart] = useState([]);
 
   const [payment, setPayment] = useState(1);
-  const [surplusMoney, setSurplusMoney] = useState();
-  const [customerPayment, setCustomerPayment] = useState(0);
-  const [customerPaymentFormat, setCustomerPaymentFormat] = useState(0);
   const [customers, setCustomers] = useState([]);
   const [customer, setCustomer] = useState({});
-  const [customerNeedPay, setCustomerNeedPay] = useState(null);
-  const [customerNeedPayFormat, setCustomerNeedPayFormat] = useState(0);
-  const [isNotPayment, setIsNotPayment] = useState(false);
 
   const [order, setOrder] = useState({});
   const [cartId, setCartId] = useState("");
@@ -137,48 +123,25 @@ const PointOfSales = () => {
     } catch (error) { }
   };
 
-  const [validate, setValidate] = useState("");
-
-
   const processingOrder = () => {
-    if (productsInCart && productsInCart.length == 0 && open1 == false) {
-      handleOpen1();
-      setValidate("Giỏ hàng đang trống!")
-      setIsValidate(false);
+    const totalMoney = handleCountTotalMoney();
+    const status = delivery == true ? 0 : 6;
+    const hasPlaceOrder = true;
+    const orderHistoryCounter = {
+      thaoTac: "Đã thanh toán",
+      loaiThaoTac: 3,
+      moTa: "Khách hàng đã thanh toán",
+      createdAt: new Date(),
     }
-    else if (productsInCart && productsInCart.length > 0) {
-      const totalMoney = handleCountTotalMoney();
-      const status = delivery == true ? 0 : 6;
-      const hasPlaceOrder = true;
-      const orderHistoryCounter = {
-        thaoTac: "Đã Thanh Toán",
-        loaiThaoTac: 3,
-        moTa: "Khách hàng đã thanh toán",
-        createdAt: new Date(),
-      }
-      const paymentMethod = {
-        loaiThanhToan: 0,
-        hinhThucThanhToan: payment,
-        soTienThanhToan: totalMoney,
-        trangThai: 1,
-        nguoiXacNhan: "Admin",
-        createdAt: new Date(),
-      }
-      updateOrder(status, totalMoney, delivery == true ? null : orderHistoryCounter, hasPlaceOrder, paymentMethod);
-      setOpen1(true);
-      const message = delivery == false ? "Thanh toán thành công" : "Đặt hàng thành công";
-      setOpen2(true);
-      setTimeout(() => {
-        navigate(`/dashboard/order-detail/${order.ma}`, {
-          state: {
-            data: {
-              message: message,
-            }
-          }
-        });
-        setOpen1(false);
-      }, 500);
+    const paymentMethod = {
+      loaiThanhToan: 0,
+      hinhThucThanhToan: payment,
+      soTienThanhToan: totalMoney,
+      trangThai: 1,
+      nguoiXacNhan: "Admin",
+      createdAt: new Date(),
     }
+    updateOrder(status, totalMoney, delivery == true ? null : orderHistoryCounter, hasPlaceOrder, paymentMethod);
   }
 
   const handleUpdateDescriptionOrder = (event) => {
@@ -252,12 +215,6 @@ const PointOfSales = () => {
         setOrder(response.data.content[0]);
         setCartId(response.data.content[0].gioHang.id)
         getCartDetails(response.data.content[0].gioHang.id);
-        let total = 0;
-        response.data.content[0].gioHang && response.data.content[0].gioHang.cartDetails.map((item, index) => {
-          total += item.donGia;
-        })
-        let final = total - discountNumber;
-        setSurplusMoney(customerPayment - final);
       })
       .catch((error) => {
         console.error(error);
@@ -283,7 +240,6 @@ const PointOfSales = () => {
       await axios.delete(`http://localhost:8080/api/carts/${id}`);
       getCartDetails(cartId);
       getAllOrdersPending();
-      getOrderById(order.ma);
     } catch (error) {
       console.log(error);
     }
@@ -308,6 +264,8 @@ const PointOfSales = () => {
     }
   }
 
+
+
   const getOrderById = (id) => {
     axios
       .get(`http://localhost:8080/api/orders/${id}`)
@@ -315,12 +273,6 @@ const PointOfSales = () => {
         setOrder(response.data);
         setCartId(response.data.gioHang.id);
         getCartDetails(response.data.gioHang.id);
-        let total = 0;
-        response.data.gioHang && response.data.gioHang.cartDetails.map((item, index) => {
-          total += item.donGia;
-        })
-        let final = total - discountNumber;
-        setSurplusMoney(customerPayment - final);
       })
       .catch((error) => {
         console.error(error);
@@ -353,60 +305,12 @@ const PointOfSales = () => {
         console.error("Error");
       })
   }
-  const handleCountTotalMoney = () => {
-    let total = 0;
-    productsInCart && productsInCart.map((item, index) => {
-      total += item.donGia;
-    })
-    return total;
-
-  }
-  const handleCountTotalMoneyFormat = () => {
-    let total = 0;
-    productsInCart && productsInCart.map((item, index) => {
-      total += item.donGia;
-    })
-    const result = total
-      .toLocaleString("vi-VN", {
-        style: "currency",
-        currency: "VND",
-      })
-    return result;
-  }
-  const handleCountTotalMoneyCustomerNeedPay = () => {
-    let result = "";
-    let total = 0;
-    productsInCart && productsInCart.map((item, index) => {
-      total += item.donGia;
-    })
-    let totalFinal = 0;
-    if (selectDiscount === "VND") {
-      totalFinal = total - discountNumber;
-      result = totalFinal
-        .toLocaleString("vi-VN", {
-          style: "currency",
-          currency: "VND",
-        })
-    }
-    else {
-      totalFinal = total - (total * discountNumber / 100);
-      result = totalFinal
-        .toLocaleString("vi-VN", {
-          style: "currency",
-          currency: "VND",
-        })
-
-    }
-    return result;
-  }
-
 
   useEffect(() => {
     getAllOrdersPending();
     getOrderPendingDefault();
     getAllProducts();
     getAllCustomers();
-    setCustomerNeedPayFormat(handleCountTotalMoneyCustomerNeedPay());
 
   }, []);
 
@@ -433,12 +337,6 @@ const PointOfSales = () => {
           "Content-Type": "application/json",
         },
       }).then(response => {
-        let total = 0;
-        response.data && response.data.cartDetails.map((item, index) => {
-          total += item.donGia;
-        })
-        let final = total - discountNumber;
-        setSurplusMoney(customerPayment - final);
       });
       getCartDetails(cartId);
       getAllOrdersPending();
@@ -453,24 +351,40 @@ const PointOfSales = () => {
       orderId: order.id,
     }
     addProductAndCartToCartDetails(cartDetails);
-
     setOpenProduct(false);
+  }
+
+  const handleCountTotalMoney = () => {
+    let total = 0;
+    productsInCart && productsInCart.map((item, index) => {
+      total += item.donGia;
+    })
+    return total;
+
+  }
+  const handleCountTotalMoneyFormat = () => {
+    let total = 0;
+    productsInCart && productsInCart.map((item, index) => {
+      total += item.donGia;
+    })
+    const totalFinal = total.toLocaleString("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    });
+    return totalFinal;
+
   }
 
   const handleChangeToggleButtonDiscount = (event, newAlignment) => {
     var oldAligment = selectDiscount;
 
     if (newAlignment != null) {
-      setSelectDiscount(newAlignment);
-      setDiscountInput("");
-      setDiscountNumber(0);
-      setCustomerNeedPayFormat(handleCountTotalMoneyCustomerNeedPay());
-      setIsNotPayment(false);
-      setSurplusMoney(customerPayment - handleCountTotalMoney());
+      setSeclectDiscount(newAlignment);
+      setDiscountInput(null);
     }
 
     if (newAlignment == null) {
-      setSelectDiscount(oldAligment);
+      setSeclectDiscount(oldAligment);
     }
   };
 
@@ -479,178 +393,32 @@ const PointOfSales = () => {
     if (event.target.checked == true) {
       setPaymentWhenReceive(true);
     }
-    else {
-      setPaymentWhenReceive(false);
-    }
   };
 
   const handlePaymentWhenReceiveChange = (event) => {
     setPaymentWhenReceive(event.target.checked);
   };
 
+  const handle = () => {
+    alert(selectDiscount);
+  };
+
   const handleDiscountFormatBySelectDiscount = (event) => {
 
     const value = event.target.value;
-    let valueFinal;
+    const discountParseNumber = parseFloat(value.replace(/[^0-9.-]+/g, ""));
+    let valueFinal = "";
 
-    // if (!/[^0-9]+/.test(value)) {
-    //   setTotalDiscountAfter(handleCountTotalMoneyFormat());
-    // }
-    //
     if (selectDiscount === "VND") {
-      setIsNotPayment(false);
       valueFinal = value
         .replace(/[^0-9]+/g, "")
         .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-
-      const discountParseNumber = parseFloat(value.replace(/[^0-9.-]+/g, ""));
-
-      setDiscountInput(valueFinal);
-      setDiscountNumber(discountParseNumber);
-
-      if (value == "" || value == null) {
-        // setCustomerNeedPay(handleCountTotalMoney());
-        // setCustomerNeedPayFormat(handleCountTotalMoneyCustomerNeedPay())
-        const afterDiscount = handleCountTotalMoney();
-        const surplusMoneyOurCustomer = customerPayment - afterDiscount;
-        setSurplusMoney(surplusMoneyOurCustomer);
-        setDiscountNumber(0);
-      }
-      else {
-        const afterDiscount = handleCountTotalMoney() - discountParseNumber;
-        const afterDiscountFinal = afterDiscount.toLocaleString("vi-VN", {
-          style: "currency",
-          currency: "VND",
-        })
-        // setCustomerNeedPay(afterDiscount);
-        // setCustomerNeedPayFormat(afterDiscountFinal);
-        const surplusMoneyOurCustomer = customerPayment - afterDiscount;
-        setSurplusMoney(surplusMoneyOurCustomer);
-      }
-
-      const valueCompare = value.replace(/[^0-9]+/g, "");
-
-      if (valueCompare >= handleCountTotalMoney()) {
-
-        const newValue = handleCountTotalMoney();
-        if (newValue == 0) {
-          setIsNotPayment(false);
-        }
-        else {
-          setIsNotPayment(true);
-        }
-
-        valueFinal = String(newValue)
-          .replace(/[^0-9]+/g, "")
-          .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        const discountParseNumber = String(newValue).replace(/[^0-9.-]+/g, "");
-        const afterDiscount = handleCountTotalMoney() - discountParseNumber;
-        const afterDiscountFinal = afterDiscount.toLocaleString("vi-VN", {
-          style: "currency",
-          currency: "VND",
-        })
-
-        // setCustomerNeedPay(afterDiscount);
-        // setCustomerNeedPayFormat(afterDiscountFinal);
-        setDiscountInput(valueFinal);
-        setDiscountNumber(discountParseNumber);
-      }
-    }
-    else {
-      setIsNotPayment(false);
-      valueFinal = parseFloat(value.replace(/[^0-9]+/g, ""));
-
-      if (value == "" || value == null) {
-        // setCustomerNeedPay(handleCountTotalMoney());
-        // setCustomerNeedPayFormat(handleCountTotalMoneyCustomerNeedPay())
-        const afterDiscount = handleCountTotalMoney();
-        const surplusMoneyOurCustomer = customerPayment - afterDiscount;
-        setSurplusMoney(surplusMoneyOurCustomer);
-        setDiscountNumber(0);
-      }
-      else {
-        const afterDiscount = handleCountTotalMoney() - (handleCountTotalMoney() * valueFinal / 100);
-        const afterDiscountFinal = afterDiscount.toLocaleString("vi-VN", {
-          style: "currency",
-          currency: "VND",
-        })
-        // setCustomerNeedPay(afterDiscount);
-        // setCustomerNeedPayFormat(afterDiscountFinal);
-        const surplusMoneyOurCustomer = customerPayment - afterDiscount;
-        setSurplusMoney(surplusMoneyOurCustomer);
-      }
-
-      if (valueFinal >= 100) {
-        valueFinal = 100;
-        setIsNotPayment(true);
-        const afterDiscount = handleCountTotalMoney() - (handleCountTotalMoney() * valueFinal / 100);
-        const afterDiscountFinal = afterDiscount.toLocaleString("vi-VN", {
-          style: "currency",
-          currency: "VND",
-        })
-        // setCustomerNeedPay(afterDiscount);
-        // setCustomerNeedPayFormat(afterDiscountFinal);
-      }
-      else if (isNaN(valueFinal)) {
-        valueFinal = "";
-      }
-
-      setDiscountInput(valueFinal);
-      setDiscountNumber(valueFinal == "" || valueFinal == null ? 0 : valueFinal);
-
+    } else {
+      valueFinal = value.replace(/[^0-9]+/g, "") + "%";
     }
 
-  }
-
-  const [isSurplusMoney, setIsSurplusMoney] = useState(false);
-
-  const handleCustomerPaymentAndSurplusMoney = (event) => {
-
-    const value = event.target.value;
-    const parseNumber = parseFloat(value.replace(/[^0-9.-]+/g, ""));
-    let valueFinal;
-
-    valueFinal = value
-      .replace(/[^0-9]+/g, "")
-      .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    setCustomerPaymentFormat(valueFinal);
-    setCustomerPayment(parseNumber);
-
-    if (value == null || value == "") {
-      if (selectDiscount === "VND") {
-        const final = handleCountTotalMoney() - discountNumber;
-        setCustomerPayment(0);
-        setCustomerPaymentFormat("");
-        setSurplusMoney(-final);
-      }
-      else {
-        const final = handleCountTotalMoney() - (handleCountTotalMoney() * discountNumber / 100);
-        setCustomerPayment(0);
-        setCustomerPaymentFormat("");
-        setSurplusMoney(-final);
-      }
-    }
-    else if (parseNumber > 100000000000) {
-      const final = handleCountTotalMoney() - discountNumber;
-      setSurplusMoney(-final);
-      setCustomerPayment(0);
-      setCustomerPaymentFormat("");
-    }
-    else {
-      if (selectDiscount == "VND") {
-        const customerNeedPayment = handleCountTotalMoney() - discountNumber;
-        const surplusMoneyOurCustomer = (parseNumber) - customerNeedPayment;
-        setSurplusMoney(surplusMoneyOurCustomer);
-      }
-      else {
-        const customerNeedPayment = handleCountTotalMoney() - (handleCountTotalMoney() * discountNumber / 100);
-        const surplusMoneyOurCustomer = (parseNumber) - customerNeedPayment;
-        setSurplusMoney(surplusMoneyOurCustomer);
-
-      }
-    }
-
-
+    setDiscountInput(valueFinal);
+    setDiscountNumber(discountParseNumber);
   }
 
   const ShowShipAddress = () => {
@@ -697,7 +465,7 @@ const PointOfSales = () => {
   const ShowShipFee = () => {
     if (delivery == true) {
       return <>
-        <div className='d-flex justify-content-between mt-3 pt-1'>
+        <div className='d-flex justify-content-between mt-3'>
           <span className='' style={{ fontSize: "15px", color: "#777" }}>Phí vận chuyển</span>
           <span className='fw-bold text-dark' style={{ fontSize: "15px" }}>0₫</span>
         </div>
@@ -775,6 +543,326 @@ const PointOfSales = () => {
   const CartInfo = () => {
     return (
       <>
+        {/*
+        <div className='d-flex mt-3 pt-1 ms-2'>
+          <svg fill="none" xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M16.4184 6.47H16.6232C19.3152 6.47 21.5 8.72 21.5 11.48V17C21.5 19.76 19.3152 22 16.6232 22H7.3768C4.6848 22 2.5 19.76 2.5 17V11.48C2.5 8.72 4.6848 6.47 7.3768 6.47H7.58162C7.60113 5.27 8.05955 4.15 8.8886 3.31C9.72741 2.46 10.8003 2.03 12.0098 2C14.4286 2 16.3891 4 16.4184 6.47ZM9.91273 4.38C9.36653 4.94 9.06417 5.68 9.04466 6.47H14.9553C14.9261 4.83 13.6191 3.5 12.0098 3.5C11.2587 3.5 10.4784 3.81 9.91273 4.38ZM15.7064 10.32C16.116 10.32 16.4379 9.98 16.4379 9.57V8.41C16.4379 8 16.116 7.66 15.7064 7.66C15.3065 7.66 14.9748 8 14.9748 8.41V9.57C14.9748 9.98 15.3065 10.32 15.7064 10.32ZM8.93737 9.57C8.93737 9.98 8.6155 10.32 8.20585 10.32C7.80595 10.32 7.47433 9.98 7.47433 9.57V8.41C7.47433 8 7.80595 7.66 8.20585 7.66C8.6155 7.66 8.93737 8 8.93737 8.41V9.57Z" fill="currentColor" />
+          </svg>
+          <div>
+            <span className='ms-4 mt-2 fw-bold fs-3'>
+              Thông Tin Đơn Hàng</span>
+          </div>
+        </div>
+        */}
+        <div style={{ height: "583px" }}>
+
+          <div className='mt-3 ms-2'>
+            <FormControl id="free-solo-2-demo">
+              <Autocomplete sx={{ width: "355px", borderRadius: "10px" }}
+                startDecorator={<SearchIcon color='disabled' sx={{ fontSize: "22px" }} />}
+                placeholder={
+                  "Tìm kiếm khách hàng"
+                }
+                endDecorator={
+                  <IconButton style={{ height: "27px", width: "30px" }}>
+                    <AddCircleOutlineIcon sx={{ fontSize: "22px", color: "gray" }} />
+                  </IconButton>
+                }
+                disableClearable
+                freeSolo
+                options={
+                  top100Films.map((option) => option.title)}
+              />
+            </FormControl>
+          </div>
+          <div className='mt-4 d-flex' style={{ marginLeft: "14px" }}>
+            <FormControlLabel
+              checked={delivery}
+              onChange={handleDeliveryChange}
+              control={<IOSSwitch sx={{ m: 1 }} />}
+              label={
+                <span className='ms-1' style={{ fontSize: "15px" }}>Giao hàng</span>
+              }
+            />
+          </div>
+
+
+          <div className='ms-2 ps-1 mt-3 pt-2'>
+            <div className='d-flex justify-content-between'>
+              <span className='' style={{ fontSize: "15px", marginTop: "1px" }}>Tổng tiền hàng</span>
+              <span className='text-dark me-2' style={{ fontSize: "17.5px" }}>
+                {
+                  handleCountTotalMoneyFormat()
+                }
+              </span>
+            </div>
+            <div className='mt-3 d-flex justify-content-between'>
+              <div style={{ marginTop: "11px" }}>
+                <span className='' style={{ fontSize: "15px" }}>
+                  Giảm giá
+                </span>
+              </div>
+              <div className='me-2 d-flex'>
+                <div className='me-2' style={{ marginTop: "6.8px" }}>
+                  <ToggleButtonGroup
+                    color="primary"
+                    value={selectDiscount}
+                    exclusive
+                    onChange={handleChangeToggleButtonDiscount}
+                    aria-label="Platform"
+                  >
+                    <ToggleButton style={{ height: "30px" }} value="VND">VND</ToggleButton>
+                    <ToggleButton style={{ height: "30px" }} value="%">%</ToggleButton>
+                  </ToggleButtonGroup>
+                </div>
+                <div className='' style={{ marginTop: "3px" }}>
+                  <TextField onClick={() => setIsFocus(true)} value={discountInput}
+                    // autoFocus={isFocus}
+                    variant="standard"
+                    // onChange={handleDiscountFormatBySelectDiscount}
+                    style={{ width: "105px", fontSize: "17.5px" }} />
+                </div>
+              </div>
+            </div>
+            <div className='d-flex justify-content-between mt-3'>
+              <span className='text-dark' style={{ fontSize: "15px", color: "#777", marginTop: "10px" }}>Mã giảm giá</span>
+              <Input sx={{ fontSize: "15px" }} className='me-2' placeholder={
+                "Nhập mã giảm giá"
+              }
+                startAdornment={
+                  <IconButton onClick={handleButtonClick} title='Chọn mã' className='me-2' style={{ height: "27px", width: "29px" }}>
+                    <DiscountOutlinedIcon sx={{ fontSize: "22px", color: "gray" }} />
+                  </IconButton>
+                }
+                style={{ width: "202px" }} />
+            </div>
+            {delivery == false ?
+              <>
+                <div className='d-flex justify-content-between mt-4 pt-1'>
+                  <span className='fw-bold' style={{ fontSize: "15px", marginTop: "1px" }}>Khách cần trả
+                  </span>
+                  <span className='me-2 fw-bold' style={{ fontSize: "17.5px", color: "#dc1111" }}>
+                    {
+                      handleCountTotalMoneyFormat()
+                    }
+                  </span>
+                </div>
+                <div className='d-flex justify-content-between mt-3'>
+                  <span className='fw-bold text-dark' style={{ fontSize: "15px", color: "#777", marginTop: "10px" }}>Khách thanh toán
+                  </span>
+                  <Input className='me-2'
+                    style={{ width: "105px", fontSize: "17.5px" }} />
+                </div>
+              </>
+              :
+              <>
+                <div className='d-flex justify-content-between mt-4'>
+                  <span className='' style={{ fontSize: "15px", marginTop: "1px" }}>Phí vận chuyển</span>
+                  <span className='me-2' style={{ fontSize: "17.5px" }}>
+                    {
+                      order && order.phiShip ? order.phiShip.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      }) : "0 ₫"
+                    }
+                  </span>
+                </div>
+                <div className='d-flex justify-content-between mt-4'>
+                  <span className='fw-bold' style={{ fontSize: "15px", marginTop: "1px" }}>Tổng cộng</span>
+                  <span className='me-2 fw-bold' style={{ fontSize: "17.5px", color: "#dc1111" }}>
+                    {
+                      handleCountTotalMoneyFormat()
+                    }
+                  </span>
+                </div>
+                {
+                  paymentWhenReceive == false ?
+                    <div className='d-flex justify-content-between mt-3'>
+                      <span className='fw-bold text-dark' style={{ fontSize: "15px", color: "#777", marginTop: "10px" }}>Khách thanh toán</span>
+                      <Input className='me-2'
+                        style={{ width: "120px", fontSize: "17.5px" }} />
+                    </div>
+                    : ""
+                }
+                <div className='mt-3 ms-1'>
+                  <FormControlLabel
+                    checked={paymentWhenReceive}
+                    onChange={handlePaymentWhenReceiveChange}
+                    control={<IOSSwitch sx={{ m: 1 }} />}
+                    label={
+                      <span className='ms-1' style={{ fontSize: "15px" }}>Thanh toán khi nhận hàng</span>
+                    }
+                  />
+                </div>
+              </>
+            }
+          </div>
+
+
+          {delivery == true && paymentWhenReceive == true ? "" :
+            <div className={
+              delivery == false ?
+                'mt-4 ms-2 pt-1' : "ms-2 mt-3 pt-1"}>
+
+              <RadioGroup className='' style={{ userSelect: "none" }}
+                onChange={(event) => {
+                  // if (event.target.value === "Tiền mặt") {
+                  //   setPayment(1);
+                  // }
+                  // else if (event.target.value === "Chuyển khoản") {
+                  //   setPayment(0);
+                  // }
+                }}
+                aria-label="platform"
+                defaultValue={"Tiền mặt"}
+                overlay
+                name="platform"
+                sx={{
+                  flexDirection: 'row',
+                  gap: 2,
+                  [`& .${radioClasses.checked}`]: {
+                    [`& .${radioClasses.action}`]: {
+                      inset: -1,
+                      border: '2px solid #212327',
+                      borderColor: 'primary.500',
+                    },
+                  },
+                  [`& .${radioClasses.radio}`]: {
+                    display: 'contents',
+                    '& > svg': {
+                      zIndex: 2,
+                      position: 'absolute',
+                      top: '-8px',
+                      right: '-8px',
+                      bgcolor: 'background.surface',
+                      borderRadius: '50%',
+                    },
+                  },
+                }}
+              >
+                <Sheet
+                  key={"Tiền mặt"}
+                  variant="outlined"
+                  sx={{
+                    borderRadius: 'md',
+                    boxShadow: 'sm',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    p: 0.5,
+                    minWidth: 100,
+                  }}
+                >
+                  <Radio value={"Tiền mặt"} checkedIcon={<CheckCircleOutlineOutlinedIcon />} />
+                  <FormLabel htmlFor={"Tiền mặt"}>Tiền mặt</FormLabel>
+                  <FaRegMoneyBillAlt style={{ fontSize: "24px" }} />
+                </Sheet>
+                <Sheet
+                  key={"Chuyển khoản"}
+                  variant="outlined"
+                  sx={{
+                    borderRadius: 'md',
+                    boxShadow: 'sm',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    p: 0.5,
+                    minWidth: 130,
+                  }}
+                >
+                  <Radio value={"Chuyển khoản"} checkedIcon={<CheckCircleOutlineOutlinedIcon />} />
+                  <FormLabel htmlFor={"Chuyển khoản"}>Chuyển khoản</FormLabel>
+                  <PaymentIcon style={{ fontSize: "24px" }} className='' />
+                </Sheet>
+                <Sheet
+                  key={"Cả 2"}
+                  variant="outlined"
+                  sx={{
+                    borderRadius: 'md',
+                    boxShadow: 'sm',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    p: 0.5,
+                    minWidth: 95,
+                  }}
+                >
+                  <Radio value={"Cả 2"} checkedIcon={<CheckCircleOutlineOutlinedIcon />} />
+                  <FormLabel htmlFor={"Cả 2"}>Cả 2</FormLabel>
+                  <CreditScoreOutlinedIcon style={{ fontSize: "24px" }} />
+
+                </Sheet>
+              </RadioGroup>
+            </div>
+          }
+          {/*
+          <div className='d-flex justify-content-between mt-3 pt-1 ms-2'>
+            <span className='ms-1' style={{ fontSize: "15px", marginTop: "2px" }}>Tiền thừa trả khách</span>
+            <span className='me-2' style={{ fontSize: "17.5px" }}>500.000 ₫</span>
+          </div>
+*/}
+        </div>
+
+        <div className="mt-2">
+          <div className=''>
+            <div className='text-center'>
+              <Link to={`/dashboard/order-detail/${order.ma}`}>
+                <button onClick={processingOrder}
+                  type="button" class="__add-cart0 add-to-cart trigger mt-1 ms-1">
+                  <span class="" style={{ fontSize: "17.5px" }}>
+                    {delivery == true ? "ĐẶT HÀNG" : "THANH TOÁN"}
+                  </span>
+                </button>
+              </Link>
+            </div>
+          </div>
+        </div>
+
+
+
+
+
+        {/*
+        <div style={{ backgroundColor: "whitesmoke", height: "450px", width: "355px", marginTop: "35px" }} className='rounded-2 ms-2'>
+          <div className=''>
+            <div className='p-4' style={{ height: "365px" }}>
+              <div className='d-flex justify-content-between'>
+                <span className='' style={{ fontSize: "15px", color: "#777" }}>Tổng tiền hàng</span>
+                <span className='fw-bold text-dark' style={{ fontSize: "15px" }}>12.190.000 ₫</span>
+              </div>
+              <div className='d-flex justify-content-between mt-3'>
+                <span className='' style={{ fontSize: "15px", color: "#777" }}>Khách cần trả</span>
+                <span className='fw-bold text-dark' style={{ fontSize: "15px" }}>500.000 ₫</span>
+              </div>
+              <ShowShipFee />
+              <hr className='' style={{ borderStyle: "dashed", borderWidth: "1px", borderColor: "#333" }} />
+              <div className='d-flex justify-content-between mt-4'>
+                <span className='fw-bold text-dark' style={{ fontSize: "18px", color: "#777" }}>Tổng cộng</span>
+                <span className='fw-bold' style={{ fontSize: "18px", color: "#dc1111" }}>12.000.000 ₫</span>
+              </div>
+              <div className='d-flex justify-content-between'>
+                <span className='fw-bold text-dark mt-3' style={{ fontSize: "15px", color: "#777" }}>Khách thanh toán</span>
+                <Input
+                  style={{ width: "105px" }} />
+              </div>
+            </div>
+            <div className=''>
+              <div className=''>
+                <div className='text-center'>
+                  <Link to={"/dashboard/order-detail"}>
+                    <button
+                      type="button" class="__add-cart0 add-to-cart trigger rounded mt-1">
+                      <span class="" style={{ fontSize: "16.5px", fontWeight: "550" }}>
+                        {delivery ? "Xác nhận đặt hàng" : "Thanh toán"}
+                      </span>
+                    </button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        */}
       </>
     )
 
@@ -973,9 +1061,9 @@ const PointOfSales = () => {
   const Alert = React.forwardRef(function Alert(props, ref) {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
   });
-  const [isValidate, setIsValidate] = useState(false);
   const [open, setOpen] = React.useState(false);
 
+  const [isValidate, setIsValidate] = useState(false);
 
   const handleClick = () => {
     setOpen(true);
@@ -986,6 +1074,24 @@ const PointOfSales = () => {
       return;
     }
     setOpen(false);
+  };
+
+
+
+  const [state, setState] = React.useState({
+    open: false,
+    vertical: 'top',
+    horizontal: 'right',
+  });
+
+  const [showAlert, setShowAlert] = useState(false);
+
+  const handleButtonClick = () => {
+    setShowAlert(true);
+  };
+
+  const handleCloseAlert = () => {
+    setShowAlert(false);
   };
 
 
@@ -1020,19 +1126,7 @@ const PointOfSales = () => {
     setOpenCustomer(false);
   }
 
-  const useStyles = makeStyles(theme => ({
-    root: {
-      "& .MuiTextField-root": {
-        margin: theme.spacing(1)
-      }
-    },
-    textarea: {
-      resize: "both"
-    }
-  }));
-
   const TabItem = ({ }) => {
-    const classes = useStyles();
 
     return (
       <>
@@ -1060,20 +1154,6 @@ const PointOfSales = () => {
             </div>
             <div className='ms-2 ps-1 mt-2' style={{ borderBottom: "2px solid #C7C7C7", width: "98.5%", borderWidth: "2px" }}></div>
             <div >
-              {/*
-              <form className={classes.root} noValidate autoComplete="off">
-                <div>
-                  <TextField
-                    id="outlined-textarea"
-                    label="Multiline Placeholder"
-                    placeholder="Placeholder"
-                    multiline
-                    variant="outlined"
-                    inputProps={{ className: classes.textarea }}
-                  />
-                </div>
-              </form>
-                */}
               {productsInCart.length == 0 ? <CartEmpty /> : <ProductCart />}
               {productsInCart.length == 1 ?
                 <div className='' style={{ height: "180px" }}>
@@ -1095,7 +1175,7 @@ const PointOfSales = () => {
                   </div>
                   <div className='ms-2 ps-1 mt-2' style={{ borderBottom: "2px solid #C7C7C7", width: "98.5%", borderWidth: "2px" }}></div>
                   <div className='mt-3 p-1'>
-                    <TextField value={description} //*  onChange={handleUpdateDescriptionOrder} */
+                    <TextField /* key="descriptionTextField" value={description} *//*  onChange={handleUpdateDescriptionOrder} */
                       placeholder='Nhập ghi chú'
                       sx={{ width: "755px" }}
                     />
@@ -1113,27 +1193,6 @@ const PointOfSales = () => {
     )
 
   }
-
-  const CssTextField = styled(TextField)({
-    "& label.Mui-focused": {
-      color: "#2196f3"
-    },
-    "& .MuiInput-underline:after": {
-      borderBottomColor: "#2196f3"
-    },
-    "& .MuiOutlinedInput-root": {
-      "& fieldset": {
-        borderColor: "#E0E3E7"
-      },
-      "&:hover fieldset": {
-        borderColor: "#E0E3E7" // use the same color as original border color
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: "#2196f3"
-      }
-    }
-  });
-
   const [valueTabs, setValueTabs] = React.useState(1);
   const [tabs, setTabs] = React.useState([1]);
   const [itemMa, setItemMa] = React.useState("");
@@ -1144,26 +1203,6 @@ const PointOfSales = () => {
   const handleChange = (event, newValue) => {
     setValueTabs(newValue);
   };
-
-  const [open1, setOpen1] = React.useState(false);
-  const [open2, setOpen2] = React.useState(false);
-  const handleClose2 = () => {
-    setOpen2(false);
-  };
-
-  const handleClose1 = () => {
-    setOpen1(false);
-  };
-  const handleOpen1 = () => {
-    setOpen1(true);
-    setTimeout(() => {
-      setOpen1(false);
-      setOpen(true);
-    }, 350);
-    setOpen(false);
-
-  };
-
 
   return (
     <>
@@ -1240,390 +1279,29 @@ const PointOfSales = () => {
                   <TabItem />
                 </TabPanel>
               </div>
+
             </div>
           </TabContext>
         </Col>
         <Col className='ms-3' sm="4" style={{ backgroundColor: "#ffffff", boxShadow: "0 0.1rem 0.3rem #00000030", width: "400px", borderRadius: "15px 15px 0 0" }}>
           <div className='mt-2'>
-            <div style={{ height: "583px" }}>
-              <div className='mt-3 ms-2'>
-                <FormControl id="free-solo-2-demo">
-                  <Autocomplete sx={{
-                    width: "355px", borderRadius: "10px",
-                    '& input': {
-                      height: 4,
-                    }
-                  }}
-                    renderInput={(params) => <CssTextField
-                      {...params}
-                      placeholder={
-                        "Tìm kiếm khách hàng"
-                      }
-                      InputProps={{
-                        ...params.InputProps,
-                        startAdornment: (
-                          <InputAdornment position="start" className='ms-1'>
-                            <svg style={{ color: "darkgray", marginBottom: "2px" }} fill="none" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-                              <circle cx="11.7669" cy="11.7666" r="8.98856" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                              <path d="M18.0186 18.4851L21.5426 22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                          </InputAdornment>
-                        ),
-                        endAdornment: (
-                          <InputAdornment position="end" className=''>
-                            <IconButton size='small'>
-                              <AddCircleOutlineIcon />
-                            </IconButton>
-                          </InputAdornment>
-                        ),
-                      }}
-                    />}
-                    disableClearable
-                    freeSolo
-                    options={
-                      top100Films.map((option) => option.title)}
-                  />
-                </FormControl>
-              </div>
-              <div className='mt-3 pt-1 d-flex' style={{ marginLeft: "14px" }}>
-                <FormControlLabel
-                  checked={delivery}
-                  onChange={handleDeliveryChange}
-                  control={<IOSSwitch sx={{ m: 1 }} />}
-                  label={
-                    <span className='ms-1' style={{ fontSize: "15px" }}>Giao hàng</span>
-                  }
-                />
-              </div>
-
-
-              <div className='ms-2 ps-1 mt-3 pt-1'>
-                <div className='d-flex justify-content-between'>
-                  <span className='' style={{ fontSize: "15px", marginTop: "1px" }}>Tổng tiền hàng</span>
-                  <span className='text-dark me-2' style={{ fontSize: "17.5px" }}>
-                    {
-                      handleCountTotalMoneyFormat()
-                    }
-                  </span>
-                </div>
-                <div className='mt-3 d-flex justify-content-between'>
-                  <div style={{ marginTop: "12px" }}>
-                    <span className='' style={{ fontSize: "15px" }}>
-                      Giảm giá
-                    </span>
-                  </div>
-                  <div className='me-2 d-flex'>
-                    <div className='me-2' style={{ marginTop: "6.8px" }}>
-                      <ToggleButtonGroup
-                        color="primary"
-                        value={selectDiscount}
-                        exclusive
-                        onChange={handleChangeToggleButtonDiscount}
-                        aria-label="Platform"
-                      >
-                        <ToggleButton style={{ height: "30px" }} value="VND">VND</ToggleButton>
-                        <ToggleButton style={{ height: "30px" }} value="%">%</ToggleButton>
-                      </ToggleButtonGroup>
-                    </div>
-                    <div className='' style={{ marginTop: "3px" }}>
-                      <TextField value={discountInput}
-                        InputProps={{
-                          style: { fontSize: '16.5px' }
-                        }}
-                        variant="standard"
-                        onChange={handleDiscountFormatBySelectDiscount}
-                        style={{ width: "105px", fontSize: "17.5px" }} />
-                    </div>
-                  </div>
-                </div>
-                {isNotPayment == false ?
-                  <>
-                    <div className='d-flex justify-content-between mt-3' style={{ position: "relative" }}>
-                      <span className='text-dark' style={{ fontSize: "15px", color: "#777", marginTop: "10px" }}>Mã giảm giá</span>
-                      <Input
-                        variant="standard"
-                        sx={{ fontSize: "15px" }} className='me-2' placeholder={
-                          "Chọn mã giảm giá"
-                        }
-                        startAdornment={
-                          <IconButton title='Chọn mã' className='me-2' style={{ height: "27px", width: "29px" }}>
-                            <DiscountOutlinedIcon sx={{ fontSize: "22px", color: "gray" }} />
-                          </IconButton>
-                        }
-                        style={{ width: "202px" }} />
-                      <div style={{ position: "absolute", left: "147px", top: "30px", display: "none" }}>
-                        <FormHelperText><span style={{ color: "#dc1111" }}>
-                          Mã giảm giá không tồn tại
-                        </span></FormHelperText>
-                      </div>
-                    </div>
-                  </>
-                  : ""
-                }
-                {delivery == false ?
-                  <>
-                    <div className='d-flex justify-content-between mt-4 pt-1'>
-                      <span className='fw-bold' style={{ fontSize: "15px", marginTop: "1px" }}>Khách cần trả
-                      </span>
-                      <span className='me-2 fw-bold' style={{ fontSize: "17.5px", color: "#dc1111" }}>
-                        {
-                          handleCountTotalMoneyCustomerNeedPay()}
-                      </span>
-                    </div>
-                    {isNotPayment == false && productsInCart.length > 0 ?
-                      <div className='d-flex justify-content-between mt-3'>
-                        <span className='fw-bold text-dark' style={{ fontSize: "15px", color: "#777", marginTop: "10px" }}>Khách thanh toán
-                        </span>
-                        <TextField className='me-2'
-                          onChange={handleCustomerPaymentAndSurplusMoney}
-                          value={customerPaymentFormat}
-                          InputProps={{
-                            style: { fontSize: '16.5px' }
-                          }}
-                          variant="standard"
-                          sx={{ width: "105px", fontSize: "17.5px" }} />
-                      </div>
-                      : ""
-                    }
-                  </>
-                  :
-                  <>
-                    <div className='d-flex justify-content-between mt-4 pt-1'>
-                      <span className='' style={{ fontSize: "15px", marginTop: "1px" }}>Phí vận chuyển</span>
-                      <span className='me-2' style={{ fontSize: "17.5px" }}>
-                        {
-                          order && order.phiShip ? order.phiShip.toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                          }) : "0 ₫"
-                        }
-                      </span>
-                    </div>
-                    <div className='d-flex justify-content-between mt-4 pt-1'>
-                      <span className='fw-bold' style={{ fontSize: "15px", marginTop: "1px" }}>Tổng cộng</span>
-                      <span className='me-2 fw-bold' style={{ fontSize: "17.5px", color: "#dc1111" }}>
-                        {
-                          handleCountTotalMoneyCustomerNeedPay()
-                        }
-                      </span>
-                    </div>
-                    {
-                      paymentWhenReceive == false && isNotPayment == false && productsInCart.length > 0 ?
-                        <div className='d-flex justify-content-between mt-3 pt-1'>
-                          <span className='fw-bold text-dark' style={{ fontSize: "15px", color: "#777", marginTop: "10px" }}>Khách thanh toán</span>
-                          <TextField className='me-2'
-                            onChange={handleCustomerPaymentAndSurplusMoney}
-                            value={customerPaymentFormat}
-                            variant="standard"
-                            style={{ width: "120px", fontSize: "17px" }} />
-                        </div>
-                        : ""
-                    }
-                  </>
-                }
-              </div>
-
-              {(customerPayment != (selectDiscount == "VND" ? handleCountTotalMoney() - discountNumber : handleCountTotalMoney() - (handleCountTotalMoney() * discountNumber / 100)) && isNotPayment == false) && (delivery == true || delivery == false) && paymentWhenReceive == false && productsInCart.length > 0 ?
-                <div className={`d-flex justify-content-between ${`${paymentWhenReceive == false && delivery == true ? "pt-4 mt-1" : "pt-3 mt-2"}`} ms-2`} >
-                  <span className='ms-1' style={{ fontSize: "15px", marginTop: "2px" }}>Tiền thừa trả khách</span>
-                  <span className='me-2' style={{ fontSize: "17.5px" }}>{
-                    surplusMoney && surplusMoney.toLocaleString("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                    })
-                  }</span>
-                </div> : ""
-              }
-              {isNotPayment == false && delivery == true ?
-                <div className='mt-3 ms-3'>
-                  <FormControlLabel
-                    checked={paymentWhenReceive}
-                    onChange={handlePaymentWhenReceiveChange}
-                    control={<IOSSwitch sx={{ m: 1 }} />}
-                    label={
-                      <span className='ms-1' style={{ fontSize: "15px" }}>Thanh toán khi nhận hàng</span>
-                    }
-                  />
-                </div>
-                : ""
-              }
-
-              {(delivery == true && paymentWhenReceive == true) || isNotPayment == true || productsInCart.length == 0 ? "" :
-                <div className={
-                  delivery == false ?
-                    'mt-4 ms-2 pt-1' : "ms-2 mt-3"}>
-
-                  <RadioGroup className='' style={{ userSelect: "none" }}
-                    onChange={(event) => {
-                      // if (event.target.value === "Tiền mặt") {
-                      //   setPayment(1);
-                      // }
-                      // else if (event.target.value === "Chuyển khoản") {
-                      //   setPayment(0);
-                      // }
-                    }}
-                    aria-label="platform"
-                    defaultValue={"Tiền mặt"}
-                    overlay
-                    name="platform"
-                    sx={{
-                      flexDirection: 'row',
-                      gap: 2,
-                      [`& .${radioClasses.checked}`]: {
-                        [`& .${radioClasses.action}`]: {
-                          inset: -1,
-                          border: '2px solid #212327',
-                          borderColor: 'primary.500',
-                        },
-                      },
-                      [`& .${radioClasses.radio}`]: {
-                        display: 'contents',
-                        '& > svg': {
-                          zIndex: 2,
-                          position: 'absolute',
-                          top: '-8px',
-                          right: '-8px',
-                          bgcolor: 'background.surface',
-                          borderRadius: '50%',
-                        },
-                      },
-                    }}
-                  >
-                    <Sheet
-                      key={"Tiền mặt"}
-                      variant="outlined"
-                      sx={{
-                        borderRadius: 'md',
-                        boxShadow: 'sm',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        p: 0.5,
-                        minWidth: 100,
-                      }}
-                    >
-                      <Radio value={"Tiền mặt"} checkedIcon={<CheckCircleOutlineOutlinedIcon />} />
-                      <FormLabel htmlFor={"Tiền mặt"}>Tiền mặt</FormLabel>
-                      <FaRegMoneyBillAlt style={{ fontSize: "24px" }} />
-                    </Sheet>
-                    <Sheet
-                      key={"Chuyển khoản"}
-                      variant="outlined"
-                      sx={{
-                        borderRadius: 'md',
-                        boxShadow: 'sm',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        p: 0.5,
-                        minWidth: 130,
-                      }}
-                    >
-                      <Radio value={"Chuyển khoản"} checkedIcon={<CheckCircleOutlineOutlinedIcon />} />
-                      <FormLabel htmlFor={"Chuyển khoản"}>Chuyển khoản</FormLabel>
-                      <PaymentIcon style={{ fontSize: "24px" }} className='' />
-                    </Sheet>
-                    <Sheet
-                      key={"Cả 2"}
-                      variant="outlined"
-                      sx={{
-                        borderRadius: 'md',
-                        boxShadow: 'sm',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        p: 0.5,
-                        minWidth: 95,
-                      }}
-                    >
-                      <Radio value={"Cả 2"} checkedIcon={<CheckCircleOutlineOutlinedIcon />} />
-                      <FormLabel htmlFor={"Cả 2"}>Cả 2</FormLabel>
-                      <CreditScoreOutlinedIcon style={{ fontSize: "24px" }} />
-
-                    </Sheet>
-                  </RadioGroup>
-                </div>
-              }
-            </div>
-
-            <div className="mt-3">
-              <div className=''>
-                <div className='text-center'>
-                  <button onClick={processingOrder}
-                    type="button" class="__add-cart0 add-to-cart trigger mt-1 ms-1">
-                    <span class="" style={{ fontSize: "17.5px" }}>
-                      {delivery == true ? "ĐẶT HÀNG" : "THANH TOÁN"}
-                    </span>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-
-
-
-
-            {/*
-        <div style={{ backgroundColor: "whitesmoke", height: "450px", width: "355px", marginTop: "35px" }} className='rounded-2 ms-2'>
-          <div className=''>
-            <div className='p-4' style={{ height: "365px" }}>
-              <div className='d-flex justify-content-between'>
-                <span className='' style={{ fontSize: "15px", color: "#777" }}>Tổng tiền hàng</span>
-                <span className='fw-bold text-dark' style={{ fontSize: "15px" }}>12.190.000 ₫</span>
-              </div>
-              <div className='d-flex justify-content-between mt-3'>
-                <span className='' style={{ fontSize: "15px", color: "#777" }}>Khách cần trả</span>
-                <span className='fw-bold text-dark' style={{ fontSize: "15px" }}>500.000 ₫</span>
-              </div>
-              <ShowShipFee />
-              <hr className='' style={{ borderStyle: "dashed", borderWidth: "1px", borderColor: "#333" }} />
-              <div className='d-flex justify-content-between mt-4'>
-                <span className='fw-bold text-dark' style={{ fontSize: "18px", color: "#777" }}>Tổng cộng</span>
-                <span className='fw-bold' style={{ fontSize: "18px", color: "#dc1111" }}>12.000.000 ₫</span>
-              </div>
-              <div className='d-flex justify-content-between'>
-                <span className='fw-bold text-dark mt-3' style={{ fontSize: "15px", color: "#777" }}>Khách thanh toán</span>
-                <Input
-                  style={{ width: "105px" }} />
-              </div>
-            </div>
-            <div className=''>
-              <div className=''>
-                <div className='text-center'>
-                  <Link to={"/dashboard/order-detail"}>
-                    <button
-                      type="button" class="__add-cart0 add-to-cart trigger rounded mt-1">
-                      <span class="" style={{ fontSize: "16.5px", fontWeight: "550" }}>
-                        {delivery ? "Xác nhận đặt hàng" : "Thanh toán"}
-                      </span>
-                    </button>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        */}
+            <CartInfo />
           </div>
         </Col>
       </Row >
       <ProductsDialog open={openProduct} onClose={handleCloseDialogProducts} onCloseNoAction={handleCloseDialogProducts} data={products} add={hanldeAddProductToCart} />
       <OrderPendingConfirmCloseDialog open={openOrderClose} onClose={handleCloseNoActionDialogOrderClose} ma={itemMa && itemMa.substring(8)} deleteOrder={() => handleCloseDialogOrderClose(itemId)} />
+      {/*
       <Snackbar anchorOrigin={{
         vertical: 'top',
-        horizontal: 'right',
-      }} TransitionComponent={Transition} open={open} autoHideDuration={3000} onClose={handleClose}>
-        <Alert variant="filled" onClose={handleClose} severity="error" sx={{ width: '100%' }}>
-          {validate}
+          horizontal: 'right',
+      }} open={open} autoHideDuration={3000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+          {productsInCart.length == 0 ? "Giỏ hàng đang trống!" : ""}
         </Alert>
       </Snackbar>
-      <Backdrop
-        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={open1}
-        onClick={handleClose1}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
+      <Button onClick={handleClick}></Button>
+*/}
     </>
   )
 }
