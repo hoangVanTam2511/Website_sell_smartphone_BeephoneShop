@@ -61,6 +61,9 @@ const AddVoucher = () => {
 
   const handleChange1 = (event) => {
     const inputValue = event.target.value;
+    // if (inputValue.length > 10) {
+    //   inputValue = inputValue.slice(0, 10);
+    // }
     const numericValue = parseFloat(inputValue.replace(/[^0-9.-]+/g, ""));
     const formattedValue = inputValue
       .replace(/[^0-9]+/g, "")
@@ -94,23 +97,17 @@ const AddVoucher = () => {
       giaTriToiDa: giaTriToiDa,
       loaiVoucher: selectDiscount,
     };
-    toast
-      .promise(axios.post(apiURLVoucher + "/addVoucher", obj), {
-        success: {
-          render({ data }) {
-            toast.success("Thêm thành công!");
-            setTimeout(() => {
-              redirectToHienThiVoucher();
-            }, 2000);
-          },
-        },
-        error: {
-          render({ error }) {
-            toast.error("Đã xảy ra lỗi khi thêm voucher.");
-          },
-        },
+    axios
+      .post(apiURLVoucher + "/addVoucher", obj)
+      .then((response) => {
+        toast.success("Thêm thành công!");
+        setTimeout(() => {
+          redirectToHienThiVoucher();
+        }, 2000);
       })
-      .catch((error) => {});
+      .catch((error) => {
+        toast.error("Đã xảy ra lỗi khi thêm voucher.");
+      });
   };
 
   const validationAll = () => {
@@ -196,6 +193,9 @@ const AddVoucher = () => {
                 setTen(e.target.value);
               }}
               style={{ width: "65%" }}
+              inputProps={{
+                maxLength: 100, // Giới hạn tối đa 10 ký tự
+              }}
             />
             <span className="validate" style={{ color: "red" }}>
               {validationMsg.ten}
@@ -210,6 +210,9 @@ const AddVoucher = () => {
                 setSoLuong(e.target.value);
               }}
               style={{ width: "65%" }}
+              inputProps={{
+                maxLength: 10, // Giới hạn tối đa 10 ký tự
+              }}
             />
             <span className="validate" style={{ color: "red" }}>
               {validationMsg.soLuong}
@@ -230,6 +233,9 @@ const AddVoucher = () => {
                 ),
               }}
               style={{ width: "65%" }}
+              inputProps={{
+                maxLength: 10, // Giới hạn tối đa 10 ký tự
+              }}
             />
             <span className="validate" style={{ color: "red" }}>
               {validationMsg.dieuKienApDungConvert}
@@ -286,7 +292,10 @@ const AddVoucher = () => {
                 }}
                 style={{
                   marginLeft: "18px",
-                  width: selectDiscount === "1" ? "660px" : "390px",
+                  width: selectDiscount === "1" ? "670px" : "390px",
+                }}
+                inputProps={{
+                  maxLength: 10, // Giới hạn tối đa 10 ký tự
                 }}
               />
             </div>
@@ -305,6 +314,9 @@ const AddVoucher = () => {
                 style={{
                   width: "250px",
                   display: selectDiscount === "2" ? "block" : "none",
+                }}
+                inputProps={{
+                  maxLength: 10, // Giới hạn tối đa 10 ký tự
                 }}
               />
             </div>

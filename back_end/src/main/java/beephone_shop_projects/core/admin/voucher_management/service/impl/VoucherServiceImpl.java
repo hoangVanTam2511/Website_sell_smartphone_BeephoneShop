@@ -34,7 +34,7 @@ public class VoucherServiceImpl implements VoucherService {
     @Autowired
     private VoucherRepository voucherRepository;
 
-    @Scheduled(fixedRate = 10000)
+    @Scheduled(fixedRate = 5000, initialDelay = 30000)
     public List<Voucher> updateStatusVoucher() {
         Date dateTime = new Date();
         List<Voucher> listToUpdate = new ArrayList<>();
@@ -79,7 +79,17 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     public Voucher addVoucher(@Valid CreateVoucherRequest request) {
-
+        Integer status = 0;
+        Date dateTime = new Date();
+        if (request.getNgayBatDau().after(dateTime) && request.getNgayKetThuc().before(dateTime)){
+            status = 1;
+        }
+        if (request.getNgayBatDau().before(dateTime)){
+            status = 2;
+        }
+        if (request.getNgayKetThuc().after(dateTime)){
+            status = 3;
+        }
         Voucher voucher = Voucher.builder()
                 .ma(generateRandomCode())
                 .ten(request.getTen())
@@ -90,7 +100,7 @@ public class VoucherServiceImpl implements VoucherService {
                 .ngayBatDau(request.getNgayBatDau())
                 .ngayKetThuc(request.getNgayKetThuc())
                 .giaTriVoucher(request.getGiaTriVoucher())
-                .trangThai(1)
+                .trangThai(status)
                 .build();
         return voucherRepository.save(voucher);
     }

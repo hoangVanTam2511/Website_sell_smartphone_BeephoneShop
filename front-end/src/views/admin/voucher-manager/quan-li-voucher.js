@@ -1,4 +1,13 @@
-import { Form, Table, Input, Button, Tooltip, Space } from "antd";
+import {
+  Form,
+  Table,
+  Input,
+  Button,
+  Tooltip,
+  Space,
+  Modal,
+  AutoComplete,
+} from "antd";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -33,6 +42,7 @@ import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 const HienThiVoucher = () => {
   const [form] = Form.useForm();
   let [listVoucher, setListVoucher] = useState([]);
+  const [voucher, setVoucher] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [searchNgayBatDau, setSearchNgayBatDau] = useState("");
@@ -41,6 +51,7 @@ const HienThiVoucher = () => {
   let [searchTatCa, setSearchTatCa] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
   const [statusVoucher, setStatusVoucher] = useState([]);
+  const [id, setId] = useState("");
   const navigate = useNavigate();
 
   // cutstom load data
@@ -283,13 +294,19 @@ const HienThiVoucher = () => {
               }}
             >
               <div>
-                <Tooltip title="Change">
+                <Tooltip title="Details">
                   <Button
-                    onClick={() => {}}
+                    onClick={() => {
+                      detailVoucher(record.id);
+                      showModal();
+                    }}
                     style={{ border: "none", background: "none", padding: "0" }}
                   >
                     {/* <FontAwesomeIcon icon={faRotateRight} /> */}
-                    <RemoveRedEyeIcon fontSize="small" />
+                    <RemoveRedEyeIcon
+                      fontSize="small"
+                      style={{ color: "blue" }}
+                    />
                   </Button>
                   <ToastContainer />
                 </Tooltip>
@@ -314,8 +331,110 @@ const HienThiVoucher = () => {
     loadDataListVoucher(page);
   };
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
+  const detailVoucher = (id) => {
+    axios
+      .get(apiURLVoucher + "/get-by-id/" + id)
+      .then((response) => {
+        // convertTien();
+        setVoucher(response.data);
+        console.log(voucher.ma);
+      })
+      .catch((error) => {});
+  };
+
   return (
     <>
+      <Modal
+        title="Voucher Details"
+        open={isModalOpen}
+        onCancel={handleCancel}
+        width={700}
+        height={AutoComplete}
+        footer={[
+          // Chỉ giữ lại nút "Cancel"
+          <Button key="cancel" onClick={handleCancel}>
+            Cancel
+          </Button>,
+        ]}
+      >
+        <div className="row detail-voucher">
+          <div className="col-6">
+            <h6>Mã: {voucher.ma}</h6>
+          </div>
+          <div className="col-6">
+            <h6>Tên: {voucher.ten}</h6>
+          </div>
+        </div>
+        <div className="row detail-voucher">
+          <div className="col-6">
+            <h6>Số lượng: {voucher.soLuong}</h6>
+          </div>
+          <div className="col-6">
+            <h6>
+              Điều kiện áp dụng:{" "}
+              {numeral(voucher.dieuKienApDung).format("0,0 VND") + " VNĐ"}
+            </h6>
+          </div>
+        </div>
+        <div className="row detail-voucher">
+          <div className="col-6">
+            <h6>
+              Giá trị voucher:{" "}
+              {voucher.loaiVoucher === 1
+                ? numeral(voucher.giaTriVoucher).format("0,0 VND") + " VNĐ"
+                : voucher.giaTriVoucher + " %"}
+            </h6>
+          </div>
+          <div className="col-6">
+            <h6>
+              Giá trị tối đa:{" "}
+              {numeral(voucher.giaTriToiDa).format("0,0 VND") + " VNĐ"}
+            </h6>
+          </div>
+        </div>
+        <div className="row detail-voucher">
+          <div className="col-6">
+            <h6>
+              Loại voucher:{" "}
+              {voucher.loaiVoucher === 2
+                ? " Giảm Giá Theo %"
+                : "Giảm Giá Theo VNĐ"}
+            </h6>
+          </div>
+          <div className="col-6">
+            <h6>
+              Trạng thái:{" "}
+              {voucher.trangThai === 1
+                ? "Còn hiệu lực"
+                : voucher.trangThai === 2
+                ? "Hết hiệu lực"
+                : "Chưa bắt đầu"}
+            </h6>
+          </div>
+        </div>
+        <div className="row detail-voucher">
+          <div className="col-6">
+            <h6>
+              Ngày bắt đầu:{" "}
+              {dayjs(voucher.ngayBatDau).format("HH:mm - DD/MM/YYYY")}
+            </h6>
+          </div>
+          <div className="col-6">
+            <h6>
+              Ngày kết thúc:{" "}
+              {dayjs(voucher.ngayKetThuc).format("HH:mm - DD/MM/YYYY")}
+            </h6>
+          </div>
+        </div>
+      </Modal>
       <div className="search-component-container">
         <h6 className="boloc-voucher" style={{ color: "black" }}>
           <svg
