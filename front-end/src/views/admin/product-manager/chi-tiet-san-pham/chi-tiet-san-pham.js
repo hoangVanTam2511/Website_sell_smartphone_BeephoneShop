@@ -265,12 +265,6 @@ const HienThiKH = () => {
         // Xử lý lỗi
         console.error("Đã xảy ra lỗi khi thay đổi trạng thái", error);
       });
-    // console.log(record)
-    // listMauSac.forEach((item) =>{
-    //   if(item.id = record.id){
-    //     item.delected = record.delected == 1 ? 0 :1;
-    //   }
-    // })
   };
 
 
@@ -290,8 +284,6 @@ const HienThiKH = () => {
 
 
   const loadDataComboBox = async () => {
-  
-
 
     axios.get(apiURLDongSanPham + "/get-list").then((response) => {
       var itemAll = {

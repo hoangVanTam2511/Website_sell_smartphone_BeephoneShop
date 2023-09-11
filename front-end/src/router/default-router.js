@@ -33,7 +33,7 @@ import ThemRom from "../views/admin/product-manager/rom/them-rom";
 
 // chi-tiet-san-pham
 import ChiTietSanPham from "../views/admin/product-manager/chi-tiet-san-pham/chi-tiet-san-pham";
-import ThemChiTietSanPham from "../views/admin/product-manager/chi-tiet-san-pham/them-chi-tiet-san-pham";
+import ThemChiTietSanPham from "../views/admin/product-manager/chi-tiet-san-pham/them-san-pham";
 
 // // imei
 import Imei from "../views/admin/product-manager/imei/imei";

@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.admin.voucher_management.model.request;
 
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -28,8 +29,6 @@ public class CreateVoucherRequest {
     @NotBlank(message = "Không để trống Tên !!!")
     private String ten;
 
-    private BigDecimal giaTriToiThieu;
-
     private BigDecimal giaTriToiDa;
 
     @NotNull(message = "Không để trống Số Lượng !!!")
@@ -42,9 +41,13 @@ public class CreateVoucherRequest {
     @NotNull(message = "Không để trống Loại Voucher !!!")
     private Integer loaiVoucher;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @FutureOrPresent(message = "Không chọn ngày quá khứ !!!")
     @NotNull(message = "Không để trống Ngày Bắt Đầu !!!")
     private Date ngayBatDau;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @FutureOrPresent(message = "Không chọn ngày quá khứ !!!")
     @NotNull(message = "Không để trống Ngày Kết Thúc !!!")
     private Date ngayKetThuc;
 

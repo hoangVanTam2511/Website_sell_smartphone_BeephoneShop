@@ -582,6 +582,34 @@ const VerticalNav = memo((props) => {
                   <span className="item-name">Khách hàng</span>
                 </Link>
               </li>
+
+              <li className="nav-item">
+                <Link
+                  className={`${location.pathname === "/chuc-vu" ? "active" : ""
+                    } nav-link`}
+                  to="/chuc-vu"
+                >
+                  <i className="icon">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="10"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <g>
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="8"
+                          fill="currentColor"
+                        ></circle>
+                      </g>
+                    </svg>
+                  </i>
+                  <i className="sidenav-mini-icon"> L </i>
+                  <span className="item-name">Chức vụ</span>
+                </Link>
+              </li>
             </ul>
           </Accordion.Collapse>
         </Accordion.Item>

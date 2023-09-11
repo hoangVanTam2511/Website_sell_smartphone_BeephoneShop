@@ -35,8 +35,6 @@ public class CustomVoucherRepositoryImpl implements CustomVoucherRepository {
             CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
             CriteriaQuery<Voucher> criteriaQuery = criteriaBuilder.createQuery(Voucher.class);
 
-
-
             Root<Voucher> root = criteriaQuery.from(Voucher.class);
             criteriaQuery.select(root);
 

@@ -4,6 +4,7 @@
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   text-align: center;
+  padding-top: 10px;
 }
 
 .input-container {
@@ -31,15 +32,20 @@
 }
 
 .validate {
-  display: block; /* Hiển thị thông báo lỗi ở dưới input */
   margin-top: 5px; /* Khoảng cách từ input */
   font-size: 14px;
-  text-align: start;
   color: red;
+  margin-left: 180px;
+}
+.validate-date {
+  margin-top: 5px; /* Khoảng cách từ input */
+  font-size: 14px;
+  color: red;
+  display: block;
 }
 .select-value {
-  width: 83%;
-  padding-left: 225px;
+  width: 94%;
+  padding-left: 205px;
   display: flex;
   justify-content: flex-start;
 }

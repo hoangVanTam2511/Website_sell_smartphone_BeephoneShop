@@ -31,7 +31,7 @@ public class ManHinhServiceImpl implements IService<ManHinh> {
     }
 
     public void insert(CreateManHinh req) {
-        ManHinh manHinh = new ManHinh(req.getMamanHinh(),req.getTenmanHinh());
+        ManHinh manHinh = new ManHinh(req.getMamanHinh(),req.getTenmanHinh(),req.getDoPhanGiai());
         manHinhRepository.save(manHinh);
     }
 

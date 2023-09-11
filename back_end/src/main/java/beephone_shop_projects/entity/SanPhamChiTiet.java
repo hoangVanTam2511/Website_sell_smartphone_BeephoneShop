@@ -22,9 +22,15 @@ import java.math.BigDecimal;
 @Table(name = "san_pham_chi_tiet")
 public class SanPhamChiTiet extends PrimaryEntity implements Serializable{
 
+    private String ma;
+
+    private String ten;
+
     private BigDecimal donGia;
 
     private Integer soLuongTonKho;
+
+    private String url;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_san_pham")

@@ -12,4 +12,6 @@ public class CreateManHinh {
     private String mamanHinh;
 
     private BigDecimal tenmanHinh;
+
+    private String doPhanGiai;
 }
