@@ -349,186 +349,114 @@ const HienThiNV = () => {
 
   return (
     <>
-      <div className="btn-add">
-        <span>
-          <Form style={{ width: "20em", display: "inline-block" }}>
-            <Input
-              placeholder="Search by Mã, Tên,..."
-              // value={searchValue}
-              // onChange={handleChange}
-            />
-          </Form>
-        </span>
-        {/* Search */}
-        <FontAwesomeIcon
-          // icon={faMagnifyingGlass}
-          style={{ marginLeft: "5px" }}
-        />
-        <span className="bl-add">
-          Trạng thái{" "}
-          <Select
-            defaultValue="Tất cả"
-            style={{
-              width: 120,
-            }}
-            onChange={handleFilter}
-          >
-            {" "}
-            <Option value="">Tất cả</Option>
-            <Option value={1}>Làm việc</Option>
-            <Option value={2}>Đã nghỉ</Option>
-          </Select>
-          <Link to="/them-nhan-vien">
-            <Button className="btn-them-tk">+ Thêm Tài khoản</Button>
-          </Link>
-          <Button className="btn-them-tu-file">
-            <NhapTuFile />
-          </Button>
-        </span>
-      </div>
       <div className="form-tbl">
-        <Form
-          form={form}
-          component={false}
-          initialValues={ {}}
-        >
-          <Table
-            components={{
-              body: {
-                cell: EditableCell,
-              },
-            }}
-            bordered
-            dataSource={filteredDataSource}
-            columns={mergedColumns}
-            rowClassName="editable-row"
-            pagination={false}
-            // {{
-            //   pageSize: 10,
-            //   current: currentPage + 1,
-            //   total: totalPages * 10,
-            //   showSizeChanger: false,
-            //   onChange: (value) => {
-            //     setCurrentPage(value - 1);
-            //   },
-            // }}
-            rowKey="id"
-            style={{ marginBottom: "20px" }}
-          />
+        <Form form={form} component={false} initialValues={{}}>
+          <Card>
+            <div className="btn-add">
+              <span>
+                <Form
+                  style={{
+                    display: "inline-block",
+                    marginLeft: "50px",
+                    paddingBottom: " 10px",
+                    width: "20em",
+                    height: "32px",
+                  }}
+                >
+                  <Input
+                    placeholder="Tìm theo mã / họ và tên / sdt..."
+                    value={searchText}
+                    onChange={handleInputChangeTop}
+                    style={{
+                      width: "21em",
+                      display: "inline-block",
+                      borderRadius: "10px 0px 0px 10px",
+                    }}
+                  />
+                </Form>
+              </span>
+              <Tooltip title="Search" color={"black"} placement="bottom">
+                <Button
+                  onClick={handleSearchTop}
+                  style={{
+                    borderRadius: "30px",
+                    width: "4em",
+                    backgroundColor: "#4976e8",
+                    color: "white",
+                    paddingBottom: "30px",
+                  }}
+                >
+                  <SearchOutlined style={{ cursor: "pointer" }} />
+                </Button>
+              </Tooltip>
 
-      <Card>
-        {/* <h5 style={{ marginBottom: "10px" }}>
-          {" "}
-          <FontAwesomeIcon icon={faFilter} />
-          &nbsp;Lọc
-        </h5> */}
-
-
-        <div className="btn-add">
-          <span>
-            <Form
-              style={{
-                display: "inline-block",
-                marginLeft: "50px",
-                paddingBottom: " 10px",
-                width: "20em",
-                height: "32px",
-              }}
-            >
-              <Input
-                placeholder="Tìm theo mã / họ và tên / sdt..."
-                value={searchText}
-                onChange={handleInputChangeTop}
-                style={{
-                  width: "21em",
-                  display: "inline-block",
-                  borderRadius: "10px 0px 0px 10px",
-                }}
-              />
-            </Form>
-          </span>
-          <Tooltip title="Search" color={"black"} placement="bottom">
-            <Button
-              onClick={handleSearchTop}
-              style={{
-                borderRadius: "30px",
-                width: "4em",
-                backgroundColor: "#4976e8",
-                color: "white",
-                paddingBottom: "30px",
-              }}
-            >
-              <SearchOutlined style={{ cursor: "pointer" }} />
-            </Button>
-          </Tooltip>
-
-          <span className="bl-add">
-            Trạng thái{"  "} &nbsp;&nbsp;
-            <Select
-              defaultValue="Tất cả"
-              style={{
-                width: 200,
-                marginRight: "20em",
-              }}
-              onChange={handleFilter}
-            >
-              {" "}
-              <Option value="">Tất cả</Option>
-              <Option value={1}>Làm việc</Option>
-              <Option value={2}>Đã nghỉ</Option>
-            </Select>
-          </span>
-        </div>
-      </Card>
-
-      <Card style={{ marginTop: "10px" }}>
-        {" "}
-        <div className="btn-add">
-          <h5>
-            <FontAwesomeIcon icon={faRectangleList} /> &nbsp;Danh sách Nhân viên
-            <span className="bl-add">
-              <Link to="/them-nhan-vien">
-                <Button className="btn-them-tk">+ Thêm Tài khoản</Button>
-              </Link>
-              <Button className="btn-them-tu-file">
-                <NhapTuFile />
-              </Button>
-            </span>
-          </h5>
-        </div>
-        <div className="form-tbl">
-          {" "}
-          <Form form={form} component={false}>
-            <Table
-              components={{
-                body: {
-                  cell: EditableCell,
-                },
-              }}
-              bordered
-              dataSource={filteredDataSource}
-              columns={mergedColumns}
-              rowClassName="editable-row"
-              pagination={false}
-              rowKey="id"
-              style={{ marginBottom: "20px" }}
-            />
-            <div className="phanTrang" style={{ textAlign: "center" }}>
-              <Pagination
-                simple
-                current={currentPage + 1}
-                onChange={(value) => {
-                  setCurrentPage(value - 1);
-                }}
-                total={totalPages * 10}
-              />
+              <span className="bl-add">
+                Trạng thái{"  "} &nbsp;&nbsp;
+                <Select
+                  defaultValue="Tất cả"
+                  style={{
+                    width: 200,
+                    marginRight: "20em",
+                  }}
+                  onChange={handleFilter}
+                >
+                  {" "}
+                  <Option value="">Tất cả</Option>
+                  <Option value={1}>Làm việc</Option>
+                  <Option value={2}>Đã nghỉ</Option>
+                </Select>
+              </span>
             </div>
-          </Form>
-        </div>
-      </Card>
-      </Form>
-    
-     </div>
+          </Card>
+
+          <Card style={{ marginTop: "10px" }}>
+            {" "}
+            <div className="btn-add">
+              <h5>
+                <FontAwesomeIcon icon={faRectangleList} /> &nbsp;Danh sách Nhân
+                viên
+                <span className="bl-add">
+                  <Link to="/them-nhan-vien">
+                    <Button className="btn-them-tk">+ Thêm Tài khoản</Button>
+                  </Link>
+                  <Button className="btn-them-tu-file">
+                    <NhapTuFile />
+                  </Button>
+                </span>
+              </h5>
+            </div>
+            <div className="form-tbl">
+              {" "}
+              <Form form={form} component={false}>
+                <Table
+                  components={{
+                    body: {
+                      cell: EditableCell,
+                    },
+                  }}
+                  bordered
+                  dataSource={filteredDataSource}
+                  columns={mergedColumns}
+                  rowClassName="editable-row"
+                  pagination={false}
+                  rowKey="id"
+                  style={{ marginBottom: "20px" }}
+                />
+                <div className="phanTrang" style={{ textAlign: "center" }}>
+                  <Pagination
+                    simple
+                    current={currentPage + 1}
+                    onChange={(value) => {
+                      setCurrentPage(value - 1);
+                    }}
+                    total={totalPages * 10}
+                  />
+                </div>
+              </Form>
+            </div>
+          </Card>
+        </Form>
+      </div>
     </>
   );
 };

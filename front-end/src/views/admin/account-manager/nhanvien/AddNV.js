@@ -65,7 +65,7 @@ const AddNV = () => {
     }
   };
   const handleHoVaTenChange = (e) => {
-    const value = e.target.value.trim();
+    const value = e.target.value;
     const specialCharPattern = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
     const trimmedValue = value.replace(/\s/g, "");
     setTen(value);
@@ -104,7 +104,7 @@ const AddNV = () => {
     }
   };
   const handleDiaChi = (e) => {
-    const value = e.target.value.trim();
+    const value = e.target.value;
     setDiaChi(value);
     const trimmedValue = value.replace(/\s/g, "");
     if (!value.trim()) {

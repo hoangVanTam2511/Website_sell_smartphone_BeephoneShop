@@ -102,11 +102,9 @@ const UpdateKH = () => {
   const [sdtError, setSDTError] = useState("");
   const [sdtkhError, setSDTKHError] = useState("");
   const [hoTenkhError, sethoTenKHError] = useState("");
-  const [initialXaPhuong, setInitialXaPhuong] = useState("");
-  const [initialQuanHuyen, setInitialQuanHuyen] = useState("");
   const [initialTinhThanhPho, setInitialTinhThanhPho] = useState("");
   const handleHoVaTenChange = (e) => {
-    const value = e.target.value.trim();
+    const value = e.target.value;
     const specialCharPattern = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
     const trimmedValue = value.replace(/\s/g, "");
     setTen(value);
@@ -146,7 +144,7 @@ const UpdateKH = () => {
   };
   //handle diaChi
   const handleHoTenChange = (e) => {
-    const value = e.target.value.trim();
+    const value = e.target.value;
     const specialCharPattern = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
 
     setHoTenKH(value);
@@ -173,7 +171,7 @@ const UpdateKH = () => {
     }
   };
   const handleDiaChi = (e) => {
-    const value = e.target.value.trim();
+    const value = e.target.value;
     setDiaChi(value);
     const trimmedValue = value.replace(/\s/g, "");
     if (!value.trim()) {

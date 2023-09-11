@@ -19,7 +19,6 @@ public interface DiaChiRepository extends IDiaChiRepository {
             "SET d.trangThai = CASE WHEN d.id = :newId THEN 1 ELSE 0 END\n" +
             "WHERE d.account.id = :accountId\n")
     void updateTrangThai(@Param("newId") String newId, @Param("accountId") String accountId);
-// DiaChi findByMa(String ma);
 
     @Query(value = """
                 SELECT  kh FROM DiaChi kh where kh.account.id=:id
