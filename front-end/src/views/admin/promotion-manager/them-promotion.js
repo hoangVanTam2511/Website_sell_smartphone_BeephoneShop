@@ -169,10 +169,19 @@ const AddKhuyenMai = () => {
         setValue("");
         setNgayBatDau(dayjs());
         setNgayKetThuc(dayjs());
+        clearSelectedItems();
       })
       .catch((error) => {
         toast.error("Đã xảy ra lỗi khi thêm Khuyến Mãi.");
       });
+  };
+
+  const clearSelectedItems = () => {
+    setSelectedRowKeys([]);
+    setSelectedRowKeys1([]);
+    setSelectedRows([]);
+    setSelectedRows1([]);
+    setSelectedProductDetails([]);
   };
 
   // Hàm thêm vào khuyến mãi chi tiết
@@ -193,9 +202,7 @@ const AddKhuyenMai = () => {
         setValue("");
         setNgayBatDau(dayjs());
         setNgayKetThuc(dayjs());
-        // setTimeout(() => {
-        //   redirectToHienThiKhuyenMai();
-        // }, 3000);
+        clearSelectedItems();
       })
       .catch((error) => {
         toast.error("Đã xảy ra lỗi khi áp dụng Khuyến Mãi vào sản phẩm.");
@@ -205,8 +212,12 @@ const AddKhuyenMai = () => {
   //Validate
   const validationAll = () => {
     const msg = {};
-    if (isEmpty(tenKhuyenMai)) {
+    if (!tenKhuyenMai) {
       msg.tenKhuyenMai = "Không để trống Tên !!!";
+    }
+
+    if (!giaTriKhuyenMai) {
+      msg.giaTriKhuyenMai = "Không để trống giá trị khuyến mãi !!!";
     }
 
     if (isAfter(String(ngayBatDau), String(ngayKetThuc))) {
@@ -270,11 +281,12 @@ const AddKhuyenMai = () => {
       selectedKeys.forEach((id) => {
         loadDatalistSanPhamChiTiet(id, true);
       });
+      console.log(listSanPhamChiTiet);
       setSelectedRowKeys(selectedKeys);
     } else {
+      clear();
       setSelectAll(checked);
       const selectedKeys = checked ? listSanPham.map((item) => item.id) : [];
-      clear();
       setSelectedRowKeys(selectedKeys);
     }
   };
@@ -653,12 +665,14 @@ const AddKhuyenMai = () => {
                   style={{ width: "90%", marginTop: "10px" }}
                 />
               </div>
-              {/* <div className="row-input">
-                <span className="validate" style={{ color: "red" }}>
-                  {validationMsg.tenKhuyenMai}
-                </span>
-              </div> */}
+              <span
+                className="validate"
+                style={{ paddingLeft: "50px", color: "red" }}
+              >
+                {validationMsg.tenKhuyenMai}
+              </span>
             </div>
+
             <div className="row-input">
               <div className="select-value">
                 <ToggleButtonGroup
@@ -713,6 +727,12 @@ const AddKhuyenMai = () => {
                   }}
                 />
               </div>
+              <span
+                className="validate"
+                style={{ color: "red", paddingLeft: "50px" }}
+              >
+                {validationMsg.giaTriKhuyenMai}
+              </span>
             </div>
             <div className="row-input-date">
               <div className="input-container">
@@ -828,7 +848,7 @@ const AddKhuyenMai = () => {
               return {
                 onClick: () => {
                   handleRowClick1(record);
-                  setSelectedRows(record);
+                  setSelectedRows1([record]);
                   setIdSanPhamChiTiet(record.id);
                   detailSanPhamSauKhuyenMai(record.id);
                 },
