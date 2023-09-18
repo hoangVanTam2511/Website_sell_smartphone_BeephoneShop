@@ -212,24 +212,24 @@ const AddKhuyenMai = () => {
   //Validate
   const validationAll = () => {
     const msg = {};
-    if (!tenKhuyenMai) {
+    if (!tenKhuyenMai.trim("")) {
       msg.tenKhuyenMai = "Không để trống Tên !!!";
     }
 
-    if (!giaTriKhuyenMai) {
+    if (!giaTriKhuyenMai.trim("")) {
       msg.giaTriKhuyenMai = "Không để trống giá trị khuyến mãi !!!";
     }
 
-    if (isAfter(String(ngayBatDau), String(ngayKetThuc))) {
-      msg.ngayBatDau = "Ngày Bắt Đầu phải nhỏ hơn ngày kết thúc !!!";
+    if (ngayBatDau.isAfter(ngayKetThuc)) {
+      msg.ngayBatDau = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc !!!";
     }
 
-    if (isAfter(String(ngayBatDau), String(ngayKetThuc))) {
-      msg.ngayBatDau = "Ngày Bắt Đầu phải nhỏ hơn ngày kết thúc !!!";
+    if (ngayKetThuc.isBefore(ngayBatDau)) {
+      msg.ngayKetThuc = "Ngày kết thúc phải lớn hơn ngày bắt đầu !!!";
     }
 
-    if (equals(String(ngayBatDau), String(ngayKetThuc))) {
-      msg.ngayKetThuc = "Ngày Kết Thúc phải lớn hơn Ngày Bắt Đầu !!!";
+    if (ngayBatDau.isBefore(dayjs())) {
+      msg.ngayBatDau = "Ngày bắt đầu phải lớn hơn ngày hiện tại !!!";
     }
 
     setValidationMsg(msg);

@@ -194,7 +194,7 @@ const HienThiVoucher = () => {
       },
     },
     {
-      title: "Thời Gian Bắt Đầu - Kết Thúc",
+      title: "Thời Gian",
       dataIndex: "thoiGian",
       width: "10%",
       align: "center",

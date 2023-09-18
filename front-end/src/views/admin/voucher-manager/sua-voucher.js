@@ -145,7 +145,7 @@ const UpdateVoucher = () => {
     setGiaTriToiDa(() => voucher.giaTriToiDa);
     setSeclectDiscount(() => voucher.loaiVoucher);
     convertTien();
-  }, []);
+  }, [voucher]);
 
   const detailVoucher = () => {
     axios

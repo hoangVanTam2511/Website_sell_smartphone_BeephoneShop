@@ -9,9 +9,11 @@ import beephone_shop_projects.core.admin.promotion_management.service.KhuyenMaiS
 import beephone_shop_projects.entity.KhuyenMai;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -24,7 +26,6 @@ import java.util.List;
 
 @Service
 @Validated
-@Component
 public class KhuyenMaiServiceImpl implements KhuyenMaiService {
 
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -32,8 +33,6 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
     @Autowired
     private KhuyenMaiRepository khuyenMaiRepository;
 
-
-    @Scheduled(fixedRate = 60000)
     public List<KhuyenMai> updateStatusKhuyenMai() {
         Date dateTime = new Date();
         List<KhuyenMai> listToUpdate = new ArrayList<>();
@@ -73,6 +72,7 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
         }
         Pageable pageable = PageRequest.of(request.getPageNo()-1, request.getPageSize());
         Page<KhuyenMai> page = khuyenMaiRepository.findAllKhuyenMai(pageable, request);
+        updateStatusKhuyenMai();
         return page;
     }
 
@@ -93,6 +93,17 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
     }
     @Override
     public KhuyenMai addKhuyenMai(@Valid CreateKhuyenMaiRequest request) {
+        Integer status = 0;
+        Date dateTime = new Date();
+        if (request.getNgayBatDau().after(dateTime) && request.getNgayKetThuc().before(dateTime)){
+            status = 1;
+        }
+        if (request.getNgayBatDau().before(dateTime)){
+            status = 2;
+        }
+        if (request.getNgayKetThuc().after(dateTime)){
+            status = 3;
+        }
         KhuyenMai khuyenMai = KhuyenMai.builder()
                 .ma(generateRandomCode())
                 .tenKhuyenMai(request.getTenKhuyenMai())
@@ -100,7 +111,7 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
                 .loaiKhuyenMai(request.getLoaiKhuyenMai())
                 .ngayBatDau(request.getNgayBatDau())
                 .ngayKetThuc(request.getNgayKetThuc())
-                .trangThai(1)
+                .trangThai(status)
                 .build();
         return khuyenMaiRepository.save(khuyenMai);
     }
