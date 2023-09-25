@@ -270,7 +270,7 @@ const TabItem = (props) => {
                       <div className='d-flex'>
                         <Tooltip TransitionComponent={Zoom} title="Chi tiết sản phẩm" style={{ cursor: "pointer" }} placement="top">
                           <div className="product-img">
-                            <img src={item.sanPhamChiTiet.url} class='' alt="" style={{ width: "115px", height: "115px" }} />
+                            <img src={`https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/t/_/t_m-iphone-14-pro_2.png`} class='' alt="" style={{ width: "115px", height: "115px" }} />
                           </div>
                         </Tooltip>
                         <div className='product ms-3'>
@@ -350,7 +350,7 @@ const TabItem = (props) => {
                             </span>
                           </div>
                         </button>
-                        <input value={10} min="1" max="100"
+                        <input value={1} min="1" max="100"
                           name="quantity" class="quantity"
                           type="number" />
                         <button class="">

@@ -2,6 +2,7 @@ package beephone_shop_projects.core.admin.product_management.repository;
 
 import beephone_shop_projects.core.admin.product_management.model.responce.CauHinhResponce;
 import beephone_shop_projects.core.admin.product_management.model.responce.ChiTietSanPhamResponce;
+import beephone_shop_projects.core.admin.product_management.model.responce.PointOfSaleOneProductResponce;
 import beephone_shop_projects.core.admin.product_management.model.responce.SanPhamResponce;
 import beephone_shop_projects.entity.SanPham;
 import beephone_shop_projects.repository.ISanPhamRepository;
@@ -98,4 +99,18 @@ public interface SanPhamRepository extends ISanPhamRepository {
         SELECT CONCAT( 'SANPHAM_',IF(count(*)  = 0,0,SUBSTRING(ma,9) + 1)) FROM san_pham
     """,nativeQuery = true)
     String getNewCode();
+
+    @Query(value = """
+        SELECT m.ma as 'ma_san_pham',
+        m.ten_san_pham as 'ten_san_pham',
+        anh.duong_dan as 'duong_dan_anh',
+        MIN(a.don_gia), MIN(a.so_luong_ton_kho)
+        FROM san_pham_chi_tiet a
+        JOIN san_pham m on m.id = a.id_san_pham
+        JOIN anh on anh.id_chi_tiet_san_pham = a.id
+        JOIN cau_hinh b on b.id = a.id_cau_hinh
+        GROUP BY m.ten_san_pham
+    """,nativeQuery = true)
+    List<PointOfSaleOneProductResponce> getPOSProduct();
+
 }

@@ -36,7 +36,7 @@ public interface CauHinhRepository extends ICauHinhRepository {
     Page<CauHinhResponce> getAllCauHinh(Pageable pageable, @Param("delected") Boolean delected);
 
     @Query(value = """
-            SELECT distinct ram.kich_thuoc as 'ram',rom.kich_thuoc as 'rom' from san_pham_chi_tiet AS spct
+            SELECT distinct ram.kich_thuoc as 'ram',rom.kich_thuoc as 'rom',spct.don_gia from san_pham_chi_tiet AS spct
             JOIN cau_hinh AS ch ON ch.id = spct.id_cau_hinh
             JOIN san_pham AS sp ON sp.id = spct.id_san_pham
             JOIN rom ON rom.id = ch.id_rom

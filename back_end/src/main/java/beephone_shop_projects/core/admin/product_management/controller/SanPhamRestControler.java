@@ -104,6 +104,15 @@ public class SanPhamRestControler {
             return new ResponseEntity<>(sanPhamService.getListConfigByIDProduct(id,ram,rom,color),HttpStatus.OK);
         }
     }
-        
+
+    @GetMapping("/pos_products")
+    public ResponseEntity<?> getPosProduct(){
+        if(sanPhamService.getListProducts() == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }else{
+            return new ResponseEntity<>(sanPhamService.getListProducts(),HttpStatus.OK);
+        }
+    }
+
 
 }

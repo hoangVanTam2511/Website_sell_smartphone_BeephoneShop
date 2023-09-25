@@ -627,7 +627,7 @@ export function ProductsDialog(props) {
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell component="th" scope="row" align='center' style={{ width: "200px" }}>
-                      <img src={item.url} alt="" style={{ width: "110px", height: "110px" }} />
+                      <img src={`https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/t/_/t_m-iphone-14-pro_2.png`} alt="" style={{ width: "110px", height: "110px" }} />
                     </TableCell>
                     <TableCell align="center" style={{ fontSize: "16px", width: "200px" }}>Prd_000000{index + 1}</TableCell>
                     <TableCell align="center" style={{ width: "430px", fontSize: "16px", whiteSpace: "pre-line" }}>{item.ten}</TableCell>
@@ -1328,7 +1328,7 @@ export const ProductDetailsDialog = (props) => {
                         </span>
                       </div>
                     </button>
-                    <input value={0} min="1" max="100"
+                    <input value={1} min="1" max="100"
                       name="quantity" class="quantity"
                       type="number" />
                     <button class="">

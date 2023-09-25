@@ -12,4 +12,7 @@ public interface PointOfSaleCofigResponce {
 
     @Value("#{target.rom}")
     Integer getRom();
+
+    @Value("#{target.don_gia}")
+    Integer getDonGia();
 }

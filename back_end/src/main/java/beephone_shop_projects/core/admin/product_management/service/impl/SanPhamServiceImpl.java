@@ -2,10 +2,7 @@ package beephone_shop_projects.core.admin.product_management.service.impl;
 
 import beephone_shop_projects.core.admin.product_management.model.request.CreateProductRequest;
 import beephone_shop_projects.core.admin.product_management.model.request.SearchChiTietSanPhamRequest;
-import beephone_shop_projects.core.admin.product_management.model.responce.PointOfSaleCofigResponce;
-import beephone_shop_projects.core.admin.product_management.model.responce.PointOfSaleColorResponce;
-import beephone_shop_projects.core.admin.product_management.model.responce.PointOfSaleProductResponce;
-import beephone_shop_projects.core.admin.product_management.model.responce.SanPhamResponce;
+import beephone_shop_projects.core.admin.product_management.model.responce.*;
 import beephone_shop_projects.core.admin.product_management.repository.*;
 import beephone_shop_projects.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -125,6 +122,10 @@ public class SanPhamServiceImpl {
     public List<PointOfSaleProductResponce> getListConfigByIDProduct(String idProduct, Integer ram,
                                                                      Integer rom, String tenMauSac) {
         return sanPhamChiTietRepository.getPointOfSaleProductResponce(idProduct, ram, rom, tenMauSac);
+    }
+
+    public List<PointOfSaleOneProductResponce> getListProducts(){
+        return sanPhamRepository.getPOSProduct();
     }
 
 
