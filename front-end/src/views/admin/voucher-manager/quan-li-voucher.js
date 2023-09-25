@@ -3,7 +3,6 @@ import {
   Table,
   Input,
   Button,
-  Tooltip,
   Space,
   Modal,
   AutoComplete,
@@ -14,7 +13,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
 import {
   faPencilAlt,
   faArrowsRotate,
@@ -32,11 +30,18 @@ import "react-toastify/dist/ReactToastify.css";
 import numeral from "numeral"; // Import thư viện numeral
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { Box, Pagination } from "@mui/material";
+import { Box, Select, IconButton, Tooltip, Pagination, TextField, Zoom } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import AddIcon from "@mui/icons-material/Add";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
+import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
+import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined';
+import { PlusOutlined } from "@ant-design/icons";
+import Card from "../../../components/Card";
+import style from './style.css';
+import { parseInt } from "lodash";
 
 //show
 const HienThiVoucher = () => {
@@ -58,34 +63,34 @@ const HienThiVoucher = () => {
   const loadDataListVoucher = (page) => {
     axios
       .get(`${apiURLVoucher}/vouchers`, {
-        params: {
-          keyword: searchTatCa,
-          pageNo: page,
-          trangThai: searchTrangThai,
-          ngayBatDau: searchNgayBatDau,
-          ngayKetThuc: searchNgayKetThuc,
-        },
+        // params: {
+        //   keyword: searchTatCa,
+        //   pageNo: page,
+        //   trangThai: searchTrangThai,
+        //   ngayBatDau: searchNgayBatDau,
+        //   ngayKetThuc: searchNgayKetThuc,
+        // },
       })
       .then((response) => {
         setListVoucher(response.data.content);
-        setTotalPages(response.data.totalPages);
+        // setTotalPages(response.data.totalPages);
       });
   };
 
   useEffect(() => {
     loadDataListVoucher(currentPage);
-    const intervalId = setInterval(() => {
-      loadDataListVoucher(currentPage);
-    }, 10000);
+    // const intervalId = setInterval(() => {
+    //   loadDataListVoucher(currentPage);
+    // }, 10000);
     // Xóa interval khi component unmounted
-    return () => clearInterval(intervalId);
+    // return () => clearInterval(intervalId);
   }, [
-    searchTatCa,
-    searchTrangThai,
-    searchNgayBatDau,
-    searchNgayKetThuc,
-    currentPage,
-    totalPages,
+    // searchTatCa,
+    // searchTrangThai,
+    // searchNgayBatDau,
+    // searchNgayKetThuc,
+    // currentPage,
+    // totalPages,
   ]);
 
   const handleReset = () => {
@@ -141,58 +146,88 @@ const HienThiVoucher = () => {
     {
       title: "STT",
       dataIndex: "stt",
-      width: "1%",
+      width: "5%",
       align: "center",
       render: (text, record) => <span>{listVoucher.indexOf(record) + 1}</span>,
-      sorter: (a, b) => a.stt - b.stt,
     },
     {
       title: "Mã",
       dataIndex: "ma",
-      width: "1%",
       align: "center",
+      render: (text, record) => <span style={{ fontWeight: "400" }}>{record.ma}</span>,
     },
-    {
-      title: "Tên",
-      dataIndex: "ten",
-      width: "15%",
-      align: "center",
-      render: (text, record) => (
-        <span
-          style={{
-            maxWidth: "25%",
-            whiteSpace: "pre-line",
-            overflow: "hidden",
-          }}
-        >
-          {record.ten}
-        </span>
-      ),
-    },
-    {
-      title: "Số Lượng",
-      dataIndex: "soLuong",
-      width: "1%",
-      align: "center",
-    },
-
+    // {
+    //   title: "Tên",
+    //   dataIndex: "ten",
+    //   width: "15%",
+    //   align: "center",
+    //   render: (text, record) => (
+    //     <span
+    //       style={{
+    //         maxWidth: "25%",
+    //         whiteSpace: "pre-line",
+    //         overflow: "hidden",
+    //       }}
+    //     >
+    //       {record.ten}
+    //     </span>
+    //   ),
+    // },
     {
       title: "Giá Trị",
       dataIndex: "giaTriVoucher",
       width: "10%",
       align: "center",
-      render: (value, record) => {
-        let formattedValue = value; // Mặc định là giữ nguyên giá trị
-
+      render: (text, record) => <span className="txt-danger" style={{ fontWeight: "400" }}>
+        {record && record.giaTriVoucher && record.giaTriVoucher.toLocaleString("vi-VN", {
+          style: "currency",
+          currency: "VND",
+        })}
+      </span>
+    },
+    {
+      title: "Giá Trị Tối Đa",
+      dataIndex: "giaTriToiDa",
+      width: "10%",
+      align: "center",
+      render: (text, record) => {
         if (record.loaiVoucher === 1) {
-          formattedValue = numeral(value).format("0,0 VND") + " VNĐ";
-        } else if (record.loaiVoucher === 2) {
-          formattedValue = `${value} %`;
+          return <span>...</span>;
         }
-
-        return <span>{formattedValue}</span>;
+        else {
+          return
+          <span className="txt-danger" style={{ fontWeight: "400" }}>
+            {record && record.giaTriVoucher && record.giaTriVoucher.toLocaleString("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            })}
+          </span>
+        }
       },
     },
+    {
+      title: "Điều kiện",
+      dataIndex: "dieuKienApDung",
+      width: "25%",
+      align: "center",
+      render: (text, record) =>
+        <>
+          <span className="" style={{ fontWeight: "400", whiteSpace: "pre-line", fontSize: "15px" }}>
+            Đơn tối thiểu {" "}
+            {record && record.dieuKienApDung && record.dieuKienApDung.toLocaleString("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            })}
+          </span>
+        </>
+    },
+    {
+      title: "Số Lượng",
+      dataIndex: "soLuong",
+      width: "5%",
+      align: "center",
+    },
+
     {
       title: "Thời Gian",
       dataIndex: "thoiGian",
@@ -200,126 +235,148 @@ const HienThiVoucher = () => {
       align: "center",
       render: (text, record) => (
         <>
-          {dayjs(record.ngayBatDau).format("DD/MM/YYYY")} -{" "}
-          {dayjs(record.ngayKetThuc).format("DD/MM/YYYY")}
+          <div
+            className={`rounded-pill mx-auto ${(record.trangThai == 1) ? "badge-primary" :
+              record.trangThai == 2 ? "badge-danger" :
+                (record.trangThai == 3) ? "badge-light" :
+                  (record.trangThai == 4 && isDateFuture(record.ngayKetThuc)
+                    == true) ? "badge-danger" :
+                    (record.trangThai == 4 && isDatePast(record.ngayBatDau)
+                      == true) ? "badge-light" :
+                      (record.trangThai == 4 && isRangeDate(record.ngayBatDau, record.ngayKetThuc)
+                        == true) ? "badge-primary" :
+                        ""}`}
+            style={{
+              height: "35px",
+              width: "auto",
+              padding: "4px",
+            }}
+          >
+            <span
+              className={`p-2 ${record.trangThai == 3 ? "text-dark" :
+                (record.trangThai == 4 && isDatePast(record.ngayBatDau)
+                  == true) ? "text-dark" :
+                  "text-white"}`}
+              style={{ fontSize: "14px" }}
+            >
+              {dayjs(record.ngayBatDau).format("DD/MM/YYYY")} {" "} - {" "}
+              {dayjs(record.ngayKetThuc).format("DD/MM/YYYY")}
+            </span>
+          </div>
         </>
       ),
     },
     {
       title: "Trạng Thái",
       dataIndex: "trangThai",
-      width: "1%",
+      width: "10%",
       align: "center",
       onFilter: (value, record) => record.trangThai == value,
       filterSearch: true,
       render: (text, record) => (
         <span>
           {record.trangThai === 1 ? (
-            <Button
-              type="primary"
+            <div
+              className="rounded-pill mx-auto badge-primary"
               style={{
-                borderRadius: "30px",
-                pointerEvents: "none",
-                cursor: "default",
+                height: "35px",
+                width: "110px",
+                padding: "4px",
               }}
             >
-              Còn Hiệu Lực
-            </Button>
+              <span
+                className="text-white p-2"
+                style={{ fontSize: "14px" }}
+              >
+                Hoạt động
+              </span>
+            </div>
           ) : record.trangThai === 2 ? (
-            <Button
-              type="primary"
-              danger
+            <div
+              className="rounded-pill mx-auto badge-danger"
               style={{
-                borderRadius: "30px",
-                pointerEvents: "none",
-                cursor: "default",
+                height: "35px",
+                width: "auto",
+                padding: "4px",
               }}
             >
-              Hết Hiệu Lực
-            </Button>
+              <span
+                className="text-white p-2"
+                style={{ fontSize: "14px" }}
+              >
+                Ngừng hoạt động
+              </span>
+            </div>
           ) : record.trangThai === 3 ? (
-            <Button
-              type="primary"
+            <div
+              className="rounded-pill mx-auto badge-light"
               style={{
-                borderRadius: "30px",
-                pointerEvents: "none",
-                cursor: "default",
-                background: "teal",
+                height: "35px",
+                width: "120px",
+                padding: "4px",
               }}
             >
-              Chưa Bắt Đầu
-            </Button>
-          ) : record.trangThai === 4 ? (
-            <Button
-              type="primary"
+              <span
+                className="text-dark p-2"
+                style={{ fontSize: "14px" }}
+              >
+                Chưa diễn ra
+              </span>
+            </div>
+
+          ) : record.trangThai == 4 ? (
+            <div
+              className="rounded-pill mx-auto badge-danger"
               style={{
-                borderRadius: "30px",
-                pointerEvents: "none",
-                cursor: "default",
-                background: "olive",
+                height: "35px",
+                width: "90px",
+                padding: "4px",
               }}
             >
-              Hết Lượt Dùng
-            </Button>
-          ) : (
-            <Button
-              type="primary"
-              style={{
-                borderRadius: "30px",
-                pointerEvents: "none",
-                cursor: "default",
-                background: "black",
-              }}
-            >
-              Không Xác Định
-            </Button>
-          )}
+              <span
+                className="text-white p-2"
+                style={{ fontSize: "14px" }}
+              >
+                Đã hủy
+              </span>
+            </div>
+          ) : ""}
         </span>
       ),
     },
     {
       title: "Thao Tác",
       dataIndex: "operation",
-      width: "1%",
       align: "center",
+      width: "20%",
       render: (_, record) => {
         return (
           <>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                textAlign: "center",
-                paddingLeft: "10px",
-              }}
+            <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
+              <IconButton size="" >
+                <BorderColorOutlinedIcon color="primary" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip TransitionComponent={Zoom}
+              title={record.trangThai == 1 || record.trangThai == 3
+                ? "Ngừng kích hoạt" :
+                (record.trangThai == 4 && isDatePast(record.ngayBatDau)
+                  == true) ? "Kích hoạt" :
+                  (record.trangThai == 4 && isRangeDate(record.ngayBatDau, record.ngayKetThuc)
+                    == true) ? "Kích hoạt" : ""
+              }
             >
-              <div>
-                <Tooltip title="Details">
-                  <Button
-                    onClick={() => {
-                      detailVoucher(record.id);
-                      showModal();
-                    }}
-                    style={{ border: "none", background: "none", padding: "0" }}
-                  >
-                    {/* <FontAwesomeIcon icon={faRotateRight} /> */}
-                    <RemoveRedEyeIcon
-                      fontSize="small"
-                      style={{ color: "blue" }}
-                    />
-                  </Button>
-                  <ToastContainer />
-                </Tooltip>
-              </div>
-              &nbsp;&nbsp;&nbsp;&nbsp;
-              <div>
-                <Tooltip title="Edit">
-                  <Link to={`/sua-voucher/${record.id}`}>
-                    <FontAwesomeIcon icon={faPencilAlt} />
-                  </Link>
-                </Tooltip>
-              </div>
-            </div>
+              <IconButton size="" className='ms-2' style={{ marginTop: "6px" }}>
+                <AssignmentOutlinedIcon color={record.trangThai == 1 || record.trangThai == 3
+                  ? "error" :
+                  (record.trangThai == 4 && isDatePast(record.ngayBatDau)
+                    == true) ? "success" :
+                    (record.trangThai == 4 && isRangeDate(record.ngayBatDau, record.ngayKetThuc)
+                      == true) ? "success" : "disabled"
+                }
+                />
+              </IconButton>
+            </Tooltip>
           </>
         );
       },
@@ -347,11 +404,264 @@ const HienThiVoucher = () => {
         setVoucher(response.data);
         console.log(voucher.ma);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
+
+  const isDateFuture = (toDate) => {
+    const currentDate = new Date();
+    const getToDate = new Date(toDate);
+    if (currentDate > getToDate) {
+      return true;
+    }
+    return false;
+
+  }
+  const isDatePast = (fromDate) => {
+    const currentDate = new Date();
+    const getFromDate = new Date(fromDate);
+    if (currentDate < getFromDate) {
+      return true;
+    }
+    return false;
+
+  }
+
+  const isRangeDate = (fromDate, toDate) => {
+    const currentDate = new Date();
+    const getFromDate = new Date(fromDate);
+    const getToDate = new Date(toDate);
+    if (currentDate >= getFromDate && currentDate <= getToDate) {
+      return true;
+    }
+    return false;
+  }
+
+  const [openSelect1, setOpenSelect1] = useState(false);
+
+  const handleCloseSelect1 = () => {
+    setOpenSelect1(false);
+  };
+
+  const handleOpenSelect1 = () => {
+    setOpenSelect1(true);
+  };
+
+  const [openSelect, setOpenSelect] = useState(false);
+
+  const handleCloseSelect = () => {
+    setOpenSelect(false);
+  };
+
+  const handleOpenSelect = () => {
+    setOpenSelect(true);
+  };
+
 
   return (
     <>
+      <div className="mt-4" style={{ backgroundColor: "#ffffff", boxShadow: "0 0.1rem 0.3rem #00000010" }}>
+        <Card className="">
+          <Card.Header className="">
+            <div className="header-title mt-2">
+              <TextField
+                label="Tìm voucher"
+                value={searchTatCa}
+                onChange={(e) => setSearchTatCa(e.target.value)}
+                InputLabelProps={{
+                  sx: {
+                    marginTop: "",
+                    textTransform: "capitalize",
+                  },
+                }}
+                inputProps={{
+                  style: {
+                    height: "23px",
+                    width: "190px",
+                  },
+                }}
+                size="small"
+                className=""
+              />
+              <Button
+                // onClick={handleRefreshData}
+                className="rounded-2 ms-2"
+                type="warning"
+                style={{ width: "100px", fontSize: "15px" }}
+              >
+                <span
+                  className="text-dark"
+                  style={{ fontWeight: "500", marginBottom: "2px" }}
+                >
+                  Làm Mới
+                </span>
+              </Button>
+            </div>
+            <div className="d-flex">
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DemoContainer components={['DatePicker']}>
+                  <DatePicker
+                    label="Ngày Bắt Đầu"
+                    value={
+                      searchNgayBatDau
+                        ? dayjs(searchNgayBatDau, "DD/MM/YYYY")
+                        : null
+                    }
+                    format="DD/MM/YYYY"
+                    onChange={handleSearchNgayBatDauChange}
+                    slotProps={{ textField: { size: 'small' } }}
+                    sx={{
+                      position: "relative",
+                      width: "50px",
+                      "& .MuiInputBase-root": {
+                        width: "85%",
+                      },
+                    }}
+                  />
+                </DemoContainer>
+              </LocalizationProvider>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DemoContainer components={['DatePicker']}>
+                  <DatePicker
+                    label="Ngày Kết Thúc"
+                    value={
+                      searchNgayKetThuc
+                        ? dayjs(searchNgayKetThuc, "DD/MM/YYYY")
+                        : null
+                    }
+                    format="DD/MM/YYYY"
+                    onChange={handleSearchNgayKetThucChange}
+                    slotProps={{ textField: { size: 'small' } }}
+                    sx={{
+                      position: "relative",
+                      width: "50px",
+                      "& .MuiInputBase-root": {
+                        width: "85%",
+                      },
+                    }}
+                  />
+                </DemoContainer>
+              </LocalizationProvider>
+            </div>
+            <div className="mt-2">
+              <Link to="/them-voucher">
+                <Button
+                  className="rounded-2 button-mui"
+                  type="primary"
+                  style={{ height: "40px", width: "140px", fontSize: "15px" }}
+                >
+                  <PlusOutlined className="ms-1"
+                    style={{
+                      position: "absolute",
+                      bottom: "12.5px",
+                      left: "12px",
+                    }}
+                  />
+                  <span
+                    className="ms-3 ps-1"
+                    style={{ marginBottom: "3px", fontWeight: "500" }}
+                  >
+                    Tạo voucher
+                  </span>
+                </Button>
+              </Link>
+            </div>
+          </Card.Header>
+          <div className="mt-3 pt-1 ms-auto me-2 pe-1 d-flex">
+            <div className='d-flex me-3' style={{ height: "40px", position: "relative", cursor: "pointer" }}>
+              <div onClick={handleOpenSelect} className="" style={{ marginTop: "7px" }}>
+                <span className='ms-2 ps-1' style={{ fontSize: "15px", fontWeight: "450" }}>Trạng Thái: </span>
+              </div>
+              <FormControl sx={{
+                minWidth: 50,
+              }} size="small">
+                <Select
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        borderRadius: '7px',
+                      },
+                    },
+                  }}
+                  IconComponent={KeyboardArrowDownOutlinedIcon}
+                  sx={{
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      border: 'none !important',
+                    },
+                    '& .MuiSelect-select': {
+                      color: '#2f80ed',
+                      fontWeight: "500",
+                    },
+                  }}
+                  open={openSelect}
+                  onClose={handleCloseSelect}
+                  onOpen={handleOpenSelect}
+                  defaultValue={5}
+                >
+                  <MenuItem className='' value={5}>Tất cả</MenuItem>
+                  <MenuItem value={1}>Hoạt động</MenuItem>
+                  <MenuItem value={2}>Ngừng hoạt động</MenuItem>
+                  <MenuItem value={3}>Sắp diễn ra</MenuItem>
+                  <MenuItem value={4}>Đã hủy</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
+            <div className='d-flex' style={{ height: "40px", position: "relative", cursor: "pointer" }}>
+              <div onClick={handleOpenSelect1} className="" style={{ marginTop: "7px" }}>
+                <span className='ms-2 ps-1' style={{ fontSize: "15px", fontWeight: "450" }}>Dành Cho: </span>
+              </div>
+              <FormControl sx={{
+                minWidth: 50,
+              }} size="small">
+                <Select
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        borderRadius: '7px',
+                      },
+                    },
+                  }}
+                  IconComponent={KeyboardArrowDownOutlinedIcon}
+                  sx={{
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      border: 'none !important',
+                    },
+                    '& .MuiSelect-select': {
+                      color: '#2f80ed',
+                      fontWeight: "500",
+                    },
+                  }}
+                  open={openSelect1}
+                  onClose={handleCloseSelect1}
+                  onOpen={handleOpenSelect1}
+                  defaultValue={14}
+                >
+                  <MenuItem className='' value={14}>Tất cả</MenuItem>
+                  <MenuItem value={15}>Khách hàng mới</MenuItem>
+                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
+          </div>
+          <Card.Body>
+            <Table
+              dataSource={listVoucher}
+              columns={columns}
+              pagination={false}
+              rowKey="id"
+            />
+          </Card.Body>
+          <div className='mx-auto'>
+            <Pagination
+              page={parseInt(currentPage)}
+              count={totalPages}
+              onChange={chuyenTrang}
+              color="primary"
+            />
+          </div>
+          <div className="mt-4"></div>
+        </Card>
+      </div>
+      {/*
       <Modal
         title="Voucher Details"
         open={isModalOpen}
@@ -415,8 +725,8 @@ const HienThiVoucher = () => {
               {voucher.trangThai === 1
                 ? "Còn hiệu lực"
                 : voucher.trangThai === 2
-                ? "Hết hiệu lực"
-                : "Chưa bắt đầu"}
+                  ? "Hết hiệu lực"
+                  : "Chưa bắt đầu"}
             </h6>
           </div>
         </div>
@@ -451,13 +761,10 @@ const HienThiVoucher = () => {
             <Form style={{ width: "20em", display: "inline-block" }}>
               <Input
                 placeholder="Search"
-                value={searchTatCa}
-                onChange={(e) => setSearchTatCa(e.target.value)}
               />
             </Form>
           </span>
           <div className="btn-search"></div>
-          {/* Search */}
           &nbsp;&nbsp;&nbsp;
           <div className="btn-reset">
             <Button
@@ -471,7 +778,6 @@ const HienThiVoucher = () => {
             </Button>
           </div>
         </div>
-        {/*Bộ Lọc trạng thái*/}
         <div className="boloc-trangThai">
           <div className="search1">
             <span className="boloc-nho">
@@ -532,51 +838,38 @@ const HienThiVoucher = () => {
           </div>
         </div>
       </div>
-      <div className="your-component-container">
-        <h6>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            height="1em"
-            viewBox="0 0 448 512"
-          >
-            <path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z" />
-          </svg>
-          &nbsp; Danh Sách Voucher
-        </h6>
+      <div className="your-component-container d-flex justify-content-between">
         <div className="btn-add">
-          {/* Search */}
-          <FontAwesomeIcon style={{ marginLeft: "5px" }} />
-          <span className="bl-add">
-            <Link to="/them-voucher">
-              <Button className="btn-add-voucher">
-                {/* <FontAwesomeIcon icon={faPlus} /> */}
-                <AddIcon fontSize="small" />
-                &nbsp; Thêm voucher{" "}
-              </Button>
-            </Link>
-          </span>
+          <Link to="/them-voucher">
+            <Button
+              className="rounded-2 button-mui"
+              type="primary"
+              style={{ height: "40px", width: "140px", fontSize: "15px" }}
+            >
+              <PlusOutlined className="ms-1"
+                style={{
+                  position: "absolute",
+                  bottom: "12.5px",
+                  left: "12px",
+                }}
+              />
+              <span
+                className="ms-3 ps-1"
+                style={{ marginBottom: "3px", fontWeight: "500" }}
+              >
+                Tạo voucher
+              </span>
+            </Button>
+          </Link>
         </div>
         <div className="form-tbl">
           <Form form={form}>
-            <Table
-              bordered
-              dataSource={listVoucher}
-              columns={columns}
-              rowClassName="editable-row"
-              pagination={false}
-              rowKey="id"
-              style={{ marginBottom: "20px" }}
-            />
             <div className="phan-trang">
-              <Pagination
-                count={totalPages}
-                onChange={chuyenTrang}
-                color="primary"
-              />
             </div>
           </Form>
         </div>
       </div>
+*/}
     </>
   );
 };

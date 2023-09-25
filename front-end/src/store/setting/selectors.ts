@@ -15,7 +15,7 @@ export const sidebar_color = (state): String => state.setting.setting.sidebar_co
 export const sidebar_type = (state): String[] => state.setting.setting.sidebar_type.value;
 export const sidebar_show = (state): String => state.setting.setting.sidebar_show.value;
 export const navbar_show = (state): String => state.setting.setting.navbar_show.value;
-export const sidebar_menu_style = (state): String  => state.setting.setting.sidebar_menu_style.value;
+export const sidebar_menu_style = (state): String => state.setting.setting.sidebar_menu_style.value;
 export const footer = (state): String => state.setting.setting.footer.value;
 export const body_font_family = (state): String => state.setting.setting.body_font_family.value;
 export const heading_font_family = (state): String => state.setting.setting.heading_font_family.value;

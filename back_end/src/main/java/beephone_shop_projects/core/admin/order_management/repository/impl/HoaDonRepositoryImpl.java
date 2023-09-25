@@ -4,12 +4,16 @@ import beephone_shop_projects.core.admin.order_management.config.PersistenceConf
 import beephone_shop_projects.core.admin.order_management.dto.SearchFilterOrderDto;
 import beephone_shop_projects.core.admin.order_management.dto.SearchOrderDto;
 import beephone_shop_projects.core.admin.order_management.repository.HoaDonRepository;
+import beephone_shop_projects.entity.GioHang;
+import beephone_shop_projects.entity.GioHangChiTiet;
 import beephone_shop_projects.entity.HoaDon;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Fetch;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
@@ -33,9 +37,14 @@ public class HoaDonRepositoryImpl extends AbstractRepositoryImpl<HoaDon, String>
 
   @Override
   @Transactional
-  public HoaDon getOrderDetailsById(String id) {
+  public HoaDon getOrderDetailsById(String id, Boolean isPending) {
     HoaDon order;
-    String query = "SELECT O FROM HoaDon O WHERE O.ma = ?1";
+    String query = "SELECT DISTINCT O FROM HoaDon O LEFT JOIN FETCH O.gioHang C" +
+            " LEFT JOIN FETCH C.cartDetails WHERE O.ma = ?1";
+    if (isPending) {
+      query = "SELECT O FROM HoaDon O JOIN FETCH O.gioHang C LEFT JOIN FETCH C.cartDetails" +
+              " LEFT JOIN O.orderHistories WHERE O.id = ?1";
+    }
 
     try (EntityManager entityManager = this.getEntityManager()) {
       TypedQuery<HoaDon> typedQuery = entityManager.createQuery(query, this.getPersistenceClass())
@@ -48,6 +57,7 @@ public class HoaDonRepositoryImpl extends AbstractRepositoryImpl<HoaDon, String>
 
     return order;
   }
+
 
   @Override
   public Page<HoaDon> findOrdersByMultipleCriteriaWithPagination(Pageable pageable, SearchFilterOrderDto searchFilter) {
@@ -63,14 +73,17 @@ public class HoaDonRepositoryImpl extends AbstractRepositoryImpl<HoaDon, String>
       Root<HoaDon> root = criteriaQuery.from(this.getPersistenceClass());
       Root<HoaDon> countRoot = countQuery.from(this.getPersistenceClass());
 
+      Fetch<HoaDon, GioHang> gioHangFetch = root.fetch("gioHang", JoinType.LEFT);
+      Fetch<GioHang, GioHangChiTiet> gioHangChiTietFetch = gioHangFetch.fetch("cartDetails", JoinType.LEFT);
+
       PersistenceConfiguration<HoaDon> configuration = new PersistenceConfiguration<HoaDon>(criteriaBuilder, criteriaQuery, countQuery, root, countRoot);
+      this.buildSelectAllAndCountEntity(configuration);
 
       this.buildSortByPageable(configuration, pageable.getSort());
       if (searchFilter.getSort() != null && searchFilter.getSort().equals("New")) {
         criteriaQuery.orderBy(criteriaBuilder.asc(root.get("createdAt")));
       }
 
-      this.buildSelectAllAndCountEntity(configuration);
       this.buildWhereConditionByPredicates(configuration, buildPredicates(SearchOrderDto.class, searchFilter, configuration));
 
       orders = this.buildQueryWithPaginationByPageableAndCriteriaQuery(pageable, configuration);
