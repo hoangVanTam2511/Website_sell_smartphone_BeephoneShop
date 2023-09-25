@@ -630,7 +630,7 @@ export function ProductsDialog(props) {
                       <img src={item.url} alt="" style={{ width: "110px", height: "110px" }} />
                     </TableCell>
                     <TableCell align="center" style={{ fontSize: "16px", width: "200px" }}>Prd_000000{index + 1}</TableCell>
-                    <TableCell align="center" style={{ width: "430px", fontSize: "16px", whiteSpace: "pre-line" }}>{item.ten}</TableCell>
+                    <TableCell align="center" style={{ width: "430px", fontSize: "16px", whiteSpace: "pre-line" }}>{item.tenSanPham}</TableCell>
                     <TableCell align="center" style={{ width: "150px", fontSize: "16px" }}>
                       <span style={{ color: "#dc1111" }}>
                         {item && item.donGia ? item.donGia.toLocaleString("vi-VN", {
@@ -640,11 +640,11 @@ export function ProductsDialog(props) {
                       </span>
 
                     </TableCell>
-                    <TableCell align="center" style={{ fontSize: "16px", width: "190px" }}>100</TableCell>
+                    <TableCell align="center" style={{ fontSize: "16px", width: "190px" }}>{item.soLuongTonKho}</TableCell>
                     <TableCell align="center" style={{ width: "230px" }}>
                       <Button
                         onClick={() =>
-                          handleOpenDialogProductDetails(item.id, item.donGia)
+                          handleOpenDialogProductDetails(item.id, item.donGia, item.ten)
                         }
                         className="rounded-2 button-mui"
                         type="primary"
@@ -696,8 +696,12 @@ export function ProductsDialog(props) {
     setOpenSelect(true);
   };
 
-  const handleOpenDialogProductDetails = (id, price) => {
+  const [idProduct, setIdProduct] = useState();
+  const [nameProduct, setNameProduct] = useState();
+  const handleOpenDialogProductDetails = (id, price, name) => {
     openDialogProductDetails(id, price);
+    setIdProduct(id);
+    setNameProduct(name)
   }
 
 
@@ -885,6 +889,8 @@ export function ProductsDialog(props) {
         onCloseNoAction={closeDialogProductDetails}
         onClose={closeNoActionDialogProductDetails}
         addProduct={addProductToCart}
+        idProduct={idProduct}
+        nameProduct={nameProduct}
       />
     </div>
   );
@@ -1157,13 +1163,47 @@ export function ConfirmDialog(props) {
   );
 }
 export const ProductDetailsDialog = (props) => {
-  const { open, onClose, onCloseNoAction, addProduct } = props;
+  const { open, onClose, onCloseNoAction, addProduct, idProduct, nameProduct } = props;
 
   const [productDetailsId, setProductDetailsId] = useState();
   const [productDetailsPrice, setProductDetailsPrice] = useState();
   const addProductDetailToCart = () => {
     addProduct();
   }
+
+  const [configurations, setConfigurations] = useState([]);
+  const [colors, setColors] = useState([]);
+
+  const getListConfigurations = (idProduct) => {
+    axios
+      .get(`http://localhost:8080/san-pham/configs/${idProduct}`, {
+      })
+      .then((response) => {
+        setConfigurations(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+  }
+
+  const getListColors = () => {
+    axios
+      .get(`http://localhost:8080/san-pham/colors/${idProduct}`, {
+      })
+      .then((response) => {
+        setColors(response.data);
+        console.log(response.data)
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+
+  }
+
+  // useEffect(() => {
+  //   getListColors();
+  //   getListConfigurations();
+  // }, [])
 
   return (
     <div className='rounded-pill'>
@@ -1181,7 +1221,7 @@ export const ProductDetailsDialog = (props) => {
           <div className='' style={{ width: "auto", height: "500px" }}>
             <div className='wrapper-header d-flex justify-content-between'>
               <span style={{ fontWeight: "500", fontSize: "25px" }}>
-                iPhone 15 Pro Max Chính hãng VN/A
+                Iphone 15 Like New
                 <span className='ms-2' style={{ fontSize: "13.5px", color: "gray" }}>(PRD00000011)</span>
               </span>
               <Tooltip title="Đóng" TransitionComponent={Zoom}>
@@ -1208,7 +1248,7 @@ export const ProductDetailsDialog = (props) => {
                     size="lg"
                     sx={{ gap: 1.7 }}
                   >
-                    {['256GB', '512GB', '1TB'].map((value) => (
+                    {['64GB', '156GB', '256GB'].map((value) => (
                       <Sheet
                         key={value}
                         sx={{
@@ -1221,7 +1261,7 @@ export const ProductDetailsDialog = (props) => {
                             <>
                               <div className='p-1'>
                                 <div>
-                                  <span className="p-2" style={{ fontSize: "14px", fontWeight: "450" }}>iPhone 15 Like New {value}</span>
+                                  <span className="p-2" style={{ fontSize: "14px", fontWeight: "450" }}>{"Iphone 15 Like New " + value}</span>
                                 </div>
                                 <div className='text-center'>
                                   <span style={{ fontSize: "14px" }}>21.490.000 ₫</span>
@@ -1264,7 +1304,7 @@ export const ProductDetailsDialog = (props) => {
                     size="lg"
                     sx={{ gap: 1.7 }}
                   >
-                    {['VÀNG', 'ĐEN', 'XANH LÁ', 'HỒNG'].map((value) => (
+                    {['VÀNG', 'XANH', 'ĐỎ', "HỒNG"].map((value) => (
                       <Sheet
                         key={value}
                         sx={{
