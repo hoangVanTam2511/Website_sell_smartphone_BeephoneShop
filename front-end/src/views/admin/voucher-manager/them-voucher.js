@@ -233,7 +233,7 @@ const AddVoucher = () => {
               }}
               style={{ width: "65%" }}
               inputProps={{
-                maxLength: 10, // Giới hạn tối đa 10 ký tự
+                maxLength: 20, // Giới hạn tối đa 10 ký tự
               }}
             />
             <span className="validate" style={{ color: "red" }}>
@@ -295,7 +295,7 @@ const AddVoucher = () => {
                   width: selectDiscount === "1" ? "670px" : "390px",
                 }}
                 inputProps={{
-                  maxLength: 10, // Giới hạn tối đa 10 ký tự
+                  maxLength: 20, // Giới hạn tối đa 10 ký tự
                 }}
               />
               <span
@@ -325,7 +325,7 @@ const AddVoucher = () => {
                   display: selectDiscount === "2" ? "block" : "none",
                 }}
                 inputProps={{
-                  maxLength: 10, // Giới hạn tối đa 10 ký tự
+                  maxLength: 20, // Giới hạn tối đa 10 ký tự
                 }}
               />
             </div>

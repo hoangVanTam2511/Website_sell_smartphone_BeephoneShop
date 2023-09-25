@@ -6,26 +6,22 @@ import { faArrowLeft, faCheck, faEye } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { apiURLKhuyenMai, apiURLSanPham } from "../../../service/api";
 import TextField from "@mui/material/TextField";
-import "../../../assets/scss/HienThiNV.scss";
 import {
-  Box,
+  Badge,
   InputAdornment,
-  Pagination,
   ToggleButton,
   ToggleButtonGroup,
+  Typography,
 } from "@mui/material";
 import "../../../assets/scss/addPromotion.scss";
-import { Link, useParams } from "react-router-dom";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import dayjs from "dayjs"; // Import thư viện Day.js
 import { Table } from "antd";
-import { isEmpty, isBefore, isAfter, equals } from "validator";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { merge } from "antd/es/theme/util/statistic";
 import numeral from "numeral";
 
 const AddKhuyenMai = () => {
@@ -60,6 +56,7 @@ const AddKhuyenMai = () => {
   let [sanPhamChiTietKhuyenMai, setSanPhamChiTietKhuyenMai] = useState([]);
   // Tạo một state để lưu danh sách các ID sản phẩm đã được chọn
   const [selectedProductIds, setSelectedProductIds] = useState([]);
+  const [idSPCTKM, setIdSPCTKM] = useState("");
 
   const redirectToHienThiKhuyenMai = () => {
     window.location.href = "/khuyen-mai";
@@ -169,7 +166,7 @@ const AddKhuyenMai = () => {
         setValue("");
         setNgayBatDau(dayjs());
         setNgayKetThuc(dayjs());
-        clearSelectedItems();
+        // clearSelectedItems();
       })
       .catch((error) => {
         toast.error("Đã xảy ra lỗi khi thêm Khuyến Mãi.");
@@ -202,7 +199,8 @@ const AddKhuyenMai = () => {
         setValue("");
         setNgayBatDau(dayjs());
         setNgayKetThuc(dayjs());
-        clearSelectedItems();
+        // clearSelectedItems();
+        // detailSanPhamSauKhuyenMai(idSPCTKM);
       })
       .catch((error) => {
         toast.error("Đã xảy ra lỗi khi áp dụng Khuyến Mãi vào sản phẩm.");
@@ -216,9 +214,9 @@ const AddKhuyenMai = () => {
       msg.tenKhuyenMai = "Không để trống Tên !!!";
     }
 
-    if (!giaTriKhuyenMai.trim("")) {
-      msg.giaTriKhuyenMai = "Không để trống giá trị khuyến mãi !!!";
-    }
+    // if (!giaTriKhuyenMai.trim("")) {
+    //   msg.giaTriKhuyenMai = "Không để trống giá trị khuyến mãi !!!";
+    // }
 
     if (ngayBatDau.isAfter(ngayKetThuc)) {
       msg.ngayBatDau = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc !!!";
@@ -250,6 +248,8 @@ const AddKhuyenMai = () => {
       setSelectedRowKeys([...selectedRowKeys, id]);
       setSelectedRows([...selectedRows, record]);
       loadDatalistSanPhamChiTiet(record.id, true);
+      // detailSanPhamSauKhuyenMai(record.id);
+      // setIdSPCTKM(record.id);
     } else {
       loadDatalistSanPhamChiTiet(record.id, false);
       setSelectedRowKeys(selectedRowKeys.filter((key) => key !== id));
@@ -381,6 +381,17 @@ const AddKhuyenMai = () => {
     },
   ];
 
+  // const [so, setSo] = useState(0);
+  // const soLuong = () => {
+  //   setSo(sanPhamChiTietKhuyenMai.length);
+  //   console.log(so);
+  // };
+
+  // useEffect(() => {
+  //   // Tính số lượng và cập nhật giá trị 'so' khi 'sanPhamChiTietKhuyenMai' thay đổi
+  //   setSo(sanPhamChiTietKhuyenMai.length);
+  // }, [sanPhamChiTietKhuyenMai]);
+
   //Column bảng Sản Phẩm Chi Tiết
   const columns1 = [
     {
@@ -410,13 +421,18 @@ const AddKhuyenMai = () => {
       title: "Ảnh",
       dataIndex: "duongDan",
       width: "10%",
-      render: (text, record) => (
-        <img
-          src={record.duongDan}
-          style={{ width: "100px", height: "100px" }}
-        />
-      ),
       align: "center",
+      render: (text, record) => (
+        <Badge badgeContent={1} color="error">
+          <Typography variant="h6">
+            <img
+              src={record.duongDan}
+              alt="Ảnh"
+              style={{ width: "100px", height: "100px" }}
+            />
+          </Typography>
+        </Badge>
+      ),
     },
     {
       title: "Tên sản phẩm",
@@ -466,142 +482,142 @@ const AddKhuyenMai = () => {
         return <span>{formattedValue}</span>;
       },
     },
-    {
-      title: "Tình trạng",
-      dataIndex: "tinhTrang",
-      width: "10%",
-      align: "center",
-      render: (_, record) => {
-        return (
-          <>
-            <div style={{ textAlign: "center" }}>
-              <Tooltip title="Change">
-                <Button
-                  onClick={() => {
-                    showModal();
-                    detailSanPhamSauKhuyenMai(record.id);
-                  }}
-                  style={{ border: "none", background: "none" }}
-                >
-                  <FontAwesomeIcon icon={faEye} />
-                </Button>{" "}
-              </Tooltip>
-            </div>
-          </>
-        );
-      },
-    },
+    // {
+    //   title: "Tình trạng",
+    //   dataIndex: "tinhTrang",
+    //   width: "10%",
+    //   align: "center",
+    //   render: (_, record) => {
+    //     return (
+    //       <>
+    //         <div style={{ textAlign: "center" }}>
+    //           <Tooltip title="Change">
+    //             <Button
+    //               onClick={() => {
+    //                 showModal();
+    //                 detailSanPhamSauKhuyenMai(record.id);
+    //               }}
+    //               style={{ border: "none", background: "none" }}
+    //             >
+    //               <FontAwesomeIcon icon={faEye} />
+    //             </Button>{" "}
+    //           </Tooltip>
+    //         </div>
+    //       </>
+    //     );
+    //   },
+    // },
   ];
 
   //Column Detail
-  const columns2 = [
-    {
-      title: "Ảnh",
-      dataIndex: "duongDan",
-      width: "10%",
-      render: (text, record) => (
-        <img
-          src={record.duongDan}
-          style={{ width: "100px", height: "100px" }}
-        />
-      ),
-      align: "center",
-    },
-    {
-      title: "Tên sản phẩm",
-      dataIndex: "tenSanPham",
-      width: "10%",
-      align: "center",
-    },
-    {
-      title: "ROM",
-      dataIndex: "kichThuocRom",
-      width: "10%",
-      align: "center",
-      render: (value, record) => {
-        let formattedValue = value;
-        formattedValue = `${record.kichThuocRom} GB`;
-        return <span>{formattedValue}</span>;
-      },
-    },
-    {
-      title: "RAM ",
-      dataIndex: "kichThuocRam",
-      width: "10%",
-      editable: true,
-      align: "center",
-      render: (value, record) => {
-        let formattedValue = value;
-        formattedValue = `${record.kichThuocRam} GB`;
-        return <span>{formattedValue}</span>;
-      },
-    },
-    {
-      title: "Màu Sắc ",
-      dataIndex: "tenMauSac",
-      width: "10%",
-      editable: true,
-      align: "center",
-    },
-    {
-      title: "Tên Khuyến Mãi",
-      dataIndex: "tenKhuyenMai",
-      width: "15%",
-      align: "center",
-      render: (text, record) => (
-        <span
-          style={{
-            maxWidth: "15%",
-            whiteSpace: "pre-line",
-            overflow: "hidden",
-          }}
-        >
-          {record.tenKhuyenMai}
-        </span>
-      ),
-    },
-    {
-      title: "Giảm Giá",
-      dataIndex: "loaiGiamGia",
-      width: "10%",
-      align: "center",
-      render: (value, record) => {
-        let formattedValue = value;
-        if (record.loaiKhuyenMai === 1) {
-          formattedValue =
-            numeral(record.giaTriKhuyenMai).format("0,0 VND") + " VNĐ";
-        } else if (record.loaiKhuyenMai === 2) {
-          formattedValue = `${record.giaTriKhuyenMai} %`;
-        }
-        return <span>{formattedValue}</span>;
-      },
-    },
-    {
-      title: "Đơn giá ",
-      dataIndex: "donGia",
-      width: "10%",
-      editable: true,
-      align: "center",
-      render: (value, record) => {
-        let formattedValue = value;
-        formattedValue = numeral(record.donGia).format("0,0 VND") + " VNĐ";
-        return <span>{formattedValue}</span>;
-      },
-    },
-    {
-      title: "Đơn giá sau khuyến mãi",
-      dataIndex: "donGiaSauKhuyenMai",
-      width: "10%",
-      editable: true,
-      align: "center",
-      render: (value, record) => {
-        let formattedValue = value;
-        formattedValue =
-          numeral(record.donGiaSauKhuyenMai).format("0,0 VND") + " VNĐ";
-        return <span>{formattedValue}</span>;
-      },
-    },
-  ];
+  // const columns2 = [
+  //   {
+  //     title: "Ảnh",
+  //     dataIndex: "duongDan",
+  //     width: "10%",
+  //     render: (text, record) => (
+  //       <img
+  //         src={record.duongDan}
+  //         style={{ width: "100px", height: "100px" }}
+  //       />
+  //     ),
+  //     align: "center",
+  //   },
+  //   {
+  //     title: "Tên sản phẩm",
+  //     dataIndex: "tenSanPham",
+  //     width: "10%",
+  //     align: "center",
+  //   },
+  //   {
+  //     title: "ROM",
+  //     dataIndex: "kichThuocRom",
+  //     width: "10%",
+  //     align: "center",
+  //     render: (value, record) => {
+  //       let formattedValue = value;
+  //       formattedValue = `${record.kichThuocRom} GB`;
+  //       return <span>{formattedValue}</span>;
+  //     },
+  //   },
+  //   {
+  //     title: "RAM ",
+  //     dataIndex: "kichThuocRam",
+  //     width: "10%",
+  //     editable: true,
+  //     align: "center",
+  //     render: (value, record) => {
+  //       let formattedValue = value;
+  //       formattedValue = `${record.kichThuocRam} GB`;
+  //       return <span>{formattedValue}</span>;
+  //     },
+  //   },
+  //   {
+  //     title: "Màu Sắc ",
+  //     dataIndex: "tenMauSac",
+  //     width: "10%",
+  //     editable: true,
+  //     align: "center",
+  //   },
+  //   {
+  //     title: "Tên Khuyến Mãi",
+  //     dataIndex: "tenKhuyenMai",
+  //     width: "15%",
+  //     align: "center",
+  //     render: (text, record) => (
+  //       <span
+  //         style={{
+  //           maxWidth: "15%",
+  //           whiteSpace: "pre-line",
+  //           overflow: "hidden",
+  //         }}
+  //       >
+  //         {record.tenKhuyenMai}
+  //       </span>
+  //     ),
+  //   },
+  //   {
+  //     title: "Giảm Giá",
+  //     dataIndex: "loaiGiamGia",
+  //     width: "10%",
+  //     align: "center",
+  //     render: (value, record) => {
+  //       let formattedValue = value;
+  //       if (record.loaiKhuyenMai === 1) {
+  //         formattedValue =
+  //           numeral(record.giaTriKhuyenMai).format("0,0 VND") + " VNĐ";
+  //       } else if (record.loaiKhuyenMai === 2) {
+  //         formattedValue = `${record.giaTriKhuyenMai} %`;
+  //       }
+  //       return <span>{formattedValue}</span>;
+  //     },
+  //   },
+  //   {
+  //     title: "Đơn giá ",
+  //     dataIndex: "donGia",
+  //     width: "10%",
+  //     editable: true,
+  //     align: "center",
+  //     render: (value, record) => {
+  //       let formattedValue = value;
+  //       formattedValue = numeral(record.donGia).format("0,0 VND") + " VNĐ";
+  //       return <span>{formattedValue}</span>;
+  //     },
+  //   },
+  //   {
+  //     title: "Đơn giá sau khuyến mãi",
+  //     dataIndex: "donGiaSauKhuyenMai",
+  //     width: "10%",
+  //     editable: true,
+  //     align: "center",
+  //     render: (value, record) => {
+  //       let formattedValue = value;
+  //       formattedValue =
+  //         numeral(record.donGiaSauKhuyenMai).format("0,0 VND") + " VNĐ";
+  //       return <span>{formattedValue}</span>;
+  //     },
+  //   },
+  // ];
 
   const mergedColumns = columns.map((col) => {
     if (!col.editable) {
@@ -631,19 +647,19 @@ const AddKhuyenMai = () => {
     };
   });
 
-  const mergedColumns2 = columns2.map((col2) => {
-    if (!col2.editable) {
-      return col2;
-    }
-    return {
-      ...col2,
-      onCell: (record) => ({
-        record,
-        dataIndex: col2.dataIndex,
-        title: col2.title,
-      }),
-    };
-  });
+  // const mergedColumns2 = columns2.map((col2) => {
+  //   if (!col2.editable) {
+  //     return col2;
+  //   }
+  //   return {
+  //     ...col2,
+  //     onCell: (record) => ({
+  //       record,
+  //       dataIndex: col2.dataIndex,
+  //       title: col2.title,
+  //     }),
+  //   };
+  // });
 
   return (
     <>
@@ -663,6 +679,9 @@ const AddKhuyenMai = () => {
                     setTenKhuyenMai(e.target.value);
                   }}
                   style={{ width: "90%", marginTop: "10px" }}
+                  inputProps={{
+                    maxLength: 100, // Giới hạn tối đa 10 ký tự
+                  }}
                 />
               </div>
               <span
@@ -674,7 +693,7 @@ const AddKhuyenMai = () => {
             </div>
 
             <div className="row-input">
-              <div className="select-value">
+              <div className="select-value-promotion">
                 <ToggleButtonGroup
                   color="primary"
                   value={selectDiscount}
@@ -722,8 +741,11 @@ const AddKhuyenMai = () => {
                   }}
                   style={{
                     marginLeft: "15px",
-                    width: "66%",
+                    width: "405px",
                     marginTop: "17px",
+                  }}
+                  inputProps={{
+                    maxLength: 20, // Giới hạn tối đa 10 ký tự
                   }}
                 />
               </div>
@@ -857,7 +879,7 @@ const AddKhuyenMai = () => {
             }}
           />
         </div>
-        <Modal
+        {/* <Modal
           title="Sản phẩm áp dụng khuyến mãi"
           open={isModalOpen}
           onOk={handleCancel}
@@ -875,7 +897,7 @@ const AddKhuyenMai = () => {
               style={{ marginBottom: "20px" }}
             />
           )}
-        </Modal>
+        </Modal> */}
       </div>
     </>
   );

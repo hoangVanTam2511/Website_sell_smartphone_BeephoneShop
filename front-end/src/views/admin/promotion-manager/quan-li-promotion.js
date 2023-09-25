@@ -1,29 +1,33 @@
-import { Form, Table, Input, Button, Tooltip } from "antd";
+import { Form, Table, Input, Button } from "antd";
 import Swal from "sweetalert2";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faPencilAlt,
-  faArrowsRotate,
-  faPlus,
-  faRotateRight,
-} from "@fortawesome/free-solid-svg-icons";
-import "../../../assets/scss/HienThiNV.scss";
+
 import { Link, useSearchParams } from "react-router-dom";
 import { apiURLKhuyenMai } from "../../../service/api";
 import "../../../assets/scss/quanLyPromotion.scss";
 import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { Pagination } from "@mui/material";
 import numeral from "numeral";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import style from "./style.css";
+import { PlusOutlined } from "@ant-design/icons";
+import Card from "../../../components/Card";
+import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
+import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
+import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
+import {
+  Select,
+  Tooltip,
+  IconButton,
+  Pagination,
+  TextField,
+  Zoom,
+  FormControl,
+  MenuItem,
+} from "@mui/material";
 
 //show
 const HienThiKhuyenMai = () => {
@@ -69,6 +73,11 @@ const HienThiKhuyenMai = () => {
 
   useEffect(() => {
     loadDataListKhuyenMai(currentPage);
+    const intervalId = setInterval(() => {
+      loadDataListKhuyenMai(currentPage);
+    }, 10000);
+    // Xóa interval khi component unmounted
+    return () => clearInterval(intervalId);
   }, [
     searchTatCa,
     searchTrangThai,
@@ -76,6 +85,33 @@ const HienThiKhuyenMai = () => {
     searchNgayKetThuc,
     currentPage,
   ]);
+
+  const isDateFuture = (toDate) => {
+    const currentDate = new Date();
+    const getToDate = new Date(toDate);
+    if (currentDate > getToDate) {
+      return true;
+    }
+    return false;
+  };
+  const isDatePast = (fromDate) => {
+    const currentDate = new Date();
+    const getFromDate = new Date(fromDate);
+    if (currentDate < getFromDate) {
+      return true;
+    }
+    return false;
+  };
+
+  const isRangeDate = (fromDate, toDate) => {
+    const currentDate = new Date();
+    const getFromDate = new Date(fromDate);
+    const getToDate = new Date(toDate);
+    if (currentDate >= getFromDate && currentDate <= getToDate) {
+      return true;
+    }
+    return false;
+  };
 
   const doiTrangThaiVoucher = (id) => {
     Swal.fire({
@@ -157,19 +193,60 @@ const HienThiKhuyenMai = () => {
         } else if (record.loaiKhuyenMai === 2) {
           formattedValue = `${record.giaTriKhuyenMai} %`;
         }
-        return <span>{formattedValue}</span>;
+        return (
+          <span className="txt-danger" style={{ fontWeight: "400" }}>
+            {formattedValue}
+          </span>
+        );
       },
     },
     {
-      title: "Thời Gian Bắt Đầu - Kết Thúc",
+      title: "Thời Gian",
       dataIndex: "thoiGian",
       width: "10%",
       align: "center",
       render: (text, record) => (
-        <div style={{ textAlign: "center" }}>
-          {dayjs(record.ngayBatDau).format("DD/MM/YYYY")} -{" "}
-          {dayjs(record.ngayKetThuc).format("DD/MM/YYYY")}
-        </div>
+        <>
+          <div
+            className={`rounded-pill mx-auto ${
+              record.trangThai == 1
+                ? "badge-primary"
+                : record.trangThai == 2
+                ? "badge-danger"
+                : record.trangThai == 3
+                ? "badge-light"
+                : record.trangThai == 4 &&
+                  isDateFuture(record.ngayKetThuc) == true
+                ? "badge-danger"
+                : record.trangThai == 4 && isDatePast(record.ngayBatDau) == true
+                ? "badge-light"
+                : record.trangThai == 4 &&
+                  isRangeDate(record.ngayBatDau, record.ngayKetThuc) == true
+                ? "badge-primary"
+                : ""
+            }`}
+            style={{
+              height: "35px",
+              width: "auto",
+              padding: "4px",
+            }}
+          >
+            <span
+              className={`p-2 ${
+                record.trangThai == 3
+                  ? "text-dark"
+                  : record.trangThai == 4 &&
+                    isDatePast(record.ngayBatDau) == true
+                  ? "text-dark"
+                  : "text-white"
+              }`}
+              style={{ fontSize: "14px" }}
+            >
+              {dayjs(record.ngayBatDau).format("DD/MM/YYYY")} -{" "}
+              {dayjs(record.ngayKetThuc).format("DD/MM/YYYY")}
+            </span>
+          </div>
+        </>
       ),
     },
     {
@@ -181,22 +258,60 @@ const HienThiKhuyenMai = () => {
       filterSearch: true,
       render: (text, record) => (
         <span>
-          {record.trangThai == 1 ? (
-            <Button type="primary" style={{ borderRadius: "30px" }}>
-              Còn Hiệu Lực
-            </Button>
-          ) : record.trangThai == 2 ? (
-            <Button type="primary" danger style={{ borderRadius: "30px" }}>
-              Hết Hiệu Lực
-            </Button>
-          ) : record.trangThai == 3 ? (
-            <Button type="primary" danger style={{ borderRadius: "30px" }}>
-              Chưa bắt đầu
-            </Button>
+          {record.trangThai === 1 ? (
+            <div
+              className="rounded-pill mx-auto badge-primary"
+              style={{
+                height: "35px",
+                width: "110px",
+                padding: "4px",
+              }}
+            >
+              <span className="text-white p-2" style={{ fontSize: "14px" }}>
+                Hoạt động
+              </span>
+            </div>
+          ) : record.trangThai === 2 ? (
+            <div
+              className="rounded-pill mx-auto badge-danger"
+              style={{
+                height: "35px",
+                width: "auto",
+                padding: "4px",
+              }}
+            >
+              <span className="text-white p-2" style={{ fontSize: "14px" }}>
+                Ngừng hoạt động
+              </span>
+            </div>
+          ) : record.trangThai === 3 ? (
+            <div
+              className="rounded-pill mx-auto badge-light"
+              style={{
+                height: "35px",
+                width: "120px",
+                padding: "4px",
+              }}
+            >
+              <span className="text-dark p-2" style={{ fontSize: "14px" }}>
+                Chưa diễn ra
+              </span>
+            </div>
+          ) : record.trangThai == 4 ? (
+            <div
+              className="rounded-pill mx-auto badge-danger"
+              style={{
+                height: "35px",
+                width: "90px",
+                padding: "4px",
+              }}
+            >
+              <span className="text-white p-2" style={{ fontSize: "14px" }}>
+                Đã hủy
+              </span>
+            </div>
           ) : (
-            <Button type="primary" style={{ borderRadius: "30px" }}>
-              Không xác định
-            </Button>
+            ""
           )}
         </span>
       ),
@@ -209,32 +324,45 @@ const HienThiKhuyenMai = () => {
       render: (_, record) => {
         return (
           <>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-              }}
+            <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
+              <Link to={`/sua-khuyen-mai/${record.id}`}>
+                <IconButton size="">
+                  <BorderColorOutlinedIcon color="primary" />
+                </IconButton>
+              </Link>
+            </Tooltip>
+
+            <Tooltip
+              TransitionComponent={Zoom}
+              title={
+                record.trangThai === 1 || record.trangThai === 3
+                  ? "Ngừng kích hoạt"
+                  : record.trangThai === 4 &&
+                    isDatePast(record.ngayBatDau) === true
+                  ? "Kích hoạt"
+                  : record.trangThai === 4 &&
+                    isRangeDate(record.ngayBatDau, record.ngayKetThuc) === true
+                  ? "Kích hoạt"
+                  : ""
+              }
             >
-              <div style={{ textAlign: "center" }}>
-                <Tooltip title="Change">
-                  <Button
-                    onClick={() => {
-                      doiTrangThaiVoucher(record.id);
-                    }}
-                    style={{ border: "none", background: "none" }}
-                  >
-                    <FontAwesomeIcon icon={faRotateRight} />
-                  </Button>{" "}
-                </Tooltip>
-              </div>
-              <div style={{ textAlign: "center", paddingLeft: "20px" }}>
-                <Tooltip title="Edit">
-                  <Link to={`/sua-khuyen-mai/${record.id}`}>
-                    <FontAwesomeIcon icon={faPencilAlt} />
-                  </Link>{" "}
-                </Tooltip>
-              </div>
-            </div>
+              <IconButton size="" className="ms-2" style={{ marginTop: "6px" }}>
+                <AssignmentOutlinedIcon
+                  color={
+                    record.trangThai === 1 || record.trangThai === 3
+                      ? "error"
+                      : record.trangThai === 4 &&
+                        isDatePast(record.ngayBatDau) === true
+                      ? "success"
+                      : record.trangThai === 4 &&
+                        isRangeDate(record.ngayBatDau, record.ngayKetThuc) ===
+                          true
+                      ? "success"
+                      : "disabled"
+                  }
+                />
+              </IconButton>
+            </Tooltip>
           </>
         );
       },
@@ -258,8 +386,8 @@ const HienThiKhuyenMai = () => {
   const handleSearchTrangThaiChange = (event) => {
     const selectedValue = event.target.value;
     setSearchTrangThai(selectedValue); // Cập nhật giá trị khi Select thay đổi
-    // searchParams.set("trangThai", searchTrangThai);
-    // setSearchParams(searchParams);
+    searchParams.set("trangThai", selectedValue);
+    setSearchParams(searchParams);
   };
 
   const handleSearchNgayBatDauChange = (selectedDate) => {
@@ -277,9 +405,283 @@ const HienThiKhuyenMai = () => {
     loadDataListKhuyenMai(page);
   };
 
+  const [openSelect1, setOpenSelect1] = useState(false);
+
+  const handleCloseSelect1 = () => {
+    setOpenSelect1(false);
+  };
+
+  const handleOpenSelect1 = () => {
+    setOpenSelect1(true);
+  };
+
+  const [openSelect, setOpenSelect] = useState(false);
+
+  const handleCloseSelect = () => {
+    setOpenSelect(false);
+  };
+
+  const handleOpenSelect = () => {
+    setOpenSelect(true);
+  };
+
   return (
     <>
-      <div className="search-component-container">
+      <div
+        className="mt-4"
+        style={{
+          backgroundColor: "#ffffff",
+          boxShadow: "0 0.1rem 0.3rem #00000010",
+        }}
+      >
+        <Card className="">
+          <Card.Header className="">
+            <div className="header-title mt-2">
+              <TextField
+                label="Tìm khuyến mãi"
+                value={searchTatCa}
+                onChange={(e) => setSearchTatCa(e.target.value)}
+                InputLabelProps={{
+                  sx: {
+                    marginTop: "",
+                    textTransform: "capitalize",
+                  },
+                }}
+                inputProps={{
+                  style: {
+                    height: "23px",
+                    width: "190px",
+                  },
+                }}
+                size="small"
+                className=""
+              />
+              <Button
+                onClick={() => {
+                  handleReset();
+                }}
+                className="rounded-2 ms-2"
+                type="warning"
+                style={{ width: "100px", fontSize: "15px" }}
+              >
+                <span
+                  className="text-dark"
+                  style={{ fontWeight: "500", marginBottom: "2px" }}
+                >
+                  Làm Mới
+                </span>
+              </Button>
+            </div>
+            <div className="d-flex">
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DemoContainer components={["DatePicker"]}>
+                  <DatePicker
+                    label="Ngày Bắt Đầu"
+                    value={
+                      searchNgayBatDau
+                        ? dayjs(searchNgayBatDau, "DD/MM/YYYY")
+                        : null
+                    }
+                    format="DD/MM/YYYY"
+                    onChange={handleSearchNgayBatDauChange}
+                    slotProps={{ textField: { size: "small" } }}
+                    sx={{
+                      position: "relative",
+                      width: "50px",
+                      "& .MuiInputBase-root": {
+                        width: "85%",
+                      },
+                    }}
+                  />
+                </DemoContainer>
+              </LocalizationProvider>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DemoContainer components={["DatePicker"]}>
+                  <DatePicker
+                    label="Ngày Kết Thúc"
+                    value={
+                      searchNgayKetThuc
+                        ? dayjs(searchNgayKetThuc, "DD/MM/YYYY")
+                        : null
+                    }
+                    format="DD/MM/YYYY"
+                    onChange={handleSearchNgayKetThucChange}
+                    slotProps={{ textField: { size: "small" } }}
+                    sx={{
+                      position: "relative",
+                      width: "50px",
+                      "& .MuiInputBase-root": {
+                        width: "85%",
+                      },
+                    }}
+                  />
+                </DemoContainer>
+              </LocalizationProvider>
+            </div>
+            <div className="mt-2">
+              <Link to="/them-khuyen-mai">
+                <Button
+                  className="rounded-2 button-mui"
+                  type="primary"
+                  style={{ height: "40px", width: "160px", fontSize: "15px" }}
+                >
+                  <PlusOutlined
+                    className="ms-1"
+                    style={{
+                      position: "absolute",
+                      bottom: "12.5px",
+                      left: "12px",
+                    }}
+                  />
+                  <span
+                    className="ms-3 ps-1"
+                    style={{ marginBottom: "3px", fontWeight: "500" }}
+                  >
+                    Tạo khuyến mãi
+                  </span>
+                </Button>
+              </Link>
+            </div>
+          </Card.Header>
+          <div className="mt-3 pt-1 ms-auto me-2 pe-1 d-flex">
+            <div
+              className="d-flex me-3"
+              style={{
+                height: "40px",
+                position: "relative",
+                cursor: "pointer",
+              }}
+            >
+              <div
+                onClick={handleOpenSelect}
+                className=""
+                style={{ marginTop: "7px" }}
+              >
+                <span
+                  className="ms-2 ps-1"
+                  style={{ fontSize: "15px", fontWeight: "450" }}
+                >
+                  Trạng Thái:{" "}
+                </span>
+              </div>
+              <FormControl
+                sx={{
+                  minWidth: 50,
+                }}
+                size="small"
+              >
+                <Select
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        borderRadius: "7px",
+                      },
+                    },
+                  }}
+                  IconComponent={KeyboardArrowDownOutlinedIcon}
+                  sx={{
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none !important",
+                    },
+                    "& .MuiSelect-select": {
+                      color: "#2f80ed",
+                      fontWeight: "500",
+                    },
+                  }}
+                  open={openSelect}
+                  onClose={handleCloseSelect}
+                  onOpen={handleOpenSelect}
+                  defaultValue={5}
+                  onChange={handleSearchTrangThaiChange}
+                >
+                  <MenuItem className="" value={5}>
+                    Tất cả
+                  </MenuItem>
+                  <MenuItem value={1}>Hoạt động</MenuItem>
+                  <MenuItem value={2}>Ngừng hoạt động</MenuItem>
+                  <MenuItem value={3}>Chưa diễn ra</MenuItem>
+                  <MenuItem value={4}>Đã hủy</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
+            <div
+              className="d-flex"
+              style={{
+                height: "40px",
+                position: "relative",
+                cursor: "pointer",
+              }}
+            >
+              <div
+                onClick={handleOpenSelect1}
+                className=""
+                style={{ marginTop: "7px" }}
+              >
+                <span
+                  className="ms-2 ps-1"
+                  style={{ fontSize: "15px", fontWeight: "450" }}
+                >
+                  Dành Cho:{" "}
+                </span>
+              </div>
+              <FormControl
+                sx={{
+                  minWidth: 50,
+                }}
+                size="small"
+              >
+                <Select
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        borderRadius: "7px",
+                      },
+                    },
+                  }}
+                  IconComponent={KeyboardArrowDownOutlinedIcon}
+                  sx={{
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none !important",
+                    },
+                    "& .MuiSelect-select": {
+                      color: "#2f80ed",
+                      fontWeight: "500",
+                    },
+                  }}
+                  open={openSelect1}
+                  onClose={handleCloseSelect1}
+                  onOpen={handleOpenSelect1}
+                  defaultValue={14}
+                >
+                  <MenuItem className="" value={14}>
+                    Tất cả
+                  </MenuItem>
+                  <MenuItem value={15}>Khách hàng mới</MenuItem>
+                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
+          </div>
+          <Card.Body>
+            <Table
+              dataSource={listKhuyenMai}
+              columns={columns}
+              pagination={false}
+              rowKey="id"
+            />
+          </Card.Body>
+          <div className="mx-auto">
+            <Pagination
+              page={parseInt(currentPage)}
+              count={totalPages}
+              onChange={chuyenTrang}
+              color="primary"
+            />
+          </div>
+          <div className="mt-4"></div>
+        </Card>
+      </div>
+      {/* <div className="search-component-container">
         <h6 className="boloc-voucher">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -387,7 +789,6 @@ const HienThiKhuyenMai = () => {
           &nbsp; Danh Sách Khuyến Mãi
         </h6>
         <div className="btn-add">
-          {/* Search */}
           <FontAwesomeIcon style={{ marginLeft: "5px" }} />
           <span className="bl-add">
             <Link to="/them-khuyen-mai">
@@ -416,7 +817,7 @@ const HienThiKhuyenMai = () => {
             />
           </div>
         </div>
-      </div>
+      </div> */}
     </>
   );
 };

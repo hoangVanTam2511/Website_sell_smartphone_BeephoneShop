@@ -27,17 +27,15 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const UpdateVoucher = () => {
-  let [voucher, setVoucher] = useState({});
-  let [ten, setTen] = useState("");
-  let [soLuong, setSoLuong] = useState("");
+  const [ten, setTen] = useState("");
+  const [soLuong, setSoLuong] = useState("");
   const [ngayBatDau, setNgayBatDau] = useState("");
   const [ngayKetThuc, setNgayKetThuc] = useState("");
   const [giaTriVoucherConvert, setGiaTriVoucherConvert] = useState(0);
   const [value, setValue] = React.useState();
   const [value1, setValue1] = React.useState();
-  let [giaTriVoucher, setGiaTriVoucher] = useState("");
-  let [dieuKienApDung, setDieuKienApDung] = useState(0);
-  const [dieuKienApDungConvert, setDieuKienApDungConvert] = useState(0);
+  const [giaTriVoucher, setGiaTriVoucher] = useState("");
+  const [dieuKienApDung, setDieuKienApDung] = useState(0);
   const [validationMsg, setValidationMsg] = useState({});
   const { id } = useParams();
   const [value2, setValue2] = React.useState();
@@ -51,7 +49,6 @@ const UpdateVoucher = () => {
   };
 
   const convertTien = () => {
-    dieuKienApDung = voucher.dieuKienApDung;
     const numericValue = parseFloat(
       String(dieuKienApDung).replace(/[^0-9.-]+/g, "")
     );
@@ -61,7 +58,6 @@ const UpdateVoucher = () => {
     setValue1(numericValue);
     setDieuKienApDung(fomarttedDieuKien);
 
-    giaTriVoucher = voucher.giaTriVoucher;
     const numericValue1 = parseFloat(
       String(giaTriVoucher).replace(/[^0-9.-]+/g, "")
     );
@@ -137,23 +133,23 @@ const UpdateVoucher = () => {
   };
 
   useEffect(() => {
-    detailVoucher();
-    setTen(() => voucher.ten);
-    setSoLuong(() => voucher.soLuong);
-    setNgayBatDau(() => voucher.ngayBatDau);
-    setNgayKetThuc(() => voucher.ngayKetThuc);
-    setGiaTriToiDa(() => voucher.giaTriToiDa);
-    setSeclectDiscount(() => voucher.loaiVoucher);
     convertTien();
-  }, [voucher]);
+    detailVoucher();
+  }, []);
 
   const detailVoucher = () => {
     axios
       .get(apiURLVoucher + "/get-by-id/" + id)
       .then((response) => {
-        convertTien();
-        setVoucher(response.data);
-        console.log(response.data);
+        setTen(response.data.ten);
+        setSoLuong(response.data.soLuong);
+        setNgayBatDau(response.data.ngayBatDau);
+        setNgayKetThuc(response.data.ngayKetThuc);
+        setGiaTriToiDa(response.data.giaTriToiDa);
+        setDieuKienApDung(response.data.dieuKienApDung);
+        setSeclectDiscount(response.data.loaiVoucher);
+        // setVoucher(response.data);
+        // console.log(response.data);
       })
       .catch((error) => {});
   };
@@ -198,25 +194,25 @@ const UpdateVoucher = () => {
       msg.soLuong = "Số lượng không được để trống !!!";
     }
 
-    if (!dieuKienApDungConvert) {
-      msg.dieuKienApDungConvert = "Điều kiện áp dụng không được để trống !!!";
-    }
+    // if (!dieuKienApDungConvert) {
+    //   msg.dieuKienApDungConvert = "Điều kiện áp dụng không được để trống !!!";
+    // }
 
-    if (ngayBatDau.isAfter(ngayKetThuc)) {
-      msg.ngayBatDau = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc !!!";
-    }
+    // if (ngayBatDau.isAfter(ngayKetThuc)) {
+    //   msg.ngayBatDau = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc !!!";
+    // }
 
-    if (!giaTriVoucherConvert) {
-      msg.giaTriVoucherConvert = "Giá trị voucher không được để trống !!!";
-    }
+    // if (!giaTriVoucherConvert) {
+    //   msg.giaTriVoucherConvert = "Giá trị voucher không được để trống !!!";
+    // }
 
-    if (ngayKetThuc.isBefore(ngayBatDau)) {
-      msg.ngayKetThuc = "Ngày kết thúc phải lớn hơn ngày bắt đầu !!!";
-    }
+    // if (ngayKetThuc.isBefore(ngayBatDau)) {
+    //   msg.ngayKetThuc = "Ngày kết thúc phải lớn hơn ngày bắt đầu !!!";
+    // }
 
-    if (ngayBatDau.isBefore(dayjs())) {
-      msg.ngayBatDau = "Ngày bắt đầu phải lớn hơn ngày hiện tại !!!";
-    }
+    // if (ngayBatDau.isBefore(dayjs())) {
+    //   msg.ngayBatDau = "Ngày bắt đầu phải lớn hơn ngày hiện tại !!!";
+    // }
 
     setValidationMsg(msg);
     if (Object.keys(msg).length > 0) return false;
@@ -237,7 +233,7 @@ const UpdateVoucher = () => {
           <div className="input-container">
             <TextField
               label="Tên Voucher"
-              value={ten !== "Tên Voucher" ? ten : voucher.ten}
+              value={ten}
               id="fullWidth"
               onChange={(e) => {
                 setTen(e.target.value);
@@ -249,7 +245,7 @@ const UpdateVoucher = () => {
           <div className="input-container">
             <TextField
               label="Số Lượng"
-              value={soLuong !== "Số Lượng" ? soLuong : voucher.soLuong}
+              value={soLuong}
               id="fullWidth"
               onChange={(e) => {
                 setSoLuong(e.target.value);
