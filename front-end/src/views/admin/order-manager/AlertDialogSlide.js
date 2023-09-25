@@ -1328,7 +1328,7 @@ export const ProductDetailsDialog = (props) => {
                         </span>
                       </div>
                     </button>
-                    <input value={0} min="1" max="100"
+                    <input value={1} min="1" max="100"
                       name="quantity" class="quantity"
                       type="number" />
                     <button class="">

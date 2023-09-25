@@ -54,7 +54,6 @@ import TabItem from './tab-item';
 import LoadingIndicator from '../../../utilities/loading';
 
 const PointOfSales = () => {
-
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   // const [selectDiscount, setSelectDiscount] = useState('VND');
@@ -65,6 +64,7 @@ const PointOfSales = () => {
   const [description, setDescription] = useState('');
   const [discount, setDiscount] = useState(0);
   const [discountFormat, setDiscountFormat] = useState('');
+  const [shipFee, setShipFee] = useState(0);
 
   const [products, setProducts] = useState([]);
   const [productsInCart, setProductsInCart] = useState([]);
@@ -83,6 +83,9 @@ const PointOfSales = () => {
   const [cartId, setCartId] = useState("");
   const [orders, setOrders] = useState([]);
 
+  const getShipFee = (fee) => {
+    setShipFee(fee);
+  }
 
   const updateOrder = async (status, totalMoney, orderHistory, hasPlaceOrder, paymentMethod) => {
     setIsLoading(false);
@@ -263,7 +266,7 @@ const PointOfSales = () => {
       await axios.delete(`http://localhost:8080/api/carts/${id}`);
       getCartDetails(cartId);
       getAllOrdersPending();
-      getOrderById(order.ma);
+      // getOrderById(order.ma);
       setIsLoading(true);
     } catch (error) {
       console.log(error);
@@ -290,19 +293,12 @@ const PointOfSales = () => {
   }
 
   const getOrderById = (id) => {
-    // setIsLoading(false);
     axios
       .get(`http://localhost:8080/api/orders/${id}`)
       .then((response) => {
         setOrder(response.data);
         setCartId(response.data.gioHang.id);
-        getCartDetails(response.data.gioHang.id);
-        let total = 0;
-        response.data.gioHang && response.data.gioHang.cartDetails.map((item, index) => {
-          total += item.donGia;
-        })
-        setSurplusMoney(customerPayment - total);
-        // setIsLoading(true);
+        setProductsInCart(response.data.gioHang.cartDetails);
       })
       .catch((error) => {
         console.error(error);
@@ -376,8 +372,7 @@ const PointOfSales = () => {
     productsInCart && productsInCart.map((item, index) => {
       total += item.donGia;
     })
-    let totalFinal = 0;
-    totalFinal = total;
+    let totalFinal = total + shipFee;
     result = totalFinal
       .toLocaleString("vi-VN", {
         style: "currency",
@@ -389,7 +384,7 @@ const PointOfSales = () => {
   useEffect(() => {
     getAllOrdersPending();
     getOrderPendingDefault();
-    // getAllCustomers();
+    getAllCustomers();
     // setCustomerNeedPayFormat(handleCountTotalMoneyCustomerNeedPay());
 
   }, []);
@@ -773,6 +768,7 @@ const PointOfSales = () => {
               <div className='scroll-container3' style={{ width: "100.6%" }}>
                 <TabPanel className='' sx={{ margin: 0.1, padding: 0 }} value={valueTabs}>
                   <TabItem
+                    getShipFee={getShipFee}
                     openProducts={openProducts}
                     openDialogProducts={handleOpenDialogProducts}
                     closeDialogProducts={handleCloseDialogProducts}
@@ -969,10 +965,10 @@ const PointOfSales = () => {
                       <span className='' style={{ fontSize: "15px", marginTop: "1px" }}>Phí vận chuyển</span>
                       <span className='me-2' style={{ fontSize: "17.5px" }}>
                         {
-                          order && order.phiShip ? order.phiShip.toLocaleString("vi-VN", {
+                          shipFee.toLocaleString("vi-VN", {
                             style: "currency",
                             currency: "VND",
-                          }) : "0 ₫"
+                          })
                         }
                       </span>
                     </div>
