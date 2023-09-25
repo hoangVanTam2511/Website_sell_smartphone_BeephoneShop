@@ -22,10 +22,11 @@ import RadioGroup from '@mui/joy/RadioGroup';
 import Sheet from '@mui/joy/Sheet';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import EditIcon from '@mui/icons-material/Edit';
+import PointOfSales from './point-of-sales';
 
 const TabItem = (props) => {
   const { delivery, productsInCarts, add, remove, openProductDetails, openDialogProductDetails, closeDialogProductDetails, closeNoActionDialogProductDetails,
-    openProducts, openDialogProducts, closeDialogProducts, closeNoActionDialogProducts
+    openProducts, openDialogProducts, closeDialogProducts, closeNoActionDialogProducts, getShipFee
   } = props;
   const [products, setProducts] = useState([]);
   const [provinces, setProvinces] = useState([]);
@@ -59,6 +60,27 @@ const TabItem = (props) => {
       })
   }
   const tokenGhn = "62124d79-4ffa-11ee-b1d4-92b443b7a897";
+
+  const getShipFeeGhn = () => {
+    axios.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee`, {
+      params: {
+        from_district_id: shopDistrictId,
+        from_ward_code: shopWardCode,
+        service_id: serviceID,
+        to_district_id: selectedDistrict,
+        to_ward_code: selectedWard,
+        weight: 240,
+      },
+      headers: {
+        token: tokenGhn,
+        Accept: 'application/json',
+      }
+    }).then(
+      (response) => {
+        getShipFee(response.data.data.total);
+      }
+    )
+  }
 
   const getAllWardGhnByIdDistrict = (districtId) => {
     axios.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward`, {
@@ -107,14 +129,15 @@ const TabItem = (props) => {
 
   const shopID = 189389;
   const serviceID = 53320;
-  const shopAddressId = 1482;
+  const shopDistrictId = 1482;
+  const shopWardCode = 11007;
 
   const getReceiveDate = () => {
     axios.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/leadtime`, {
       params: {
         ShopID: shopID,
         service_id: serviceID,
-        from_district_id: shopAddressId,
+        from_district_id: shopDistrictId,
         to_district_id: selectedDistrict,
         to_ward_code: selectedWard,
       },
@@ -144,6 +167,10 @@ const TabItem = (props) => {
   useEffect(() => {
     if (selectedProvince != "" && selectedDistrict != "" && selectedWard != "") {
       getReceiveDate();
+      getShipFeeGhn();
+    }
+    else {
+      getShipFee(0);
     }
   }, [selectedWard, selectedDistrict, selectedProvince])
 
@@ -630,6 +657,7 @@ const TabItem = (props) => {
       // onClose={closeDialogProductDetails}
       // addProduct={addProductToCart}
       />
+
     </>
   )
 }

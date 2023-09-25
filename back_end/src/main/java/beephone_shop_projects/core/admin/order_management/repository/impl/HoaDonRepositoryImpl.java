@@ -37,10 +37,10 @@ public class HoaDonRepositoryImpl extends AbstractRepositoryImpl<HoaDon, String>
 
   @Override
   @Transactional
-  public HoaDon getOrderDetailsById(String id, Boolean isPending) {
+  public HoaDon getOrderById(String id, Boolean isPending) {
     HoaDon order;
-    String query = "SELECT DISTINCT O FROM HoaDon O LEFT JOIN FETCH O.gioHang C" +
-            " LEFT JOIN FETCH C.cartDetails WHERE O.ma = ?1";
+    String query = "SELECT O FROM HoaDon O " +
+            " WHERE O.ma = ?1";
     if (isPending) {
       query = "SELECT O FROM HoaDon O JOIN FETCH O.gioHang C LEFT JOIN FETCH C.cartDetails" +
               " LEFT JOIN O.orderHistories WHERE O.id = ?1";
