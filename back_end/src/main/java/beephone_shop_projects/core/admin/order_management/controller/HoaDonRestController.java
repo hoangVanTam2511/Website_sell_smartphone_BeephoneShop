@@ -57,7 +57,8 @@ public class HoaDonRestController {
 
   @GetMapping("/{id}")
   public ResponseEntity<?> getOrderDetails(@PathVariable("id") String id) {
-    OrderDto order = hoaDonService.getOrderDetailsById(id);
+    Boolean isPending = false;
+    OrderDto order = hoaDonService.getOrderDetailsById(id, isPending);
     if (order == null) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
@@ -66,7 +67,8 @@ public class HoaDonRestController {
 
   @GetMapping("/{id}/orderHistory")
   public ResponseEntity<?> getOrderHistoriesByOrderId(@PathVariable("id") String id) {
-    OrderDto order = hoaDonService.getOrderDetailsById(id);
+    Boolean isPending = false;
+    OrderDto order = hoaDonService.getOrderDetailsById(id, isPending);
     List<OrderHistoryDto> orderHistories = lichSuHoaDonService.getOrderHistoriesByOrderId(order.getMa());
     if (order == null) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -91,7 +93,7 @@ public class HoaDonRestController {
   public ResponseEntity<?> updateOrder(@RequestBody UpdateOrderDto updateOrderDTO, @PathVariable("id") String id, @RequestParam(value = "isPending", required = true) Boolean isPending
           , @RequestParam(value = "hasPlaceOrder", defaultValue = "false") Boolean hasPlaceOrder) throws Exception {
     if (!isPending) {
-      OrderDto order = hoaDonService.getOrderDetailsById(id);
+      OrderDto order = hoaDonService.getOrderDetailsById(id, isPending);
       if (order == null) {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
       }
@@ -110,12 +112,13 @@ public class HoaDonRestController {
 
   @DeleteMapping("/{id}")
   public ResponseEntity<?> deleteOrderPending(@PathVariable("id") String id) throws Exception {
-    OrderDto getOrder = hoaDonService.findOneById(id);
+    Boolean isPending = true;
+    OrderDto getOrder = hoaDonService.getOrderDetailsById(id, isPending);
     if (getOrder == null) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
     hoaDonService.deleteById(getOrder.getId());
-    gioHangService.deleteById(getOrder.getGioHang().getId());
+//    gioHangService.deleteById(getOrder.getGioHang().getId());
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
