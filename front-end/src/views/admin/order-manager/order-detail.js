@@ -2,9 +2,9 @@ import React, { Fragment, useState, useEffect } from "react";
 import { styled } from '@mui/material/styles';
 import { Row, Col } from "react-bootstrap";
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { Button, Input, Select, Table } from "antd";
+import { Button, Table } from "antd";
 import axios from "axios";
-import { FaTruck, FaRegCalendarCheck, FaRegFileAlt } from "react-icons/fa";
+import { FaTruck, FaRegCalendarCheck, FaRegFileAlt, FaRegCalendarTimes } from "react-icons/fa";
 import { MdCancelPresentation } from "react-icons/md";
 import { Table as TableMui } from '@mui/material';
 import TableBody from '@mui/material/TableBody';
@@ -71,7 +71,7 @@ const Transition = (props) => {
 
 const OrderDetail = (props) => {
   const location = useLocation();
-  const { data } = location.state;
+  // const { data } = location.state;
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -196,10 +196,8 @@ const OrderDetail = (props) => {
                 : record.loaiThaoTac == 3
                   ? FaRegCalendarCheck
                   : record.loaiThaoTac == 4
-                    ? MdCancelPresentation
-                    : record.loaiThaoTac == 5
-                      ? MdCancelPresentation
-                      : ""
+                    ? FaRegCalendarTimes
+                    : ""
         }</span>
       ),
     },
@@ -243,7 +241,7 @@ const OrderDetail = (props) => {
       width: "15%",
       dataIndex: "ma",
       render: (text, record) => (
-        <span style={{ fontWeight: "550" }}>{record.ma}</span>
+        <span style={{ fontWeight: "500" }}>{record.ma}</span>
       ),
     },
     {
@@ -254,29 +252,28 @@ const OrderDetail = (props) => {
       render: (type) =>
         type == 1 ? (
           <div
-            className="rounded-pill mx-auto"
+            className="rounded-pill mx-auto badge-success"
             style={{
-              height: "38px",
-              width: "100px",
-              padding: "5px",
-              backgroundColor: "#26A65B",
+              height: "35px",
+              width: "110px",
+              padding: "4px",
             }}
           >
             <span
               className="text-white"
-              style={{ fontSize: "14px", fontWeight: "550" }}
+              style={{ fontSize: "14px", fontWeight: "400" }}
             >
               Hoàn tiền
             </span>
           </div>
         ) : type == 0 ? (
           <div
-            className="rounded-pill bg-primary mx-auto"
-            style={{ height: "38px", width: "100px", padding: "5px" }}
+            className="rounded-pill badge-primary mx-auto"
+            style={{ height: "35px", width: "110px", padding: "4px" }}
           >
             <span
               className="text-white"
-              style={{ fontSize: "14px", fontWeight: "550" }}
+              style={{ fontSize: "14px", fontWeight: "400" }}
             >
               Thanh toán
             </span>
@@ -293,29 +290,28 @@ const OrderDetail = (props) => {
       render: (text, record) =>
         record.hinhThucThanhToan == 0 ? (
           <div
-            className="rounded-pill mx-auto"
+            className="rounded-pill mx-auto badge-success"
             style={{
-              height: "38px",
-              width: "120px",
-              padding: "5px",
-              backgroundColor: "#26A65B",
+              height: "35px",
+              width: "130px",
+              padding: "4px",
             }}
           >
             <span
               className="text-white"
-              style={{ fontSize: "14px", fontWeight: "550" }}
+              style={{ fontSize: "14px", fontWeight: "400" }}
             >
               Chuyển khoản
             </span>
           </div>
         ) : record.hinhThucThanhToan == 1 ? (
           <div
-            className="rounded-pill bg-primary mx-auto"
-            style={{ height: "38px", width: "90px", padding: "5px" }}
+            className="rounded-pill badge-success mx-auto"
+            style={{ height: "35px", width: "90px", padding: "4px" }}
           >
             <span
               className="text-white"
-              style={{ fontSize: "14px", fontWeight: "550" }}
+              style={{ fontSize: "14px", fontWeight: "400" }}
             >
               Tiền mặt
             </span>
@@ -332,17 +328,16 @@ const OrderDetail = (props) => {
       render: (status) =>
         status == 1 ? (
           <div
-            className="rounded-pill bg-success mx-auto"
+            className="rounded-pill badge-primary mx-auto"
             style={{
-              height: "38px",
-              width: "110px",
-              padding: "5px",
-              backgroundColor: "#26A65B",
+              height: "35px",
+              width: "115px",
+              padding: "4px",
             }}
           >
             <span
               className="text-white"
-              style={{ fontSize: "14px", fontWeight: "550" }}
+              style={{ fontSize: "14px", fontWeight: "400" }}
             >
               Thành công
             </span>
@@ -369,8 +364,8 @@ const OrderDetail = (props) => {
       width: "10%",
       render: (text, record) => (
         <span
-          className=""
-          style={{ fontSize: "17px", color: "#dc3333" }}
+          className="txt-danger"
+          style={{ fontSize: "17px" }}
         >
           {record &&
             record.soTienThanhToan &&
@@ -526,15 +521,13 @@ const OrderDetail = (props) => {
                       : item.loaiThaoTac === 3
                         ? FaRegCalendarCheck
                         : item.loaiThaoTac === 4
-                          ? MdCancelPresentation
-                          : item.loaiThaoTac === 5
-                            ? MdCancelPresentation
-                            : ""
+                          ? FaRegCalendarTimes
+                          : ""
               }
               title={
                 <div className="mt-1">
                   <span
-                    style={{ whiteSpace: "pre-line", fontSize: "20px" }}
+                    style={{ whiteSpace: "pre-line", fontSize: "19px" }}
                   >
                     {item.thaoTac}
                   </span>
@@ -546,15 +539,15 @@ const OrderDetail = (props) => {
               )}
               color={
                 item.loaiThaoTac == 0
-                  ? "#26A65B"
+                  ? "#09a129"
                   : item.loaiThaoTac == 1
-                    ? "#26A65B"
+                    ? "#09a129"
                     : item.loaiThaoTac == 2
-                      ? "#26A65B"
+                      ? "#09a129"
                       : item.loaiThaoTac == 3
-                        ? "#26A65B"
+                        ? "#09a129"
                         : item.loaiThaoTac == 4
-                          ? "#dc3333"
+                          ? "#e5383b"
                           : ""
               }
             />
@@ -576,15 +569,14 @@ const OrderDetail = (props) => {
                 className="rounded-2 ms-2"
                 type="primary"
                 style={{
-                  height: "50px",
+                  height: "40px",
                   width: "auto",
                   fontSize: "16px",
-                  backgroundColor: "#3A57E8",
                 }}
               >
                 <span
                   className=""
-                  style={{ fontWeight: "550", marginBottom: "2px" }}
+                  style={{ fontWeight: "500", marginBottom: "2px" }}
                 >
                   XÁC NHẬN
                 </span>
@@ -597,15 +589,14 @@ const OrderDetail = (props) => {
                 className="rounded-2 ms-2"
                 type="primary"
                 style={{
-                  height: "50px",
+                  height: "40px",
                   width: "auto",
                   fontSize: "16px",
-                  backgroundColor: "#3A57E8",
                 }}
               >
                 <span
                   className=""
-                  style={{ fontWeight: "550", marginBottom: "2px" }}
+                  style={{ fontWeight: "500", marginBottom: "2px" }}
                 >
                   GIAO HÀNG
                 </span>
@@ -618,15 +609,14 @@ const OrderDetail = (props) => {
                 className="rounded-2 ms-2"
                 type="primary"
                 style={{
-                  height: "50px",
+                  height: "40px",
                   width: "auto",
                   fontSize: "16px",
-                  backgroundColor: "#3A57E8",
                 }}
               >
                 <span
                   className=""
-                  style={{ fontWeight: "550", marginBottom: "2px" }}
+                  style={{ fontWeight: "500", marginBottom: "2px" }}
                 >
                   HOÀN THÀNH
                 </span>
@@ -635,23 +625,22 @@ const OrderDetail = (props) => {
           ) : (
             ""
           )}
-          {order.trangThai != 3 && order.trangThai != 4 && order.loaiHoaDon == 1 ? (
+          {order.trangThai != 3 && order.trangThai != 4 ? (
             <div className="ms-1">
               <Button
                 onClick={() => handleOpenDialogConfirmOrder(null, true)}
                 danger
                 className="rounded-2 ms-2"
-                type="primary"
+                type="danger"
                 style={{
-                  height: "50px",
+                  height: "40px",
                   width: "auto",
                   fontSize: "16px",
-                  backgroundColor: "#dc3333",
                 }}
               >
                 <span
                   className=""
-                  style={{ fontWeight: "550", marginBottom: "2px" }}
+                  style={{ fontWeight: "500", marginBottom: "2px" }}
                 >
                   HỦY ĐƠN
                 </span>
@@ -664,28 +653,21 @@ const OrderDetail = (props) => {
         <div>
           <Button
             onClick={handleClickOpenDialogDetailOrderHistories}
-            className="rounded-2 me-2"
-            type="primary"
+            className="rounded-2"
+            type="warning"
             style={{
-              height: "50px",
+              height: "40px",
               width: "100px",
               fontSize: "16px",
-              backgroundColor: "#F5A524",
             }}
           >
             <span
               className="text-dark"
-              style={{ fontWeight: "550", marginBottom: "2px" }}
+              style={{ fontWeight: "500", marginBottom: "2px" }}
             >
               Chi Tiết
             </span>
           </Button>
-          <OrderHistoryDialog
-            columns={columnsTableOrderHistories}
-            open={openDialogDetailOrderHistories}
-            onClose={handleCloseDialogDetailOrderHistories}
-            dataSource={orderHistories}
-          />
         </div>
       </div>
 
@@ -698,7 +680,7 @@ const OrderDetail = (props) => {
       <div className="wrap-order-detail mt-4">
         <div className="p-3">
           <div className="d-flex justify-content-between">
-            <div className="ms-2" style={{ marginTop: "5px" }}>
+            <div className="ms-2" style={{ marginTop: "3px" }}>
               <span className='' style={{ fontSize: "25px" }}>THÔNG TIN ĐƠN HÀNG</span>
             </div>
             <div className="">
@@ -707,24 +689,18 @@ const OrderDetail = (props) => {
                 className="rounded-2 ms-2"
                 type="primary"
                 style={{
-                  height: "45px",
+                  height: "40px",
                   fontSize: "16px",
-                  backgroundColor: "#3A57E8",
                   width: "100px",
                 }}
               >
                 <span
                   className=""
-                  style={{ fontWeight: "550", marginBottom: "3px" }}
+                  style={{ fontWeight: "500", marginBottom: "3px" }}
                 >
                   Cập nhật
                 </span>
               </Button>
-              <UpdateRecipientOrderDialog
-                open={openDialogUpdateRecipientOrder}
-                onClose={handleCloseDialogUpdateRecipientOrder}
-                onCloseNoAction={handleCloseNoActionDialogUpdateRecipientOrder}
-              />
             </div>
           </div>
           <div className='ms-2 mt-2' style={{ borderBottom: "2px solid #C7C7C7", width: "99.2%", borderWidth: "2px" }}></div>
@@ -733,14 +709,14 @@ const OrderDetail = (props) => {
         <Row>
           <Col sm="5">
             <div className="ms-4 mt-3 d-flex" style={{ height: "30px" }}>
-              <div className="ms-2" style={{ width: "130px" }}>
-                <span style={{ fontSize: "17px" }}>Mã Đơn Hàng</span>
+              <div className="ms-2 mt-1" style={{ width: "130px" }}>
+                <span className="" style={{ fontSize: "17px" }}>Mã Đơn Hàng</span>
               </div>
               <div className="ms-5 ps-5">
                 <div
                   className="rounded-pill"
                   style={{
-                    height: "31px",
+                    height: "35px",
                     width: "auto",
                     padding: "5px",
                     backgroundColor: "#e1e1e1",
@@ -753,18 +729,17 @@ const OrderDetail = (props) => {
               </div>
             </div>
             <div className="ms-4 mt-4 d-flex" style={{ height: "30px" }}>
-              <div className="ms-2" style={{ width: "130px" }}>
+              <div className="ms-2 mt-1" style={{ width: "130px" }}>
                 <span style={{ fontSize: "17px" }}>Loại Đơn Hàng</span>
               </div>
               <div className="ms-5 ps-5">
                 {order.loaiHoaDon == 1 ? (
                   <div
-                    className="rounded-pill"
+                    className="rounded-pill badge-success"
                     style={{
-                      height: "31px",
+                      height: "35px",
                       width: "auto",
                       padding: "5px",
-                      backgroundColor: "#26A65B",
                     }}
                   >
                     <span
@@ -778,7 +753,7 @@ const OrderDetail = (props) => {
                   <div
                     className="rounded-pill bg-primary"
                     style={{
-                      height: "31px",
+                      height: "35px",
                       width: "auto",
                       padding: "5px",
                     }}
@@ -794,18 +769,17 @@ const OrderDetail = (props) => {
               </div>
             </div>
             <div className="ms-4 mt-4 d-flex" style={{ height: "30px" }}>
-              <div className="ms-2" style={{ width: "130px" }}>
+              <div className="ms-2 mt-1" style={{ width: "130px" }}>
                 <span style={{ fontSize: "17px" }}>Trạng Thái</span>
               </div>
               <div className="ms-5 ps-5">
                 {order.trangThai == 0 ? (
                   <div
-                    className="rounded-pill"
+                    className="rounded-pill badge-warning"
                     style={{
-                      height: "31px",
-                      width: "151px",
+                      height: "35px",
+                      width: "auto",
                       padding: "5px",
-                      backgroundColor: "#FAAD14",
                     }}
                   >
                     <span
@@ -817,9 +791,9 @@ const OrderDetail = (props) => {
                   </div>
                 ) : order.trangThai == 1 ? (
                   <div
-                    className="rounded-pill bg-success"
+                    className="rounded-pill badge-success"
                     style={{
-                      height: "31px",
+                      height: "35px",
                       width: "auto",
                       padding: "5px",
                     }}
@@ -833,9 +807,9 @@ const OrderDetail = (props) => {
                   </div>
                 ) : order.trangThai == 2 ? (
                   <div
-                    className="rounded-pill bg-primary"
+                    className="rounded-pill badge-primary"
                     style={{
-                      height: "31px",
+                      height: "35px",
                       width: "auto",
                       padding: "5px",
                     }}
@@ -851,7 +825,7 @@ const OrderDetail = (props) => {
                   <div
                     className="rounded-pill bg-primary"
                     style={{
-                      height: "31px",
+                      height: "35px",
                       width: "auto",
                       padding: "5px",
                     }}
@@ -865,12 +839,11 @@ const OrderDetail = (props) => {
                   </div>
                 ) : order.trangThai == 4 ? (
                   <div
-                    className="rounded-pill"
+                    className="rounded-pill badge-danger"
                     style={{
-                      height: "31px",
+                      height: "35px",
                       width: "auto",
                       padding: "5px",
-                      backgroundColor: "#dc3333",
                     }}
                   >
                     <span
@@ -880,37 +853,21 @@ const OrderDetail = (props) => {
                       Đã hủy
                     </span>
                   </div>
-                ) : order.trangThai == 6 && order.loaiHoaDon == 0 ?
-
-                  <div
-                    className="rounded-pill bg-primary"
-                    style={{
-                      height: "31px",
-                      width: "auto",
-                      padding: "5px",
-                    }}
-                  >
-                    <span
-                      className="text-white p-2"
-                      style={{ fontSize: "14px" }}
-                    >
-                      Đã thanh toán
-                    </span>
-                  </div>
+                )
                   : ""
-
                 }
               </div>
             </div>
             <div className="ms-4 mt-4 d-flex" style={{ height: "30px" }}>
-              <div className="ms-2" style={{ width: "130px" }}>
-                <span style={{ fontSize: "17px" }}>Ngày tạo</span>
+              <div className="ms-2 mt-1" style={{ width: "130px" }}>
+                <span style={{ fontSize: "17px" }}>
+                  Ngày nhận hàng dự kiến</span>
               </div>
               <div className="ms-5 ps-5">
                 <div
                   className="rounded-pill"
                   style={{
-                    height: "31px",
+                    height: "35px",
                     width: "auto",
                     padding: "5px",
                     backgroundColor: "#e1e1e1",
@@ -930,7 +887,7 @@ const OrderDetail = (props) => {
           </Col>
           <Col sm="6" className="ms-5">
             <div className="ms-4 mt-3 d-flex" style={{ height: "30px" }}>
-              <div className="ms-2" style={{ width: "130px" }}>
+              <div className="ms-2 mt-1" style={{ width: "130px" }}>
                 <span style={{ fontSize: "17px" }}>Tên Khách Hàng</span>
               </div>
               <div className="ms-5 ps-5">
@@ -938,50 +895,50 @@ const OrderDetail = (props) => {
                   <div
                     className="rounded-pill"
                     style={{
-                      height: "31px",
+                      height: "35px",
                       width: "auto",
                       padding: "5px",
                       backgroundColor: "#e1e1e1",
                     }}
                   >
                     <span className="text-dark p-2" style={{ fontSize: "14px" }}>
-                      Khách Hàng Lẻ
+                      Khách lẻ
                     </span>
                   </div>
                   : order.tenNguoiNhan
                 }
               </div>
             </div>
-            <div className="ms-4 mt-4 d-flex" style={{ height: "30px" }}>
-              <div className="ms-2" style={{ width: "130px" }}>
+            <div className="ms-4 mt-4 mt-1 d-flex" style={{ height: "30px" }}>
+              <div className="ms-2 mt-1" style={{ width: "130px" }}>
                 <span style={{ fontSize: "17px" }}>Số Điện Thoại</span>
               </div>
-              <div className="ms-5 ps-5">
+              <div className="ms-5 ps-5 mt-1">
                 <span className="text-dark ms-1" style={{ fontSize: "17px" }}>
-                  {order.soDienThoaiNguoiNhan == null ? "0123901293" : order.soDienThoaiNguoiNhan}
+                  {order.soDienThoaiNguoiNhan == null ? "..." : order.soDienThoaiNguoiNhan}
                 </span>
               </div>
             </div>
-            <div className="ms-4 mt-4 d-flex" style={{ height: "30px" }}>
-              <div className="ms-2" style={{ width: "130px" }}>
+            <div className="ms-4 mt-4 mt-1 d-flex" style={{ height: "30px" }}>
+              <div className="ms-2 mt-1" style={{ width: "130px" }}>
                 <span style={{ fontSize: "17px" }}>Email</span>
               </div>
-              <div className="ms-5 ps-5">
+              <div className="ms-5 ps-5 mt-1">
                 <span className="text-dark ms-1" style={{ fontSize: "17px" }}>
                   haog@gmail.com
                 </span>
               </div>
             </div>
-            <div className="ms-4 mt-4 d-flex" style={{ height: "30px" }}>
-              <div className="ms-2" style={{ width: "130px" }}>
+            <div className="ms-4 mt-4 mt-1 d-flex" style={{ height: "30px" }}>
+              <div className="ms-2 mt-1" style={{ width: "130px" }}>
                 <span style={{ fontSize: "17px" }}>Địa Chỉ</span>
               </div>
               <div
-                className="ms-5 ps-5"
+                className="ms-5 ps-5 mt-1"
                 style={{ whiteSpace: "pre-line", flex: "1" }}
               >
                 <span className="text-dark ms-1" style={{ fontSize: "17px" }}>
-                  {order.diaChiNguoiNhan == null ? "ABCXYZ" : order.diaChiNguoiNhan}
+                  {order.diaChiNguoiNhan == null ? "..." : order.diaChiNguoiNhan}
                 </span>
               </div>
             </div>
@@ -998,7 +955,7 @@ const OrderDetail = (props) => {
       <div className="wrap-payment mt-4 p-3">
         <div className="">
           <div className="d-flex justify-content-between">
-            <div className="ms-2" style={{ marginTop: "5px" }}>
+            <div className="ms-2" style={{ marginTop: "3px" }}>
               <span className='' style={{ fontSize: "25px" }}>LỊCH SỬ THANH TOÁN</span>
             </div>
             <div className="">
@@ -1007,25 +964,18 @@ const OrderDetail = (props) => {
                 className="rounded-2 ms-2"
                 type="primary"
                 style={{
-                  height: "45px",
+                  height: "40px",
                   fontSize: "16px",
-                  backgroundColor: "#3A57E8",
-                  width: "193px",
+                  width: "120px",
                 }}
               >
                 <span
                   className=""
-                  style={{ fontWeight: "550", marginBottom: "3px" }}
+                  style={{ fontWeight: "500", marginBottom: "3px" }}
                 >
-                  Tiến hành thanh toán
+                  Thanh toán
                 </span>
               </Button>
-              <PaymentDialog
-                open={openDialogPayment}
-                onClose={handleCloseDialogPayment}
-                onCloseNoAction={handleCloseNoActionDialogPayment}
-                addPayment={handleAddPayment}
-              />
             </div>
           </div>
           <div className='ms-2 mt-2' style={{ borderBottom: "2px solid #C7C7C7", width: "99.2%", borderWidth: "2px" }}></div>
@@ -1091,19 +1041,19 @@ const OrderDetail = (props) => {
       <div className="wrap-order-summary mt-4 p-3">
         <div className="">
           <div className="d-flex justify-content-between">
-            <div className="ms-2" style={{ marginTop: "5px" }}>
+            <div className="ms-2" style={{ marginTop: "3px" }}>
               <span className='' style={{ fontSize: "25px" }}>SẢN PHẨM ĐÃ MUA</span>
             </div>
             <div className="">
               <Button
                 // onClick={handleOpenDialogProducts}
-                className="rounded-2 bg-primary"
+                className="rounded-2"
                 type="primary"
-                style={{ height: "45px", width: "145px", fontSize: "16px" }}
+                style={{ height: "40px", width: "145px", fontSize: "16px" }}
               >
                 <span
                   className="text-white"
-                  style={{ marginBottom: "3px", fontWeight: "550" }}
+                  style={{ marginBottom: "3px", fontWeight: "500" }}
                 >
                   Thêm sản phẩm
                 </span>
@@ -1352,9 +1302,26 @@ const OrderDetail = (props) => {
       <OrderSummary />
 
 
+      <OrderHistoryDialog
+        columns={columnsTableOrderHistories}
+        open={openDialogDetailOrderHistories}
+        onClose={handleCloseDialogDetailOrderHistories}
+        dataSource={orderHistories}
+      />
+      <PaymentDialog
+        open={openDialogPayment}
+        onClose={handleCloseDialogPayment}
+        onCloseNoAction={handleCloseNoActionDialogPayment}
+        addPayment={handleAddPayment}
+      />
+      <UpdateRecipientOrderDialog
+        open={openDialogUpdateRecipientOrder}
+        onClose={handleCloseDialogUpdateRecipientOrder}
+        onCloseNoAction={handleCloseNoActionDialogUpdateRecipientOrder}
+      />
 
       <div className="mt-5"></div>
-      {data.message &&
+      {/*data.message &&
         <Snackbar anchorOrigin={{
           vertical: 'top',
           horizontal: 'right',
@@ -1363,7 +1330,7 @@ const OrderDetail = (props) => {
             {data.message}
           </Alert>
         </Snackbar>
-      }
+      */}
     </>
   );
 };

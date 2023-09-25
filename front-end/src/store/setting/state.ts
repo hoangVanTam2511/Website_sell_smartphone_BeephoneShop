@@ -21,7 +21,7 @@ export const initialState: SettingState = {
     },
     "theme_color": {
       "colors": {
-        "--{{prefix}}primary": "#3a57e8",
+        "--{{prefix}}primary": "#2F80ED",
         "--{{prefix}}info": "#08B1BA"
       },
       "value": "theme-color-default"
@@ -117,7 +117,7 @@ export const defaultState: SettingDefaultState = {
       ],
       type: "default",
       colors: {
-        "--{{prefix}}primary": "#3a57e8",
+        "--{{prefix}}primary": "#2F80ED",
         "--{{prefix}}info": "#08B1BA",
       },
       value: "theme-color-default",

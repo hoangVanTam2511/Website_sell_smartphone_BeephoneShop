@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Table } from "antd";
-import { Pagination, TextField, } from "@mui/material";
+import { IconButton, Pagination, TextField, Tooltip, } from "@mui/material";
 import { PlusOutlined } from "@ant-design/icons";
 import Card from "../../../components/Card";
 import { format } from "date-fns";
@@ -11,10 +11,11 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
+import Zoom from '@mui/material/Zoom';
 import * as dayjs from "dayjs";
 
 const ManagementOrders = () => {
-  const location = useLocation();
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [totalPages, setTotalPages] = useState();
@@ -151,8 +152,8 @@ const ManagementOrders = () => {
     // localStorage.setItem('currentPage', page);
   };
 
-  const handleAdd = () => {
-    alert("hello");
+  const handleCreateNewOrderPending = () => {
+    navigate(`/dashboard/point-of-sales`);
   };
 
   const [open, setOpen] = useState(false);
@@ -167,7 +168,7 @@ const ManagementOrders = () => {
       dataIndex: "stt",
       width: "5%",
       render: (text, record, index) => (
-        <span style={{ fontWeight: "550" }}>{orders.indexOf(record) + 1}</span>
+        <span style={{ fontWeight: "400" }}>{orders.indexOf(record) + 1}</span>
       ),
     },
     {
@@ -177,11 +178,11 @@ const ManagementOrders = () => {
       width: "15%",
       dataIndex: "ma",
       render: (text, record) => (
-        <span style={{ fontWeight: "550" }}>{record.ma}</span>
+        <span style={{ fontWeight: "500" }}>{record.ma}</span>
       ),
     },
     {
-      title: "Tên Khách Hàng",
+      title: "Khách Hàng",
       align: "center",
       dataIndex: "tenNguoiNhan",
       width: "15%",
@@ -190,14 +191,14 @@ const ManagementOrders = () => {
           <div
             className="rounded-pill mx-auto"
             style={{
-              height: "38px",
-              width: "90px",
-              padding: "5px",
+              height: "35px",
+              width: "92px",
+              padding: "4px",
               backgroundColor: "#e1e1e1",
             }}
           >
             <span
-              className="text-dark"
+              className="text-dark mt-1"
               style={{ fontSize: "14px" }}
             >
               Khách lẻ
@@ -211,6 +212,9 @@ const ManagementOrders = () => {
       title: "Số Điện Thoại",
       align: "center",
       dataIndex: "soDienThoaiNguoiNhan",
+      render: (text, record) => (
+        <span style={{ fontWeight: "400" }}>{record.soDienThoaiNguoiNhan || "..."}</span>
+      ),
     },
     {
       title: "Loại Đơn Hàng",
@@ -220,29 +224,28 @@ const ManagementOrders = () => {
       render: (type) =>
         type == 1 ? (
           <div
-            className="rounded-pill mx-auto bg-success"
+            className="rounded-pill mx-auto badge-success"
             style={{
-              height: "38px",
-              width: "100px",
-              padding: "5px",
-              backgroundColor: "#26A65B",
+              height: "35px",
+              width: "96px",
+              padding: "4px",
             }}
           >
             <span
               className="text-white"
-              style={{ fontSize: "14px", fontWeight: "550" }}
+              style={{ fontSize: "14px" }}
             >
               Giao hàng
             </span>
           </div>
         ) : type == 0 ? (
           <div
-            className="rounded-pill bg-primary mx-auto"
-            style={{ height: "38px", width: "100px", padding: "5px" }}
+            className="rounded-pill badge-primary mx-auto"
+            style={{ height: "35px", width: "91px", padding: "4px" }}
           >
             <span
               className="text-white"
-              style={{ fontSize: "14px", fontWeight: "550" }}
+              style={{ fontSize: "14px" }}
             >
               Tại quầy
             </span>
@@ -259,103 +262,85 @@ const ManagementOrders = () => {
       render: (status) => {
         return status == 0 ? (
           <div
-            className="rounded-pill"
+            className="rounded-pill badge-warning"
             style={{
-              backgroundColor: "#FAAD14",
-              height: "38px",
-              padding: "5px",
+              height: "35px",
+              padding: "4px",
+              width: "auto"
             }}
           >
             <span
               className="text-dark"
-              style={{ fontSize: "14px", padding: "11px", fontWeight: "550" }}
+              style={{ fontSize: "14px", padding: "13px" }}
             >
               Đang chờ xác nhận
             </span>
           </div>
         ) : status == 1 ? (
           <div
-            className="rounded-pill mx-auto"
+            className="rounded-pill mx-auto badge-success"
             style={{
-              height: "38px",
+              height: "35px",
               width: "115px",
-              padding: "5px",
-              backgroundColor: "#26A65B",
+              padding: "4px",
             }}
           >
             <span
               className="text-white"
-              style={{ fontSize: "14px", fontWeight: "550" }}
+              style={{ fontSize: "14px" }}
             >
               Đã xác nhận
             </span>
           </div>
         ) : status == 2 ?
           <div
-            className="rounded-pill mx-auto bg-primary"
+            className="rounded-pill mx-auto badge-primary"
             style={{
-              height: "38px",
+              height: "35px",
               width: "135px",
-              padding: "5px",
+              padding: "4px",
             }}
           >
             <span
               className="text-white"
-              style={{ fontSize: "14px", fontWeight: "550" }}
+              style={{ fontSize: "14px" }}
             >
               Đang giao hàng
             </span>
           </div>
           : status == 3 ?
             <div
-              className="rounded-pill mx-auto bg-primary"
+              className="rounded-pill mx-auto badge-primary"
               style={{
-                height: "38px",
+                height: "35px",
                 width: "135px",
-                padding: "5px",
+                padding: "4px",
               }}
             >
               <span
                 className="text-white"
-                style={{ fontSize: "14px", fontWeight: "550" }}
+                style={{ fontSize: "14px" }}
               >
                 Đã hoàn thành
               </span>
             </div>
             : status == 4 ?
               <div
-                className="rounded-pill mx-auto"
+                className="rounded-pill mx-auto badge-danger"
                 style={{
-                  height: "38px",
-                  width: "85px",
-                  padding: "5px",
-                  backgroundColor: "#dc3333"
+                  height: "35px",
+                  width: "90px",
+                  padding: "4px",
                 }}
               >
                 <span
                   className="text-white"
-                  style={{ fontSize: "14px", fontWeight: "550" }}
+                  style={{ fontSize: "14px" }}
                 >
                   Đã hủy
                 </span>
               </div>
-              : status == 6 ?
-                <div
-                  className="rounded-pill mx-auto bg-success"
-                  style={{
-                    height: "38px",
-                    width: "130px",
-                    padding: "5px",
-                  }}
-                >
-                  <span
-                    className="text-white"
-                    style={{ fontSize: "14px", fontWeight: "550" }}
-                  >
-                    Đã thanh toán
-                  </span>
-                </div>
-                : ""
+              : ""
       },
     },
     {
@@ -364,8 +349,8 @@ const ManagementOrders = () => {
       dataIndex: "tongTien",
       width: "15%",
       render: (text, record) => (
-        <span style={{ color: "#dc1111", fontWeight: "550" }}>
-          {record.tongTien.toLocaleString("vi-VN", {
+        <span className="txt-danger" style={{ fontWeight: "500" }}>
+          {record && record.tongTien && record.tongTien.toLocaleString("vi-VN", {
             style: "currency",
             currency: "VND",
           })}
@@ -379,7 +364,7 @@ const ManagementOrders = () => {
       width: "5%",
       render: (text, record) => (
         <span style={{ fontWeight: "", whiteSpace: "pre-line" }}>
-          {format(new Date(record.createdAt), "HH:mm:ss, dd/MM/yyyy")}
+          {record && record.createdAt && format(new Date(record.createdAt), "HH:mm:ss, dd/MM/yyyy")}
         </span>
       ),
     },
@@ -391,18 +376,11 @@ const ManagementOrders = () => {
       render: (text, record) => (
         <div className="button-container">
           <Link className="ms-1" to={`/dashboard/order-detail/${record.ma}`}>
-            <Button
-              className="rounded-3"
-              type="primary"
-              style={{ height: "45px", width: "92px", fontSize: "14px", backgroundColor: "#FAAD14" }}
-            >
-              <span
-                className="text-dark"
-                style={{ fontWeight: "550", marginBottom: "3px" }}
-              >
-                Chi tiết
-              </span>
-            </Button>
+            <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
+              <IconButton size="">
+                <BorderColorOutlinedIcon color="primary" />
+              </IconButton>
+            </Tooltip>
           </Link>
         </div>
       ),
@@ -435,7 +413,7 @@ const ManagementOrders = () => {
 
   return (
     <>
-      <div className="mt-4">
+      <div className="mt-4" style={{ backgroundColor: "#ffffff", boxShadow: "0 0.1rem 0.3rem #00000010" }}>
         <Card className="">
           <Card.Header className="d-flex justify-content-between">
             <div className="header-title mt-2">
@@ -445,13 +423,13 @@ const ManagementOrders = () => {
                 value={keyword}
                 InputLabelProps={{
                   sx: {
-                    marginTop: "2.5px",
+                    marginTop: "",
                     textTransform: "capitalize",
                   },
                 }}
                 inputProps={{
                   style: {
-                    height: "28px",
+                    height: "23px",
                     width: "190px",
                   },
                 }}
@@ -460,13 +438,13 @@ const ManagementOrders = () => {
               />
               <Button
                 onClick={handleRefreshData}
-                className="rounded-2 ms-2 bg-primary"
-                type="primary"
-                style={{ height: "45px", width: "100px", fontSize: "15px", backgroundColor: "#FAAD14" }}
+                className="rounded-2 ms-2"
+                type="warning"
+                style={{ width: "100px", fontSize: "15px" }}
               >
                 <span
-                  className="text-white"
-                  style={{ fontWeight: "550", marginBottom: "3px" }}
+                  className="text-dark"
+                  style={{ fontWeight: "500", marginBottom: "2px" }}
                 >
                   Làm Mới
                 </span>
@@ -476,21 +454,16 @@ const ManagementOrders = () => {
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DemoContainer components={['DatePicker']}>
                   <DatePicker label="Từ ngày"
+                    slotProps={{ textField: { size: 'small' } }}
                     value={fromDate ? dayjs(fromDate, "DD/MM/YYYY") : null}
                     format="DD/MM/YYYY"
                     onChange={(value) => handleGetFromDateFromDatePicker(value)}
                     sx={{
                       position: "relative",
                       width: "50px",
-                      "& .MuiInputLabel-root": {
-                        top: "-3.2px",
-                      },
                       "& .MuiInputBase-root": {
                         width: "85%",
                       },
-                      "& .MuiInputBase-input": {
-                        height: "14px",
-                      }
                     }}
                   />
                 </DemoContainer>
@@ -499,21 +472,16 @@ const ManagementOrders = () => {
                 <DemoContainer components={['DatePicker']}>
                   <DatePicker
                     onChange={(value) => handleGetToDateFromDatePicker(value)}
+                    slotProps={{ textField: { size: 'small' } }}
                     label={"Đến ngày"}
                     value={toDate ? dayjs(toDate, "DD/MM/YYYY") : null}
                     format={"DD/MM/YYYY"}
                     sx={{
                       position: "relative",
                       width: "50px",
-                      "& .MuiInputLabel-root": {
-                        top: "-3.2px",
-                      },
                       "& .MuiInputBase-root": {
                         width: "85%",
                       },
-                      "& .MuiInputBase-input": {
-                        height: "14px",
-                      }
                     }}
                   />
                 </DemoContainer>
@@ -521,21 +489,21 @@ const ManagementOrders = () => {
             </div>
             <div className="mt-2">
               <Button
-                onClick={handleAdd}
-                className="rounded-2 bg-primary"
+                onClick={handleCreateNewOrderPending}
+                className="rounded-2 button-mui"
                 type="primary"
-                style={{ height: "45px", width: "150px", fontSize: "15px" }}
+                style={{ height: "40px", width: "150px", fontSize: "15px" }}
               >
                 <PlusOutlined className="ms-1"
                   style={{
                     position: "absolute",
-                    bottom: "14.5px",
+                    bottom: "12.5px",
                     left: "12px",
                   }}
                 />
                 <span
                   className="ms-3 ps-1"
-                  style={{ fontWeight: "550", marginBottom: "3px" }}
+                  style={{ marginBottom: "3px", fontWeight: "500" }}
                 >
                   Tạo đơn hàng
                 </span>
