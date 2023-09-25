@@ -80,9 +80,8 @@ const ThemSanPham = () => {
         setOpen(true);
         await axios.get("http://localhost:8080/nha-san-xuat/new-code")
             .then((res) => {
-                console.log(res.data)
                 setNhaSanXuatForm({ ...nhaSanXuatForm, 'maNhaSanXuat': res.data })
-            })
+            }).catch((res)=>console.log(res))
     };
 
     const handleOk = async () => {
@@ -124,7 +123,7 @@ const ThemSanPham = () => {
         await axios.get("http://localhost:8080/chip/new-code")
             .then((res) => {
                 setChipForm({ ...chipForm, 'maChip': res.data })
-            })
+            }).catch((res)=>console.log(res))
     };
 
     const handleOkFormChip = async () => {
@@ -157,7 +156,7 @@ const ThemSanPham = () => {
         await axios.get("http://localhost:8080/pin/new-code")
             .then((res) => {
                 setpinForm({ ...pinForm, 'mapin': res.data })
-            })
+            }).catch((res)=>console.log(res))
 
     };
 
@@ -192,7 +191,7 @@ const ThemSanPham = () => {
         await axios.get("http://localhost:8080/ram/new-code")
             .then((res) => {
                 setramForm({ ...ramForm, 'maram': res.data })
-            })
+            }).catch((res)=>console.log(res))
     };
     const handleOkFormram = async () => {
         await axios.post("http://localhost:8080/ram/save-second", ramForm)
@@ -225,7 +224,7 @@ const ThemSanPham = () => {
         await axios.get("http://localhost:8080/rom/new-code")
             .then((res) => {
                 setromForm({ ...romForm, 'marom': res.data })
-            })
+            }).catch((res)=>console.log(res))
     };
 
     const handleOkFormrom = async () => {
@@ -257,7 +256,7 @@ const ThemSanPham = () => {
         await axios.get("http://localhost:8080/mau-sac/new-code")
             .then((res) => {
                 setmauSacForm({ ...mauSacForm, 'mamauSac': res.data })
-            })
+            }).catch((res)=>console.log(res))
     };
 
     const handleOkFormmauSac = async () => {
@@ -290,7 +289,7 @@ const ThemSanPham = () => {
         await axios.get("http://localhost:8080/man-hinh/new-code")
             .then((res) => {
                 setmanHinhForm({ ...manHinhForm, 'mamanHinh': res.data })
-            })
+            }).catch((res)=>console.log(res))
     };
     const handleOkFormmanHinh = async () => {
         await axios.post("http://localhost:8080/man-hinh/save-second", manHinhForm)
@@ -322,7 +321,7 @@ const ThemSanPham = () => {
         await axios.get("http://localhost:8080/dong-san-pham/new-code")
             .then((res) => {
                 setDongSanPhamForm({ ...DongSanPhamForm, 'maDongSanPham': res.data })
-            })
+            }).catch((res)=>console.log(res))
     };
     const handleOkFormDongSanPham = async () => {
         await axios.post("http://localhost:8080/dong-san-pham/save", DongSanPhamForm)
@@ -347,7 +346,7 @@ const ThemSanPham = () => {
                 (res) => {
                     loadDataListCauHinh(currentPage)
                 }
-            )
+            ).catch((res)=>console.log(res))
             sethiddenConfig(false)
         } else {
             sethiddenConfig(true)
@@ -382,7 +381,7 @@ const ThemSanPham = () => {
             setListCauHinh(modifiedData);
             setCurrentPage(response.data.number);
             setTotalPages(response.data.totalPages);
-        });
+        }).catch((res)=>console.log(res));
     };
     const handleCancelFromCauHinh = () => {
         setOpenFormCauHinh(false)
@@ -400,7 +399,7 @@ const ThemSanPham = () => {
         await axios.delete(`${apiURLCauHinh}/delete/${id}`).then(
             (response) => {
                 loadDataListCauHinh(currentPage)
-            })
+            }).catch((res)=>console.log(res))
 
     }
 
@@ -487,18 +486,16 @@ const ThemSanPham = () => {
 
         await axios.post("http://localhost:8080/san-pham/save", chiTietSanPham).then(
             (res) => {
-                console.log(res)
                 axios.post(`http://localhost:8080/chi-tiet-san-pham/save?id=${res.data.id}`, listIdCauHinh).then(
                     (res) => {
                     }
-                )
+                ).catch((res)=>console.log(res))
             }
         )
 
     }
     const onInputChange = (e) => {
         setchiTietSanPham({ ...chiTietSanPham, [e.target.name]: e.target.value })
-        console.log(chiTietSanPham)
     }
 
     const handleTextArea = (e) => {
@@ -513,7 +510,6 @@ const ThemSanPham = () => {
     // handle chang segemented
     const handleChangeSegemented = (value) => {
         setchiTietSanPham({ ...chiTietSanPham, [String(value).slice(0, String(value).indexOf(":"))]: String(value).slice(String(value).indexOf(":") + 1) })
-        console.log(chiTietSanPham)
     };
 
     // handdleChange tab cấu hình - become 
@@ -528,7 +524,6 @@ const ThemSanPham = () => {
         loadDataListCauHinh(currentPage)
         setListCauHinhSelected(listCauHinhSelected)
         setStep(step)
-        console.log(listCauHinhSelected)
     }, [confirmLoading, currentPage, sizeOfListSelected, step]);
 
     //ảnh 
@@ -552,7 +547,6 @@ const ThemSanPham = () => {
                                 for (let [key, value] of urlImage) {
 
                                     if (getIndexOfLocationImage(key) == getIndexOfLocationImage(location_image)) {
-                                        console.log(urlImage.get(key))
                                         if (urlImage.get(key) != null) {
                                             count++;
                                         }
@@ -568,10 +562,10 @@ const ThemSanPham = () => {
 
                                 }
                             }
-                        )
+                        ).catch((res)=>console.log(res))
                     })
                 }
-            )
+            ).catch((res)=>console.log(res))
         })
     };
 
@@ -619,15 +613,14 @@ const ThemSanPham = () => {
                 value: "dongSanPham:" + item.tenDongSanPham,
             }));
             setListDongSanPham(modifiedData);
-            console.log(modifiedData)
-        });
+        }).catch((res)=>console.log(res));
         axios.get(apiURLNhaSanXuat + "/get-list").then((response) => {
             const modifiedData = response.data.map((item, index) => ({
                 label: item.tenNhaSanXuat,
                 value: "nhaSanXuat:" + item.tenNhaSanXuat,
             }));
             setlistNhaSanXuat(modifiedData);
-        });
+        }).catch((res)=>console.log(res));
 
         axios.get(apiURLPin + "/get-list").then((response) => {
             const modifiedData = response.data.map((item, index) => ({
@@ -635,7 +628,7 @@ const ThemSanPham = () => {
                 value: "pin:" + item.dungLuong,
             }));
             setListPin(modifiedData);
-        });
+        }).catch((res)=>console.log(res));
 
         axios.get(apiURLram + "/get-list").then((response) => {
             const modifiedData = response.data.map((item, index) => ({
@@ -643,7 +636,7 @@ const ThemSanPham = () => {
                 value: "ram:" + item.kichThuoc,
             }));
             setListRam(modifiedData);
-        });
+        }).catch((res)=>console.log(res));
 
         axios.get(apiURLrom + "/get-list").then((response) => {
             const modifiedData = response.data.map((item, index) => ({
@@ -651,7 +644,7 @@ const ThemSanPham = () => {
                 value: "rom:" + item.kichThuoc,
             }));
             setlistRom(modifiedData);
-        });
+        }).catch((res)=>console.log(res));
 
         axios.get(apiURLChip + "/get-list").then((response) => {
             const modifiedData = response.data.map((item, index) => ({
@@ -659,7 +652,7 @@ const ThemSanPham = () => {
                 value: "chip:" + item.tenChip,
             }));
             setlistChip(modifiedData);
-        });
+        }).catch((res)=>console.log(res));
 
         axios.get(apiURLMauSac + "/get-list").then((response) => {
             const modifiedData = response.data.map((item, index) => ({
@@ -667,7 +660,7 @@ const ThemSanPham = () => {
                 value: "mauSac:" + item.tenMauSac,
             }));
             setlistMauSac(modifiedData);
-        });
+        }).catch((res)=>console.log(res));
 
         axios.get(apiURLManHinh + "/get-list").then((response) => {
             const modifiedData = response.data.map((item, index) => ({
@@ -675,7 +668,7 @@ const ThemSanPham = () => {
                 value: "manHinh:" + item.kichThuoc,
             }));
             setlistManHinh(modifiedData);
-        });
+        }).catch((res)=>console.log(res));
     }
 
     // step
@@ -697,13 +690,12 @@ const ThemSanPham = () => {
 
                 }
             }
-        )
+        ).catch((res)=>console.log(res))
 
         listCauHinhSelected.forEach(async (item, index) => {
 
             await axios.post("http://localhost:8080/chi-tiet-san-pham/save", item).then(
                 (res) => {
-                    console.log(res.data)
                     for (let [key, value] of urlImage) {
                       
                         if (getIndexOfLocationImage(key) == index) {
@@ -720,7 +712,7 @@ const ThemSanPham = () => {
                         }
                     }
                 }
-            )
+            ).catch((res)=>console.log(res))
         }
         )
 

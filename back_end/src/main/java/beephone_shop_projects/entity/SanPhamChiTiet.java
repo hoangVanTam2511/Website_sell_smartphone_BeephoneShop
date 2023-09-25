@@ -36,7 +36,4 @@ public class SanPhamChiTiet extends PrimaryEntity implements Serializable{
     @JoinColumn(name = "id_cau_hinh")
     private CauHinh idCauHinh;
 
-
-
-
 }

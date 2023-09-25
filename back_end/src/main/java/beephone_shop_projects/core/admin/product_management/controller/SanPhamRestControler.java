@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,22 +28,22 @@ import org.springframework.web.bind.annotation.RestController;
 public class SanPhamRestControler {
     
     @Autowired
-    private SanPhamServiceImpl chiTietSanPhamService;
+    private SanPhamServiceImpl sanPhamService;
 
     @GetMapping("/view-all")
     public Page<SanPhamResponce> viewAll(@RequestParam(value = "page",defaultValue = "0") Integer page) {
         Pageable pageable = PageRequest.of(page,5);
-        return chiTietSanPhamService.getAllByDelected(pageable);
+        return sanPhamService.getAllByDelected(pageable);
     }
 
     @DeleteMapping("/doi-trang-thai/{id}")
     public void delete(@PathVariable("id")String id) {
-        chiTietSanPhamService.delete(id);
+        sanPhamService.delete(id);
     }
 
     @PostMapping("/save")
     public SanPham save(@RequestBody CreateProductRequest productRequest) {
-       return chiTietSanPhamService.insert(productRequest);
+       return sanPhamService.insert(productRequest);
     }
 
     @PutMapping("/update/{id}")
@@ -55,20 +57,53 @@ public class SanPhamRestControler {
                                                @RequestBody(required = false) SearchChiTietSanPhamRequest chiTietSanPhamRequest) {
         Pageable pageable = PageRequest.of(page,5);
         System.out.println(chiTietSanPhamRequest);
-        return chiTietSanPhamService.searchByAllPosition(chiTietSanPhamRequest,pageable);
+        return sanPhamService.searchByAllPosition(chiTietSanPhamRequest,pageable);
     }
 
 
     @GetMapping("/don-gia-lon-nhat")
     public Double getDonGiaLonNhat(){
-        return  this.chiTietSanPhamService.getPriceMax();
+        return  this.sanPhamService.getPriceMax();
     }
 
     @GetMapping("/get-one/{id}")
     public SanPham getSanPham(
             @PathVariable("id") String id
     ){
-        return this.chiTietSanPhamService.getOne(id);
+        return this.sanPhamService.getOne(id);
     }
+    
+    @GetMapping("/colors/{id}")
+    public ResponseEntity<?> getListColorsByIdProduct(@PathVariable("id")String id){
+        if(sanPhamService.getListColorByIDProduct(id) == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }else{
+            return new ResponseEntity<>(sanPhamService.getListColorByIDProduct(id),HttpStatus.OK);
+        }
+    }
+
+
+    @GetMapping("/configs/{id}")
+    public ResponseEntity<?> getListCofigsByIdProduct(@PathVariable("id")String id){
+        if(sanPhamService.getListConfigByIDProduct(id) == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }else{
+            return new ResponseEntity<>(sanPhamService.getListConfigByIDProduct(id),HttpStatus.OK);
+        }
+    }
+
+    @GetMapping("/configs")
+    public ResponseEntity<?> getListCofigsByIdProduct(@RequestParam("idProduct")String id,
+                                                      @RequestParam("ram")Integer ram,
+                                                      @RequestParam("rom")Integer rom,
+                                                      @RequestParam("color")String color
+                                                      ){
+        if(sanPhamService.getListConfigByIDProduct(id,ram,rom,color) == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }else{
+            return new ResponseEntity<>(sanPhamService.getListConfigByIDProduct(id,ram,rom,color),HttpStatus.OK);
+        }
+    }
+        
 
 }
