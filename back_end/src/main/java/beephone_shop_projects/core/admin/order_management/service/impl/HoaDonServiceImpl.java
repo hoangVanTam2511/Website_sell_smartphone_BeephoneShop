@@ -49,7 +49,7 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderDto, Str
 
   @Override
   public OrderDto getOrderDetailsById(String id, Boolean isPending) {
-    HoaDon order = hoaDonRepository.getOrderDetailsById(id, isPending);
+    HoaDon order = hoaDonRepository.getOrderById(id, isPending);
     OrderDto orderDto = orderConverter.convertToDto(order);
     return orderDto;
   }
