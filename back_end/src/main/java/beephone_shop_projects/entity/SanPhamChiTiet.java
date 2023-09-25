@@ -24,13 +24,9 @@ public class SanPhamChiTiet extends PrimaryEntity implements Serializable{
 
     private String ma;
 
-    private String ten;
-
     private BigDecimal donGia;
 
     private Integer soLuongTonKho;
-
-    private String url;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_san_pham")
@@ -39,8 +35,5 @@ public class SanPhamChiTiet extends PrimaryEntity implements Serializable{
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_cau_hinh")
     private CauHinh idCauHinh;
-
-
-
 
 }

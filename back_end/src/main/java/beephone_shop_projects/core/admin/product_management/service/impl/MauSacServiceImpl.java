@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class MauSacServiceImpl implements IService<MauSac> {
@@ -52,4 +53,7 @@ public class MauSacServiceImpl implements IService<MauSac> {
     }
 
     public String generateNewCode(){return this.mauSacRepository.getNewCode();}
+
+
+
 }

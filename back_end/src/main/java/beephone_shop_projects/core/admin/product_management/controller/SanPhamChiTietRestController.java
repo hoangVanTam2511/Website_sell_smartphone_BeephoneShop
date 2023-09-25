@@ -1,6 +1,8 @@
 package beephone_shop_projects.core.admin.product_management.controller;
 
+import beephone_shop_projects.core.admin.product_management.model.request.CreateProductDetailRequest;
 import beephone_shop_projects.core.admin.product_management.service.impl.SanPhamChiTietServiceImpl;
+import beephone_shop_projects.entity.SanPhamChiTiet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,11 +22,8 @@ public class SanPhamChiTietRestController {
     private SanPhamChiTietServiceImpl sanPhamChiTietService;
 
     @PostMapping("/save")
-    public void addSanPhamChiTiet(
-            @RequestBody ArrayList<String> listId,@RequestParam("id") String idSanPham
-            ){
-       sanPhamChiTietService.addSanPhamChiTiet(listId,idSanPham);
+    public SanPhamChiTiet createProductDetail(@RequestBody CreateProductDetailRequest req){
+       return sanPhamChiTietService.insert(req);
     }
-
 
 }

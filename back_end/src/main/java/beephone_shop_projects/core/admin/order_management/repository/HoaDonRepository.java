@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface HoaDonRepository extends GenericRepository<HoaDon, String> {
 
-  HoaDon getOrderDetailsById(String id, Boolean isPending);
+  HoaDon getOrderById(String id, Boolean isPending);
 
   Page<HoaDon> findOrdersByMultipleCriteriaWithPagination(Pageable pageable, SearchFilterOrderDto searchFilter);
 
