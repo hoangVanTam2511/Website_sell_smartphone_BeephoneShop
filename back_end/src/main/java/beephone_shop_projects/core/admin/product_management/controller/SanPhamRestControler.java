@@ -1,6 +1,6 @@
 package beephone_shop_projects.core.admin.product_management.controller;
 
-import beephone_shop_projects.core.admin.product_management.model.request.CreateChiTietSanPhamRequest;
+import beephone_shop_projects.core.admin.product_management.model.request.CreateProductRequest;
 import beephone_shop_projects.core.admin.product_management.model.request.SearchChiTietSanPhamRequest;
 import beephone_shop_projects.core.admin.product_management.model.responce.SanPhamResponce;
 import beephone_shop_projects.core.admin.product_management.service.impl.SanPhamServiceImpl;
@@ -40,8 +40,8 @@ public class SanPhamRestControler {
     }
 
     @PostMapping("/save")
-    public SanPham save(@RequestBody CreateChiTietSanPhamRequest chiTietSanPhamRequest) {
-       return chiTietSanPhamService.insert(chiTietSanPhamRequest);
+    public SanPham save(@RequestBody CreateProductRequest productRequest) {
+       return chiTietSanPhamService.insert(productRequest);
     }
 
     @PutMapping("/update/{id}")

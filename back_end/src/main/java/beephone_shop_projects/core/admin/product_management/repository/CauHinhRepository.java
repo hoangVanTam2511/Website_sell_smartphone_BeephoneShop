@@ -13,19 +13,24 @@ public interface CauHinhRepository extends ICauHinhRepository {
     Page<CauHinh> findAll(Pageable pageable);
 
     @Query(value = """
-    SELECT a.id,
-     b.kich_thuoc as 'kich_thuoc_man_hinh',
-     c.ten_mau_sac as'mau_sac',
-     d.dung_luong as 'dung_luong_pin',
-     e.kich_thuoc as 'kich_thuoc_ram',
-     f.kich_thuoc as 'kich_thuoc_rom'
-     FROM cau_hinh a
-    JOIN man_hinh b on b.id = a.id_man_hinh
-    JOIN mau_sac c on c.id = a.id_mau_sac
-    JOIN pin d on d.id = a.id_pin
-    JOIN ram e on e.id = a.id_ram
-    JOIN rom f on f.id = a.id_rom
-    WHERE a.delected = :delected
-    """,nativeQuery = true)
-    Page<CauHinhResponce> getAllCauHinh(Pageable pageable, @Param("delected")Boolean delected);
+                  SELECT a.id,
+                     c.ten_mau_sac as'mau_sac',
+                     e.kich_thuoc as 'kich_thuoc_ram',
+                     f.kich_thuoc as 'kich_thuoc_rom',
+                     spct.so_luong_ton_kho as 'so_luong',
+                     spct.don_gia as 'don_gia',
+                     imei.so_imei as 'imei',
+                     spct.id_san_pham as 'id_san_pham'
+                    FROM cau_hinh as a
+                    JOIN mau_sac as c ON c.id = a.id_mau_sac
+                    JOIN ram as e ON e.id = a.id_ram
+                    JOIN rom as f ON f.id = a.id_rom
+                    LEFT JOIN san_pham_chi_tiet as spct ON  spct.id_cau_hinh = a.id
+                    LEFT JOIN imei ON imei.id_chi_tiet_san_pham = spct.id
+                    WHERE a.delected = 1
+                                                 
+            """, nativeQuery = true)
+    Page<CauHinhResponce> getAllCauHinh(Pageable pageable, @Param("delected") Boolean delected);
+
+
 }

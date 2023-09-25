@@ -13,4 +13,9 @@ public interface SanPhamChiTietRepository extends ISanPhamChiTietRepository {
   List<SanPhamChiTiet> getAll();
 
 
+  @Query(value = """
+        SELECT CONCAT( 'CHITIETSANPHAM_',IF(count(*)  = 0,0,SUBSTRING(ma,16) + 1)) FROM san_pham_chi_tiet
+    """,nativeQuery = true)
+  String getNewCode();
+
 }

@@ -49,47 +49,53 @@ public interface SanPhamRepository extends ISanPhamRepository {
     Double getDonGiaLonNhat();
 
     @Query(value = """
-                                       	SELECT m.id,m.ten_san_pham,
-                                              c.ten_nha_san_xuat,
-            	                              n.ten_chip,
-                                              l.ten_dong_san_pham ,
-                                              m.delected
-                                             FROM san_pham_chi_tiet a
-                                             JOIN san_pham m on m.id = a.id_san_pham
-                                             JOIN cau_hinh b on b.id = a.id_cau_hinh
-                                             JOIN nha_san_xuat c on c.id = m.id_nha_san_xuat
-                                             JOIN mau_sac d on d.id = b.id_mau_sac
-                                             JOIN ram f on f.id = b.id_ram
-                                             JOIN rom g on g.id = b.id_rom
-                                             JOIN pin k on k.id = b.id_pin
-                                             JOIN dong_san_pham l on l.id = m.id_dong_san_pham
-                                             JOIN chip n on n.id = m.id_chip
-                                             JOIN man_hinh o on o.id = b.id_man_hinh
-                                             WHERE  f.kich_thuoc LIKE :ram
-                                             AND  g.kich_thuoc LIKE :rom
-                                             AND  c.ten_nha_san_xuat LIKE :nha_san_xuat
-                                             AND  d.ten_mau_sac LIKE :mau_sac
-                                             AND   k.dung_luong LIKE :dung_luong
-                                             AND  l.ten_dong_san_pham LIKE :dong_san_pham
-            						    AND a.don_gia BETWEEN :donGiaMin and :donGiaMax
-                                             AND n.ten_chip LIKE :chip
-                                             AND o.kich_thuoc LIKE :manHinh
-                                             GROUP BY m.id,m.ten_san_pham,
-                                              c.ten_nha_san_xuat,
-            	                        n.ten_chip,
-                                              l.ten_dong_san_pham ,
-                                              a.delected
+                      SELECT m.id,m.ten_san_pham,
+                          c.ten_nha_san_xuat,
+                          n.ten_chip,
+                          l.ten_dong_san_pham ,
+                          m.delected
+                         FROM san_pham_chi_tiet a
+                         JOIN san_pham m on m.id = a.id_san_pham
+                         JOIN cau_hinh b on b.id = a.id_cau_hinh
+                         JOIN nha_san_xuat c on c.id = m.id_nha_san_xuat
+                         JOIN mau_sac d on d.id = b.id_mau_sac
+                         JOIN ram f on f.id = b.id_ram
+                         JOIN rom g on g.id = b.id_rom
+                         JOIN pin k on k.id = m.id_pin
+                         JOIN dong_san_pham l on l.id = m.id_dong_san_pham
+                         JOIN chip n on n.id = m.id_chip
+                         JOIN man_hinh o on o.id = m.id_man_hinh
+                         WHERE  f.kich_thuoc LIKE :ram
+                         AND  g.kich_thuoc LIKE :rom
+                         AND  c.ten_nha_san_xuat LIKE :nha_san_xuat
+                         AND  d.ten_mau_sac LIKE :mau_sac
+                         AND   k.dung_luong LIKE :dung_luong
+                         AND  l.ten_dong_san_pham LIKE :dong_san_pham
+                         AND a.don_gia BETWEEN :donGiaMin and :donGiaMax
+                         AND n.ten_chip LIKE :chip
+                         AND o.kich_thuoc LIKE :manHinh
+                         GROUP BY m.id,m.ten_san_pham,
+                          c.ten_nha_san_xuat,
+                          n.ten_chip,
+                          l.ten_dong_san_pham ,
+                          a.delected
+                                                        
             """, nativeQuery = true)
     Page<SanPhamResponce> searchByAllPosition(Pageable pageable
             , @Param("ram") String ram,
-                                              @Param("rom") String rom,
-                                              @Param("nha_san_xuat") String nhaSanXuat,
-                                              @Param("mau_sac") String mauSac,
-                                              @Param("dung_luong") String dungLuongPin,
-                                              @Param("dong_san_pham") String dongSanPham,
-                                              @Param("donGiaMin") String donGiaMin,
-                                              @Param("donGiaMax") String donGiaMax,
-                                              @Param("chip") String chip,
-                                              @Param("manHinh") String manHinh
+              @Param("rom") String rom,
+              @Param("nha_san_xuat") String nhaSanXuat,
+              @Param("mau_sac") String mauSac,
+              @Param("dung_luong") String dungLuongPin,
+              @Param("dong_san_pham") String dongSanPham,
+              @Param("donGiaMin") String donGiaMin,
+              @Param("donGiaMax") String donGiaMax,
+              @Param("chip") String chip,
+              @Param("manHinh") String manHinh
     );
+
+    @Query(value = """
+        SELECT CONCAT( 'SANPHAM_',IF(count(*)  = 0,0,SUBSTRING(ma,9) + 1)) FROM san_pham
+    """,nativeQuery = true)
+    String getNewCode();
 }
