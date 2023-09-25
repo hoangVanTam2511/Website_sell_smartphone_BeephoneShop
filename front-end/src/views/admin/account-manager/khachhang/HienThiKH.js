@@ -4,26 +4,23 @@ import {
   Table,
   Input,
   Button,
-  Pagination,
-  Card,
-  Tooltip,
   Select,
+  Avatar,
 } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
+import Card from "../../../../components/Card";
 import moment from "moment";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { apiURLKH } from "../../../../service/api";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faPencilAlt,
-  faArrowsRotate,
-  faRectangleList,
-  faList,
-} from "@fortawesome/free-solid-svg-icons";
 import "../../../../assets/scss/HienThiNV.scss";
 import { Link, useNavigate } from "react-router-dom";
 import NhapTuFile from "./NhapTuFile";
-import { SearchOutlined } from "@ant-design/icons";
+import style from './style.css';
+import { TextField, Tooltip, Zoom, IconButton, Pagination, Select as SelectMui, MenuItem, FormControl } from "@mui/material";
+import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
+import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
+import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined';
 
 const { Option } = Select;
 
@@ -77,6 +74,18 @@ const EditableCell = ({
 };
 //show
 const HienThiKH = () => {
+
+  const [openSelect, setOpenSelect] = useState(false);
+
+  const handleCloseSelect = () => {
+    setOpenSelect(false);
+  };
+
+  const handleOpenSelect = () => {
+    setOpenSelect(true);
+  };
+
+
   const [form] = Form.useForm();
   let [listKH, setListKH] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
@@ -116,7 +125,7 @@ const HienThiKH = () => {
 
   useEffect(() => {
     loadDataListKH(currentPage);
-  }, [currentPage]);
+  }, [currentPage, searchText]);
   const loadDataListKH = (currentPage) => {
     axios.get(apiURLKH + "/hien-thi?page=" + currentPage).then((response) => {
       const modifiedData = response.data.content.map((item, index) => ({
@@ -169,30 +178,32 @@ const HienThiKH = () => {
       title: "STT",
       dataIndex: "stt",
       width: "5%",
+      align: "center",
       render: (text) => <span>{text}</span>,
-      sorter: (a, b) => a.stt - b.stt,
+      // sorter: (a, b) => a.stt - b.stt,
     },
     {
-      title: "Ma",
+      title: "Mã",
       dataIndex: "ma",
-      width: "10%",
+      align: "center",
     },
     {
       title: "Họ và tên",
       dataIndex: "hoVaTen",
-      width: "15%",
+      align: "center",
       // compare: (a, b) => a.hoVaTen - b.hoVaTen,
     },
     {
       title: "Email",
       dataIndex: "email",
-      width: "14%",
-      ellipsis: true,
+      align: "center",
     },
     {
       title: "Số điện thoại",
       dataIndex: "soDienThoai",
-      width: "12%",
+      align: "center",
+      render: (text, record) =>
+        <span >{record.soDienThoai || "..."}</span>
     },
     // {
     //   title: "Địa chỉ",
@@ -211,8 +222,8 @@ const HienThiKH = () => {
 
     {
       title: "Trạng thái",
+      align: "center",
       dataIndex: "trangThai",
-      width: "11%",
       // eslint-disable-next-line eqeqeq
       onFilter: (value, record) => record.trangThai == value,
       filterSearch: true,
@@ -220,73 +231,87 @@ const HienThiKH = () => {
         <span>
           {/*  eslint-disable-next-line eqeqeq */}
           {record.trangThai == 1 ? (
-            <Button type="primary" style={{ borderRadius: "30px" }}>
-              Hoạt động
-            </Button>
+            <div
+              className="rounded-pill mx-auto badge-primary"
+              style={{
+                height: "35px",
+                width: "96px",
+                padding: "4px",
+              }}
+            >
+              <span
+                className="text-white"
+                style={{ fontSize: "14px" }}
+              >
+                Hoạt động
+              </span>
+            </div>
           ) : // eslint-disable-next-line eqeqeq
-          record.trangThai == 2 ? (
-            <Button type="primary" danger style={{ borderRadius: "30px" }}>
-              Vô hiệu hóa
-            </Button>
-          ) : (
-            <Button type="primary" style={{ borderRadius: "30px" }}>
-              Không xác định
-            </Button>
-          )}
+            record.trangThai == 2 ? (
+              <div
+                className="rounded-pill mx-auto badge-danger"
+                style={{
+                  height: "35px",
+                  width: "140px",
+                  padding: "4px",
+                }}
+              >
+                <span
+                  className="text-white"
+                  style={{ fontSize: "14px" }}
+                >
+                  Ngừng hoạt động
+                </span>
+              </div>
+            ) : (
+              <div
+                className="rounded-pill mx-auto badge-primary"
+                style={{
+                  height: "35px",
+                  width: "130px",
+                  padding: "4px",
+                }}
+              >
+                <span
+                  className="text-white"
+                  style={{ fontSize: "14px" }}
+                >
+                  Không xác định
+                </span>
+              </div>
+            )}
         </span>
       ),
     },
     {
       title: "Thao Tác",
+      align: "center",
       dataIndex: "operation",
-      width: "10%",
       render: (_, record) => {
         const editable = isEditing(record);
         return editable ? (
           ""
         ) : (
           <>
-            <Tooltip title="Sửa Khách Hàng" color={"black"} placement="bottom">
-              <FontAwesomeIcon
-                icon={faPencilAlt}
-                onClick={() => edit(record)}
-                style={{
-                  cursor: "pointer",
-                  color: editingKey === record.id ? "red" : "green",
-                }}
-                disabled={editingKey !== ""}
-              />
+            <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
+              <IconButton size="" onClick={() => edit(record)}>
+                <BorderColorOutlinedIcon color="primary" />
+              </IconButton>
             </Tooltip>
-            <Popconfirm
-              title={`Đổi trạng thái tài khoản từ ${
-                record.trangThai === 1 ? "HOẠT ĐỘNG" : "VÔ HIỆU HÓA"
-              } sang ${record.trangThai === 1 ? "VÔ HIỆU HÓA" : "HOẠT ĐỘNG"} `}
-              onConfirm={() => {
-                doChangeTrangThai(record.id);
-              }}
-              okText="Đồng ý"
-              cancelText="Hủy"
+            <Tooltip TransitionComponent={Zoom}
+              title={record.trangThai == 1 ? "Ngừng kích hoạt" : "Kích hoạt"}
             >
-              <Tooltip
-                title="Đổi Trạng Thái"
-                color={"black"}
-                placement="bottom"
-              >
-                <FontAwesomeIcon
-                  icon={faArrowsRotate}
-                  style={{ cursor: "pointer", paddingLeft: "20px" }}
-                  transform={{ rotate: 90 }}
-                  onClick={() => {
-                    // Hành động khi nhấp vào biểu tượng
-                  }}
-                />
-              </Tooltip>
-            </Popconfirm>
+              <IconButton onClick={() => doChangeTrangThai(record.id)} size="" className='ms-2' style={{ marginTop: "6px" }}>
+                <AssignmentOutlinedIcon color={record.trangThai == 1 ? "error" : "success"} />
+              </IconButton>
+            </Tooltip>
           </>
         );
       },
     },
   ];
+
+
 
   const mergedColumns = columns.map((col) => {
     if (!col.editable) {
@@ -303,8 +328,148 @@ const HienThiKH = () => {
     };
   });
 
+
   return (
     <>
+      <div className="mt-4" style={{ backgroundColor: "#ffffff", boxShadow: "0 0.1rem 0.3rem #00000010" }}>
+        <Card className="">
+          <Card.Header className="d-flex justify-content-between">
+            <div className="header-title mt-2">
+              <TextField
+                label="Tìm khách hàng"
+                value={searchText}
+                onChange={handleInputChangeTop}
+                InputLabelProps={{
+                  sx: {
+                    marginTop: "",
+                    textTransform: "capitalize",
+                  },
+                }}
+                inputProps={{
+                  style: {
+                    height: "23px",
+                    width: "190px",
+                  },
+                }}
+                size="small"
+                className=""
+              />
+              <Button
+                // onClick={handleRefreshData}
+                className="rounded-2 ms-2"
+                type="warning"
+                style={{ width: "100px", fontSize: "15px" }}
+              >
+                <span
+                  className="text-dark"
+                  style={{ fontWeight: "500", marginBottom: "2px" }}
+                >
+                  Làm Mới
+                </span>
+              </Button>
+            </div>
+
+            <div className="mt-2 d-flex">
+              <div className='ms-4 me-5 d-flex' style={{ height: "40px", position: "relative", cursor: "pointer" }}>
+                <div onClick={handleOpenSelect} className="" style={{ marginTop: "7px" }}>
+                  <span className='ms-2 ps-1' style={{ fontSize: "15px", fontWeight: "450" }}>Trạng Thái: </span>
+                </div>
+                <FormControl sx={{
+                  minWidth: 50,
+                }} size="small">
+                  <SelectMui
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          borderRadius: '7px',
+                        },
+                      },
+                    }}
+                    IconComponent={KeyboardArrowDownOutlinedIcon}
+                    sx={{
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        border: 'none !important',
+                      },
+                      '& .MuiSelect-select': {
+                        color: '#2f80ed',
+                        fontWeight: "500",
+                      },
+                    }}
+                    open={openSelect}
+                    onClose={handleCloseSelect}
+                    onOpen={handleOpenSelect}
+                    defaultValue={14}
+                  >
+                    <MenuItem className='' value={14}>Tất cả</MenuItem>
+                    <MenuItem value={15}>Hoạt động</MenuItem>
+                    <MenuItem value={20}>Ngừng hoạt động</MenuItem>
+                  </SelectMui>
+                </FormControl>
+              </div>
+              <Link to="/them-khach-hang" className="me-3">
+                <Button
+                  // onClick={handleCreateNewOrderPending}
+                  className="rounded-2 button-mui"
+                  type="primary"
+                  style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                >
+                  <PlusOutlined className="ms-1"
+                    style={{
+                      position: "absolute",
+                      bottom: "12.5px",
+                      left: "12px",
+                    }}
+                  />
+                  <span
+                    className="ms-3 ps-1"
+                    style={{ marginBottom: "3px", fontWeight: "500" }}
+                  >
+                    Tạo tài khoản
+                  </span>
+                </Button>
+              </Link>
+              <Link to="/them-khach-hang">
+                <Button
+                  // onClick={handleCreateNewOrderPending}
+                  className="rounded-2 button-mui"
+                  type="primary"
+                  style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                >
+                  <PlusOutlined className="ms-1"
+                    style={{
+                      position: "absolute",
+                      bottom: "12.5px",
+                      left: "12px",
+                    }}
+                  />
+                  <span
+                    className="ms-3 ps-1"
+                    style={{ marginBottom: "3px", fontWeight: "500" }}
+                  >
+                    Nhập từ file
+                  </span>
+                </Button>
+              </Link>
+            </div>
+          </Card.Header>
+          <Card.Body>
+            <Table
+              dataSource={filteredDataSource}
+              columns={mergedColumns}
+              pagination={false}
+              rowKey="id"
+            />
+          </Card.Body>
+          <div className='mx-auto'>
+            <Pagination color="primary" /* page={parseInt(currentPage)} key={refreshPage} count={totalPages} */
+              /* onChange={handlePageChange} */ />
+          </div>
+          <div className="mt-4"></div>
+        </Card>
+      </div>
+
+
+      {/*
       <Card>
         <div className="btn-add">
           <span>
@@ -412,6 +577,7 @@ const HienThiKH = () => {
           </Form>
         </div>
       </Card>
+*/}
     </>
   );
 };

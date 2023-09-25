@@ -1314,7 +1314,7 @@ const ThemSanPham = () => {
                                 </Col>
                             </Row>
                             <br />
-                            <Button variant="contained" endIcon={<ArrowRightOutlined />} style={{ width: `14%`, fontSize: `96%`, transform: `translateX(280%)`, marginBottom: `2%` }} onClick={() => handleClickStepTwo()}>
+                            <Button variant="contained" endIcon={<ArrowRightOutlined />} style={{ width: `14%`, fontSize: `89%`, transform: `translateX(280%)`, marginBottom: `2%` }} onClick={() => handleClickStepTwo()}>
                                 Tiếp theo
                             </Button>
 
@@ -1386,7 +1386,7 @@ const ThemSanPham = () => {
                                                                                     title={title_custom}
                                                                                     bordered={false}
                                                                                     style={{
-                                                                                        width: '100%', marginBottom: `3%`
+                                                                                        width: '100%', marginBottom: `3%`, border: `1px solid ${item.mauSac}`
                                                                                     }}>
                                                                                     <p>
                                                                                         <CloseOutlined className='button_exit_form_config' onClick={(event) => handleClickExitForm(item.id)} />

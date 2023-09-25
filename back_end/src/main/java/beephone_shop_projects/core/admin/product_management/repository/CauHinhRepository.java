@@ -27,7 +27,7 @@ public interface CauHinhRepository extends ICauHinhRepository {
                     JOIN rom as f ON f.id = a.id_rom
                     LEFT JOIN san_pham_chi_tiet as spct ON  spct.id_cau_hinh = a.id
                     LEFT JOIN imei ON imei.id_chi_tiet_san_pham = spct.id
-                    WHERE a.delected = 1
+                    WHERE a.delected = 1 GROUP BY a.id
                                                  
             """, nativeQuery = true)
     Page<CauHinhResponce> getAllCauHinh(Pageable pageable, @Param("delected") Boolean delected);

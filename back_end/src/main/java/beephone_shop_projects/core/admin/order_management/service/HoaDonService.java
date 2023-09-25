@@ -9,7 +9,7 @@ import org.springframework.data.domain.Page;
 
 public interface HoaDonService extends GenericService<OrderDto, String> {
 
-  OrderDto getOrderDetailsById(String id);
+  OrderDto getOrderDetailsById(String id, Boolean isPending);
 
   OrderDto placeOrder(Account account, Voucher voucher) throws Exception;
 
