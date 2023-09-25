@@ -3,7 +3,6 @@ package beephone_shop_projects.core.admin.voucher_management.model.response;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 public interface VoucherResponse {

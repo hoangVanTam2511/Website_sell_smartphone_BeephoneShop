@@ -5,16 +5,11 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.PastOrPresent;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.Date;
 
 @Getter
@@ -53,23 +48,24 @@ public class CreateVoucherRequest {
 
     @NotNull(message = "Không để trống giá trị Voucher !!!")
     @Min(value = 0, message = "Giá Trị Tối Thiểu Là 0 VNĐ !!!")
-    @Max(value = 1000000, message = "Giá Trị Tối Đa là 1.000.000 VNĐ !!!")
+    @Max(value = 100000000, message = "Giá Trị Tối Đa là 1.000.000 VNĐ !!!")
     private BigDecimal giaTriVoucher;
 
 
-    public String getMa() {
-        return ma;
-    }
+//    public String getMa() {
+//        return ma;
+//    }
+//
+//    public void setMa(String ma) {
+//        this.ma = ma;
+//    }
+//
+//    public Integer getTrangThai() {
+//        return trangThai;
+//    }
+//
+//    public void setTrangThai(Integer trangThai) {
+//        this.trangThai = trangThai;
+//    }
 
-    public void setMa(String ma) {
-        this.ma = ma;
-    }
-
-    public Integer getTrangThai() {
-        return trangThai;
-    }
-
-    public void setTrangThai(Integer trangThai) {
-        this.trangThai = trangThai;
-    }
 }
