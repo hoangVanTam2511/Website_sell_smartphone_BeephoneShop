@@ -151,36 +151,43 @@ const HienThiVoucher = () => {
       dataIndex: "giaTriVoucher",
       width: "10%",
       align: "center",
-      render: (text, record) => (
-        <span className="txt-danger" style={{ fontWeight: "400" }}>
-          {record &&
-            record.giaTriVoucher &&
-            record.giaTriVoucher.toLocaleString("vi-VN", {
-              style: "currency",
-              currency: "VND",
-            })}
-        </span>
-      ),
+      render: (value, record) => {
+        let formattedValue = value;
+        if (record.loaiVoucher === 1) {
+          formattedValue = record.giaTriVoucher.toLocaleString("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          });
+        } else if (record.loaiVoucher === 2) {
+          formattedValue = `${record.giaTriVoucher} %`;
+        }
+        return (
+          <span className="txt-danger" style={{ fontWeight: "400" }}>
+            {formattedValue}
+          </span>
+        );
+      },
     },
     {
       title: "Giá Trị Tối Đa",
       dataIndex: "giaTriToiDa",
       width: "10%",
       align: "center",
-      render: (text, record) => {
+      render: (value, record) => {
+        let formattedValue = value;
         if (record.loaiVoucher === 1) {
-          return <span>...</span>;
-        } else {
-          return;
-          <span className="txt-danger" style={{ fontWeight: "400" }}>
-            {record &&
-              record.giaTriVoucher &&
-              record.giaTriVoucher.toLocaleString("vi-VN", {
-                style: "currency",
-                currency: "VND",
-              })}
-          </span>;
+          formattedValue = "...";
+        } else if (record.loaiVoucher === 2) {
+          formattedValue = record.giaTriToiDa.toLocaleString("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          });
         }
+        return (
+          <span className="txt-danger" style={{ fontWeight: "400" }}>
+            {formattedValue}
+          </span>
+        );
       },
     },
     {
