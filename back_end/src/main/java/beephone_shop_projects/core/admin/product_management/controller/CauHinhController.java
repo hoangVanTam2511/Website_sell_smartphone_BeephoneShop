@@ -29,7 +29,7 @@ public class CauHinhController {
 
     @GetMapping("/view-all")
     public Page<CauHinhResponce> viewAll(@RequestParam(value = "page",defaultValue = "0") Integer page) {
-        Pageable pageable = PageRequest.of(page,5);
+        Pageable pageable = PageRequest.of(page,2);
         return cauHinhService.getAllCauHinhResponce(pageable);
     }
 

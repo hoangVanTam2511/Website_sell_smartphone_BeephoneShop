@@ -45,121 +45,96 @@ const VerticalNav = memo((props) => {
             className={`${location.pathname === "/" ? "active" : ""} nav-link `}
             aria-current="page"
             to="/"
-            onClick={() => {}}
+            onClick={() => { }}
           >
-            <i className="icon">
-              <img
-                width={20}
-                color="#8888"
-                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAADNElEQVR4nO2aTU8TURSGHxdtZaFGxaULJWqiIh+icaERfoQfP0H/hMrOSCLFoIEFLnWFaDCwZU80GqULYKUbjQUjZSEtac1N3kluaof56J0yVd5kNsy5557DPV/3ncIe/j3kgCFgGJgBCsA6UAZqtAH6gUngpwz2e1KLXmC+ztivwBRwB7gOnEmzIx3AKLAtA38Dz4ErPvKpdOQU8EGGVeXA8YA19Y5s6TH5s6R8Mnk1qDxLHJeBHzLqi0InDOod2SmPjHMTQF+STpS02QLQGWFtvSNZIAMcBnqAG8Bj4KMlWwXeAt2uw8k7iVlgf8T1UXLkrJwqaU0FGHERch1WTizEcCJush8F8nLErH0PdNEERq2ciBJOrqpWP7Cs9d+Bgbh9oqJ4DZvYSZTfA8oXo2MDuBhVgdfsTIltBi76SAZ4YZ3MyShH6jW7oD4RBFcNMQPMSde7sAVg0tFpuO7sB4EV6XsUJJyzBkC/sSMKXI8oAxqPykF9ZsgaAPc52DiJWeuJ1dd8MSwhM8WSUkc6gU1VVDMdNMRrbXzX0aZJTb+j0vvMT6AggWZ6RyscOS+9a5rf/kJRAqcdbZjkfeSzdF9r9HIrYNSO+ySBvHTfb/Sy1kaO3JLuV7Q5euWICbG2RqccMfelQHg507Ay7DJy1kz4/zhSlLC5tbV1aBUkfIE2T/YZCd8kfbgt26bDCHtDpGE30oYx2XYvjPCghA3vlDYs7TSiNKoM61pgeKe0oFs2FXUNDoWJFIZXXjY9jbKoT5eYUkrK8LEwFys/eNySSbDdxrhseRM3Jit6DF20W7hkkQ/n4ioZ0X9iWQxgq3EIWJUND5tRlBM5VlOoha4WDpCx2M9FFwx9l2jLmmjMVjiTAV5qz2/ACZck2YYUz4kBTDKc5rXXrzgkdhhnvJNZiUv5h0jsVesknDthh5mXM9tiAON+R6nvE+PWl+NFl+Hkh5wIZe8XDpsizwzvFKfEm469KV1lVaeWfO21jZhVt61Z94S82A5zdziim2ZWE0Kv3o1ZA6B5qmp2sfuEC/SIxlyLQRkVNTv1kCJkNV4/0MXnkwz1fjBQ1N+mRbBdbXFf2gOtwB84n09GlR2llgAAAABJRU5ErkJggg=="
-              />
-            </i>
-            <span className="item-name">Thống kê</span>
+            <div className="d-flex" style={{ padding: "2px" }}>
+              <i className="icon">
+                <svg width="25" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M10.1528 5.55559C10.2037 5.65925 10.2373 5.77027 10.2524 5.8844L10.5308 10.0243L10.669 12.1051C10.6705 12.3191 10.704 12.5317 10.7687 12.7361C10.9356 13.1326 11.3372 13.3846 11.7741 13.3671L18.4313 12.9316C18.7196 12.9269 18.998 13.0347 19.2052 13.2313C19.3779 13.3952 19.4894 13.6096 19.5246 13.8402L19.5364 13.9802C19.2609 17.795 16.4592 20.9767 12.6524 21.7981C8.84555 22.6194 4.94186 20.8844 3.06071 17.535C2.51839 16.5619 2.17965 15.4923 2.06438 14.389C2.01623 14.0624 1.99503 13.7326 2.00098 13.4026C1.99503 9.31279 4.90747 5.77702 8.98433 4.92463C9.47501 4.84822 9.95603 5.10798 10.1528 5.55559Z" fill="currentColor"></path>
+                  <path opacity="0.4" d="M12.8701 2.00082C17.43 2.11683 21.2624 5.39579 22.0001 9.81229L21.993 9.84488L21.9729 9.89227L21.9757 10.0224C21.9652 10.1947 21.8987 10.3605 21.784 10.4945C21.6646 10.634 21.5014 10.729 21.3217 10.7659L21.2121 10.7809L13.5313 11.2786C13.2758 11.3038 13.0214 11.2214 12.8314 11.052C12.6731 10.9107 12.5719 10.7201 12.5433 10.5147L12.0277 2.84506C12.0188 2.81913 12.0188 2.79102 12.0277 2.76508C12.0348 2.55367 12.1278 2.35384 12.2861 2.21023C12.4444 2.06662 12.6547 1.9912 12.8701 2.00082Z" fill="currentColor"></path>
+                </svg>
+              </i>
+              <span className="item-name text-start">Thống kê</span>
+            </div>
           </Link>
         </li>
 
         <li className="nav-item">
           <Link
-            className={`${
-              location.pathname.includes("/dashboard/point-of-sales") ||
+            className={`${location.pathname.includes("/dashboard/point-of-sales") ||
               location.pathname.includes("/dashboard/order-pending")
-                ? "active"
-                : ""
-            } nav-link`}
+              ? "active"
+              : ""
+              } nav-link`}
             to="/dashboard/point-of-sales"
           >
-            <i className="icon">
-              <svg
-                width="25"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  opacity="0.4"
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M5.91064 20.5886C5.91064 19.7486 6.59064 19.0686 7.43064 19.0686C8.26064 19.0686 8.94064 19.7486 8.94064 20.5886C8.94064 21.4186 8.26064 22.0986 7.43064 22.0986C6.59064 22.0986 5.91064 21.4186 5.91064 20.5886ZM17.1606 20.5886C17.1606 19.7486 17.8406 19.0686 18.6806 19.0686C19.5106 19.0686 20.1906 19.7486 20.1906 20.5886C20.1906 21.4186 19.5106 22.0986 18.6806 22.0986C17.8406 22.0986 17.1606 21.4186 17.1606 20.5886Z"
-                  fill="currentColor"
-                />
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M20.1907 6.34909C20.8007 6.34909 21.2007 6.55909 21.6007 7.01909C22.0007 7.47909 22.0707 8.13909 21.9807 8.73809L21.0307 15.2981C20.8507 16.5591 19.7707 17.4881 18.5007 17.4881H7.59074C6.26074 17.4881 5.16074 16.4681 5.05074 15.1491L4.13074 4.24809L2.62074 3.98809C2.22074 3.91809 1.94074 3.52809 2.01074 3.12809C2.08074 2.71809 2.47074 2.44809 2.88074 2.50809L5.26574 2.86809C5.60574 2.92909 5.85574 3.20809 5.88574 3.54809L6.07574 5.78809C6.10574 6.10909 6.36574 6.34909 6.68574 6.34909H20.1907ZM14.1307 11.5481H16.9007C17.3207 11.5481 17.6507 11.2081 17.6507 10.7981C17.6507 10.3781 17.3207 10.0481 16.9007 10.0481H14.1307C13.7107 10.0481 13.3807 10.3781 13.3807 10.7981C13.3807 11.2081 13.7107 11.5481 14.1307 11.5481Z"
-                  fill="currentColor"
-                />
-              </svg>
-            </i>
-            <span className="item-name" style={{ fontWeight: "" }}>
-              Bán Hàng Tại Quầy
-            </span>
+            <div className="d-flex" style={{ padding: "2px" }}>
+              <i className="icon">
+                <svg
+                  width="25"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    opacity="0.4"
+                    fillRule="evenodd"
+                    clipRule="evenodd"
+                    d="M5.91064 20.5886C5.91064 19.7486 6.59064 19.0686 7.43064 19.0686C8.26064 19.0686 8.94064 19.7486 8.94064 20.5886C8.94064 21.4186 8.26064 22.0986 7.43064 22.0986C6.59064 22.0986 5.91064 21.4186 5.91064 20.5886ZM17.1606 20.5886C17.1606 19.7486 17.8406 19.0686 18.6806 19.0686C19.5106 19.0686 20.1906 19.7486 20.1906 20.5886C20.1906 21.4186 19.5106 22.0986 18.6806 22.0986C17.8406 22.0986 17.1606 21.4186 17.1606 20.5886Z"
+                    fill="currentColor"
+                  />
+                  <path
+                    fillRule="evenodd"
+                    clipRule="evenodd"
+                    d="M20.1907 6.34909C20.8007 6.34909 21.2007 6.55909 21.6007 7.01909C22.0007 7.47909 22.0707 8.13909 21.9807 8.73809L21.0307 15.2981C20.8507 16.5591 19.7707 17.4881 18.5007 17.4881H7.59074C6.26074 17.4881 5.16074 16.4681 5.05074 15.1491L4.13074 4.24809L2.62074 3.98809C2.22074 3.91809 1.94074 3.52809 2.01074 3.12809C2.08074 2.71809 2.47074 2.44809 2.88074 2.50809L5.26574 2.86809C5.60574 2.92909 5.85574 3.20809 5.88574 3.54809L6.07574 5.78809C6.10574 6.10909 6.36574 6.34909 6.68574 6.34909H20.1907ZM14.1307 11.5481H16.9007C17.3207 11.5481 17.6507 11.2081 17.6507 10.7981C17.6507 10.3781 17.3207 10.0481 16.9007 10.0481H14.1307C13.7107 10.0481 13.3807 10.3781 13.3807 10.7981C13.3807 11.2081 13.7107 11.5481 14.1307 11.5481Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </i>
+              <span className="item-name" style={{ fontWeight: "" }}>
+                Bán Hàng Tại Quầy
+              </span>
+            </div>
           </Link>
         </li>
         <li className="nav-item">
           <Link
-            className={`${
-              location.pathname.includes("/dashboard/management-orders") ||
+            className={`${location.pathname.includes("/dashboard/management-orders") ||
               location.pathname.includes("/dashboard/order-detail")
-                ? "active"
-                : ""
-            } nav-link`}
+              ? "active"
+              : ""
+              } nav-link`}
             to="/dashboard/management-orders"
           >
-            <i className="icon">
-              <svg
-                width="25"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  opacity="0.4"
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M5.91064 20.5886C5.91064 19.7486 6.59064 19.0686 7.43064 19.0686C8.26064 19.0686 8.94064 19.7486 8.94064 20.5886C8.94064 21.4186 8.26064 22.0986 7.43064 22.0986C6.59064 22.0986 5.91064 21.4186 5.91064 20.5886ZM17.1606 20.5886C17.1606 19.7486 17.8406 19.0686 18.6806 19.0686C19.5106 19.0686 20.1906 19.7486 20.1906 20.5886C20.1906 21.4186 19.5106 22.0986 18.6806 22.0986C17.8406 22.0986 17.1606 21.4186 17.1606 20.5886Z"
-                  fill="currentColor"
-                />
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M20.1907 6.34909C20.8007 6.34909 21.2007 6.55909 21.6007 7.01909C22.0007 7.47909 22.0707 8.13909 21.9807 8.73809L21.0307 15.2981C20.8507 16.5591 19.7707 17.4881 18.5007 17.4881H7.59074C6.26074 17.4881 5.16074 16.4681 5.05074 15.1491L4.13074 4.24809L2.62074 3.98809C2.22074 3.91809 1.94074 3.52809 2.01074 3.12809C2.08074 2.71809 2.47074 2.44809 2.88074 2.50809L5.26574 2.86809C5.60574 2.92909 5.85574 3.20809 5.88574 3.54809L6.07574 5.78809C6.10574 6.10909 6.36574 6.34909 6.68574 6.34909H20.1907ZM14.1307 11.5481H16.9007C17.3207 11.5481 17.6507 11.2081 17.6507 10.7981C17.6507 10.3781 17.3207 10.0481 16.9007 10.0481H14.1307C13.7107 10.0481 13.3807 10.3781 13.3807 10.7981C13.3807 11.2081 13.7107 11.5481 14.1307 11.5481Z"
-                  fill="currentColor"
-                />
-              </svg>
-            </i>
-            <span className="item-name" style={{ fontWeight: "" }}>
-              Quản Lý Đơn Hàng
-            </span>
+            <div className="d-flex" style={{ padding: "2px" }}>
+              <i className="icon">
+                <svg
+                  width="25"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    opacity="0.4"
+                    fillRule="evenodd"
+                    clipRule="evenodd"
+                    d="M5.91064 20.5886C5.91064 19.7486 6.59064 19.0686 7.43064 19.0686C8.26064 19.0686 8.94064 19.7486 8.94064 20.5886C8.94064 21.4186 8.26064 22.0986 7.43064 22.0986C6.59064 22.0986 5.91064 21.4186 5.91064 20.5886ZM17.1606 20.5886C17.1606 19.7486 17.8406 19.0686 18.6806 19.0686C19.5106 19.0686 20.1906 19.7486 20.1906 20.5886C20.1906 21.4186 19.5106 22.0986 18.6806 22.0986C17.8406 22.0986 17.1606 21.4186 17.1606 20.5886Z"
+                    fill="currentColor"
+                  />
+                  <path
+                    fillRule="evenodd"
+                    clipRule="evenodd"
+                    d="M20.1907 6.34909C20.8007 6.34909 21.2007 6.55909 21.6007 7.01909C22.0007 7.47909 22.0707 8.13909 21.9807 8.73809L21.0307 15.2981C20.8507 16.5591 19.7707 17.4881 18.5007 17.4881H7.59074C6.26074 17.4881 5.16074 16.4681 5.05074 15.1491L4.13074 4.24809L2.62074 3.98809C2.22074 3.91809 1.94074 3.52809 2.01074 3.12809C2.08074 2.71809 2.47074 2.44809 2.88074 2.50809L5.26574 2.86809C5.60574 2.92909 5.85574 3.20809 5.88574 3.54809L6.07574 5.78809C6.10574 6.10909 6.36574 6.34909 6.68574 6.34909H20.1907ZM14.1307 11.5481H16.9007C17.3207 11.5481 17.6507 11.2081 17.6507 10.7981C17.6507 10.3781 17.3207 10.0481 16.9007 10.0481H14.1307C13.7107 10.0481 13.3807 10.3781 13.3807 10.7981C13.3807 11.2081 13.7107 11.5481 14.1307 11.5481Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </i>
+              <span className="item-name text-start" style={{ fontWeight: "" }}>
+                Quản Lý Đơn Hàng
+              </span>
+            </div>
           </Link>
         </li>
-
-        {/* <li className="nav-item">
-          <Link
-            className={`${location.pathname === "/camera" ? "active" : ""
-              } nav-link`}
-            to="/camera"
-          >
-            <i className="icon">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="10"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <g>
-                  <circle
-                    cx="12"
-                    cy="12"
-                    r="8"
-                    fill="currentColor"
-                  ></circle>
-                </g>
-              </svg>
-            </i>
-            <i className="sidenav-mini-icon"> C </i>
-            <span className="item-name">Camera</span>
-          </Link>
-        </li> */}
 
         <Accordion.Item
           as="li"
@@ -172,39 +147,38 @@ const VerticalNav = memo((props) => {
             eventKey="sidebar-auth"
             onClick={(activeKey) => setActiveMenu(activeKey)}
           >
-            <i className="icon">
-              <img
-                width={20}
-                color="#8888"
-                src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAAsTAAALEwEAmpwYAAACSklEQVR4nO2bW2oUURCGvzaGuAHjAnQBGl2Elw14WYSMGfDFwDwKmg4a3YCIqIsx8VV9igrRt5gFTCgooTg0CjOnunvg/+HAwEBduuvUdxpOQR01wBbwAJgAj5PWxH1suc/BdQnYA34C857XD6AFNodIvAGmwOkAiZfrD/Coz4q4ALzrCOQYeO9v5WnSat3Hrw7/b4GN7OSbjuQ/ATeBc/Qn83ULOOh4CKmVMC0cvgDOM5zM934Rk22HFG36fovJj0WvQlyn3pyra68o+0Xf/BWvpBJxU/9vEVkshyG+51RWU6DO9vyi+vaPjv5lCbu3g53vtXvBjaLbL9PwviY9gLWCDnZYqqb7wbBhaBlZme90IO4JcHlJ2x9DnHdJ6v7PGK92Q5zbNQ3PgmH7PValxTnTA0AVMNcWQD1griaIKDBjvBIG0TkAHYTQSRAdhdG3APoYYhX4WlnCIMIgwiDCIMIgwiDCIKvA18oSBhEGEQYRBhEGEQYRBlkFvlaWMIgwiDCIMIgwiDCIMMgq8LWy0uLczryIXFFt1rX5exWvymYq7ars9YqXpbNkl6V/hziv1TTe+JTWX+M2rjI23QnxHWWMzrTBwcHAozKl1oHP2X3qInASnLxkPHpdjNGljMzgnTUOOOwPXAnrRfK2HmY6bHw0LTo89HEVa0J9ac33fCx7W2/6cL7R8RDmPq7ywXtF1uxw66iL3T4mnz44GSthUozRDbVOssv+f7OEuz6l1XfiR97trTkPrsYPHnZitMrImh022+bjai3OnwF4eENmxJKIXwAAAABJRU5ErkJggg=="
-              />
-            </i>
-            <span className="item-name">Sản phẩm</span>
-            <i className="right-icon">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="18"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </i>
+            <div className="d-flex" style={{ padding: "2px" }}>
+              <i className="icon">
+                <svg fill="none" xmlns="http://www.w3.org/2000/svg" width="25" viewBox="0 0 24 24">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M16.4184 6.47H16.6232C19.3152 6.47 21.5 8.72 21.5 11.48V17C21.5 19.76 19.3152 22 16.6232 22H7.3768C4.6848 22 2.5 19.76 2.5 17V11.48C2.5 8.72 4.6848 6.47 7.3768 6.47H7.58162C7.60113 5.27 8.05955 4.15 8.8886 3.31C9.72741 2.46 10.8003 2.03 12.0098 2C14.4286 2 16.3891 4 16.4184 6.47ZM9.91273 4.38C9.36653 4.94 9.06417 5.68 9.04466 6.47H14.9553C14.9261 4.83 13.6191 3.5 12.0098 3.5C11.2587 3.5 10.4784 3.81 9.91273 4.38ZM15.7064 10.32C16.116 10.32 16.4379 9.98 16.4379 9.57V8.41C16.4379 8 16.116 7.66 15.7064 7.66C15.3065 7.66 14.9748 8 14.9748 8.41V9.57C14.9748 9.98 15.3065 10.32 15.7064 10.32ZM8.93737 9.57C8.93737 9.98 8.6155 10.32 8.20585 10.32C7.80595 10.32 7.47433 9.98 7.47433 9.57V8.41C7.47433 8 7.80595 7.66 8.20585 7.66C8.6155 7.66 8.93737 8 8.93737 8.41V9.57Z" fill="currentColor" />
+                </svg>
+              </i>
+              <span className="item-name" style={{ paddingRight: "5px" }}>Quản Lý Sản Phẩm</span>
+              <i className="right-icon">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </i>
+            </div>
           </CustomToggle>
           <Accordion.Collapse eventKey="sidebar-auth">
             <ul className="sub-nav">
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/chi-tiet-san-pham" ? "active" : ""
-                  } nav-link`}
-                  to="/chi-tiet-san-pham"
+                  className={`${location.pathname === "/san-pham" ? "active" : ""
+                    } nav-link`}
+                  to="/san-pham"
                 >
                   <i className="icon">
                     <svg
@@ -224,14 +198,13 @@ const VerticalNav = memo((props) => {
                     </svg>
                   </i>
                   <i className="sidenav-mini-icon"> L </i>
-                  <span className="item-name">Chi tiết sản phẩm</span>
+                  <span className="item-name">Sản phẩm</span>
                 </Link>
               </li>
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/mau-sac" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/mau-sac" ? "active" : ""
+                    } nav-link`}
                   to="/mau-sac"
                 >
                   <i className="icon">
@@ -257,9 +230,8 @@ const VerticalNav = memo((props) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/chip" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/chip" ? "active" : ""
+                    } nav-link`}
                   to="/chip"
                 >
                   <i className="icon">
@@ -285,9 +257,8 @@ const VerticalNav = memo((props) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/ram" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/ram" ? "active" : ""
+                    } nav-link`}
                   to="/ram"
                 >
                   <i className="icon">
@@ -314,9 +285,8 @@ const VerticalNav = memo((props) => {
 
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/dong-san-pham" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/dong-san-pham" ? "active" : ""
+                    } nav-link`}
                   to="/dong-san-pham"
                 >
                   <i className="icon">
@@ -343,9 +313,8 @@ const VerticalNav = memo((props) => {
 
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/man-hinh" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/man-hinh" ? "active" : ""
+                    } nav-link`}
                   to="/man-hinh"
                 >
                   <i className="icon">
@@ -372,9 +341,8 @@ const VerticalNav = memo((props) => {
 
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/nha-san-xuat" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/nha-san-xuat" ? "active" : ""
+                    } nav-link`}
                   to="/nha-san-xuat"
                 >
                   <i className="icon">
@@ -401,9 +369,8 @@ const VerticalNav = memo((props) => {
 
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/pin" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/pin" ? "active" : ""
+                    } nav-link`}
                   to="/pin"
                 >
                   <i className="icon">
@@ -430,9 +397,8 @@ const VerticalNav = memo((props) => {
 
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/rom" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/rom" ? "active" : ""
+                    } nav-link`}
                   to="/rom"
                 >
                   <i className="icon">
@@ -470,67 +436,68 @@ const VerticalNav = memo((props) => {
             eventKey="sidebar-user"
             onClick={(activeKey) => setActiveMenu(activeKey)}
           >
-            <i className="icon">
-              <svg
-                width="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M11.9488 14.54C8.49884 14.54 5.58789 15.1038 5.58789 17.2795C5.58789 19.4562 8.51765 20.0001 11.9488 20.0001C15.3988 20.0001 18.3098 19.4364 18.3098 17.2606C18.3098 15.084 15.38 14.54 11.9488 14.54Z"
-                  fill="currentColor"
-                ></path>
-                <path
-                  opacity="0.4"
-                  d="M11.949 12.467C14.2851 12.467 16.1583 10.5831 16.1583 8.23351C16.1583 5.88306 14.2851 4 11.949 4C9.61293 4 7.73975 5.88306 7.73975 8.23351C7.73975 10.5831 9.61293 12.467 11.949 12.467Z"
-                  fill="currentColor"
-                ></path>
-                <path
-                  opacity="0.4"
-                  d="M21.0881 9.21923C21.6925 6.84176 19.9205 4.70654 17.664 4.70654C17.4187 4.70654 17.1841 4.73356 16.9549 4.77949C16.9244 4.78669 16.8904 4.802 16.8725 4.82902C16.8519 4.86324 16.8671 4.90917 16.8895 4.93889C17.5673 5.89528 17.9568 7.0597 17.9568 8.30967C17.9568 9.50741 17.5996 10.6241 16.9728 11.5508C16.9083 11.6462 16.9656 11.775 17.0793 11.7948C17.2369 11.8227 17.3981 11.8371 17.5629 11.8416C19.2059 11.8849 20.6807 10.8213 21.0881 9.21923Z"
-                  fill="currentColor"
-                ></path>
-                <path
-                  d="M22.8094 14.817C22.5086 14.1722 21.7824 13.73 20.6783 13.513C20.1572 13.3851 18.747 13.205 17.4352 13.2293C17.4155 13.232 17.4048 13.2455 17.403 13.2545C17.4003 13.2671 17.4057 13.2887 17.4316 13.3022C18.0378 13.6039 20.3811 14.916 20.0865 17.6834C20.074 17.8032 20.1698 17.9068 20.2888 17.8888C20.8655 17.8059 22.3492 17.4853 22.8094 16.4866C23.0637 15.9589 23.0637 15.3456 22.8094 14.817Z"
-                  fill="currentColor"
-                ></path>
-                <path
-                  opacity="0.4"
-                  d="M7.04459 4.77973C6.81626 4.7329 6.58077 4.70679 6.33543 4.70679C4.07901 4.70679 2.30701 6.84201 2.9123 9.21947C3.31882 10.8216 4.79355 11.8851 6.43661 11.8419C6.60136 11.8374 6.76343 11.8221 6.92013 11.7951C7.03384 11.7753 7.09115 11.6465 7.02668 11.551C6.3999 10.6234 6.04263 9.50765 6.04263 8.30991C6.04263 7.05904 6.43303 5.89462 7.11085 4.93913C7.13234 4.90941 7.14845 4.86348 7.12696 4.82926C7.10906 4.80135 7.07593 4.78694 7.04459 4.77973Z"
-                  fill="currentColor"
-                ></path>
-                <path
-                  d="M3.32156 13.5127C2.21752 13.7297 1.49225 14.1719 1.19139 14.8167C0.936203 15.3453 0.936203 15.9586 1.19139 16.4872C1.65163 17.4851 3.13531 17.8066 3.71195 17.8885C3.83104 17.9065 3.92595 17.8038 3.91342 17.6832C3.61883 14.9167 5.9621 13.6046 6.56918 13.3029C6.59425 13.2885 6.59962 13.2677 6.59694 13.2542C6.59515 13.2452 6.5853 13.2317 6.5656 13.2299C5.25294 13.2047 3.84358 13.3848 3.32156 13.5127Z"
-                  fill="currentColor"
-                ></path>
-              </svg>
-            </i>
-            <span className="item-name">Tài khoản</span>
-            <i className="right-icon">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="18"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </i>
+            <div className="d-flex" style={{ padding: "2px" }}>
+              <i className="icon">
+                <svg
+                  width="25"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M11.9488 14.54C8.49884 14.54 5.58789 15.1038 5.58789 17.2795C5.58789 19.4562 8.51765 20.0001 11.9488 20.0001C15.3988 20.0001 18.3098 19.4364 18.3098 17.2606C18.3098 15.084 15.38 14.54 11.9488 14.54Z"
+                    fill="currentColor"
+                  ></path>
+                  <path
+                    opacity="0.4"
+                    d="M11.949 12.467C14.2851 12.467 16.1583 10.5831 16.1583 8.23351C16.1583 5.88306 14.2851 4 11.949 4C9.61293 4 7.73975 5.88306 7.73975 8.23351C7.73975 10.5831 9.61293 12.467 11.949 12.467Z"
+                    fill="currentColor"
+                  ></path>
+                  <path
+                    opacity="0.4"
+                    d="M21.0881 9.21923C21.6925 6.84176 19.9205 4.70654 17.664 4.70654C17.4187 4.70654 17.1841 4.73356 16.9549 4.77949C16.9244 4.78669 16.8904 4.802 16.8725 4.82902C16.8519 4.86324 16.8671 4.90917 16.8895 4.93889C17.5673 5.89528 17.9568 7.0597 17.9568 8.30967C17.9568 9.50741 17.5996 10.6241 16.9728 11.5508C16.9083 11.6462 16.9656 11.775 17.0793 11.7948C17.2369 11.8227 17.3981 11.8371 17.5629 11.8416C19.2059 11.8849 20.6807 10.8213 21.0881 9.21923Z"
+                    fill="currentColor"
+                  ></path>
+                  <path
+                    d="M22.8094 14.817C22.5086 14.1722 21.7824 13.73 20.6783 13.513C20.1572 13.3851 18.747 13.205 17.4352 13.2293C17.4155 13.232 17.4048 13.2455 17.403 13.2545C17.4003 13.2671 17.4057 13.2887 17.4316 13.3022C18.0378 13.6039 20.3811 14.916 20.0865 17.6834C20.074 17.8032 20.1698 17.9068 20.2888 17.8888C20.8655 17.8059 22.3492 17.4853 22.8094 16.4866C23.0637 15.9589 23.0637 15.3456 22.8094 14.817Z"
+                    fill="currentColor"
+                  ></path>
+                  <path
+                    opacity="0.4"
+                    d="M7.04459 4.77973C6.81626 4.7329 6.58077 4.70679 6.33543 4.70679C4.07901 4.70679 2.30701 6.84201 2.9123 9.21947C3.31882 10.8216 4.79355 11.8851 6.43661 11.8419C6.60136 11.8374 6.76343 11.8221 6.92013 11.7951C7.03384 11.7753 7.09115 11.6465 7.02668 11.551C6.3999 10.6234 6.04263 9.50765 6.04263 8.30991C6.04263 7.05904 6.43303 5.89462 7.11085 4.93913C7.13234 4.90941 7.14845 4.86348 7.12696 4.82926C7.10906 4.80135 7.07593 4.78694 7.04459 4.77973Z"
+                    fill="currentColor"
+                  ></path>
+                  <path
+                    d="M3.32156 13.5127C2.21752 13.7297 1.49225 14.1719 1.19139 14.8167C0.936203 15.3453 0.936203 15.9586 1.19139 16.4872C1.65163 17.4851 3.13531 17.8066 3.71195 17.8885C3.83104 17.9065 3.92595 17.8038 3.91342 17.6832C3.61883 14.9167 5.9621 13.6046 6.56918 13.3029C6.59425 13.2885 6.59962 13.2677 6.59694 13.2542C6.59515 13.2452 6.5853 13.2317 6.5656 13.2299C5.25294 13.2047 3.84358 13.3848 3.32156 13.5127Z"
+                    fill="currentColor"
+                  ></path>
+                </svg>
+              </i>
+              <span className="item-name" style={{ paddingRight: "6.5px" }}> Quản Lý Tài khoản</span>
+              <i className="right-icon">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </i>
+            </div>
           </CustomToggle>
           <Accordion.Collapse eventKey="sidebar-user">
             <ul className="sub-nav">
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/nhan-vien" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/nhan-vien" ? "active" : ""
+                    } nav-link`}
                   to="/nhan-vien"
                 >
                   <i className="icon">
@@ -551,14 +518,13 @@ const VerticalNav = memo((props) => {
                     </svg>
                   </i>
                   <i className="sidenav-mini-icon"> L </i>
-                  <span className="item-name">Nhân viên</span>
+                  <span className="item-name">Nhân Viên</span>
                 </Link>
               </li>
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/khach-hang" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/khach-hang" ? "active" : ""
+                    } nav-link`}
                   to="/khach-hang"
                 >
                   <i className="icon">
@@ -579,7 +545,7 @@ const VerticalNav = memo((props) => {
                     </svg>
                   </i>
                   <i className="sidenav-mini-icon"> L </i>
-                  <span className="item-name">Khách hàng</span>
+                  <span className="item-name">Khách Hàng</span>
                 </Link>
               </li>
 
@@ -607,7 +573,7 @@ const VerticalNav = memo((props) => {
                     </svg>
                   </i>
                   <i className="sidenav-mini-icon"> L </i>
-                  <span className="item-name">Chức vụ</span>
+                  <span className="item-name">Chức Vụ</span>
                 </Link>
               </li>
             </ul>
@@ -624,40 +590,37 @@ const VerticalNav = memo((props) => {
             eventKey="sidebar-voucher"
             onClick={(activeKey) => setActiveMenu(activeKey)}
           >
-            <i className="icon">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                height="1em"
-                viewBox="0 0 512 512"
-              >
-                <path d="M345 39.1L472.8 168.4c52.4 53 52.4 138.2 0 191.2L360.8 472.9c-9.3 9.4-24.5 9.5-33.9 .2s-9.5-24.5-.2-33.9L438.6 325.9c33.9-34.3 33.9-89.4 0-123.7L310.9 72.9c-9.3-9.4-9.2-24.6 .2-33.9s24.6-9.2 33.9 .2zM0 229.5V80C0 53.5 21.5 32 48 32H197.5c17 0 33.3 6.7 45.3 18.7l168 168c25 25 25 65.5 0 90.5L277.3 442.7c-25 25-65.5 25-90.5 0l-168-168C6.7 262.7 0 246.5 0 229.5zM144 144a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z" />
-              </svg>
-            </i>
-            <span className="item-name">Giảm Giá</span>
-            <i className="right-icon">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="18"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </i>
+            <div className="d-flex" style={{ padding: "2px" }}>
+              <i className="icon">
+                <svg fill="none" xmlns="http://www.w3.org/2000/svg" width="25" viewBox="0 0 24 24">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M20.3992 9.14611L21.1194 9.86611C21.6897 10.4261 21.9998 11.1861 21.9998 11.9861C22.0098 12.7861 21.6997 13.5471 21.1395 14.1161C21.1328 14.1234 21.1261 14.1299 21.1194 14.1363C21.1161 14.1396 21.1128 14.1428 21.1094 14.1461L20.3992 14.8561C20.1191 15.1361 19.959 15.5161 19.959 15.9171V16.9461C19.959 18.6061 18.6085 19.9571 16.9479 19.9571H15.9176C15.5174 19.9571 15.1373 20.1161 14.8572 20.3961L14.1369 21.1161C13.5467 21.7071 12.7764 21.9961 12.0061 21.9961C11.2359 21.9961 10.4656 21.7071 9.87537 21.1271L9.14511 20.3961C8.865 20.1161 8.48487 19.9571 8.08472 19.9571H7.05435C5.39375 19.9571 4.04326 18.6061 4.04326 16.9461V15.9171C4.04326 15.5161 3.8832 15.1361 3.6031 14.8461L2.88284 14.1361C1.71241 12.9671 1.70241 11.0561 2.87283 9.87711L3.6031 9.14611C3.8832 8.86611 4.04326 8.48611 4.04326 8.07611V7.05611C4.04326 5.39611 5.39375 4.04711 7.05435 4.04711H8.08472C8.48487 4.04711 8.865 3.88611 9.14511 3.60611L9.86537 2.88611C11.0358 1.70711 12.9465 1.70711 14.1269 2.87711L14.8572 3.60611C15.1373 3.88611 15.5174 4.04711 15.9176 4.04711H16.9479C18.6085 4.04711 19.959 5.39611 19.959 7.05611V8.08711C19.959 8.48611 20.1191 8.86611 20.3992 9.14611ZM9.42521 15.4461C9.66529 15.4461 9.88537 15.3561 10.0454 15.1861L15.1873 10.0471C15.5274 9.70711 15.5274 9.14611 15.1873 8.80611C14.8472 8.46711 14.297 8.46711 13.9569 8.80611L8.81499 13.9461C8.47486 14.2861 8.47486 14.8461 8.81499 15.1861C8.97504 15.3561 9.19512 15.4461 9.42521 15.4461ZM13.6968 14.5661C13.6968 15.0561 14.0869 15.4461 14.5771 15.4461C15.0572 15.4461 15.4474 15.0561 15.4474 14.5661C15.4474 14.0871 15.0572 13.6961 14.5771 13.6961C14.0869 13.6961 13.6968 14.0871 13.6968 14.5661ZM9.43521 8.55611C9.91539 8.55611 10.3055 8.94611 10.3055 9.42611C10.3055 9.91711 9.91539 10.3061 9.43521 10.3061C8.95504 10.3061 8.55489 9.91711 8.55489 9.42611C8.55489 8.94611 8.95504 8.55611 9.43521 8.55611Z" fill="currentColor" />
+                </svg>
+              </i>
+              <span className="item-name" style={{ paddingRight: "57px" }}>Khuyến Mãi</span>
+              <i className="right-icon">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </i>
+            </div>
           </CustomToggle>
           <Accordion.Collapse eventKey="sidebar-voucher">
             <ul className="sub-nav">
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/voucher" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/voucher" ? "active" : ""
+                    } nav-link`}
                   to="/voucher"
                 >
                   <i className="icon">
@@ -683,9 +646,8 @@ const VerticalNav = memo((props) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/khuyen-mai" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/khuyen-mai" ? "active" : ""
+                    } nav-link`}
                   to="/khuyen-mai"
                 >
                   <i className="icon">
@@ -706,7 +668,7 @@ const VerticalNav = memo((props) => {
                     </svg>
                   </i>
                   <i className="sidenav-mini-icon"> L </i>
-                  <span className="item-name">Khuyến Mãi</span>
+                  <span className="item-name">Giảm Giá</span>
                 </Link>
               </li>
             </ul>

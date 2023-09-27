@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @ToString
-public class CreateChiTietSanPhamRequest {
+public class CreateProductRequest {
 
     private String tenSanPham;
 
@@ -17,8 +17,18 @@ public class CreateChiTietSanPhamRequest {
 
     private String chip;
 
+    private Integer pin;
+
+    private BigDecimal manHinh;
+
     private String dongSanPham;
 
     private String nhaSanXuat;
+
+    private String heDieuHanh;
+
+    private Integer sim;
+
+    private String congSac;
 
 }

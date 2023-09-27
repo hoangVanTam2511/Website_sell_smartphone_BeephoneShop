@@ -46,9 +46,6 @@ public class TestController {
   @Autowired
   private HinhThucThanhToanRepositoryImpl hinhThucThanhToanRepository;
 
-  @Autowired
-  private GiaoHangNhanhService giaoHangNhanhService;
-
   @GetMapping("/products")
   public ResponseEntity<?> home1() {
     return new ResponseEntity<>(sanPhamChiTietRepository.getAll(), HttpStatus.OK);
@@ -90,11 +87,6 @@ public class TestController {
   public ResponseEntity<?> home(@PathVariable("id") String id) {
     List<HinhThucThanhToan> list = hinhThucThanhToanRepository.getPaymentMethodsByOrderId(id);
     return new ResponseEntity<>(list, HttpStatus.OK);
-  }
-
-  @GetMapping("/province")
-  public ResponseEntity<?> home7() {
-    return new ResponseEntity<>(giaoHangNhanhService.getListProvince(), HttpStatus.OK);
   }
 
 }

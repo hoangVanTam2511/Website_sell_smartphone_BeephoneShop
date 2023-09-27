@@ -1,8 +1,10 @@
 package beephone_shop_projects.core.admin.product_management.service.impl;
 
+import beephone_shop_projects.core.admin.product_management.model.request.CreateProductDetailRequest;
 import beephone_shop_projects.core.admin.product_management.repository.CauHinhRepository;
 import beephone_shop_projects.core.admin.product_management.repository.SanPhamChiTietRepository;
 import beephone_shop_projects.core.admin.product_management.repository.SanPhamRepository;
+import beephone_shop_projects.entity.CauHinh;
 import beephone_shop_projects.entity.SanPham;
 import beephone_shop_projects.entity.SanPhamChiTiet;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,15 +23,18 @@ public class SanPhamChiTietServiceImpl  {
 
     @Autowired
     private SanPhamRepository sanPhamRepository;
+    public SanPhamChiTiet insert(CreateProductDetailRequest req){
 
-    public void addSanPhamChiTiet(ArrayList<String> listId,String idSanPham){
-        SanPham sanPham = sanPhamRepository.findById(idSanPham).get();
-        listId.forEach((item) -> {
-            SanPhamChiTiet sanPhamChiTiet = new SanPhamChiTiet();
-            sanPhamChiTiet.setIdSanPham(sanPham);
-            sanPhamChiTiet.setIdCauHinh(cauHinhRepository.findById(item).get());
-            sanPhamChiTietRepository.save(sanPhamChiTiet);
-        });
+        SanPham sanPham = sanPhamRepository.findById(req.getIdSanPham()).orElseThrow();
+        CauHinh cauHinh = cauHinhRepository.findById(req.getId()).orElseThrow();
 
+        SanPhamChiTiet sanPhamChiTiet = new SanPhamChiTiet();
+        sanPhamChiTiet.setMa(sanPhamChiTietRepository.getNewCode());
+        sanPhamChiTiet.setIdSanPham(sanPham);
+        sanPhamChiTiet.setIdCauHinh(cauHinh);
+        sanPhamChiTiet.setDonGia(req.getDonGia());
+        sanPhamChiTiet.setSoLuongTonKho(req.getSoLuong());
+
+        return sanPhamChiTietRepository.save(sanPhamChiTiet);
     }
 }

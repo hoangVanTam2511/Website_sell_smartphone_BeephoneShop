@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -26,6 +25,7 @@ import java.util.List;
 @Service
 @Validated
 @Component
+
 public class VoucherServiceImpl implements VoucherService {
 
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -34,7 +34,7 @@ public class VoucherServiceImpl implements VoucherService {
     @Autowired
     private VoucherRepository voucherRepository;
 
-    @Scheduled(fixedRate = 5000, initialDelay = 30000)
+    //    @Scheduled(fixedRate = 5000, initialDelay = 30000)
     public List<Voucher> updateStatusVoucher() {
         Date dateTime = new Date();
         List<Voucher> listToUpdate = new ArrayList<>();
@@ -81,13 +81,13 @@ public class VoucherServiceImpl implements VoucherService {
     public Voucher addVoucher(@Valid CreateVoucherRequest request) {
         Integer status = 0;
         Date dateTime = new Date();
-        if (request.getNgayBatDau().after(dateTime) && request.getNgayKetThuc().before(dateTime)){
+        if (request.getNgayBatDau().after(dateTime) && request.getNgayKetThuc().before(dateTime)) {
             status = 1;
         }
-        if (request.getNgayBatDau().before(dateTime)){
+        if (request.getNgayBatDau().before(dateTime)) {
             status = 2;
         }
-        if (request.getNgayKetThuc().after(dateTime)){
+        if (request.getNgayKetThuc().after(dateTime)) {
             status = 3;
         }
         Voucher voucher = Voucher.builder()
@@ -155,6 +155,7 @@ public class VoucherServiceImpl implements VoucherService {
         }
         Pageable pageable = PageRequest.of(request.getPageNo() - 1, request.getPageSize());
         Page<Voucher> vouchers = voucherRepository.findAll(pageable, request);
+        updateStatusVoucher();
         return vouchers;
     }
 

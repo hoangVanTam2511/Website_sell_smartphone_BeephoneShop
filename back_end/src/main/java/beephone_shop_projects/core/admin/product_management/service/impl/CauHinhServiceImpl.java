@@ -38,16 +38,12 @@ public class CauHinhServiceImpl  {
     @Autowired
     private PinRepository pinRepository;
 
-
     @Autowired
     private CauHinhRepository cauHinhRepository;
 
-    
     public void addCauHinh(CreateCauHinhRequest createCauHinhRequest){
         Ram ram = ramRepository.findByKichThuoc(createCauHinhRequest.getRam());
         Rom rom = romRepository.findByKichThuoc(createCauHinhRequest.getRom());
-        ManHinh manHinh = manHinhRepository.findByKichThuoc(createCauHinhRequest.getManHinh());
-        Pin pin = pinRepository.findByDungLuong(createCauHinhRequest.getPin());
         MauSac mauSac = mauSacRepository.findByTenMauSac(createCauHinhRequest.getMauSac());
 
         CauHinh cauHinh = new CauHinh();

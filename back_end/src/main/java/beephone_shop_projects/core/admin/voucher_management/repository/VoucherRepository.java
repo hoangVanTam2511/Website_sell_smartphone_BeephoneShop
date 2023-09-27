@@ -34,9 +34,10 @@ public interface VoucherRepository extends IVoucherRepository, CustomVoucherRepo
     @Query(value = """
             UPDATE Voucher v
             SET v.trangThai = CASE
-                WHEN v.trangThai = 1 THEN 2
-                WHEN v.trangThai = 2 THEN 1
-                WHEN v.trangThai = 3 THEN 1
+                WHEN v.trangThai = 1 THEN 4
+               WHEN v.trangThai = 3 THEN 4
+               WHEN v.trangThai = 4 THEN 1
+               WHEN v.trangThai = 4 THEN 3
                 ELSE v.trangThai
             END
             WHERE v.id = :idBanGhi

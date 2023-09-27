@@ -546,7 +546,7 @@ const HienThiKH = () => {
           <span className="bl-add">
 
 
-            <Link to="/them-chi-tiet-san-pham">
+            <Link to="/them-san-pham">
               <Button className="btn-them-tk">+ Thêm chi tiết sản phẩm </Button>
             </Link>
 
