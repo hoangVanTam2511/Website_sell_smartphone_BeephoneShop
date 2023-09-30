@@ -6,14 +6,7 @@ import { faArrowLeft, faCheck, faEye } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { apiURLKhuyenMai, apiURLSanPham } from "../../../service/api";
 import TextField from "@mui/material/TextField";
-import {
-  Badge,
-  InputAdornment,
-  ToggleButton,
-  ToggleButtonGroup,
-  Typography,
-} from "@mui/material";
-import "../../../assets/scss/addPromotion.scss";
+import { Badge, InputAdornment, Typography } from "@mui/material";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -23,6 +16,11 @@ import { Table } from "antd";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import numeral from "numeral";
+import style from "./style.css";
+
+import Box from "@mui/joy/Box";
+import Radio, { radioClasses } from "@mui/joy/Radio";
+import RadioGroup from "@mui/joy/RadioGroup";
 
 const AddKhuyenMai = () => {
   //add-khuyen-mai
@@ -31,7 +29,7 @@ const AddKhuyenMai = () => {
   let [loaiKhuyenMai, setLoaiKhuyenMai] = useState("");
   let [ngayBatDau, setNgayBatDau] = useState(dayjs());
   let [ngayKetThuc, setNgayKetThuc] = useState(dayjs());
-  const [selectDiscount, setSeclectDiscount] = useState("1");
+  const [selectDiscount, setSeclectDiscount] = useState("VNĐ");
   const [value, setValue] = React.useState();
   const [value2, setValue2] = React.useState();
 
@@ -55,8 +53,6 @@ const AddKhuyenMai = () => {
   const [selectedProductDetails, setSelectedProductDetails] = useState([]);
   let [sanPhamChiTietKhuyenMai, setSanPhamChiTietKhuyenMai] = useState([]);
   // Tạo một state để lưu danh sách các ID sản phẩm đã được chọn
-  const [selectedProductIds, setSelectedProductIds] = useState([]);
-  const [idSPCTKM, setIdSPCTKM] = useState("");
 
   const redirectToHienThiKhuyenMai = () => {
     window.location.href = "/khuyen-mai";
@@ -93,7 +89,7 @@ const AddKhuyenMai = () => {
   }, [dataSanPhamChiTiet]);
 
   const handleChange = (event) => {
-    if (selectDiscount === "1") {
+    if (selectDiscount === "VNĐ") {
       const inputValue = event.target.value;
       const numericValue = parseFloat(inputValue.replace(/[^0-9.-]+/g, ""));
       const formattedValue = inputValue
@@ -102,7 +98,7 @@ const AddKhuyenMai = () => {
       setValue(formattedValue);
       setGiaTriKhuyenMai(numericValue);
     }
-    if (selectDiscount === "2") {
+    if (selectDiscount === "%") {
       let inputValue = event.target.value;
       // Loại bỏ các ký tự không phải số
       inputValue = inputValue.replace(/\D/g, "");
@@ -118,7 +114,7 @@ const AddKhuyenMai = () => {
   };
 
   const handleChangeToggleButtonDiscount = (event, newAlignment) => {
-    var oldAligment = selectDiscount;
+    var oldAligment = event.target.value;
 
     if (newAlignment != null) {
       setSeclectDiscount(newAlignment);
@@ -128,6 +124,7 @@ const AddKhuyenMai = () => {
     if (newAlignment == null) {
       setSeclectDiscount(oldAligment);
     }
+    handleReset();
   };
 
   const handleReset = () => {
@@ -342,6 +339,8 @@ const AddKhuyenMai = () => {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
+
+  const thongBaoAnh = () => {};
 
   //Column bảng Sản Phẩm
   const columns = [
@@ -663,92 +662,111 @@ const AddKhuyenMai = () => {
 
   return (
     <>
-      <div className="row">
-        <div className="col-md-6">
-          <div className="add-promotion-container">
-            <h5 className="title-promotion" style={{ marginBottom: "2%" }}>
-              Thêm Khuyến Mãi
-            </h5>
-            <div className="row-input">
-              <div className="input-container">
-                <TextField
-                  label="Tên Khuyến Mãi:"
-                  value={tenKhuyenMai}
-                  id="fullWidth"
-                  onChange={(e) => {
-                    setTenKhuyenMai(e.target.value);
-                  }}
-                  style={{ width: "90%", marginTop: "10px" }}
-                  inputProps={{
-                    maxLength: 100, // Giới hạn tối đa 10 ký tự
-                  }}
-                />
-              </div>
-              <span
-                className="validate"
-                style={{ paddingLeft: "50px", color: "red" }}
-              >
-                {validationMsg.tenKhuyenMai}
-              </span>
+      <div className="row mt-4 add-promotion-container">
+        <div
+          className="col-md-5 mt-3"
+          style={{ borderRight: "1px solid black" }}
+        >
+          <h5 className="title-promotion ms-4">Thêm Khuyến Mãi</h5>
+          <div className="row-input ms-3">
+            <div className="input-container">
+              <TextField
+                label="Tên Khuyến Mãi:"
+                value={tenKhuyenMai}
+                id="fullWidth"
+                onChange={(e) => {
+                  setTenKhuyenMai(e.target.value);
+                }}
+                style={{ width: "430px", marginTop: "10px" }}
+                inputProps={{
+                  maxLength: 100, // Giới hạn tối đa 10 ký tự
+                }}
+              />
             </div>
+            <span
+              className="validate"
+              style={{ paddingLeft: "50px", color: "red" }}
+            >
+              {validationMsg.tenKhuyenMai}
+            </span>
+          </div>
 
-            <div className="row-input">
-              <div className="select-value-promotion">
-                <ToggleButtonGroup
-                  color="primary"
-                  value={selectDiscount}
-                  exclusive
-                  onChange={handleChangeToggleButtonDiscount}
-                  aria-label="Platform"
-                >
-                  <ToggleButton
-                    style={{
-                      height: "55px",
-                      borderRadius: "10px",
-                      width: "40px",
-                      marginTop: "17px",
-                    }}
-                    value="1"
-                    onClick={() => handleReset()}
+          <div className="d-flex ms-3" style={{ marginBottom: "5px" }}>
+            <div>
+              <RadioGroup
+                orientation="horizontal"
+                aria-label="Alignment"
+                name="alignment"
+                variant="outlined"
+                value={selectDiscount}
+                onChange={handleChangeToggleButtonDiscount}
+                sx={{ borderRadius: "12px" }}
+              >
+                {["VNĐ", "%"].map((item) => (
+                  <Box
+                    key={item}
+                    sx={(theme) => ({
+                      position: "relative",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      width: 47,
+                      height: 54,
+                      "&:not([data-first-child])": {
+                        borderLeft: "1px solid",
+                        borderdivor: "divider",
+                      },
+                      [`&[data-first-child] .${radioClasses.action}`]: {
+                        borderTopLeftRadius: `calc(${theme.vars.radius.sm} + 5px)`,
+                        borderBottomLeftRadius: `calc(${theme.vars.radius.sm} + 5px)`,
+                      },
+                      [`&[data-last-child] .${radioClasses.action}`]: {
+                        borderTopRightRadius: `calc(${theme.vars.radius.sm} + 5px)`,
+                        borderBottomRightRadius: `calc(${theme.vars.radius.sm} + 5px)`,
+                      },
+                    })}
                   >
-                    VND
-                  </ToggleButton>
-                  <ToggleButton
-                    style={{
-                      height: "55px",
-                      borderRadius: "10px",
-                      width: "40px",
-                      marginTop: "17px",
-                    }}
-                    value="2"
-                    onClick={() => handleReset()}
-                  >
-                    %
-                  </ToggleButton>
-                </ToggleButtonGroup>
-                <TextField
-                  label="Nhập Giá Trị Khuyến Mãi"
-                  value={value}
-                  onChange={handleChange}
-                  id="outlined-start-adornment"
-                  InputProps={{
-                    inputMode: "numeric",
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        {selectDiscount === "1" ? "VND" : "%"}
-                      </InputAdornment>
-                    ),
-                  }}
-                  style={{
-                    marginLeft: "15px",
-                    width: "405px",
-                    marginTop: "17px",
-                  }}
-                  inputProps={{
-                    maxLength: 20, // Giới hạn tối đa 10 ký tự
-                  }}
-                />
-              </div>
+                    <Radio
+                      value={item}
+                      disableIcon
+                      overlay
+                      label={[item]}
+                      variant={selectDiscount === item ? "solid" : "plain"}
+                      slotProps={{
+                        input: { "aria-label": item },
+                        action: {
+                          sx: { borderRadius: 0, transition: "none" },
+                        },
+                        label: { sx: { lineHeight: 0 } },
+                      }}
+                    />
+                  </Box>
+                ))}
+              </RadioGroup>
+            </div>
+            <div>
+              <TextField
+                label="Nhập Giá Trị Khuyến Mãi"
+                value={value}
+                onChange={handleChange}
+                id="outlined-start-adornment"
+                InputProps={{
+                  inputMode: "numeric",
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      {selectDiscount === "VNĐ" ? "VND" : "%"}
+                    </InputAdornment>
+                  ),
+                }}
+                style={{
+                  marginLeft: "15px",
+                  width: "320px",
+                }}
+                inputProps={{
+                  maxLength: 20, // Giới hạn tối đa 10 ký tự
+                }}
+              />
+
               <span
                 className="validate"
                 style={{ color: "red", paddingLeft: "50px" }}
@@ -756,86 +774,83 @@ const AddKhuyenMai = () => {
                 {validationMsg.giaTriKhuyenMai}
               </span>
             </div>
-            <div className="row-input-date">
-              <div className="input-container">
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DemoContainer components={["DateTimePicker"]}>
-                    <DateTimePicker
-                      ampm={true}
-                      disablePast={true}
-                      label="Ngày Bắt Đầu"
-                      value={ngayBatDau}
-                      format="HH:mm DD/MM/YYYY"
-                      onChange={(e) => {
-                        setNgayBatDau(e);
-                      }}
-                      sx={{ width: "95%", marginTop: "10px" }}
-                    />
-                  </DemoContainer>
-                </LocalizationProvider>
-              </div>
-              <div className="row-input">
-                <span className="validate" style={{ color: "red" }}>
-                  {validationMsg.ngayBatDau}
-                </span>
-              </div>
+          </div>
+          <div className="row-input-date ms-3 mt-3">
+            <div className="input-container">
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DemoContainer components={["DateTimePicker"]}>
+                  <DateTimePicker
+                    ampm={true}
+                    disablePast={true}
+                    label="Ngày Bắt Đầu"
+                    value={ngayBatDau}
+                    format="HH:mm DD/MM/YYYY"
+                    onChange={(e) => {
+                      setNgayBatDau(e);
+                    }}
+                    sx={{ width: "430px" }}
+                  />
+                </DemoContainer>
+              </LocalizationProvider>
             </div>
-            <div className="row-input-date">
-              <div className="input-container">
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DemoContainer components={["DateTimePicker"]}>
-                    <DateTimePicker
-                      ampm={true}
-                      disablePast={true}
-                      label="Ngày Kết Thúc"
-                      value={ngayKetThuc}
-                      format="HH:mm DD-MM-YYYY"
-                      onChange={(e) => {
-                        setNgayKetThuc(e);
-                      }}
-                      sx={{ width: "95%", marginTop: "10px" }}
-                    />
-                  </DemoContainer>
-                </LocalizationProvider>
-              </div>
-              <div className="row-input">
-                <span className="validate" style={{ color: "red" }}>
-                  {validationMsg.ngayKetThuc}
-                </span>
-              </div>
+            <div className="row-input">
+              <span className="validate" style={{ color: "red" }}>
+                {validationMsg.ngayBatDau}
+              </span>
             </div>
-            <div className="btn-accept">
-              <Button type="primary" onClick={handleSubmit}>
-                Áp Dụng{" "}
-                <FontAwesomeIcon
-                  icon={faCheck}
-                  style={{ paddingLeft: "10px" }}
-                />
-              </Button>
-              <ToastContainer />
-              &nbsp;&nbsp;
-              <Button
-                type="primary"
-                onClick={() => {
-                  redirectToHienThiKhuyenMai();
-                }}
-                htmlType="submit"
-              >
-                Quay Về{" "}
-                <FontAwesomeIcon
-                  icon={faArrowLeft}
-                  style={{ paddingLeft: "10px" }}
-                />
-              </Button>
+          </div>
+          <div className="row-input-date ms-3 mt-3">
+            <div className="input-container">
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DemoContainer components={["DateTimePicker"]}>
+                  <DateTimePicker
+                    ampm={true}
+                    disablePast={true}
+                    label="Ngày Kết Thúc"
+                    value={ngayKetThuc}
+                    format="HH:mm DD-MM-YYYY"
+                    onChange={(e) => {
+                      setNgayKetThuc(e);
+                    }}
+                    sx={{ width: "430px", marginTop: "20px" }}
+                  />
+                </DemoContainer>
+              </LocalizationProvider>
             </div>
+            <div className="row-input">
+              <span className="validate" style={{ color: "red" }}>
+                {validationMsg.ngayKetThuc}
+              </span>
+            </div>
+          </div>
+          <div className="btn-accept mt-3">
+            <Button type="primary" onClick={handleSubmit}>
+              Áp Dụng{" "}
+              <FontAwesomeIcon icon={faCheck} style={{ paddingLeft: "10px" }} />
+            </Button>
+            <ToastContainer />
+            &nbsp;&nbsp;
+            <Button
+              type="primary"
+              onClick={() => {
+                redirectToHienThiKhuyenMai();
+              }}
+              htmlType="submit"
+            >
+              Quay Về{" "}
+              <FontAwesomeIcon
+                icon={faArrowLeft}
+                style={{ paddingLeft: "10px" }}
+              />
+            </Button>
           </div>
         </div>
 
-        <div className="col-6">
+        <div className="col-7 mt-3">
           <div className="table-container">
-            <h4 className="title-promotion" style={{ marginBottom: "2%" }}>
-              Sản Phẩm
-            </h4>
+            <h5 className="title-promotion" style={{ marginBottom: "2%" }}>
+              Danh sách sản Phẩm
+            </h5>
             <Table
               dataSource={listSanPham}
               columns={mergedColumns}
@@ -858,8 +873,11 @@ const AddKhuyenMai = () => {
             />
           </div>
         </div>
-        <div className="row">
-          <h4 style={{ marginTop: "20px" }}>Chi tiết sản phẩm</h4>
+        <hr style={{ width: "97.3%", border: "1px solid black " }} />
+        <div className="row mt-3">
+          <h5 style={{ marginTop: "20px", marginBottom: "10px" }}>
+            Danh sách chi tiết sản phẩm
+          </h5>
           <Table
             dataSource={listSanPhamChiTiet}
             columns={mergedColumns1}

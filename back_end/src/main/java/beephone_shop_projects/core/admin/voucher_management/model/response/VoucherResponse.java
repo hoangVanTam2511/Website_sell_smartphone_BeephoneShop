@@ -22,7 +22,7 @@ public interface VoucherResponse {
     BigDecimal getDieuKienApDung();
 
     @Value("#{target.loaiVoucher}")
-    Integer getLoaiVoucher();
+    String getLoaiVoucher();
 
     @Value("#{target.ngayBatDau}")
     Date getNgayBatDau();

@@ -29,7 +29,7 @@ public class FindVoucherRequest {
 
     private Integer soLuong;
 
-    private Integer loaiVoucher;
+    private String loaiVoucher;
 
     private Integer trangThai;
 

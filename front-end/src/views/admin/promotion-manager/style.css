@@ -86,3 +86,10 @@ tr:hover {
 .ant-table-tbody > tr.ant-table-row:hover > td {
   background: #f0f0f0 !important;
 }
+
+.add-promotion-container {
+  width: 100%;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}

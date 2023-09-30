@@ -20,7 +20,6 @@ public class CreateVoucherRequest {
 
     private Integer trangThai;
 
-
     @NotBlank(message = "Không để trống Tên !!!")
     private String ten;
 
@@ -33,8 +32,7 @@ public class CreateVoucherRequest {
     @Min(value = 0, message = "Giá Trị Tối Thiểu Là 0 !!!")
     private BigDecimal dieuKienApDung;
 
-    @NotNull(message = "Không để trống Loại Voucher !!!")
-    private Integer loaiVoucher;
+    private String loaiVoucher;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @FutureOrPresent(message = "Không chọn ngày quá khứ !!!")

@@ -1,6 +1,5 @@
 package beephone_shop_projects.core.admin.voucher_management.model.request;
 
-import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -26,20 +25,17 @@ public class UpdateVoucherRequest {
     @NotNull(message = "Không để trống Số Lượng !!!")
     private Integer soLuong;
 
-    @NotNull(message = "Không để trống Loại Voucher !!!")
-    private Integer loaiVoucher;
+    private String loaiVoucher;
 
     @NotNull(message = "Không để trống Điều Kiện Áp Dung")
     @Min(value = 0, message = "Giá Trị Tối Thiểu Là 0 !!!")
     private BigDecimal dieuKienApDung;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @FutureOrPresent(message = "Không chọn ngày quá khứ !!!")
     @NotNull(message = "Không để trống Ngày Bắt Đầu !!!")
     private Date ngayBatDau;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @FutureOrPresent(message = "Không chọn ngày quá khứ !!!")
     @NotNull(message = "Không để trống Ngày Kết Thúc !!!")
     private Date ngayKetThuc;
 
@@ -47,15 +43,5 @@ public class UpdateVoucherRequest {
     @Min(value = 0, message = "Giá Trị Tối Thiểu Là 0 !!!")
     @Max(value = 100000000, message = "Giá Trị Tối Đa là 100.000Đ")
     private BigDecimal giaTriVoucher;
-
-//    private Integer trangThai;
-//
-//    public String getMa() {
-//        return ma;
-//    }
-//
-//    public void setMa(String ma) {
-//        this.ma = ma;
-//    }
 
 }

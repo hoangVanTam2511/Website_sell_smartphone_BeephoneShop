@@ -20,7 +20,7 @@ public class CreateKhuyenMaiRequest {
     private BigDecimal giaTriKhuyenMai;
 
     @NotNull(message = "Loại khuyến mãi không được để trống !!!")
-    private Integer loaiKhuyenMai;
+    private String loaiKhuyenMai;
 
     @NotNull(message = "Ngày bắt đầu không được trống !!!")
     @DateTimeFormat(pattern = "yyyy-MM-dd")

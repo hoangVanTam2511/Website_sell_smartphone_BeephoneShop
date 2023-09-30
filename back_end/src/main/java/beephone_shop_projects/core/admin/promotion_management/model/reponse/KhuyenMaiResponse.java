@@ -20,7 +20,7 @@ public interface KhuyenMaiResponse {
     BigDecimal getGiaTriKhuyenMai();
 
     @Value("#{target.loai_khuyen_mai}")
-    Integer getLoaiKhuyenMai();
+    String getLoaiKhuyenMai();
 
     @Value("#{target.ngay_bat_dau}")
     Date getNgayBatDau();
