@@ -27,7 +27,7 @@ public interface AnhRepository extends IAnhRepository  {
     void updateDelected(@Param("delected") Boolean delected, @Param("id")String id);
 
     @Query(value = """
-    SELECT CONCAT( 'ANH_',SUBSTRING(ma,5) + 1)   FROM chip
+    SELECT CONCAT( 'ANH_',IF(count(*)  = 0,0,SUBSTRING(ma,5) + 1))   FROM anh
     """,nativeQuery = true)
     String getNewCode();
 }

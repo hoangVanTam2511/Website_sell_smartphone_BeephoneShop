@@ -32,7 +32,7 @@ import Rom from "../views/admin/product-manager/rom/rom";
 import ThemRom from "../views/admin/product-manager/rom/them-rom";
 
 // chi-tiet-san-pham
-import ChiTietSanPham from "../views/admin/product-manager/chi-tiet-san-pham/chi-tiet-san-pham";
+import ChiTietSanPham from "../views/admin/product-manager/chi-tiet-san-pham/san-pham";
 import ThemChiTietSanPham from "../views/admin/product-manager/chi-tiet-san-pham/them-san-pham";
 
 // // imei
@@ -151,11 +151,11 @@ export const DefaultRouter = [
             element: <ThemRom />,
         },
         {
-            path: "chi-tiet-san-pham",
+            path: "san-pham",
             element: <ChiTietSanPham />,
         },
         {
-            path: "them-chi-tiet-san-pham",
+            path: "them-san-pham",
             element: <ThemChiTietSanPham />,
         },
         {

@@ -9,11 +9,7 @@ import java.math.BigDecimal;
 @Setter
 public class CreateCauHinhRequest {
 
-    private BigDecimal manHinh;
-
     private String mauSac;
-
-    private Integer pin;
 
     private Integer ram;
 

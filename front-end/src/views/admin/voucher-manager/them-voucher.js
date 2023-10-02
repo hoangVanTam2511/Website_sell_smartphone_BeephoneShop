@@ -16,7 +16,6 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import dayjs from "dayjs"; // Import thư viện Day.js
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { isEmpty, isAfter, equals } from "validator";
 
 const AddVoucher = () => {
   let [ten, setTen] = useState("");
@@ -113,25 +112,25 @@ const AddVoucher = () => {
   const validationAll = () => {
     const msg = {};
 
-    if (!ten) {
+    if (!ten.trim("")) {
       msg.ten = "Tên không được để trống !!!";
     }
 
-    if (!soLuong) {
+    if (!soLuong.trim("")) {
       msg.soLuong = "Số lượng không được để trống !!!";
     }
 
-    if (!dieuKienApDungConvert) {
-      msg.dieuKienApDungConvert = "Điều kiện áp dụng không được để trống !!!";
-    }
+    // if (!dieuKienApDungConvert.trim("")) {
+    //   msg.dieuKienApDungConvert = "Điều kiện áp dụng không được để trống !!!";
+    // }
 
     if (ngayBatDau.isAfter(ngayKetThuc)) {
       msg.ngayBatDau = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc !!!";
     }
 
-    if (!giaTriVoucherConvert) {
-      msg.giaTriVoucherConvert = "Giá trị voucher không được để trống !!!";
-    }
+    // if (!giaTriVoucherConvert.trim("")) {
+    //   msg.giaTriVoucherConvert = "Giá trị voucher không được để trống !!!";
+    // }
 
     if (ngayKetThuc.isBefore(ngayBatDau)) {
       msg.ngayKetThuc = "Ngày kết thúc phải lớn hơn ngày bắt đầu !!!";
@@ -234,7 +233,7 @@ const AddVoucher = () => {
               }}
               style={{ width: "65%" }}
               inputProps={{
-                maxLength: 10, // Giới hạn tối đa 10 ký tự
+                maxLength: 20, // Giới hạn tối đa 10 ký tự
               }}
             />
             <span className="validate" style={{ color: "red" }}>
@@ -276,6 +275,7 @@ const AddVoucher = () => {
                 </ToggleButton>
               </ToggleButtonGroup>
             </div>
+
             <div className="">
               <TextField
                 label="Nhập Giá Trị Voucher"
@@ -295,10 +295,19 @@ const AddVoucher = () => {
                   width: selectDiscount === "1" ? "670px" : "390px",
                 }}
                 inputProps={{
-                  maxLength: 10, // Giới hạn tối đa 10 ký tự
+                  maxLength: 20, // Giới hạn tối đa 10 ký tự
                 }}
               />
+              <span
+                className="validate-value"
+                style={{
+                  color: "red",
+                }}
+              >
+                {validationMsg.giaTriVoucherConvert}
+              </span>
             </div>
+
             <div className="ms-4">
               <TextField
                 label="Giá Trị Tối Đa:"
@@ -316,7 +325,7 @@ const AddVoucher = () => {
                   display: selectDiscount === "2" ? "block" : "none",
                 }}
                 inputProps={{
-                  maxLength: 10, // Giới hạn tối đa 10 ký tự
+                  maxLength: 20, // Giới hạn tối đa 10 ký tự
                 }}
               />
             </div>

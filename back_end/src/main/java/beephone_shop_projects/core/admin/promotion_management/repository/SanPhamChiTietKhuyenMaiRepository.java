@@ -22,7 +22,7 @@ public interface SanPhamChiTietKhuyenMaiRepository extends ISanPhamChiTietReposi
             JOIN mau_sac c ON c.id = b.id_mau_sac
             JOIN ram d ON d.id = b.id_ram
             JOIN rom e ON e.id = b.id_rom
-            JOIN anh f ON f.id_chi_tiet_san_pham = a.id
+            JOIN anh f ON f.id_chi_tiet_san_pham = ctsp.id
             WHERE ctsp.id_san_pham = ?1
             ORDER BY ctsp.created_at DESC 
              """, nativeQuery = true)
@@ -37,7 +37,7 @@ public interface SanPhamChiTietKhuyenMaiRepository extends ISanPhamChiTietReposi
             JOIN mau_sac c ON c.id = b.id_mau_sac
             JOIN ram d ON d.id = b.id_ram
             JOIN rom e ON e.id = b.id_rom
-            JOIN anh f ON f.id_chi_tiet_san_pham = a.id
+            JOIN anh f ON f.id_chi_tiet_san_pham = ctsp.id
             JOIN khuyen_mai_chi_tiet k ON k.id_chi_tiet_san_pham = ctsp.id
             JOIN khuyen_mai km ON km.id = k.id_khuyen_mai
             WHERE k.id_chi_tiet_san_pham = ?1

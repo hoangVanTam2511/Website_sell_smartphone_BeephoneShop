@@ -32,7 +32,7 @@ public class DongSanPhamServiceImpl implements IService<DongSanPham> {
 
     public void insert(CreateDongSanPham req) {
         DongSanPham dongSanPham = new DongSanPham();
-        dongSanPham.setTenDongSanPham(req.getMaDongSanPham());
+        dongSanPham.setTenDongSanPham(req.getTenDongSanPham());
         dongSanPham.setMa(req.getMaDongSanPham());
         dongSanPhamRepository.save(dongSanPham);
     }

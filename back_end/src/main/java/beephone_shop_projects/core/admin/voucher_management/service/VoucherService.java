@@ -9,8 +9,6 @@ import beephone_shop_projects.entity.Voucher;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 
-import java.util.List;
-
 public interface VoucherService {
 
     VoucherResponse getOne(String id);

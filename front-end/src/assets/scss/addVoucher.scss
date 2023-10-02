@@ -8,20 +8,12 @@
 }
 
 .input-container {
-  text-align: center;
-  // display: flex; /* Sử dụng flexbox để các phần tử nằm trên cùng một dòng */
   gap: 20px; /* Khoảng cách giữa các ô input */
   margin-bottom: 15px;
-  // padding-left: 25px;
-}
-.can-giua-form {
-  text-align: center;
 }
 .row-input {
   margin-bottom: 30px;
   display: flex;
-  justify-content: center;
-  text-align: center;
 }
 
 .btn-accept {
@@ -31,11 +23,20 @@
   justify-content: flex-end;
 }
 
+.validate-value {
+  margin-top: 5px; /* Khoảng cách từ input */
+  font-size: 14px;
+  color: red;
+  margin-left: 40px;
+  text-align: start;
+  display: block;
+}
 .validate {
   margin-top: 5px; /* Khoảng cách từ input */
   font-size: 14px;
   color: red;
-  margin-left: 180px;
+  margin-left: 200px;
+  text-align: start;
 }
 .validate-date {
   margin-top: 5px; /* Khoảng cách từ input */

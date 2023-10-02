@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.admin.product_management.controller;
 
+import beephone_shop_projects.core.admin.product_management.model.request.CreateImageRequest;
 import beephone_shop_projects.core.admin.product_management.service.impl.AnhServiceImpl;
 import beephone_shop_projects.entity.Anh;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,24 +26,9 @@ public class AnhRestController {
     @Autowired
     private AnhServiceImpl anhService;
 
-    @GetMapping("/view-all")
-    public Page<Anh> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
-        Pageable pageable = PageRequest.of(page,5);
-        return anhService.getAll(pageable);
-    }
-
-    @DeleteMapping("/delete")
-    public void delete(@RequestParam("id")String id) {
-        anhService.delete(id);
-    }
-
     @PostMapping("/save")
-    public void save(@RequestBody Anh anh) {
-        anhService.insert(anh);
+    public Anh save(@RequestBody CreateImageRequest req) {
+        return anhService.insert(req);
     }
 
-    @PutMapping("/update/{id}")
-    public void update(@RequestBody Anh anh ,@PathVariable("id")String id) {
-        anhService.insert(anh);
-    }
 }
