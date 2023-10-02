@@ -25,7 +25,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import PointOfSales from './point-of-sales';
 
 const TabItem = (props) => {
-  const { delivery, productsInCarts, add, remove, openProductDetails, openDialogProductDetails, closeDialogProductDetails, closeNoActionDialogProductDetails,
+  const { delivery, cartItems, add, remove, openProductDetails, openDialogProductDetails, closeDialogProductDetails, closeNoActionDialogProductDetails,
     openProducts, openDialogProducts, closeDialogProducts, closeNoActionDialogProducts, getShipFee
   } = props;
   const [products, setProducts] = useState([]);
@@ -288,7 +288,7 @@ const TabItem = (props) => {
                 </TableRow>
               </StyledTableHead>
               <StyledTableBody>
-                {productsInCarts.map((item, index) => (
+                {cartItems.map((item, index) => (
                   <TableRow
                     key={index}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -461,19 +461,19 @@ const TabItem = (props) => {
           </div>
           <div className='ms-2 ps-1 mt-2' style={{ borderBottom: "2px solid #C7C7C7", width: "98.5%", borderWidth: "2px" }}></div>
           <div >
-            {productsInCarts.length == 0 ? <CartEmpty /> : <ProductCart />}
-            {productsInCarts.length == 1 ?
+            {cartItems.length == 0 ? <CartEmpty /> : <ProductCart />}
+            {cartItems.length == 1 ?
               <div className='' style={{ height: "180px" }}>
               </div>
               :
-              productsInCarts.length > 1 ?
+              cartItems.length > 1 ?
                 <div className='' style={{ height: "35px" }}>
                 </div>
                 :
                 <div className='' style={{ height: "35px" }}>
                 </div>
             }
-            {productsInCarts.length > 0 ?
+            {cartItems.length > 0 ?
               <div className='' style={{ height: "auto" }}>
                 <div className='mt-5 pt-3 p-1'>
                   <CssTextField multiline maxRows={2.5}

@@ -14,6 +14,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 import Zoom from '@mui/material/Zoom';
 import * as dayjs from "dayjs";
+import { OrderStatusString, OrderTypeString } from "./enum";
 
 const ManagementOrders = () => {
   const navigate = useNavigate();
@@ -41,7 +42,7 @@ const ManagementOrders = () => {
         }
       })
       .then((response) => {
-        setOrders(response.data.content);
+        setOrders(response.data.data);
         setTotalPages(response.data.totalPages);
         // localStorage.setItem('orders', response.data.content);
         // localStorage.setItem('totalPages', response.data.totalPages);
@@ -222,7 +223,7 @@ const ManagementOrders = () => {
       width: "15%",
       dataIndex: "loaiHoaDon",
       render: (type) =>
-        type == 1 ? (
+        type == OrderTypeString.DELIVERY ? (
           <div
             className="rounded-pill mx-auto badge-success"
             style={{
@@ -238,7 +239,7 @@ const ManagementOrders = () => {
               Giao hàng
             </span>
           </div>
-        ) : type == 0 ? (
+        ) : type == OrderTypeString.AT_COUNTER ? (
           <div
             className="rounded-pill badge-primary mx-auto"
             style={{ height: "35px", width: "91px", padding: "4px" }}
@@ -260,7 +261,7 @@ const ManagementOrders = () => {
       width: "15%",
       dataIndex: "trangThai",
       render: (status) => {
-        return status == 0 ? (
+        return status == OrderStatusString.PENDING_CONFIRM ? (
           <div
             className="rounded-pill badge-warning"
             style={{
@@ -276,44 +277,13 @@ const ManagementOrders = () => {
               Đang chờ xác nhận
             </span>
           </div>
-        ) : status == 1 ? (
-          <div
-            className="rounded-pill mx-auto badge-success"
-            style={{
-              height: "35px",
-              width: "115px",
-              padding: "4px",
-            }}
-          >
-            <span
-              className="text-white"
-              style={{ fontSize: "14px" }}
-            >
-              Đã xác nhận
-            </span>
-          </div>
-        ) : status == 2 ?
-          <div
-            className="rounded-pill mx-auto badge-primary"
-            style={{
-              height: "35px",
-              width: "135px",
-              padding: "4px",
-            }}
-          >
-            <span
-              className="text-white"
-              style={{ fontSize: "14px" }}
-            >
-              Đang giao hàng
-            </span>
-          </div>
-          : status == 3 ?
+        )
+          : status == OrderStatusString.CONFIRMED ? (
             <div
-              className="rounded-pill mx-auto badge-primary"
+              className="rounded-pill mx-auto badge-success"
               style={{
                 height: "35px",
-                width: "135px",
+                width: "115px",
                 padding: "4px",
               }}
             >
@@ -321,26 +291,92 @@ const ManagementOrders = () => {
                 className="text-white"
                 style={{ fontSize: "14px" }}
               >
-                Đã hoàn thành
+                Đã xác nhận
               </span>
             </div>
-            : status == 4 ?
+          )
+            : status == OrderStatusString.PREPARING ? (
               <div
-                className="rounded-pill mx-auto badge-danger"
+                className="rounded-pill mx-auto badge-warning"
                 style={{
                   height: "35px",
-                  width: "90px",
+                  width: "auto",
                   padding: "4px",
                 }}
               >
                 <span
-                  className="text-white"
+                  className="text-dark"
                   style={{ fontSize: "14px" }}
                 >
-                  Đã hủy
+                  Đang chuẩn bị hàng
                 </span>
               </div>
-              : ""
+            )
+              : status == OrderStatusString.DELIVERING ?
+                <div
+                  className="rounded-pill mx-auto badge-primary"
+                  style={{
+                    height: "35px",
+                    width: "135px",
+                    padding: "4px",
+                  }}
+                >
+                  <span
+                    className="text-white"
+                    style={{ fontSize: "14px" }}
+                  >
+                    Đang giao hàng
+                  </span>
+                </div>
+                : status == OrderStatusString.SUCCESS_DELIVERY ?
+                  <div
+                    className="rounded-pill mx-auto badge-primary"
+                    style={{
+                      height: "35px",
+                      width: "125px",
+                      padding: "4px",
+                    }}
+                  >
+                    <span
+                      className="text-white"
+                      style={{ fontSize: "14px" }}
+                    >
+                      Đã giao hàng
+                    </span>
+                  </div>
+                  : status == OrderStatusString.CANCELLED ?
+                    <div
+                      className="rounded-pill mx-auto badge-danger"
+                      style={{
+                        height: "35px",
+                        width: "90px",
+                        padding: "4px",
+                      }}
+                    >
+                      <span
+                        className="text-white"
+                        style={{ fontSize: "14px" }}
+                      >
+                        Đã hủy
+                      </span>
+                    </div>
+                    : status == OrderStatusString.HAD_PAID ?
+                      <div
+                        className="rounded-pill mx-auto badge-primary"
+                        style={{
+                          height: "35px",
+                          width: "135px",
+                          padding: "4px",
+                        }}
+                      >
+                        <span
+                          className="text-white"
+                          style={{ fontSize: "14px" }}
+                        >
+                          Đã thanh toán
+                        </span>
+                      </div> : ""
+
       },
     },
     {

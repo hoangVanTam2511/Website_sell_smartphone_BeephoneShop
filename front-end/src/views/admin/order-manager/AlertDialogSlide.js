@@ -27,6 +27,7 @@ import Sheet from '@mui/joy/Sheet';
 import RemoveOutlinedIcon from '@mui/icons-material/RemoveOutlined';
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import LoadingIndicator from '../../../utilities/loading.js'
+import { OrderStatusString } from './enum';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -1076,7 +1077,7 @@ export function OrderHistoryDialog(props) {
 
 export function ConfirmDialog(props) {
 
-  const { open, status, confirmOrderInfo, confirmDelivery, confirmFinish, confirmCancel, onCloseNoAction } = props;
+  const { open, status, confirmPreparing, confirmOrderInfo, confirmDelivery, confirmFinish, confirmCancel, onCloseNoAction } = props;
   const [description, setDescription] = useState("");
 
   const handleGetValueFromInputTextField = (event) => {
@@ -1090,25 +1091,31 @@ export function ConfirmDialog(props) {
   }
 
   const handleConfirm = () => {
-    if (status === 0) {
+    if (status === OrderStatusString.PENDING_CONFIRM) {
       confirmOrderInfo(description);
-    } else if (status === 1) {
+    }
+    else if (status === OrderStatusString.CONFIRMED) {
+      confirmPreparing(description);
+    }
+    else if (status === OrderStatusString.PREPARING) {
       confirmDelivery(description);
-    } else if (status === 2) {
+    } else if (status === OrderStatusString.DELIVERING) {
       confirmFinish(description);
-    } else if (status === 4) {
+    } else if (status === OrderStatusString.CANCELLED) {
       confirmCancel(description);
     }
     setDescription("");
   };
   const returnConfirmHeader = () => {
-    if (status === 0) {
+    if (status === OrderStatusString.PENDING_CONFIRM) {
       return "Xác Nhận Đơn Hàng"
-    } else if (status === 1) {
+    } else if (status === OrderStatusString.CONFIRMED) {
+      return "Xác Nhận Đang Chuẩn Bị Hàng"
+    } else if (status === OrderStatusString.PREPARING) {
       return "Xác Nhận Giao Hàng"
-    } else if (status === 2) {
-      return "Xác Nhận Hoàn Thành"
-    } else if (status === 4) {
+    } else if (status === OrderStatusString.DELIVERING) {
+      return "Xác Nhận Đã Giao"
+    } else if (status === OrderStatusString.CANCELLED) {
       return "Xác Nhận Hủy Đơn"
     }
   };
@@ -1143,12 +1150,12 @@ export function ConfirmDialog(props) {
             size='medium' className='mt-2' />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleConfirm} danger className="rounded-2 me-3 bg-primary" type="primary" style={{ height: "50px", width: "auto", fontSize: "16px", marginBottom: "20px" }}>
-            <span className='text-white' style={{ fontWeight: "550", marginBottom: "2px" }}>
+          <Button onClick={handleConfirm} className="rounded-2 me-2" type="primary" style={{ height: "40px", width: "auto", fontSize: "16px", marginBottom: "20px" }}>
+            <span className='text-white' style={{ fontWeight: "500", marginBottom: "2px" }}>
               Xác nhận</span>
           </Button>
-          <Button onClick={handleCloseDialog} danger className="rounded-2 me-3" type="primary" style={{ height: "50px", width: "auto", fontSize: "16px", marginBottom: "20px", backgroundColor: "#dc3333" }}>
-            <span className='text-white' style={{ fontWeight: "550", marginBottom: "2px" }}>
+          <Button onClick={handleCloseDialog} className="rounded-2 me-3" type="danger" style={{ height: "40px", width: "auto", fontSize: "16px", marginBottom: "20px" }}>
+            <span className='text-white' style={{ fontWeight: "500", marginBottom: "2px" }}>
               Hủy bỏ</span>
           </Button>
         </DialogActions>
