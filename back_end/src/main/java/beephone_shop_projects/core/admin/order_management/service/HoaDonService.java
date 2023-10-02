@@ -1,24 +1,32 @@
 package beephone_shop_projects.core.admin.order_management.service;
 
-import beephone_shop_projects.core.admin.order_management.dto.OrderDto;
-import beephone_shop_projects.core.admin.order_management.dto.SearchFilterOrderDto;
-import beephone_shop_projects.core.admin.order_management.dto.UpdateOrderDto;
+import beephone_shop_projects.core.admin.order_management.model.request.SearchFilterOrderDto;
+import beephone_shop_projects.core.admin.order_management.model.request.OrderRequest;
+import beephone_shop_projects.core.admin.order_management.model.response.OrderResponse;
 import beephone_shop_projects.entity.Account;
 import beephone_shop_projects.entity.Voucher;
 import org.springframework.data.domain.Page;
 
-public interface HoaDonService extends GenericService<OrderDto, String> {
+import java.util.List;
 
-  OrderDto getOrderDetailsById(String id, Boolean isPending);
+public interface HoaDonService extends GenericService<OrderResponse, OrderRequest, String> {
 
-  OrderDto placeOrder(Account account, Voucher voucher) throws Exception;
+  OrderResponse getOrderDetailsById(String id);
 
-  Page<OrderDto> findOrdersByMultipleCriteriaWithPagination(SearchFilterOrderDto searchFilterDTO) throws Exception;
+  OrderResponse placeOrder(Account account, Voucher voucher) throws Exception;
 
-  OrderDto updateOrder(UpdateOrderDto updateOrder, OrderDto orderDto) throws Exception;
+  Page<OrderResponse> findOrdersByMultipleCriteriaWithPagination(SearchFilterOrderDto searchFilterDTO) throws Exception;
 
-  OrderDto createOrderPending() throws Exception;
+  OrderResponse updateStatusOrderDelivery(OrderRequest req, String id) throws Exception;
 
-  OrderDto updateOrderPending(UpdateOrderDto updateOrderDto) throws Exception;
+  OrderResponse createOrderPending() throws Exception;
+
+  OrderResponse processingPaymentOrder(OrderRequest req, String id) throws Exception;
+
+  List<OrderResponse> getOrdersPending() throws Exception;
+
+  OrderResponse getOrderPendingById(String id);
+
+  Boolean deleteOrderPening(String id) throws Exception;
 
 }

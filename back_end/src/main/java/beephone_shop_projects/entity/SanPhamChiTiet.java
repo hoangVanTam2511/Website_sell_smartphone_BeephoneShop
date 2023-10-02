@@ -20,27 +20,21 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "san_pham_chi_tiet")
-public class SanPhamChiTiet extends PrimaryEntity implements Serializable{
+public class SanPhamChiTiet extends PrimaryEntity implements Serializable {
 
-    private String ma;
+  private String ma;
 
-    private String ten;
+  private BigDecimal donGia;
 
-    private BigDecimal donGia;
+  private Integer soLuongTonKho;
 
-    private Integer soLuongTonKho;
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "id_san_pham")
+  private SanPham sanPham;
 
-    private String url;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_san_pham")
-    private SanPham idSanPham;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_cau_hinh")
-    private CauHinh idCauHinh;
-
-
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "id_cau_hinh")
+  private CauHinh cauHinh;
 
 
 }

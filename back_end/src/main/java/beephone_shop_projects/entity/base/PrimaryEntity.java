@@ -5,11 +5,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
-import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.Date;
 
 @Getter
 @Setter
@@ -17,8 +15,8 @@ import java.util.Date;
 @EntityListeners(CreatePrimaryEntityListener.class)
 public abstract class PrimaryEntity extends AuditEntity implements IsIdentified {
 
-    @Id
-    @Column(length = 50,updatable = false)
-    private String id;
+  @Id
+  @Column(length = 50, updatable = false)
+  private String id;
 
 }

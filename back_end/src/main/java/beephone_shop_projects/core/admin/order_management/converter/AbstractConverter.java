@@ -1,24 +1,27 @@
 package beephone_shop_projects.core.admin.order_management.converter;
 
+import org.modelmapper.Condition;
+import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class AbstractConverter<D, E> implements GenericConverter<D, E> {
+public class AbstractConverter<D, E, R> implements GenericConverter<D, E, R> {
 
-  private Class<D> dtoClass;
+  private Class<D> responseClass;
   private Class<E> entityClass;
+  private Class<R> requestClass;
 
   public AbstractConverter() {
     Type type = getClass().getGenericSuperclass();
     ParameterizedType parameterizedType = (ParameterizedType) type;
-    dtoClass = (Class<D>) parameterizedType.getActualTypeArguments()[0];
+    responseClass = (Class<D>) parameterizedType.getActualTypeArguments()[0];
     entityClass = (Class<E>) parameterizedType.getActualTypeArguments()[1];
+    requestClass = (Class<R>) parameterizedType.getActualTypeArguments()[2];
   }
 
   private ModelMapper getModelMapper() {
@@ -26,24 +29,32 @@ public class AbstractConverter<D, E> implements GenericConverter<D, E> {
   }
 
   @Override
-  public D convertToDto(E entity) {
+  public D convertEntityToResponse(E entity) {
     if (entity != null) {
-      return getModelMapper().map(entity, dtoClass);
+      return getModelMapper().map(entity, responseClass);
     }
     return null;
   }
 
   @Override
-  public E convertToEntity(D dto) {
-    if (dto != null) {
-      return getModelMapper().map(dto, entityClass);
+  public E convertResponseToEntity(D response) {
+    if (response != null) {
+      return getModelMapper().map(response, entityClass);
     }
     return null;
   }
 
   @Override
-  public Page<D> convertToPageDto(Page<E> entityPage) {
-    return entityPage.map(e -> getModelMapper().map(e, dtoClass));
+  public E convertRequestToEntity(R req) {
+    if (req != null) {
+      return getModelMapper().map(req, entityClass);
+    }
+    return null;
+  }
+
+  @Override
+  public Page<D> convertToPageResponse(Page<E> entityPage) {
+    return entityPage.map(e -> getModelMapper().map(e, responseClass));
   }
 
   @Override
@@ -52,8 +63,8 @@ public class AbstractConverter<D, E> implements GenericConverter<D, E> {
   }
 
   @Override
-  public List<D> convertToListDto(List<E> entityList) {
-    return entityList.stream().map(e -> getModelMapper().map(e, dtoClass)).collect(Collectors.toList());
+  public List<D> convertToListResponse(List<E> entityList) {
+    return entityList.stream().map(e -> getModelMapper().map(e, responseClass)).collect(Collectors.toList());
   }
 
   @Override

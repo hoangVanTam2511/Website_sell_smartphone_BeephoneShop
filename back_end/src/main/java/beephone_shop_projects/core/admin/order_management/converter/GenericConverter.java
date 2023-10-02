@@ -4,17 +4,19 @@ import org.springframework.data.domain.Page;
 
 import java.util.List;
 
-public interface GenericConverter<D, E> {
+public interface GenericConverter<D, E, R> {
 
-  D convertToDto(E entity);
+  D convertEntityToResponse(E entity);
 
-  E convertToEntity(D dto);
+  E convertResponseToEntity(D response);
 
-  Page<D> convertToPageDto(Page<E> entityPage);
+  E convertRequestToEntity(R request);
 
-  Page<E> convertToPageEntity(Page<D> dtoPage);
+  Page<D> convertToPageResponse(Page<E> entityPage);
 
-  List<D> convertToListDto(List<E> entityList);
+  Page<E> convertToPageEntity(Page<D> responsePage);
 
-  List<E> convertToListEntity(List<D> dtoList);
+  List<D> convertToListResponse(List<E> entityList);
+
+  List<E> convertToListEntity(List<D> responseList);
 }

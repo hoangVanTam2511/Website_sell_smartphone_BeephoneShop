@@ -36,24 +36,23 @@ public class SanPham extends PrimaryEntity implements IsIdentified {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_dong_san_pham")
-    private DongSanPham idDongSanPham;
-
+    private DongSanPham dongSanPham;
 
     @ManyToOne (fetch = FetchType.EAGER)
     @JoinColumn(name = "id_nha_san_xuat")
-    private NhaSanXuat idNhaSanXuat;
+    private NhaSanXuat nhaSanXuat;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_chip")
-    private Chip idChip;
+    private Chip chip;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_man_hinh")
-    private ManHinh idManHinh;
+    private ManHinh manHinh;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_pin")
-    private Pin idPin;
+    private Pin pin;
 
 
 }

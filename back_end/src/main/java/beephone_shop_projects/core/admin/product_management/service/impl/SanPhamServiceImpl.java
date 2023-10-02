@@ -47,9 +47,9 @@ public class SanPhamServiceImpl {
 
         SanPham sanPham = new SanPham();
         sanPham.setTenSanPham(req.getTenSanPham());
-        sanPham.setIdDongSanPham(dongSanPham);
-        sanPham.setIdNhaSanXuat(nhaSanXuat);
-        sanPham.setIdChip(chip);
+        sanPham.setDongSanPham(dongSanPham);
+        sanPham.setNhaSanXuat(nhaSanXuat);
+        sanPham.setChip(chip);
         sanPham.setDelected(false);
 
         return chiTietSanPhamRepository.save(sanPham);
