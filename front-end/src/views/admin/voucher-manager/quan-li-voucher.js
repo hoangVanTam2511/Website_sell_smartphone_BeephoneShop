@@ -1,4 +1,4 @@
-import { Form, Table, message, Button, Popconfirm } from "antd";
+import { Form, Table, Button, Modal } from "antd";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -37,16 +37,20 @@ import { id } from "date-fns/esm/locale";
 //show
 const HienThiVoucher = () => {
   const [form] = Form.useForm();
-  let [listVoucher, setListVoucher] = useState([]);
+  const [listVoucher, setListVoucher] = useState([]);
   const [voucher, setVoucher] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [searchNgayBatDau, setSearchNgayBatDau] = useState("");
   const [searchNgayKetThuc, setSearchNgayKetThuc] = useState("");
   const [searchTrangThai, setSearchTrangThai] = useState("");
-  let [searchTatCa, setSearchTatCa] = useState("");
+  const [searchTatCa, setSearchTatCa] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
   const [isLoading, setIsLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [id, setId] = useState("");
+  const [ma, setMa] = useState("");
+  const [ten, setTen] = useState("");
 
   const loadDataListVoucher = (page) => {
     axios
@@ -132,6 +136,20 @@ const HienThiVoucher = () => {
   const handleSearchNgayKetThucChange = (selectedDate) => {
     const value = selectedDate.format("DD/MM/YYYY");
     setSearchNgayKetThuc(value); // Cập nhật giá trị khi Select thay đổi
+  };
+
+  const showModal = (id, ma, ten) => {
+    setId(id);
+    setMa(ma);
+    setTen(ten);
+    setIsModalOpen(true);
+  };
+  const handleOk = () => {
+    doiTrangThaiVoucher(id);
+    setIsModalOpen(false);
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
   };
 
   //Ten column
@@ -378,6 +396,8 @@ const HienThiVoucher = () => {
                   : record.trangThai === 4 &&
                     isRangeDate(record.ngayBatDau, record.ngayKetThuc) === true
                   ? "Kích hoạt"
+                  : record.trangThai === 2
+                  ? "Không thể đổi"
                   : ""
               }
             >
@@ -392,7 +412,7 @@ const HienThiVoucher = () => {
                 size=""
                 className="ms-2"
                 style={{ marginTop: "6px" }}
-                onClick={() => doiTrangThaiVoucher(record.id)}
+                onClick={() => showModal(record.id, record.ma, record.ten)}
               >
                 <AssignmentOutlinedIcon
                   color={
@@ -409,6 +429,7 @@ const HienThiVoucher = () => {
                   }
                 />
               </IconButton>
+              <ToastContainer />
             </Tooltip>
           </>
         );
@@ -489,6 +510,17 @@ const HienThiVoucher = () => {
       >
         <Card className="">
           <Card.Header className="">
+            <Modal
+              title="Xác nhận đổi trạng thái"
+              open={isModalOpen}
+              onOk={handleOk}
+              onCancel={handleCancel}
+            >
+              <h6 style={{ fontWeight: "normal" }}>
+                Bạn có chắc chắn muốn thực hiện hành động đổi trạng thái voucher
+                có mã "{ma}" và tên "{ten}" này không?
+              </h6>
+            </Modal>
             <div className="header-title mt-2">
               <TextField
                 label="Tìm voucher"

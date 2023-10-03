@@ -20,22 +20,32 @@ import Radio, { radioClasses } from "@mui/joy/Radio";
 import RadioGroup from "@mui/joy/RadioGroup";
 
 const AddVoucher = () => {
+  const [listVoucher, setListVoucher] = useState([]);
   const [ma, setMa] = useState("");
   const [ten, setTen] = useState("");
   const [ngayBatDau, setNgayBatDau] = useState(dayjs());
   const [ngayKetThuc, setNgayKetThuc] = useState(dayjs());
   const [dieuKienApDungConvert, setDieuKienApDungConvert] = useState(0);
-  const [soLuong, setSoLuong] = useState("");
+  const [soLuong, setSoLuong] = useState();
   const [validationMsg, setValidationMsg] = useState({});
   const [giaTriVoucherConvert, setGiaTriVoucherConvert] = useState(0);
   const [value, setValue] = React.useState();
   const [value1, setValue1] = React.useState();
   const [value2, setValue2] = React.useState();
   const [selectDiscount, setSeclectDiscount] = useState("VNĐ");
-  const [giaTriToiDa, setGiaTriToiDa] = useState(0);
+  const [giaTriToiDa, setGiaTriToiDa] = useState();
   const [valueToiThieu, setValueToiThieu] = React.useState();
   const [valueToiDa, setValueToiDa] = React.useState();
   const [isLoading, setIsLoading] = useState(false);
+
+  const loadDataListVoucher = (page) => {
+    axios
+      .get(`${apiURLVoucher}/vouchers`)
+      .then((response) => {
+        setListVoucher(response.data.content);
+      })
+      .catch((error) => {});
+  };
 
   const handleChange = (event) => {
     if (selectDiscount === "VNĐ") {
@@ -53,9 +63,9 @@ const AddVoucher = () => {
       inputValue = inputValue.replace(/\D/g, "");
       // Xử lý giới hạn giá trị từ 1 đến 100
       if (isNaN(inputValue) || inputValue < 1) {
-        inputValue = 0;
+        inputValue = "0";
       } else if (inputValue > 100) {
-        inputValue = 100;
+        inputValue = "100";
       }
       setValue(inputValue);
       setGiaTriVoucherConvert(inputValue);
@@ -98,6 +108,7 @@ const AddVoucher = () => {
       giaTriToiDa: giaTriToiDa,
       loaiVoucher: selectDiscount,
     };
+
     axios
       .post(apiURLVoucher + "/addVoucher", obj)
       .then((response) => {
@@ -114,26 +125,67 @@ const AddVoucher = () => {
   const validationAll = () => {
     const msg = {};
 
+    // if (listVoucher.some((voucher) => voucher.ma === ma)) {
+    //   msg.ma = "Mã voucher đã tồn tại !!!";
+    // }
+
     if (!ten.trim("")) {
       msg.ten = "Tên không được để trống !!!";
     }
 
-    if (!soLuong.trim("")) {
+    if (/^\s+|\s+$/.test(ten)) {
+      msg.ten = "Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi";
+    }
+    if (soLuong == null || soLuong === "") {
       msg.soLuong = "Số lượng không được để trống !!!";
     }
+    if (/^\s+|\s+$/.test(soLuong)) {
+      msg.soLuong = "Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi";
+    }
 
-    // if (!dieuKienApDungConvert.trim("")) {
-    //   msg.dieuKienApDungConvert = "Điều kiện áp dụng không được để trống !!!";
-    // }
+    if (soLuong <= 0 || soLuong > 10000) {
+      msg.soLuong = "Số lượng cho phép từ 1 đến 10000";
+    }
+
+    const numericValue1 = parseFloat(value1?.replace(/[^0-9.-]+/g, ""));
+    if (value1 == null || value1 === "") {
+      msg.value1 = "Điều kiện áp dụng không được để trống !!!";
+    }
+
+    if (numericValue1 <= 0 || numericValue1 > 100000000) {
+      msg.value1 = "Điều kiện áp dụng từ 1đ đến 100.000.000đ";
+    }
 
     if (ngayBatDau.isAfter(ngayKetThuc)) {
       msg.ngayBatDau = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc !!!";
     }
 
-    // if (!giaTriVoucherConvert.trim("")) {
-    //   msg.giaTriVoucherConvert = "Giá trị voucher không được để trống !!!";
-    // }
+    const numericValue2 = parseFloat(value?.replace(/[^0-9.-]+/g, ""));
+    if (value == null || value === "") {
+      msg.value = "Giá trị voucher không được để trống !!!";
+    }
 
+    if (
+      (selectDiscount === "VNĐ" && numericValue2 <= 0) ||
+      (selectDiscount === "VNĐ" && numericValue2 > 100000000)
+    ) {
+      msg.value = "Giá trị voucher từ 1đ đến 100.000.000đ";
+    }
+
+    const numericValue3 = parseFloat(valueToiDa?.replace(/[^0-9.-]+/g, ""));
+    if (
+      (selectDiscount === "%" && valueToiDa === null) ||
+      (selectDiscount === "%" && valueToiDa === "")
+    ) {
+      msg.valueToiDa = "Giá trị tối đa không được để trống !!!";
+    }
+
+    if (
+      (selectDiscount === "%" && numericValue3 <= 0) ||
+      (selectDiscount === "%" && numericValue3 > 100000000)
+    ) {
+      msg.valueToiDa = "Giá trị tối đa từ 1đ đến 100.000.000đ";
+    }
     if (ngayKetThuc.isBefore(ngayBatDau)) {
       msg.ngayKetThuc = "Ngày kết thúc phải lớn hơn ngày bắt đầu !!!";
     }
@@ -141,6 +193,12 @@ const AddVoucher = () => {
     if (ngayBatDau.isBefore(dayjs())) {
       msg.ngayBatDau = "Ngày bắt đầu phải lớn hơn ngày hiện tại !!!";
     }
+
+    if (ngayKetThuc.isBefore(dayjs())) {
+      msg.ngayKetThuc = "Ngày kết thúc phải lớn hơn ngày hiện tại !!!";
+    }
+
+    console.log(value);
 
     setValidationMsg(msg);
     if (Object.keys(msg).length > 0) return false;
@@ -269,7 +327,7 @@ const AddVoucher = () => {
                 }}
               />
               <span className="validate" style={{ color: "red" }}>
-                {validationMsg.dieuKienApDungConvert}
+                {validationMsg.value1}
               </span>
             </div>
           </div>
@@ -352,12 +410,12 @@ const AddVoucher = () => {
                 }}
               />
               <span
-                className="validate-value"
+                className="validate"
                 style={{
                   color: "red",
                 }}
               >
-                {validationMsg.giaTriVoucherConvert}
+                {validationMsg.value}
               </span>
             </div>
             <div className="ms-3">
@@ -380,6 +438,14 @@ const AddVoucher = () => {
                   maxLength: 20, // Giới hạn tối đa 10 ký tự
                 }}
               />
+              <span
+                className="validate"
+                style={{
+                  color: "red",
+                }}
+              >
+                {validationMsg.valueToiDa}
+              </span>
             </div>
           </div>
           <div

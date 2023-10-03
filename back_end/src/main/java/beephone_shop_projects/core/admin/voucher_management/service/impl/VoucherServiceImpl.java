@@ -96,6 +96,9 @@ public class    VoucherServiceImpl implements VoucherService {
         if (request.getMa().isBlank()){
             codeVoucher = "BEE"+generateRandomCode();
         }
+        if (voucherRepository.findCodeVoucher(request.getMa()) != null){
+            // in ra lỗi trùng mã
+        }
         Voucher voucher = Voucher.builder()
                 .ma(codeVoucher)
                 .ten(request.getTen())
@@ -114,6 +117,9 @@ public class    VoucherServiceImpl implements VoucherService {
     @Override
     public Voucher updateVoucher(@Valid UpdateVoucherRequest request, String id) {
         Voucher voucher = voucherRepository.findById(id).get();
+        if (voucherRepository.findCodeVoucher(request.getMa()) != null){
+            // in ra lỗi không tồn tại
+        }
         if (voucher != null) {
             voucher.setMa(request.getMa());
             voucher.setTen(request.getTen());
@@ -143,6 +149,9 @@ public class    VoucherServiceImpl implements VoucherService {
     public Voucher doiTrangThai(String id) {
         Voucher voucher = voucherRepository.findById(id).get();
 
+        if (voucherRepository.findById(id) != null){
+            // in ra lỗi
+        }
         if (voucher.getTrangThai() == 1 || voucher.getTrangThai() == 3) {
             voucher.setTrangThai(4);
         } else if (voucher.getTrangThai() == 4) {

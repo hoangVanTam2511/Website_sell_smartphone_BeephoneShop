@@ -61,9 +61,9 @@ const UpdateVoucher = () => {
       inputValue = inputValue.replace(/\D/g, "");
       // Xử lý giới hạn giá trị từ 1 đến 100
       if (isNaN(inputValue) || inputValue < 1) {
-        inputValue = 0;
+        inputValue = "0";
       } else if (inputValue > 100) {
-        inputValue = 100;
+        inputValue = "100";
       }
       setValue(inputValue);
       setGiaTriVoucher(inputValue);
@@ -191,31 +191,66 @@ const UpdateVoucher = () => {
   };
   const validationAll = () => {
     const msg = {};
-    if (!ten) {
+    if (!ten.trim("")) {
       msg.ten = "Tên không được để trống !!!";
     }
-    if (!soLuong) {
+
+    if (/^\s+|\s+$/.test(ten)) {
+      msg.ten = "Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi";
+    }
+    if (soLuong == null || soLuong === "") {
       msg.soLuong = "Số lượng không được để trống !!!";
     }
+    if (/^\s+|\s+$/.test(soLuong)) {
+      msg.soLuong = "Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi";
+    }
 
-    // if (!dieuKienApDungConvert) {
-    //   msg.dieuKienApDungConvert = "Điều kiện áp dụng không được để trống !!!";
-    // }
+    if (soLuong <= 0 || soLuong > 10000) {
+      msg.soLuong = "Số lượng cho phép từ 1 đến 10000";
+    }
+
+    const numericValue1 = parseFloat(value1?.replace(/[^0-9.-]+/g, ""));
+    if (value1 == null || value1 === "") {
+      msg.value1 = "Điều kiện áp dụng không được để trống !!!";
+    }
+
+    if (numericValue1 <= 0 || numericValue1 > 100000000) {
+      msg.value1 = "Điều kiện áp dụng từ 1đ đến 100.000.000đ";
+    }
 
     // if (ngayBatDau.isAfter(ngayKetThuc)) {
     //   msg.ngayBatDau = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc !!!";
     // }
 
-    // if (!giaTriVoucherConvert) {
-    //   msg.giaTriVoucherConvert = "Giá trị voucher không được để trống !!!";
-    // }
+    const numericValue2 = parseFloat(value?.replace(/[^0-9.-]+/g, ""));
+    if (value == null || value === "") {
+      msg.value = "Giá trị voucher không được trống !!!";
+    }
 
+    if (
+      (selectDiscount === "VNĐ" && numericValue2 <= 0) ||
+      (selectDiscount === "VNĐ" && numericValue2 > 100000000)
+    ) {
+      msg.value = "Giá trị voucher từ 1đ đến 100.000.000đ";
+    }
+
+    const numericValue3 = parseFloat(valueToiDa?.replace(/[^0-9.-]+/g, ""));
+    if (
+      (selectDiscount === "%" && valueToiDa === null) ||
+      (selectDiscount === "%" && valueToiDa === "")
+    ) {
+      msg.valueToiDa = "Giá trị tối đa không được để trống !!!";
+    }
+
+    if (
+      (selectDiscount === "%" && numericValue3 <= 0) ||
+      (selectDiscount === "%" && numericValue3 > 100000000)
+    ) {
+      msg.valueToiDa = "Giá trị tối đa từ 1đ đến 100.000.000đ";
+    }
     // if (ngayKetThuc.isBefore(ngayBatDau)) {
     //   msg.ngayKetThuc = "Ngày kết thúc phải lớn hơn ngày bắt đầu !!!";
-    // }
-
-    // if (ngayBatDau.isBefore(dayjs())) {
-    //   msg.ngayBatDau = "Ngày bắt đầu phải lớn hơn ngày hiện tại !!!";
+    //   msg.ngayBatDau = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc !!!";
     // }
 
     setValidationMsg(msg);
@@ -325,7 +360,7 @@ const UpdateVoucher = () => {
                 }}
               />
               <span className="validate" style={{ color: "red" }}>
-                {validationMsg.dieuKienApDungConvert}
+                {validationMsg.value1}
               </span>
             </div>
           </div>
@@ -405,12 +440,12 @@ const UpdateVoucher = () => {
                 }}
               />
               <span
-                className="validate-value"
+                className="validate"
                 style={{
                   color: "red",
                 }}
               >
-                {validationMsg.giaTriVoucherConvert}
+                {validationMsg.value}
               </span>
             </div>
             <div className="ms-3">
@@ -433,6 +468,14 @@ const UpdateVoucher = () => {
                   maxLength: 20, // Giới hạn tối đa 10 ký tự
                 }}
               />
+              <span
+                className="validate"
+                style={{
+                  color: "red",
+                }}
+              >
+                {validationMsg.valueToiDa}
+              </span>
             </div>
           </div>
           <div className="d-flex" style={{ marginLeft: "40px" }}>
