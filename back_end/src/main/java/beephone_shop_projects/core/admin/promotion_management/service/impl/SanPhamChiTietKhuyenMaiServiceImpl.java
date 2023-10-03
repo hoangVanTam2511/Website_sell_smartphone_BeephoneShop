@@ -1,6 +1,7 @@
 package beephone_shop_projects.core.admin.promotion_management.service.impl;
 
 import beephone_shop_projects.core.admin.promotion_management.model.reponse.SanPhamChiTietKhuyenMaiResponse;
+import beephone_shop_projects.core.admin.promotion_management.model.reponse.SanPhamChiTietKhuyenMaiResponseCustom;
 import beephone_shop_projects.core.admin.promotion_management.model.reponse.SanPhamChiTietSauKhuyenMaiResponse;
 import beephone_shop_projects.core.admin.promotion_management.model.reponse.SanPhamKhuyenMaiResponse;
 import beephone_shop_projects.core.admin.promotion_management.repository.SanPhamChiTietKhuyenMaiRepository;
@@ -43,7 +44,21 @@ public class SanPhamChiTietKhuyenMaiServiceImpl implements SanPhamChiTietKhuyenM
                 }
             }
             listAo.removeAll(itemsToRemove);
+
         }
+//        for (SanPhamChiTietKhuyenMaiResponse sp : listAo) {
+//            SanPhamChiTietKhuyenMaiResponseCustom responseCustom = new SanPhamChiTietKhuyenMaiResponseCustom();
+//            responseCustom.setId(sp.getId());
+//            responseCustom.setDuongDan(sp.getDuongDan());
+//            responseCustom.setTenSanPham(sp.getTenSanPham());
+//            responseCustom.setTenMauSac(sp.getTenMauSac());
+//            responseCustom.setKichThuocRam(sp.getKichThuocRam());
+//            responseCustom.setKichThuocRom(sp.getKichThuocRom());
+//            responseCustom.setDonGia(sp.getDonGia());
+//            responseCustom.setDelected(sp.getDelected());
+//
+////            List<KhuyenMaiChiTietResponse> kmct = new ArrayList<>() ;
+//        }
         return listAo;
     }
 

@@ -68,6 +68,7 @@ const SuaKhuyenMai = () => {
   const loadDatalistSanPham = () => {
     axios.get("http://localhost:8080/san-pham-1").then((response) => {
       setListSanPham(response.data);
+      console.log(response);
     });
   };
 
@@ -151,6 +152,8 @@ const SuaKhuyenMai = () => {
       .get("http://localhost:8080/san-pham-chi-tiet-khuyen-mai/detail/" + id)
       .then((response) => {
         setSanPhamChiTietKhuyenMai(response.data);
+        setIdSanPhamChiTiet(response.idSanPhamChiTiet);
+        console.log(response);
       })
       .catch((error) => {});
   };
@@ -182,32 +185,47 @@ const SuaKhuyenMai = () => {
       .catch((error) => {});
   };
 
+  //Validate
   const validationAll = () => {
     const msg = {};
-    // if (isEmpty(tenKhuyenMai)) {
-    //   msg.tenKhuyenMai = "Không để trống Tên !!!";
-    // }
-    // if (isEmpty(mucGiamGiaTheoPhanTram)) {
-    //   msg.mucGiamGiaTheoPhanTram = "Không để trống Mức GIảm Giá Theo Tên !!!";
-    // }
-    // if (isEmpty(mucGiamGiaTheoSoTien)) {
-    //   msg.mucGiamGiaTheoSoTien = "Không để trống Mức Giảm Giá Theo Tiền !!!";
-    // }
-    // if (isEmpty(dieuKienGiamGia)) {
-    //   msg.dieuKienGiamGia = "Không để trống Điều Kiện Giảm Giá !!!";
-    // }
 
-    // if (isAfter(String(ngayBatDau), String(ngayKetThuc))) {
-    //   msg.ngayBatDau = "Ngày Bắt Đầu phải nhỏ hơn ngày kết thúc !!!";
-    // }
+    if (!tenKhuyenMai.trim("")) {
+      msg.tenKhuyenMai = "Tên không được để trống !!!";
+    }
 
-    // if (isAfter(String(ngayBatDau), String(ngayKetThuc))) {
-    //   msg.ngayBatDau = "Ngày Bắt Đầu phải nhỏ hơn ngày kết thúc !!!";
-    // }
+    if (/^\s+|\s+$/.test(tenKhuyenMai)) {
+      msg.tenKhuyenMai =
+        "Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi";
+    }
+    if (ngayBatDau.isAfter(ngayKetThuc)) {
+      msg.ngayBatDau = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc !!!";
+    }
 
-    // if (equals(String(ngayBatDau), String(ngayKetThuc))) {
-    //   msg.ngayKetThuc = "Ngày Kết Thúc phải lớn hơn Ngày Bắt Đầu !!!";
-    // }
+    const numericValue2 = parseFloat(value?.replace(/[^0-9.-]+/g, ""));
+    if (value == null || value === "") {
+      msg.giaTriKhuyenMai = "Giá trị voucher không được để trống !!!";
+    }
+
+    if (
+      (selectDiscount === "VNĐ" && numericValue2 <= 0) ||
+      (selectDiscount === "VNĐ" && numericValue2 > 100000000)
+    ) {
+      msg.giaTriKhuyenMai = "Giá trị voucher từ 1đ đến 100.000.000đ";
+    }
+
+    if (ngayKetThuc.isBefore(ngayBatDau)) {
+      msg.ngayKetThuc = "Ngày kết thúc phải lớn hơn ngày bắt đầu !!!";
+    }
+
+    if (ngayBatDau.isBefore(dayjs())) {
+      msg.ngayBatDau = "Ngày bắt đầu phải lớn hơn ngày hiện tại !!!";
+    }
+
+    if (ngayKetThuc.isBefore(dayjs())) {
+      msg.ngayKetThuc = "Ngày kết thúc phải lớn hơn ngày hiện tại !!!";
+    }
+
+    console.log(value);
 
     setValidationMsg(msg);
     if (Object.keys(msg).length > 0) return false;
@@ -366,6 +384,7 @@ const SuaKhuyenMai = () => {
       width: "5%",
       render: (_, record) => (
         <Checkbox
+          key={record.idSanPhamChiTiet}
           onChange={(e) => handleCheckboxChange1(record, e)}
           checked={selectedRowKeys1.includes(record.id)}
         />

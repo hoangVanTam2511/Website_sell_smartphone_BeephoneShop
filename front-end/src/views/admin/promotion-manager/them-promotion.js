@@ -6,7 +6,7 @@ import { faArrowLeft, faCheck, faEye } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { apiURLKhuyenMai, apiURLSanPham } from "../../../service/api";
 import TextField from "@mui/material/TextField";
-import { Badge, InputAdornment, Typography } from "@mui/material";
+import { InputAdornment, Typography } from "@mui/material";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -21,6 +21,7 @@ import style from "./style.css";
 import Box from "@mui/joy/Box";
 import Radio, { radioClasses } from "@mui/joy/Radio";
 import RadioGroup from "@mui/joy/RadioGroup";
+import Badge from "@mui/material/Badge";
 
 const AddKhuyenMai = () => {
   //add-khuyen-mai
@@ -52,20 +53,22 @@ const AddKhuyenMai = () => {
   //Lấy id ctsp
   const [selectedProductDetails, setSelectedProductDetails] = useState([]);
   let [sanPhamChiTietKhuyenMai, setSanPhamChiTietKhuyenMai] = useState([]);
+  const [isInputChanged, setIsInputChanged] = useState(false);
   // Tạo một state để lưu danh sách các ID sản phẩm đã được chọn
 
   const redirectToHienThiKhuyenMai = () => {
     window.location.href = "/khuyen-mai";
   };
 
-  useEffect(() => {
-    clear();
-  }, []);
-
   const loadDatalistSanPham = () => {
-    axios.get("http://localhost:8080/san-pham-1").then((response) => {
-      setListSanPham(response.data);
-    });
+    axios
+      .get("http://localhost:8080/san-pham-1")
+      .then((response) => {
+        setListSanPham(response.data);
+      })
+      .catch((error) => {
+        console.log("Lỗi do hiển thị dữ liệu sản phẩm");
+      });
   };
 
   const loadDatalistSanPhamChiTiet = (id, check) => {
@@ -73,6 +76,9 @@ const AddKhuyenMai = () => {
       .get("http://localhost:8080/san-pham-chi-tiet-1/" + id + "/" + check)
       .then((response) => {
         setlistSanPhamChiTiet(response.data);
+      })
+      .catch((error) => {
+        console.log("Lỗi do hiển thị dữ liệu sản phẩm chi tiết");
       });
   };
 
@@ -81,11 +87,15 @@ const AddKhuyenMai = () => {
       .get("http://localhost:8080/san-pham-chi-tiet/removeALL")
       .then((response) => {
         setlistSanPhamChiTiet(response.data);
+      })
+      .catch((error) => {
+        console.log("Lỗi do clear dữ liệu sản phẩm");
       });
   };
 
   useEffect(() => {
     loadDatalistSanPham();
+    clear();
   }, [dataSanPhamChiTiet]);
 
   const handleChange = (event) => {
@@ -97,6 +107,7 @@ const AddKhuyenMai = () => {
         .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
       setValue(formattedValue);
       setGiaTriKhuyenMai(numericValue);
+      setIsInputChanged(true);
     }
     if (selectDiscount === "%") {
       let inputValue = event.target.value;
@@ -137,8 +148,24 @@ const AddKhuyenMai = () => {
       .get("http://localhost:8080/san-pham-chi-tiet-khuyen-mai/detail/" + id)
       .then((response) => {
         setSanPhamChiTietKhuyenMai(response.data);
+        console.log(sanPhamChiTietKhuyenMai);
       })
-      .catch((error) => {});
+      .catch((error) => {
+        "Lỗi do hiển thị sản phẩm sau khuyến mãi";
+      });
+  };
+
+  const detailSanPhamSauKhuyenMai1 = (id) => {
+    axios
+      .get("http://localhost:8080/san-pham-chi-tiet-khuyen-mai/detail/" + id)
+      .then((response) => {
+        setSanPhamChiTietKhuyenMai(response.data);
+        console.log(sanPhamChiTietKhuyenMai);
+      })
+      .catch((error) => {
+        "Lỗi do hiển thị sản phẩm sau khuyến mãi";
+      });
+    return sanPhamChiTietKhuyenMai.length;
   };
 
   //Hàm áp dụng khuyến mãi cho sản phẩm
@@ -207,16 +234,29 @@ const AddKhuyenMai = () => {
   //Validate
   const validationAll = () => {
     const msg = {};
+
     if (!tenKhuyenMai.trim("")) {
-      msg.tenKhuyenMai = "Không để trống Tên !!!";
+      msg.tenKhuyenMai = "Tên không được để trống !!!";
     }
 
-    // if (!giaTriKhuyenMai.trim("")) {
-    //   msg.giaTriKhuyenMai = "Không để trống giá trị khuyến mãi !!!";
-    // }
-
+    if (/^\s+|\s+$/.test(tenKhuyenMai)) {
+      msg.tenKhuyenMai =
+        "Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi";
+    }
     if (ngayBatDau.isAfter(ngayKetThuc)) {
       msg.ngayBatDau = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc !!!";
+    }
+
+    const numericValue2 = parseFloat(value?.replace(/[^0-9.-]+/g, ""));
+    if (value == null || value === "") {
+      msg.giaTriKhuyenMai = "Giá trị voucher không được để trống !!!";
+    }
+
+    if (
+      (selectDiscount === "VNĐ" && numericValue2 <= 0) ||
+      (selectDiscount === "VNĐ" && numericValue2 > 100000000)
+    ) {
+      msg.giaTriKhuyenMai = "Giá trị voucher từ 1đ đến 100.000.000đ";
     }
 
     if (ngayKetThuc.isBefore(ngayBatDau)) {
@@ -226,6 +266,12 @@ const AddKhuyenMai = () => {
     if (ngayBatDau.isBefore(dayjs())) {
       msg.ngayBatDau = "Ngày bắt đầu phải lớn hơn ngày hiện tại !!!";
     }
+
+    if (ngayKetThuc.isBefore(dayjs())) {
+      msg.ngayKetThuc = "Ngày kết thúc phải lớn hơn ngày hiện tại !!!";
+    }
+
+    console.log(numericValue2);
 
     setValidationMsg(msg);
     if (Object.keys(msg).length > 0) return false;
@@ -240,13 +286,10 @@ const AddKhuyenMai = () => {
 
   const handleCheckboxChange = (record, e) => {
     const id = record.id;
-
     if (e.target.checked) {
       setSelectedRowKeys([...selectedRowKeys, id]);
       setSelectedRows([...selectedRows, record]);
       loadDatalistSanPhamChiTiet(record.id, true);
-      // detailSanPhamSauKhuyenMai(record.id);
-      // setIdSPCTKM(record.id);
     } else {
       loadDatalistSanPhamChiTiet(record.id, false);
       setSelectedRowKeys(selectedRowKeys.filter((key) => key !== id));
@@ -268,11 +311,10 @@ const AddKhuyenMai = () => {
     },
   };
 
-  // Xử lý khi checkbox trên tiêu đề cột thay đổi
+  //Xử lý khi checkbox trên tiêu đề cột thay đổi
   const handleSelectAllChange = (e) => {
     const checked = e.target.checked;
     if (checked === true) {
-      clear();
       setSelectAll(checked);
       const selectedKeys = checked ? listSanPham.map((item) => item.id) : [];
       selectedKeys.forEach((id) => {
@@ -380,17 +422,6 @@ const AddKhuyenMai = () => {
     },
   ];
 
-  // const [so, setSo] = useState(0);
-  // const soLuong = () => {
-  //   setSo(sanPhamChiTietKhuyenMai.length);
-  //   console.log(so);
-  // };
-
-  // useEffect(() => {
-  //   // Tính số lượng và cập nhật giá trị 'so' khi 'sanPhamChiTietKhuyenMai' thay đổi
-  //   setSo(sanPhamChiTietKhuyenMai.length);
-  // }, [sanPhamChiTietKhuyenMai]);
-
   //Column bảng Sản Phẩm Chi Tiết
   const columns1 = [
     {
@@ -422,14 +453,17 @@ const AddKhuyenMai = () => {
       width: "10%",
       align: "center",
       render: (text, record) => (
-        <Badge badgeContent={1} color="error">
-          <Typography variant="h6">
-            <img
-              src={record.duongDan}
-              alt="Ảnh"
-              style={{ width: "100px", height: "100px" }}
-            />
-          </Typography>
+        <Badge
+          showZero={true}
+          className="ms-2"
+          // badgeContent={detailSanPhamSauKhuyenMai1(record.id)}
+          color="primary"
+        >
+          <img
+            src={record.duongDan}
+            alt="Ảnh"
+            style={{ width: "100px", height: "100px" }}
+          />
         </Badge>
       ),
     },
@@ -438,9 +472,13 @@ const AddKhuyenMai = () => {
       dataIndex: "tenSanPham",
       width: "10%",
       align: "center",
+      render: (value, record) => {
+        let tenSanPham = value;
+        return <span style={{ whiteSpace: "pre-line" }}> {tenSanPham}</span>;
+      },
     },
     {
-      title: "Kích thước ROM",
+      title: "ROM",
       dataIndex: "kichThuocRom",
       width: "10%",
       align: "center",
@@ -451,7 +489,7 @@ const AddKhuyenMai = () => {
       },
     },
     {
-      title: "Kích thước RAM ",
+      title: "RAM ",
       dataIndex: "kichThuocRam",
       width: "10%",
       editable: true,
@@ -481,142 +519,192 @@ const AddKhuyenMai = () => {
         return <span>{formattedValue}</span>;
       },
     },
-    // {
-    //   title: "Tình trạng",
-    //   dataIndex: "tinhTrang",
-    //   width: "10%",
-    //   align: "center",
-    //   render: (_, record) => {
-    //     return (
-    //       <>
-    //         <div style={{ textAlign: "center" }}>
-    //           <Tooltip title="Change">
-    //             <Button
-    //               onClick={() => {
-    //                 showModal();
-    //                 detailSanPhamSauKhuyenMai(record.id);
-    //               }}
-    //               style={{ border: "none", background: "none" }}
-    //             >
-    //               <FontAwesomeIcon icon={faEye} />
-    //             </Button>{" "}
-    //           </Tooltip>
-    //         </div>
-    //       </>
-    //     );
-    //   },
-    // },
+
+    {
+      title: "Giảm giá",
+      dataIndex: "giaTriKhuyenMai",
+      width: "10%",
+      editable: true,
+      align: "center",
+      render: (_, record) => {
+        let formattedValue = value;
+        if (selectDiscount === "VNĐ") {
+          formattedValue = numeral(value).format("0,0 VND") + " VNĐ";
+        } else if (selectDiscount === "%") {
+          formattedValue = `${value} %`;
+        }
+        return <span>{formattedValue}</span>;
+      },
+    },
+
+    {
+      title: "Đơn giá khuyến mãi",
+      dataIndex: "donGiaSauKhuyenMai",
+      width: "10%",
+      editable: true,
+      align: "center",
+      whiteSpace: "pre-line",
+      render: (_, record) => {
+        if (isInputChanged) {
+          const numericValue2 = parseFloat(value?.replace(/[^0-9.-]+/g, ""));
+          let giaTriKhuyenMai = record.donGia;
+          if (selectDiscount === "VNĐ") {
+            giaTriKhuyenMai =
+              numeral(record.donGia - numericValue2).format("0,0 VND") + " VNĐ";
+            return <span>{giaTriKhuyenMai}</span>;
+          } else if (selectDiscount === "%") {
+            giaTriKhuyenMai =
+              numeral((record.donGia * numericValue2) / 100).format("0,0 VND") +
+              " VNĐ";
+          }
+          return <span>{giaTriKhuyenMai}</span>;
+        } else {
+          let formattedValue = record.donGia;
+          formattedValue = numeral(record.donGia).format("0,0 VND") + " VNĐ";
+          return <span>{formattedValue}</span>;
+        }
+      },
+    },
+    {
+      title: "Tình trạng",
+      dataIndex: "tinhTrang",
+      width: "10%",
+      align: "center",
+      render: (_, record) => {
+        return (
+          <>
+            <div style={{ textAlign: "center" }}>
+              <Tooltip title="Change">
+                <Button
+                  onClick={() => {
+                    showModal();
+                    detailSanPhamSauKhuyenMai(record.id);
+                  }}
+                  style={{ border: "none", background: "none" }}
+                >
+                  <FontAwesomeIcon icon={faEye} />
+                </Button>{" "}
+              </Tooltip>
+            </div>
+          </>
+        );
+      },
+    },
   ];
 
-  //Column Detail
-  // const columns2 = [
-  //   {
-  //     title: "Ảnh",
-  //     dataIndex: "duongDan",
-  //     width: "10%",
-  //     render: (text, record) => (
-  //       <img
-  //         src={record.duongDan}
-  //         style={{ width: "100px", height: "100px" }}
-  //       />
-  //     ),
-  //     align: "center",
-  //   },
-  //   {
-  //     title: "Tên sản phẩm",
-  //     dataIndex: "tenSanPham",
-  //     width: "10%",
-  //     align: "center",
-  //   },
-  //   {
-  //     title: "ROM",
-  //     dataIndex: "kichThuocRom",
-  //     width: "10%",
-  //     align: "center",
-  //     render: (value, record) => {
-  //       let formattedValue = value;
-  //       formattedValue = `${record.kichThuocRom} GB`;
-  //       return <span>{formattedValue}</span>;
-  //     },
-  //   },
-  //   {
-  //     title: "RAM ",
-  //     dataIndex: "kichThuocRam",
-  //     width: "10%",
-  //     editable: true,
-  //     align: "center",
-  //     render: (value, record) => {
-  //       let formattedValue = value;
-  //       formattedValue = `${record.kichThuocRam} GB`;
-  //       return <span>{formattedValue}</span>;
-  //     },
-  //   },
-  //   {
-  //     title: "Màu Sắc ",
-  //     dataIndex: "tenMauSac",
-  //     width: "10%",
-  //     editable: true,
-  //     align: "center",
-  //   },
-  //   {
-  //     title: "Tên Khuyến Mãi",
-  //     dataIndex: "tenKhuyenMai",
-  //     width: "15%",
-  //     align: "center",
-  //     render: (text, record) => (
-  //       <span
-  //         style={{
-  //           maxWidth: "15%",
-  //           whiteSpace: "pre-line",
-  //           overflow: "hidden",
-  //         }}
-  //       >
-  //         {record.tenKhuyenMai}
-  //       </span>
-  //     ),
-  //   },
-  //   {
-  //     title: "Giảm Giá",
-  //     dataIndex: "loaiGiamGia",
-  //     width: "10%",
-  //     align: "center",
-  //     render: (value, record) => {
-  //       let formattedValue = value;
-  //       if (record.loaiKhuyenMai === 1) {
-  //         formattedValue =
-  //           numeral(record.giaTriKhuyenMai).format("0,0 VND") + " VNĐ";
-  //       } else if (record.loaiKhuyenMai === 2) {
-  //         formattedValue = `${record.giaTriKhuyenMai} %`;
-  //       }
-  //       return <span>{formattedValue}</span>;
-  //     },
-  //   },
-  //   {
-  //     title: "Đơn giá ",
-  //     dataIndex: "donGia",
-  //     width: "10%",
-  //     editable: true,
-  //     align: "center",
-  //     render: (value, record) => {
-  //       let formattedValue = value;
-  //       formattedValue = numeral(record.donGia).format("0,0 VND") + " VNĐ";
-  //       return <span>{formattedValue}</span>;
-  //     },
-  //   },
-  //   {
-  //     title: "Đơn giá sau khuyến mãi",
-  //     dataIndex: "donGiaSauKhuyenMai",
-  //     width: "10%",
-  //     editable: true,
-  //     align: "center",
-  //     render: (value, record) => {
-  //       let formattedValue = value;
-  //       formattedValue =
-  //         numeral(record.donGiaSauKhuyenMai).format("0,0 VND") + " VNĐ";
-  //       return <span>{formattedValue}</span>;
-  //     },
-  //   },
-  // ];
+  const columns2 = [
+    {
+      title: "Ảnh",
+      dataIndex: "duongDan",
+      width: "10%",
+      render: (text, record) => (
+        <img
+          src={record.duongDan}
+          style={{ width: "100px", height: "100px" }}
+        />
+      ),
+      align: "center",
+    },
+    {
+      title: "Tên sản phẩm",
+      dataIndex: "tenSanPham",
+      width: "10%",
+      align: "center",
+    },
+    {
+      title: "ROM",
+      dataIndex: "kichThuocRom",
+      width: "10%",
+      align: "center",
+      render: (value, record) => {
+        let formattedValue = value;
+        formattedValue = `${record.kichThuocRom} GB`;
+        return <span>{formattedValue}</span>;
+      },
+    },
+    {
+      title: "RAM ",
+      dataIndex: "kichThuocRam",
+      width: "10%",
+      editable: true,
+      align: "center",
+      render: (value, record) => {
+        let formattedValue = value;
+        formattedValue = `${record.kichThuocRam} GB`;
+        return <span>{formattedValue}</span>;
+      },
+    },
+    {
+      title: "Màu Sắc ",
+      dataIndex: "tenMauSac",
+      width: "10%",
+      editable: true,
+      align: "center",
+    },
+    {
+      title: "Tên Khuyến Mãi",
+      dataIndex: "tenKhuyenMaiSPCT",
+      width: "15%",
+      align: "center",
+      render: (text, record) => (
+        <span
+          style={{
+            maxWidth: "15%",
+            whiteSpace: "pre-line",
+            overflow: "hidden",
+          }}
+        >
+          {record.tenKhuyenMaiSPCT}
+        </span>
+      ),
+    },
+    {
+      title: "Giảm Giá",
+      dataIndex: "loaiGiamGia",
+      width: "10%",
+      align: "center",
+      render: (value, record) => {
+        let formattedValue = value;
+        if (record.loaiKhuyenMai === "VNĐ") {
+          formattedValue =
+            numeral(record.giaTriKhuyenMai).format("0,0 VND") + " VNĐ";
+        } else if (record.loaiKhuyenMai === "%") {
+          formattedValue = `${record.giaTriKhuyenMai} %`;
+        }
+        return (
+          <span className="txt-danger" style={{ fontWeight: "400" }}>
+            {formattedValue}
+          </span>
+        );
+      },
+    },
+    {
+      title: "Đơn giá ",
+      dataIndex: "donGia",
+      width: "10%",
+      editable: true,
+      align: "center",
+      render: (value, record) => {
+        let formattedValue = value;
+        formattedValue = numeral(record.donGia).format("0,0 VND") + " VNĐ";
+        return <span>{formattedValue}</span>;
+      },
+    },
+
+    {
+      title: "Đơn giá sau khuyến mãi",
+      dataIndex: "donGiaSauKhuyenMai",
+      width: "10%",
+      editable: true,
+      align: "center",
+      render: (value, record) => {
+        let formattedValue = value;
+        formattedValue =
+          numeral(record.donGiaSauKhuyenMai).format("0,0 VND") + " VNĐ";
+        return <span>{formattedValue}</span>;
+      },
+    },
+  ];
 
   const mergedColumns = columns.map((col) => {
     if (!col.editable) {
@@ -646,19 +734,19 @@ const AddKhuyenMai = () => {
     };
   });
 
-  // const mergedColumns2 = columns2.map((col2) => {
-  //   if (!col2.editable) {
-  //     return col2;
-  //   }
-  //   return {
-  //     ...col2,
-  //     onCell: (record) => ({
-  //       record,
-  //       dataIndex: col2.dataIndex,
-  //       title: col2.title,
-  //     }),
-  //   };
-  // });
+  const mergedColumns2 = columns2.map((col2) => {
+    if (!col2.editable) {
+      return col2;
+    }
+    return {
+      ...col2,
+      onCell: (record) => ({
+        record,
+        dataIndex: col2.dataIndex,
+        title: col2.title,
+      }),
+    };
+  });
 
   return (
     <>
@@ -668,7 +756,7 @@ const AddKhuyenMai = () => {
           style={{ borderRight: "1px solid black" }}
         >
           <h5 className="title-promotion ms-4">Thêm Khuyến Mãi</h5>
-          <div className="row-input ms-3">
+          <div className="row-input ms-3 mb-3">
             <div className="input-container">
               <TextField
                 label="Tên Khuyến Mãi:"
@@ -683,10 +771,7 @@ const AddKhuyenMai = () => {
                 }}
               />
             </div>
-            <span
-              className="validate"
-              style={{ paddingLeft: "50px", color: "red" }}
-            >
+            <span className="validate" style={{ color: "red" }}>
               {validationMsg.tenKhuyenMai}
             </span>
           </div>
@@ -769,7 +854,7 @@ const AddKhuyenMai = () => {
 
               <span
                 className="validate"
-                style={{ color: "red", paddingLeft: "50px" }}
+                style={{ color: "red", paddingLeft: "15px" }}
               >
                 {validationMsg.giaTriKhuyenMai}
               </span>
@@ -897,26 +982,28 @@ const AddKhuyenMai = () => {
             }}
           />
         </div>
-        {/* <Modal
-          title="Sản phẩm áp dụng khuyến mãi"
-          open={isModalOpen}
-          onOk={handleCancel}
-          onCancel={handleCancel}
-          width={1200}
-        >
-          {sanPhamChiTietKhuyenMai.length === 0 ? (
-            <p>Sản phẩm chưa được áp dụng khuyến mãi !!!</p>
-          ) : (
-            <Table
-              dataSource={sanPhamChiTietKhuyenMai}
-              columns={mergedColumns2}
-              pagination={false}
-              rowKey="id"
-              style={{ marginBottom: "20px" }}
-            />
-          )}
-        </Modal> */}
       </div>
+      <Modal
+        title="Sản phẩm áp dụng khuyến mãi"
+        open={isModalOpen}
+        onOk={handleCancel}
+        onCancel={handleCancel}
+        width={1200}
+        centered={true}
+      >
+        {sanPhamChiTietKhuyenMai.length === 0 ? (
+          <p>Sản phẩm chưa được áp dụng khuyến mãi !!!</p>
+        ) : (
+          <Table
+            width={1200}
+            dataSource={sanPhamChiTietKhuyenMai}
+            columns={mergedColumns2}
+            pagination={false}
+            rowKey="id"
+            style={{ marginBottom: "20px" }}
+          />
+        )}
+      </Modal>
     </>
   );
 };
