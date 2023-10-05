@@ -456,7 +456,7 @@ const AddKhuyenMai = () => {
         <Badge
           showZero={true}
           className="ms-2"
-          // badgeContent={detailSanPhamSauKhuyenMai1(record.id)}
+          badgeContent={record.size}
           color="primary"
         >
           <img

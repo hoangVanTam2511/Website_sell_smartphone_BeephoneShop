@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.admin.promotion_management.repository;
 
+import beephone_shop_projects.core.admin.promotion_management.model.reponse.KhuyenMaiChiTietResponse;
 import beephone_shop_projects.core.admin.promotion_management.model.reponse.SanPhamChiTietKhuyenMaiResponse;
 import beephone_shop_projects.core.admin.promotion_management.model.reponse.SanPhamChiTietSauKhuyenMaiResponse;
 import beephone_shop_projects.repository.ISanPhamChiTietRepository;
@@ -57,4 +58,10 @@ public interface SanPhamChiTietKhuyenMaiRepository extends ISanPhamChiTietReposi
             ORDER BY ctsp.created_at DESC 
              """, nativeQuery = true)
     List<SanPhamChiTietSauKhuyenMaiResponse> getOneChiTietSanPham(@Param("id") String id);
+
+    @Query(value = """
+            SELECT k.don_gia, k.don_gia_sau_khuyen_mai FROM khuyen_mai_chi_tiet k 
+            JOIN san_pham_chi_tiet ctsp ON k.id_chi_tiet_san_pham = ctsp.id WHERE ctsp.id = ?1
+            """, nativeQuery = true)
+    List<KhuyenMaiChiTietResponse> getListKhuyenMai(@Param("id") String id);
 }
