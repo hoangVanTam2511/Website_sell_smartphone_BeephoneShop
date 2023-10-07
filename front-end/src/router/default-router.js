@@ -31,8 +31,15 @@ import ThemNhaSanXuat from "../views/admin/product-manager/nha-san-xuat/them-nha
 import Rom from "../views/admin/product-manager/rom/rom";
 import ThemRom from "../views/admin/product-manager/rom/them-rom";
 
+// rom
+import Camera from "../views/admin/product-manager/camera/camera";
+
+// mau_sac
+import MauSac from "../views/admin/product-manager/mau-sac/quan-li-mau-sac";
+import ThemMauSac from "../views/admin/product-manager/mau-sac/them-mau-sac";
+
 // chi-tiet-san-pham
-import ChiTietSanPham from "../views/admin/product-manager/chi-tiet-san-pham/san-pham";
+import SanPham from "../views/admin/product-manager/chi-tiet-san-pham/san-pham";
 import ThemChiTietSanPham from "../views/admin/product-manager/chi-tiet-san-pham/them-san-pham";
 
 // // imei
@@ -55,6 +62,10 @@ import Role from "../views/admin/account-manager/role/HienThiRole";
 import AddRole from "../views/admin/account-manager/role/AddRole";
 
 //admin
+
+
+// sanpham
+import ChiTietSanPham from "../views/admin/product-manager/chi-tiet-san-pham/chi-tiet-san-pham";
 
 import Default from "../layouts/dashboard/default";
 import ManagementOrders from "../views/admin/order-manager/management-orders";
@@ -151,8 +162,16 @@ export const DefaultRouter = [
             element: <ThemRom />,
         },
         {
+            path: "camera",
+            element: <Camera />,
+        },
+        {
             path: "san-pham",
-            element: <ChiTietSanPham />,
+            element: <SanPham />,
+        },
+        {
+            path: "chi-tiet-san-pham/:idSanPham",
+            element:  <ChiTietSanPham />,
         },
         {
             path: "them-san-pham",
@@ -165,6 +184,14 @@ export const DefaultRouter = [
         {
             path: "khach-hang",
             element: <KhachHang />,
+        },
+        {
+            path: "mau-sac",
+            element: <MauSac />,
+        },
+        {
+            path: "them-mau-sac",
+            element: <ThemMauSac />,
         },
 
         {

@@ -455,6 +455,36 @@ const VerticalNav = memo((props) => {
                   <span className="item-name">Rom</span>
                 </Link>
               </li>
+
+              
+              <li className="nav-item">
+                <Link
+                  className={`${
+                    location.pathname === "/camera" ? "active" : ""
+                  } nav-link`}
+                  to="/camera"
+                >
+                  <i className="icon">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="10"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <g>
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="8"
+                          fill="currentColor"
+                        ></circle>
+                      </g>
+                    </svg>
+                  </i>
+                  <i className="sidenav-mini-icon"> C </i>
+                  <span className="item-name">Camera</span>
+                </Link>
+              </li>
             </ul>
           </Accordion.Collapse>
         </Accordion.Item>

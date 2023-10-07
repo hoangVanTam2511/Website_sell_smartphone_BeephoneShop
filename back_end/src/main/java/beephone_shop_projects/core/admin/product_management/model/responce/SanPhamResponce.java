@@ -16,6 +16,9 @@ import org.springframework.data.rest.core.config.Projection;
 })
 public interface SanPhamResponce {
 
+    @Value("#{target.stt}")
+    String getStt();
+
     @Value("#{target.id}")
     String getId();
 

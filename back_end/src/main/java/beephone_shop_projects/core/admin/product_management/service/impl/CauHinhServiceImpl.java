@@ -4,14 +4,12 @@ import beephone_shop_projects.core.admin.product_management.model.request.Create
 import beephone_shop_projects.core.admin.product_management.model.responce.CauHinhResponce;
 import beephone_shop_projects.core.admin.product_management.repository.CauHinhRepository;
 import beephone_shop_projects.core.admin.product_management.repository.ManHinhRepository;
-import beephone_shop_projects.core.admin.product_management.repository.MauSacRepository;
+import beephone_shop_projects.core.admin.product_management.repository.ColorRepository;
 import beephone_shop_projects.core.admin.product_management.repository.PinRepository;
 import beephone_shop_projects.core.admin.product_management.repository.RamRepository;
 import beephone_shop_projects.core.admin.product_management.repository.RomRepository;
 import beephone_shop_projects.entity.CauHinh;
-import beephone_shop_projects.entity.ManHinh;
 import beephone_shop_projects.entity.MauSac;
-import beephone_shop_projects.entity.Pin;
 import beephone_shop_projects.entity.Ram;
 import beephone_shop_projects.entity.Rom;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +31,7 @@ public class CauHinhServiceImpl  {
     private ManHinhRepository manHinhRepository;
 
     @Autowired
-    private MauSacRepository mauSacRepository;
+    private ColorRepository colorRepository;
 
     @Autowired
     private PinRepository pinRepository;
@@ -44,7 +42,7 @@ public class CauHinhServiceImpl  {
     public void addCauHinh(CreateCauHinhRequest createCauHinhRequest){
         Ram ram = ramRepository.findByKichThuoc(createCauHinhRequest.getRam());
         Rom rom = romRepository.findByKichThuoc(createCauHinhRequest.getRom());
-        MauSac mauSac = mauSacRepository.findByTenMauSac(createCauHinhRequest.getMauSac());
+        MauSac mauSac = colorRepository.findByTenMauSac(createCauHinhRequest.getMauSac());
 
         CauHinh cauHinh = new CauHinh();
         cauHinh.setIdMauSac(mauSac);

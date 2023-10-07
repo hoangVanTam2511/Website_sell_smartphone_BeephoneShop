@@ -51,5 +51,7 @@ public class PinServiceImpl implements IService<Pin> {
         return (ArrayList<Pin>) this.pinRepository.findAllByDelected(true);
     }
 
-    public String generateNewCode(){return this.pinRepository.getNewCode();}
+    public String generateNewCode(){
+        return this.pinRepository.getNewCode() == null ?"PIN_0":"PIN_"+ this.pinRepository.getNewCode() ;
+    }
 }

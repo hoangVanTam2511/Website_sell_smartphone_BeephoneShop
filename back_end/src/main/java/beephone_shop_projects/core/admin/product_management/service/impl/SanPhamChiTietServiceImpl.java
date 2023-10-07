@@ -1,6 +1,7 @@
 package beephone_shop_projects.core.admin.product_management.service.impl;
 
 import beephone_shop_projects.core.admin.product_management.model.request.CreateProductDetailRequest;
+import beephone_shop_projects.core.admin.product_management.model.responce.ProductDetailResponce;
 import beephone_shop_projects.core.admin.product_management.repository.CauHinhRepository;
 import beephone_shop_projects.core.admin.product_management.repository.SanPhamChiTietRepository;
 import beephone_shop_projects.core.admin.product_management.repository.SanPhamRepository;
@@ -29,12 +30,16 @@ public class SanPhamChiTietServiceImpl  {
         CauHinh cauHinh = cauHinhRepository.findById(req.getId()).orElseThrow();
 
         SanPhamChiTiet sanPhamChiTiet = new SanPhamChiTiet();
-        sanPhamChiTiet.setMa(sanPhamChiTietRepository.getNewCode());
+        sanPhamChiTiet.setMa(sanPhamChiTietRepository.getNewCode() == null ? "PRODUCT_DETAIL_0" : "PRODUCT_DETAIL_" + this.sanPhamChiTietRepository.getNewCode());
         sanPhamChiTiet.setIdSanPham(sanPham);
         sanPhamChiTiet.setIdCauHinh(cauHinh);
         sanPhamChiTiet.setDonGia(req.getDonGia());
         sanPhamChiTiet.setSoLuongTonKho(req.getSoLuong());
 
         return sanPhamChiTietRepository.save(sanPhamChiTiet);
+    }
+
+    public ArrayList<ProductDetailResponce> getListProductDetailByID(String idSanPham){
+        return  this.sanPhamChiTietRepository.getListProductDetailByID(idSanPham);
     }
 }

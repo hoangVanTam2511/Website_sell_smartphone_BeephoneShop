@@ -1,12 +1,11 @@
 package beephone_shop_projects.entity;
 
 import beephone_shop_projects.entity.base.PrimaryEntity;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import javax.persistence.*;
 
 @Entity
 @Getter

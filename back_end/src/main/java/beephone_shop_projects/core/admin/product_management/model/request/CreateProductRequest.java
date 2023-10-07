@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 @Getter
 @Setter
@@ -30,5 +31,9 @@ public class CreateProductRequest {
     private Integer sim;
 
     private String congSac;
+
+    private ArrayList<String> cameraTruoc;
+
+    private ArrayList<String> cameraSau;
 
 }

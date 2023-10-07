@@ -5,6 +5,7 @@ import beephone_shop_projects.core.admin.product_management.model.request.Search
 import beephone_shop_projects.core.admin.product_management.model.responce.*;
 import beephone_shop_projects.core.admin.product_management.repository.*;
 import beephone_shop_projects.entity.*;
+import beephone_shop_projects.infrastructure.constant.CameraContant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,13 +35,19 @@ public class SanPhamServiceImpl {
     private PinRepository pinRepository;
 
     @Autowired
-    private MauSacRepository mauSacRepository;
+    private ColorRepository colorRepository;
 
     @Autowired
     private CauHinhRepository cauHinhRepository;
 
     @Autowired
     private SanPhamChiTietRepository sanPhamChiTietRepository;
+
+    @Autowired
+    private CameraRepository cameraRepository;
+
+    @Autowired
+    private CameraDetailRepository cameraDetailRepository;
 
     public Page<SanPham> getAll(Pageable pageable) {
         return sanPhamRepository.findAllByDelected(true, pageable);
@@ -58,7 +65,7 @@ public class SanPhamServiceImpl {
         Pin pin = pinRepository.findByDungLuong(req.getPin());
 
         SanPham sanPham = new SanPham();
-        sanPham.setMa(sanPhamRepository.getNewCode());
+        sanPham.setMa(sanPhamRepository.getNewCode() == null ? "PRODUCT_0" : "PRODUCT_" + sanPhamRepository.getNewCode());
         sanPham.setTenSanPham(req.getTenSanPham());
         sanPham.setIdDongSanPham(dongSanPham);
         sanPham.setIdNhaSanXuat(nhaSanXuat);
@@ -71,7 +78,32 @@ public class SanPhamServiceImpl {
         sanPham.setCongSac(req.getCongSac());
         sanPham.setDelected(false);
 
-        return sanPhamRepository.save(sanPham);
+        SanPham product = sanPhamRepository.save(sanPham);
+
+        req.getCameraSau().forEach((item) -> {
+            //   find camera by do phan giai
+            Integer index  = item.indexOf(" ");
+            // cắt chuỗi và lưu vào db
+            Camera camera = cameraRepository.findByDoPhanGiai(item.substring(0,index));
+            ChiTietCamera cameraDetail = new ChiTietCamera();
+            cameraDetail.setIdCamera(camera);
+            cameraDetail.setIdSanPham(product);
+            cameraDetail.setLoaiCamera(CameraContant.CAMERA_SAU);
+            cameraDetailRepository.save(cameraDetail);
+        });
+
+        req.getCameraTruoc().forEach((item) -> {
+            //   find camera by do phan giai
+            Integer index  = item.indexOf(" ");
+            Camera camera = cameraRepository.findByDoPhanGiai(item.substring(0,index));
+            ChiTietCamera cameraDetail = new ChiTietCamera();
+            cameraDetail.setIdCamera(camera);
+            cameraDetail.setIdSanPham(product);
+            cameraDetail.setLoaiCamera(CameraContant.CAMERA_TRUOC);
+            cameraDetailRepository.save(cameraDetail);
+        });
+
+        return product;
     }
 
     public void update(SanPham sanPham, String id) {
@@ -112,7 +144,7 @@ public class SanPhamServiceImpl {
     }
 
     public List<PointOfSaleColorResponce> getListColorByIDProduct(String idProduct) {
-        return mauSacRepository.getListMauSacByIdProduct(idProduct);
+        return colorRepository.getListMauSacByIdProduct(idProduct);
     }
 
     public List<PointOfSaleCofigResponce> getListConfigByIDProduct(String idProduct) {
@@ -124,7 +156,7 @@ public class SanPhamServiceImpl {
         return sanPhamChiTietRepository.getPointOfSaleProductResponce(idProduct, ram, rom, tenMauSac);
     }
 
-    public List<PointOfSaleOneProductResponce> getListProducts(){
+    public List<PointOfSaleOneProductResponce> getListProducts() {
         return sanPhamRepository.getPOSProduct();
     }
 

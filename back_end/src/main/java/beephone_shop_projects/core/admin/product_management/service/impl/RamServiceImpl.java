@@ -51,5 +51,7 @@ public class RamServiceImpl implements IService<Ram> {
       return (ArrayList<Ram>) this.ramRepository.findAllByDelected(true);
     }
 
-    public String generateNewCode(){return this.ramRepository.getNewCode();}
+    public String generateNewCode(){
+        return this.ramRepository.getNewCode() == null ?"RAM_0":"RAM_"+ this.ramRepository.getNewCode() ;
+    }
 }

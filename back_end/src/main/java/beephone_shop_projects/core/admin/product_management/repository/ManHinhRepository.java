@@ -29,7 +29,7 @@ public interface ManHinhRepository extends IManHinhRepository {
     ManHinh findByKichThuoc(BigDecimal kichThuoc);
 
     @Query(value = """
-    SELECT CONCAT( 'MANHINH_',IF(count(*)  = 0,0,SUBSTRING(ma,9) + 1))   FROM man_hinh
+    SELECT SUBSTRING(ma,9) + 1  FROM man_hinh ORDER BY ma DESC LIMIT 0,1
     """,nativeQuery = true)
     String getNewCode();
 }

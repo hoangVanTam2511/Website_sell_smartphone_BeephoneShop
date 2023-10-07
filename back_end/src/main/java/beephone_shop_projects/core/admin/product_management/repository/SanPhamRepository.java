@@ -23,11 +23,11 @@ public interface SanPhamRepository extends ISanPhamRepository {
 
     @Query(value = """
             SELECT a.id,a.ten_san_pham,b.ten_chip, c.ten_dong_san_pham,d.ten_nha_san_xuat,a.delected
-             FROM san_pham a
+            FROM san_pham a
             JOIN chip b ON b.id = a.id_chip
             JOIN dong_san_pham c ON c.id = a.id_dong_san_pham
             JOIN nha_san_xuat d ON d.id = a.id_nha_san_xuat
-             order by a.created_at desc
+            ORDER BY a.created_at desc
              """, nativeQuery = true)
     Page<SanPhamResponce> findAllChiTietSanPham(Pageable pageable);
 
@@ -50,7 +50,7 @@ public interface SanPhamRepository extends ISanPhamRepository {
     Double getDonGiaLonNhat();
 
     @Query(value = """
-                      SELECT m.id,m.ten_san_pham,
+                      SELECT ROW_NUMBER() OVER() AS stt, m.id,m.ten_san_pham,
                           c.ten_nha_san_xuat,
                           n.ten_chip,
                           l.ten_dong_san_pham ,
@@ -79,38 +79,37 @@ public interface SanPhamRepository extends ISanPhamRepository {
                           c.ten_nha_san_xuat,
                           n.ten_chip,
                           l.ten_dong_san_pham ,
-                          a.delected
-                                                        
+                          m.delected
             """, nativeQuery = true)
     Page<SanPhamResponce> searchByAllPosition(Pageable pageable
             , @Param("ram") String ram,
-              @Param("rom") String rom,
-              @Param("nha_san_xuat") String nhaSanXuat,
-              @Param("mau_sac") String mauSac,
-              @Param("dung_luong") String dungLuongPin,
-              @Param("dong_san_pham") String dongSanPham,
-              @Param("donGiaMin") String donGiaMin,
-              @Param("donGiaMax") String donGiaMax,
-              @Param("chip") String chip,
-              @Param("manHinh") String manHinh
+                                              @Param("rom") String rom,
+                                              @Param("nha_san_xuat") String nhaSanXuat,
+                                              @Param("mau_sac") String mauSac,
+                                              @Param("dung_luong") String dungLuongPin,
+                                              @Param("dong_san_pham") String dongSanPham,
+                                              @Param("donGiaMin") String donGiaMin,
+                                              @Param("donGiaMax") String donGiaMax,
+                                              @Param("chip") String chip,
+                                              @Param("manHinh") String manHinh
     );
 
     @Query(value = """
-        SELECT CONCAT( 'SANPHAM_',IF(count(*)  = 0,0,SUBSTRING(ma,9) + 1)) FROM san_pham
-    """,nativeQuery = true)
+                SELECT SUBSTRING(ma,9) + 1 FROM san_pham ORDER BY ma DESC LIMIT 0,1
+            """, nativeQuery = true)
     String getNewCode();
 
     @Query(value = """
-        SELECT m.ma as 'ma_san_pham',
-        m.ten_san_pham as 'ten_san_pham',
-        anh.duong_dan as 'duong_dan_anh',
-        MIN(a.don_gia), MIN(a.so_luong_ton_kho)
-        FROM san_pham_chi_tiet a
-        JOIN san_pham m on m.id = a.id_san_pham
-        JOIN anh on anh.id_chi_tiet_san_pham = a.id
-        JOIN cau_hinh b on b.id = a.id_cau_hinh
-        GROUP BY m.ten_san_pham
-    """,nativeQuery = true)
+                SELECT m.ma as 'ma_san_pham',
+                m.ten_san_pham as 'ten_san_pham',
+                anh.duong_dan as 'duong_dan_anh',
+                MIN(a.don_gia), MIN(a.so_luong_ton_kho)
+                FROM san_pham_chi_tiet a
+                JOIN san_pham m on m.id = a.id_san_pham
+                JOIN anh on anh.id_chi_tiet_san_pham = a.id
+                JOIN cau_hinh b on b.id = a.id_cau_hinh
+                GROUP BY m.ten_san_pham
+            """, nativeQuery = true)
     List<PointOfSaleOneProductResponce> getPOSProduct();
 
 }

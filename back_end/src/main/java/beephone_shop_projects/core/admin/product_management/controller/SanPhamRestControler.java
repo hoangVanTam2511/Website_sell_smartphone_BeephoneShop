@@ -51,15 +51,12 @@ public class SanPhamRestControler {
 
     }
 
-
     @PostMapping("/products")
     public Page<SanPhamResponce> search(@RequestParam(value = "page",defaultValue = "1") Integer page,
                                                @RequestBody(required = false) SearchChiTietSanPhamRequest chiTietSanPhamRequest) {
         Pageable pageable = PageRequest.of(page,5);
-        System.out.println(chiTietSanPhamRequest);
         return sanPhamService.searchByAllPosition(chiTietSanPhamRequest,pageable);
     }
-
 
     @GetMapping("/don-gia-lon-nhat")
     public Double getDonGiaLonNhat(){
@@ -81,7 +78,6 @@ public class SanPhamRestControler {
             return new ResponseEntity<>(sanPhamService.getListColorByIDProduct(id),HttpStatus.OK);
         }
     }
-
 
     @GetMapping("/configs/{id}")
     public ResponseEntity<?> getListCofigsByIdProduct(@PathVariable("id")String id){

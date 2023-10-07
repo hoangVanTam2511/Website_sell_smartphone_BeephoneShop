@@ -56,7 +56,7 @@ const ThemMauSac = () => {
                                 placeholder='Enter code'
                                 name='ma'
                                 value={ma}
-                                disabled='true'
+                               
                                 id="ma" />
                         </Form.Group>
                         <Form.Group className="form-group">

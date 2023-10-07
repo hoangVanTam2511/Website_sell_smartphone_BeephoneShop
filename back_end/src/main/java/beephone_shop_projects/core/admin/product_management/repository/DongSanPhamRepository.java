@@ -29,7 +29,7 @@ public interface DongSanPhamRepository extends IDongSanPhamRepository {
     DongSanPham findByTenDongSanPham(String tenDongSanPham);
 
     @Query(value = """
-    SELECT CONCAT( 'DONGSANPHAM_',IF(count(*)  = 0,0,SUBSTRING(ma,13) + 1))   FROM dong_san_pham
+    SELECT SUBSTRING(ma,14) + 1  FROM dong_san_pham ORDER BY ma DESC LIMIT 0,1
     """,nativeQuery = true)
     String getNewCode();
 

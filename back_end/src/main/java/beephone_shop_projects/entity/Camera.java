@@ -1,19 +1,15 @@
 package beephone_shop_projects.entity;
 
 import beephone_shop_projects.entity.base.PrimaryEntity;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Table(name = "camera")
 public class Camera extends PrimaryEntity {
 

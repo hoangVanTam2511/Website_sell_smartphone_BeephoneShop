@@ -29,7 +29,7 @@ public interface NhaSanXuatRepository extends INhaSanXuatRepository {
     NhaSanXuat findByTenNhaSanXuat(String tenNhaSanXuat);
 
     @Query(value = """
-    SELECT CONCAT( 'NHASANXUAT_',IF(count(*)  = 0,0,SUBSTRING(ma,11) + 1))   FROM nha_san_xuat
+    SELECT SUBSTRING(ma,10) + 1  FROM nha_san_xuat ORDER BY ma DESC LIMIT 0,1
     """,nativeQuery = true)
     String getNewCode();
 }
