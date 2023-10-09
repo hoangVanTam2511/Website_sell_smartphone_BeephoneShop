@@ -47,6 +47,7 @@ const HienThiKhuyenMai = () => {
     setSearchNgayBatDau("");
     setSearchNgayKetThuc("");
     setSearchTrangThai("");
+    setSearchParams("");
   };
 
   // cutstom load data
@@ -370,6 +371,9 @@ const HienThiKhuyenMai = () => {
   const handleSearchTrangThaiChange = (event) => {
     const selectedValue = event.target.value;
     setSearchTrangThai(selectedValue); // Cập nhật giá trị khi Select thay đổi
+    if (selectedValue === 5) {
+      setSearchTrangThai("");
+    }
     searchParams.set("trangThai", selectedValue);
     setSearchParams(searchParams);
   };

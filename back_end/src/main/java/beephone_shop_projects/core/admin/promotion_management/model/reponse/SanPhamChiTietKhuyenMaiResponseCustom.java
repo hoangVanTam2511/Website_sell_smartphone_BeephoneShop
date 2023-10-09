@@ -33,4 +33,8 @@ public class SanPhamChiTietKhuyenMaiResponseCustom {
     private Boolean delected;
 
     private List<KhuyenMaiChiTietResponse> khuyenMaiChiTietResponse;
+
+    private Integer size;
+
+    private BigDecimal giaTriKhuyenMai;
 }

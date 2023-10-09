@@ -11,4 +11,10 @@ public interface KhuyenMaiChiTietResponse{
 
     @Value("#{target.don_gia_sau_khuyen_mai}")
     BigDecimal getDonGiaSauKhuyenMai();
+
+    @Value("#{target.gia_tri_khuyen_mai}")
+    BigDecimal getGiaTriKhuyenMai();
+
+    @Value("#{target.loai_khuyen_mai}")
+    String getLoaiKhuyenMai();
 }

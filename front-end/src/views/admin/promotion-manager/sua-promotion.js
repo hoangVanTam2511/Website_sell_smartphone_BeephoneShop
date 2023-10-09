@@ -1,10 +1,4 @@
-import {
-  Button,
-  Checkbox,
-  Tooltip,
-  Modal,
-  // DatePicker, Form, Input, Radio, Select
-} from "antd";
+import { Button, Checkbox, Tooltip } from "antd";
 import React, { useEffect } from "react";
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -27,31 +21,32 @@ import numeral from "numeral";
 import Box from "@mui/joy/Box";
 import Radio, { radioClasses } from "@mui/joy/Radio";
 import RadioGroup from "@mui/joy/RadioGroup";
+import Badge from "@mui/material/Badge";
+import Modal from "@mui/joy/Modal";
+import ModalClose from "@mui/joy/ModalClose";
+import Typography from "@mui/joy/Typography";
+import Sheet from "@mui/joy/Sheet";
 
 const SuaKhuyenMai = () => {
-  let [ma, setMa] = useState("");
-  let [tenKhuyenMai, setTenKhuyenMai] = useState("");
-  let [mucGiamGiaTheoPhanTram, setMucGiamGiaTheoPhanTram] = useState("");
-  let [mucGiamGiaTheoSoTien, setMucGiamGiaTheoSoTien] = useState("");
-  let [ngayBatDau, setNgayBatDau] = useState(dayjs());
-  let [ngayKetThuc, setNgayKetThuc] = useState(dayjs());
-  let [dieuKienGiamGia, setDieuKienGiamGia] = useState("");
+  const [ma, setMa] = useState("");
+  const [tenKhuyenMai, setTenKhuyenMai] = useState("");
+  const [ngayBatDau, setNgayBatDau] = useState(dayjs());
+  const [ngayKetThuc, setNgayKetThuc] = useState(dayjs());
   const { id } = useParams();
+  const [idChiTietSanPham, setIdChiTietSanPham] = useState([]);
+  const [idSanPham, setIdSanPham] = useState([]);
 
   //san-pham
-  let [listSanPham, setListSanPham] = useState([]);
-  let [listSanPhamChiTiet, setlistSanPhamChiTiet] = useState([]);
-  let [selectedRow, setSelectedRow] = useState("");
+  const [listSanPham, setListSanPham] = useState([]);
+  const [listSanPhamChiTiet, setlistSanPhamChiTiet] = useState([]);
+  const [selectedRow, setSelectedRow] = useState("");
   const [validationMsg, setValidationMsg] = useState({});
   const [selectDiscount, setSelectDiscount] = useState("1");
   const [value, setValue] = React.useState();
-  const [value2, setValue2] = React.useState();
   const [giaTriKhuyenMai, setGiaTriKhuyenMai] = useState(0);
 
-  let [dataSanPhamChiTiet, setDataSanPhamChiTiet] = useState([]);
-
   //khuyenmaichitiet
-  let [idSanPhamChiTiet, setIdSanPhamChiTiet] = useState("");
+  const [idSanPhamChiTiet, setIdSanPhamChiTiet] = useState("");
   //check-box
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
@@ -61,19 +56,24 @@ const SuaKhuyenMai = () => {
   const [selectAll1, setSelectAll1] = useState(false);
   //Lấy id ctsp
   const [selectedProductDetails, setSelectedProductDetails] = useState([]);
-  let [sanPhamChiTietKhuyenMai, setSanPhamChiTietKhuyenMai] = useState([]);
-  // Tạo một state để lưu danh sách các ID sản phẩm đã được chọn
-  const [selectedProductIds, setSelectedProductIds] = useState([]);
+  const [sanPhamChiTietKhuyenMai, setSanPhamChiTietKhuyenMai] = useState([]);
+  const [isInputChanged, setIsInputChanged] = useState(false);
 
-  const loadDatalistSanPham = () => {
-    axios.get("http://localhost:8080/san-pham-1").then((response) => {
-      setListSanPham(response.data);
-      console.log(response);
-    });
-  };
+  const [open, setOpen] = React.useState(false);
 
   const redirectToHienThiKhuyenMai = () => {
     window.location.href = "/khuyen-mai";
+  };
+
+  const loadDatalistSanPham = () => {
+    axios
+      .get("http://localhost:8080/san-pham-1")
+      .then((response) => {
+        setListSanPham(response.data);
+      })
+      .catch((error) => {
+        console.log("Lỗi do hiển thị dữ liệu sản phẩm");
+      });
   };
 
   const loadDatalistSanPhamChiTiet = (id, check) => {
@@ -81,6 +81,9 @@ const SuaKhuyenMai = () => {
       .get("http://localhost:8080/san-pham-chi-tiet-1/" + id + "/" + check)
       .then((response) => {
         setlistSanPhamChiTiet(response.data);
+      })
+      .catch((error) => {
+        console.log("Lỗi do hiển thị dữ liệu sản phẩm chi tiết");
       });
   };
 
@@ -89,14 +92,11 @@ const SuaKhuyenMai = () => {
       .get("http://localhost:8080/san-pham-chi-tiet/removeALL")
       .then((response) => {
         setlistSanPhamChiTiet(response.data);
+      })
+      .catch((error) => {
+        console.log("Lỗi do clear dữ liệu sản phẩm");
       });
   };
-
-  useEffect(() => {
-    detailKhuyenMai();
-    loadDatalistSanPham();
-    clear();
-  }, []);
 
   const handleChange = (event) => {
     if (selectDiscount === "VNĐ") {
@@ -107,6 +107,7 @@ const SuaKhuyenMai = () => {
         .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
       setValue(formattedValue);
       setGiaTriKhuyenMai(numericValue);
+      setIsInputChanged(true);
     }
     if (selectDiscount === "%") {
       let inputValue = event.target.value;
@@ -114,9 +115,9 @@ const SuaKhuyenMai = () => {
       inputValue = inputValue.replace(/\D/g, "");
       // Xử lý giới hạn giá trị từ 1 đến 100
       if (isNaN(inputValue) || inputValue < 1) {
-        inputValue = 0;
+        inputValue = "0";
       } else if (inputValue > 100) {
-        inputValue = 100;
+        inputValue = "100";
       }
       setValue(inputValue);
       setGiaTriKhuyenMai(inputValue);
@@ -146,43 +147,60 @@ const SuaKhuyenMai = () => {
       .catch((error) => {});
   };
 
+  const detailKhuyenMaiChiTiet = () => {
+    axios
+      .get("http://localhost:8080/detail/khuyen-mai/" + id)
+      .then((response) => {
+        const data1 = response.data;
+        const selectedKeys = data1.map((item) => item.idSanPham);
+        const selectedKeys1 = data1.map((item) => item.idSanPhamChiTiet);
+        setIdSanPham(selectedKeys);
+        selectedKeys.forEach((idSanPham) => {
+          loadDatalistSanPhamChiTiet(idSanPham, true);
+        });
+        setSelectedRowKeys(selectedKeys);
+        setSelectedRowKeys1(selectedKeys1);
+      })
+      .catch((error) => {});
+  };
+
   //Detail sản phẩm chi tiết đã áp dụng khuyến mãi
   const detailSanPhamSauKhuyenMai = (id) => {
     axios
       .get("http://localhost:8080/san-pham-chi-tiet-khuyen-mai/detail/" + id)
       .then((response) => {
         setSanPhamChiTietKhuyenMai(response.data);
-        setIdSanPhamChiTiet(response.idSanPhamChiTiet);
-        console.log(response);
       })
       .catch((error) => {});
   };
 
+  useEffect(() => {
+    detailKhuyenMai();
+    detailKhuyenMaiChiTiet(idSanPham);
+    loadDatalistSanPham();
+    clear();
+  }, []);
+
   const suaKhuyenMai = () => {
+    const numericValue2 = parseFloat(value?.replace(/[^0-9.-]+/g, ""));
     let obj = {
       tenKhuyenMai: tenKhuyenMai,
       ngayBatDau: ngayBatDau,
       ngayKetThuc: ngayKetThuc,
       loaiKhuyenMai: selectDiscount,
-      giaTriKhuyenMai: value,
+      giaTriKhuyenMai: numericValue2,
     };
-    toast
-      .promise(axios.put(apiURLKhuyenMai + "/update-khuyen-mai/" + id, obj), {
-        success: {
-          render({ data }) {
-            toast.success("Cập nhật thành công!");
-            setTimeout(() => {
-              redirectToHienThiKhuyenMai();
-            }, 3000);
-          },
-        },
-        error: {
-          render({ error }) {
-            toast.error("Đã xảy ra lỗi khi cập nhật Khuyến Mãi.");
-          },
-        },
+    axios
+      .put(apiURLKhuyenMai + "/update-khuyen-mai/" + id, obj)
+      .then((response) => {
+        toast.success("Cập nhật thành công!");
+        setTimeout(() => {
+          redirectToHienThiKhuyenMai();
+        }, 1000);
       })
-      .catch((error) => {});
+      .catch((error) => {
+        toast.error("Đã xảy ra lỗi khi cập nhật Khuyến Mãi.");
+      });
   };
 
   //Validate
@@ -197,9 +215,9 @@ const SuaKhuyenMai = () => {
       msg.tenKhuyenMai =
         "Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi";
     }
-    if (ngayBatDau.isAfter(ngayKetThuc)) {
-      msg.ngayBatDau = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc !!!";
-    }
+    // if (ngayBatDau.isAfter(ngayKetThuc)) {
+    //   msg.ngayBatDau = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc !!!";
+    // }
 
     const numericValue2 = parseFloat(value?.replace(/[^0-9.-]+/g, ""));
     if (value == null || value === "") {
@@ -213,19 +231,17 @@ const SuaKhuyenMai = () => {
       msg.giaTriKhuyenMai = "Giá trị voucher từ 1đ đến 100.000.000đ";
     }
 
-    if (ngayKetThuc.isBefore(ngayBatDau)) {
-      msg.ngayKetThuc = "Ngày kết thúc phải lớn hơn ngày bắt đầu !!!";
-    }
+    // if (ngayKetThuc.isBefore(ngayBatDau)) {
+    //   msg.ngayKetThuc = "Ngày kết thúc phải lớn hơn ngày bắt đầu !!!";
+    // }
 
-    if (ngayBatDau.isBefore(dayjs())) {
-      msg.ngayBatDau = "Ngày bắt đầu phải lớn hơn ngày hiện tại !!!";
-    }
+    // if (ngayBatDau.isBefore(dayjs())) {
+    //   msg.ngayBatDau = "Ngày bắt đầu phải lớn hơn ngày hiện tại !!!";
+    // }
 
-    if (ngayKetThuc.isBefore(dayjs())) {
-      msg.ngayKetThuc = "Ngày kết thúc phải lớn hơn ngày hiện tại !!!";
-    }
-
-    console.log(value);
+    // if (ngayKetThuc.isBefore(dayjs())) {
+    //   msg.ngayKetThuc = "Ngày kết thúc phải lớn hơn ngày hiện tại !!!";
+    // }
 
     setValidationMsg(msg);
     if (Object.keys(msg).length > 0) return false;
@@ -235,12 +251,12 @@ const SuaKhuyenMai = () => {
   const handleSubmit = () => {
     const isValid = validationAll();
     if (!isValid) return;
+
     suaKhuyenMai();
   };
 
   const handleCheckboxChange = (record, e) => {
     const id = record.id;
-
     if (e.target.checked) {
       setSelectedRowKeys([...selectedRowKeys, id]);
       setSelectedRows([...selectedRows, record]);
@@ -259,14 +275,14 @@ const SuaKhuyenMai = () => {
   };
 
   const rowSelection = {
-    selectedRowKeys,
+    selectedRowKeys: selectedRowKeys.filter((key) => idSanPham.includes(key)),
     onChange: (selectedRowKeys, selectedRows) => {
       setSelectedRowKeys(selectedRowKeys);
       setSelectedRows(selectedRows);
     },
   };
 
-  // Xử lý khi checkbox trên tiêu đề cột thay đổi
+  //Xử lý khi checkbox trên tiêu đề cột thay đổi
   const handleSelectAllChange = (e) => {
     const checked = e.target.checked;
     if (checked === true) {
@@ -275,11 +291,12 @@ const SuaKhuyenMai = () => {
       selectedKeys.forEach((id) => {
         loadDatalistSanPhamChiTiet(id, true);
       });
+      // console.log(listSanPhamChiTiet);
       setSelectedRowKeys(selectedKeys);
     } else {
+      clear();
       setSelectAll(checked);
       const selectedKeys = checked ? listSanPham.map((item) => item.id) : [];
-      clear();
       setSelectedRowKeys(selectedKeys);
     }
   };
@@ -322,18 +339,6 @@ const SuaKhuyenMai = () => {
       : [];
     setSelectedProductDetails(selectedKeys1);
     setSelectedRowKeys1(selectedKeys1);
-  };
-
-  //Code Modal
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
-  const handleCancel = () => {
-    setIsModalOpen(false);
   };
 
   //Column bảng Sản Phẩm
@@ -384,7 +389,6 @@ const SuaKhuyenMai = () => {
       width: "5%",
       render: (_, record) => (
         <Checkbox
-          key={record.idSanPhamChiTiet}
           onChange={(e) => handleCheckboxChange1(record, e)}
           checked={selectedRowKeys1.includes(record.id)}
         />
@@ -404,22 +408,34 @@ const SuaKhuyenMai = () => {
       title: "Ảnh",
       dataIndex: "duongDan",
       width: "10%",
-      render: (text, record) => (
-        <img
-          src={record.duongDan}
-          style={{ width: "100px", height: "100px" }}
-        />
-      ),
       align: "center",
+      render: (text, record) => (
+        <Badge
+          showZero={true}
+          className="ms-2"
+          badgeContent={record.size}
+          color="primary"
+        >
+          <img
+            src={record.duongDan}
+            alt="Ảnh"
+            style={{ width: "100px", height: "100px" }}
+          />
+        </Badge>
+      ),
     },
     {
       title: "Tên sản phẩm",
       dataIndex: "tenSanPham",
       width: "10%",
       align: "center",
+      render: (value, record) => {
+        let tenSanPham = value;
+        return <span style={{ whiteSpace: "pre-line" }}> {tenSanPham}</span>;
+      },
     },
     {
-      title: "Kích thước ROM",
+      title: "ROM",
       dataIndex: "kichThuocRom",
       width: "10%",
       align: "center",
@@ -430,7 +446,7 @@ const SuaKhuyenMai = () => {
       },
     },
     {
-      title: "Kích thước RAM ",
+      title: "RAM ",
       dataIndex: "kichThuocRam",
       width: "10%",
       editable: true,
@@ -460,6 +476,54 @@ const SuaKhuyenMai = () => {
         return <span>{formattedValue}</span>;
       },
     },
+
+    {
+      title: "Giảm giá",
+      dataIndex: "giaTriKhuyenMai",
+      width: "10%",
+      editable: true,
+      align: "center",
+      render: (_, record) => {
+        let formattedValue = value;
+        if (selectDiscount === "VNĐ") {
+          formattedValue = numeral(value).format("0,0 VND") + " VNĐ";
+        } else if (selectDiscount === "%") {
+          formattedValue = value + " %";
+        }
+        return <span>{formattedValue}</span>;
+      },
+    },
+
+    {
+      title: "Đơn giá khuyến mãi",
+      dataIndex: "donGiaSauKhuyenMai",
+      width: "10%",
+      editable: true,
+      align: "center",
+      whiteSpace: "pre-line",
+      render: (_, record) => {
+        if (isInputChanged) {
+          const numericValue2 = parseFloat(value?.replace(/[^0-9.-]+/g, ""));
+          let giaTriKhuyenMai = record.donGia;
+          if (selectDiscount === "VNĐ") {
+            giaTriKhuyenMai = record.donGia - numericValue2;
+            return (
+              <span>{numeral(giaTriKhuyenMai).format("0,0 VND") + " VNĐ"}</span>
+            );
+          } else if (selectDiscount === "%") {
+            giaTriKhuyenMai =
+              record.donGia - (record.donGia * numericValue2) / 100;
+            return (
+              <span>{numeral(giaTriKhuyenMai).format("0,0 VND") + " VNĐ"}</span>
+            );
+          }
+        } else {
+          let formattedValue = record.donGia;
+          formattedValue = numeral(record.donGia).format("0,0 VND") + " VNĐ";
+          return <span>{formattedValue}</span>;
+        }
+      },
+    },
     {
       title: "Tình trạng",
       dataIndex: "tinhTrang",
@@ -471,8 +535,9 @@ const SuaKhuyenMai = () => {
             <div style={{ textAlign: "center" }}>
               <Tooltip title="Change">
                 <Button
-                  onClick={() => {
-                    showModal();
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setOpen(true);
                     detailSanPhamSauKhuyenMai(record.id);
                   }}
                   style={{ border: "none", background: "none" }}
@@ -638,6 +703,7 @@ const SuaKhuyenMai = () => {
       }),
     };
   });
+
   const handleChangeToggleButtonDiscount = (event) => {
     const newAlignment = event.target.value;
     if (newAlignment != null) {
@@ -853,6 +919,7 @@ const SuaKhuyenMai = () => {
               style={{ marginBottom: "20px" }}
               onRow={(record) => {
                 return {
+                  // onChange: () => {},
                   onClick: () => {
                     if (selectedRow === record) {
                       handleRowClick(record);
@@ -865,36 +932,7 @@ const SuaKhuyenMai = () => {
                 };
               }}
             />
-            {/* <div className="phan-trang">
-              <Pagination
-              // simplecurrent={currentPage + 1}
-              // onChange={(value) => {
-              //   setCurrentPage(value - 1);
-              // }}
-              // total={totalPages * 10}
-              />
-            </div> */}
           </div>
-
-          {/* <Modal
-            title="Sản phẩm áp dụng khuyến mãi"
-            open={isModalOpen}
-            onOk={handleCancel}
-            onCancel={handleCancel}
-            width={1200}
-          >
-            {sanPhamChiTietKhuyenMai.length === 0 ? (
-              <p>Sản phẩm chưa được áp dụng khuyến mãi !!!</p>
-            ) : (
-              <Table
-                dataSource={sanPhamChiTietKhuyenMai}
-                columns={mergedColumns2}
-                pagination={false}
-                rowKey="id"
-                style={{ marginBottom: "20px" }}
-              />
-            )}
-          </Modal> */}
         </div>
         <div className="row ms-1">
           <h4 className="mb-3 ms-3" style={{ marginTop: "20px" }}>
@@ -910,7 +948,7 @@ const SuaKhuyenMai = () => {
               return {
                 onClick: () => {
                   handleRowClick1(record);
-                  setSelectedRows(record);
+                  setSelectedRows1([record]);
                   setIdSanPhamChiTiet(record.id);
                   detailSanPhamSauKhuyenMai(record.id);
                 },
@@ -920,6 +958,57 @@ const SuaKhuyenMai = () => {
           />
         </div>
       </div>
+      <React.Fragment>
+        <Modal
+          aria-labelledby="modal-title"
+          aria-describedby="modal-desc"
+          open={open}
+          onClose={() => setOpen(false)}
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <div className="modal-container">
+            <Sheet
+              variant="outlined"
+              sx={{
+                maxWidth: 1300,
+                borderRadius: "md",
+                p: 3,
+                boxShadow: "lg",
+              }}
+            >
+              <ModalClose variant="plain" sx={{ m: 1 }} />
+              <Typography
+                component="h2"
+                id="modal-title"
+                level="h4"
+                textColor="inherit"
+                fontWeight="lg"
+                mb={1}
+                textAlign="center"
+              >
+                Sản phẩm đang được áp dụng khuyến mãi
+              </Typography>
+              <Typography id="modal-desc" textColor="text.tertiary">
+                {sanPhamChiTietKhuyenMai.length === 0 ? (
+                  <p>Sản phẩm chưa được áp dụng khuyến mãi !!!</p>
+                ) : (
+                  <Table
+                    dataSource={sanPhamChiTietKhuyenMai}
+                    columns={mergedColumns2}
+                    pagination={false}
+                    rowKey="id"
+                    style={{ marginBottom: "20px" }}
+                  />
+                )}
+              </Typography>
+            </Sheet>
+          </div>
+        </Modal>
+      </React.Fragment>
     </>
   );
 };

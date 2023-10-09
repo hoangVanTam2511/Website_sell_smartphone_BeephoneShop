@@ -16,5 +16,5 @@ public interface KhuyenMaiChiTietService {
 
     KhuyenMaiChiTiet updateKhuyenMaiChiTiet(@Valid CreateKhuyenMaiChiTietRequest request, String ma);
 
-//    Boolean deleteVoucher(String ma);
+    Boolean deleteKhuyenMaiChiTiet(String ma);
 }
