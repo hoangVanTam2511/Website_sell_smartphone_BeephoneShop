@@ -14,6 +14,7 @@ import beephone_shop_projects.core.admin.order_management.repository.impl.OrderR
 import beephone_shop_projects.core.admin.order_management.service.HoaDonService;
 import beephone_shop_projects.entity.Account;
 import beephone_shop_projects.entity.GioHang;
+import beephone_shop_projects.entity.HinhThucThanhToan;
 import beephone_shop_projects.entity.HoaDon;
 import beephone_shop_projects.entity.LichSuHoaDon;
 import beephone_shop_projects.entity.Voucher;
@@ -182,10 +183,16 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
       HoaDon paymentOrder = hoaDonRepository.save(orderConverter.convertResponseToEntity(orderCurrent));
       gioHangService.deleteById(req.getCart().getId());
 
+//      HinhThucThanhToan hinhThucThanhToan = new HinhThucThanhToan();
+//      hinhThucThanhToan.setHoaDon(orderConverter.convertResponseToEntity(orderCurrent));
+//      hinhThucThanhToan.setSoTienThanhToan(req.getTienKhachTra());
+//      hinhThucThanhToan.setLoaiThanhToan(0);
+//      hinhThucThanhToan.setHinhThucThanhToan(0);
+//      hinhThucThanhToan.setCreatedAt(new Date());
+//      hinhThucThanhToanRepository.save(hinhThucThanhToan);
       if (req.getOrderHistory() != null) {
         orderHistoryServiceImpl.save(req.getOrderHistory());
       }
-//    hinhThucThanhToanRepository.save(paymentMethod);
 
       List<HoaDon> ordersPending = hoaDonRepository.getOrdersPending();
       if (ordersPending.isEmpty()) {
