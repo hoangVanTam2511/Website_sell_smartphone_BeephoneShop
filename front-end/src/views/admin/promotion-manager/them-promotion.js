@@ -1,4 +1,4 @@
-import { Button, Checkbox, Modal, Tooltip } from "antd";
+import { Button, Checkbox, Tooltip } from "antd";
 import React, { useEffect } from "react";
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -6,7 +6,7 @@ import { faArrowLeft, faCheck, faEye } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { apiURLKhuyenMai, apiURLSanPham } from "../../../service/api";
 import TextField from "@mui/material/TextField";
-import { InputAdornment, Typography } from "@mui/material";
+import { InputAdornment } from "@mui/material";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -21,27 +21,30 @@ import style from "./style.css";
 import Box from "@mui/joy/Box";
 import Radio, { radioClasses } from "@mui/joy/Radio";
 import RadioGroup from "@mui/joy/RadioGroup";
-import Badge from "@mui/material/Badge";
+import Badge from "@mui/joy/Badge";
+import Modal from "@mui/joy/Modal";
+import ModalClose from "@mui/joy/ModalClose";
+import Typography from "@mui/joy/Typography";
+import Sheet from "@mui/joy/Sheet";
 
 const AddKhuyenMai = () => {
   //add-khuyen-mai
-  let [tenKhuyenMai, setTenKhuyenMai] = useState("");
-  let [giaTriKhuyenMai, setGiaTriKhuyenMai] = useState(0);
-  let [loaiKhuyenMai, setLoaiKhuyenMai] = useState("");
-  let [ngayBatDau, setNgayBatDau] = useState(dayjs());
-  let [ngayKetThuc, setNgayKetThuc] = useState(dayjs());
+  const [tenKhuyenMai, setTenKhuyenMai] = useState("");
+  const [giaTriKhuyenMai, setGiaTriKhuyenMai] = useState(0);
+  const [ngayBatDau, setNgayBatDau] = useState(dayjs());
+  const [ngayKetThuc, setNgayKetThuc] = useState(dayjs());
   const [selectDiscount, setSeclectDiscount] = useState("VNĐ");
   const [value, setValue] = React.useState();
   const [value2, setValue2] = React.useState();
 
   //san-pham
-  let [listSanPham, setListSanPham] = useState([]);
-  let [listSanPhamChiTiet, setlistSanPhamChiTiet] = useState([]);
-  let [dataSanPhamChiTiet, setDataSanPhamChiTiet] = useState([]);
-  let [selectedRow, setSelectedRow] = useState("");
+  const [listSanPham, setListSanPham] = useState([]);
+  const [listSanPhamChiTiet, setlistSanPhamChiTiet] = useState([]);
+  const [dataSanPhamChiTiet, setDataSanPhamChiTiet] = useState([]);
+  const [selectedRow, setSelectedRow] = useState("");
 
   //khuyenmaichitiet
-  let [idSanPhamChiTiet, setIdSanPhamChiTiet] = useState("");
+  const [idSanPhamChiTiet, setIdSanPhamChiTiet] = useState("");
   const [validationMsg, setValidationMsg] = useState({});
   //check-box
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -52,9 +55,10 @@ const AddKhuyenMai = () => {
   const [selectAll1, setSelectAll1] = useState(false);
   //Lấy id ctsp
   const [selectedProductDetails, setSelectedProductDetails] = useState([]);
-  let [sanPhamChiTietKhuyenMai, setSanPhamChiTietKhuyenMai] = useState([]);
+  const [sanPhamChiTietKhuyenMai, setSanPhamChiTietKhuyenMai] = useState([]);
   const [isInputChanged, setIsInputChanged] = useState(false);
-  // Tạo một state để lưu danh sách các ID sản phẩm đã được chọn
+
+  const [open, setOpen] = React.useState(false);
 
   const redirectToHienThiKhuyenMai = () => {
     window.location.href = "/khuyen-mai";
@@ -115,9 +119,9 @@ const AddKhuyenMai = () => {
       inputValue = inputValue.replace(/\D/g, "");
       // Xử lý giới hạn giá trị từ 1 đến 100
       if (isNaN(inputValue) || inputValue < 1) {
-        inputValue = 0;
+        inputValue = "0";
       } else if (inputValue > 100) {
-        inputValue = 100;
+        inputValue = "100";
       }
       setValue(inputValue);
       setGiaTriKhuyenMai(inputValue);
@@ -148,24 +152,11 @@ const AddKhuyenMai = () => {
       .get("http://localhost:8080/san-pham-chi-tiet-khuyen-mai/detail/" + id)
       .then((response) => {
         setSanPhamChiTietKhuyenMai(response.data);
-        console.log(sanPhamChiTietKhuyenMai);
+        // console.log(sanPhamChiTietKhuyenMai);
       })
       .catch((error) => {
         "Lỗi do hiển thị sản phẩm sau khuyến mãi";
       });
-  };
-
-  const detailSanPhamSauKhuyenMai1 = (id) => {
-    axios
-      .get("http://localhost:8080/san-pham-chi-tiet-khuyen-mai/detail/" + id)
-      .then((response) => {
-        setSanPhamChiTietKhuyenMai(response.data);
-        console.log(sanPhamChiTietKhuyenMai);
-      })
-      .catch((error) => {
-        "Lỗi do hiển thị sản phẩm sau khuyến mãi";
-      });
-    return sanPhamChiTietKhuyenMai.length;
   };
 
   //Hàm áp dụng khuyến mãi cho sản phẩm
@@ -197,13 +188,13 @@ const AddKhuyenMai = () => {
       });
   };
 
-  const clearSelectedItems = () => {
-    setSelectedRowKeys([]);
-    setSelectedRowKeys1([]);
-    setSelectedRows([]);
-    setSelectedRows1([]);
-    setSelectedProductDetails([]);
-  };
+  // const clearSelectedItems = () => {
+  //   setSelectedRowKeys([]);
+  //   setSelectedRowKeys1([]);
+  //   setSelectedRows([]);
+  //   setSelectedRows1([]);
+  //   setSelectedProductDetails([]);
+  // };
 
   // Hàm thêm vào khuyến mãi chi tiết
   const addKhuyenMaiChiTiet = (khuyenMaiID, idSanPhamChiTiet) => {
@@ -249,14 +240,14 @@ const AddKhuyenMai = () => {
 
     const numericValue2 = parseFloat(value?.replace(/[^0-9.-]+/g, ""));
     if (value == null || value === "") {
-      msg.giaTriKhuyenMai = "Giá trị voucher không được để trống !!!";
+      msg.giaTriKhuyenMai = "Giá trị giảm giá không được để trống !!!";
     }
 
     if (
       (selectDiscount === "VNĐ" && numericValue2 <= 0) ||
       (selectDiscount === "VNĐ" && numericValue2 > 100000000)
     ) {
-      msg.giaTriKhuyenMai = "Giá trị voucher từ 1đ đến 100.000.000đ";
+      msg.giaTriKhuyenMai = "Giá trị giảm giá từ 1đ đến 100.000.000đ";
     }
 
     if (ngayKetThuc.isBefore(ngayBatDau)) {
@@ -370,20 +361,6 @@ const AddKhuyenMai = () => {
     setSelectedRowKeys1(selectedKeys1);
   };
 
-  //Code Modal
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
-
-  const thongBaoAnh = () => {};
-
   //Column bảng Sản Phẩm
   const columns = [
     {
@@ -472,6 +449,7 @@ const AddKhuyenMai = () => {
       dataIndex: "tenSanPham",
       width: "10%",
       align: "center",
+      maxWidth: "10%",
       render: (value, record) => {
         let tenSanPham = value;
         return <span style={{ whiteSpace: "pre-line" }}> {tenSanPham}</span>;
@@ -531,7 +509,7 @@ const AddKhuyenMai = () => {
         if (selectDiscount === "VNĐ") {
           formattedValue = numeral(value).format("0,0 VND") + " VNĐ";
         } else if (selectDiscount === "%") {
-          formattedValue = `${value} %`;
+          formattedValue = value + " %";
         }
         return <span>{formattedValue}</span>;
       },
@@ -549,15 +527,17 @@ const AddKhuyenMai = () => {
           const numericValue2 = parseFloat(value?.replace(/[^0-9.-]+/g, ""));
           let giaTriKhuyenMai = record.donGia;
           if (selectDiscount === "VNĐ") {
-            giaTriKhuyenMai =
-              numeral(record.donGia - numericValue2).format("0,0 VND") + " VNĐ";
-            return <span>{giaTriKhuyenMai}</span>;
+            giaTriKhuyenMai = record.donGia - numericValue2;
+            return (
+              <span>{numeral(giaTriKhuyenMai).format("0,0 VND") + " VNĐ"}</span>
+            );
           } else if (selectDiscount === "%") {
             giaTriKhuyenMai =
-              numeral((record.donGia * numericValue2) / 100).format("0,0 VND") +
-              " VNĐ";
+              record.donGia - (record.donGia * numericValue2) / 100;
+            return (
+              <span>{numeral(giaTriKhuyenMai).format("0,0 VND") + " VNĐ"}</span>
+            );
           }
-          return <span>{giaTriKhuyenMai}</span>;
         } else {
           let formattedValue = record.donGia;
           formattedValue = numeral(record.donGia).format("0,0 VND") + " VNĐ";
@@ -576,8 +556,9 @@ const AddKhuyenMai = () => {
             <div style={{ textAlign: "center" }}>
               <Tooltip title="Change">
                 <Button
-                  onClick={() => {
-                    showModal();
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setOpen(true);
                     detailSanPhamSauKhuyenMai(record.id);
                   }}
                   style={{ border: "none", background: "none" }}
@@ -983,27 +964,57 @@ const AddKhuyenMai = () => {
           />
         </div>
       </div>
-      <Modal
-        title="Sản phẩm áp dụng khuyến mãi"
-        open={isModalOpen}
-        onOk={handleCancel}
-        onCancel={handleCancel}
-        width={1200}
-        centered={true}
-      >
-        {sanPhamChiTietKhuyenMai.length === 0 ? (
-          <p>Sản phẩm chưa được áp dụng khuyến mãi !!!</p>
-        ) : (
-          <Table
-            width={1200}
-            dataSource={sanPhamChiTietKhuyenMai}
-            columns={mergedColumns2}
-            pagination={false}
-            rowKey="id"
-            style={{ marginBottom: "20px" }}
-          />
-        )}
-      </Modal>
+      <React.Fragment>
+        <Modal
+          aria-labelledby="modal-title"
+          aria-describedby="modal-desc"
+          open={open}
+          onClose={() => setOpen(false)}
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <div className="modal-container">
+            <Sheet
+              variant="outlined"
+              sx={{
+                maxWidth: 1300,
+                borderRadius: "md",
+                p: 3,
+                boxShadow: "lg",
+              }}
+            >
+              <ModalClose variant="plain" sx={{ m: 1 }} />
+              <Typography
+                component="h2"
+                id="modal-title"
+                level="h4"
+                textColor="inherit"
+                fontWeight="lg"
+                mb={1}
+                textAlign="center"
+              >
+                Sản phẩm đang được áp dụng khuyến mãi
+              </Typography>
+              <Typography id="modal-desc" textColor="text.tertiary">
+                {sanPhamChiTietKhuyenMai.length === 0 ? (
+                  <p>Sản phẩm chưa được áp dụng khuyến mãi !!!</p>
+                ) : (
+                  <Table
+                    dataSource={sanPhamChiTietKhuyenMai}
+                    columns={mergedColumns2}
+                    pagination={false}
+                    rowKey="id"
+                    style={{ marginBottom: "20px" }}
+                  />
+                )}
+              </Typography>
+            </Sheet>
+          </div>
+        </Modal>
+      </React.Fragment>
     </>
   );
 };

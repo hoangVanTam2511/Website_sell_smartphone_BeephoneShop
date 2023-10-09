@@ -17,4 +17,6 @@ public interface SanPhamChiTietKhuyenMaiService {
 
     List<KhuyenMaiChiTietResponse> getListKhuyenMai(String id);
 
+    List<DetailKhuyenMaiResponse> getDetailKhuyenMai(@Param("id") String id);
+
 }
