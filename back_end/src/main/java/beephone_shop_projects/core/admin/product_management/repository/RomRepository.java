@@ -27,7 +27,7 @@ public interface RomRepository extends IRomRepository {
     Rom findByKichThuoc(Integer kichThuoc);
 
     @Query(value = """
-    SELECT CONCAT( 'ROM_',IF(count(*)  = 0,0,SUBSTRING(ma,5) + 1))   FROM rom
+    SELECT SUBSTRING(ma,5) + 1 FROM rom ORDER BY ma DESC LIMIT 0,1
     """,nativeQuery = true)
     String getNewCode();
 }

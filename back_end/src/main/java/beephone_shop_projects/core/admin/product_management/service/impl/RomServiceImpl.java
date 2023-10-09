@@ -51,5 +51,7 @@ public class RomServiceImpl implements IService<Rom> {
         return (ArrayList<Rom>) this.romRepository.findAllByDelected(true);
     }
 
-    public String generateNewCode(){return this.romRepository.getNewCode();}
+    public String generateNewCode(){
+        return this.romRepository.getNewCode() == null ?"ROM_0":"ROM_"+ this.romRepository.getNewCode() ;
+    }
 }

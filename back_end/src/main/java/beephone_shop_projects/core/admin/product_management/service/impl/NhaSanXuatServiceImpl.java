@@ -52,5 +52,7 @@ public class NhaSanXuatServiceImpl implements IService<NhaSanXuat> {
         return (ArrayList<NhaSanXuat>) nhaSanXuatRepository.findAllByDelected(true);
     }
 
-    public String generateNewCode(){return this.nhaSanXuatRepository.getNewCode();}
+    public String generateNewCode(){
+        return this.nhaSanXuatRepository.getNewCode() == null ?"PRODUCER_0":"PRODUCER_"+ this.nhaSanXuatRepository.getNewCode() ;
+    }
 }

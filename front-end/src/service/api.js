@@ -17,3 +17,4 @@ export const apiURLVoucher = "http://localhost:8080/voucher";
 export const apiURLKhuyenMai = "http://localhost:8080/khuyen-mai";
 export const apiURLCauHinh = "http://localhost:8080/cau-hinh";
 export const apiURLSanPham = "http://localhost:8080/san-pham";
+export const apiURLAnh = "http://localhost:8080/anh";

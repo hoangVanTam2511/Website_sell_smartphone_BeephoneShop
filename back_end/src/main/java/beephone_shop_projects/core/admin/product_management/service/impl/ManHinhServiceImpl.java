@@ -54,5 +54,7 @@ public class ManHinhServiceImpl implements IService<ManHinh> {
                 this.manHinhRepository.findAllByDelected(true);
     }
 
-    public String generateNewCode(){return this.manHinhRepository.getNewCode();}
+    public String generateNewCode(){
+        return this.manHinhRepository.getNewCode() == null ?"DISPLAY_0":"DISPLAY_"+ this.manHinhRepository.getNewCode() ;
+    }
 }

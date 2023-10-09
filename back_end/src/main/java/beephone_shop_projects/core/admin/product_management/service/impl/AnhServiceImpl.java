@@ -30,13 +30,17 @@ public class AnhServiceImpl {
 
        Anh anh = new Anh();
 
-       anh.setMa(anhRepository.getNewCode());
+       anh.setMa(anhRepository.getNewCode()== null ?"ANH_O":"ANH_"+anhRepository.getNewCode());
        anh.setTenAnh(req.getTenAnh());
        anh.setDuongDan(req.getDuongDan());
        anh.setTrangThai(req.getTrangThai());
        anh.setSanPhamChiTiet(sanPhamChiTiet);
 
        return anhRepository.save(anh);
+    }
+
+    public  ArrayList<Anh> findByIDChiTietSanPham(String idChiTietSanPham){
+        return anhRepository.findByIDChiTietSanPham(idChiTietSanPham);
     }
 
 }

@@ -4,7 +4,7 @@
 }
 
 .ant-select-selector {
-    height: 38px !important;
+    height: 38px ;
     border: 1px solid #a3c0c9;
 }
 
@@ -21,8 +21,8 @@
 #addConfig {
     font-size: 15px;
     font-weight: 600;
-    margin-left: 476px;
     height: 38px;
+    margin-top:6px;
 }
 
 .font_awesome_icon_selection_custom {
@@ -114,5 +114,10 @@
 
   .ant-segmented-item-selected{
     background-color: #1976d2;
+  }
+
+  .css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input{
+    padding-right: 32px;
+    height: 32px;
   }
 

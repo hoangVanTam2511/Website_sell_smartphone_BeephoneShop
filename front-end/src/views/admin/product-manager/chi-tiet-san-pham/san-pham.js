@@ -10,26 +10,32 @@ import {
   Switch,
   Slider,
   Tag
-} from "antd";
-import { useState, useEffect } from "react";
-import axios from "axios";
+} from 'antd'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 import {
-  apiURLSanPham, apiURLChip, apiURLDongSanPham, apiURLManHinh, apiURLMauSac,
-  apiURLNhaSanXuat, apiURLPin, apiURLram, apiURLrom
-} from "../../../../service/api";
-import {
-  FontAwesomeIcon
-} from "@fortawesome/react-fontawesome";
-import { faList,faFilter } from '@fortawesome/free-solid-svg-icons'
-import "../../../../assets/scss/HienThiNV.scss";
-import { Link } from "react-router-dom";
-import { SearchOutlined } from "@ant-design/icons";
-import Highlighter from "react-highlight-words";
+  apiURLSanPham,
+  apiURLChip,
+  apiURLDongSanPham,
+  apiURLManHinh,
+  apiURLMauSac,
+  apiURLNhaSanXuat,
+  apiURLPin,
+  apiURLram,
+  apiURLrom
+} from '../../../../service/api'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faList, faFilter, faEye } from '@fortawesome/free-solid-svg-icons'
+import '../../../../assets/scss/product.scss'
+import { Link, useNavigate } from 'react-router-dom'
+import { SearchOutlined } from '@ant-design/icons'
+import Highlighter from 'react-highlight-words'
+import ExcelExportHelper from "../chi-tiet-san-pham/ExcelExportHelper";
 
-const currentDate = new Date().toISOString().split("T")[0];
 
+const currentDate = new Date().toISOString().split('T')[0]
 
-// khởi tạo các cell 
+// khởi tạo các cell
 const EditableCell = ({
   editing,
   dataIndex,
@@ -40,11 +46,7 @@ const EditableCell = ({
   children,
   ...restProps
 }) => {
-
-  const inputNode =
-    (
-      <Input />
-    );
+  const inputNode = <Input />
 
   return (
     //copy props bắt buộc nhập các trường sau bấm edit
@@ -53,13 +55,13 @@ const EditableCell = ({
         <Form.Item
           name={dataIndex}
           style={{
-            margin: 0,
+            margin: 0
           }}
           rules={[
             {
               required: true,
-              message: `Please Input ${title}!`,
-            },
+              message: `Please Input ${title}!`
+            }
           ]}
         >
           {inputNode}
@@ -68,19 +70,19 @@ const EditableCell = ({
         children
       )}
     </td>
-  );
-};
+  )
+}
 
 //show
 const HienThiKH = () => {
-  const [form] = Form.useForm();
-  let [listMauSac, setlistMauSac] = useState([]);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [editingNgaySinh, setEditingNgaySinh] = useState(null);
-  const [filterStatus, setFilterStatus] = useState(null);
-  const [searchText, setSearchText] = useState("");
-  const [searchedColumn, setSearchedColumn] = useState("");
+  const [form] = Form.useForm()
+  let [listMauSac, setlistMauSac] = useState([])
+  const [currentPage, setCurrentPage] = useState(0)
+  const [totalPages, setTotalPages] = useState(0)
+  const [editingNgaySinh, setEditingNgaySinh] = useState(null)
+  const [filterStatus, setFilterStatus] = useState(null)
+  const [searchText, setSearchText] = useState('')
+  const [searchedColumn, setSearchedColumn] = useState('')
   // const searchInput = useRef(null);
   const [listColor, setlistColor] = useState([])
   const [listChip, setlistChip] = useState([])
@@ -90,90 +92,88 @@ const HienThiKH = () => {
   const [listPin, setListPin] = useState([])
   const [listNhaSanXuat, setlistNhaSanXuat] = useState([])
   const [listDongSanPham, setListDongSanPham] = useState([])
-  const [priceBiggest,setpriceBiggest] = useState(0)
-
+  const [priceBiggest, setpriceBiggest] = useState(0)
+  let navigate = useNavigate()
   const [chiTietSanPham, setchiTietSanPham] = useState({
-    sanPham: "",
-    dongSanPham: "",
-    nhaSanXuat: "",
-    mauSac: "",
-    pin: "",
-    ram: "",
-    rom: "",
-    chip: "",
-    manHinh: "",
-    donGiaMin: "",
-    donGiaMax: "",
-    trangThai:""
+    sanPham: '',
+    dongSanPham: '',
+    nhaSanXuat: '',
+    mauSac: '',
+    pin: '',
+    ram: '',
+    rom: '',
+    chip: '',
+    manHinh: '',
+    donGiaMin: '',
+    donGiaMax: '',
+    trangThai: ''
   })
 
-
-
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
-    confirm();
-    setSearchText(selectedKeys[0]);
-    setSearchedColumn(dataIndex);
-  };
-  const handleReset = (clearFilters) => {
-    clearFilters();
-    setSearchText("");
-  };
+    confirm()
+    setSearchText(selectedKeys[0])
+    setSearchedColumn(dataIndex)
+  }
+  const handleReset = clearFilters => {
+    clearFilters()
+    setSearchText('')
+  }
 
-  const getColumnSearchProps = (dataIndex) => ({
+  const getColumnSearchProps = dataIndex => ({
     filterDropdown: ({
       setSelectedKeys,
       selectedKeys,
       confirm,
       clearFilters,
-      close,
+      close
     }) => (
       <div
         style={{
-          padding: 8,
+          padding: 8
         }}
-        onKeyDown={(e) => e.stopPropagation()}
+        onKeyDown={e => e.stopPropagation()}
       >
         <Input
           // ref={searchInput}
           placeholder={`Nhập ${dataIndex}`}
           value={selectedKeys[0]}
-          onChange={(e) =>
+          onChange={e =>
             setSelectedKeys(e.target.value ? [e.target.value] : [])
           }
           onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
           style={{
             marginBottom: 8,
-            display: "block",
+            display: 'block'
           }}
         />
 
         <Space>
           <Button
-            type="primary"
+            type='primary'
             onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
             icon={<SearchOutlined />}
-            size="small"
+            size='small'
             style={{
-              width: 90,
+              width: 90
             }}
           >
             Search
           </Button>
           <Button
             onClick={() => clearFilters && handleReset(clearFilters)}
-            size="small"
+            size='small'
             style={{
-              width: 90,
+              width: 90
             }}
           >
             Reset
           </Button>
 
           <Button
-            type="link"
-            size="small"
+            type='link'
+            size='small'
             onClick={() => {
-              close();
+              close()
             }}
           >
             close
@@ -181,262 +181,260 @@ const HienThiKH = () => {
         </Space>
       </div>
     ),
-    filterIcon: (filtered) => (
+    filterIcon: filtered => (
       <SearchOutlined
         style={{
-          color: filtered ? "#1677ff" : undefined,
+          color: filtered ? '#1677ff' : undefined
         }}
       />
     ),
     onFilter: (value, record) =>
       record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-    onFilterDropdownOpenChange: (visible) => {
+    onFilterDropdownOpenChange: visible => {
       if (visible) {
         // setTimeout(() => searchInput.current?.select(), 100);
       }
     },
-    render: (text) =>
+    render: text =>
       searchedColumn === dataIndex ? (
         <Highlighter
           highlightStyle={{
-            backgroundColor: "#ffc069",
-            padding: 0,
+            backgroundColor: '#ffc069',
+            padding: 0
           }}
           searchWords={[searchText]}
           autoEscape
-          textToHighlight={text ? text.toString() : ""}
+          textToHighlight={text ? text.toString() : ''}
         />
       ) : (
         text
-      ),
-  });
+      )
+  })
 
   useEffect(() => {
-    loadDatalistMauSac(currentPage);
+    loadDatalistMauSac(currentPage)
     loadDataComboBox()
-  }, [currentPage,chiTietSanPham]);
+  }, [currentPage, chiTietSanPham])
 
-
- 
   // cutstom load data
-  const loadDatalistMauSac = async (currentPage) => {
-    if (currentPage == undefined) currentPage = 0;
-    axios.post(apiURLSanPham + "/products?page=" + currentPage,chiTietSanPham).then((response) => {
-      
-      const modifiedData = response.data.content.map((item, index) => ({
-        ...item,
-        tags:[item.tenDongSanPham,item.tenNhaSanXuat,item.tenChip],
-        stt: index + 1,
-      }));
+  const loadDatalistMauSac = async currentPage => {
+    if (currentPage == undefined) currentPage = 0
+    axios
+      .post(apiURLSanPham + '/products?page=' + currentPage, chiTietSanPham)
+      .then(response => {
+        const modifiedData = response.data.content.map((item, index) => ({
+          ...item,
+          tags: [item.tenDongSanPham, item.tenNhaSanXuat, item.tenChip]
+        }))
+        console.log(modifiedData)
+        setlistMauSac(modifiedData)
+        setCurrentPage(response.data.number)
+        setTotalPages(response.data.totalPages)
+      })
 
-      setlistMauSac(modifiedData);
-      setCurrentPage(response.data.number);
-      setTotalPages(response.data.totalPages);
-    });
-      
-    axios.get(apiURLSanPham+'/don-gia-lon-nhat').then((response)=>{
+    axios.get(apiURLSanPham + '/don-gia-lon-nhat').then(response => {
       setpriceBiggest(response.data)
-     })
-  };
-
+    })
+  }
 
   const filteredDataSource = filterStatus
-    ? listMauSac.filter((item) => item.trangThai === filterStatus)
-    : listMauSac;
-
+    ? listMauSac.filter(item => item.trangThai === filterStatus)
+    : listMauSac
 
   //edit
-  const [editingKey, setEditingKey] = useState("");
+  const [editingKey, setEditingKey] = useState('')
 
-  const isEditing = (record) => record.id === editingKey;
-
+  const isEditing = record => record.id === editingKey
 
   const doChangeTrangThai = (e, record) => {
-    //  const [trangThai, setTrangThai] = useState(record.trangThai);
+    console.log(record.delected)
     axios
       .delete(apiURLSanPham + `/doi-trang-thai/${record.id}`)
-      .then((response) => {
+      .then(response => {
         // Xử lý thành công
         // setTrangThai(trangThai === 1 ? 2 : 1);
-        loadDatalistMauSac(currentPage);
-        console.log("Trạng thái đã được thay đổi");
+        loadDatalistMauSac(currentPage)
+        console.log('Trạng thái đã được thay đổi')
       })
-      .catch((error) => {
+      .catch(error => {
         // Xử lý lỗi
-        console.error("Đã xảy ra lỗi khi thay đổi trạng thái", error);
-      });
-  };
-
-
-
-  const handleChange = (value) => {
-     setchiTietSanPham({ ...chiTietSanPham, [String(value).slice(0, String(value).indexOf(":"))]: String(value).slice(String(value).indexOf(":") + 1) })
-  };
-
-  const handleText = (e) =>{
-    setchiTietSanPham({ ...chiTietSanPham, sanPham: e.target.value})
+        console.error('Đã xảy ra lỗi khi thay đổi trạng thái', error)
+      })
   }
 
-
-  const sliderChange = (e) => {
-    setchiTietSanPham({ ...chiTietSanPham, ["donGiaMin"]: e[0], ["donGiaMax"]: e[1] })
+  const handleChange = value => {
+    setchiTietSanPham({
+      ...chiTietSanPham,
+      [String(value).slice(0, String(value).indexOf(':'))]: String(value).slice(
+        String(value).indexOf(':') + 1
+      )
+    })
   }
 
+  const handleText = e => {
+    setchiTietSanPham({ ...chiTietSanPham, sanPham: e.target.value })
+  }
+
+  const sliderChange = e => {
+    setchiTietSanPham({
+      ...chiTietSanPham,
+      ['donGiaMin']: e[0],
+      ['donGiaMax']: e[1]
+    })
+  }
 
   const loadDataComboBox = async () => {
-
-    axios.get(apiURLDongSanPham + "/get-list").then((response) => {
+    axios.get(apiURLDongSanPham + '/get-list').then(response => {
       var itemAll = {
-        label: "Tất cả",
-        value: "dongSanPham:",
-      };
+        label: 'Tất cả',
+        value: 'dongSanPham:'
+      }
       const modifiedData = response.data.map((item, index) => ({
         label: item.tenDongSanPham,
-        value: "dongSanPham:" + item.tenDongSanPham,
-      }));
+        value: 'dongSanPham:' + item.tenDongSanPham
+      }))
       modifiedData.unshift(itemAll)
-      setListDongSanPham(modifiedData);
-    });
-    axios.get(apiURLNhaSanXuat + "/get-list").then((response) => {
+      setListDongSanPham(modifiedData)
+    })
+    axios.get(apiURLNhaSanXuat + '/get-list').then(response => {
       var itemAll = {
-        label: "Tất cả",
-        value: "nhaSanXuat:",
-      };
+        label: 'Tất cả',
+        value: 'nhaSanXuat:'
+      }
       const modifiedData = response.data.map((item, index) => ({
         label: item.tenNhaSanXuat,
-        value: "nhaSanXuat:" + item.tenNhaSanXuat,
-      }));
+        value: 'nhaSanXuat:' + item.tenNhaSanXuat
+      }))
       modifiedData.unshift(itemAll)
-      setlistNhaSanXuat(modifiedData);
-    });
+      setlistNhaSanXuat(modifiedData)
+    })
 
-    axios.get(apiURLPin + "/get-list").then((response) => {
+    axios.get(apiURLPin + '/get-list').then(response => {
       var itemAll = {
-        label: "Tất cả",
-        value: "pin:",
-      };
+        label: 'Tất cả',
+        value: 'pin:'
+      }
       const modifiedData = response.data.map((item, index) => ({
-        label: item.dungLuong + " mah",
-        value: "pin:" + item.dungLuong,
-      }));
+        label: item.dungLuong + ' mah',
+        value: 'pin:' + item.dungLuong
+      }))
       modifiedData.unshift(itemAll)
-      setListPin(modifiedData);
-    });
+      setListPin(modifiedData)
+    })
 
-    axios.get(apiURLram + "/get-list").then((response) => {
+    axios.get(apiURLram + '/get-list').then(response => {
       var itemAll = {
-        label: "Tất cả",
-        value: "ram:",
-      };
+        label: 'Tất cả',
+        value: 'ram:'
+      }
       const modifiedData = response.data.map((item, index) => ({
-        label: item.kichThuoc + " GB",
-        value: "ram:" + item.kichThuoc,
-      }));
+        label: item.kichThuoc + ' GB',
+        value: 'ram:' + item.kichThuoc
+      }))
       modifiedData.unshift(itemAll)
-      setListRam(modifiedData);
-    });
+      setListRam(modifiedData)
+    })
 
-    axios.get(apiURLrom + "/get-list").then((response) => {
+    axios.get(apiURLrom + '/get-list').then(response => {
       var itemAll = {
-        label: "Tất cả",
-        value: "rom:",
-      };
+        label: 'Tất cả',
+        value: 'rom:'
+      }
       const modifiedData = response.data.map((item, index) => ({
-        label: item.kichThuoc + " GB",
-        value: "rom:" + item.kichThuoc,
-      }));
+        label: item.kichThuoc + ' GB',
+        value: 'rom:' + item.kichThuoc
+      }))
       modifiedData.unshift(itemAll)
-      setlistRom(modifiedData);
-    });
+      setlistRom(modifiedData)
+    })
 
-    axios.get(apiURLChip + "/get-list").then((response) => {
+    axios.get(apiURLChip + '/get-list').then(response => {
       var itemAll = {
-        label: "Tất cả",
-        value: "chip:",
-      };
+        label: 'Tất cả',
+        value: 'chip:'
+      }
       const modifiedData = response.data.map((item, index) => ({
         label: item.tenChip,
-        value: "chip:" + item.tenChip,
-      }));
+        value: 'chip:' + item.tenChip
+      }))
       modifiedData.unshift(itemAll)
-      setlistChip(modifiedData);
-    });
+      setlistChip(modifiedData)
+    })
 
-    axios.get(apiURLMauSac + "/get-list").then((response) => {
+    axios.get(apiURLMauSac + '/get-list').then(response => {
       var itemAll = {
-        label: "Tất cả",
-        value: "mauSac:",
-      };
+        label: 'Tất cả',
+        value: 'mauSac:'
+      }
       const modifiedData = response.data.map((item, index) => ({
         label: item.tenMauSac,
-        value: "mauSac:" + item.tenMauSac,
-      }));
+        value: 'mauSac:' + item.tenMauSac
+      }))
       modifiedData.unshift(itemAll)
-      setlistColor(modifiedData);
-    });
+      setlistColor(modifiedData)
+    })
 
-    axios.get(apiURLManHinh + "/get-list").then((response) => {
+    axios.get(apiURLManHinh + '/get-list').then(response => {
       var itemAll = {
-        label: "Tất cả",
-        value: "manHinh:",
-      };
+        label: 'Tất cả',
+        value: 'manHinh:'
+      }
       const modifiedData = response.data.map((item, index) => ({
-        label: item.kichThuoc + " inch",
-        value: "manHinh:" + item.kichThuoc,
-      }));
+        label: item.kichThuoc + ' inch',
+        value: 'manHinh:' + item.kichThuoc
+      }))
       modifiedData.unshift(itemAll)
-      setlistManHinh(modifiedData);
-    });
+      setlistManHinh(modifiedData)
+    })
   }
-
 
   const columns = [
     {
-      title: "STT",
-      dataIndex: "stt",
-      width: "5%",
-      render: (text) => <span>{text}</span>,
-      sorter: (a, b) => a.stt - b.stt,
+      title: 'STT',
+      dataIndex: 'stt',
+      width: '5%',
+      render: text => <span>{text}</span>,
+      sorter: (a, b) => a.stt - b.stt
     },
     {
-      title: "Tên sản phẩm",
-      dataIndex: "tenSanPham",
-      width: "5%",
-      editable: true,
+      title: 'Tên sản phẩm',
+      dataIndex: 'tenSanPham',
+      width: '5%',
+      editable: true
     },
     {
-      title: "Thông tin",
-      dataIndex: "tags",
-      width: "65%",
+      title: 'Thông tin',
+      dataIndex: 'tags',
+      width: '65%',
       render: (_, { tags }) => (
         <>
-          {tags.map((tag) => {
-            let color = tag.length >2 ? 'geekblue' : 'GREEN';
+          {tags.map(tag => {
+            let color = tag.length > 2 ? 'geekblue' : 'GREEN'
             if (tag === 'loser') {
-              color = 'volcano';
+              color = 'volcano'
             }
             return (
               <Tag color={color} key={tag}>
                 {tag.toUpperCase()}
               </Tag>
-            );
+            )
           })}
         </>
-      ),
+      )
     },
     {
-      title: "Trạng thái",
-      dataIndex: "delected",
-      width: "5%",
+      title: 'Trạng thái',
+      dataIndex: 'delected',
+      width: '5%',
       filters: [
         {
-          text: "Kinh doanh",
-          value: "true",
+          text: 'Kinh doanh',
+          value: 'true'
         },
         {
-          text: "Ngừng kinh doanh",
-          value: "false",
-        },
+          text: 'Ngừng kinh doanh',
+          value: 'false'
+        }
       ],
       // eslint-disable-next-line eqeqeq
       onFilter: (value, record) => record.delected == value,
@@ -445,120 +443,94 @@ const HienThiKH = () => {
       // editable: true,
       render: (text, record) => (
         <span>
-
-          <Space direction="vertical">
-            <Switch style={{ borderRadius: "30px", width: 140 }} onChange={(e) => doChangeTrangThai(e, record)}
-              checkedChildren="Kinh doanh" unCheckedChildren="Ngừng kinh doanh" defaultChecked={record.delected == 1 ? true : false} />
+          <Space direction='vertical'>
+            <Switch
+              style={{ borderRadius: '30px', width: 140 }}
+              onChange={e => doChangeTrangThai(e, record)}
+              checkedChildren='Kinh doanh'
+              unCheckedChildren='Ngừng kinh doanh'
+              defaultChecked={record.delected}
+            />
           </Space>
-
         </span>
-      ),
+      )
     },
-      // {
-      // title: "Thao Tác",
-      // dataIndex: "operation",
-      // width: "5%",
-      // render: (_, record) => {
-      //   const editable = isEditing(record);
-      //   return editable ? (
-      //     <span>
-      //       <FontAwesomeIcon
-      //         // icon={faSave}
-      //         onClick={() => save(record.id)}
-      //         style={{ marginRight: "15px", cursor: "pointer" }}
-      //       />
-      //       <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
-      //         <FontAwesomeIcon icon={faTimes} style={{ cursor: "pointer" }} />
-      //       </Popconfirm>
-      //     </span>
-      //   ) : (
-      //     <>
-      //       <FontAwesomeIcon
-      //         icon={faPencilAlt}
-      //         onClick={() => edit(record)}
-      //         style={{
-      //           cursor: "pointer",
-      //           // opacity: editingKey === record.id ? 0.5 : 1,
-      //           color: editingKey === record.id ? "red" : "green",
-      //         }}
-      //         disabled={editingKey !== ""}
-      //       />
+    {
+      title: 'Thao Tác',
+      dataIndex: 'operation',
+      width: '2%',
+      render: (_, record) => {
+        return (
+          <>
+            <FontAwesomeIcon
+              icon={faEye}
+              onClick={() => navigate(`/chi-tiet-san-pham/${record.id}`)}
+              style={{
+                cursor: 'pointer',
+                color: editingKey === record.id ? 'red' : 'green'
+              }}
+            />
+          </>
+        )
+      }
+    }
+  ]
 
-      //       <FontAwesomeIcon
-      //         icon={faTrashAlt}
-      //         onClick={() => Delete(record)}
-      //         style={{
-      //           cursor: "pointer",
-      //           // opacity: editingKey === record.id ? 0.5 : 1,
-      //           color: "#F55E4C",
-      //           marginLeft: 20,
-      //         }}
-      //         disabled={editingKey !== ""
-      //       }
-      //       />
-      //     </>
-      //   );
-      // },
-    // },
-  ];
-
-  const mergedColumns = columns.map((col) => {
+  const mergedColumns = columns.map(col => {
     if (!col.editable) {
-      return col;
+      return col
     }
     return {
       ...col,
-      onCell: (record) => ({
+      onCell: record => ({
         record,
         dataIndex: col.dataIndex,
         title: col.title,
-        editing: isEditing(record),
-      }),
-    };
-  });
+        editing: isEditing(record)
+      })
+    }
+  })
 
   return (
     <>
-
-
-      <h2 className="text-center font-weight-bold">Quản lí chi tiết sản phẩm</h2>
+      <h2 className='text-center font-weight-bold'>Quản lí sản phẩm</h2>
       <br />
-      <div className="card " style={{ padding: 10 }}  >
-        <div style={{ color: 'black', marginLeft: 10, marginTop: 20, fontWeight: 'bold' }}>
-        <FontAwesomeIcon icon={faFilter} />Filter
-        </div>
-        <div className="btn-add">
+      <div className='card ' style={{ padding: ` 0 73px` }}>
+      
+        <div className='btn-add'>
           <span>
-            <Form style={{ width: "20em", display: "inline-block" }}>
+            <Form style={{ width: '20em', display: 'inline-block', height: "40px" }}>
               <Input
-                placeholder="Nhập tên hoặc màu sắc hoặc hình thức "
-                name="sanPham"
-                onChange={(e) =>handleText(e)}
+                placeholder='Nhập tên hoặc màu sắc hoặc hình thức '
+                name='sanPham'
+                style={{ height: "40px" }}
+                onChange={e => handleText(e)}
               />
             </Form>
           </span>
 
           {/* Search */}
-          <FontAwesomeIcon
+          <FontAwesomeIcon style={{ marginLeft: '5px' }} />
+          <span className='bl-add'>
+            
+            <Button className='btn-them-tu-file'  style={{ height: "40px", width: "auto", fontSize: "15px" }}>
+              <ExcelExportHelper data={listMauSac} />
+            </Button>
 
-            style={{ marginLeft: "5px" }}
-          />
-          <span className="bl-add">
-
-
-            <Link to="/them-san-pham">
-              <Button className="btn-them-tk">+ Thêm chi tiết sản phẩm </Button>
+            <Link to='/them-san-pham'>
+              <Button className='btn-them-tk'  style={{ height: "40px", width: "auto", fontSize: "15px" }} >+ Thêm chi tiết sản phẩm </Button>
             </Link>
 
           </span>
         </div>
 
-
-        <div className="btn-add" style={{ width: 1020, marginRight: 20, justifyContent: 'center' }} >
-
+        <div
+          className='btn-add'
+          style={{ width: 1020, marginRight: 20, justifyContent: 'center' }}
+        >
           {/* <Select
           defaultValue="Chọn sản phẩm"
-          style={{ width: 150,marginRight:15,marginBottom:20 }}
+          style={{ width: 200,marginRight:15,marginBottom:20 }}
           onChange={handleChange}
           options={[
             {
@@ -569,33 +541,34 @@ const HienThiKH = () => {
         /> */}
 
           <Select
-            defaultValue="Chọn dòng sản phẩm"
-            style={{ width: 150, marginRight: 15, marginBottom: 20 }}
+            defaultValue='Chọn dòng sản phẩm'
+            style={{ width: 200, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
                 label: 'Chọn một dòng sản phẩm',
                 options: listDongSanPham
-              },
+              }
             ]}
           />
- 
 
           <Select
-            defaultValue="Chọn nhà sản xuất"
-            style={{ width: 150, marginRight: 15, marginBottom: 20 }}
+            listItemHeight={10}
+            listHeight={250}
+            defaultValue='Chọn nhà sản xuất'
+            style={{ width: 200, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
                 label: 'Chọn một nhà sản xuất',
                 options: listNhaSanXuat
-              },
+              }
             ]}
           />
 
           <Select
-            defaultValue="Chọn màu sắc"
-            style={{ width: 150, marginRight: 15, marginBottom: 20 }}
+            defaultValue='Chọn màu sắc'
+            style={{ width: 200, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
@@ -604,98 +577,110 @@ const HienThiKH = () => {
               }
             ]}
           />
-         
 
           <Select
-            defaultValue="Chọn pin"
-            style={{ width: 150, marginRight: 15, marginBottom: 20 }}
+            defaultValue='Chọn pin'
+            style={{ width: 200, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
                 label: 'Chọn một dung lượng pin',
                 options: listPin
-              },
+              }
             ]}
           />
 
           <Select
-            defaultValue="Chọn ram"
-            style={{ width: 150, marginRight: 15, marginBottom: 20 }}
+            defaultValue='Chọn ram'
+            style={{ width: 200, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
                 label: 'Chọn một dung lượng ram',
                 options: listRam
-              },
+              }
             ]}
           />
 
           <Select
-            defaultValue="Chọn rom"
-            style={{ width: 150, marginRight: 15, marginBottom: 20 }}
+            defaultValue='Chọn rom'
+            style={{ width: 200, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
                 label: 'Chọn một dung lượng rom',
                 options: listRom
-              },
+              }
             ]}
           />
 
-
           <Select
-            defaultValue="Chọn chip"
-            style={{ width: 150, marginRight: 15, marginBottom: 20 }}
+            defaultValue='Chọn chip'
+            style={{ width: 200, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
                 label: 'Chọn một chip',
                 options: listChip
-              },
+              }
             ]}
           />
 
-         
-
           <Select
-            defaultValue="Chọn kích cỡ màn hình"
-            style={{ width: 150, marginRight: 15, marginBottom: 20 }}
+            defaultValue='Chọn kích cỡ màn hình'
+            style={{ width: 200, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
                 label: 'Chọn một kích cỡ màn hình',
                 options: listManHinh
-              },
+              }
             ]}
           />
 
-          <div className="d-flex">
-            <label style={{ color: "black" }}>Lựa chọn khoảng giá : </label>
+          <div className='d-flex'>
+            <label style={{ color: 'black' }}>Lựa chọn khoảng giá : </label>
 
             <Button
               style={{ marginLeft: 40, marginBottom: 20 }}
-              type="primary" ghost>
-              {chiTietSanPham.donGiaMin == "" ? "0".toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + " đ" : chiTietSanPham.donGiaMin.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + " đ"}
+              type='primary'
+              ghost
+            >
+              {chiTietSanPham.donGiaMin == ''
+                ? '0'.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' đ'
+                : chiTietSanPham.donGiaMin
+                    .toString()
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' đ'}
             </Button>
             <Slider
-              onChange={(e) => sliderChange(e)}
+              onChange={e => sliderChange(e)}
               style={{ width: 250, marginLeft: 5, marginBottom: 20 }}
               min={0}
               max={Number(priceBiggest)}
               step={1000000}
-              range defaultValue={[0, Number(priceBiggest)]} />
+              range
+              defaultValue={[0, Number(priceBiggest)]}
+            />
             <Button
               style={{ marginLeft: 5, marginBottom: 20 }}
-              type="primary" ghost>
-              {chiTietSanPham.donGiaMax == "" ? priceBiggest.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + " đ" : chiTietSanPham.donGiaMax.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + " đ"}
+              type='primary'
+              ghost
+            >
+              {chiTietSanPham.donGiaMax == ''
+                ? priceBiggest
+                    .toString()
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' đ'
+                : chiTietSanPham.donGiaMax
+                    .toString()
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' đ'}
             </Button>
           </div>
 
-          <div className="d-flex">
-            <label style={{ color: "black" }}>Lựa chọn trạng thái  : </label>
+          <div className='d-flex'>
+            <label style={{ color: 'black' }}>Lựa chọn trạng thái : </label>
 
             <Select
-              defaultValue="Chọn trạng thái"
+              defaultValue='Chọn trạng thái'
               style={{ width: 250, marginLeft: 40, marginBottom: 20 }}
               onChange={handleChange}
               options={[
@@ -704,28 +689,27 @@ const HienThiKH = () => {
                   options: [
                     {
                       value: 'trangThai: ',
-                      label: 'Tất cả',
-                    }, {
+                      label: 'Tất cả'
+                    },
+                    {
                       value: 'trangThai:1',
-                      label: 'Kinh doanh',
+                      label: 'Kinh doanh'
                     },
                     {
                       value: 'trangThai:0',
-                      label: 'Ngừng kinh doanh',
-                    }]
-                },
+                      label: 'Ngừng kinh doanh'
+                    }
+                  ]
+                }
               ]}
             />
           </div>
         </div>
       </div>
 
-      <div className="card " style={{ padding: 10 }}  >
-        <div style={{ color: 'black', marginLeft: 10, marginTop: 20, fontWeight: 'bold' }}>
-          <FontAwesomeIcon icon={faList} /> Danh sách sản phẩm
-        </div>
-
-        <div className="form-tbl">
+      <div className='card ' style={{ padding: ` 0 7px` }}>
+    
+        <div className='form-tbl'>
           <Form
             form={form}
             component={false}
@@ -734,32 +718,31 @@ const HienThiKH = () => {
             <Table
               components={{
                 body: {
-                  cell: EditableCell,
-                },
+                  cell: EditableCell
+                }
               }}
               bordered
               dataSource={filteredDataSource}
               columns={mergedColumns}
-              rowClassName="editable-row"
+              rowClassName='editable-row'
               pagination={false}
-              rowKey="id"
-              style={{ marginBottom: "20px" }}
+              rowKey='id'
+              style={{ marginBottom: '20px' }}
             />
 
             <Pagination
               style={{ transform: `translateX(${450}px)`, width: 200 }}
               simplecurrent={currentPage + 1}
-              onChange={(value) => {
-                setCurrentPage(value - 1);
+              onChange={value => {
+                setCurrentPage(value - 1)
               }}
               total={totalPages * 10}
             />
           </Form>
         </div>
-
-          </div>
+      </div>
     </>
-  );
-};
+  )
+}
 
-export default HienThiKH;
+export default HienThiKH

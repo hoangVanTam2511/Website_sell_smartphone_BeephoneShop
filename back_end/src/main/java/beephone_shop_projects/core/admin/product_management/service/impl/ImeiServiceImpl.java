@@ -13,7 +13,6 @@ public class ImeiServiceImpl implements IService<Imei> {
 
     @Autowired
     private ImeiRepository imeiRepository;
-
     @Override
     public Page<Imei> getAll(Pageable pageable) {
         return imeiRepository.findAllByDelected(true,pageable);

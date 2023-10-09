@@ -117,12 +117,13 @@ public class DBGenerator implements CommandLineRunner {
 
         //Bảng Role
         Role nhanVien = new Role();
-        nhanVien.setMa("Nhanvien1");
+        nhanVien.setMa("role1");
         nhanVien.setTen("Nhân Viên");
         nhanVien.setId(roleRepository.save(nhanVien).getId());
+
         Role chuCuaHang = new Role();
-        chuCuaHang.setMa("ChuCuaHang1");
-        chuCuaHang.setTen("admin");
+        chuCuaHang.setMa("role2");
+        chuCuaHang.setTen("Khách Hàng");
         chuCuaHang.setId(roleRepository.save(chuCuaHang).getId());
 
         //Bảng Account

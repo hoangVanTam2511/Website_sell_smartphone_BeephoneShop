@@ -38,6 +38,7 @@ public class ManHinhRestController {
     public ArrayList<ManHinh> getList(){
         return this.manHinhService.getDanhSachManHinh();
     }
+
     @DeleteMapping("/delete")
     public void delete(@RequestParam("id")String id) {
         manHinhService.delete(id);

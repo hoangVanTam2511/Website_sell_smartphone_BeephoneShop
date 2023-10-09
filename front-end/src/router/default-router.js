@@ -1,5 +1,5 @@
-import React from "react";
-import Index from "../views/index";
+import React from 'react'
+import Index from '../views/index'
 import { ToastContainer } from "react-toastify";
 // san pham
 
@@ -31,8 +31,15 @@ import ThemNhaSanXuat from "../views/admin/product-manager/nha-san-xuat/them-nha
 import Rom from "../views/admin/product-manager/rom/rom";
 import ThemRom from "../views/admin/product-manager/rom/them-rom";
 
+// rom
+import Camera from "../views/admin/product-manager/camera/camera";
+
+// mau_sac
+import MauSac from "../views/admin/product-manager/mau-sac/quan-li-mau-sac";
+import ThemMauSac from "../views/admin/product-manager/mau-sac/them-mau-sac";
+
 // chi-tiet-san-pham
-import ChiTietSanPham from "../views/admin/product-manager/chi-tiet-san-pham/san-pham";
+import SanPham from "../views/admin/product-manager/chi-tiet-san-pham/san-pham";
 import ThemChiTietSanPham from "../views/admin/product-manager/chi-tiet-san-pham/them-san-pham";
 
 // // imei
@@ -56,6 +63,10 @@ import AddRole from "../views/admin/account-manager/role/AddRole";
 
 //admin
 
+
+// sanpham
+import ChiTietSanPham from "../views/admin/product-manager/chi-tiet-san-pham/chi-tiet-san-pham";
+
 import Default from "../layouts/dashboard/default";
 import ManagementOrders from "../views/admin/order-manager/management-orders";
 import OrderDetail from "../views/admin/order-manager/order-detail";
@@ -76,94 +87,112 @@ import UpdateNV from "../views/admin/account-manager/nhanvien/UpdateNV";
 
 import SuaKhuyenMai from "../views/admin/promotion-manager/sua-promotion";
 
+
 //khuyenMai
 import UpdateVoucher from "../views/admin/voucher-manager/sua-voucher";
 
-import OrdersPending from "../views/admin/order-manager/ordes-pending";
+import OrdersPending from "../views/admin/order-manager/ordes-pending"
 
-import PointOfSales from "../views/admin/order-manager/point-of-sales";
+import PointOfSales from "../views/admin/order-manager/point-of-sales"
+
 
 export const DefaultRouter = [
   {
     path: "/",
     element: <Default />,
     children: [
-      {
-        path: "",
-        element: <Index />,
-      },
-      {
-        path: "chip",
-        element: <Chip />,
-      },
-      {
-        path: "them-chip",
-        element: <ThemChip />,
-      },
-      {
-        path: "dong-san-pham",
-        element: <DongSanPham />,
-      },
-      {
-        path: "them-dong-san-pham",
-        element: <ThemDongSanPham />,
-      },
-      {
-        path: "nha-san-xuat",
-        element: <NhaSanXuat />,
-      },
-      {
-        path: "them-nha-san-xuat",
-        element: <ThemNhaSanXuat />,
-      },
-      {
-        path: "man-hinh",
-        element: <ManHinh />,
-      },
-      {
-        path: "them-man-hinh",
-        element: <ThemManHinh />,
-      },
-      {
-        path: "pin",
-        element: <Pin />,
-      },
-      {
-        path: "them-pin",
-        element: <ThemPin />,
-      },
-      {
-        path: "ram",
-        element: <Ram />,
-      },
-      {
-        path: "them-ram",
-        element: <ThemRam />,
-      },
-      {
-        path: "rom",
-        element: <Rom />,
-      },
-      {
-        path: "them-rom",
-        element: <ThemRom />,
-      },
-      {
-        path: "san-pham",
-        element: <ChiTietSanPham />,
-      },
-      {
-        path: "them-san-pham",
-        element: <ThemChiTietSanPham />,
-      },
-      {
-        path: "khach-hang",
-        element: <KhachHang />,
-      },
-      {
-        path: "khach-hang",
-        element: <KhachHang />,
-      },
+        {
+            path: "",
+            element: <Index />,
+        },
+        {
+            path: "chip",
+            element: <Chip />,
+        },
+        {
+            path: "them-chip",
+            element: <ThemChip />,
+        },
+        {
+            path: "dong-san-pham",
+            element: <DongSanPham />,
+        },
+        {
+            path: "them-dong-san-pham",
+            element: <ThemDongSanPham />,
+        },
+        {
+            path: "nha-san-xuat",
+            element: <NhaSanXuat />,
+        },
+        {
+            path: "them-nha-san-xuat",
+            element: <ThemNhaSanXuat />,
+        },
+        {
+            path: "man-hinh",
+            element: <ManHinh />,
+        },
+        {
+            path: "them-man-hinh",
+            element: <ThemManHinh />,
+        },
+        {
+            path: "pin",
+            element: <Pin />,
+        },
+        {
+            path: "them-pin",
+            element: <ThemPin />,
+        },
+        {
+            path: "ram",
+            element: <Ram />,
+        },
+        {
+            path: "them-ram",
+            element: <ThemRam />,
+        },
+        {
+            path: "rom",
+            element: <Rom />,
+        },
+        {
+            path: "them-rom",
+            element: <ThemRom />,
+        },
+        {
+            path: "camera",
+            element: <Camera />,
+        },
+        {
+            path: "san-pham",
+            element: <SanPham />,
+        },
+        {
+            path: "chi-tiet-san-pham/:idSanPham",
+            element:  <ChiTietSanPham />,
+        },
+        {
+            path: "them-san-pham",
+            element: <ThemChiTietSanPham />,
+        },
+        {
+            path: "khach-hang",
+            element: <KhachHang />,
+        },
+        {
+            path: "khach-hang",
+            element: <KhachHang />,
+        },
+        {
+            path: "mau-sac",
+            element: <MauSac />,
+        },
+        {
+            path: "them-mau-sac",
+            element: <ThemMauSac />,
+        },
 
       {
         path: "them-khach-hang",
@@ -243,19 +272,19 @@ export const DefaultRouter = [
         element: <SuaKhuyenMai />,
       },
       {
-        path: "dashboard/management-orders",
+        path: 'dashboard/management-orders',
         element: <ManagementOrders />,
       },
       {
-        path: "dashboard/orders-pending",
+        path: 'dashboard/orders-pending',
         element: <OrdersPending />,
       },
       {
-        path: "dashboard/point-of-sales",
+        path: 'dashboard/point-of-sales',
         element: <PointOfSales />,
       },
       {
-        path: "dashboard/order-detail/:id",
+        path: 'dashboard/order-detail/:id',
         element: <OrderDetail />,
       },
     ],

@@ -30,7 +30,7 @@ public interface ChipRepository extends IChipRepository {
 
 
     @Query(value = """
-    SELECT CONCAT( 'CHIP_',IF(count(*)  = 0,0,SUBSTRING(ma,6) + 1))   FROM chip
+    SELECT SUBSTRING(ma,6) + 1  FROM chip ORDER BY ma DESC LIMIT 0,1
     """,nativeQuery = true)
     String getNewCode();
 

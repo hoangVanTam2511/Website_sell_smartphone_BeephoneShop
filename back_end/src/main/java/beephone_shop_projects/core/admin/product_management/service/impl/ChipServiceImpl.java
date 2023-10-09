@@ -53,5 +53,7 @@ public class ChipServiceImpl implements IService<Chip> {
         return (ArrayList<Chip>) this.chipRepository.findAllByDelected(true);
     }
 
-    public String generateNewCode(){return this.chipRepository.getNewCode();}
+    public String generateNewCode(){
+        return this.chipRepository.getNewCode() == null ?"CHIP_0":"CHIP_"+ this.chipRepository.getNewCode() ;
+    }
 }
