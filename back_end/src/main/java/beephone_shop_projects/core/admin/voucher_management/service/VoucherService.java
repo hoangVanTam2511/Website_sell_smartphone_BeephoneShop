@@ -9,6 +9,8 @@ import beephone_shop_projects.entity.Voucher;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 
+import java.math.BigDecimal;
+
 public interface VoucherService {
 
     VoucherResponse getOne(String id);
@@ -23,7 +25,7 @@ public interface VoucherService {
 
     Page<Voucher> getAll(FindVoucherRequest request);
 
-    CheckVoucherResponse checkVoucher(String input);
+    CheckVoucherResponse checkVoucher(String input, BigDecimal tongTien);
 
     Page<VoucherResponse> getVoucherStatusIsActive(FindVoucherRequest request);
 

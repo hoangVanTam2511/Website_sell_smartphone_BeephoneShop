@@ -9,5 +9,7 @@ public class CheckVoucherResponse {
 
     private VoucherResponse voucher;
 
-    private String messageError;
+    private String message;
+
+    private Boolean status;
 }

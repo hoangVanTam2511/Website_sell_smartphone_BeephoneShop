@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Date;
@@ -160,25 +161,28 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
-    public CheckVoucherResponse checkVoucher(String input) {
+    public CheckVoucherResponse checkVoucher(String input, BigDecimal tongTien) {
         CheckVoucherResponse response = new CheckVoucherResponse();
         if (input == null || input.isBlank()) {
             return null;
         } else {
             VoucherResponse voucher = voucherRepository.findCodeVoucher(input);
             if (voucher != null) {
-                if (voucher.getMa().equals(input) && voucher.getSoLuong() > 0 && voucher.getTrangThai() == 1) {
-                    response.setVoucher(voucher);
-                    response.setMessageError("Found !!!");
-                } else if (!voucher.getMa().equals(input) || voucher.getTrangThai() != 1) {
-                    response.setMessageError("Mã giảm giá " + input + " không tồn tại.");
+                if (!voucher.getMa().equals(input) || voucher.getTrangThai() != 1) {
+                    response.setMessage("Mã giảm giá không tồn tại.");
                 } else if (voucher.getMa().equals(input) && voucher.getSoLuong() <= 0) {
-                    response.setMessageError("Hết lượt sử dụng.");
-                } else {
-                    response.setMessageError("Mã giảm giá " + input + " không tồn tại.");
+                    response.setMessage("Mã giảm giá đã hết lượt sử dụng.");
+                } else if (tongTien.compareTo(voucher.getDieuKienApDung()) == -1){
+                    response.setMessage("Đơn hàng không đủ điều kiện.");
+                } else if (voucher.getMa().equals(input) && voucher.getSoLuong() > 0 && voucher.getTrangThai() == 1) {
+                    response.setVoucher(voucher);
+                    response.setStatus(true);
+                }
+                else {
+                    response.setMessage("Mã giảm giá không tồn tại.");
                 }
             } else {
-                response.setMessageError("Mã giảm giá " + input + " không tồn tại.");
+                response.setMessage("Mã giảm giá không tồn tại.");
             }
         }
         return response;

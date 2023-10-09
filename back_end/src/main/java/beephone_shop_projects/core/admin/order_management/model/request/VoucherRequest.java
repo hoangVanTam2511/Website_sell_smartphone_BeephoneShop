@@ -1,4 +1,4 @@
-package beephone_shop_projects.core.admin.order_management.model.response;
+package beephone_shop_projects.core.admin.order_management.model.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @NoArgsConstructor
-public class VoucherResponse {
+public class VoucherRequest {
 
   private String id;
 
@@ -24,5 +24,7 @@ public class VoucherResponse {
   private Integer soLuong;
 
   private BigDecimal giaTriToiDa;
+
+  private BigDecimal dieuKienApDung;
 
 }

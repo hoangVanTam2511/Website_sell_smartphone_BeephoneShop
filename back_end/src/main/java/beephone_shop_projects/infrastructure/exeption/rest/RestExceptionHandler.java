@@ -1,11 +1,10 @@
 package beephone_shop_projects.infrastructure.exeption.rest;
 
-import beephone_shop_projects.infrastructure.constant.HttpStatusCode;
+import beephone_shop_projects.infrastructure.constant.HttpStatus;
 import beephone_shop_projects.infrastructure.constant.Message;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Path;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -18,19 +17,19 @@ import java.util.stream.Collectors;
 public final class RestExceptionHandler extends
         BeePhoneProjectExceptionRestHandler<ConstraintViolationException> {
 
-//  @ExceptionHandler(RestApiException.class)
-//  public ResponseEntity<?> handlerRestApiExceptionGlobal(RestApiException restApiException) {
-//    ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(),
-//            restApiException.getMessage(), null);
-//    return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
-//  }
-//
-//  @ExceptionHandler(RuntimeException.class)
-//  public ResponseEntity<?> handlerExceptionGlobal(RuntimeException runtimeException) {
-//    ApiError apiError = new ApiError(HttpStatusCode.SERVER_ERROR_COMMON,
-//            Message.SERVER_ERROR_COMMON, null);
-//    return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
-//  }
+  @ExceptionHandler(RestApiException.class)
+  public ResponseEntity<?> handlerRestApiExceptionGlobal(RestApiException restApiException) {
+    ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST,
+            restApiException.getMessage(), null);
+    return new ResponseEntity<>(apiError, org.springframework.http.HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(RuntimeException.class)
+  public ResponseEntity<?> handlerExceptionGlobal(RuntimeException runtimeException) {
+    ApiError apiError = new ApiError(HttpStatus.SERVER_ERROR_COMMON,
+            Message.SERVER_ERROR_COMMON, null, Message.SERVER_ERROR_COMMON);
+    return new ResponseEntity<>(apiError, org.springframework.http.HttpStatus.BAD_REQUEST);
+  }
 
   @Override
   protected Object wrapApi(ConstraintViolationException ex) {

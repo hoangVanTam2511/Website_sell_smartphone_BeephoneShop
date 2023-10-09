@@ -34,7 +34,7 @@ public class AnhServiceImpl {
        anh.setTenAnh(req.getTenAnh());
        anh.setDuongDan(req.getDuongDan());
        anh.setTrangThai(req.getTrangThai());
-       anh.setIdSanPhamChiTiet(sanPhamChiTiet);
+       anh.setSanPhamChiTiet(sanPhamChiTiet);
 
        return anhRepository.save(anh);
     }

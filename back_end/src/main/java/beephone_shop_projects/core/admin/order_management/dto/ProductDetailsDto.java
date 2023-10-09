@@ -23,7 +23,7 @@ public class ProductDetailsDto {
 
   private ProductDto sanPham;
 
-  private ConfigurationDto cauHinh;
+  private ConfigurationResponse cauHinh;
 
 
 }

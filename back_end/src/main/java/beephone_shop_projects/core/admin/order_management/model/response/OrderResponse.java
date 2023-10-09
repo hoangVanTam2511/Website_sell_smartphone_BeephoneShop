@@ -1,5 +1,7 @@
 package beephone_shop_projects.core.admin.order_management.model.response;
 
+import beephone_shop_projects.core.admin.order_management.model.request.AccountRequest;
+import beephone_shop_projects.core.admin.order_management.model.request.VoucherRequest;
 import beephone_shop_projects.infrastructure.constant.OrderStatus;
 import beephone_shop_projects.infrastructure.constant.OrderType;
 import lombok.AllArgsConstructor;
@@ -10,7 +12,6 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,6 +28,8 @@ public class OrderResponse {
   private BigDecimal tienThua;
 
   private BigDecimal tongTienSauKhiGiam;
+
+  private BigDecimal phiShip;
 
   private String ghiChu;
 

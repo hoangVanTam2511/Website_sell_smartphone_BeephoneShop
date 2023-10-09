@@ -1,8 +1,10 @@
 package beephone_shop_projects.core.admin.product_management.repository;
 
 import beephone_shop_projects.core.admin.product_management.model.responce.PointOfSaleProductResponce;
+import beephone_shop_projects.entity.SanPham;
 import beephone_shop_projects.entity.SanPhamChiTiet;
 import beephone_shop_projects.repository.ISanPhamChiTietRepository;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -14,6 +16,14 @@ public interface SanPhamChiTietRepository extends ISanPhamChiTietRepository {
   @Query("SELECT P FROM SanPhamChiTiet P")
   List<SanPhamChiTiet> getAll();
 
+  @Query("""
+                select P, I, C, CH from SanPhamChiTiet P join fetch P.images I
+                join fetch P.sanPham C
+                join fetch C.pin join fetch C.nhaSanXuat join fetch C.dongSanPham
+                join fetch C.manHinh join fetch C.chip join P.cauHinh CH
+                join fetch CH.mauSac join fetch CH.ram join fetch CH.rom
+          """)
+  List<SanPhamChiTiet> getProducts();
 
   @Query(value = """
         SELECT CONCAT( 'CHITIETSANPHAM_',IF(count(*)  = 0,0,SUBSTRING(ma,16) + 1)) FROM san_pham_chi_tiet

@@ -4,6 +4,7 @@ import beephone_shop_projects.core.admin.order_management.model.request.SearchFi
 import beephone_shop_projects.core.admin.order_management.model.request.SearchOrderDto;
 import beephone_shop_projects.core.admin.order_management.repository.OrderRepository;
 import beephone_shop_projects.core.common.base.JpaPersistence;
+import beephone_shop_projects.entity.Anh;
 import beephone_shop_projects.entity.CauHinh;
 import beephone_shop_projects.entity.GioHang;
 import beephone_shop_projects.entity.GioHangChiTiet;
@@ -56,6 +57,7 @@ public class OrderRepositoryImpl extends AbstractRepositoryImpl<HoaDon, String> 
       Fetch<GioHang, GioHangChiTiet> joinCartItems = joinCart.
               fetch("cartItems", JoinType.LEFT);
       Fetch<GioHangChiTiet, SanPhamChiTiet> joinProductDetails = joinCartItems.fetch("sanPhamChiTiet", JoinType.LEFT);
+      Fetch<SanPhamChiTiet, Anh> joinImages = joinProductDetails.fetch("images", JoinType.LEFT);
       Fetch<SanPhamChiTiet, SanPham> joinProduct = joinProductDetails.fetch("sanPham", JoinType.LEFT);
       Fetch<SanPhamChiTiet, CauHinh> joinConfiguration = joinProductDetails.fetch("cauHinh", JoinType.LEFT);
       Fetch<CauHinh, Ram> joinRam = joinConfiguration.fetch("ram", JoinType.LEFT);

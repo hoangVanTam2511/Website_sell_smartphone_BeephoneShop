@@ -46,6 +46,8 @@ public class HoaDon extends PrimaryEntity implements IsIdentified {
 
   private String ghiChu;
 
+  private BigDecimal phiShip;
+
   private BigDecimal tienKhachTra;
 
   @Enumerated(EnumType.ORDINAL)

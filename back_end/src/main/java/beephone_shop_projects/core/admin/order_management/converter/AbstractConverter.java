@@ -1,7 +1,5 @@
 package beephone_shop_projects.core.admin.order_management.converter;
 
-import org.modelmapper.Condition;
-import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 
@@ -48,6 +46,14 @@ public class AbstractConverter<D, E, R> implements GenericConverter<D, E, R> {
   public E convertRequestToEntity(R req) {
     if (req != null) {
       return getModelMapper().map(req, entityClass);
+    }
+    return null;
+  }
+
+  @Override
+  public D convertRequestToResponse(R request) {
+    if (request != null) {
+      return getModelMapper().map(request, responseClass);
     }
     return null;
   }

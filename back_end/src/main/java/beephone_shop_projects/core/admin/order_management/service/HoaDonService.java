@@ -21,7 +21,7 @@ public interface HoaDonService extends GenericService<OrderResponse, OrderReques
 
   OrderResponse createOrderPending() throws Exception;
 
-  OrderResponse processingPaymentOrder(OrderRequest req, String id) throws Exception;
+  OrderResponse updateOrPaymentOrderPending(OrderRequest req, String id) throws Exception;
 
   List<OrderResponse> getOrdersPending() throws Exception;
 

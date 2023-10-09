@@ -1,6 +1,6 @@
 package beephone_shop_projects.infrastructure.exeption.rest;
 
-import beephone_shop_projects.infrastructure.constant.HttpStatusCode;
+import beephone_shop_projects.infrastructure.constant.HttpStatus;
 import beephone_shop_projects.infrastructure.constant.Message;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,14 +17,18 @@ public class ApiError {
 
   private Object data;
 
-//  private String codeMessage;
-//
-//  private String codeMessageValue;
+  private String codeMessage;
 
-  public ApiError(HttpStatusCode code, Message message, Object data) {
+  public ApiError(HttpStatus code, String message, Object data) {
     this.code = code.getStatusCode();
-    this.message = message.getMessage();
+    this.message = message;
     this.data = data;
   }
 
+  public ApiError(HttpStatus code, Message message, Object data, Message codeMessage) {
+    this.code = code.getStatusCode();
+    this.message = message.getMessage();
+    this.data = data;
+    this.codeMessage = codeMessage.name();
+  }
 }

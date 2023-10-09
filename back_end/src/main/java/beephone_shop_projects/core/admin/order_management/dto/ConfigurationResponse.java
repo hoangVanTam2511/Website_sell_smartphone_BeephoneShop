@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ConfigurationDto {
+public class ConfigurationResponse {
 
   private String id;
 

@@ -23,6 +23,6 @@ public class CartItemResponse {
 
   private Date createdAt;
 
-  private ProductDetailsDto sanPhamChiTiet;
+  private ProductItemResponse sanPhamChiTiet;
 
 }

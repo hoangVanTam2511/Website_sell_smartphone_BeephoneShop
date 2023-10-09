@@ -1,6 +1,6 @@
 package beephone_shop_projects.core.common.base;
 
-import beephone_shop_projects.infrastructure.constant.HttpStatusCode;
+import beephone_shop_projects.infrastructure.constant.HttpStatus;
 import beephone_shop_projects.infrastructure.constant.Message;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,7 +14,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PageResponse<T> {
+public class ResponsePage<T> {
 
   private Integer code;
   private String message;
@@ -23,8 +23,8 @@ public class PageResponse<T> {
   private long totalElements;
   private PageableResponse pageable;
 
-  public PageResponse(Page<T> page) {
-    this.code = HttpStatusCode.SUCCESS_CODE.getStatusCode();
+  public ResponsePage(Page<T> page) {
+    this.code = HttpStatus.SUCCESS_CODE.getStatusCode();
     this.message = Message.SUCCESS.getMessage();
     this.data = page.getContent();
     this.totalPages = page.getTotalPages();

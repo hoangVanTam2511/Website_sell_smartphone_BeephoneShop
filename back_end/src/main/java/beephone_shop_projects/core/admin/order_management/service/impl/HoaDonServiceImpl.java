@@ -1,7 +1,8 @@
 package beephone_shop_projects.core.admin.order_management.service.impl;
 
+import beephone_shop_projects.core.admin.order_management.converter.AccountConverter;
 import beephone_shop_projects.core.admin.order_management.converter.OrderConverter;
-import beephone_shop_projects.core.admin.order_management.converter.OrderHistoryConverter;
+import beephone_shop_projects.core.admin.order_management.converter.VoucherConverter;
 import beephone_shop_projects.core.admin.order_management.model.request.OrderRequest;
 import beephone_shop_projects.core.admin.order_management.model.request.SearchFilterOrderDto;
 import beephone_shop_projects.core.admin.order_management.model.response.OrderHistoryResponse;
@@ -57,6 +58,12 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
 
   @Autowired
   private LichSuHoaDonServiceImpl lichSuHoaDonService;
+
+  @Autowired
+  private AccountConverter accountConverter;
+
+  @Autowired
+  private VoucherConverter voucherConverter;
 
   public HoaDonServiceImpl(OrderRepositoryImpl repo, OrderConverter converter) {
     super(repo, converter);
@@ -119,10 +126,10 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
   public OrderResponse updateStatusOrderDelivery(OrderRequest req, String id) throws Exception {
     OrderResponse orderCurrent = getOrderDetailsById(id);
     if (orderCurrent == null) {
-      throw new Exception("Đơn hàng không tồn tại!");
+      throw new RestApiException("Đơn hàng không tồn tại!");
     }
     if (req.getTrangThai().equals(OrderStatus.CANCELLED) && req.getOrderHistory().getMoTa().isBlank()) {
-      throw new Exception("Bạn chưa nhập lý do hủy đơn hàng!");
+      throw new RestApiException("Bạn chưa nhập lý do hủy đơn hàng!");
     }
     orderCurrent.setTrangThai(req.getTrangThai());
     orderHistoryServiceImpl.save(req.getOrderHistory());
@@ -156,32 +163,49 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
   }
 
   @Override
-  public OrderResponse processingPaymentOrder(OrderRequest req, String id) throws Exception {
-    OrderResponse orderCurrent = getOrderDetailsById(req.getMa());
+  public OrderResponse updateOrPaymentOrderPending(OrderRequest req, String id) throws Exception {
+    OrderResponse orderCurrent = getOrderPendingById(id);
     if (orderCurrent == null) {
-      throw new Exception("Đơn hàng không tồn tại!");
+      throw new RestApiException("Đơn hàng không tồn tại!");
     }
-    orderCurrent.setCart(null);
-    orderCurrent.setTrangThai(req.getTrangThai());
-    orderCurrent.setTongTien(req.getTongTien());
-    orderCurrent.setTongTienSauKhiGiam(req.getTongTienSauKhiGiam());
-    orderCurrent.setTienKhachTra(req.getTienKhachTra());
-    orderCurrent.setTienThua(req.getTienThua());
-    orderCurrent.setLoaiHoaDon(req.getLoaiHoaDon());
 
-    HoaDon updateOrderCurrent = hoaDonRepository.save(orderConverter.convertResponseToEntity(orderCurrent));
-    gioHangService.deleteById(req.getCart().getId());
+    if (req.getIsPayment()) {
+      orderCurrent.setCart(null);
+      orderCurrent.setTrangThai(req.getTrangThai());
+      orderCurrent.setTongTien(req.getTongTien());
+      orderCurrent.setTongTienSauKhiGiam(req.getTongTienSauKhiGiam());
+      orderCurrent.setTienKhachTra(req.getTienKhachTra());
+      orderCurrent.setTienThua(req.getTienThua());
+      orderCurrent.setLoaiHoaDon(req.getLoaiHoaDon());
+//      orderCurrent.setVoucher(req.getVou);
 
-    if (req.getOrderHistory() != null) {
-      orderHistoryServiceImpl.save(req.getOrderHistory());
-    }
+      HoaDon paymentOrder = hoaDonRepository.save(orderConverter.convertResponseToEntity(orderCurrent));
+      gioHangService.deleteById(req.getCart().getId());
+
+      if (req.getOrderHistory() != null) {
+        orderHistoryServiceImpl.save(req.getOrderHistory());
+      }
 //    hinhThucThanhToanRepository.save(paymentMethod);
 
-    List<HoaDon> ordersPending = hoaDonRepository.getOrdersPending();
-    if (ordersPending.isEmpty()) {
-      createOrderPending();
+      List<HoaDon> ordersPending = hoaDonRepository.getOrdersPending();
+      if (ordersPending.isEmpty()) {
+        createOrderPending();
+      }
+      return orderConverter.convertEntityToResponse(paymentOrder);
+
+    } else {
+      orderCurrent.setGhiChu(req.getGhiChu());
+//      orderCurrent.setAccount(accountConverter.convertRequestToResponse(req.getAccount()));
+
+      if (req.getVoucher().getId() == null) {
+        orderCurrent.setVoucher(null);
+      } else {
+        orderCurrent.setVoucher(voucherConverter.convertRequestToResponse(req.getVoucher()));
+      }
+
+      HoaDon updateOrderPending = hoaDonRepository.save(orderConverter.convertResponseToEntity(orderCurrent));
+      return orderConverter.convertEntityToResponse(updateOrderPending);
     }
-    return orderConverter.convertEntityToResponse(updateOrderCurrent);
   }
 
   @Override

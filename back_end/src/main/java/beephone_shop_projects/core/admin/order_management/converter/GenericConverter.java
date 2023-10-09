@@ -12,6 +12,8 @@ public interface GenericConverter<D, E, R> {
 
   E convertRequestToEntity(R request);
 
+  D convertRequestToResponse(R request);
+
   Page<D> convertToPageResponse(Page<E> entityPage);
 
   Page<E> convertToPageEntity(Page<D> responsePage);

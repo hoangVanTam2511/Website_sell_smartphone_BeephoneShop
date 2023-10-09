@@ -1,6 +1,6 @@
 package beephone_shop_projects.core.admin.order_management.model.request;
 
-import beephone_shop_projects.core.admin.order_management.model.response.CartResponse;
+import beephone_shop_projects.core.admin.order_management.model.response.VoucherResponse;
 import beephone_shop_projects.infrastructure.constant.OrderStatus;
 import beephone_shop_projects.infrastructure.constant.OrderType;
 import lombok.AllArgsConstructor;
@@ -33,13 +33,15 @@ public class OrderRequest {
 
   private OrderStatus trangThai;
 
-//  private String ghiChu;
+  private String ghiChu;
 
-//  private String tenNguoiNhan;
-//
-//  private String soDienThoaiNguoiNhan;
-//
-//  private String diaChiNguoiNhan;
+  private BigDecimal phiShip;
+
+  private String tenNguoiNhan;
+
+  private String soDienThoaiNguoiNhan;
+
+  private String diaChiNguoiNhan;
 
   private Date createdAt;
 
@@ -49,7 +51,7 @@ public class OrderRequest {
 //
 //  private String updatedBy;
 
-//  private AccountResponse account;
+  private AccountRequest account;
 
   private CartRequest cart;
 
@@ -57,8 +59,11 @@ public class OrderRequest {
 
 //  private Set<OrderItemRequest> orderItems;
 
-//  private VoucherResponse voucher;
+  private VoucherRequest voucher;
 
   private OrderHistoryRequest orderHistory;
+
+  private Boolean isPayment;
+
 
 }

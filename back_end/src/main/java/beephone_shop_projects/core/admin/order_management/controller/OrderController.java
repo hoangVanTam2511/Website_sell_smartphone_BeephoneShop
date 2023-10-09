@@ -1,23 +1,19 @@
 package beephone_shop_projects.core.admin.order_management.controller;
 
-import beephone_shop_projects.core.admin.order_management.dto.OrderHistoryDto;
 import beephone_shop_projects.core.admin.order_management.model.request.OrderRequest;
 import beephone_shop_projects.core.admin.order_management.model.request.SearchFilterOrderDto;
-import beephone_shop_projects.core.admin.order_management.model.response.OrderHistoryResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.OrderResponse;
 import beephone_shop_projects.core.admin.order_management.service.impl.HoaDonServiceImpl;
 import beephone_shop_projects.core.admin.order_management.service.impl.LichSuHoaDonServiceImpl;
-import beephone_shop_projects.core.common.base.PageResponse;
+import beephone_shop_projects.core.common.base.ResponsePage;
 import beephone_shop_projects.core.common.base.ResponseObject;
 import beephone_shop_projects.entity.Account;
 import beephone_shop_projects.entity.Voucher;
 import beephone_shop_projects.infrastructure.constant.ApiConstants;
-import beephone_shop_projects.infrastructure.constant.HttpStatusCode;
+import beephone_shop_projects.infrastructure.constant.HttpStatus;
 import beephone_shop_projects.infrastructure.constant.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.LinkedHashSet;
 import java.util.List;
 
 @RestController
@@ -45,9 +40,9 @@ public class OrderController {
   private LichSuHoaDonServiceImpl lichSuHoaDonService;
 
   @GetMapping
-  public PageResponse<OrderResponse> getOrders(@ModelAttribute SearchFilterOrderDto searchFilter) throws Exception {
+  public ResponsePage<OrderResponse> getOrders(@ModelAttribute SearchFilterOrderDto searchFilter) throws Exception {
     Page<OrderResponse> orders = hoaDonService.findOrdersByMultipleCriteriaWithPagination(searchFilter);
-    return new PageResponse(orders);
+    return new ResponsePage(orders);
   }
 
   @GetMapping("/pending")
@@ -85,16 +80,16 @@ public class OrderController {
       OrderResponse updatedStatusOrderDelivery = hoaDonService.updateStatusOrderDelivery(req, id);
       return new ResponseObject(updatedStatusOrderDelivery);
     }
-    OrderResponse updatedOrderPending = hoaDonService.processingPaymentOrder(req, id);
+    OrderResponse updatedOrderPending = hoaDonService.updateOrPaymentOrderPending(req, id);
     return new ResponseObject(updatedOrderPending);
   }
 
   @DeleteMapping("/{id}")
   public ResponseObject<OrderResponse> deleteOrderPending(@PathVariable("id") String id) throws Exception {
     if (hoaDonService.deleteOrderPening(id)) {
-      return new ResponseObject(HttpStatusCode.NO_CONTENT_CODE, Message.SUCCESS);
+      return new ResponseObject(HttpStatus.NO_CONTENT_CODE, Message.SUCCESS);
     }
-    return new ResponseObject(HttpStatusCode.SERVER_ERROR_COMMON, Message.SERVER_ERROR_COMMON);
+    return new ResponseObject(HttpStatus.SERVER_ERROR_COMMON, Message.SERVER_ERROR_COMMON);
   }
 
 
