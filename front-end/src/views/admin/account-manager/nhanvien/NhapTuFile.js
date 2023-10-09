@@ -2,7 +2,7 @@ import { Button, Modal } from "antd";
 import { useState } from "react";
 import "../../../../assets/scss/NhapTuFile.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDownload, faUpload } from "@fortawesome/free-solid-svg-icons";
+import { faUpload } from "@fortawesome/free-solid-svg-icons";
 import ExportButton from "./ExportNV";
 const NhapTuFile = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);

@@ -1,19 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { FormControl, InputLabel, MenuItem, Select, Grid } from "@mui/material";
+import { FormControl, Grid, InputLabel, MenuItem, Select } from "@mui/material";
 
 const host = "https://provinces.open-api.vn/api/";
 
-const AddressFormUpdate = ({
+const ModalAddDiaChiKhachHang = ({
   required,
   submitted,
   onProvinceChange,
   onDistrictChange,
   onWardChange,
-  selectedTinhThanhPho,
-  selectedQuanHuyen,
-  selectedXaPhuong,
-  editing,
   formSubmitted,
 }) => {
   const [provinces, setProvinces] = useState([]);
@@ -25,65 +21,32 @@ const AddressFormUpdate = ({
   const [provinceError, setProvinceError] = useState(false);
   const [districtError, setDistrictError] = useState(false);
   const [wardError, setWardError] = useState(false);
+
   useEffect(() => {
     fetchProvinces();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    if (selectedTinhThanhPho && !editing) {
-      const selectedProvinceCode = provinces.find(
-        (province) => province.name === selectedTinhThanhPho
-      )?.code;
-      setSelectedProvince(selectedProvinceCode);
-      fetchDistricts(selectedProvinceCode);
+  const callAPI = (api) => {
+    if (!selectedProvince) {
+      setProvinceError(true);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedTinhThanhPho, provinces]);
-
-  useEffect(() => {
-    if (selectedQuanHuyen) {
-      const selectedDistrictCode = districts.find(
-        (district) => district.name === selectedQuanHuyen
-      )?.code;
-
-      if (selectedDistrictCode) {
-        setSelectedDistrict(selectedDistrictCode);
-        // Fetch wards based on selected district
-        fetchWards(selectedDistrictCode);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedQuanHuyen, districts]);
-
-  useEffect(() => {
-    if (selectedXaPhuong) {
-      const selectedWardCode = wards.find(
-        (ward) => ward.name === selectedXaPhuong
-      )?.code;
-      setSelectedWard(selectedWardCode);
-    }
-  }, [selectedXaPhuong, wards]);
-
-  const callAPI = async (api) => {
-    // if (!selectedProvince) {
-    //   setProvinceError(true);
-    // }
     if (!selectedDistrict) {
       setDistrictError(true);
     }
     if (!selectedWard) {
       setWardError(true);
     }
-    const response = await axios.get(api);
-    return response.data;
+    return axios.get(api).then((response) => {
+      return response.data;
+    });
   };
 
   const fetchProvinces = () => {
     callAPI(host + "?depth=1")
       .then((data) => {
         setProvinces(data);
-        // console.log(data);
+        // console.log(data.provinceCode);
       })
       .catch((error) => {
         console.error("Error fetching provinces:", error);
@@ -93,13 +56,8 @@ const AddressFormUpdate = ({
   const fetchDistricts = (provinceCode) => {
     callAPI(host + "p/" + provinceCode + "?depth=2")
       .then((data) => {
-        if (data && data.districts) {
-          setDistricts(data.districts);
-          setSelectedDistrict("");
-        }
-        // else {
-        //   console.error("Error fetching districts: Invalid response format");
-        // }
+        setDistricts(data.districts);
+        setSelectedDistrict("");
       })
       .catch((error) => {
         console.error("Error fetching districts:", error);
@@ -110,41 +68,33 @@ const AddressFormUpdate = ({
     callAPI(host + "d/" + districtCode + "?depth=2")
       .then((data) => {
         setWards(data.wards);
-        setSelectedWard("");
+        setSelectedWard(""); // Reset selected ward when fetching new wards
       })
       .catch((error) => {
         console.error("Error fetching wards:", error);
       });
   };
 
-  const handleProvinceChange = (event) => {
-    setProvinceError(false);
+  const handleProvinceChange = (value) => {
     if (submitted) {
       // Nếu đã ấn nút "Lưu" thì kiểm tra trạng thái select
-      if (!event.target.value) {
+      if (!value.target.value) {
         setProvinceError(true);
         setSelectedProvince("");
       }
     }
-    const selectedValue = event.target.value;
-    setSelectedProvince(selectedValue);
+    setSelectedProvince(value.target.value);
     setSelectedDistrict("");
     setSelectedWard("");
-    setDistricts([]);
-    setWards([]);
-    if (selectedValue === "") {
-      onProvinceChange("");
-    } else {
-      fetchDistricts(selectedValue);
-      onProvinceChange(selectedValue);
-    }
+    fetchDistricts(value.target.value);
+    onProvinceChange(value.target.value);
+    setProvinceError(false);
   };
 
   const handleDistrictChange = (value) => {
     setSelectedDistrict(value.target.value);
-    setSelectedWard(""); // Reset selectedWard khi chọn lại quận/huyện mới
+    setSelectedWard("");
     fetchWards(value.target.value);
-    setWards([]);
     onDistrictChange(value.target.value);
     setDistrictError(false);
     if (submitted) {
@@ -166,6 +116,7 @@ const AddressFormUpdate = ({
       }
     }
   };
+
   useEffect(() => {
     if (selectedProvince) {
       const selectedProvinceName = provinces.find(
@@ -195,8 +146,9 @@ const AddressFormUpdate = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedWard, onWardChange]);
+
   return (
-    <div>
+    <>
       <Grid container spacing={3.3}>
         <Grid item xs={4}>
           <FormControl style={{ width: "100%" }}>
@@ -210,9 +162,8 @@ const AddressFormUpdate = ({
               onChange={handleProvinceChange}
               value={selectedProvince}
               size="large"
-              className={
-                formSubmitted && !selectedProvince ? "error-select" : ""
-              }
+              error={formSubmitted && !selectedProvince}
+              style={{ width: "100%" }}
             >
               {provinces.map((province) => (
                 <MenuItem key={province.code} value={province.code}>
@@ -220,17 +171,18 @@ const AddressFormUpdate = ({
                 </MenuItem>
               ))}
             </Select>
-            {/* {required && submitted && provinceError && (
+            {required && submitted && provinceError && (
               <p
                 style={{
                   color: " #d32f2f",
                   paddingLeft: "15px",
                   fontSize: "12px",
+                  textAlign: "left",
                 }}
               >
                 Vui lòng chọn
               </p>
-            )} */}
+            )}
           </FormControl>
         </Grid>
         <Grid item xs={4}>
@@ -246,6 +198,7 @@ const AddressFormUpdate = ({
               value={selectedDistrict}
               size="large"
               error={formSubmitted && !selectedDistrict}
+              style={{ width: "100%" }}
             >
               {districts.map((district) => (
                 <MenuItem key={district.code} value={district.code}>
@@ -259,6 +212,7 @@ const AddressFormUpdate = ({
                   color: " #d32f2f",
                   paddingLeft: "15px",
                   fontSize: "12px",
+                  textAlign: "left",
                 }}
               >
                 Vui lòng chọn
@@ -267,7 +221,7 @@ const AddressFormUpdate = ({
           </FormControl>
         </Grid>
         <Grid item xs={4}>
-          <FormControl style={{ textAlign: "center", width: "100%" }}>
+          <FormControl style={{ width: "100%" }}>
             <InputLabel id="demo-simple-select-label">
               Chọn Phường/Xã
             </InputLabel>
@@ -279,6 +233,7 @@ const AddressFormUpdate = ({
               value={selectedWard}
               size="large"
               error={formSubmitted && !selectedWard}
+              style={{ width: "100%" }}
             >
               {wards.map((ward) => (
                 <MenuItem key={ward.code} value={ward.code}>
@@ -301,8 +256,8 @@ const AddressFormUpdate = ({
           </FormControl>
         </Grid>
       </Grid>
-    </div>
+    </>
   );
 };
 
-export default AddressFormUpdate;
+export default ModalAddDiaChiKhachHang;

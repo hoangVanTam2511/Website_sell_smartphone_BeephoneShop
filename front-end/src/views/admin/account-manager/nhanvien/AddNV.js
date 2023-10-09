@@ -1,14 +1,11 @@
 import { Button, Card, Modal, message } from "antd";
 import React from "react";
 import { useState } from "react";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { faCheck } from "@fortawesome/free-solid-svg-icons";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import axios from "axios";
 import { apiURLNV } from "../../../../service/api";
 import TextField from "@mui/material/TextField";
 import "../../../../assets/scss/HienThiNV.scss";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import {
@@ -55,16 +52,16 @@ const AddNV = () => {
     if (data) {
       setTen(data.hoVaTen);
       setNgaySinh(data.ngaySinh);
-      setDiaChi(data.diaChi);
-      setTinhThanhPho(data.tinhThanhPho);
-      setXaPhuong(data.xaPhuong);
+      // setDiaChi(data.diaChi);
+      // setTinhThanhPho(data.tinhThanhPho);
+      // setXaPhuong(data.xaPhuong);
       setCCCD(data.cccd);
       setGioiTinh(data.gioiTinh);
     }
   };
   const handleHoVaTenChange = (e) => {
     const value = e.target.value;
-    const specialCharPattern = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+    const specialCharPattern = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+/;
     const trimmedValue = value.replace(/\s/g, "");
     setTen(value);
     if (!value.trim()) {
@@ -160,7 +157,6 @@ const AddNV = () => {
     setFormSubmitted(true);
     let obj = {
       hoVaTen: hoVaTen,
-      // id: id,
       ngaySinh: ngaySinh,
       soDienThoai: soDienThoai,
       xaPhuong: xaPhuong,
@@ -178,7 +174,9 @@ const AddNV = () => {
       !email ||
       !soDienThoai ||
       !diaChi ||
-      !xaPhuong
+      !xaPhuong ||
+      !quanHuyen ||
+      !tinhThanhPho
     ) {
       message.error("Vui lòng điền đủ thông tin");
       setIsConfirmVisible(false);
@@ -191,7 +189,6 @@ const AddNV = () => {
         let newKhachHangResponse = {
           hoVaTen: hoVaTen,
           ngaySinh: ngaySinh,
-          // id: id,
           soDienThoai: soDienThoai,
           xaPhuong: xaPhuong,
           quanHuyen: quanHuyen,
@@ -211,6 +208,8 @@ const AddNV = () => {
         alert("Thêm thất bại");
       });
   };
+  const today = new Date().toISOString().split("T")[0]; // Get the current date in "yyyy-mm-dd" format
+
   return (
     <>
       <Card bordered={false} style={{ width: "100%" }}>
@@ -297,6 +296,9 @@ const AddNV = () => {
                       }}
                       onChange={(e) => {
                         setNgaySinh(e.target.value); // Cập nhật giá trị ngaySinh sau khi thay đổi
+                      }}
+                      inputProps={{
+                        max: today, // Set the maximum allowed date to today
                       }}
                       error={formSubmitted && !ngaySinh} // Show error if form submitted and hoVaTen is empty
                       helperText={

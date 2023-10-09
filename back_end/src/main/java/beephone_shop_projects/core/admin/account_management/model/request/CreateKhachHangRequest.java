@@ -16,9 +16,16 @@ import java.util.UUID;
 
 public class CreateKhachHangRequest {
 
+    private static int sttCounter = 1;
+
+    private int stt; // Số thứ tự
+
     private String ma;
 
     private UUID id;
+    public CreateKhachHangRequest() {
+        this.stt = sttCounter++;
+    }
 
     @NotBlank(message = "Họ tên trống")
     @Pattern(regexp = "^[a-zA-Z0-9 ]*$", message = "Họ và tên không được chứa ký tự đặc biệt")
