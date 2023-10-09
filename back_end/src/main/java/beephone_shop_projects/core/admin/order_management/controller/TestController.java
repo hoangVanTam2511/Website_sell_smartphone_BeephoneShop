@@ -3,12 +3,10 @@ package beephone_shop_projects.core.admin.order_management.controller;
 import beephone_shop_projects.core.admin.order_management.dto.CartDetailDto;
 import beephone_shop_projects.core.admin.order_management.model.response.OrderResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.ProductItemResponse;
-import beephone_shop_projects.core.admin.order_management.model.response.ProductResponse;
-import beephone_shop_projects.core.admin.order_management.repository.impl.CartItemRepositoryImpl;
+import beephone_shop_projects.core.admin.order_management.repository.CartItemRepository;
 import beephone_shop_projects.core.admin.order_management.repository.impl.CartRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.repository.impl.HinhThucThanhToanRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.repository.impl.OrderRepositoryImpl;
-import beephone_shop_projects.core.admin.order_management.service.impl.CartItemServiceImpl;
 import beephone_shop_projects.core.admin.order_management.service.impl.HoaDonServiceImpl;
 import beephone_shop_projects.core.admin.product_management.repository.SanPhamChiTietRepository;
 import beephone_shop_projects.core.common.base.ResponseObject;
@@ -19,6 +17,7 @@ import beephone_shop_projects.entity.HoaDon;
 import beephone_shop_projects.entity.SanPhamChiTiet;
 import beephone_shop_projects.infrastructure.constant.HttpStatus;
 import beephone_shop_projects.infrastructure.constant.Message;
+import beephone_shop_projects.infrastructure.exeption.rest.RestApiException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -43,10 +42,7 @@ public class TestController {
   private SanPhamChiTietRepository sanPhamChiTietRepository;
 
   @Autowired
-  private CartItemRepositoryImpl cartItemRepository;
-
-  @Autowired
-  private CartItemServiceImpl cartItemService;
+  private CartItemRepository cartItemRepository;
 
   @Autowired
   private CartRepositoryImpl gioHangRepository;
@@ -88,24 +84,35 @@ public class TestController {
 
   @DeleteMapping("/carts/{id}")
   public ResponseObject home4(@PathVariable("id") String id) throws Exception {
-    if (cartItemService.deleteById(id)) {
-      return new ResponseObject(HttpStatus.NO_CONTENT_CODE, Message.SUCCESS);
-    }
-    return new ResponseObject(HttpStatus.SERVER_ERROR_COMMON, Message.SERVER_ERROR_COMMON);
+    cartItemRepository.deleteById(id);
+    return new ResponseObject(HttpStatus.NO_CONTENT_CODE, Message.SUCCESS);
   }
 
   @PostMapping("/carts")
   public ResponseEntity<?> home2(@RequestBody CartDetailDto cartDetailDto) throws Exception {
     GioHang gioHang = gioHangRepository.findOneById(cartDetailDto.getCartId());
     Optional<SanPhamChiTiet> sanPhamChiTiet = sanPhamChiTietRepository.findById(cartDetailDto.getProductId());
-
+    Optional<GioHangChiTiet> gioHangChiTiet = cartItemRepository.findProductItem(sanPhamChiTiet.get().getId(), gioHang.getId());
     GioHangChiTiet cartDetail = new GioHangChiTiet();
-    cartDetail.setDonGia(cartDetailDto.getPrice());
-    cartDetail.setSoLuong(cartDetailDto.getAmount());
-    cartDetail.setGioHang(gioHang);
-    cartDetail.setSanPhamChiTiet(sanPhamChiTiet.get());
-
-    cartItemRepository.save(cartDetail);
+    if (gioHangChiTiet.isPresent()) {
+      if (gioHangChiTiet.get().getSoLuong() >= 4 || gioHangChiTiet.get().getSoLuong() + cartDetailDto.getAmount() > 4) {
+        throw new RestApiException("Chỉ được phép chọn tối đa 4 sản phẩm!");
+      } else{
+        gioHangChiTiet.get().setSoLuong(gioHangChiTiet.get().getSoLuong() + cartDetailDto.getAmount());
+//        sanPhamChiTiet.get().setSoLuongTonKho(sanPhamChiTiet.get().getSoLuongTonKho() - cartDetail.getSoLuong());
+//        sanPhamChiTietRepository.save(sanPhamChiTiet.get());
+        cartItemRepository.save(gioHangChiTiet.get());
+      }
+    }
+    else{
+      cartDetail.setDonGia(cartDetailDto.getPrice());
+      cartDetail.setSoLuong(cartDetailDto.getAmount());
+      cartDetail.setGioHang(gioHang);
+      cartDetail.setSanPhamChiTiet(sanPhamChiTiet.get());
+      sanPhamChiTiet.get().setSoLuongTonKho(sanPhamChiTiet.get().getSoLuongTonKho() - cartDetail.getSoLuong());
+      sanPhamChiTietRepository.save(sanPhamChiTiet.get());
+      cartItemRepository.save(cartDetail);
+    }
 
     return new ResponseEntity<>(gioHang, org.springframework.http.HttpStatus.OK);
   }
@@ -116,4 +123,9 @@ public class TestController {
     return new ResponseEntity<>(list, org.springframework.http.HttpStatus.OK);
   }
 
+  @GetMapping("/test1000/{id}")
+  public ResponseEntity<?> homegg(@PathVariable("id") String id) {
+    Optional<GioHangChiTiet> gioHangChiTiet = cartItemRepository.findProductItem(id, "1");
+    return new ResponseEntity<>(gioHangChiTiet, org.springframework.http.HttpStatus.OK);
+  }
 }
