@@ -20,7 +20,7 @@ const NhapTuFile = () => {
     <>
       <FontAwesomeIcon icon={faPlus} /> &nbsp;
       <span type="primary" onClick={showModal}>
-        Nhập từ file
+        import
       </span>
       <Modal
         open={isModalOpen}

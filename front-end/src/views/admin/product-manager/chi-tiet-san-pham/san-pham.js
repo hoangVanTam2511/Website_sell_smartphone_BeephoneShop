@@ -496,23 +496,14 @@ const HienThiKH = () => {
       <h2 className='text-center font-weight-bold'>Quản lí sản phẩm</h2>
       <br />
       <div className='card ' style={{ padding: ` 0 73px` }}>
-        <div
-          style={{
-            color: 'black',
-            marginLeft: 10,
-            marginTop: 20,
-            fontWeight: 'bold'
-          }}
-        >
-          <FontAwesomeIcon icon={faFilter} />
-          Filter
-        </div>
+      
         <div className='btn-add'>
           <span>
-            <Form style={{ width: '20em', display: 'inline-block' }}>
+            <Form style={{ width: '20em', display: 'inline-block', height: "40px" }}>
               <Input
                 placeholder='Nhập tên hoặc màu sắc hoặc hình thức '
                 name='sanPham'
+                style={{ height: "40px" }}
                 onChange={e => handleText(e)}
               />
             </Form>
@@ -522,12 +513,12 @@ const HienThiKH = () => {
           <FontAwesomeIcon style={{ marginLeft: '5px' }} />
           <span className='bl-add'>
             
-            <Button className='btn-them-tu-file'>
+            <Button className='btn-them-tu-file'  style={{ height: "40px", width: "auto", fontSize: "15px" }}>
               <ExcelExportHelper data={listMauSac} />
             </Button>
 
             <Link to='/them-san-pham'>
-              <Button className='btn-them-tk'>+ Thêm chi tiết sản phẩm </Button>
+              <Button className='btn-them-tk'  style={{ height: "40px", width: "auto", fontSize: "15px" }} >+ Thêm chi tiết sản phẩm </Button>
             </Link>
 
           </span>
@@ -717,17 +708,7 @@ const HienThiKH = () => {
       </div>
 
       <div className='card ' style={{ padding: ` 0 7px` }}>
-        <div
-          style={{
-            color: 'black',
-            marginLeft: 10,
-            marginTop: 20,
-            fontWeight: 'bold'
-          }}
-        >
-          <FontAwesomeIcon icon={faList} /> Danh sách sản phẩm
-        </div>
-
+    
         <div className='form-tbl'>
           <Form
             form={form}
