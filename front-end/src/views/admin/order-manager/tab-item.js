@@ -25,10 +25,13 @@ import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import EditIcon from '@mui/icons-material/Edit';
 import PointOfSales from './point-of-sales';
 import { parseInt } from 'lodash';
+import { Notistack } from './enum';
+import useCustomSnackbar from '../../../utilities/notistack';
 
 const TabItem = (props) => {
+  const { handleOpenAlertVariant } = useCustomSnackbar();
   const { delivery, cartItems, add, remove, openProductDetails, openDialogProductDetails, closeDialogProductDetails, closeNoActionDialogProductDetails,
-    openProducts, openDialogProducts, closeDialogProducts, closeNoActionDialogProducts, getShipFee
+    openProducts, openDialogProducts, closeDialogProducts, closeNoActionDialogProducts, getShipFee, count, clickCount, changeCount, clickCount1
   } = props;
   const [products, setProducts] = useState([]);
   const [provinces, setProvinces] = useState([]);
@@ -38,7 +41,35 @@ const TabItem = (props) => {
   const [selectedWard, setSelectedWard] = useState('');
   const [selectedDistrict, setSelectedDistrict] = useState('');
   const [receiveDate, setReceiveDate] = useState();
-  const [count, setCount] = useState(1);
+  const [count1, setCount1] = useState(1);
+
+  const handleChangeCount1 = (value) => {
+    let newValue = parseInt(value);
+    newValue = newValue > 4 ? 4 : newValue;
+    newValue = newValue < 1 ? 1 : newValue;
+    setCount1(newValue);
+  };
+
+  const handleClickCount1 = () => {
+    if (count == 1) {
+      handleOpenAlertVariant("Tối thiểu 1 sản phẩm!", Notistack.ERROR);
+    }
+    else {
+      setCount1(count - 1);
+    }
+  }
+  const handleClickCount = () => {
+    if (count == 4) {
+      handleOpenAlertVariant("Tối đa 4 sản phẩm!", Notistack.ERROR);
+    }
+    else {
+      setCount1(count + 1);
+    }
+  }
+
+  const handleChangeCount = (value) => {
+    changeCount(value);
+  }
 
   const openDialogProductItems = () => {
     openDialogProductDetails();
@@ -251,6 +282,12 @@ const TabItem = (props) => {
     )
   }
 
+  const total = (donGia, soLuong) => {
+    const result = donGia * soLuong;
+    return result;
+
+  }
+
 
   const StyledTableContainer = styled(TableContainer)({
     boxShadow: 'none',
@@ -435,7 +472,7 @@ const TabItem = (props) => {
                           </TableCell>
                           <TableCell className='' align="center" style={{ width: "100px" }}>
                             <div class="number-input1 ">
-                              <button onClick={() => setCount(count - 1)}
+                              <button onClick={() => handleClickCount1()}
                                 class="minus">
                                 <div className='wrap-minus'>
                                   <span>
@@ -443,10 +480,10 @@ const TabItem = (props) => {
                                   </span>
                                 </div>
                               </button>
-                              <input value={item.soLuong} min="1" max="100" onChange={(e) => setCount(parseInt(e.target.value))}
+                              <input value={item.soLuong} min="1" max="4" onChange={(e) => handleChangeCount(e)}
                                 name="quantity" class="quantity"
                                 type="number" />
-                              <button class="" onClick={() => setCount(count + 1)}>
+                              <button class="" onClick={() => handleClickCount()}>
                                 <div className='wrap-plus'>
                                   <span >
                                     <AddOutlinedIcon style={{ fontSize: "18px" }} />
@@ -457,10 +494,11 @@ const TabItem = (props) => {
                           </TableCell>
                           <TableCell align="center" style={{ fontSize: "17px", width: "170px" }}>
                             <span style={{ fontSize: "17.5px", fontWeight: "500" }} className="txt-price">
-                              {item && item.sanPhamChiTiet.donGia ? item.sanPhamChiTiet.donGia.toLocaleString("vi-VN", {
-                                style: "currency",
-                                currency: "VND",
-                              }) : ""}
+                              {
+                                item && total(item.donGia, item.soLuong).toLocaleString("vi-VN", {
+                                  style: "currency",
+                                  currency: "VND",
+                                })}
                             </span>
                           </TableCell>
                           <TableCell align="center">
@@ -676,6 +714,10 @@ const TabItem = (props) => {
         openDialogProductItems={openDialogProductItems}
         closeDialogProductDetails={closeDialogProductDetails}
         closeNoActionDialogProductDetails={closeNoActionDialogProductDetails}
+        count={count}
+        changeCount={handleChangeCount}
+        clickCount={clickCount}
+        clickCount1={clickCount1}
 
       />
       <ProductDetailsDialog

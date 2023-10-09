@@ -69,7 +69,6 @@ const PointOfSales = () => {
   const [customer, setCustomer] = useState({});
   const [customerNeedPay, setCustomerNeedPay] = useState(null);
   const [customerNeedPayFormat, setCustomerNeedPayFormat] = useState(0);
-  const [count, setCount] = useState(1);
 
   const [idVoucher, setIdVoucher] = useState("");
   const [vouchers, setVouchers] = useState([]);
@@ -130,7 +129,7 @@ const PointOfSales = () => {
       tongTien: handleCountTotalMoney(),
       tienThua: handleCountTotalSurplus(),
       tongTienSauKhiGiam: handleCountTotalMoneyCustomerNeedPay(),
-      tienKhachTra: customerPayment,
+      tienKhachTra: customerPayment || 0,
       trangThai: data.trangThai,
       loaiHoaDon: data.loaiHoaDon,
       // ghiChu: description,
@@ -532,7 +531,7 @@ const PointOfSales = () => {
   const handleCountTotalSurplus = () => {
     let total = 0;
     cartItems && cartItems.map((item) => {
-      total += item.donGia;
+      total += item.donGia * item.soLuong;
     })
     const result = (customerPayment - (total + shipFee - discountValue || 0));
     return result;
@@ -541,7 +540,7 @@ const PointOfSales = () => {
   const handleCountTotalSurplusFormat = () => {
     let total = 0;
     cartItems && cartItems.map((item) => {
-      total += item.donGia;
+      total += item.donGia * item.soLuong;
     })
     const surplus = (customerPayment - (total + shipFee - discountValue || 0));
     const result = surplus
@@ -555,7 +554,7 @@ const PointOfSales = () => {
   const handleCountTotalMoney = () => {
     let total = 0;
     cartItems && cartItems.map((item) => {
-      total += item.donGia;
+      total += item.donGia * item.soLuong;
     })
     return total;
 
@@ -563,7 +562,7 @@ const PointOfSales = () => {
   const handleCountTotalMoneyFormat = () => {
     let total = 0;
     cartItems && cartItems.map((item) => {
-      total += item.donGia;
+      total += item.donGia * item.soLuong;
     })
     const result = total
       .toLocaleString("vi-VN", {
@@ -575,7 +574,7 @@ const PointOfSales = () => {
   const handleCountTotalMoneyCustomerNeedPay = () => {
     let total = 0;
     cartItems && cartItems.map((item) => {
-      total += item.donGia;
+      total += item.donGia * item.soLuong;
     })
     const result = total + shipFee - (discountValue || 0);
     return result;
@@ -584,7 +583,7 @@ const PointOfSales = () => {
     let result = "";
     let total = 0;
     cartItems && cartItems.map((item) => {
-      total += item.donGia;
+      total += item.donGia * item.soLuong;
     })
     let totalFinal = total + shipFee - (discountValue || 0);
     result = totalFinal
@@ -630,6 +629,7 @@ const PointOfSales = () => {
   }
 
   const handleCloseDialogProductDetails = () => {
+    setCount(1);
     setOpenProductDetails(false);
   }
 
@@ -642,6 +642,30 @@ const PointOfSales = () => {
   }
   const handleCloseNoActionDialogProducts = () => {
     setOpenProducts(false);
+  }
+  const [count, setCount] = useState(1);
+  const handleChangeCount = (value) => {
+    let newValue = parseInt(value);
+    newValue = newValue > 4 ? 4 : newValue;
+    newValue = newValue < 1 ? 1 : newValue;
+    setCount(newValue);
+  };
+
+  const handleClickCount1 = () => {
+    if (count == 1) {
+      handleOpenAlertVariant("Tối thiểu 1 sản phẩm!", Notistack.ERROR);
+    }
+    else {
+      setCount(count - 1);
+    }
+  }
+  const handleClickCount = () => {
+    if (count == 4) {
+      handleOpenAlertVariant("Tối đa 4 sản phẩm!", Notistack.ERROR);
+    }
+    else {
+      setCount(count + 1);
+    }
   }
 
   const addCartItemsToCart = async (cartItems) => {
@@ -664,8 +688,12 @@ const PointOfSales = () => {
         setIsLoading(false);
         handleCloseDialogProductDetails();
         handleCloseDialogProducts();
+        handleOpenAlertVariant("Thêm vào giỏ hàng thành công ", Notistack.SUCCESS);
       });
-    } catch (error) { }
+    } catch (error) {
+      handleOpenAlertVariant(error.response.data.message, Notistack.ERROR);
+      setIsLoading(false);
+    }
   };
   const handleAddProductToCart = (priceProduct, idProduct, amount) => {
     const cartItems = {
@@ -675,7 +703,12 @@ const PointOfSales = () => {
       productId: idProduct,
       // orderId: order.id,
     }
-    addCartItemsToCart(cartItems);
+    if (isNaN(amount) || amount === 0 || amount === null || amount === "") {
+      handleOpenAlertVariant("Vui lòng nhập số lượng!", Notistack.ERROR);
+    }
+    else {
+      addCartItemsToCart(cartItems);
+    }
   }
 
   const handleDeliveryChange = (event) => {
@@ -1003,6 +1036,10 @@ const PointOfSales = () => {
                     remove={handleDeleteCartItemById}
                     delivery={delivery}
                     cartItems={cartItems}
+                    count={count}
+                    changeCount={handleChangeCount}
+                    clickCount={handleClickCount}
+                    clickCount1={handleClickCount1}
                   />
                 </TabPanel>
               </div>

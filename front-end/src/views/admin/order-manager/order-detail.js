@@ -16,6 +16,8 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import LoadingIndicator from '../../../utilities/loading';
 import EditIcon from '@mui/icons-material/Edit';
+import RemoveOutlinedIcon from '@mui/icons-material/RemoveOutlined';
+import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import {
   Dialog,
   Select as SelectMui,
@@ -1240,18 +1242,25 @@ const OrderDetail = (props) => {
                             </div>
                           </TableCell>
                           <TableCell align="center" style={{ width: "100px" }}>
-                            {/* 
-*/}
-                            <div class="number-input1">
-                              <button style={{ marginBottom: "1px" }}
-                                class="minus">-
-                              </button>
-                              <input value={1} min="1" max="100"
-                                name="quantity" class="quantity"
-                                type="number" />
-                              <button class="" style={{ marginTop: "2.3px" }} >+
-                              </button>
-                            </div>
+                    <div class="number-input2">
+                      <button                        class="minus">
+                        <div className='wrap-minus'>
+                          <span>
+                            <RemoveOutlinedIcon style={{ fontSize: "20px" }} />
+                          </span>
+                        </div>
+                      </button>
+                      <input value={1} min="1" max="4"
+                        name="quantity" class="quantity"
+                        type="number" />
+                      <button class=""                      >
+                        <div className='wrap-plus'>
+                          <span >
+                            <AddOutlinedIcon style={{ fontSize: "20px" }} />
+                          </span>
+                        </div>
+                      </button>
+                    </div>
                           </TableCell>
                           <TableCell align="center" style={{ color: "#dc1111", fontSize: "15px", width: "200px" }}>
                             <span style={{ color: "#dc1111", fontSize: "17.5px" }}>
