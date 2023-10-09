@@ -2,6 +2,10 @@ export const OrderTypeString = {
   AT_COUNTER: "AT_COUNTER",
   DELIVERY: "DELIVERY",
 }
+export const Notistack = {
+  SUCCESS: "success",
+  ERROR: "error",
+}
 // export const OrderTypeNumber = {
 //   AT_COUNTER: 0,
 //   DELIVERY: 1,

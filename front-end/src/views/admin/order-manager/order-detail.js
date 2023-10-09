@@ -66,36 +66,26 @@ import { Alert, AlertTitle, FormHelperText, Slide } from '@mui/material';
 import { TextareaAutosize } from '@mui/base/TextareaAutosize';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
-import { OrderStatusString, OrderTypeString } from "./enum";
+import { OrderStatusString, OrderTypeString, Notistack } from './enum';
+import useCustomSnackbar from '../../../utilities/notistack';
 
 const Transition = (props) => {
   return <Slide {...props} direction="left" />;
 };
 
 const OrderDetail = (props) => {
-  const location = useLocation();
-  // const { data } = location.state;
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
-
-  const [open1, setOpen1] = React.useState(true);
-
-  const handleClick1 = () => {
-    setOpen1(true);
-  };
-
-  const handleClose1 = () => {
-    setOpen1(false);
-  };
+  const [alert, setAlert] = useState({});
 
   const [isDone, setIsDone] = useState(false);
-  // let [message, setMessage] = useState(data.message);
   const [order, setOrder] = useState({});
   const [orderHistories, setOrderHistories] = useState([]);
   const [status, setStatus] = useState();
   const [paymentHistorys, setPaymentHistorys] = useState([]);
   const { id } = useParams();
+  const { handleOpenAlertVariant } = useCustomSnackbar();
 
   const getOrderItemsById = () => {
     axios
@@ -109,7 +99,6 @@ const OrderDetail = (props) => {
         console.error(error);
       });
   }
-
 
   useEffect(() => {
     getOrderItemsById();
@@ -140,9 +129,13 @@ const OrderDetail = (props) => {
       }).then((response) => {
         getOrderItemsById();
         setIsLoading(false);
-      });
+        handleOpenAlertVariant("Xác nhận thành công", "success");
+      })
     } catch (error) {
-      console.log(error);
+      const message = error.response.data.message;
+      setIsLoading(false);
+      handleOpenAlertVariant(message, Notistack.ERROR);
+      console.log(error.response.data)
     }
   };
 
@@ -1425,16 +1418,6 @@ const OrderDetail = (props) => {
 
       <div className="mt-5"></div>
       {isLoading && <LoadingIndicator />}
-      {/*data.message &&
-        <Snackbar anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }} TransitionComponent={Transition} open={open1} autoHideDuration={3000} onClose={handleClose1}>
-          <Alert variant="filled" onClose={handleClose1} sx={{ width: '100%', backgroundColor: "#26A65B" }}>
-            {data.message}
-          </Alert>
-        </Snackbar>
-      */}
     </>
   );
 };
