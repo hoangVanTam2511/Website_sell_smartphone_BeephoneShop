@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { FormControl, Grid, InputLabel, MenuItem, Select } from "@mui/material";
+import { FormControl, InputLabel, MenuItem, Select, Grid } from "@mui/material";
 
 const host = "https://provinces.open-api.vn/api/";
 
@@ -21,14 +21,13 @@ const AddressForm = ({
   const [provinceError, setProvinceError] = useState(false);
   const [districtError, setDistrictError] = useState(false);
   const [wardError, setWardError] = useState(false);
+
   useEffect(() => {
     fetchProvinces();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const callAPI = (api) => {
-    // setFormSubmitted(true); // Set formSubmitted to true when the user clicks the "Xác nhận" button
-
-    // Check if required fields are empty
     if (!selectedProvince) {
       setProvinceError(true);
     }
@@ -77,17 +76,19 @@ const AddressForm = ({
   };
 
   const handleProvinceChange = (value) => {
+    if (submitted) {
+      // Nếu đã ấn nút "Lưu" thì kiểm tra trạng thái select
+      if (!value.target.value) {
+        setProvinceError(true);
+        setSelectedProvince("");
+      }
+    }
     setSelectedProvince(value.target.value);
     setSelectedDistrict("");
     setSelectedWard("");
     fetchDistricts(value.target.value);
     onProvinceChange(value.target.value);
     setProvinceError(false);
-    if (submitted) {
-      if (!value.target.value) {
-        setProvinceError(true);
-      }
-    }
   };
 
   const handleDistrictChange = (value) => {
@@ -97,6 +98,7 @@ const AddressForm = ({
     onDistrictChange(value.target.value);
     setDistrictError(false);
     if (submitted) {
+      // Nếu đã ấn nút "Lưu" thì kiểm tra trạng thái select
       if (!value.target.value) {
         setDistrictError(true);
       }
@@ -132,6 +134,7 @@ const AddressForm = ({
       )?.name;
       onDistrictChange(selectedDistrictName);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedDistrict, onDistrictChange]);
 
   useEffect(() => {
@@ -141,11 +144,12 @@ const AddressForm = ({
       )?.name;
       onWardChange(selectedWardName);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedWard, onWardChange]);
 
   return (
-    <div>
-      <Grid container spacing={3}>
+    <>
+      <Grid container spacing={3.3}>
         <Grid item xs={4}>
           <FormControl style={{ width: "100%" }}>
             <InputLabel id="demo-simple-select-label">
@@ -173,6 +177,7 @@ const AddressForm = ({
                   color: " #d32f2f",
                   paddingLeft: "15px",
                   fontSize: "12px",
+                  textAlign: "left",
                 }}
               >
                 Vui lòng chọn
@@ -192,8 +197,8 @@ const AddressForm = ({
               onChange={handleDistrictChange}
               value={selectedDistrict}
               size="large"
-              style={{ width: "100%" }}
               error={formSubmitted && !selectedDistrict}
+              style={{ width: "100%" }}
             >
               {districts.map((district) => (
                 <MenuItem key={district.code} value={district.code}>
@@ -207,6 +212,7 @@ const AddressForm = ({
                   color: " #d32f2f",
                   paddingLeft: "15px",
                   fontSize: "12px",
+                  textAlign: "left",
                 }}
               >
                 Vui lòng chọn
@@ -215,7 +221,7 @@ const AddressForm = ({
           </FormControl>
         </Grid>
         <Grid item xs={4}>
-          <FormControl style={{ textAlign: "center", width: "100%" }}>
+          <FormControl style={{ width: "100%" }}>
             <InputLabel id="demo-simple-select-label">
               Chọn Phường/Xã
             </InputLabel>
@@ -227,6 +233,7 @@ const AddressForm = ({
               value={selectedWard}
               size="large"
               error={formSubmitted && !selectedWard}
+              style={{ width: "100%" }}
             >
               {wards.map((ward) => (
                 <MenuItem key={ward.code} value={ward.code}>
@@ -249,7 +256,7 @@ const AddressForm = ({
           </FormControl>
         </Grid>
       </Grid>
-    </div>
+    </>
   );
 };
 

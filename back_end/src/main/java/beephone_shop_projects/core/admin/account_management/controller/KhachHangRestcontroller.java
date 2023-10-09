@@ -31,15 +31,13 @@ public class KhachHangRestcontroller {
     @Autowired
     private KhachHangServiceImpl accService;
     @Autowired
-    private RoleServiceImpl roleService;
-    @Autowired
     private ExportServiceImpl excelExportService;
     @Autowired
     private DiaChiServiceImpl diaChiService;
 
     @GetMapping("hien-thi")
-    public Page<AccountResponse> hienThi(@RequestParam(name = "page", defaultValue = "0") Integer pageNo) {
-        return accService.getAllKH(pageNo);
+    public ResponseEntity hienThi(@RequestParam(name = "page", defaultValue = "0") Integer pageNo) {
+        return new ResponseEntity(accService.getAllKH(pageNo), HttpStatus.OK);
     }
 
     @GetMapping("hien-thi-theo/{id}")
@@ -48,26 +46,14 @@ public class KhachHangRestcontroller {
     }
 
     @GetMapping("search-all")
-    public Page<AccountResponse> searchAll(@RequestParam("tenKH") String hoVaTen, @RequestParam(name = "page", defaultValue = "0") Integer pageNo) {
+    public ResponseEntity searchAll(@RequestParam("tenKH") String hoVaTen, @RequestParam(name = "page", defaultValue = "0") Integer pageNo) {
         Optional<String> opTen = Optional.ofNullable(hoVaTen);
-        return accService.search(opTen, pageNo);
+        return new ResponseEntity(accService.search(opTen,pageNo), HttpStatus.OK);
     }
+
 
     @PostMapping("add")
     public ResponseEntity add(@RequestBody CreateKhachHangRequest request) {
-//        List<DiaChiKhachHangRequest> diaChiRequestList = request.getDiaChiList();
-//        List<DiaChi> diaChiList = new ArrayList<>();
-//        for (DiaChiKhachHangRequest diaChiRequest : diaChiRequestList) {
-//            DiaChi diaChi = new DiaChi();
-//            diaChi.setDiaChi(diaChiRequest.getDiaChi());
-//            diaChi.setTinhThanhPho(diaChiRequest.getTinhThanhPho());
-//            diaChi.setQuanHuyen(diaChiRequest.getQuanHuyen());
-//            diaChi.setXaPhuong(diaChiRequest.getXaPhuong());
-//            diaChi.setHoTenKH(diaChiRequest.getHoTenKH());
-//            diaChi.setSoDienThoaiKhachHang(diaChiRequest.getSoDienThoaiKhachHang());
-//            diaChi.setAccount(accService.findAccount(request.getMa()));
-//           diaChiList.add(diaChi);
-//        }
         return new ResponseEntity(accService.addKH(request), HttpStatus.CREATED);
     }
 

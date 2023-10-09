@@ -5,6 +5,7 @@ import {
   useAccordionButton,
   AccordionContext,
 } from "react-bootstrap";
+import { faShoppingCart } from "@fortawesome/react-fontawesome";
 function CustomToggle({ children, eventKey, onClick }) {
   const { activeEventKey } = useContext(AccordionContext);
 
@@ -44,13 +45,25 @@ const VerticalNav = memo((props) => {
             className={`${location.pathname === "/" ? "active" : ""} nav-link `}
             aria-current="page"
             to="/"
-            onClick={() => { }}
+            onClick={() => {}}
           >
             <div className="d-flex" style={{ padding: "2px" }}>
               <i className="icon">
-                <svg width="25" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M10.1528 5.55559C10.2037 5.65925 10.2373 5.77027 10.2524 5.8844L10.5308 10.0243L10.669 12.1051C10.6705 12.3191 10.704 12.5317 10.7687 12.7361C10.9356 13.1326 11.3372 13.3846 11.7741 13.3671L18.4313 12.9316C18.7196 12.9269 18.998 13.0347 19.2052 13.2313C19.3779 13.3952 19.4894 13.6096 19.5246 13.8402L19.5364 13.9802C19.2609 17.795 16.4592 20.9767 12.6524 21.7981C8.84555 22.6194 4.94186 20.8844 3.06071 17.535C2.51839 16.5619 2.17965 15.4923 2.06438 14.389C2.01623 14.0624 1.99503 13.7326 2.00098 13.4026C1.99503 9.31279 4.90747 5.77702 8.98433 4.92463C9.47501 4.84822 9.95603 5.10798 10.1528 5.55559Z" fill="currentColor"></path>
-                  <path opacity="0.4" d="M12.8701 2.00082C17.43 2.11683 21.2624 5.39579 22.0001 9.81229L21.993 9.84488L21.9729 9.89227L21.9757 10.0224C21.9652 10.1947 21.8987 10.3605 21.784 10.4945C21.6646 10.634 21.5014 10.729 21.3217 10.7659L21.2121 10.7809L13.5313 11.2786C13.2758 11.3038 13.0214 11.2214 12.8314 11.052C12.6731 10.9107 12.5719 10.7201 12.5433 10.5147L12.0277 2.84506C12.0188 2.81913 12.0188 2.79102 12.0277 2.76508C12.0348 2.55367 12.1278 2.35384 12.2861 2.21023C12.4444 2.06662 12.6547 1.9912 12.8701 2.00082Z" fill="currentColor"></path>
+                <svg
+                  width="25"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M10.1528 5.55559C10.2037 5.65925 10.2373 5.77027 10.2524 5.8844L10.5308 10.0243L10.669 12.1051C10.6705 12.3191 10.704 12.5317 10.7687 12.7361C10.9356 13.1326 11.3372 13.3846 11.7741 13.3671L18.4313 12.9316C18.7196 12.9269 18.998 13.0347 19.2052 13.2313C19.3779 13.3952 19.4894 13.6096 19.5246 13.8402L19.5364 13.9802C19.2609 17.795 16.4592 20.9767 12.6524 21.7981C8.84555 22.6194 4.94186 20.8844 3.06071 17.535C2.51839 16.5619 2.17965 15.4923 2.06438 14.389C2.01623 14.0624 1.99503 13.7326 2.00098 13.4026C1.99503 9.31279 4.90747 5.77702 8.98433 4.92463C9.47501 4.84822 9.95603 5.10798 10.1528 5.55559Z"
+                    fill="currentColor"
+                  ></path>
+                  <path
+                    opacity="0.4"
+                    d="M12.8701 2.00082C17.43 2.11683 21.2624 5.39579 22.0001 9.81229L21.993 9.84488L21.9729 9.89227L21.9757 10.0224C21.9652 10.1947 21.8987 10.3605 21.784 10.4945C21.6646 10.634 21.5014 10.729 21.3217 10.7659L21.2121 10.7809L13.5313 11.2786C13.2758 11.3038 13.0214 11.2214 12.8314 11.052C12.6731 10.9107 12.5719 10.7201 12.5433 10.5147L12.0277 2.84506C12.0188 2.81913 12.0188 2.79102 12.0277 2.76508C12.0348 2.55367 12.1278 2.35384 12.2861 2.21023C12.4444 2.06662 12.6547 1.9912 12.8701 2.00082Z"
+                    fill="currentColor"
+                  ></path>
                 </svg>
               </i>
               <span className="item-name text-start">Thống kê</span>
@@ -60,11 +73,12 @@ const VerticalNav = memo((props) => {
 
         <li className="nav-item">
           <Link
-            className={`${location.pathname.includes("/dashboard/point-of-sales") ||
+            className={`${
+              location.pathname.includes("/dashboard/point-of-sales") ||
               location.pathname.includes("/dashboard/order-pending")
-              ? "active"
-              : ""
-              } nav-link`}
+                ? "active"
+                : ""
+            } nav-link`}
             to="/dashboard/point-of-sales"
           >
             <div className="d-flex" style={{ padding: "2px" }}>
@@ -98,11 +112,12 @@ const VerticalNav = memo((props) => {
         </li>
         <li className="nav-item">
           <Link
-            className={`${location.pathname.includes("/dashboard/management-orders") ||
+            className={`${
+              location.pathname.includes("/dashboard/management-orders") ||
               location.pathname.includes("/dashboard/order-detail")
-              ? "active"
-              : ""
-              } nav-link`}
+                ? "active"
+                : ""
+            } nav-link`}
             to="/dashboard/management-orders"
           >
             <div className="d-flex" style={{ padding: "2px" }}>
@@ -148,11 +163,23 @@ const VerticalNav = memo((props) => {
           >
             <div className="d-flex" style={{ padding: "2px" }}>
               <i className="icon">
-                <svg fill="none" xmlns="http://www.w3.org/2000/svg" width="25" viewBox="0 0 24 24">
-                  <path fill-rule="evenodd" clip-rule="evenodd" d="M16.4184 6.47H16.6232C19.3152 6.47 21.5 8.72 21.5 11.48V17C21.5 19.76 19.3152 22 16.6232 22H7.3768C4.6848 22 2.5 19.76 2.5 17V11.48C2.5 8.72 4.6848 6.47 7.3768 6.47H7.58162C7.60113 5.27 8.05955 4.15 8.8886 3.31C9.72741 2.46 10.8003 2.03 12.0098 2C14.4286 2 16.3891 4 16.4184 6.47ZM9.91273 4.38C9.36653 4.94 9.06417 5.68 9.04466 6.47H14.9553C14.9261 4.83 13.6191 3.5 12.0098 3.5C11.2587 3.5 10.4784 3.81 9.91273 4.38ZM15.7064 10.32C16.116 10.32 16.4379 9.98 16.4379 9.57V8.41C16.4379 8 16.116 7.66 15.7064 7.66C15.3065 7.66 14.9748 8 14.9748 8.41V9.57C14.9748 9.98 15.3065 10.32 15.7064 10.32ZM8.93737 9.57C8.93737 9.98 8.6155 10.32 8.20585 10.32C7.80595 10.32 7.47433 9.98 7.47433 9.57V8.41C7.47433 8 7.80595 7.66 8.20585 7.66C8.6155 7.66 8.93737 8 8.93737 8.41V9.57Z" fill="currentColor" />
+                <svg
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="25"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M16.4184 6.47H16.6232C19.3152 6.47 21.5 8.72 21.5 11.48V17C21.5 19.76 19.3152 22 16.6232 22H7.3768C4.6848 22 2.5 19.76 2.5 17V11.48C2.5 8.72 4.6848 6.47 7.3768 6.47H7.58162C7.60113 5.27 8.05955 4.15 8.8886 3.31C9.72741 2.46 10.8003 2.03 12.0098 2C14.4286 2 16.3891 4 16.4184 6.47ZM9.91273 4.38C9.36653 4.94 9.06417 5.68 9.04466 6.47H14.9553C14.9261 4.83 13.6191 3.5 12.0098 3.5C11.2587 3.5 10.4784 3.81 9.91273 4.38ZM15.7064 10.32C16.116 10.32 16.4379 9.98 16.4379 9.57V8.41C16.4379 8 16.116 7.66 15.7064 7.66C15.3065 7.66 14.9748 8 14.9748 8.41V9.57C14.9748 9.98 15.3065 10.32 15.7064 10.32ZM8.93737 9.57C8.93737 9.98 8.6155 10.32 8.20585 10.32C7.80595 10.32 7.47433 9.98 7.47433 9.57V8.41C7.47433 8 7.80595 7.66 8.20585 7.66C8.6155 7.66 8.93737 8 8.93737 8.41V9.57Z"
+                    fill="currentColor"
+                  />
                 </svg>
               </i>
-              <span className="item-name" style={{ paddingRight: "5px" }}>Quản Lý Sản Phẩm</span>
+              <span className="item-name" style={{ paddingRight: "5px" }}>
+                Quản Lý Sản Phẩm
+              </span>
               <i className="right-icon">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -175,8 +202,9 @@ const VerticalNav = memo((props) => {
             <ul className="sub-nav">
               <li className="nav-item">
                 <Link
-                  className={`${location.pathname === "/san-pham" ? "active" : ""
-                    } nav-link`}
+                  className={`${
+                    location.pathname === "/san-pham" ? "active" : ""
+                  } nav-link`}
                   to="/san-pham"
                 >
                   <i className="icon">
@@ -202,8 +230,9 @@ const VerticalNav = memo((props) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`${location.pathname === "/mau-sac" ? "active" : ""
-                    } nav-link`}
+                  className={`${
+                    location.pathname === "/mau-sac" ? "active" : ""
+                  } nav-link`}
                   to="/mau-sac"
                 >
                   <i className="icon">
@@ -229,8 +258,9 @@ const VerticalNav = memo((props) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`${location.pathname === "/chip" ? "active" : ""
-                    } nav-link`}
+                  className={`${
+                    location.pathname === "/chip" ? "active" : ""
+                  } nav-link`}
                   to="/chip"
                 >
                   <i className="icon">
@@ -256,8 +286,9 @@ const VerticalNav = memo((props) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`${location.pathname === "/ram" ? "active" : ""
-                    } nav-link`}
+                  className={`${
+                    location.pathname === "/ram" ? "active" : ""
+                  } nav-link`}
                   to="/ram"
                 >
                   <i className="icon">
@@ -284,8 +315,9 @@ const VerticalNav = memo((props) => {
 
               <li className="nav-item">
                 <Link
-                  className={`${location.pathname === "/dong-san-pham" ? "active" : ""
-                    } nav-link`}
+                  className={`${
+                    location.pathname === "/dong-san-pham" ? "active" : ""
+                  } nav-link`}
                   to="/dong-san-pham"
                 >
                   <i className="icon">
@@ -312,8 +344,9 @@ const VerticalNav = memo((props) => {
 
               <li className="nav-item">
                 <Link
-                  className={`${location.pathname === "/man-hinh" ? "active" : ""
-                    } nav-link`}
+                  className={`${
+                    location.pathname === "/man-hinh" ? "active" : ""
+                  } nav-link`}
                   to="/man-hinh"
                 >
                   <i className="icon">
@@ -340,8 +373,9 @@ const VerticalNav = memo((props) => {
 
               <li className="nav-item">
                 <Link
-                  className={`${location.pathname === "/nha-san-xuat" ? "active" : ""
-                    } nav-link`}
+                  className={`${
+                    location.pathname === "/nha-san-xuat" ? "active" : ""
+                  } nav-link`}
                   to="/nha-san-xuat"
                 >
                   <i className="icon">
@@ -368,8 +402,9 @@ const VerticalNav = memo((props) => {
 
               <li className="nav-item">
                 <Link
-                  className={`${location.pathname === "/pin" ? "active" : ""
-                    } nav-link`}
+                  className={`${
+                    location.pathname === "/pin" ? "active" : ""
+                  } nav-link`}
                   to="/pin"
                 >
                   <i className="icon">
@@ -396,8 +431,9 @@ const VerticalNav = memo((props) => {
 
               <li className="nav-item">
                 <Link
-                  className={`${location.pathname === "/rom" ? "active" : ""
-                    } nav-link`}
+                  className={`${
+                    location.pathname === "/rom" ? "active" : ""
+                  } nav-link`}
                   to="/rom"
                 >
                   <i className="icon">
@@ -472,7 +508,10 @@ const VerticalNav = memo((props) => {
                   ></path>
                 </svg>
               </i>
-              <span className="item-name" style={{ paddingRight: "6.5px" }}> Quản Lý Tài khoản</span>
+              <span className="item-name" style={{ paddingRight: "6.5px" }}>
+                {" "}
+                Quản Lý Tài khoản
+              </span>
               <i className="right-icon">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -495,8 +534,9 @@ const VerticalNav = memo((props) => {
             <ul className="sub-nav">
               <li className="nav-item">
                 <Link
-                  className={`${location.pathname === "/nhan-vien" ? "active" : ""
-                    } nav-link`}
+                  className={`${
+                    location.pathname === "/nhan-vien" ? "active" : ""
+                  } nav-link`}
                   to="/nhan-vien"
                 >
                   <i className="icon">
@@ -522,8 +562,9 @@ const VerticalNav = memo((props) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`${location.pathname === "/khach-hang" ? "active" : ""
-                    } nav-link`}
+                  className={`${
+                    location.pathname === "/khach-hang" ? "active" : ""
+                  } nav-link`}
                   to="/khach-hang"
                 >
                   <i className="icon">
@@ -548,10 +589,11 @@ const VerticalNav = memo((props) => {
                 </Link>
               </li>
 
-              <li className="nav-item">
+              {/* <li className="nav-item">
                 <Link
-                  className={`${location.pathname === "/chuc-vu" ? "active" : ""
-                    } nav-link`}
+                  className={`${
+                    location.pathname === "/chuc-vu" ? "active" : ""
+                  } nav-link`}
                   to="/chuc-vu"
                 >
                   <i className="icon">
@@ -574,7 +616,7 @@ const VerticalNav = memo((props) => {
                   <i className="sidenav-mini-icon"> L </i>
                   <span className="item-name">Chức Vụ</span>
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </Accordion.Collapse>
         </Accordion.Item>
@@ -591,11 +633,23 @@ const VerticalNav = memo((props) => {
           >
             <div className="d-flex" style={{ padding: "2px" }}>
               <i className="icon">
-                <svg fill="none" xmlns="http://www.w3.org/2000/svg" width="25" viewBox="0 0 24 24">
-                  <path fill-rule="evenodd" clip-rule="evenodd" d="M20.3992 9.14611L21.1194 9.86611C21.6897 10.4261 21.9998 11.1861 21.9998 11.9861C22.0098 12.7861 21.6997 13.5471 21.1395 14.1161C21.1328 14.1234 21.1261 14.1299 21.1194 14.1363C21.1161 14.1396 21.1128 14.1428 21.1094 14.1461L20.3992 14.8561C20.1191 15.1361 19.959 15.5161 19.959 15.9171V16.9461C19.959 18.6061 18.6085 19.9571 16.9479 19.9571H15.9176C15.5174 19.9571 15.1373 20.1161 14.8572 20.3961L14.1369 21.1161C13.5467 21.7071 12.7764 21.9961 12.0061 21.9961C11.2359 21.9961 10.4656 21.7071 9.87537 21.1271L9.14511 20.3961C8.865 20.1161 8.48487 19.9571 8.08472 19.9571H7.05435C5.39375 19.9571 4.04326 18.6061 4.04326 16.9461V15.9171C4.04326 15.5161 3.8832 15.1361 3.6031 14.8461L2.88284 14.1361C1.71241 12.9671 1.70241 11.0561 2.87283 9.87711L3.6031 9.14611C3.8832 8.86611 4.04326 8.48611 4.04326 8.07611V7.05611C4.04326 5.39611 5.39375 4.04711 7.05435 4.04711H8.08472C8.48487 4.04711 8.865 3.88611 9.14511 3.60611L9.86537 2.88611C11.0358 1.70711 12.9465 1.70711 14.1269 2.87711L14.8572 3.60611C15.1373 3.88611 15.5174 4.04711 15.9176 4.04711H16.9479C18.6085 4.04711 19.959 5.39611 19.959 7.05611V8.08711C19.959 8.48611 20.1191 8.86611 20.3992 9.14611ZM9.42521 15.4461C9.66529 15.4461 9.88537 15.3561 10.0454 15.1861L15.1873 10.0471C15.5274 9.70711 15.5274 9.14611 15.1873 8.80611C14.8472 8.46711 14.297 8.46711 13.9569 8.80611L8.81499 13.9461C8.47486 14.2861 8.47486 14.8461 8.81499 15.1861C8.97504 15.3561 9.19512 15.4461 9.42521 15.4461ZM13.6968 14.5661C13.6968 15.0561 14.0869 15.4461 14.5771 15.4461C15.0572 15.4461 15.4474 15.0561 15.4474 14.5661C15.4474 14.0871 15.0572 13.6961 14.5771 13.6961C14.0869 13.6961 13.6968 14.0871 13.6968 14.5661ZM9.43521 8.55611C9.91539 8.55611 10.3055 8.94611 10.3055 9.42611C10.3055 9.91711 9.91539 10.3061 9.43521 10.3061C8.95504 10.3061 8.55489 9.91711 8.55489 9.42611C8.55489 8.94611 8.95504 8.55611 9.43521 8.55611Z" fill="currentColor" />
+                <svg
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="25"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M20.3992 9.14611L21.1194 9.86611C21.6897 10.4261 21.9998 11.1861 21.9998 11.9861C22.0098 12.7861 21.6997 13.5471 21.1395 14.1161C21.1328 14.1234 21.1261 14.1299 21.1194 14.1363C21.1161 14.1396 21.1128 14.1428 21.1094 14.1461L20.3992 14.8561C20.1191 15.1361 19.959 15.5161 19.959 15.9171V16.9461C19.959 18.6061 18.6085 19.9571 16.9479 19.9571H15.9176C15.5174 19.9571 15.1373 20.1161 14.8572 20.3961L14.1369 21.1161C13.5467 21.7071 12.7764 21.9961 12.0061 21.9961C11.2359 21.9961 10.4656 21.7071 9.87537 21.1271L9.14511 20.3961C8.865 20.1161 8.48487 19.9571 8.08472 19.9571H7.05435C5.39375 19.9571 4.04326 18.6061 4.04326 16.9461V15.9171C4.04326 15.5161 3.8832 15.1361 3.6031 14.8461L2.88284 14.1361C1.71241 12.9671 1.70241 11.0561 2.87283 9.87711L3.6031 9.14611C3.8832 8.86611 4.04326 8.48611 4.04326 8.07611V7.05611C4.04326 5.39611 5.39375 4.04711 7.05435 4.04711H8.08472C8.48487 4.04711 8.865 3.88611 9.14511 3.60611L9.86537 2.88611C11.0358 1.70711 12.9465 1.70711 14.1269 2.87711L14.8572 3.60611C15.1373 3.88611 15.5174 4.04711 15.9176 4.04711H16.9479C18.6085 4.04711 19.959 5.39611 19.959 7.05611V8.08711C19.959 8.48611 20.1191 8.86611 20.3992 9.14611ZM9.42521 15.4461C9.66529 15.4461 9.88537 15.3561 10.0454 15.1861L15.1873 10.0471C15.5274 9.70711 15.5274 9.14611 15.1873 8.80611C14.8472 8.46711 14.297 8.46711 13.9569 8.80611L8.81499 13.9461C8.47486 14.2861 8.47486 14.8461 8.81499 15.1861C8.97504 15.3561 9.19512 15.4461 9.42521 15.4461ZM13.6968 14.5661C13.6968 15.0561 14.0869 15.4461 14.5771 15.4461C15.0572 15.4461 15.4474 15.0561 15.4474 14.5661C15.4474 14.0871 15.0572 13.6961 14.5771 13.6961C14.0869 13.6961 13.6968 14.0871 13.6968 14.5661ZM9.43521 8.55611C9.91539 8.55611 10.3055 8.94611 10.3055 9.42611C10.3055 9.91711 9.91539 10.3061 9.43521 10.3061C8.95504 10.3061 8.55489 9.91711 8.55489 9.42611C8.55489 8.94611 8.95504 8.55611 9.43521 8.55611Z"
+                    fill="currentColor"
+                  />
                 </svg>
               </i>
-              <span className="item-name" style={{ paddingRight: "57px" }}>Khuyến Mãi</span>
+              <span className="item-name" style={{ paddingRight: "57px" }}>
+                Khuyến Mãi
+              </span>
               <i className="right-icon">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -618,8 +672,9 @@ const VerticalNav = memo((props) => {
             <ul className="sub-nav">
               <li className="nav-item">
                 <Link
-                  className={`${location.pathname === "/voucher" ? "active" : ""
-                    } nav-link`}
+                  className={`${
+                    location.pathname === "/voucher" ? "active" : ""
+                  } nav-link`}
                   to="/voucher"
                 >
                   <i className="icon">
@@ -645,8 +700,9 @@ const VerticalNav = memo((props) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`${location.pathname === "/khuyen-mai" ? "active" : ""
-                    } nav-link`}
+                  className={`${
+                    location.pathname === "/khuyen-mai" ? "active" : ""
+                  } nav-link`}
                   to="/khuyen-mai"
                 >
                   <i className="icon">

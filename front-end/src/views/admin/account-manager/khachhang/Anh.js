@@ -1,12 +1,11 @@
 import React, { useState } from "react";
-import { Upload, Button, message, Image } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
+import { Upload, message, Image } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const ImageUploadComponent = ({ setAnhDaiDien, hoten }) => {
   const [imageUrl, setImageUrl] = useState(null);
-  const [imageSize, setImageSize] = useState({ width: 170, height: 170 });
+  const [imageSize, setImageSize] = useState({ width: 160, height: 160 });
 
   const handleChange = (info) => {
     if (info.file.status === "uploading") {
@@ -44,7 +43,6 @@ const ImageUploadComponent = ({ setAnhDaiDien, hoten }) => {
     customRequest: customUploadRequest,
     showUploadList: false,
     beforeUpload: (file) => {
-      // Hiển thị ảnh ngay sau khi chọn (trước khi tải lên)
       const reader = new FileReader();
       reader.onload = (e) => {
         setImageUrl(e.target.result);
@@ -57,7 +55,7 @@ const ImageUploadComponent = ({ setAnhDaiDien, hoten }) => {
   };
   const calculateImageSize = (width, height) => {
     const aspectRatio = width / height;
-    const maxDimension = 170;
+    const maxDimension = 160;
 
     if (aspectRatio > 1) {
       return { width: maxDimension, height: maxDimension / aspectRatio };
@@ -77,8 +75,8 @@ const ImageUploadComponent = ({ setAnhDaiDien, hoten }) => {
       {/* Hiển thị ảnh đã chọn (nếu có) */}
       <div
         style={{
-          width: "170px",
-          height: "170px",
+          width: "160px",
+          height: "160px",
           borderRadius: "50%",
           border: "1px dashed #ccc",
           position: "relative",

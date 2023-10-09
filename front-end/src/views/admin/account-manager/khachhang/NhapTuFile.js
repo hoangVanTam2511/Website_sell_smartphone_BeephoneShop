@@ -2,7 +2,7 @@ import { Button, Modal } from "antd";
 import { useState } from "react";
 import "../../../../assets/scss/NhapTuFile.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDownload, faUpload } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faUpload } from "@fortawesome/free-solid-svg-icons";
 import ExportButton from "./Export";
 import "../../../../assets/scss/HienThiNV.scss";
 const NhapTuFile = () => {
@@ -18,8 +18,9 @@ const NhapTuFile = () => {
   };
   return (
     <>
+      <FontAwesomeIcon icon={faPlus} /> &nbsp;
       <span type="primary" onClick={showModal}>
-        + Nhập từ file
+        Nhập từ file
       </span>
       <Modal
         open={isModalOpen}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { FormControl, InputLabel, MenuItem, Select, Grid } from "@mui/material";
+import { message } from "antd";
 
 const host = "https://provinces.open-api.vn/api/";
 
@@ -14,6 +15,7 @@ const AddressFormUpdate = ({
   selectedQuanHuyen,
   selectedXaPhuong,
   editing,
+  formSubmitted,
 }) => {
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
@@ -21,6 +23,9 @@ const AddressFormUpdate = ({
   const [selectedProvince, setSelectedProvince] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedWard, setSelectedWard] = useState("");
+  const [provinceError, setProvinceError] = useState(false);
+  const [districtError, setDistrictError] = useState(false);
+  const [wardError, setWardError] = useState(false);
 
   useEffect(() => {
     fetchProvinces();
@@ -61,9 +66,17 @@ const AddressFormUpdate = ({
   }, [selectedXaPhuong, wards]);
 
   const callAPI = async (api) => {
-    return axios.get(api).then((response) => {
-      return response.data;
-    });
+    if (!selectedProvince) {
+      setProvinceError(true);
+    }
+    if (!selectedDistrict) {
+      setDistrictError(true);
+    }
+    if (!selectedWard) {
+      setWardError(true);
+    }
+    const response = await axios.get(api);
+    return response.data;
   };
 
   const fetchProvinces = () => {
@@ -84,9 +97,6 @@ const AddressFormUpdate = ({
           setDistricts(data.districts);
           setSelectedDistrict("");
         }
-        // else {
-        //   console.error("Error fetching districts: Invalid response format");
-        // }
       })
       .catch((error) => {
         console.error("Error fetching districts:", error);
@@ -105,18 +115,27 @@ const AddressFormUpdate = ({
   };
 
   const handleProvinceChange = (event) => {
+    setProvinceError(false);
+    if (submitted) {
+      // Nếu đã ấn nút "Lưu" thì kiểm tra trạng thái select
+      if (!event.target.value) {
+        setProvinceError(true);
+        setSelectedProvince("");
+        message.error("hâh");
+      }
+    }
     const selectedValue = event.target.value;
     setSelectedProvince(selectedValue);
     setSelectedDistrict("");
     setSelectedWard("");
     setDistricts([]);
     setWards([]);
+
     if (selectedValue === "") {
       onProvinceChange("");
     } else {
       fetchDistricts(selectedValue);
       onProvinceChange(selectedValue);
-      console.log("Selected province code:", selectedValue);
     }
   };
 
@@ -126,11 +145,29 @@ const AddressFormUpdate = ({
     fetchWards(value.target.value);
     // setWards([]);
     onDistrictChange(value.target.value);
+    setDistrictError(false);
+    if (submitted) {
+      // Nếu đã ấn nút "Lưu" thì kiểm tra trạng thái select
+      if (!value.target.value) {
+        setDistrictError(true);
+        message.error("hâh");
+        setSelectedDistrict("");
+      }
+    }
   };
 
   const handleWardChange = (value) => {
     setSelectedWard(value.target.value);
     onWardChange(value.target.value);
+    setWardError(false);
+    if (submitted) {
+      // Nếu đã ấn nút "Lưu" thì kiểm tra trạng thái select
+      if (!value.target.value) {
+        setWardError(true);
+        message.error("hâh");
+        setSelectedWard("");
+      }
+    }
   };
   useEffect(() => {
     if (selectedProvince) {
@@ -160,7 +197,7 @@ const AddressFormUpdate = ({
   }, [selectedWard, onWardChange]);
   return (
     <div>
-      <Grid container spacing={3}>
+      <Grid container spacing={3.3}>
         <Grid item xs={4}>
           <FormControl style={{ width: "100%" }}>
             <InputLabel id="demo-simple-select-label">
@@ -172,10 +209,8 @@ const AddressFormUpdate = ({
               label="Chọn Tỉnh/Thành phố"
               onChange={handleProvinceChange}
               value={selectedProvince}
+              error={formSubmitted && !selectedProvince}
               size="large"
-              className={
-                required && submitted && !selectedProvince ? "error-select" : ""
-              }
             >
               {provinces.map((province) => (
                 <MenuItem key={province.code} value={province.code}>
@@ -196,10 +231,8 @@ const AddressFormUpdate = ({
               label="Chọn Quận/Huyện"
               onChange={handleDistrictChange}
               value={selectedDistrict}
+              error={formSubmitted && !selectedDistrict}
               size="large"
-              className={
-                required && submitted && !selectedWard ? "error-select" : ""
-              }
             >
               {districts.map((district) => (
                 <MenuItem key={district.code} value={district.code}>
@@ -207,6 +240,17 @@ const AddressFormUpdate = ({
                 </MenuItem>
               ))}
             </Select>
+            {required && submitted && districtError && (
+              <p
+                style={{
+                  color: " #d32f2f",
+                  paddingLeft: "15px",
+                  fontSize: "12px",
+                }}
+              >
+                Vui lòng chọn
+              </p>
+            )}
           </FormControl>
         </Grid>
         <Grid item xs={4}>
@@ -220,6 +264,7 @@ const AddressFormUpdate = ({
               label="Chọn Phường/Xã"
               onChange={handleWardChange}
               value={selectedWard}
+              error={formSubmitted && !selectedWard}
               size="large"
             >
               {wards.map((ward) => (
@@ -228,6 +273,18 @@ const AddressFormUpdate = ({
                 </MenuItem>
               ))}
             </Select>
+            {required && submitted && wardError && (
+              <p
+                style={{
+                  color: " #d32f2f",
+                  fontSize: "12px",
+                  textAlign: "left",
+                  paddingLeft: "15px",
+                }}
+              >
+                Vui lòng chọn
+              </p>
+            )}
           </FormControl>
         </Grid>
       </Grid>

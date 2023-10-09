@@ -78,20 +78,6 @@ const IDScan = ({ onScanData }) => {
       tinhThanhPho,
       ngayCap,
     });
-    // return (
-    //   <div>
-    //     <p>cccd: {cccd}</p>
-    //     <p>tên: {hoVaTen}</p>
-    //     <p>ngày sinh: {formattedNgaySinh}</p>
-    //     <p>giới tính: {gioiTinh === "Nam" ? "true" : "false"}</p>
-    //     <p>địa chỉ: {thon}</p>
-    //     <p>xaPhuong: {xaPhuong}</p>
-    //     <p>quanHuyen: {quanHuyen}</p>
-    //     <p>tinhThanhPho: {tinhThanhPho}</p>
-
-    //     <p>ngày cấp: {ngayCap}</p>
-    //   </div>
-    // );
   };
   return (
     <div>

@@ -38,16 +38,9 @@ public class KhachHangServiceImpl implements KhachHangService {
 
     @Override
     public Page<AccountResponse> getAllKH(Integer pageNo) {
-        Pageable pageable = PageRequest.of(pageNo, 20);
+        Pageable pageable = PageRequest.of(pageNo - 1, 10);
         return accountRepository.getAllKH(pageable);
     }
-
-//    @Override
-//    public Page<AccountResponse> searchAllKHang(Integer pageNo) {
-//        Pageable pageable = PageRequest.of(pageNo, 20);
-//        return accountRepository.searchAllKH(pageable);
-//    }
-
     @Override
     public Account addKH(CreateKhachHangRequest request) {
         Random random = new Random();
@@ -79,12 +72,6 @@ public class KhachHangServiceImpl implements KhachHangService {
                 .matKhau(matKhau)
                 .soDienThoai(request.getSoDienThoai())
                 .build();
-//        Account khachHang = addKH(request);
-
-////        // Thêm nhiều địa chỉ vào khách hàng
-//        for (DiaChi diaChi : diaChiList) {
-//            addDiaChiToKhachHang(khachHang, diaChi);
-//        }
         return accountRepository.save(kh);
     }
 
@@ -133,7 +120,7 @@ public class KhachHangServiceImpl implements KhachHangService {
 
     @Override
     public Page<AccountResponse> search(Optional<String> tenSearch, Integer pageNo) {
-        Pageable pageable = PageRequest.of(pageNo, 20);
+        Pageable pageable = PageRequest.of(pageNo, 10);
         return accountRepository.searchAllKH(tenSearch, pageable);
     }
 
