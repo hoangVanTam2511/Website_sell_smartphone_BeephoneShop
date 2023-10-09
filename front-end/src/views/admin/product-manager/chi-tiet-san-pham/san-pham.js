@@ -30,7 +30,7 @@ import '../../../../assets/scss/product.scss'
 import { Link, useNavigate } from 'react-router-dom'
 import { SearchOutlined } from '@ant-design/icons'
 import Highlighter from 'react-highlight-words'
-import ExportExcel from "../chi-tiet-san-pham/export_excel";
+import ExcelExportHelper from "../chi-tiet-san-pham/ExcelExportHelper";
 
 
 const currentDate = new Date().toISOString().split('T')[0]
@@ -521,12 +521,15 @@ const HienThiKH = () => {
           {/* Search */}
           <FontAwesomeIcon style={{ marginLeft: '5px' }} />
           <span className='bl-add'>
+            
             <Button className='btn-them-tu-file'>
-              <ExportExcel />
+              <ExcelExportHelper data={listMauSac} />
             </Button>
+
             <Link to='/them-san-pham'>
               <Button className='btn-them-tk'>+ Thêm chi tiết sản phẩm </Button>
             </Link>
+
           </span>
         </div>
 

@@ -51,10 +51,10 @@ public interface SanPhamRepository extends ISanPhamRepository {
 
     @Query(value = """
                       SELECT ROW_NUMBER() OVER() AS stt, m.id,m.ten_san_pham,
-                          c.ten_nha_san_xuat,
-                          n.ten_chip,
-                          l.ten_dong_san_pham ,
-                          m.delected
+                          c.ten_nha_san_xuat,m.cong_sac,m.he_dieu_hanh,m.ma,
+                          n.ten_chip,m.mo_ta,o.kich_thuoc AS kich_thuoc_man_hinh,
+                          l.ten_dong_san_pham ,o.do_phan_giai AS do_phan_giai_man_hinh,
+                          m.delected,k.dung_luong AS dung_luong_pin, m.sim
                          FROM san_pham_chi_tiet a
                          JOIN san_pham m on m.id = a.id_san_pham
                          JOIN cau_hinh b on b.id = a.id_cau_hinh

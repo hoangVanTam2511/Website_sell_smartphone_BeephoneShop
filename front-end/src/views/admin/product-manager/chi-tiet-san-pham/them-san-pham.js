@@ -436,7 +436,7 @@ const ThemSanPham = () => {
     const addNewConfig = async () => {
 
         if (hiddenConfig == true) {
-            if (cauHinh.ram === "" || cauHinh.rom === "" || cauHinh.mauSac === "") {
+            if (cauHinh.ram === "" || cauHinh.rom === "") {
                 openNotificationError("error", "Không thể thêm cấu hình !!!", "Bạn phải nhập dữ liệu đầy đủ");
                 return;
             }
@@ -528,18 +528,18 @@ const ThemSanPham = () => {
             dataIndex: "kichThuocRom",
             width: "5%",
         },
-        {
-            title: "Màu sắc",
-            dataIndex: "",
-            width: "5%",
-            render: (_, record) => {
-                return (
-                    <>
-                        <Button style={{ fontSize: 14, fontWeight: 600, backgroundColor: record.mauSac, height: 60 }} > </Button>
-                    </>
-                )
-            }
-        },
+        // {
+        //     title: "Màu sắc",
+        //     dataIndex: "",
+        //     width: "5%",
+        //     render: (_, record) => {
+        //         return (
+        //             <>
+        //                 <Button style={{ fontSize: 14, fontWeight: 600, backgroundColor: record.mauSac, height: 60 }} > </Button>
+        //             </>
+        //         )
+        //     }
+        // },
         {
             title: "Thao tác",
             dataIndex: "",
@@ -1606,7 +1606,7 @@ const ThemSanPham = () => {
                                                                     :
                                                                     <>
                                                                         {listCauHinhSelected.map((item, index) => {
-                                                                            const title_custom = `Cấu hình thứ ${Number(index) + 1} : Ram: ${item.kichThuocRam}G + Rom: ${item.kichThuocRom}G + Màu sắc: ${item.mauSac}`
+                                                                            const title_custom = `Cấu hình thứ ${Number(index) + 1} : Ram: ${item.kichThuocRam}G + Rom: ${item.kichThuocRom}G `
                                                                             const id1 = `image1${index}`, id2 = `image2${index}`, id3 = `image3${index}`, id4 = `image4${index}`, id5 = `image5${index}`;
                                                                             // số lượng sản phẩm
                                                                             const openFormQuantityProduct = false;
@@ -1853,7 +1853,7 @@ const ThemSanPham = () => {
                                                                                 <>
                                                                                     <Row style={{ marginTop: '30' }} >
 
-                                                                                        <Col span={8}>
+                                                                                        <Col span={12}>
                                                                                             <Form.Group className="form-group">
 
                                                                                                 <FontAwesomeIcon
@@ -1922,7 +1922,7 @@ const ThemSanPham = () => {
                                                                                         </Col>
 
 
-                                                                                        <Col span={8}>
+                                                                                        <Col span={12}>
                                                                                             <Form.Group className="form-group">
 
                                                                                                 <FontAwesomeIcon
@@ -1990,7 +1990,7 @@ const ThemSanPham = () => {
                                                                                             </Form.Group>
                                                                                         </Col>
 
-                                                                                        <Col span={8}>
+                                                                                        {/* <Col span={8}>
                                                                                             <Form.Group className="form-group">
 
                                                                                                 <FontAwesomeIcon
@@ -2056,7 +2056,7 @@ const ThemSanPham = () => {
                                                                                                 </FormControl>
 
                                                                                             </Form.Group>
-                                                                                        </Col>
+                                                                                        </Col> */}
 
 
                                                                                     </Row>

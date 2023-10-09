@@ -34,6 +34,35 @@ public interface SanPhamResponce {
     @Value("#{target.ten_chip}")
     String getTenChip();
 
+    @Value("#{target.kich_thuoc_man_hinh}")
+    String getKichThuocManHinh();
+
+    @Value("#{target.do_phan_giai_man_hinh}")
+    String getDoPhanGiaiManHinh();
+
+    @Value("#{target.he_dieu_hanh}")
+    String getHeDieuHanh();
+
+    @Value("#{target.ma}")
+    String getMa();
+
+    @Value("#{target.cong_sac}")
+    String getCongSac();
+
+    @Value("#{target.sim}")
+    String getSim();
+
+
+    @Value("#{target.dung_luong_pin}")
+    String getDungLuong();
+
+
+    @Value("#{target.mo_ta}")
+    String getMota();
+
     @Value("#{target.delected}")
     String getDelected();
+
 }
+
+

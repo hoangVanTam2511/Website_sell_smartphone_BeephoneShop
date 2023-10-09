@@ -34,6 +34,7 @@ import '../../../../assets/scss/HienThiNV.scss'
 import { Link } from 'react-router-dom'
 import { SearchOutlined } from '@ant-design/icons'
 import Highlighter from 'react-highlight-words'
+import ConfigDetail from "../chi-tiet-san-pham/config-detail"; 
 
 const currentDate = new Date().toISOString().split('T')[0]
 const contentStyle = {
@@ -243,6 +244,7 @@ const HienThiChiTietSanPham = () => {
           setListImage(map => new Map(map.set(item.id,response.data)))
         })
       })
+      console.log(listChiTietSanPham)
       setlistChiTietSanPham(modifiedData)
       setCurrentPage(response.data.number)
       setTotalPages(response.data.totalPages)
@@ -470,13 +472,7 @@ const HienThiChiTietSanPham = () => {
       render: (_, record) => {
         return (
           <>
-            <FontAwesomeIcon
-              icon={faEye}
-              style={{
-                cursor: 'pointer',
-                color: editingKey === record.id ? 'red' : 'green'
-              }}
-            />
+           <ConfigDetail productDetail = {record} />
           </>
         )
       }
