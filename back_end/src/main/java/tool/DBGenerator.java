@@ -391,15 +391,15 @@ public class DBGenerator implements CommandLineRunner {
         khuyenMai.setGiaTriKhuyenMai(new BigDecimal(250000));
         khuyenMai.setLoaiKhuyenMai("VNĐ");
         SimpleDateFormat dateFormat5 = new SimpleDateFormat("dd-MM-yyyy");
-        Date ngayBatDau5 = null;
+//        Date ngayBatDau5 = null;
         Date ngayKetThuc5 = null;
         try {
-            ngayBatDau5 = dateFormat5.parse("20-05-2023");
-            ngayKetThuc5 = dateFormat5.parse("30-07-2023");
+//            ngayBatDau5 = dateFormat5.parse("20-05-2023");
+            ngayKetThuc5 = dateFormat5.parse("10-12-2023");
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        khuyenMai.setNgayBatDau(ngayBatDau5);
+        khuyenMai.setNgayBatDau(new Date());
         khuyenMai.setNgayKetThuc(ngayKetThuc5);
         khuyenMai.setTrangThai(3);
         khuyenMai.setId(khuyenMaiRepository.save(khuyenMai).getId());
@@ -432,8 +432,8 @@ public class DBGenerator implements CommandLineRunner {
         Date ngayBatDau7 = null;
         Date ngayKetThuc7 = null;
         try {
-            ngayBatDau7 = dateFormat7.parse("20-05-2023");
-            ngayKetThuc7 = dateFormat7.parse("30-07-2023");
+            ngayBatDau7 = dateFormat7.parse("20-05-2024");
+            ngayKetThuc7 = dateFormat7.parse("30-07-2024");
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -454,15 +454,15 @@ public class DBGenerator implements CommandLineRunner {
         voucher.setSoLuong(1000);
         voucher.setLoaiVoucher("VNĐ");
         SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd-MM-yyyy");
-        Date ngayBatDau1 = null;
+//        Date ngayBatDau1 = null;
         Date ngayKetThuc1 = null;
         try {
-            ngayBatDau1 = dateFormat1.parse("20-05-2023");
-            ngayKetThuc1 = dateFormat1.parse("30-07-2023");
+//            ngayBatDau1 = dateFormat1.parse("20-05-2023");
+            ngayKetThuc1 = dateFormat1.parse("20-12-2023");
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        voucher.setNgayBatDau(ngayBatDau1);
+        voucher.setNgayBatDau(new Date());
         voucher.setNgayKetThuc(ngayKetThuc1);
         voucher.setTrangThai(3);
         voucher.setId(voucherRepository.save(voucher).getId());
@@ -481,8 +481,8 @@ public class DBGenerator implements CommandLineRunner {
         Date ngayBatDau2 = null;
         Date ngayKetThuc2 = null;
         try {
-            ngayBatDau2 = dateFormat2.parse("20-05-2023");
-            ngayKetThuc2 = dateFormat2.parse("30-07-2023");
+            ngayBatDau2 = dateFormat2.parse("20-05-2024");
+            ngayKetThuc2 = dateFormat2.parse("30-07-2024");
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -565,7 +565,7 @@ public class DBGenerator implements CommandLineRunner {
         anh.setMa("ảnh1");
         anh.setTenAnh("Ảnh SamSung");
         anh.setIdSanPhamChiTiet(sanPhamChiTiet);
-        anh.setDuongDan("https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/v/_/v_ng_20.png");
+        anh.setDuongDan("https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:80/plain/https://cellphones.com.vn/media/catalog/product/g/a/galaxy-z-fold-5-xanh-1.png");
         anh.setTrangThai(true);
         anh.setId(anhRepository.save(anh).getId());
 
@@ -573,7 +573,7 @@ public class DBGenerator implements CommandLineRunner {
         anh1.setMa("ảnh2");
         anh1.setTenAnh("Ảnh Iphone");
         anh1.setIdSanPhamChiTiet(sanPhamChiTiet1);
-        anh1.setDuongDan("https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/t/_/t_m-iphone-14-pro_2.png");
+        anh1.setDuongDan("https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:80/plain/https://cellphones.com.vn/media/catalog/product/v/n/vn_iphone_15_pink_pdp_image_position-1a_pink_color_2.png");
         anh1.setTrangThai(true);
         anh1.setId(anhRepository.save(anh1).getId());
 
@@ -581,7 +581,7 @@ public class DBGenerator implements CommandLineRunner {
         anh2.setMa("ảnh3");
         anh2.setTenAnh("Ảnh Xiaomi");
         anh2.setIdSanPhamChiTiet(sanPhamChiTiet2);
-        anh2.setDuongDan("https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/v/_/v_ng_20.png");
+        anh2.setDuongDan("https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:80/plain/https://cellphones.com.vn/media/catalog/product/x/i/xiami-13t-xanh-01_1_1.png");
         anh2.setTrangThai(true);
         anh2.setId(anhRepository.save(anh2).getId());
 

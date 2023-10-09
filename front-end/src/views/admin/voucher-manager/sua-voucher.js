@@ -12,7 +12,7 @@ import TextField from "@mui/material/TextField";
 import "../../../assets/scss/HienThiNV.scss";
 import { InputAdornment } from "@mui/material";
 import "../voucher-manager/style.css";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -195,15 +195,15 @@ const UpdateVoucher = () => {
       msg.ten = "Tên không được để trống !!!";
     }
 
-    if (/^\s+|\s+$/.test(ten)) {
-      msg.ten = "Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi";
-    }
+    // if (/^\s+|\s+$/.test(ten)) {
+    //   msg.ten = "Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi";
+    // }
     if (soLuong == null || soLuong === "") {
       msg.soLuong = "Số lượng không được để trống !!!";
     }
-    if (/^\s+|\s+$/.test(soLuong)) {
-      msg.soLuong = "Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi";
-    }
+    // if (/^\s+|\s+$/.test(soLuong)) {
+    //   msg.soLuong = "Số lượng không chứa ký tự khoảng trống ở đầu và cuối chuỗi";
+    // }
 
     if (soLuong <= 0 || soLuong > 10000) {
       msg.soLuong = "Số lượng cho phép từ 1 đến 10000";
@@ -287,7 +287,7 @@ const UpdateVoucher = () => {
             <div>
               <TextField
                 label="Mã Voucher"
-                placeholder="Mã tự động "
+                placeholder="Nhập hoặc để mã tự động"
                 value={ma}
                 id="fullWidth"
                 onChange={(e) => {
@@ -299,7 +299,7 @@ const UpdateVoucher = () => {
                 }}
               />
               <span className="validate" style={{ color: "red" }}>
-                {validationMsg.ten}
+                {validationMsg.ma}
               </span>
             </div>
             <div className="ms-3">

@@ -116,7 +116,7 @@ tr:hover {
   margin-top: 5px;
   font-size: 14px;
   color: red;
-  text-align: start;
+  display: flex;
 }
 
 .validate-date {

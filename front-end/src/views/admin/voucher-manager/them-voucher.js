@@ -43,6 +43,7 @@ const AddVoucher = () => {
       .get(`${apiURLVoucher}/vouchers`)
       .then((response) => {
         setListVoucher(response.data.content);
+        console.log(response);
       })
       .catch((error) => {});
   };
@@ -125,23 +126,20 @@ const AddVoucher = () => {
   const validationAll = () => {
     const msg = {};
 
-    // if (listVoucher.some((voucher) => voucher.ma === ma)) {
-    //   msg.ma = "Mã voucher đã tồn tại !!!";
-    // }
-
     if (!ten.trim("")) {
       msg.ten = "Tên không được để trống !!!";
     }
 
-    if (/^\s+|\s+$/.test(ten)) {
-      msg.ten = "Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi";
-    }
+    // if (/^\s+|\s+$/.test(ten)) {
+    //   msg.ten = "Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi";
+    // }
     if (soLuong == null || soLuong === "") {
       msg.soLuong = "Số lượng không được để trống !!!";
     }
-    if (/^\s+|\s+$/.test(soLuong)) {
-      msg.soLuong = "Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi";
-    }
+    // if (/^\s+|\s+$/.test(soLuong)) {
+    //   msg.soLuong =
+    //     "Số lượng không chứa ký tự khoảng trống ở đầu và cuối chuỗi";
+    // }
 
     if (soLuong <= 0 || soLuong > 10000) {
       msg.soLuong = "Số lượng cho phép từ 1 đến 10000";
@@ -254,7 +252,7 @@ const AddVoucher = () => {
             <div>
               <TextField
                 label="Mã Voucher"
-                placeholder="Mã tự động "
+                placeholder="Nhập hoặc để mã tự động "
                 value={ma}
                 id="fullWidth"
                 onChange={(e) => {

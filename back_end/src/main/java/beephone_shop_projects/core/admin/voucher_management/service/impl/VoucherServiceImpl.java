@@ -92,7 +92,7 @@ public class    VoucherServiceImpl implements VoucherService {
             status = 3;
         }
 
-        String codeVoucher = request.getMa();
+        String codeVoucher = request.getMa().trim();
         if (request.getMa().isBlank()){
             codeVoucher = "BEE"+generateRandomCode();
         }
@@ -101,10 +101,10 @@ public class    VoucherServiceImpl implements VoucherService {
         }
         Voucher voucher = Voucher.builder()
                 .ma(codeVoucher)
-                .ten(request.getTen())
+                .ten(request.getTen().trim())
                 .dieuKienApDung(request.getDieuKienApDung())
                 .giaTriToiDa(request.getGiaTriToiDa())
-                .loaiVoucher(request.getLoaiVoucher())
+                .loaiVoucher(request.getLoaiVoucher().trim())
                 .soLuong(request.getSoLuong())
                 .ngayBatDau(request.getNgayBatDau())
                 .ngayKetThuc(request.getNgayKetThuc())
@@ -121,10 +121,10 @@ public class    VoucherServiceImpl implements VoucherService {
             // in ra lỗi không tồn tại
         }
         if (voucher != null) {
-            voucher.setMa(request.getMa());
-            voucher.setTen(request.getTen());
+            voucher.setMa(request.getMa().trim());
+            voucher.setTen(request.getTen().trim());
             voucher.setGiaTriToiDa(request.getGiaTriToiDa());
-            voucher.setLoaiVoucher(request.getLoaiVoucher());
+            voucher.setLoaiVoucher(request.getLoaiVoucher().trim());
             voucher.setDieuKienApDung(request.getDieuKienApDung());
             voucher.setSoLuong(request.getSoLuong());
             voucher.setNgayBatDau(request.getNgayBatDau());

@@ -1,14 +1,11 @@
 import { Form, Table, Button, Modal } from "antd";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import { Link, useSearchParams } from "react-router-dom";
 import { apiURLVoucher } from "../../../service/api";
 import "../voucher-manager/style.css";
-import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs"; // Import thư viện Day.js
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -32,7 +29,7 @@ import Card from "../../../components/Card";
 import style from "./style.css";
 import { parseInt } from "lodash";
 import LoadingIndicator from "../../../utilities/loading";
-import { id } from "date-fns/esm/locale";
+import { current } from "@reduxjs/toolkit";
 
 //show
 const HienThiVoucher = () => {
@@ -95,6 +92,7 @@ const HienThiVoucher = () => {
       setSearchTrangThai("");
       setCurrentPage(1);
       setIsLoading(true);
+      setSearchParams("");
     }, 200);
   };
 
@@ -124,6 +122,9 @@ const HienThiVoucher = () => {
   const handleSearchTrangThaiChange = (event) => {
     const selectedValue = event.target.value;
     setSearchTrangThai(parseInt(selectedValue)); // Cập nhật giá trị khi Select thay đổi
+    if (selectedValue === 5) {
+      setSearchTrangThai("");
+    }
     searchParams.set("trangThai", parseInt(selectedValue));
     setSearchParams(searchParams);
   };
