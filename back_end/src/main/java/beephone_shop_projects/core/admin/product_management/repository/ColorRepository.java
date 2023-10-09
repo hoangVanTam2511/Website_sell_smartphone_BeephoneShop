@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface MauSacRepository extends IMauSacRepository {
+public interface ColorRepository extends IMauSacRepository {
     Page<MauSac> findAllByDelected(Boolean delected, Pageable pageable);
 
     @Modifying
@@ -30,7 +30,7 @@ public interface MauSacRepository extends IMauSacRepository {
     MauSac findByTenMauSac(String tenMauSac);
 
     @Query(value = """
-    SELECT CONCAT( 'MAUSAC_',IF(count(*)  = 0,0,SUBSTRING(ma,8) + 1))   FROM mau_sac
+    SELECT SUBSTRING(ma,7) + 1  FROM mau_sac ORDER BY ma DESC LIMIT 0,1
     """,nativeQuery = true)
     String getNewCode();
 

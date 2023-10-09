@@ -51,15 +51,12 @@ public class SanPhamRestControler {
 
     }
 
-
     @PostMapping("/products")
     public Page<SanPhamResponce> search(@RequestParam(value = "page",defaultValue = "1") Integer page,
                                                @RequestBody(required = false) SearchChiTietSanPhamRequest chiTietSanPhamRequest) {
         Pageable pageable = PageRequest.of(page,5);
-        System.out.println(chiTietSanPhamRequest);
         return sanPhamService.searchByAllPosition(chiTietSanPhamRequest,pageable);
     }
-
 
     @GetMapping("/don-gia-lon-nhat")
     public Double getDonGiaLonNhat(){
@@ -82,7 +79,6 @@ public class SanPhamRestControler {
         }
     }
 
-
     @GetMapping("/configs/{id}")
     public ResponseEntity<?> getListCofigsByIdProduct(@PathVariable("id")String id){
         if(sanPhamService.getListConfigByIDProduct(id) == null){
@@ -104,6 +100,15 @@ public class SanPhamRestControler {
             return new ResponseEntity<>(sanPhamService.getListConfigByIDProduct(id,ram,rom,color),HttpStatus.OK);
         }
     }
-        
+
+    @GetMapping("/pos_products")
+    public ResponseEntity<?> getPosProduct(){
+        if(sanPhamService.getListProducts() == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }else{
+            return new ResponseEntity<>(sanPhamService.getListProducts(),HttpStatus.OK);
+        }
+    }
+
 
 }

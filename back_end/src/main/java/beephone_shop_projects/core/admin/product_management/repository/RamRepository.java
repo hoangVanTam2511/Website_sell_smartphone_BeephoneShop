@@ -27,7 +27,7 @@ public interface RamRepository extends IRamRepository {
     Ram findByKichThuoc(Integer kichThuoc);
 
     @Query(value = """
-    SELECT CONCAT( 'RAM_',IF(count(*)  = 0,0,SUBSTRING(ma,5) + 1))   FROM ram
+    SELECT SUBSTRING(ma,5) + 1  FROM ram ORDER BY ma DESC LIMIT 0,1
     """,nativeQuery = true)
     String getNewCode();
 }

@@ -434,7 +434,7 @@ export function ProductsDialog(props) {
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell component="th" scope="row" align='center' style={{ width: "200px" }}>
-                      <img src={item && item.images && item.images[0].duongDan} alt="" style={{ width: "110px", height: "110px" }} />
+                      <img src={item.url} alt="" style={{ width: "110px", height: "110px" }} />
                     </TableCell>
                     <TableCell align="center" style={{ fontSize: "16px", width: "" }}>No.900{index + 1}</TableCell>
                     <TableCell align="center" style={{ width: "430px", fontSize: "16px", whiteSpace: "pre-line" }}>{item && item.sanPham && item.sanPham.tenSanPham + " " + item.cauHinh.ram.kichThuoc + "/" + item.cauHinh.rom.kichThuoc + "GB"}</TableCell>

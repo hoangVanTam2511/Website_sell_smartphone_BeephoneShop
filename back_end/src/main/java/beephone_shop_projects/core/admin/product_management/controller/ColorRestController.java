@@ -1,7 +1,7 @@
 package beephone_shop_projects.core.admin.product_management.controller;
 
 import beephone_shop_projects.core.admin.product_management.model.request.CreateMauSac;
-import beephone_shop_projects.core.admin.product_management.service.impl.MauSacServiceImpl;
+import beephone_shop_projects.core.admin.product_management.service.impl.ColorServiceImpl;
 import beephone_shop_projects.entity.MauSac;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,10 +23,10 @@ import java.util.ArrayList;
 @RestController
 @RequestMapping("/mau-sac")
 @CrossOrigin(origins = "http://localhost:3000")
-public class MauSacRestController{
+public class ColorRestController {
 
     @Autowired
-    private MauSacServiceImpl mauSacService;
+    private ColorServiceImpl mauSacService;
 
     @GetMapping("/view-all")
     public Page<MauSac> viewAll(@RequestParam(value = "page",defaultValue = "0") Integer page) {

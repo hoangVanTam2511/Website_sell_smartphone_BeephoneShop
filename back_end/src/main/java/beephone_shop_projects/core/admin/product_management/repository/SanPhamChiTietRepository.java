@@ -1,14 +1,14 @@
 package beephone_shop_projects.core.admin.product_management.repository;
 
 import beephone_shop_projects.core.admin.product_management.model.responce.PointOfSaleProductResponce;
-import beephone_shop_projects.entity.SanPham;
+import beephone_shop_projects.core.admin.product_management.model.responce.ProductDetailResponce;
 import beephone_shop_projects.entity.SanPhamChiTiet;
 import beephone_shop_projects.repository.ISanPhamChiTietRepository;
-import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -26,7 +26,7 @@ public interface SanPhamChiTietRepository extends ISanPhamChiTietRepository {
   List<SanPhamChiTiet> getProducts();
 
   @Query(value = """
-        SELECT CONCAT( 'CHITIETSANPHAM_',IF(count(*)  = 0,0,SUBSTRING(ma,16) + 1)) FROM san_pham_chi_tiet
+        SELECT SUBSTRING(ma,16) + 1 FROM san_pham_chi_tiet ORDER BY ma DESC LIMIT 0,1
     """,nativeQuery = true)
   String getNewCode();
 
@@ -47,4 +47,15 @@ public interface SanPhamChiTietRepository extends ISanPhamChiTietRepository {
                                                                  @Param("mau_sac")String mau_sac
                                                                  );
 
+  @Query(value = """    
+            SELECT spct.delected,spct.so_luong_ton_kho,spct.id,
+            spct.don_gia,ram.kich_thuoc AS 'kich_thuoc_ram',rom.kich_thuoc AS 'kich_thuoc_rom',mau_sac.ten_mau_sac 
+            FROM san_pham_chi_tiet AS spct
+            JOIN cau_hinh AS ch ON ch.id = spct.id_cau_hinh
+            JOIN ram ON ram.id=  ch.id_ram
+            JOIN rom ON rom.id = ch.id_rom
+            JOIN mau_sac ON mau_sac.id = ch.id_mau_sac
+            WHERE  spct.id_san_pham = :idSanPham
+          """,nativeQuery = true)
+  ArrayList<ProductDetailResponce> getListProductDetailByID(@Param("idSanPham")String idSanPham);
 }

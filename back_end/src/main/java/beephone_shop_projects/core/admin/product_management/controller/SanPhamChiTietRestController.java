@@ -4,12 +4,8 @@ import beephone_shop_projects.core.admin.product_management.model.request.Create
 import beephone_shop_projects.core.admin.product_management.service.impl.SanPhamChiTietServiceImpl;
 import beephone_shop_projects.entity.SanPhamChiTiet;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 
@@ -24,6 +20,10 @@ public class SanPhamChiTietRestController {
     @PostMapping("/save")
     public SanPhamChiTiet createProductDetail(@RequestBody CreateProductDetailRequest req){
        return sanPhamChiTietService.insert(req);
+    }
+    @GetMapping("/{idSanPham}")
+    public ResponseEntity<?> getListProductDetailByID(@PathVariable("idSanPham") String idSanPham){
+        return ResponseEntity.ok(sanPhamChiTietService.getListProductDetailByID(idSanPham));
     }
 
 }

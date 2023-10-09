@@ -5,31 +5,40 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
+import Box from '@mui/material/Box';
 import CurrencyInput from 'react-currency-input-field';
 import { faPlus, faTrashAlt, faCheck, faThumbtack, faMinus, faCircleXmark } from '@fortawesome/free-solid-svg-icons'
 import { storage } from "./firebase"
 import { ref, uploadBytes, listAll, getDownloadURL, deleteObject } from 'firebase/storage'
-import { apiURLCauHinh, apiURLChip, apiURLDongSanPham, apiURLManHinh, apiURLMauSac, apiURLNhaSanXuat, apiURLPin, apiURLram, apiURLrom } from '../../../../service/api';
+import { apiURLCamera, apiURLCauHinh, apiURLChip, apiURLDongSanPham, apiURLManHinh, apiURLMauSac, apiURLNhaSanXuat, apiURLPin, apiURLram, apiURLrom } from '../../../../service/api';
 import {
     Col, Row,
     Input, Card,
     Tag, Pagination,
     Tabs, Space,
     Divider, Table, Modal,
-    Avatar, Segmented
+    Avatar, Segmented, notification
 } from "antd";
-import { CloseOutlined, ArrowRightOutlined, ArrowLeftOutlined, CheckOutlined } from "@ant-design/icons"
+import { useTheme } from '@mui/material/styles';
+import {
+    CloseOutlined, ArrowRightOutlined, ArrowLeftOutlined, CheckOutlined, 
+} from "@ant-design/icons"
 import {
     FontAwesomeIcon
 } from "@fortawesome/react-fontawesome";
 import "../../../../assets/scss/addProduct.scss";
 import Button from '@mui/material/Button';
-import Multiselect from 'multiselect-react-dropdown'
 import { useNavigate } from 'react-router-dom'
+import Chip from '@mui/material/Chip';
+import TextField from '@mui/material/TextField';
+import FormHelperText from '@mui/material/FormHelperText';
 
 
 const { TextArea } = Input;
 let index = 0;
+const Context = React.createContext({
+    name: 'Default',
+});
 const ThemSanPham = () => {
     // list properties of phone
     const [listMauSac, setlistMauSac] = useState([])
@@ -41,6 +50,7 @@ const ThemSanPham = () => {
     const [listNhaSanXuat, setlistNhaSanXuat] = useState([])
     const [listIdCauHinh, setListIdCauHinh] = useState([])
     const [listDongSanPham, setListDongSanPham] = useState([])
+    const [listCamera, setListCamera] = useState([])
     //config 
     const [listCauHinh, setListCauHinh] = useState([])
     const [hiddenConfig, sethiddenConfig] = useState(false)
@@ -61,6 +71,41 @@ const ThemSanPham = () => {
     // step in selected
     const [step, setStep] = useState(0)
     let navigate = useNavigate();
+    // notification
+    const [api, contextHolder] = notification.useNotification();
+
+
+    const theme = useTheme();
+    const [personName, setPersonName] = React.useState([]);
+
+    const handleChangeSelectMultipleFront = (e) => {
+        setchiTietSanPham({ ...chiTietSanPham, [e.target.name]: e.target.value })
+    };
+
+    const handleChangeSelectMultipleAfter = (e) => {
+        setchiTietSanPham({ ...chiTietSanPham, [e.target.name]: e.target.value })
+    };
+
+    const ITEM_HEIGHT = 48;
+    const ITEM_PADDING_TOP = 8;
+    const MenuProps = {
+        PaperProps: {
+            style: {
+                maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+                width: 250,
+            },
+        },
+    };
+
+
+    function getStyles(name, personName, theme) {
+        return {
+            fontWeight:
+                personName.indexOf(name) === -1
+                    ? theme.typography.fontWeightRegular
+                    : theme.typography.fontWeightMedium,
+        };
+    }
 
 
     // modal nhà sản xuất
@@ -81,7 +126,7 @@ const ThemSanPham = () => {
         await axios.get("http://localhost:8080/nha-san-xuat/new-code")
             .then((res) => {
                 setNhaSanXuatForm({ ...nhaSanXuatForm, 'maNhaSanXuat': res.data })
-            }).catch((res)=>console.log(res))
+            }).catch((res) => console.log(res))
     };
 
     const handleOk = async () => {
@@ -123,7 +168,7 @@ const ThemSanPham = () => {
         await axios.get("http://localhost:8080/chip/new-code")
             .then((res) => {
                 setChipForm({ ...chipForm, 'maChip': res.data })
-            }).catch((res)=>console.log(res))
+            }).catch((res) => console.log(res))
     };
 
     const handleOkFormChip = async () => {
@@ -156,7 +201,7 @@ const ThemSanPham = () => {
         await axios.get("http://localhost:8080/pin/new-code")
             .then((res) => {
                 setpinForm({ ...pinForm, 'mapin': res.data })
-            }).catch((res)=>console.log(res))
+            }).catch((res) => console.log(res))
 
     };
 
@@ -191,7 +236,7 @@ const ThemSanPham = () => {
         await axios.get("http://localhost:8080/ram/new-code")
             .then((res) => {
                 setramForm({ ...ramForm, 'maram': res.data })
-            }).catch((res)=>console.log(res))
+            }).catch((res) => console.log(res))
     };
     const handleOkFormram = async () => {
         await axios.post("http://localhost:8080/ram/save-second", ramForm)
@@ -224,7 +269,7 @@ const ThemSanPham = () => {
         await axios.get("http://localhost:8080/rom/new-code")
             .then((res) => {
                 setromForm({ ...romForm, 'marom': res.data })
-            }).catch((res)=>console.log(res))
+            }).catch((res) => console.log(res))
     };
 
     const handleOkFormrom = async () => {
@@ -256,7 +301,7 @@ const ThemSanPham = () => {
         await axios.get("http://localhost:8080/mau-sac/new-code")
             .then((res) => {
                 setmauSacForm({ ...mauSacForm, 'mamauSac': res.data })
-            }).catch((res)=>console.log(res))
+            }).catch((res) => console.log(res))
     };
 
     const handleOkFormmauSac = async () => {
@@ -279,6 +324,34 @@ const ThemSanPham = () => {
 
     const { mamanHinh, tenmanHinh } = manHinhForm // tạo contructor
 
+    const [cameraForm, setCameraForm] = useState({
+        resolutionCamera: ""
+    })
+    const [openFormCamera, setOpenFormCamera] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [resolutionCameraError, setResoluTionCameraError] = useState("")
+    const [formSubmitted, setFormSubmitted] = useState(false);
+    const [formSubmittedConfig, setFormSubmittedConfig] = useState(false);
+
+    const showModalFormCamera = () => {
+        setOpenFormCamera(true);
+    };
+    const handleOkFormCamera = () => {
+        if (!cameraForm.resolutionCamera) {
+            setFormSubmitted(true);
+            setResoluTionCameraError("Độ phân giải không được bỏ trống")
+            return;
+        }
+        setLoading(true);
+        axios.post("http://localhost:8080/camera/save", cameraForm)
+        setTimeout(() => {
+            setLoading(false);
+            setOpenFormCamera(false);
+        }, 300);
+    };
+    const handleCancelFormCamera = () => {
+        setOpenFormCamera(false);
+    };
     const onInputChangeFormmanHinh = (e) => {
         setmanHinhForm({ ...manHinhForm, [e.target.name]: e.target.value })
     }
@@ -289,7 +362,7 @@ const ThemSanPham = () => {
         await axios.get("http://localhost:8080/man-hinh/new-code")
             .then((res) => {
                 setmanHinhForm({ ...manHinhForm, 'mamanHinh': res.data })
-            }).catch((res)=>console.log(res))
+            }).catch((res) => console.log(res))
     };
     const handleOkFormmanHinh = async () => {
         await axios.post("http://localhost:8080/man-hinh/save-second", manHinhForm)
@@ -321,7 +394,7 @@ const ThemSanPham = () => {
         await axios.get("http://localhost:8080/dong-san-pham/new-code")
             .then((res) => {
                 setDongSanPhamForm({ ...DongSanPhamForm, 'maDongSanPham': res.data })
-            }).catch((res)=>console.log(res))
+            }).catch((res) => console.log(res))
     };
     const handleOkFormDongSanPham = async () => {
         await axios.post("http://localhost:8080/dong-san-pham/save", DongSanPhamForm)
@@ -339,22 +412,48 @@ const ThemSanPham = () => {
     const showModalFormCauHinh = () => {
         setOpenFormCauHinh(true);
     };
+    // notification
+    const openNotificationError = (placement, title, content) => {
+        api.error({
+            message: `${title} `,
+            description: `${content}`,
+            placement,
+        });
+    };
+
+    const openNotificationSuccess = (placement, title, content) => {
+        api.success({
+            message: `${title} `,
+            description: `${content}`,
+            placement,
+        });
+    };
+
 
     const addNewConfig = async () => {
+
         if (hiddenConfig == true) {
+            if (cauHinh.ram === "" || cauHinh.rom === "") {
+                openNotificationError("error", "Không thể thêm cấu hình !!!", "Bạn phải nhập dữ liệu đầy đủ");
+                return;
+            }
             await axios.post("http://localhost:8080/cau-hinh/save", cauHinh).then(
                 (res) => {
+                    openNotificationSuccess("success", "Thêm cấu hình thành công !!!", "");
                     loadDataListCauHinh(currentPage)
                 }
-            ).catch((res)=>console.log(res))
+            ).catch((res) => console.log(res))
             sethiddenConfig(false)
         } else {
             sethiddenConfig(true)
         }
     }
 
-    const handleOkFormCauHinh = async () => {
+    const cancelAddConfig = () => {
+        sethiddenConfig(false)
+    }
 
+    const handleOkFormCauHinh = async () => {
         // get id and call all configSelected
 
         listIdCauHinh.forEach((id) => {
@@ -366,11 +465,21 @@ const ThemSanPham = () => {
         })
         setListCauHinhSelected(listCauHinhSelected)
         setSizeOfListSelected(listCauHinhSelected.length)
+        openNotificationSuccess('success', `Bạn đã chọn ${listCauHinhSelected.length} cấu hình`, '')
         setTimeout(() => {
             setOpenFormCauHinh(false);
             setConfirmLoading(false);
         }, 100);
     };
+
+    const handleInputChangeFormresolutionCamera = (e) => {
+        const resolutionCameraValue = e.target.value.trim()
+        if (isNaN(resolutionCameraValue)) {
+            setResoluTionCameraError("Độ phân giải camera phải là số ")
+        } else {
+            setCameraForm({ ...cameraForm, [e.target.name]: e.target.value })
+        }
+    }
 
     const loadDataListCauHinh = async (currentPage) => {
         axios.get(apiURLCauHinh + "/view-all?page=" + currentPage).then((response) => {
@@ -381,7 +490,7 @@ const ThemSanPham = () => {
             setListCauHinh(modifiedData);
             setCurrentPage(response.data.number);
             setTotalPages(response.data.totalPages);
-        }).catch((res)=>console.log(res));
+        }).catch((res) => console.log(res));
     };
     const handleCancelFromCauHinh = () => {
         setOpenFormCauHinh(false)
@@ -399,12 +508,11 @@ const ThemSanPham = () => {
         await axios.delete(`${apiURLCauHinh}/delete/${id}`).then(
             (response) => {
                 loadDataListCauHinh(currentPage)
-            }).catch((res)=>console.log(res))
+            }).catch((res) => console.log(res))
 
     }
 
     // tìm kiếm
-
 
     const columns = [
         {
@@ -468,17 +576,38 @@ const ThemSanPham = () => {
         tenSanPham: "",
         dongSanPham: "",
         nhaSanXuat: "",
-        heDieuHanh: "",
-        sim: "",
-        congSac: "",
+        heDieuHanh: "ios",
+        cameraTruoc: [],
+        cameraSau: [],
+        chip: "",
+        sim: "1",
+        pin: "",
+        manHinh: "",
+        congSac: "lightning",
         moTa: ""
     })
+
+    // error
+    const [tenSanPhamError, setTenSanPhamError] = useState();
+    const [dongSanPhamError, setDongSanPhamError] = useState();
+    const [nhaSanXuatError, setNhaSanXuatError] = useState();
+    const [heDieuHanhError, setHeDieuHanhError] = useState();
+    const [cameraTruocError, setCameraTruocError] = useState();
+    const [cameraSauError, setCameraSauError] = useState();
+    const [moTaError, setMoTaError] = useState();
+    const [chipError, setChipError] = useState();
+    const [manHinhError, setManHinhError] = useState();
+    const [pinError, setPinError] = useState();
 
     const [cauHinh, setCauHinh] = useState({
         ram: "",
         rom: "",
         mauSac: "",
     })
+
+    const [ramError, setRamError] = useState();
+    const [romError, setRomError] = useState();
+    const [mauSacError, setMauSacError] = useState();
 
     const { donGia, moTa } = chiTietSanPham // tạo contructor
 
@@ -489,7 +618,7 @@ const ThemSanPham = () => {
                 axios.post(`http://localhost:8080/chi-tiet-san-pham/save?id=${res.data.id}`, listIdCauHinh).then(
                     (res) => {
                     }
-                ).catch((res)=>console.log(res))
+                ).catch((res) => console.log(res))
             }
         )
 
@@ -499,6 +628,7 @@ const ThemSanPham = () => {
     }
 
     const handleTextArea = (e) => {
+        console.log(chiTietSanPham)
         setchiTietSanPham({ ...chiTietSanPham, [e.target.name]: e.target.value })
     }
 
@@ -562,10 +692,10 @@ const ThemSanPham = () => {
 
                                 }
                             }
-                        ).catch((res)=>console.log(res))
+                        ).catch((res) => console.log(res))
                     })
                 }
-            ).catch((res)=>console.log(res))
+            ).catch((res) => console.log(res))
         })
     };
 
@@ -613,14 +743,14 @@ const ThemSanPham = () => {
                 value: "dongSanPham:" + item.tenDongSanPham,
             }));
             setListDongSanPham(modifiedData);
-        }).catch((res)=>console.log(res));
+        }).catch((res) => console.log(res));
         axios.get(apiURLNhaSanXuat + "/get-list").then((response) => {
             const modifiedData = response.data.map((item, index) => ({
                 label: item.tenNhaSanXuat,
                 value: "nhaSanXuat:" + item.tenNhaSanXuat,
             }));
             setlistNhaSanXuat(modifiedData);
-        }).catch((res)=>console.log(res));
+        }).catch((res) => console.log(res));
 
         axios.get(apiURLPin + "/get-list").then((response) => {
             const modifiedData = response.data.map((item, index) => ({
@@ -628,7 +758,7 @@ const ThemSanPham = () => {
                 value: "pin:" + item.dungLuong,
             }));
             setListPin(modifiedData);
-        }).catch((res)=>console.log(res));
+        }).catch((res) => console.log(res));
 
         axios.get(apiURLram + "/get-list").then((response) => {
             const modifiedData = response.data.map((item, index) => ({
@@ -636,7 +766,7 @@ const ThemSanPham = () => {
                 value: "ram:" + item.kichThuoc,
             }));
             setListRam(modifiedData);
-        }).catch((res)=>console.log(res));
+        }).catch((res) => console.log(res));
 
         axios.get(apiURLrom + "/get-list").then((response) => {
             const modifiedData = response.data.map((item, index) => ({
@@ -644,7 +774,7 @@ const ThemSanPham = () => {
                 value: "rom:" + item.kichThuoc,
             }));
             setlistRom(modifiedData);
-        }).catch((res)=>console.log(res));
+        }).catch((res) => console.log(res));
 
         axios.get(apiURLChip + "/get-list").then((response) => {
             const modifiedData = response.data.map((item, index) => ({
@@ -652,7 +782,7 @@ const ThemSanPham = () => {
                 value: "chip:" + item.tenChip,
             }));
             setlistChip(modifiedData);
-        }).catch((res)=>console.log(res));
+        }).catch((res) => console.log(res));
 
         axios.get(apiURLMauSac + "/get-list").then((response) => {
             const modifiedData = response.data.map((item, index) => ({
@@ -660,7 +790,7 @@ const ThemSanPham = () => {
                 value: "mauSac:" + item.tenMauSac,
             }));
             setlistMauSac(modifiedData);
-        }).catch((res)=>console.log(res));
+        }).catch((res) => console.log(res));
 
         axios.get(apiURLManHinh + "/get-list").then((response) => {
             const modifiedData = response.data.map((item, index) => ({
@@ -668,12 +798,28 @@ const ThemSanPham = () => {
                 value: "manHinh:" + item.kichThuoc,
             }));
             setlistManHinh(modifiedData);
-        }).catch((res)=>console.log(res));
+        }).catch((res) => console.log(res));
+
+        axios.get(apiURLCamera + "/view-all").then((response) => {
+            const modifiedData = response.data.content.map((item, index) => ({
+                label: item.doPhanGiai + " MP",
+                value: "camera:" + item.doPhanGiai,
+            }));
+            setListCamera(modifiedData);
+        }).catch((res) => console.log(res));
     }
 
     // step
     const handleClickStepTwo = () => {
-        setStep(1)
+        setFormSubmitted(true)
+        if (chiTietSanPham.cameraSau.length === 0 || chiTietSanPham.cameraTruoc.length === 0
+            || chiTietSanPham.manHinh === "" || chiTietSanPham.mauSac === "" || chiTietSanPham.pin === ""
+            || chiTietSanPham.chip === "" || chiTietSanPham.dongSanPham === "" || chiTietSanPham.nhaSanXuat === "") {
+
+            return;
+        } else {
+            setStep(1)
+        }
     }
 
     const handleClickStepOne = () => {
@@ -681,23 +827,24 @@ const ThemSanPham = () => {
     }
 
     const handleClickStepThree = async () => {
+
         await axios.post("http://localhost:8080/san-pham/save", chiTietSanPham).then(
             (res) => {
                 {
                     listCauHinhSelected.forEach((item) => {
                         item.idSanPham = res.data.id;
                     })
-
+                   
                 }
             }
-        ).catch((res)=>console.log(res))
+        ).catch((res) => console.log(res))
 
         listCauHinhSelected.forEach(async (item, index) => {
 
             await axios.post("http://localhost:8080/chi-tiet-san-pham/save", item).then(
                 (res) => {
                     for (let [key, value] of urlImage) {
-                      
+
                         if (getIndexOfLocationImage(key) == index) {
                             if (value != null) {
                                 axios.post("http://localhost:8080/anh/save", {
@@ -706,25 +853,26 @@ const ThemSanPham = () => {
                                     "trangThai": pinImage.get(key),
                                     "idChiTietSanPham": res.data.id
                                 }).then((res) => {
-                                    
+
                                 })
                             }
                         }
                     }
                 }
-            ).catch((res)=>console.log(res))
+            ).catch((res) => console.log(res))
         }
         )
-
-        navigate("/san-pham")
-
+        openNotificationSuccess('success', "Bạn đã tạo sản phẩm thành công ", '')
+        setTimeout(()=>{
+            navigate("/san-pham")
+        },200)
     }
 
 
 
     return (
         <div className="card-body" style={{ marginLeft: 40, marginTop: 50 }}>
-
+            {contextHolder}
 
             <Form onSubmit={(e) => onSubmit(e)}>
                 <> {
@@ -740,14 +888,19 @@ const ThemSanPham = () => {
                                     <Form.Group className="form-group">
 
                                         <Form.Label htmlFor="pwd" style={{ width: 127, color: 'black' }} >Tên sản phẩm</Form.Label>
-                                        <Form.Control type="text"
-                                            className=" form-control d-inline-block"
-                                            style={{ width: `75%`, height: 43 }}
-                                            placeholder='Nhập tên sản phẩm'
-                                            name='tenSanPham'
-                                            // value={tenSanPham}
-                                            onChange={(e) => onInputChange(e)}
-                                            id="ten`" />
+                                        <TextField
+                                            required
+                                            id="outlined-required"
+                                            value={chiTietSanPham.tenSanPham}
+                                            error={(formSubmitted && !chiTietSanPham.tenSanPham) || !!tenSanPhamError}
+                                            helperText={
+                                                tenSanPhamError ||
+                                                (formSubmitted && !chiTietSanPham.tenSanPham && "Tên sản phẩm không được trống")
+                                            }
+                                            style={{ width: 689 }}
+                                            name="tenSanPham"
+                                            onChange={onInputChange}
+                                        />
                                     </Form.Group>
                                 </Col>
                             </Row>
@@ -758,11 +911,19 @@ const ThemSanPham = () => {
                                     <Form.Group className="form-group">
 
                                         <Form.Label htmlFor="pwd" style={{ width: 127, color: 'black' }}> Mô tả </Form.Label>
-                                        <TextArea rows={4}
-                                            onChange={(e) => handleTextArea(e)}
-                                            name='moTa'
-                                            style={{ width: `75%` }}
-                                            value={moTa}
+                                        <TextField
+                                            id="outlined-multiline-static"
+                                            multiline
+                                            rows={4}
+                                            error={(formSubmitted && !chiTietSanPham.moTa) || !!moTaError}
+                                            helperText={
+                                                moTaError ||
+                                                (formSubmitted && !chiTietSanPham.moTa && "Mô tả của sản phẩm không được trống")
+                                            }
+                                            value={chiTietSanPham.moTa}
+                                            name="moTa"
+                                            style={{ width: 689 }}
+                                            onChange={handleTextArea}
                                         />
                                     </Form.Group>
                                 </Col>
@@ -773,7 +934,7 @@ const ThemSanPham = () => {
                                 <Col span={8} style={{ transform: `translate(36px, 0px)` }}>
                                     <Form.Group className="form-group">
 
-                                        <Form.Label htmlFor="pwd" style={{ width: `29%`, color: 'black', display: `block`, marginBottom: `5%` }} >Hệ điều hành
+                                        <Form.Label htmlFor="pwd" style={{ width: `29%`, color: 'black', display: `block`, marginBottom: `12px` }} >Hệ điều hành
                                         </Form.Label>
                                         <Space direction="vertical" >
                                             <Segmented
@@ -812,10 +973,10 @@ const ThemSanPham = () => {
                                     </Form.Group>
                                 </Col>
 
-                                <Col span={6}>
+                                <Col span={5}>
                                     <Form.Group className="form-group">
 
-                                        <Form.Label htmlFor="pwd" style={{ width: `20%`, color: 'black', display: `block`, marginBottom: `5%` }} >Sim
+                                        <Form.Label htmlFor="pwd" style={{ width: `20%`, color: 'black', display: `block`, marginBottom: `5%`, marginBottom: `12px` }} >Sim
                                         </Form.Label>
                                         <Space direction="vertical">
                                             <Segmented
@@ -855,10 +1016,10 @@ const ThemSanPham = () => {
                                     </Form.Group>
                                 </Col>
 
-                                <Col span={10}>
+                                <Col span={11}>
                                     <Form.Group className="form-group">
 
-                                        <Form.Label htmlFor="pwd" style={{ width: `20%`, color: 'black', display: `block`, marginBottom: `5%` }} >Cổng sạc
+                                        <Form.Label htmlFor="pwd" style={{ width: `20%`, color: 'black', display: `block`, marginBottom: `12px` }} >Cổng sạc
                                         </Form.Label>
                                         <Space direction="vertical">
                                             <Segmented
@@ -920,43 +1081,45 @@ const ThemSanPham = () => {
                                             transform: `translate(92px, 27px)`, border: `1px solid`, borderRadius: `50%`, height: 8, width: 8,
                                         }}
                                             className='font_awesome_icon_selection_custom'
-                                            icon={faPlus} onClick={showModal} />
-                                        <Form.Label htmlFor="pwd" style={{ width: `25%`, color: 'black', display: `block`, marginBottom: `5%` }} >Camera truớc
+                                            icon={faPlus} onClick={showModalFormCamera} />
+                                        <Form.Label htmlFor="pwd" style={{ width: `25%`, color: 'black', display: `block`, marginBottom: `5%` }} >Camera trước
                                         </Form.Label>
-                                        <Multiselect
-                                            id="css_custom"
-                                            displayValue="key"
-                                            onKeyPressFn={function noRefCheck() { }}
-                                            onRemove={function noRefCheck() { }}
-                                            onSearch={function noRefCheck() { }}
-                                            onSelect={function noRefCheck() { }}
-                                            options={[
-                                                {
-                                                    cat: '48 MP',
-                                                    key: '48 MP'
-                                                },
-                                                {
-                                                    cat: '64 MP',
-                                                    key: '64 MP'
-                                                },
+                                        <Select
+                                            error={(formSubmitted && chiTietSanPham.cameraTruoc.length === 0) || !!cameraTruocError}
+                                            style={{ width: 340 }}
+                                            id="demo-multiple-chip"
+                                            multiple
+                                            name="cameraTruoc"
+                                            value={chiTietSanPham.cameraTruoc}
+                                            onChange={handleChangeSelectMultipleFront}
+                                            renderValue={(selected) => (
 
-                                            ]}
-                                            placeholder="Chọn camera trước"
-                                            style={{
-                                                chips: {
-                                                    background: '#1976d2'
-                                                },
-                                                multiselectContainer: {
-                                                    color: 'red'
-                                                },
-                                                searchBox: {
-                                                    border: 'none',
-                                                    'border-bottom': '1px solid black',
-                                                    'border-radius': '1px',
-                                                    'width': `70%`
-                                                }
-                                            }}
-                                        />
+                                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                                    {selected.map((value) => (
+                                                        <Chip key={value} label={value} />
+                                                    ))}
+                                                </Box>
+                                            )}
+                                            MenuProps={MenuProps}
+                                        >
+                                            {listCamera.map((name) => (
+                                                <MenuItem
+                                                    key={name.label}
+                                                    value={name.label}
+                                                    style={getStyles(name, personName, theme)}
+                                                >
+                                                    {name.label}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                        <FormHelperText style={{ color: `red` }}>
+                                            {
+                                                cameraTruocError ||
+                                                (formSubmitted && chiTietSanPham.cameraTruoc.length === 0 && `
+                                                     Camera trước không được để trống
+                                                  `)
+                                            }
+                                        </FormHelperText>
 
                                     </Form.Group>
                                 </Col>
@@ -967,44 +1130,80 @@ const ThemSanPham = () => {
                                             transform: `translate(92px, 27px)`, border: `1px solid`, borderRadius: `50%`, height: 8, width: 8,
                                         }}
                                             className='font_awesome_icon_selection_custom'
-                                            icon={faPlus} onClick={showModal} />
+                                            icon={faPlus} onClick={showModalFormCamera} />
                                         <Form.Label htmlFor="pwd" style={{ width: `25%`, color: 'black', display: `block`, marginBottom: `5%` }} >Camera sau
                                         </Form.Label>
-                                        <Multiselect
-                                            id="css_custom"
-                                            displayValue="key"
-                                            onKeyPressFn={function noRefCheck() { }}
-                                            onRemove={function noRefCheck() { }}
-                                            onSearch={function noRefCheck() { }}
-                                            onSelect={function noRefCheck() { }}
-                                            options={[
-                                                {
-                                                    cat: '48 MP',
-                                                    key: '48 MP'
-                                                },
-                                                {
-                                                    cat: '64 MP',
-                                                    key: '64 MP'
-                                                },
-                                            ]}
-                                            placeholder="Chọn camera sau"
-                                            style={{
-                                                chips: {
-                                                    background: '#1976d2'
-                                                },
-                                                multiselectContainer: {
-                                                    color: 'red'
-                                                },
-                                                searchBox: {
-                                                    border: 'none',
-                                                    'border-bottom': '1px solid black',
-                                                    'border-radius': '0px',
-                                                    'width': `70%`
-                                                }
-                                            }}
-                                        />
+                                        <Select
+                                            error={(formSubmitted && chiTietSanPham.cameraSau.length === 0) || !!cameraSauError}
+                                            style={{ width: 340 }}
+                                            id="demo-multiple-chip"
+                                            multiple
+                                            name="cameraSau"
+                                            value={chiTietSanPham.cameraSau}
+                                            onChange={handleChangeSelectMultipleAfter}
+                                            renderValue={(selected) => (
+                                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                                    {selected.map((value) => (
+                                                        <Chip key={value} label={value} />
+                                                    ))}
+                                                </Box>
+                                            )}
+                                            MenuProps={MenuProps}
+                                        >
+                                            {listCamera.map((name) => (
+                                                <MenuItem
+                                                    key={name.label}
+                                                    value={name.label}
+                                                    style={getStyles(name, personName, theme)}
+                                                >
+                                                    {name.label}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                        <FormHelperText style={{ color: `red` }}>
+                                            {
+                                                cameraSauError ||
+                                                (formSubmitted && chiTietSanPham.cameraSau.length === 0 && `
+                                                Camera sau của sản phẩm không được để trống
+                                                  `)
+                                            }
+                                        </FormHelperText>
                                     </Form.Group>
                                 </Col>
+
+                                {/* modal */}
+                                <Modal
+                                    open={openFormCamera}
+                                    title="Thêm camera"
+                                    onOk={handleOkFormCamera}
+                                    onCancel={handleCancelFormCamera}
+                                    footer={[
+                                        <Button key="back" type="danger" onClick={handleCancelFormCamera}>
+                                            Huỷ
+                                        </Button>,
+                                        <Button key="submit" type="primary" loading={loading} style={{ height: 40, marginRight: `36%` }} onClick={handleOkFormCamera}>
+                                            Thêm mới
+                                        </Button>,
+
+                                    ]}
+                                >
+
+                                    <TextField
+                                        label="Độ phân giải camera"
+                                        id="fullWidth"
+                                        name="resolutionCamera"
+                                        value={cameraForm.resolutionCamera}
+                                        onChange={(e) => handleInputChangeFormresolutionCamera(e)}
+                                        error={(formSubmitted && !cameraForm.resolutionCamera) || !!resolutionCameraError}
+                                        helperText={
+                                            resolutionCameraError ||
+                                            (formSubmitted && !cameraForm.resolutionCamera && "Độ phân giải camera không được trống")
+                                        }
+                                        style={{ width: "100%" }}
+                                    />
+
+                                    {/* </Form.Group> */}
+                                </Modal>
 
                             </Row>
 
@@ -1032,7 +1231,7 @@ const ThemSanPham = () => {
                                                             placeholder='Nhập mã '
                                                             name='maNhaSanXuat'
                                                             value={maNhaSanXuat}
-                                                            disabled='true'
+
                                                             id="maNhaSanXuat" />
                                                     </Form.Group>
                                                     <Form.Group className="form-group">
@@ -1051,6 +1250,7 @@ const ThemSanPham = () => {
                                         <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
                                             <InputLabel id="demo-simple-select-standard-label" className='inputlabel_of_selection' >Nhà sản xuất</InputLabel>
                                             <Select
+                                                error={(formSubmitted && !chiTietSanPham.nhaSanXuat) || !!nhaSanXuatError}
                                                 className='selection_custom'
                                                 labelId="demo-simple-select-standard-label"
                                                 id="demo-simple-select-filled"
@@ -1064,8 +1264,16 @@ const ThemSanPham = () => {
                                                     })
                                                 }
 
-
                                             </Select>
+                                            <FormHelperText style={{ color: `red` }}>
+                                                {
+                                                    nhaSanXuatError ||
+                                                    (formSubmitted && !chiTietSanPham.nhaSanXuat && `
+                                                  Nhà sản xuất không được để trống
+                                                  `)
+                                                }
+                                            </FormHelperText>
+
                                         </FormControl>
 
                                     </Form.Group>
@@ -1092,7 +1300,7 @@ const ThemSanPham = () => {
                                                             placeholder='Nhập mã sản phẩm'
                                                             name='maNhaSanXuat'
                                                             value={maChip}
-                                                            disabled='true'
+
                                                             id="maNhaSanXuat" />
                                                     </Form.Group>
                                                     <Form.Group className="form-group">
@@ -1111,6 +1319,7 @@ const ThemSanPham = () => {
                                         <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
                                             <InputLabel id="demo-simple-select-standard-label-chip" className='inputlabel_of_selection' >Chip</InputLabel>
                                             <Select
+                                                error={(formSubmitted && !chiTietSanPham.chip) || !!chipError}
                                                 className='selection_custom'
                                                 labelId="demo-simple-select-standard-label-chip"
                                                 id="demo-simple-select-filled"
@@ -1126,6 +1335,14 @@ const ThemSanPham = () => {
 
 
                                             </Select>
+                                            <FormHelperText style={{ color: `red` }}>
+                                                {
+                                                    chipError ||
+                                                    (formSubmitted && !chiTietSanPham.chip && `
+                                                  Chip không được để trống
+                                                  `)
+                                                }
+                                            </FormHelperText>
                                         </FormControl>
 
                                     </Form.Group>
@@ -1170,6 +1387,7 @@ const ThemSanPham = () => {
                                         <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
                                             <InputLabel id="demo-simple-select-standard-label-chip" className='inputlabel_of_selection' >Dòng sản phẩm</InputLabel>
                                             <Select
+                                                error={(formSubmitted && !chiTietSanPham.dongSanPham) || !!dongSanPhamError}
                                                 className='selection_custom'
                                                 labelId="demo-simple-select-standard-label-chip"
                                                 id="demo-simple-select-filled"
@@ -1183,6 +1401,14 @@ const ThemSanPham = () => {
                                                     })
                                                 }
                                             </Select>
+                                            <FormHelperText style={{ color: `red` }}>
+                                                {
+                                                    dongSanPhamError ||
+                                                    (formSubmitted && !chiTietSanPham.dongSanPham && `
+                                                    Dòng sản phẩm không được để trống
+                                                  `)
+                                                }
+                                            </FormHelperText>
                                         </FormControl>
                                     </Form.Group>
                                 </Col>
@@ -1207,7 +1433,7 @@ const ThemSanPham = () => {
                                                     <Form.Group className="form-group">
                                                         <Form.Label htmlFor="email">Mã</Form.Label>
                                                         <Form.Control type="text"
-                                                            disabled='true'
+
                                                             name='mamanHinh'
                                                             value={mamanHinh}
                                                             id="mamanHinh" />
@@ -1228,6 +1454,11 @@ const ThemSanPham = () => {
                                         <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
                                             <InputLabel id="demo-simple-select-standard-label-chip" className='inputlabel_of_selection' >Màn hình</InputLabel>
                                             <Select
+                                                error={(formSubmitted && !chiTietSanPham.manHinh) || !!manHinhError}
+                                                helperText={
+                                                    manHinhError ||
+                                                    (formSubmitted && !chiTietSanPham.manHinh && "Màn hình không được để trống")
+                                                }
                                                 className='selection_custom'
                                                 labelId="demo-simple-select-standard-label-chip"
                                                 id="demo-simple-select-filled"
@@ -1243,6 +1474,14 @@ const ThemSanPham = () => {
 
 
                                             </Select>
+                                            <FormHelperText style={{ color: `red` }}>
+                                                {
+                                                    manHinhError ||
+                                                    (formSubmitted && !chiTietSanPham.manHinh && `
+                                                  Màn hình không được để trống
+                                                  `)
+                                                }
+                                            </FormHelperText>
                                         </FormControl>
 
                                     </Form.Group>
@@ -1267,7 +1506,7 @@ const ThemSanPham = () => {
                                                             placeholder='Nhập pin'
                                                             name='mapin'
                                                             value={mapin}
-                                                            disabled='true'
+
                                                             id="mapin" />
                                                     </Form.Group>
                                                     <Form.Group className="form-group">
@@ -1286,6 +1525,7 @@ const ThemSanPham = () => {
                                         <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
                                             <InputLabel id="demo-simple-select-standard-label-pin" className='inputlabel_of_selection' >Pin</InputLabel>
                                             <Select
+                                                error={(formSubmitted && !chiTietSanPham.pin) || !!pinError}
                                                 className='selection_custom'
                                                 labelId="demo-simple-select-standard-label-pin"
                                                 id="demo-simple-select-filled"
@@ -1301,6 +1541,14 @@ const ThemSanPham = () => {
 
 
                                             </Select>
+                                            <FormHelperText style={{ color: `red` }}>
+                                                {
+                                                    pinError ||
+                                                    (formSubmitted && !chiTietSanPham.pin && `
+                                                     Pin không được để trống
+                                                  `)
+                                                }
+                                            </FormHelperText>
                                         </FormControl>
                                     </Form.Group>
                                 </Col>
@@ -1332,9 +1580,8 @@ const ThemSanPham = () => {
 
 
                                                             {
-                                                                sizeOfListSelected == 0 ?
+                                                                sizeOfListSelected === 0 ?
                                                                     <>
-                                                                        <Divider style={{ marginTop: `2%` }} />
                                                                         <br />
                                                                         <h3 className='text-center'>Hiện tại bạn chưa có cấu hình nào.</h3>
                                                                         <br />
@@ -1356,7 +1603,7 @@ const ThemSanPham = () => {
                                                                     :
                                                                     <>
                                                                         {listCauHinhSelected.map((item, index) => {
-                                                                            const title_custom = `Cấu hình thứ ${Number(index) + 1} : Ram: ${item.kichThuocRam}G + Rom: ${item.kichThuocRom}G + Màu sắc: ${item.mauSac}`
+                                                                            const title_custom = `Cấu hình thứ ${Number(index) + 1} : Ram: ${item.kichThuocRam}G + Rom: ${item.kichThuocRom}G `
                                                                             const id1 = `image1${index}`, id2 = `image2${index}`, id3 = `image3${index}`, id4 = `image4${index}`, id5 = `image5${index}`;
                                                                             // số lượng sản phẩm
                                                                             const openFormQuantityProduct = false;
@@ -1382,7 +1629,7 @@ const ThemSanPham = () => {
                                                                                     }}>
                                                                                     <p>
                                                                                         <CloseOutlined className='button_exit_form_config' onClick={(event) => handleClickExitForm(item.id)} />
-                                                                                        <Form.Label htmlFor="pwd" style={{ width: 150, color: 'black', transform: `translate(4px, -1px)` }} >Thêm ảnh</Form.Label>
+                                                                                        <Form.Label htmlFor="pwd" style={{ width: 150, color: 'black', transform: `translate(-26px, -1px)` }} >Thêm ảnh</Form.Label>
                                                                                         <div style={{ display: 'flex', justifyContent: 'center', height: 100 }}>
                                                                                             <div class="image-upload">
                                                                                                 {urlImage.get(`image1${index}`) ?
@@ -1517,7 +1764,7 @@ const ThemSanPham = () => {
                                                                                                                             placeholder='Nhập imei '
                                                                                                                             name='maNhaSanXuat'
                                                                                                                             value={maNhaSanXuat}
-                                                                                                                            disabled='true'
+
                                                                                                                             id="maNhaSanXuat" />
                                                                                                                     </Col>
                                                                                                                 </Row>
@@ -1600,224 +1847,259 @@ const ThemSanPham = () => {
                                                                     <div style={{ marginBottom: `3%` }}>
                                                                         {
                                                                             hiddenConfig ?
-                                                                                <Button id='addConfig' variant="contained" color="success" style={{ fontSize: 15, fontWeight: 600 }} onClick={addNewConfig}>
-                                                                                    <FontAwesomeIcon style={{ marginRight: 10 }}
-                                                                                        icon={faCheck} /> Hoàn thành
-                                                                                </Button>
+                                                                                <>
+                                                                                    <Row style={{ marginTop: '30' }} >
+
+                                                                                        <Col span={8}>
+                                                                                            <Form.Group className="form-group">
+
+                                                                                                <FontAwesomeIcon
+                                                                                                    className='font_awesome_icon_selection_custom'
+                                                                                                    icon={faPlus} onClick={showModalFormrom} />
+                                                                                                <Modal
+                                                                                                    title="Thêm rom"
+                                                                                                    open={openFormrom}
+                                                                                                    onOk={handleOkFormrom}
+                                                                                                    confirmLoading={confirmLoading}
+                                                                                                    onCancel={handleCancel}
+                                                                                                >
+                                                                                                    <p>
+                                                                                                        <Form >
+                                                                                                            <Form.Group className="form-group">
+                                                                                                                <Form.Label htmlFor="email">Mã</Form.Label>
+                                                                                                                <Form.Control type="text"
+                                                                                                                    name='marom'
+                                                                                                                    value={marom}
+
+                                                                                                                    id="marom" />
+                                                                                                            </Form.Group>
+                                                                                                            <Form.Group className="form-group">
+                                                                                                                <Form.Label htmlFor="pwd">Dung lượng ROM</Form.Label>
+                                                                                                                <Form.Control type="text"
+                                                                                                                    placeholder='Nhập dung lượng rom'
+                                                                                                                    name='tenrom'
+                                                                                                                    value={tenrom}
+                                                                                                                    onChange={(e) => onInputChangeFormrom(e)}
+                                                                                                                    id="ten`" />
+                                                                                                            </Form.Group>
+                                                                                                        </Form>
+                                                                                                    </p>
+                                                                                                </Modal>
+
+                                                                                                <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+                                                                                                    <InputLabel id="demo-simple-select-standard-label-rom" className='inputlabel_of_selection' >ROM</InputLabel>
+                                                                                                    <Select
+                                                                                                        error={(formSubmitted && !cauHinh.rom) || !!romError}
+                                                                                                        className='selection_custom'
+                                                                                                        labelId="demo-simple-select-standard-label-rom"
+                                                                                                        id="demo-simple-select-filled"
+                                                                                                        // value={cauHinh.rom}
+                                                                                                        onChange={handleChangeFormCauHinh}>
+                                                                                                        {
+                                                                                                            listRom.map((item, index) => {
+                                                                                                                return (
+                                                                                                                    <MenuItem value={item.value}>{item.label}</MenuItem>
+                                                                                                                )
+                                                                                                            })
+                                                                                                        }
+
+
+                                                                                                    </Select>
+                                                                                                    <FormHelperText style={{ color: `red` }}>
+                                                                                                        {
+                                                                                                            romError ||
+                                                                                                            (formSubmitted && !cauHinh.rom && `
+                                                                                                              Bạn phải chọn một rom
+                                                                                                               `)
+                                                                                                        }
+                                                                                                    </FormHelperText>
+                                                                                                </FormControl>
+
+                                                                                            </Form.Group>
+                                                                                        </Col>
+
+
+                                                                                        <Col span={8}>
+                                                                                            <Form.Group className="form-group">
+
+                                                                                                <FontAwesomeIcon
+                                                                                                    className='font_awesome_icon_selection_custom'
+                                                                                                    icon={faPlus} onClick={showModalFormram} />
+                                                                                                <Modal
+                                                                                                    title="Thêm dung lượng ram"
+                                                                                                    open={openFormram}
+                                                                                                    onOk={handleOkFormram}
+                                                                                                    confirmLoading={confirmLoading}
+                                                                                                    onCancel={handleCancel}
+                                                                                                >
+                                                                                                    <p>
+                                                                                                        <Form >
+                                                                                                            <Form.Group className="form-group">
+                                                                                                                <Form.Label htmlFor="email">Mã</Form.Label>
+                                                                                                                <Form.Control type="text"
+                                                                                                                    name='maram'
+                                                                                                                    value={maram}
+
+                                                                                                                    id="maram" />
+                                                                                                            </Form.Group>
+                                                                                                            <Form.Group className="form-group">
+                                                                                                                <Form.Label htmlFor="pwd">Dung lượng ram</Form.Label>
+                                                                                                                <Form.Control type="text"
+                                                                                                                    placeholder='Nhập dung lượng ram'
+                                                                                                                    name='tenram'
+                                                                                                                    value={tenram}
+                                                                                                                    onChange={(e) => onInputChangeFormram(e)}
+                                                                                                                    id="ten`" />
+                                                                                                            </Form.Group>
+                                                                                                        </Form>
+                                                                                                    </p>
+                                                                                                </Modal>
+
+                                                                                                <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+                                                                                                    <InputLabel id="demo-simple-select-standard-label-ram" className='inputlabel_of_selection' >RAM</InputLabel>
+                                                                                                    <Select
+                                                                                                        error={(formSubmitted && !cauHinh.ram) || !!romError}
+                                                                                                        className='selection_custom'
+                                                                                                        labelId="demo-simple-select-standard-label-ram"
+                                                                                                        id="demo-simple-select-filled"
+                                                                                                        // value={cauHinh.ram}
+                                                                                                        onChange={handleChangeFormCauHinh}>
+                                                                                                        {
+                                                                                                            listRam.map((item, index) => {
+                                                                                                                return (
+                                                                                                                    <MenuItem value={item.value}>{item.label}</MenuItem>
+                                                                                                                )
+                                                                                                            })
+                                                                                                        }
+
+
+                                                                                                    </Select>
+                                                                                                    <FormHelperText style={{ color: `red` }}>
+                                                                                                        {
+                                                                                                            ramError ||
+                                                                                                            (formSubmitted && !cauHinh.ram && `
+                                                                                                              Bạn phải chọn một ram
+                                                                                                              `)
+                                                                                                        }
+                                                                                                    </FormHelperText>
+                                                                                                </FormControl>
+
+                                                                                            </Form.Group>
+                                                                                        </Col>
+
+                                                                                        <Col span={8}>
+                                                                                            <Form.Group className="form-group">
+
+                                                                                                <FontAwesomeIcon
+                                                                                                    className='font_awesome_icon_selection_custom'
+                                                                                                    icon={faPlus} onClick={showModalFormmauSac} />
+                                                                                                <Modal
+                                                                                                    title="Thêm màu sắc"
+                                                                                                    open={openFormmauSac}
+                                                                                                    onOk={handleOkFormmauSac}
+                                                                                                    confirmLoading={confirmLoading}
+                                                                                                    onCancel={handleCancel}
+                                                                                                >
+                                                                                                    <p>
+                                                                                                        <Form >
+                                                                                                            <Form.Group className="form-group">
+                                                                                                                <Form.Label htmlFor="email">Mã</Form.Label>
+                                                                                                                <Form.Control type="text"
+
+                                                                                                                    name='mamauSac'
+                                                                                                                    value={mamauSac}
+                                                                                                                    id="mamauSac" />
+                                                                                                            </Form.Group>
+                                                                                                            <Form.Group className="form-group">
+                                                                                                                <Form.Label htmlFor="pwd">Tên màu sắc </Form.Label>
+                                                                                                                <Form.Control type="text"
+                                                                                                                    placeholder='Nhập tên màu sắc'
+                                                                                                                    name='tenmauSac'
+                                                                                                                    value={tenmauSac}
+                                                                                                                    onChange={(e) => onInputChangeFormmauSac(e)}
+                                                                                                                    id="ten`" />
+                                                                                                            </Form.Group>
+                                                                                                        </Form>
+                                                                                                    </p>
+                                                                                                </Modal>
+
+                                                                                                <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+                                                                                                    <InputLabel id="demo-simple-select-standard-label-color" className='inputlabel_of_selection' >Màu sắc</InputLabel>
+                                                                                                    <Select
+                                                                                                        error={(formSubmitted && !cauHinh.mauSac) || !!mauSacError}
+                                                                                                        className='selection_custom'
+                                                                                                        labelId="demo-simple-select-standard-label-color"
+                                                                                                        id="demo-simple-select-filled"
+                                                                                                        // value={cauHinh.mauSac}
+                                                                                                        onChange={handleChangeFormCauHinh}>
+                                                                                                        {
+                                                                                                            listMauSac.map((item, index) => {
+                                                                                                                return (
+                                                                                                                    <MenuItem value={item.value}>{item.label}</MenuItem>
+                                                                                                                )
+                                                                                                            })
+                                                                                                        }
+
+
+                                                                                                    </Select>
+                                                                                                    <FormHelperText style={{ color: `red` }}>
+                                                                                                        {
+                                                                                                            mauSacError ||
+                                                                                                            (formSubmitted && !cauHinh.mauSac && `
+                                                                                                              Bạn phải chọn màu sắc
+                                                                                                              `)
+                                                                                                        }
+                                                                                                    </FormHelperText>
+                                                                                                </FormControl>
+
+                                                                                            </Form.Group>
+                                                                                        </Col>
+
+
+                                                                                    </Row>
+
+                                                                                    <Button id='addConfig' variant="outlined" color="error" style={{ fontSize: 15, fontWeight: 600, marginLeft: 230, marginRight: 20 }} onClick={cancelAddConfig}>
+                                                                                        <FontAwesomeIcon style={{ marginRight: 10 }}
+                                                                                            icon={faCheck} /> Huỷ
+                                                                                    </Button>
+                                                                                    <Button id='addConfig' variant="outlined" color="success" style={{ fontSize: 15, fontWeight: 600 }} onClick={addNewConfig}>
+                                                                                        <FontAwesomeIcon style={{ marginRight: 10 }}
+                                                                                            icon={faCheck} /> Hoàn thành
+                                                                                    </Button>
+
+
+                                                                                </>
                                                                                 :
-                                                                                <Button id='addConfig' variant="contained" style={{ fontSize: 15, fontWeight: 600 }} onClick={addNewConfig}>
-                                                                                    <FontAwesomeIcon style={{ marginRight: 10 }}
-                                                                                        icon={faPlus} /> Thêm mới
-                                                                                </Button>
+                                                                                <>
+                                                                                    <Button id='addConfig' variant="contained" style={{ fontSize: 15, fontWeight: 600, marginLeft: `77%`, marginBottom: 30 }} onClick={addNewConfig}>
+                                                                                        <FontAwesomeIcon style={{ marginRight: 10 }}
+                                                                                            icon={faPlus} /> Thêm mới
+                                                                                    </Button>
+
+                                                                                    <Table
+                                                                                        rowSelection={{
+                                                                                            type: `checkbox`,
+                                                                                            ...rowSelection,
+                                                                                        }}
+                                                                                        columns={columns}
+                                                                                        pagination={false}
+                                                                                        dataSource={listCauHinh}
+                                                                                    />
+                                                                                    <Pagination
+                                                                                        style={{ marginLeft: `40%`, marginTop: `3%` }}
+                                                                                        simplecurrent={currentPage + 1}
+                                                                                        onChange={(value) => {
+                                                                                            setCurrentPage(value - 1);
+                                                                                        }}
+                                                                                        total={totalPages * 10}
+                                                                                    />
+                                                                                </>
 
 
                                                                         }
 
                                                                     </div>
-                                                                    {
-                                                                        hiddenConfig &&
-                                                                        <Row style={{ marginTop: '30' }} >
 
-                                                                            <Col span={8}>
-                                                                                <Form.Group className="form-group">
-
-                                                                                    <FontAwesomeIcon
-                                                                                        className='font_awesome_icon_selection_custom'
-                                                                                        icon={faPlus} onClick={showModalFormrom} />
-                                                                                    <Modal
-                                                                                        title="Thêm rom"
-                                                                                        open={openFormrom}
-                                                                                        onOk={handleOkFormrom}
-                                                                                        confirmLoading={confirmLoading}
-                                                                                        onCancel={handleCancel}
-                                                                                    >
-                                                                                        <p>
-                                                                                            <Form >
-                                                                                                <Form.Group className="form-group">
-                                                                                                    <Form.Label htmlFor="email">Mã</Form.Label>
-                                                                                                    <Form.Control type="text"
-                                                                                                        name='marom'
-                                                                                                        value={marom}
-                                                                                                        disabled='true'
-                                                                                                        id="marom" />
-                                                                                                </Form.Group>
-                                                                                                <Form.Group className="form-group">
-                                                                                                    <Form.Label htmlFor="pwd">Dung lượng ROM</Form.Label>
-                                                                                                    <Form.Control type="text"
-                                                                                                        placeholder='Nhập dung lượng rom'
-                                                                                                        name='tenrom'
-                                                                                                        value={tenrom}
-                                                                                                        onChange={(e) => onInputChangeFormrom(e)}
-                                                                                                        id="ten`" />
-                                                                                                </Form.Group>
-                                                                                            </Form>
-                                                                                        </p>
-                                                                                    </Modal>
-
-                                                                                    <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-                                                                                        <InputLabel id="demo-simple-select-standard-label-rom" className='inputlabel_of_selection' >ROM</InputLabel>
-                                                                                        <Select
-                                                                                            className='selection_custom'
-                                                                                            labelId="demo-simple-select-standard-label-rom"
-                                                                                            id="demo-simple-select-filled"
-                                                                                            // value={cauHinh.rom}
-                                                                                            onChange={handleChangeFormCauHinh}>
-                                                                                            {
-                                                                                                listRom.map((item, index) => {
-                                                                                                    return (
-                                                                                                        <MenuItem value={item.value}>{item.label}</MenuItem>
-                                                                                                    )
-                                                                                                })
-                                                                                            }
-
-
-                                                                                        </Select>
-                                                                                    </FormControl>
-
-                                                                                </Form.Group>
-                                                                            </Col>
-
-
-                                                                            <Col span={8}>
-                                                                                <Form.Group className="form-group">
-
-                                                                                    <FontAwesomeIcon
-                                                                                        className='font_awesome_icon_selection_custom'
-                                                                                        icon={faPlus} onClick={showModalFormram} />
-                                                                                    <Modal
-                                                                                        title="Thêm dung lượng ram"
-                                                                                        open={openFormram}
-                                                                                        onOk={handleOkFormram}
-                                                                                        confirmLoading={confirmLoading}
-                                                                                        onCancel={handleCancel}
-                                                                                    >
-                                                                                        <p>
-                                                                                            <Form >
-                                                                                                <Form.Group className="form-group">
-                                                                                                    <Form.Label htmlFor="email">Mã</Form.Label>
-                                                                                                    <Form.Control type="text"
-                                                                                                        name='maram'
-                                                                                                        value={maram}
-                                                                                                        disabled='true'
-                                                                                                        id="maram" />
-                                                                                                </Form.Group>
-                                                                                                <Form.Group className="form-group">
-                                                                                                    <Form.Label htmlFor="pwd">Dung lượng ram</Form.Label>
-                                                                                                    <Form.Control type="text"
-                                                                                                        placeholder='Nhập dung lượng ram'
-                                                                                                        name='tenram'
-                                                                                                        value={tenram}
-                                                                                                        onChange={(e) => onInputChangeFormram(e)}
-                                                                                                        id="ten`" />
-                                                                                                </Form.Group>
-                                                                                            </Form>
-                                                                                        </p>
-                                                                                    </Modal>
-
-                                                                                    <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-                                                                                        <InputLabel id="demo-simple-select-standard-label-ram" className='inputlabel_of_selection' >RAM</InputLabel>
-                                                                                        <Select
-                                                                                            className='selection_custom'
-                                                                                            labelId="demo-simple-select-standard-label-ram"
-                                                                                            id="demo-simple-select-filled"
-                                                                                            // value={cauHinh.ram}
-                                                                                            onChange={handleChangeFormCauHinh}>
-                                                                                            {
-                                                                                                listRam.map((item, index) => {
-                                                                                                    return (
-                                                                                                        <MenuItem value={item.value}>{item.label}</MenuItem>
-                                                                                                    )
-                                                                                                })
-                                                                                            }
-
-
-                                                                                        </Select>
-                                                                                    </FormControl>
-
-                                                                                </Form.Group>
-                                                                            </Col>
-
-                                                                            <Col span={8}>
-                                                                                <Form.Group className="form-group">
-
-                                                                                    <FontAwesomeIcon
-                                                                                        className='font_awesome_icon_selection_custom'
-                                                                                        icon={faPlus} onClick={showModalFormmauSac} />
-                                                                                    <Modal
-                                                                                        title="Thêm màu sắc"
-                                                                                        open={openFormmauSac}
-                                                                                        onOk={handleOkFormmauSac}
-                                                                                        confirmLoading={confirmLoading}
-                                                                                        onCancel={handleCancel}
-                                                                                    >
-                                                                                        <p>
-                                                                                            <Form >
-                                                                                                <Form.Group className="form-group">
-                                                                                                    <Form.Label htmlFor="email">Mã</Form.Label>
-                                                                                                    <Form.Control type="text"
-                                                                                                        disabled='true'
-                                                                                                        name='mamauSac'
-                                                                                                        value={mamauSac}
-                                                                                                        id="mamauSac" />
-                                                                                                </Form.Group>
-                                                                                                <Form.Group className="form-group">
-                                                                                                    <Form.Label htmlFor="pwd">Tên màu sắc </Form.Label>
-                                                                                                    <Form.Control type="text"
-                                                                                                        placeholder='Nhập tên màu sắc'
-                                                                                                        name='tenmauSac'
-                                                                                                        value={tenmauSac}
-                                                                                                        onChange={(e) => onInputChangeFormmauSac(e)}
-                                                                                                        id="ten`" />
-                                                                                                </Form.Group>
-                                                                                            </Form>
-                                                                                        </p>
-                                                                                    </Modal>
-
-                                                                                    <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-                                                                                        <InputLabel id="demo-simple-select-standard-label-color" className='inputlabel_of_selection' >Màu sắc</InputLabel>
-                                                                                        <Select
-                                                                                            className='selection_custom'
-                                                                                            labelId="demo-simple-select-standard-label-color"
-                                                                                            id="demo-simple-select-filled"
-                                                                                            // value={cauHinh.mauSac}
-                                                                                            onChange={handleChangeFormCauHinh}>
-                                                                                            {
-                                                                                                listMauSac.map((item, index) => {
-                                                                                                    return (
-                                                                                                        <MenuItem value={item.value}>{item.label}</MenuItem>
-                                                                                                    )
-                                                                                                })
-                                                                                            }
-
-
-                                                                                        </Select>
-                                                                                    </FormControl>
-
-                                                                                </Form.Group>
-                                                                            </Col>
-
-
-                                                                        </Row>
-                                                                    }
-
-
-                                                                    <Table
-                                                                        rowSelection={{
-                                                                            type: `checkbox`,
-                                                                            ...rowSelection,
-                                                                        }}
-                                                                        columns={columns}
-                                                                        pagination={false}
-                                                                        dataSource={listCauHinh}
-                                                                    />
-                                                                    <Pagination
-                                                                        style={{ marginLeft: `36%`, marginTop: `3%` }}
-                                                                        simplecurrent={currentPage + 1}
-                                                                        onChange={(value) => {
-                                                                            setCurrentPage(value - 1);
-                                                                        }}
-                                                                        total={totalPages * 10}
-                                                                    />
 
                                                                 </div>
                                                             </Modal>

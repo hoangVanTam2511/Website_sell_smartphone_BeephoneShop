@@ -22,12 +22,12 @@ public class DongSanPhamServiceImpl implements IService<DongSanPham> {
 
     @Override
     public Page<DongSanPham> getAll(Pageable pageable) {
-        return dongSanPhamRepository.findAllByDelected(true,pageable);
+        return dongSanPhamRepository.findAllByDelected(true, pageable);
     }
 
     @Override
     public void insert(DongSanPham req) {
-       dongSanPhamRepository.save(req);
+        dongSanPhamRepository.save(req);
     }
 
     public void insert(CreateDongSanPham req) {
@@ -44,16 +44,19 @@ public class DongSanPhamServiceImpl implements IService<DongSanPham> {
 
     @Override
     public void delete(String id) {
-        dongSanPhamRepository.updateDelected(false,id);
+        dongSanPhamRepository.updateDelected(false, id);
     }
 
-    public DongSanPham getOne(String id){
+    public DongSanPham getOne(String id) {
         return dongSanPhamRepository.findById(id).get();
     }
 
-    public ArrayList<DongSanPham> getDanhSachDongSanPham(){
+    public ArrayList<DongSanPham> getDanhSachDongSanPham() {
         return (ArrayList<DongSanPham>) this.dongSanPhamRepository.findAllByDelected(true);
     }
 
-    public String generateNewCode(){return this.dongSanPhamRepository.getNewCode();}
+    public String generateNewCode() {
+        return this.dongSanPhamRepository.getNewCode() == null ? "PRODUCT_LINE_0" : "PRODUCT_LINE_" + this.dongSanPhamRepository.getNewCode();
+    }
+
 }

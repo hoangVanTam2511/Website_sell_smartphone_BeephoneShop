@@ -9,8 +9,10 @@ import {
   Space,
   Switch,
   Slider,
-  Tag
+  Tag,
+  Carousel
 } from 'antd'
+import { useParams } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import {
@@ -22,18 +24,27 @@ import {
   apiURLNhaSanXuat,
   apiURLPin,
   apiURLram,
-  apiURLrom
+  apiURLrom,
+  apiURLChiTietSanPham,
+  apiURLAnh
 } from '../../../../service/api'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faList, faFilter, faEye } from '@fortawesome/free-solid-svg-icons'
-import '../../../../assets/scss/product.scss'
-import { Link, useNavigate } from 'react-router-dom'
+import '../../../../assets/scss/HienThiNV.scss'
+import { Link } from 'react-router-dom'
 import { SearchOutlined } from '@ant-design/icons'
 import Highlighter from 'react-highlight-words'
-import ExcelExportHelper from "../chi-tiet-san-pham/ExcelExportHelper";
-
+import ConfigDetail from "../chi-tiet-san-pham/config-detail"; 
 
 const currentDate = new Date().toISOString().split('T')[0]
+const contentStyle = {
+  height: '159px',
+  color: '#fff',
+  width: `248px`,
+  lineHeight: '160px',
+  textAlign: 'center',
+  background: '#364d79'
+}
 
 // khởi tạo các cell
 const EditableCell = ({
@@ -74,9 +85,10 @@ const EditableCell = ({
 }
 
 //show
-const HienThiKH = () => {
+const HienThiChiTietSanPham = () => {
+  const { idSanPham } = useParams()
   const [form] = Form.useForm()
-  let [listMauSac, setlistMauSac] = useState([])
+  let [listChiTietSanPham, setlistChiTietSanPham] = useState([])
   const [currentPage, setCurrentPage] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
   const [editingNgaySinh, setEditingNgaySinh] = useState(null)
@@ -93,7 +105,9 @@ const HienThiKH = () => {
   const [listNhaSanXuat, setlistNhaSanXuat] = useState([])
   const [listDongSanPham, setListDongSanPham] = useState([])
   const [priceBiggest, setpriceBiggest] = useState(0)
-  let navigate = useNavigate()
+  const [listImage, setListImage] = useState(new Map())
+  
+
   const [chiTietSanPham, setchiTietSanPham] = useState({
     sanPham: '',
     dongSanPham: '',
@@ -212,25 +226,29 @@ const HienThiKH = () => {
   })
 
   useEffect(() => {
-    loadDatalistMauSac(currentPage)
+    loadDatalistChiTietSanPham(currentPage)
     loadDataComboBox()
   }, [currentPage, chiTietSanPham])
 
   // cutstom load data
-  const loadDatalistMauSac = async currentPage => {
+  const loadDatalistChiTietSanPham = async currentPage => {
     if (currentPage == undefined) currentPage = 0
-    axios
-      .post(apiURLSanPham + '/products?page=' + currentPage, chiTietSanPham)
-      .then(response => {
-        const modifiedData = response.data.content.map((item, index) => ({
-          ...item,
-          tags: [item.tenDongSanPham, item.tenNhaSanXuat, item.tenChip]
-        }))
-        console.log(modifiedData)
-        setlistMauSac(modifiedData)
-        setCurrentPage(response.data.number)
-        setTotalPages(response.data.totalPages)
+    axios.get(apiURLChiTietSanPham + `/${idSanPham}`).then(response => {
+      const modifiedData = response.data.map((item, index) => ({
+        ...item,
+        tags: [item.tenDongSanPham, item.tenNhaSanXuat, item.tenChip],
+        stt: index + 1
+      }))
+      modifiedData.map((item) => {
+        axios.get(apiURLAnh + `/${item.id}`).then(response => {
+          setListImage(map => new Map(map.set(item.id,response.data)))
+        })
       })
+      console.log(listChiTietSanPham)
+      setlistChiTietSanPham(modifiedData)
+      setCurrentPage(response.data.number)
+      setTotalPages(response.data.totalPages)
+    })
 
     axios.get(apiURLSanPham + '/don-gia-lon-nhat').then(response => {
       setpriceBiggest(response.data)
@@ -238,8 +256,8 @@ const HienThiKH = () => {
   }
 
   const filteredDataSource = filterStatus
-    ? listMauSac.filter(item => item.trangThai === filterStatus)
-    : listMauSac
+    ? listChiTietSanPham.filter(item => item.trangThai === filterStatus)
+    : listChiTietSanPham
 
   //edit
   const [editingKey, setEditingKey] = useState('')
@@ -247,13 +265,12 @@ const HienThiKH = () => {
   const isEditing = record => record.id === editingKey
 
   const doChangeTrangThai = (e, record) => {
-    console.log(record.delected)
     axios
       .delete(apiURLSanPham + `/doi-trang-thai/${record.id}`)
       .then(response => {
         // Xử lý thành công
         // setTrangThai(trangThai === 1 ? 2 : 1);
-        loadDatalistMauSac(currentPage)
+        loadDatalistChiTietSanPham(currentPage)
         console.log('Trạng thái đã được thay đổi')
       })
       .catch(error => {
@@ -397,63 +414,56 @@ const HienThiKH = () => {
       sorter: (a, b) => a.stt - b.stt
     },
     {
-      title: 'Tên sản phẩm',
-      dataIndex: 'tenSanPham',
+      title: 'Ảnh',
+      dataIndex: 'kichThuocRam',
+      width: '2%',
+      render: (_, record) => {
+       console.log(listImage.get(record.id))
+        return (
+          <>
+            <Carousel style={{ width: `194px` }} autoplay>
+              { listImage.get(record.id) === undefined  ? "":
+              listImage.get(record.id).map((item) => {
+                return(
+                <div>
+                   <img  style={contentStyle} src={item.duongDan}/>
+                </div>
+                )
+              })}
+            </Carousel>
+          </>
+        )
+      }
+    },
+    {
+      title: 'Ram',
+      dataIndex: 'kichThuocRam',
       width: '5%',
       editable: true
     },
     {
-      title: 'Thông tin',
-      dataIndex: 'tags',
-      width: '65%',
-      render: (_, { tags }) => (
-        <>
-          {tags.map(tag => {
-            let color = tag.length > 2 ? 'geekblue' : 'GREEN'
-            if (tag === 'loser') {
-              color = 'volcano'
-            }
-            return (
-              <Tag color={color} key={tag}>
-                {tag.toUpperCase()}
-              </Tag>
-            )
-          })}
-        </>
-      )
+      title: 'Rom',
+      dataIndex: 'kichThuocRom',
+      width: '5%',
+      editable: true
     },
     {
-      title: 'Trạng thái',
-      dataIndex: 'delected',
+      title: 'Màu sắc',
+      dataIndex: 'mauSac',
       width: '5%',
-      filters: [
-        {
-          text: 'Kinh doanh',
-          value: 'true'
-        },
-        {
-          text: 'Ngừng kinh doanh',
-          value: 'false'
-        }
-      ],
-      // eslint-disable-next-line eqeqeq
-      onFilter: (value, record) => record.delected == value,
-      filterSearch: true,
-      // editable: true,
-      // editable: true,
-      render: (text, record) => (
-        <span>
-          <Space direction='vertical'>
-            <Switch
-              style={{ borderRadius: '30px', width: 140 }}
-              onChange={e => doChangeTrangThai(e, record)}
-              checkedChildren='Kinh doanh'
-              unCheckedChildren='Ngừng kinh doanh'
-              defaultChecked={record.delected}
-            />
-          </Space>
-        </span>
-      )
+      editable: true
+    },
+    {
+      title: 'Số lượng tồn',
+      dataIndex: 'soLuong',
+      width: '5%',
+      editable: true
+    },
+    {
+      title: 'Đơn giá',
+      dataIndex: 'donGia',
+      width: '5%',
+      editable: true
     },
     {
       title: 'Thao Tác',
@@ -462,14 +472,7 @@ const HienThiKH = () => {
       render: (_, record) => {
         return (
           <>
-            <FontAwesomeIcon
-              icon={faEye}
-              onClick={() => navigate(`/chi-tiet-san-pham/${record.id}`)}
-              style={{
-                cursor: 'pointer',
-                color: editingKey === record.id ? 'red' : 'green'
-              }}
-            />
+           <ConfigDetail productDetail = {record} />
           </>
         )
       }
@@ -493,9 +496,11 @@ const HienThiKH = () => {
 
   return (
     <>
-      <h2 className='text-center font-weight-bold'>Quản lí sản phẩm</h2>
+      <h2 className='text-center font-weight-bold'>
+        Quản lí chi tiết sản phẩm
+      </h2>
       <br />
-      <div className='card ' style={{ padding: ` 0 73px` }}>
+      <div className='card ' style={{ padding: 10 }}>
         <div
           style={{
             color: 'black',
@@ -521,15 +526,9 @@ const HienThiKH = () => {
           {/* Search */}
           <FontAwesomeIcon style={{ marginLeft: '5px' }} />
           <span className='bl-add'>
-            
-            <Button className='btn-them-tu-file'>
-              <ExcelExportHelper data={listMauSac} />
-            </Button>
-
             <Link to='/them-san-pham'>
               <Button className='btn-them-tk'>+ Thêm chi tiết sản phẩm </Button>
             </Link>
-
           </span>
         </div>
 
@@ -538,20 +537,20 @@ const HienThiKH = () => {
           style={{ width: 1020, marginRight: 20, justifyContent: 'center' }}
         >
           {/* <Select
-          defaultValue="Chọn sản phẩm"
-          style={{ width: 200,marginRight:15,marginBottom:20 }}
-          onChange={handleChange}
-          options={[
-            {
-              label: 'Chọn một sản phẩm',
-              options: listSanPham
-            },
-          ]}
-        /> */}
+            defaultValue="Chọn sản phẩm"
+            style={{ width: 150,marginRight:15,marginBottom:20 }}
+            onChange={handleChange}
+            options={[
+              {
+                label: 'Chọn một sản phẩm',
+                options: listSanPham
+              },
+            ]}
+          /> */}
 
           <Select
             defaultValue='Chọn dòng sản phẩm'
-            style={{ width: 200, marginRight: 15, marginBottom: 20 }}
+            style={{ width: 150, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
@@ -562,10 +561,8 @@ const HienThiKH = () => {
           />
 
           <Select
-            listItemHeight={10}
-            listHeight={250}
             defaultValue='Chọn nhà sản xuất'
-            style={{ width: 200, marginRight: 15, marginBottom: 20 }}
+            style={{ width: 150, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
@@ -577,7 +574,7 @@ const HienThiKH = () => {
 
           <Select
             defaultValue='Chọn màu sắc'
-            style={{ width: 200, marginRight: 15, marginBottom: 20 }}
+            style={{ width: 150, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
@@ -589,7 +586,7 @@ const HienThiKH = () => {
 
           <Select
             defaultValue='Chọn pin'
-            style={{ width: 200, marginRight: 15, marginBottom: 20 }}
+            style={{ width: 150, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
@@ -601,7 +598,7 @@ const HienThiKH = () => {
 
           <Select
             defaultValue='Chọn ram'
-            style={{ width: 200, marginRight: 15, marginBottom: 20 }}
+            style={{ width: 150, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
@@ -613,7 +610,7 @@ const HienThiKH = () => {
 
           <Select
             defaultValue='Chọn rom'
-            style={{ width: 200, marginRight: 15, marginBottom: 20 }}
+            style={{ width: 150, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
@@ -625,7 +622,7 @@ const HienThiKH = () => {
 
           <Select
             defaultValue='Chọn chip'
-            style={{ width: 200, marginRight: 15, marginBottom: 20 }}
+            style={{ width: 150, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
@@ -637,7 +634,7 @@ const HienThiKH = () => {
 
           <Select
             defaultValue='Chọn kích cỡ màn hình'
-            style={{ width: 200, marginRight: 15, marginBottom: 20 }}
+            style={{ width: 150, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
@@ -716,7 +713,7 @@ const HienThiKH = () => {
         </div>
       </div>
 
-      <div className='card ' style={{ padding: ` 0 7px` }}>
+      <div className='card ' style={{ padding: 10 }}>
         <div
           style={{
             color: 'black',
@@ -725,7 +722,7 @@ const HienThiKH = () => {
             fontWeight: 'bold'
           }}
         >
-          <FontAwesomeIcon icon={faList} /> Danh sách sản phẩm
+          <FontAwesomeIcon icon={faList} /> Danh sách các cấu hình
         </div>
 
         <div className='form-tbl'>
@@ -746,16 +743,7 @@ const HienThiKH = () => {
               rowClassName='editable-row'
               pagination={false}
               rowKey='id'
-              style={{ marginBottom: '20px' }}
-            />
-
-            <Pagination
-              style={{ transform: `translateX(${450}px)`, width: 200 }}
-              simplecurrent={currentPage + 1}
-              onChange={value => {
-                setCurrentPage(value - 1)
-              }}
-              total={totalPages * 10}
+              style={{ marginBottom: '20px',textAlign:`center` }}
             />
           </Form>
         </div>
@@ -764,4 +752,4 @@ const HienThiKH = () => {
   )
 }
 
-export default HienThiKH
+export default HienThiChiTietSanPham
