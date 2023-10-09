@@ -1,8 +1,6 @@
 import { Button, Card, Modal, message } from "antd";
 import React, { useEffect } from "react"; // , { useEffect }
 import { useState } from "react";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { apiURLNV } from "../../../../service/api";
 import TextField from "@mui/material/TextField";
@@ -18,7 +16,6 @@ import {
   Radio,
   RadioGroup,
 } from "@mui/material";
-import AddressForm from "./DiaChi";
 import ImageUploadComponent from "./AnhUpdate";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
@@ -40,7 +37,10 @@ const UpdateNV = () => {
   let [matKhau, setMatKhau] = useState("");
   let [trangThai, setTrangThai] = useState(1);
   let [anhDaiDien, setAnhDaiDien] = useState("");
-  let [editing, setEditing] = useState(false);
+  let [
+    editing,
+    // setEditing
+  ] = useState(false);
   const [isConfirmVisible, setIsConfirmVisible] = useState(false);
   const showConfirm = () => {
     setIsConfirmVisible(true); // Mở hộp thoại xác nhận
@@ -103,8 +103,8 @@ const UpdateNV = () => {
     setAnhDaiDien(imageURL);
   };
   const handleHoVaTenChange = (e) => {
-    const value = e.target.value.trim();
-    const specialCharPattern = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+    const value = e.target.value;
+    const specialCharPattern = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+/;
     const trimmedValue = value.replace(/\s/g, "");
     setTen(value);
     if (!value.trim()) {
@@ -142,7 +142,7 @@ const UpdateNV = () => {
     }
   };
   const handleDiaChi = (e) => {
-    const value = e.target.value.trim();
+    const value = e.target.value;
     setDiaChi(value);
     const trimmedValue = value.replace(/\s/g, "");
     if (!value.trim()) {
@@ -174,7 +174,9 @@ const UpdateNV = () => {
       !email ||
       !soDienThoai ||
       !diaChi ||
-      !xaPhuong
+      !tinhThanhPho ||
+      !xaPhuong ||
+      !quanHuyen
     ) {
       message.error("Vui lòng điền đủ thông tin trước khi lưu.");
       setIsConfirmVisible(false);
@@ -202,6 +204,11 @@ const UpdateNV = () => {
         .put(`${apiURLNV}/update/${id}`, updatedItem)
         .then((response) => {
           if (response.status === 200) {
+            if (!tinhThanhPho || !xaPhuong || !quanHuyen) {
+              message.error("Vui lòng điền đủ thông tin trước khi lưu.");
+              setIsConfirmVisible(false);
+              return;
+            }
             setIsConfirmVisible(false);
             message.success("Sửa thành công");
           } else {
@@ -215,6 +222,8 @@ const UpdateNV = () => {
       console.error("Validate Failed:", errInfo);
     }
   };
+  const today = new Date().toISOString().split("T")[0]; // Get the current date in "yyyy-mm-dd" format
+
   return (
     <>
       <Card bordered={false} style={{ width: "100%" }}>
@@ -285,6 +294,9 @@ const UpdateNV = () => {
                         width: "100%",
                         mb: 2,
                       },
+                    }}
+                    inputProps={{
+                      max: today, // Set the maximum allowed date to today
                     }}
                     noValidate
                     autoComplete="off"
@@ -411,6 +423,7 @@ const UpdateNV = () => {
                 }}
               >
                 <AddressFormUpdate
+                  // onDiaChiChange={handleDiaChiChange}
                   onDiaChiChange={handleDiaChiChange}
                   required={true}
                   submitted={submitted}
@@ -421,6 +434,7 @@ const UpdateNV = () => {
                   selectedQuanHuyen={quanHuyen}
                   selectedXaPhuong={xaPhuong}
                   editing={editing}
+                  formSubmitted={formSubmitted}
                 />
                 <div style={{ textAlign: "center", marginTop: "20px" }}>
                   <Button type="primary" onClick={showConfirm} size={"large"}>

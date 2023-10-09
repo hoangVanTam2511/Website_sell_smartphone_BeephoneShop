@@ -3,10 +3,13 @@ import { Grid, TextField } from "@mui/material";
 import { Button, Card, Checkbox, Modal, message } from "antd";
 import { useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFloppyDisk, faPlus } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowLeft,
+  faFloppyDisk,
+  faPlus,
+} from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { apiURLKH } from "../../../../service/api";
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
   Box,
@@ -16,9 +19,8 @@ import {
   RadioGroup,
 } from "@mui/material";
 import ImageUploadComponent from "./AnhUpdate";
-
-import AddressForm from "./DiaChi";
 import AddressTable from "./HienThiDiaChi";
+import ModalAddDiaChiKhachHang from "./ModalAddDiaChiKhachHang";
 
 const UpdateKH = () => {
   const { id } = useParams();
@@ -55,6 +57,7 @@ const UpdateKH = () => {
 
   useEffect(() => {
     fetchDiaChiList();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   //hiển thị diaChi
@@ -70,8 +73,8 @@ const UpdateKH = () => {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [isModalVisibleS, setIsModalVisibleS] = useState(false);
   const [formSubmittedS, setFormSubmittedS] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
   const [submittedS, setSubmittedS] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   //fetch detail khachHang
   useEffect(() => {
     getKHById(id);
@@ -102,12 +105,9 @@ const UpdateKH = () => {
   const [sdtError, setSDTError] = useState("");
   const [sdtkhError, setSDTKHError] = useState("");
   const [hoTenkhError, sethoTenKHError] = useState("");
-  const [initialXaPhuong, setInitialXaPhuong] = useState("");
-  const [initialQuanHuyen, setInitialQuanHuyen] = useState("");
-  const [initialTinhThanhPho, setInitialTinhThanhPho] = useState("");
   const handleHoVaTenChange = (e) => {
-    const value = e.target.value.trim();
-    const specialCharPattern = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+    const value = e.target.value;
+    const specialCharPattern = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+/;
     const trimmedValue = value.replace(/\s/g, "");
     setTen(value);
     if (!value.trim()) {
@@ -146,8 +146,8 @@ const UpdateKH = () => {
   };
   //handle diaChi
   const handleHoTenChange = (e) => {
-    const value = e.target.value.trim();
-    const specialCharPattern = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+    const value = e.target.value;
+    const specialCharPattern = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+/;
 
     setHoTenKH(value);
     if (!value.trim()) {
@@ -173,7 +173,7 @@ const UpdateKH = () => {
     }
   };
   const handleDiaChi = (e) => {
-    const value = e.target.value.trim();
+    const value = e.target.value;
     setDiaChi(value);
     const trimmedValue = value.replace(/\s/g, "");
     if (!value.trim()) {
@@ -186,7 +186,6 @@ const UpdateKH = () => {
   };
   const handleProvinceChange = (value) => {
     setTinhThanhPho(value);
-    setInitialTinhThanhPho(value);
   };
 
   const handleDistrictChange = (value) => {
@@ -199,20 +198,24 @@ const UpdateKH = () => {
   const handleAnhDaiDienChange = (imageURL) => {
     setAnhDaiDien(imageURL);
   };
-  const handleCloseModal = () => {
-    setIsModalVisibleS(false);
-  };
+
   const handleCheckboxChange = (e) => {
     setTrangThaiKH(e.target.checked ? 1 : 0); // Nếu tích checkbox thì trangThaiKH là 1, ngược lại là 0
   };
   const redirectToHienThiKH = () => {
-    // Thực hiện điều hướng tới trang "Hiển thị nhân viên"
     window.location.href = "/update-khach-hang/" + id;
+  };
+  const redirectTable = () => {
+    window.location.href = "/khach-hang/";
+  };
+  const handleCloseModal = () => {
+    setIsModalVisibleS(false);
+    redirectToHienThiKH();
   };
   //add diaChi
   const addDiaChiList = () => {
-    setFormSubmittedS(true);
     setSubmittedS(true);
+    setFormSubmittedS(true);
     let newAddress = {
       diaChi: diaChi,
       xaPhuong: xaPhuong,
@@ -224,14 +227,7 @@ const UpdateKH = () => {
       id: id1,
       trangThai: trangThaiKH,
     };
-    if (
-      !hoTenKH ||
-      !soDienThoaiKhachHang ||
-      !tinhThanhPho ||
-      !diaChi ||
-      !quanHuyen ||
-      !xaPhuong
-    ) {
+    if (!hoTenKH || !soDienThoaiKhachHang || !diaChi) {
       message.error("Chưa điền đủ thông tin");
       setIsModalVisibleS(true);
       return; // Stop form submission if any required field is empty
@@ -277,22 +273,16 @@ const UpdateKH = () => {
     setIsConfirmVisible(true); // Mở hộp thoại xác nhận
   };
 
+  const showRetable = () => {
+    redirectTable();
+  };
   const handleCancel = () => {
     setIsConfirmVisible(false); // Đóng hộp thoại xác nhận khi người dùng hủy
   };
-  const resetAddAddressForm = () => {
-    setDiaChi(""); // Đặt lại địa chỉ
-    setXaPhuong("");
-    setQuanHuyen("");
-    setTinhThanhPho(initialTinhThanhPho); // Đặt lại tinhThanhPho
-    setSoDienThoaiKhachHang(""); // Đặt lại soDienThoaiKhachHang
-    setHoTenKH(""); // Đặt lại hoTenKH
-    setTrangThaiKH(0); // Đặt lại trangThaiKH
-    setIsModalVisibleS(false); // Đóng modal
-  };
+
   const save = async (id) => {
-    setFormSubmitted(true);
     setSubmitted(true);
+    setFormSubmitted(true);
     if (!hoVaTen || ngaySinh == null || !email || !soDienThoai) {
       message.error("Vui lòng điền đủ thông tin trước khi lưu.");
       setIsConfirmVisible(false);
@@ -325,12 +315,15 @@ const UpdateKH = () => {
         })
         .catch((error) => {
           console.error("Failed to update customer information:", error);
-          toast.error("An error occurred while updating customer information.");
+          message.error(
+            "An error occurred while updating customer information."
+          );
         });
     } catch (errInfo) {
       console.error("Validate Failed:", errInfo);
     }
   };
+  const today = new Date().toISOString().split("T")[0];
   return (
     <>
       {" "}
@@ -351,7 +344,7 @@ const UpdateKH = () => {
                   flexDirection: "column",
                   alignItems: "center",
                   marginBottom: "20px",
-                  width: "100%",
+                  width: "95%",
                 }}
               >
                 <ImageUploadComponent
@@ -406,6 +399,9 @@ const UpdateKH = () => {
                         value={ngaySinh}
                         InputLabelProps={{
                           shrink: true,
+                        }}
+                        inputProps={{
+                          max: today, // Set the maximum allowed date to today
                         }}
                         onChange={(e) => {
                           setNgaySinh(e.target.value); // Cập nhật giá trị ngaySinh sau khi thay đổi
@@ -484,9 +480,9 @@ const UpdateKH = () => {
                     style={{ width: "100%" }}
                   />
                 </div>
-              </div>
+              </div>{" "}
             </Card>
-          </Grid>
+          </Grid>{" "}
           <Grid item xs={6}>
             <Card
               title={<span style={{ color: "gray" }}>Thông tin Địa Chỉ </span>}
@@ -496,7 +492,11 @@ const UpdateKH = () => {
                 borderLeft: "4px solid #e2e2e2",
                 borderRadius: 0,
               }}
-              style={{ borderRadius: 0 }}
+              style={{
+                height: "100%", // Set Card height to 100% of its parent container
+                overflowY: "auto", // Add a vertical scrollbar when content overflows
+                maxHeight: "calc(120vh - 100px)",
+              }}
             >
               <Button
                 style={{
@@ -506,12 +506,8 @@ const UpdateKH = () => {
                   marginBottom: "20px",
                 }}
                 size="large"
-                onClick={() => {
-                  // setInitialXaPhuong(xaPhuong);
-                  // setInitialQuanHuyen(quanHuyen);
-                  // setInitialTinhThanhPho(tinhThanhPho);
+                onClick={() => {           
                   setIsModalVisibleS(true);
-                  // handleAddressChange(); // Open the modal when the button is clicked
                 }}
               >
                 <FontAwesomeIcon icon={faPlus} /> &nbsp; Thêm địa chỉ
@@ -522,6 +518,7 @@ const UpdateKH = () => {
                 onCancel={() => {
                   setIsModalVisibleS(false); // Close the modal when cancel is clicked
                 }}
+                maskClosable={false}
                 footer={[
                   <React.Fragment key="modal-footer">
                     <Button
@@ -566,7 +563,7 @@ const UpdateKH = () => {
                       value={hoTenKH}
                       id="fullWidth"
                       onChange={handleHoTenChange}
-                      error={formSubmittedS && (!hoTenKH || !hoTenkhError)}
+                      error={(formSubmittedS && !hoTenKH) || !!hoTenkhError}
                       helperText={
                         hoTenkhError ||
                         (formSubmittedS && !hoTenKH && "Họ và tên trống")
@@ -608,7 +605,7 @@ const UpdateKH = () => {
                     />
                   </div>
                   <div style={{ marginBottom: "20px" }}>
-                    <AddressForm
+                    <ModalAddDiaChiKhachHang
                       // onDiaChiChange={handleAddressChange}
                       required={true}
                       submitted={submittedS}
@@ -640,36 +637,33 @@ const UpdateKH = () => {
             </Card>{" "}
           </Grid>{" "}
         </Grid>
-
-        <div style={{ marginRight: "20px", float: "right" }}>
-          <Button type="primary" onClick={showConfirm} size={"large"}>
+        <div style={{ marginTop: "10px" }}>
+          {" "}
+          <Button size={"large"} onClick={showRetable}>
             <FontAwesomeIcon
-              icon={faFloppyDisk}
+              icon={faArrowLeft}
               style={{ paddingRight: "5px" }}
             />
-            Lưu Khách Hàng{" "}
-          </Button>
-          <Modal
-            title="Xác nhận"
-            open={isConfirmVisible}
-            onOk={() => save(id)}
-            onCancel={handleCancel}
-          >
-            <p>Bạn có chắc chắn muốn lưu khách hàng?</p>
-          </Modal>
+            Quay lại
+          </Button>{" "}
+          <div style={{ float: "right" }}>
+            <Button type="primary" onClick={showConfirm} size={"large"}>
+              <FontAwesomeIcon
+                icon={faFloppyDisk}
+                style={{ paddingRight: "5px" }}
+              />
+              Lưu Khách Hàng{" "}
+            </Button>
+            <Modal
+              title="Xác nhận"
+              open={isConfirmVisible}
+              onOk={() => save(id)}
+              onCancel={handleCancel}
+            >
+              <p>Bạn có chắc chắn muốn lưu khách hàng?</p>
+            </Modal>
+          </div>
         </div>
-        <ToastContainer
-          position="top-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="colored"
-        />
       </Card>
     </>
   );

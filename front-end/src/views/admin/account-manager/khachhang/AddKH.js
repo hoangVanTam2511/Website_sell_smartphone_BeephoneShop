@@ -1,10 +1,6 @@
-import { Button, Modal, Card, Checkbox, message } from "antd";
-// import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-// import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import React, { useEffect } from "react";
+import { Button, Modal, Card, message } from "antd";
+import React from "react";
 import { useState } from "react";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { apiURLKH } from "../../../../service/api";
 import TextField from "@mui/material/TextField";
@@ -65,7 +61,7 @@ const AddKH = () => {
     setShowConfirmModal(true);
   };
   const handleHoVaTenChange = (e) => {
-    const value = e.target.value.trim();
+    const value = e.target.value;
     const specialCharPattern = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
     const trimmedValue = value.replace(/\s/g, "");
     setTen(value);
@@ -80,7 +76,7 @@ const AddKH = () => {
     }
   };
   const handleHoVaTenKH = (e) => {
-    const value = e.target.value.trim();
+    const value = e.target.value;
     const specialCharPattern = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
     const trimmedValue = value.replace(/\s/g, "");
     setHoTenKH(value);
@@ -107,7 +103,7 @@ const AddKH = () => {
     }
   };
   const handleDiaChi = (e) => {
-    const value = e.target.value.trim();
+    const value = e.target.value;
     setDiaChi(value);
     const trimmedValue = value.replace(/\s/g, "");
     if (!value.trim()) {
@@ -254,13 +250,15 @@ const AddKH = () => {
         alert("Thêm thất bại");
       });
   };
+  
+  const today = new Date().toISOString().split("T")[0]; // Get the current date in "yyyy-mm-dd" format
 
   return (
     <>
       <Card bordered="false" style={{ width: "100%" }}>
         <Grid container justifyContent="space-between">
           {/* Left column */}
-          <Grid item xs={5.3}>
+          <Grid item xs={5.4}>
             <Card
               title={
                 <span style={{ color: "gray" }}>Thông tin Khách Hàng</span>
@@ -268,13 +266,13 @@ const AddKH = () => {
               bordered="false"
               headStyle={{ borderLeft: "4px solid #e2e2e2", borderRadius: 0 }}
             >
-              <div style={{ width: "90%", margin: "0 auto" }}>
+              <div style={{ width: "95%", margin: "0 auto" }}>
                 <div
                   style={{
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
-                    marginBottom: "20px",
+                    marginBottom: "-8px",
                     width: "100%",
                   }}
                 >
@@ -288,7 +286,7 @@ const AddKH = () => {
                   style={{
                     textAlign: "center",
                     marginBottom: "20px",
-                    marginTop: "20px",
+                    // marginTop: "20px",
                   }}
                 >
                   <TextField
@@ -309,7 +307,7 @@ const AddKH = () => {
                   <div
                     className="text-f"
                     style={{
-                      marginBottom: "15px",
+                      marginBottom: "10px",
                       textAlign: "left",
                       width: "47%",
                     }}
@@ -333,6 +331,9 @@ const AddKH = () => {
                         InputLabelProps={{
                           shrink: true,
                         }}
+                        inputProps={{
+                          max: today, // Set the maximum allowed date to today
+                        }}
                         onChange={(e) => {
                           setNgaySinh(e.target.value); // Cập nhật giá trị ngaySinh sau khi thay đổi
                         }}
@@ -346,7 +347,7 @@ const AddKH = () => {
                   <div
                     className="text-f"
                     style={{
-                      marginBottom: "15px",
+                      marginBottom: "10px",
                       marginLeft: "50px",
                       marginTop: "20px",
                     }}
@@ -425,7 +426,7 @@ const AddKH = () => {
             <Card
               title={
                 <span style={{ color: "gray" }}>
-                  Thông tin Địa chỉ mặc định
+                  Thông tin địa chỉ mặc định
                 </span>
               }
               bordered="false"
@@ -433,7 +434,12 @@ const AddKH = () => {
                 borderLeft: "4px solid #e2e2e2",
                 borderRadius: 0,
               }}
-              style={{ borderRadius: 0 }}
+              style={{
+                borderRadius: 0,
+                height: "100%", // Set Card height to 100% of its parent container
+                overflowY: "auto", // Add a vertical scrollbar when content overflows
+                maxHeight: "calc(120vh - 100px)",
+              }}
             >
               {/* <h4 style={{ color: "gray" }}>Địa chỉ mặc định</h4> */}
 
@@ -447,10 +453,10 @@ const AddKH = () => {
                     value={hoTenKH}
                     id="fullWidth"
                     onChange={handleHoVaTenKH}
-                    error={(formSubmitted && hoTenKH) || !!hoTenKHErr}
+                    error={(formSubmitted && !hoTenKH) || !!hoTenKHErr}
                     helperText={
                       hoTenKHErr ||
-                      (formSubmitted && hoTenKH && "Họ và tên trống")
+                      (formSubmitted && !hoTenKH && "Họ và tên trống")
                     }
                     style={{ width: "100%" }}
                   />
@@ -502,7 +508,7 @@ const AddKH = () => {
             </Card>
           </Grid>{" "}
         </Grid>
-        <div style={{ marginRight: "20px", float: "right" }}>
+        <div style={{ float: "right", marginTop: "10px" }}>
           <Button type="primary" onClick={showConfirm} size={"large"}>
             <FontAwesomeIcon
               icon={faFloppyDisk}

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface AccountRepository extends IAccountRepository {
@@ -27,11 +28,10 @@ public interface AccountRepository extends IAccountRepository {
     List<Account> getAllNVienNoPage();
 
     @Query(value = """
-                SELECT  a.ma AS ma,a.id,a.email,a.ho_va_ten, a.trang_thai,a.mat_khau , a.so_dien_thoai , a.ngay_sinh ,a.id_role
-                FROM account a
-            """, nativeQuery = true)
+        SELECT  a.ma ,a.id,a.email,a.ho_va_ten, a.trang_thai,a.mat_khau , a.so_dien_thoai , a.ngay_sinh ,a.id_role
+                FROM account a join role b on a.id_role=b.id where b.ma="role2"
+    """,nativeQuery = true)
     Page<AccountResponse> getAllKH(Pageable pageable);
-
     @Transactional
     @Modifying
     @Query(value = """
@@ -53,19 +53,6 @@ public interface AccountRepository extends IAccountRepository {
                         OR ac.ma LIKE CONCAT('%', :tenKH, '%')
                         OR ac.email LIKE CONCAT('%', :tenKH, '%')
                         OR ac.diaChi LIKE CONCAT('%', :tenKH, '%')
-                        OR ac.soDienThoai LIKE CONCAT('%', :tenKH, '%')
-                        OR CAST(ac.ngaySinh AS string) LIKE CONCAT('%', :tenKH, '%')
-                        )
-            """)
-    Page<AccountResponse> searchAllKH(@Param("tenKH") Optional<String> tenKH, Pageable pageable);
-
-    @Query(value = """
-                SELECT  ac FROM Account ac
-                WHERE (:tenKH IS NULL
-                        OR ac.hoVaTen LIKE CONCAT('%', :tenKH, '%')
-                        OR ac.ma LIKE CONCAT('%', :tenKH, '%')
-                        OR ac.email LIKE CONCAT('%', :tenKH, '%')
-                        OR ac.diaChi LIKE CONCAT('%', :tenKH, '%')
                         OR ac.xaPhuong LIKE CONCAT('%', :tenKH, '%')
                         OR ac.tinhThanhPho LIKE CONCAT('%', :tenKH, '%')
                         OR ac.quanHuyen LIKE CONCAT('%', :tenKH, '%')
@@ -74,15 +61,19 @@ public interface AccountRepository extends IAccountRepository {
                         ) AND ac.idRole.ma='role1'
             """)
     Page<Account> searchAllNV(@RequestParam("tenKH") Optional<String> tenKH, Pageable pageable);
+    @Query(value = "SELECT a.ma AS ma, a.id, a.email, a.ho_va_ten, a.trang_thai, a.mat_khau, a.so_dien_thoai, a.ngay_sinh, a.id_role\n" +
+            "FROM account a INNER JOIN role r ON r.id = a.id_role \n" +
+            "WHERE (:tenKH IS NULL OR a.ho_va_ten LIKE CONCAT('%', :tenKH, '%')\n" +
+            "OR a.ma LIKE CONCAT('%', :tenKH, '%')\n" +
+            "OR a.email LIKE CONCAT('%', :tenKH, '%')\n" +
+            "OR a.so_dien_thoai LIKE CONCAT('%', :tenKH, '%')\n" +
+            "OR CAST(a.ngay_sinh AS CHAR) LIKE CONCAT('%', :tenKH, '%'))\n" +
+            "AND r.ma='role2';\n",
+            nativeQuery = true)
 
-//    @Query(value = "SELECT a.ma AS ma, a.id, a.email, a.ho_va_ten, a.trang_thai, a.mat_khau, a.so_dien_thoai, a.ngay_sinh, a.id_role\n" +
-//            "FROM account a INNER JOIN role r ON r.id = a.id_role \n" +
-//            "WHERE (:tenKH IS NULL OR a.ho_va_ten LIKE CONCAT('%', :tenKH, '%')\n" +
-//            "OR a.ma LIKE CONCAT('%', :tenKH, '%')\n" +
-//            "OR a.email LIKE CONCAT('%', :tenKH, '%')\n" +
-//            "OR a.so_dien_thoai LIKE CONCAT('%', :tenKH, '%')\n" +
-//            "OR CAST(a.ngay_sinh AS CHAR) LIKE CONCAT('%', :tenKH, '%'))\n" +
-//            "AND a.id_role = 'b68f6376-48c4-4fb0-83df-6743c5a818e8';\n",
-//            nativeQuery = true)
-//    Account findByMa(String ma);
+    Page<AccountResponse> searchAllKH(@Param("tenKH")Optional<String> tenKH, Pageable pageable);
+
+    @Query("SELECT a FROM Account a WHERE  a.trangThai = :trangThai AND a.idRole.ma='role1' ")
+    Page<Account> filterTrangThai(@RequestParam("trangThai") Integer trangThai, Pageable pageable);
+
 }

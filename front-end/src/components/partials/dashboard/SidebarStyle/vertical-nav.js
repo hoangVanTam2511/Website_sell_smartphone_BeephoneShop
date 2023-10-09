@@ -5,6 +5,7 @@ import {
   useAccordionButton,
   AccordionContext,
 } from "react-bootstrap";
+import { faShoppingCart } from "@fortawesome/react-fontawesome";
 function CustomToggle({ children, eventKey, onClick }) {
   const { activeEventKey } = useContext(AccordionContext);
 
@@ -588,7 +589,7 @@ const VerticalNav = memo((props) => {
                 </Link>
               </li>
 
-              <li className="nav-item">
+              {/* <li className="nav-item">
                 <Link
                   className={`${
                     location.pathname === "/chuc-vu" ? "active" : ""
@@ -615,7 +616,7 @@ const VerticalNav = memo((props) => {
                   <i className="sidenav-mini-icon"> L </i>
                   <span className="item-name">Chức Vụ</span>
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </Accordion.Collapse>
         </Accordion.Item>
@@ -672,13 +673,7 @@ const VerticalNav = memo((props) => {
               <li className="nav-item">
                 <Link
                   className={`${
-                    location.pathname.includes("/dashboard/voucher")
-                      ? "active"
-                      : location.pathname.includes("/dashboard/add-voucher")
-                      ? "active"
-                      : location.pathname.includes("/dashboard/update-voucher")
-                      ? "active"
-                      : ""
+                    location.pathname === "/dashboard/voucher" ? "active" : ""
                   } nav-link`}
                   to="/dashboard/voucher"
                 >
@@ -699,7 +694,7 @@ const VerticalNav = memo((props) => {
                       </g>
                     </svg>
                   </i>
-                  <i className="sidenav-mini-icon">V </i>
+                  <i className="sidenav-mini-icon"> L </i>
                   <span className="item-name">Voucher</span>
                 </Link>
               </li>
@@ -727,7 +722,7 @@ const VerticalNav = memo((props) => {
                       </g>
                     </svg>
                   </i>
-                  <i className="sidenav-mini-icon">G </i>
+                  <i className="sidenav-mini-icon"> L </i>
                   <span className="item-name">Giảm Giá</span>
                 </Link>
               </li>

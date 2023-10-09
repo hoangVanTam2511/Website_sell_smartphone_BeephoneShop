@@ -25,7 +25,7 @@ public class NhanVienServiceImpl implements NhanVienService {
 
     @Override
     public Page<Account> getAllNV(Integer pageNo) {
-        Pageable pageable = PageRequest.of(pageNo, 20);
+        Pageable pageable = PageRequest.of(pageNo - 1, 20);
         return accountRepository.getAllNV(pageable);
     }
 
@@ -81,10 +81,6 @@ public class NhanVienServiceImpl implements NhanVienService {
 
     @Override
     public Account updateNV(CreateAccountRequest request, String id) {
-        return null;
-    }
-
-    public Account updateNV(Account request, String id) {
         Optional<Account> optional = accountRepository.findById(id);
         Date date = null;
         try {
@@ -111,20 +107,25 @@ public class NhanVienServiceImpl implements NhanVienService {
             optional.get().setHoVaTen(request.getHoVaTen());
             optional.get().setSoDienThoai(request.getSoDienThoai());
             accountRepository.save(optional.get());
-            return accountRepository.save(optional.get());
         }
-        return optional.get();
+        return accountRepository.save(optional.get());
     }
 
     @Override
     public Page<Account> search(Optional<String> tenSearch, Integer pageNo) {
-        Pageable pageable = PageRequest.of(pageNo, 10);
+        Pageable pageable = PageRequest.of(pageNo - 1, 20);
         return accountRepository.searchAllNV(tenSearch, pageable);
     }
 
     @Override
     public Account getOne(UUID id) {
         return accountRepository.findById(String.valueOf(id)).get();
+    }
+
+    @Override
+    public Page<Account> filterTrangThai(Integer trangThai, Integer pageableNo) {
+        Pageable pageable = PageRequest.of(pageableNo - 1, 100);
+        return accountRepository.filterTrangThai(trangThai, pageable);
     }
 
     public static String removeDiacritics(String str) {
