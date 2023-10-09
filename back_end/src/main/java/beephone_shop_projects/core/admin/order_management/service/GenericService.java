@@ -5,17 +5,17 @@ import org.springframework.data.domain.Pageable;
 
 import java.io.Serializable;
 
-public interface GenericService<D, ID extends Serializable> {
+public interface GenericService<D, R, ID extends Serializable> {
 
   Page<D> findAll(Pageable pageable);
 
   D findOneById(ID id);
 
-  D save(D dto) throws Exception;
+  D save(R req) throws Exception;
 
-  D update(D dto) throws Exception;
+  D update(R req) throws Exception;
 
-  void delete(D dto) throws Exception;
+  void delete(R req) throws Exception;
 
-  void deleteById(ID id) throws Exception;
+  boolean deleteById(ID id) throws Exception;
 }

@@ -30,8 +30,8 @@ public class SanPhamChiTietServiceImpl  {
 
         SanPhamChiTiet sanPhamChiTiet = new SanPhamChiTiet();
         sanPhamChiTiet.setMa(sanPhamChiTietRepository.getNewCode());
-        sanPhamChiTiet.setIdSanPham(sanPham);
-        sanPhamChiTiet.setIdCauHinh(cauHinh);
+        sanPhamChiTiet.setSanPham(sanPham);
+        sanPhamChiTiet.setCauHinh(cauHinh);
         sanPhamChiTiet.setDonGia(req.getDonGia());
         sanPhamChiTiet.setSoLuongTonKho(req.getSoLuong());
 

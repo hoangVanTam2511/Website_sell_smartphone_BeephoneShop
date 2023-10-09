@@ -8,10 +8,10 @@ import org.springframework.data.domain.Pageable;
 
 import java.io.Serializable;
 
-public class AbstractServiceImpl<E, D, ID extends Serializable> implements GenericService<D, ID> {
+public class AbstractServiceImpl<E, D, R, ID extends Serializable> implements GenericService<D, R, ID> {
 
   private GenericRepository<E, ID> repo;
-  private GenericConverter<D, E> converter;
+  private GenericConverter<D, E, R> converter;
 
   public AbstractServiceImpl(GenericRepository repo, GenericConverter converter) {
     this.repo = repo;
@@ -21,38 +21,38 @@ public class AbstractServiceImpl<E, D, ID extends Serializable> implements Gener
   @Override
   public Page<D> findAll(Pageable pageable) {
     Page<E> entityPage = repo.findAll(pageable);
-    return converter.convertToPageDto(entityPage);
+    return converter.convertToPageResponse(entityPage);
   }
 
   @Override
   public D findOneById(ID id) {
     E entity = repo.findOneById(id);
-    return converter.convertToDto(entity);
+    return converter.convertEntityToResponse(entity);
   }
 
   @Override
-  public D save(D dto) throws Exception {
-    E entity = converter.convertToEntity(dto);
+  public D save(R req) throws Exception {
+    E entity = converter.convertRequestToEntity(req);
     E createdEntity = repo.save(entity);
-    return converter.convertToDto(createdEntity);
+    return converter.convertEntityToResponse(createdEntity);
   }
 
   @Override
-  public D update(D dto) throws Exception {
-    E entity = converter.convertToEntity(dto);
+  public D update(R req) throws Exception {
+    E entity = converter.convertRequestToEntity(req);
     E updatedEntity = repo.update(entity);
-    return converter.convertToDto(updatedEntity);
+    return converter.convertEntityToResponse(updatedEntity);
   }
 
   @Override
-  public void delete(D dto) throws Exception {
-    E entity = converter.convertToEntity(dto);
+  public void delete(R req) throws Exception {
+    E entity = converter.convertRequestToEntity(req);
     repo.delete(entity);
   }
 
   @Override
-  public void deleteById(ID id) throws Exception {
-    repo.deleteById(id);
+  public boolean deleteById(ID id) throws Exception {
+    return repo.deleteById(id);
   }
 
 }

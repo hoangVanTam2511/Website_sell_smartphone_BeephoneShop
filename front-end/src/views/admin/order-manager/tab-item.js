@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { toast } from "react-toastify";
 import { TextField, FormControl, InputLabel, Select as SelectMui, OutlinedInput, MenuItem, IconButton, Tooltip, Zoom } from '@mui/material'
 import style from './style.css'
 import Table from '@mui/material/Table';
@@ -23,9 +24,10 @@ import Sheet from '@mui/joy/Sheet';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import EditIcon from '@mui/icons-material/Edit';
 import PointOfSales from './point-of-sales';
+import { parseInt } from 'lodash';
 
 const TabItem = (props) => {
-  const { delivery, productsInCarts, add, remove, openProductDetails, openDialogProductDetails, closeDialogProductDetails, closeNoActionDialogProductDetails,
+  const { delivery, cartItems, add, remove, openProductDetails, openDialogProductDetails, closeDialogProductDetails, closeNoActionDialogProductDetails,
     openProducts, openDialogProducts, closeDialogProducts, closeNoActionDialogProducts, getShipFee
   } = props;
   const [products, setProducts] = useState([]);
@@ -36,16 +38,17 @@ const TabItem = (props) => {
   const [selectedWard, setSelectedWard] = useState('');
   const [selectedDistrict, setSelectedDistrict] = useState('');
   const [receiveDate, setReceiveDate] = useState();
+  const [count, setCount] = useState(1);
 
-  const opendDialogProductDetailsAndGetProduct = (id, price) => {
-    openDialogProductDetails(id, price);
+  const openDialogProductItems = () => {
+    openDialogProductDetails();
   }
   const removeProductInCart = (id) => {
     remove(id);
   }
 
-  const addProductToCart = () => {
-    add();
+  const addProductToCart = (priceProduct, idProduct, amount) => {
+    add(priceProduct, idProduct, amount);
   }
   // const openProductsDialog = () => {
   //   openDialogProducts();
@@ -54,7 +57,7 @@ const TabItem = (props) => {
   const getAllProducts = () => {
     axios.get(`http://localhost:8080/api/products`)
       .then(response => {
-        setProducts(response.data);
+        setProducts(response.data.data);
       }).catch(error => {
         console.error("Error");
       })
@@ -202,10 +205,8 @@ const TabItem = (props) => {
   };
 
   useEffect(() => {
-    if (openProducts == true) {
-      getAllProducts();
-    }
-  }, [openProducts])
+    getAllProducts();
+  }, [])
 
 
   const CssTextField = styled(TextField)({
@@ -241,7 +242,7 @@ const TabItem = (props) => {
   const CartEmpty = () => {
     return (
       <>
-        <div className='text-center' style={{ height: "490px" }}>
+        <div className='text-center' style={{ height: "524px" }}>
           <img src="https://img.freepik.com/premium-vector/shopping-cart-with-cross-mark-wireless-paymant-icon-shopping-bag-failure-paymant-sign-online-shopping-vector_662353-912.jpg"
             style={{ width: "240px" }} />
           <p className='text-dark' style={{ fontSize: "16px", fontWeight: "550" }}>Chưa có sản phẩm nào trong giỏ hàng!</p>
@@ -251,189 +252,27 @@ const TabItem = (props) => {
   }
 
 
-  const ProductCart = () => {
-    const StyledTableContainer = styled(TableContainer)({
-      boxShadow: 'none',
-    });
+  const StyledTableContainer = styled(TableContainer)({
+    boxShadow: 'none',
+  });
 
-    const StyledTableHead = styled(TableHead)`
+  const StyledTableHead = styled(TableHead)`
   & tr:hover th{
     background-color: white !important;
   }
 `;
 
-    const StyledTableBody = styled(TableBody)`
+  const StyledTableBody = styled(TableBody)`
   & tr:hover td{
     background-color: white !important;
   }
 `;
 
 
-    const useStyles = () => ({
-    });
+  const useStyles = () => ({
+  });
 
-    const classes = useStyles();
-
-    return (
-      <>
-        <div className='' style={{ height: "auto" }}>
-          <StyledTableContainer component={Paper}>
-            <Table sx={{ minWidth: 650, boxShadow: "none" }} aria-label="simple table" className={classes.tableContainer}>
-              <StyledTableHead>
-                <TableRow>
-                  <TableCell align="center">Sản Phẩm</TableCell>
-                  <TableCell align="center">Số lượng</TableCell>
-                  <TableCell align="center">Thành tiền</TableCell>
-                  <TableCell align="center">Thao Tác</TableCell>
-                </TableRow>
-              </StyledTableHead>
-              <StyledTableBody>
-                {productsInCarts.map((item, index) => (
-                  <TableRow
-                    key={index}
-                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                  >
-                    <TableCell className="" style={{ width: "100px", paddingRight: "40px" }}>
-                      <div className='d-flex'>
-                        <Tooltip TransitionComponent={Zoom} title="Chi tiết sản phẩm" style={{ cursor: "pointer" }} placement="top">
-                          <div className="product-img">
-                            <img src={item.sanPhamChiTiet.url} class='' alt="" style={{ width: "115px", height: "115px" }} />
-                          </div>
-                        </Tooltip>
-                        <div className='product ms-3'>
-                          <div className='product-name'>
-                            <span className='' style={{ whiteSpace: "pre-line", fontSize: "14px", fontWeight: "500" }}>{item.sanPhamChiTiet.ten}</span>
-                          </div>
-                          <div className='mt-2'>
-                            <span className='product-price' style={{ color: "#dc3333", fontSize: "14px", fontWeight: "500" }}>
-                              {item && item.sanPhamChiTiet.donGia ? item.sanPhamChiTiet.donGia.toLocaleString("vi-VN", {
-                                style: "currency",
-                                currency: "VND",
-                              }) : ""}
-                            </span>
-                          </div>
-                          <div className='mt-2 pt-1 d-flex'>
-                            <RadioGroup orientation='horizontal'
-                              aria-labelledby="storage-label"
-                              defaultValue="256GB"
-
-                              size="lg"
-                              sx={{ gap: 1.7 }}
-                            >
-                              {['12/256GB', 'Rose Pine'].map((value) => (
-                                <Sheet
-                                  key={value}
-                                  sx={{
-                                    borderRadius: 'md',
-                                    boxShadow: 'sm',
-                                  }}
-                                >
-                                  <Radio disabled
-                                    label={
-                                      <>
-                                        <div>
-                                          <span className="p-2" style={{ fontSize: "14px", fontWeight: "500" }}>{value}</span>
-                                        </div>
-                                      </>
-                                    }
-                                    overlay
-                                    disableIcon
-                                    value={value}
-                                    slotProps={{
-                                      label: ({ checked }) => ({
-                                        sx: {
-                                          fontWeight: 'lg',
-                                          fontSize: 'md',
-                                          color: checked ? 'text.primary' : 'text.secondary',
-                                        },
-                                      }),
-                                      action: ({ checked }) => ({
-                                        sx: (theme) => ({
-                                          ...(checked && {
-                                            '--variant-borderWidth': '2px',
-                                            '&&': {
-                                              // && to increase the specificity to win the base :hover styles
-                                              borderColor: "#2f80ed",
-                                            },
-                                          }),
-                                        }),
-                                      }),
-                                    }}
-                                  />
-                                </Sheet>
-                              ))}
-                            </RadioGroup>
-                          </div>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell className='' align="center" style={{ width: "100px" }}>
-                      <div class="number-input1 ">
-                        <button
-                          class="minus">
-                          <div className='wrap-minus'>
-                            <span>
-                              <RemoveOutlinedIcon style={{ fontSize: "18px" }} />
-                            </span>
-                          </div>
-                        </button>
-                        <input value={1} min="1" max="100"
-                          name="quantity" class="quantity"
-                          type="number" />
-                        <button class="">
-                          <div className='wrap-plus'>
-                            <span >
-                              <AddOutlinedIcon style={{ fontSize: "18px" }} />
-                            </span>
-                          </div>
-                        </button>
-                      </div>
-                    </TableCell>
-                    <TableCell align="center" style={{ color: "#dc3333", fontSize: "15px", width: "170px" }}>
-                      <span style={{ color: "#dc3333", fontSize: "15px", fontWeight: "500" }}>
-                        {item && item.sanPhamChiTiet.donGia ? item.sanPhamChiTiet.donGia.toLocaleString("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        }) : ""}
-                      </span>
-                    </TableCell>
-                    <TableCell align="center">
-                      <Tooltip TransitionComponent={Zoom} title="Cập nhật">
-                        <Button className=''
-                          icon={
-                            <EditIcon />
-                          }
-                          // onClick={() => openDialogProductDetails()}
-                          type="primary"
-                          style={{ fontSize: "13px", height: "32.5px" }}
-                        >
-                        </Button>
-
-                      </Tooltip>
-                      <Tooltip TransitionComponent={Zoom} title="Xóa khỏi giỏ hàng">
-                        <Button className='ms-2'
-                          onClick={() => removeProductInCart(item.id)}
-                          icon={
-                            <IconTrash />
-                          }
-                          type="warning"
-                          style={{ fontSize: "13px", height: "32.5px" }}
-                        >
-                        </Button>
-
-
-                      </Tooltip>
-
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </StyledTableBody>
-            </Table>
-          </StyledTableContainer>
-        </div>
-      </>
-    )
-  }
+  const classes = useStyles();
 
   return (
     <>
@@ -448,11 +287,11 @@ const TabItem = (props) => {
                 onClick={() => openDialogProducts()}
                 className="rounded-2 button-mui"
                 type="primary"
-                style={{ height: "35px", width: "140px", fontSize: "15px" }}
+                style={{ height: "38px", width: "140px", fontSize: "15px" }}
               >
                 <span
                   className="text-white"
-                  style={{ marginBottom: "3px", fontSize: "15px", fontWeight: "500" }}
+                  style={{ marginBottom: "2px", fontSize: "15px", fontWeight: "500" }}
                 >
                   Thêm sản phẩm
                 </span>
@@ -461,28 +300,214 @@ const TabItem = (props) => {
           </div>
           <div className='ms-2 ps-1 mt-2' style={{ borderBottom: "2px solid #C7C7C7", width: "98.5%", borderWidth: "2px" }}></div>
           <div >
-            {productsInCarts.length == 0 ? <CartEmpty /> : <ProductCart />}
-            {productsInCarts.length == 1 ?
-              <div className='' style={{ height: "180px" }}>
+            {cartItems.length == 0 ? <CartEmpty /> :
+
+              <div className='' style={{ height: "auto" }}>
+                <StyledTableContainer component={Paper}>
+                  <Table sx={{ minWidth: 650, boxShadow: "none" }} aria-label="simple table" className={classes.tableContainer}>
+                    <StyledTableHead>
+                      <TableRow>
+                        <TableCell align="center">Sản Phẩm</TableCell>
+                        <TableCell align="center">Số lượng</TableCell>
+                        <TableCell align="center">Thành tiền</TableCell>
+                        <TableCell align="center">Thao Tác</TableCell>
+                      </TableRow>
+                    </StyledTableHead>
+                    <StyledTableBody>
+                      {cartItems.map((item, index) => (
+                        <TableRow
+                          key={index}
+                          sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                        >
+                          <TableCell className="" style={{ width: "200px", paddingRight: "40px" }}>
+                            <div className='d-flex'>
+                              <Tooltip TransitionComponent={Zoom} title="Chi tiết sản phẩm" style={{ cursor: "pointer" }} placement="top">
+                                <div className="product-img">
+                                  <img src={item && item.sanPhamChiTiet && item.sanPhamChiTiet.images && item.sanPhamChiTiet.images[0].duongDan} class='' alt="" style={{ width: "115px", height: "115px" }} />
+                                </div>
+                              </Tooltip>
+                              <div className='product ms-3'>
+                                <div classNamountme='product-name'>
+                                  <span className='' style={{ whiteSpace: "pre-line", fontSize: "15px", fontWeight: "500" }}>{item.sanPhamChiTiet.sanPham.tenSanPham + "\u00A0" + item.sanPhamChiTiet.cauHinh.ram.kichThuoc + "/" + item.sanPhamChiTiet.cauHinh.rom.kichThuoc + "GB"}</span>
+                                </div>
+                                <div className='mt-2'>
+                                  <span className='product-price txt-price' style={{ fontSize: "16px", fontWeight: "500" }}>
+                                    {item && item.sanPhamChiTiet.donGia ? item.sanPhamChiTiet.donGia.toLocaleString("vi-VN", {
+                                      style: "currency",
+                                      currency: "VND",
+                                    }) : ""}
+                                  </span>
+                                </div>
+                                <div className='mt-2 pt-1 d-flex' style={{ width: "150px" }}>
+                                  <RadioGroup orientation='horizontal'
+                                    aria-labelledby="storage-label"
+                                    size="lg"
+                                    sx={{ gap: 1.7 }}
+                                  >
+                                    <Sheet
+                                      sx={{
+                                        borderRadius: 'md',
+                                        boxShadow: 'sm',
+                                      }}
+                                    >
+                                      <Radio disabled
+                                        label={
+                                          <>
+                                            <div>
+                                              <span className="p-2" style={{ fontSize: "14px", fontWeight: "500" }}>{item.sanPhamChiTiet.cauHinh.ram.kichThuoc + "/" + item.sanPhamChiTiet.cauHinh.rom.kichThuoc + "GB"}</span>
+                                            </div>
+                                          </>
+                                        }
+                                        overlay
+                                        disableIcon
+                                        slotProps={{
+                                          label: ({ checked }) => ({
+                                            sx: {
+                                              fontWeight: 'lg',
+                                              fontSize: 'md',
+                                              color: checked ? 'text.primary' : 'text.secondary',
+                                            },
+                                          }),
+                                          action: ({ checked }) => ({
+                                            sx: (theme) => ({
+                                              ...(checked && {
+                                                '--variant-borderWidth': '2px',
+                                                '&&': {
+                                                  // && to increase the specificity to win the base :hover styles
+                                                  borderColor: "#2f80ed",
+                                                },
+                                              }),
+                                            }),
+                                          }),
+                                        }}
+                                      />
+                                    </Sheet>
+                                  </RadioGroup>
+                                  <div className="ms-2 ps-1">
+                                    <RadioGroup orientation='horizontal'
+                                      aria-labelledby="storage-label"
+                                      size="lg"
+                                      sx={{ gap: 1.7 }}
+                                    >
+                                      <Sheet
+                                        sx={{
+                                          borderRadius: 'md',
+                                          boxShadow: 'sm',
+                                        }}
+                                      >
+                                        <Radio disabled
+                                          label={
+                                            <>
+                                              <div>
+                                                <span className="p-2" style={{ fontSize: "14px", fontWeight: "500" }}>{item.sanPhamChiTiet.cauHinh.mauSac.tenMauSac}</span>
+                                              </div>
+                                            </>
+                                          }
+                                          overlay
+                                          disableIcon
+                                          slotProps={{
+                                            label: ({ checked }) => ({
+                                              sx: {
+                                                fontWeight: 'lg',
+                                                fontSize: 'md',
+                                                color: checked ? 'text.primary' : 'text.secondary',
+                                              },
+                                            }),
+                                            action: ({ checked }) => ({
+                                              sx: (theme) => ({
+                                                ...(checked && {
+                                                  '--variant-borderWidth': '2px',
+                                                  '&&': {
+                                                    // && to increase the specificity to win the base :hover styles
+                                                    borderColor: "#2f80ed",
+                                                  },
+                                                }),
+                                              }),
+                                            }),
+                                          }}
+                                        />
+                                      </Sheet>
+                                    </RadioGroup>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell className='' align="center" style={{ width: "100px" }}>
+                            <div class="number-input1 ">
+                              <button onClick={() => setCount(count - 1)}
+                                class="minus">
+                                <div className='wrap-minus'>
+                                  <span>
+                                    <RemoveOutlinedIcon style={{ fontSize: "18px" }} />
+                                  </span>
+                                </div>
+                              </button>
+                              <input value={item.soLuong} min="1" max="100" onChange={(e) => setCount(parseInt(e.target.value))}
+                                name="quantity" class="quantity"
+                                type="number" />
+                              <button class="" onClick={() => setCount(count + 1)}>
+                                <div className='wrap-plus'>
+                                  <span >
+                                    <AddOutlinedIcon style={{ fontSize: "18px" }} />
+                                  </span>
+                                </div>
+                              </button>
+                            </div>
+                          </TableCell>
+                          <TableCell align="center" style={{ fontSize: "17px", width: "170px" }}>
+                            <span style={{ fontSize: "17.5px", fontWeight: "500" }} className="txt-price">
+                              {item && item.sanPhamChiTiet.donGia ? item.sanPhamChiTiet.donGia.toLocaleString("vi-VN", {
+                                style: "currency",
+                                currency: "VND",
+                              }) : ""}
+                            </span>
+                          </TableCell>
+                          <TableCell align="center">
+                            <Tooltip TransitionComponent={Zoom} title="Cập nhật">
+                              <Button className=''
+                                icon={
+                                  <EditIcon />
+                                }
+                                // onClick={() => openDialogProductDetails()}
+                                type="primary"
+                                style={{ fontSize: "13px", height: "32.5px" }}
+                              >
+                              </Button>
+
+                            </Tooltip>
+                            <Tooltip TransitionComponent={Zoom} title="Xóa khỏi giỏ hàng">
+                              <Button className='ms-2'
+                                onClick={() => removeProductInCart(item.id)}
+                                icon={
+                                  <IconTrash />
+                                }
+                                type="danger"
+                                style={{ fontSize: "13px", height: "32.5px" }}
+                              >
+                              </Button>
+
+
+                            </Tooltip>
+
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </StyledTableBody>
+                  </Table>
+                </StyledTableContainer>
+              </div>
+            }
+            {cartItems.length == 1 ?
+              <div className='' style={{ height: "320px" }}>
               </div>
               :
-              productsInCarts.length > 1 ?
-                <div className='' style={{ height: "35px" }}>
+              cartItems.length === 2 ?
+                <div className='' style={{ height: "172px" }}>
                 </div>
-                :
-                <div className='' style={{ height: "35px" }}>
-                </div>
-            }
-            {productsInCarts.length > 0 ?
-              <div className='' style={{ height: "auto" }}>
-                <div className='mt-5 pt-3 p-1'>
-                  <CssTextField multiline maxRows={2.5}
-                    label="Ghi chú đơn hàng"
-                    sx={{ width: "755px" }}
-                  />
-                </div>
-                <div className='mt-3'></div>
-              </div> : ""
+                : cartItems.length > 2 ?
+                  <div className='' style={{ height: "24.5px" }}>
+                  </div> : ""
             }
           </div>
         </div>
@@ -608,14 +633,16 @@ const TabItem = (props) => {
                           },
                         }}
                         size='medium' className='mt-3' />
-                      <div className='mt-4 pt-2 ms-2 ps-1 d-flex' style={{ height: "45px" }}>
+                      <div className='mt-4 pt-2 ms-2 ps-1' style={{ height: "45px" }}>
                         {selectedProvince != "" && selectedDistrict != "" && selectedWard != "" ?
                           <>
-                            <img src="https://www.svgrepo.com/show/259747/delivery-truck-deliver.svg" style={{ width: "50px", height: "40px" }} />
-                            <div className='mt-1 pt-1'>
-                              <span className='ms-2' style={{ fontSize: "19px", fontWeight: "500", color: "" }}>
-                                Thời gian giao hàng dự kiến: {receiveDate}</span>
-                              <span className='ms-2' style={{ fontSize: "19px", fontWeight: "500", color: "#38b000" }}>(Giao Hàng Nhanh)</span>
+                            <div className="d-flex">
+                              <img src="https://www.svgrepo.com/show/236705/delivery-truck-truck.svg" style={{ width: "50px", height: "40px" }} />
+                              <div className='mt-2 pt-1'>
+                                <span className='ms-2' style={{ fontSize: "19px", fontWeight: "500", color: "" }}>
+                                  Thời gian giao hàng dự kiến: {receiveDate}</span>
+                              </div>
+                              <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/05/Logo-GHN-Slogan-En.png" style={{ width: "180px", height: "55px" }} className="ms-3" />
                             </div>
                           </> : ""
                         }
@@ -646,7 +673,7 @@ const TabItem = (props) => {
         data={products}
         add={addProductToCart}
         openProductDetails={openProductDetails}
-        openDialogProductDetails={opendDialogProductDetailsAndGetProduct}
+        openDialogProductItems={openDialogProductItems}
         closeDialogProductDetails={closeDialogProductDetails}
         closeNoActionDialogProductDetails={closeNoActionDialogProductDetails}
 

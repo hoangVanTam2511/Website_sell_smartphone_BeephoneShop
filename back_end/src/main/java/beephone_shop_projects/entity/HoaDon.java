@@ -2,8 +2,12 @@ package beephone_shop_projects.entity;
 
 import beephone_shop_projects.entity.base.IsIdentified;
 import beephone_shop_projects.entity.base.PrimaryEntity;
+import beephone_shop_projects.infrastructure.constant.OrderStatus;
+import beephone_shop_projects.infrastructure.constant.OrderType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -16,7 +20,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -42,9 +46,12 @@ public class HoaDon extends PrimaryEntity implements IsIdentified {
 
   private String ghiChu;
 
+  private BigDecimal phiShip;
+
   private BigDecimal tienKhachTra;
 
-  private Integer loaiHoaDon;
+  @Enumerated(EnumType.ORDINAL)
+  private OrderType loaiHoaDon;
 
   private Date ngayGiaoHang;
 
@@ -56,11 +63,11 @@ public class HoaDon extends PrimaryEntity implements IsIdentified {
 
   private Date ngayHenKhachNhan;
 
-  private Integer trangThai;
+  @Enumerated(EnumType.ORDINAL)
+  private OrderStatus trangThai;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "id_hinh_thuc_thanh_toan")
-  private HinhThucThanhToan hinhThucThanhToan;
+  @OneToMany(mappedBy = "hoaDon", cascade = CascadeType.REMOVE)
+  private Set<HinhThucThanhToan> paymentMethods;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_khach_hang")
@@ -70,10 +77,14 @@ public class HoaDon extends PrimaryEntity implements IsIdentified {
   @JoinColumn(name = "id_voucher")
   private Voucher voucher;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "id_gio_hang")
-  private GioHang gioHang;
+  private GioHang cart;
 
   @OneToMany(mappedBy = "hoaDon", cascade = CascadeType.REMOVE)
-  private List<LichSuHoaDon> orderHistories;
+  private Set<LichSuHoaDon> orderHistories;
+
+//  @OneToMany(mappedBy = "hoaDon", cascade = CascadeType.REMOVE)
+//  private Set<HoaDonChiTiet> orderDetails;
+
 }

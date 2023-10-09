@@ -9,14 +9,25 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 public class ProductDto {
+
   private String id;
 
-  private BigDecimal donGia;
-
-  private Integer soLuongTonKho;
+  private String ma;
 
   private String ten;
 
-  private String url;
+  private String heDieuHanh;
+
+  private String sim;
+
+  private String congSac;
+
+  private String dongSanPham;
+
+  private String chip;
+
+  private String manHinh;
+
+  private String pin;
 
 }

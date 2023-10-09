@@ -1,18 +1,26 @@
 package beephone_shop_projects.core.admin.order_management.controller;
 
 import beephone_shop_projects.core.admin.order_management.dto.CartDetailDto;
-import beephone_shop_projects.core.admin.order_management.repository.GioHangChiTietRepository;
-import beephone_shop_projects.core.admin.order_management.repository.impl.GioHangRepositoryImpl;
+import beephone_shop_projects.core.admin.order_management.model.response.OrderResponse;
+import beephone_shop_projects.core.admin.order_management.model.response.ProductItemResponse;
+import beephone_shop_projects.core.admin.order_management.model.response.ProductResponse;
+import beephone_shop_projects.core.admin.order_management.repository.impl.CartItemRepositoryImpl;
+import beephone_shop_projects.core.admin.order_management.repository.impl.CartRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.repository.impl.HinhThucThanhToanRepositoryImpl;
-import beephone_shop_projects.core.admin.order_management.repository.impl.HoaDonRepositoryImpl;
-import beephone_shop_projects.core.admin.order_management.service.GiaoHangNhanhService;
+import beephone_shop_projects.core.admin.order_management.repository.impl.OrderRepositoryImpl;
+import beephone_shop_projects.core.admin.order_management.service.impl.CartItemServiceImpl;
+import beephone_shop_projects.core.admin.order_management.service.impl.HoaDonServiceImpl;
 import beephone_shop_projects.core.admin.product_management.repository.SanPhamChiTietRepository;
+import beephone_shop_projects.core.common.base.ResponseObject;
 import beephone_shop_projects.entity.GioHang;
 import beephone_shop_projects.entity.GioHangChiTiet;
 import beephone_shop_projects.entity.HinhThucThanhToan;
+import beephone_shop_projects.entity.HoaDon;
 import beephone_shop_projects.entity.SanPhamChiTiet;
+import beephone_shop_projects.infrastructure.constant.HttpStatus;
+import beephone_shop_projects.infrastructure.constant.Message;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,36 +43,55 @@ public class TestController {
   private SanPhamChiTietRepository sanPhamChiTietRepository;
 
   @Autowired
-  private GioHangChiTietRepository gioHangChiTietRepository;
+  private CartItemRepositoryImpl cartItemRepository;
 
   @Autowired
-  private GioHangRepositoryImpl gioHangRepository;
+  private CartItemServiceImpl cartItemService;
 
   @Autowired
-  private HoaDonRepositoryImpl hoaDonRepository;
+  private CartRepositoryImpl gioHangRepository;
+
+  @Autowired
+  private OrderRepositoryImpl hoaDonRepository;
+
+  @Autowired
+  private HoaDonServiceImpl hoaDonService;
+
+  @Autowired
+  private ModelMapper modelMapper;
 
   @Autowired
   private HinhThucThanhToanRepositoryImpl hinhThucThanhToanRepository;
 
-  @GetMapping("/products")
-  public ResponseEntity<?> home1() {
-    return new ResponseEntity<>(sanPhamChiTietRepository.getAll(), HttpStatus.OK);
+  @GetMapping("/test1")
+  public ResponseEntity<?> home10() {
+    List<HoaDon> hoaDons = hoaDonRepository.getOrdersPending();
+    return new ResponseEntity<>(hoaDons.stream().map(s -> modelMapper.map(s, OrderResponse.class)), org.springframework.http.HttpStatus.OK);
   }
 
-  @GetMapping("/carts/{id}")
-  public ResponseEntity<?> home3(@PathVariable("id") String id) {
-    List<GioHangChiTiet> list = gioHangChiTietRepository.getAllByIdCart(id);
-    return new ResponseEntity<>(list, HttpStatus.OK);
+  @GetMapping("/test2/{id}")
+  public ResponseObject home10(@PathVariable String id) {
+    OrderResponse hoaDon = hoaDonService.getOrderPendingById(id);
+    return new ResponseObject(hoaDon);
   }
+
+  @GetMapping("/products")
+  public ResponseObject home1() {
+    return new ResponseObject(sanPhamChiTietRepository.getProducts().stream().map(s -> modelMapper.map(s, ProductItemResponse.class)));
+  }
+
+//  @GetMapping("/carts/{id}")
+//  public ResponseEntity<?> home3(@PathVariable("id") String id) {
+//    List<GioHangChiTiet> list = cartItemRepository.getAllByIdCart(id);
+//    return new ResponseEntity<>(list, HttpStatus.OK);
+//  }
 
   @DeleteMapping("/carts/{id}")
-  public ResponseEntity<?> home4(@PathVariable("id") String id) {
-    Optional<GioHangChiTiet> cartDetails = gioHangChiTietRepository.findById(id);
-    if (cartDetails.isPresent()) {
-      gioHangChiTietRepository.delete(cartDetails.get());
-      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  public ResponseObject home4(@PathVariable("id") String id) throws Exception {
+    if (cartItemService.deleteById(id)) {
+      return new ResponseObject(HttpStatus.NO_CONTENT_CODE, Message.SUCCESS);
     }
-    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    return new ResponseObject(HttpStatus.SERVER_ERROR_COMMON, Message.SERVER_ERROR_COMMON);
   }
 
   @PostMapping("/carts")
@@ -78,15 +105,15 @@ public class TestController {
     cartDetail.setGioHang(gioHang);
     cartDetail.setSanPhamChiTiet(sanPhamChiTiet.get());
 
-    gioHangChiTietRepository.save(cartDetail);
+    cartItemRepository.save(cartDetail);
 
-    return new ResponseEntity<>(gioHang, HttpStatus.OK);
+    return new ResponseEntity<>(gioHang, org.springframework.http.HttpStatus.OK);
   }
 
   @GetMapping("/payments/{id}")
   public ResponseEntity<?> home(@PathVariable("id") String id) {
     List<HinhThucThanhToan> list = hinhThucThanhToanRepository.getPaymentMethodsByOrderId(id);
-    return new ResponseEntity<>(list, HttpStatus.OK);
+    return new ResponseEntity<>(list, org.springframework.http.HttpStatus.OK);
   }
 
 }

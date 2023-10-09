@@ -47,9 +47,9 @@ public class CauHinhServiceImpl  {
         MauSac mauSac = mauSacRepository.findByTenMauSac(createCauHinhRequest.getMauSac());
 
         CauHinh cauHinh = new CauHinh();
-        cauHinh.setIdMauSac(mauSac);
-        cauHinh.setIdRom(rom);
-        cauHinh.setIdRam(ram);
+        cauHinh.setMauSac(mauSac);
+        cauHinh.setRom(rom);
+        cauHinh.setRam(ram);
 
         cauHinhRepository.save(cauHinh);
     }

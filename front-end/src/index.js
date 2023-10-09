@@ -13,6 +13,7 @@ import { store } from "./store";
 import { IndexRouters } from "./router";
 import { SimpleRouter } from "./router/simple-router";
 import { DefaultRouter } from "./router/default-router";
+import { SnackbarProvider } from "notistack";
 
 const router = createBrowserRouter(
   [...DefaultRouter, ...IndexRouters, ...SimpleRouter],
@@ -22,9 +23,14 @@ const router = createBrowserRouter(
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <Provider store={store}>
-      <App>
-        <RouterProvider router={router}></RouterProvider>
-      </App>
+      <SnackbarProvider anchorOrigin={{
+        vertical: 'top',
+        horizontal: 'right',
+      }}>
+        <App>
+          <RouterProvider router={router}></RouterProvider>
+        </App>
+      </SnackbarProvider>
     </Provider>
   </React.StrictMode>
 );

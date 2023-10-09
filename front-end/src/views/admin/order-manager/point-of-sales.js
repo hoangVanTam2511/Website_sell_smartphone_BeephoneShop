@@ -4,6 +4,7 @@ import { Row, Col } from 'react-bootstrap'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { styled } from '@mui/material/styles';
 import Switch from '@mui/material/Switch';
+import CircularProgress from '@mui/material/CircularProgress';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import CloseIcon from '@mui/icons-material/Close';
 import FormLabel from '@mui/joy/FormLabel';
@@ -18,183 +19,365 @@ import TabPanel from '@mui/lab/TabPanel';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import { FormHelperText, Slide, Tooltip } from '@mui/material';
-import DiscountOutlinedIcon from '@mui/icons-material/DiscountOutlined';
 import CreditScoreOutlinedIcon from '@mui/icons-material/CreditScoreOutlined';
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 import Badge from '@mui/material/Badge';
 import Zoom from '@mui/material/Zoom';
 
+import { toast } from "react-toastify";
 import { IoPersonCircle } from "react-icons/io5";
 import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 import { tabsClasses } from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { Button } from 'antd'
-import { FormControl, Input, Backdrop, InputLabel, Select as SelectMui, OutlinedInput, MenuItem, Checkbox, FormControlLabel, InputAdornment, IconButton } from '@mui/material'
+import { FormControl, Input, OutlinedInput, Checkbox, FormControlLabel, InputAdornment, IconButton } from '@mui/material'
 import TextField from '@mui/material/TextField';
 import style from './style.css'
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import { CustomerDialog, OrderPendingConfirmCloseDialog, ProductsDialog, ShipFeeInput } from './AlertDialogSlide';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import EditIcon from '@mui/icons-material/Edit';
+import { ConfirmPaymentDialog, CustomersDialog, OrderPendingConfirmCloseDialog, ProductsDialog, ShipFeeInput, VouchersDialog } from './AlertDialogSlide';
 import axios from 'axios';
 import { FaRegMoneyBillAlt } from 'react-icons/fa';
 import { isNaN, map, parseInt, debounce } from 'lodash';
 import { AutoComplete, InputGroup } from 'rsuite';
 import 'rsuite/dist/rsuite-no-reset.min.css';
 import CloseOutlined from '@mui/icons-material/CloseOutlined';
-import { Loading3QuartersOutlined } from "@ant-design/icons";
 import TabItem from './tab-item';
 import LoadingIndicator from '../../../utilities/loading';
+import { OrderStatusString, OrderTypeString, Notistack } from './enum';
+import useCustomSnackbar from '../../../utilities/notistack';
 
 const PointOfSales = () => {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(true);
-  // const [selectDiscount, setSelectDiscount] = useState('VND');
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingInside, setLoadingInside] = useState(false);
   const [delivery, setDelivery] = React.useState(false);
   const [paymentWhenReceive, setPaymentWhenReceive] = useState(false);
-  // const [discountNumber, setDiscountNumber] = useState(0);
-  // const [discountInput, setDiscountInput] = useState("");
   const [description, setDescription] = useState('');
-  const [discount, setDiscount] = useState(0);
+  const [discount, setDiscount] = useState("");
+  const [discountValue, setDiscountValue] = useState(0);
+  const [discountValidate, setDiscountValidate] = useState("");
   const [discountFormat, setDiscountFormat] = useState('');
   const [shipFee, setShipFee] = useState(0);
 
   const [products, setProducts] = useState([]);
-  const [productsInCart, setProductsInCart] = useState([]);
+  const [cartItems, setCartItems] = useState([]);
+  const [isFirstGet, setIsFirstGet] = useState(true);
 
   const [payment, setPayment] = useState(1);
-  const [surplusMoney, setSurplusMoney] = useState();
   const [customerPayment, setCustomerPayment] = useState(0);
   const [customerPaymentFormat, setCustomerPaymentFormat] = useState("");
   const [customers, setCustomers] = useState([]);
   const [customer, setCustomer] = useState({});
   const [customerNeedPay, setCustomerNeedPay] = useState(null);
   const [customerNeedPayFormat, setCustomerNeedPayFormat] = useState(0);
-  const [isNotPayment, setIsNotPayment] = useState(false);
+  const [count, setCount] = useState(1);
 
+  const [idVoucher, setIdVoucher] = useState("");
+  const [vouchers, setVouchers] = useState([]);
   const [order, setOrder] = useState({});
   const [cartId, setCartId] = useState("");
   const [orders, setOrders] = useState([]);
+  const [changedCartItems, setChangedCartItems] = useState(0);
+  const [alert, setAlert] = useState({});
+  const [dieuKien, setDieuKien] = useState(0);
+
+  const { handleOpenAlertVariant } = useCustomSnackbar();
+
+  const [openDialogConfirmPayment, setOpenDialogConfirmPayment] = useState(false);
+
+  const handleOpenDialogConfirmPayment = () => {
+    if (cartItems && cartItems.length == 0) {
+      handleOpenAlertVariant("Giỏ hàng chưa có sản phẩm!", Notistack.ERROR);
+    }
+    else {
+      setOpenDialogConfirmPayment(true);
+    }
+  }
+  const handleCloseDialogConfirmPayment = () => {
+    setOpenDialogConfirmPayment(false);
+  }
 
   const getShipFee = (fee) => {
     setShipFee(fee);
   }
+  const getDieuKien = (dieuKien) => {
+    setDieuKien(dieuKien);
+  }
 
-  const updateOrder = async (status, totalMoney, orderHistory, hasPlaceOrder, paymentMethod) => {
-    setIsLoading(false);
-    const orderDto = {
-      id: order.id,
-      ma: order.ma,
-      createdAt: order.createdAt,
-      // tenNguoiNhan: "",
-      // soDienThoaiNguoiNhan: "",
-      // ghiChu: description == null ? order.ghiChu : description,
-      trangThai: status == null ? order.trangThai : status,
-      loaiHoaDon: delivery == true ? 1 : 0,
-      tongTien: totalMoney,
-      khachCanTra: totalMoney,
-      gioHang: order.gioHang,
+  useEffect(() => {
+    if (cartItems.length === 0 && discountValue != 0) {
+      handleCheckVoucher(discount);
     }
-    const updateData = {
-      orderStatus: null,
-      orderHistory: orderHistory,
-      orderDto: orderDto,
-      isDelivery: delivery,
-      paymentMethod: paymentMethod,
+    else if (cartItems.length !== 0) {
+      if (discount != "" && discountValue == 0) {
+        if (discount.trim().length === 10) {
+          handleCheckVoucher(discount);
+        }
+        // if (discountValidate !== "Mã giảm giá không tồn tại.") {
+        // }
+      }
+      else if (discount != "" && discountValue != 0) {
+        if (handleCountTotalMoney() < dieuKien) {
+          handleCheckVoucher(discount);
+        }
+      }
+    }
+
+  }, [changedCartItems])
+
+  const paymentOrder = async (data) => {
+    setIsLoading(true);
+    const orderRequest = {
+      tongTien: handleCountTotalMoney(),
+      tienThua: handleCountTotalSurplus(),
+      tongTienSauKhiGiam: handleCountTotalMoneyCustomerNeedPay(),
+      tienKhachTra: customerPayment,
+      trangThai: data.trangThai,
+      loaiHoaDon: data.loaiHoaDon,
+      // ghiChu: description,
+      // soDienThoaiNguoiNhan: "",
+      // tenNguoiNhan: "",
+      // diaChiNguoiNhan: "",
+      orderHistory: data.orderHistory,
+      cart: order.cart,
+      isPayment: true,
+      // paymentMethod: paymentMethod,
     };
     try {
-      await axios.put(`http://localhost:8080/api/orders/${order.ma}`, updateData, {
+      await axios.put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
         headers: {
           "Content-Type": "application/json",
         },
         params: {
-          isPending: true,
-          hasPlaceOrder: hasPlaceOrder,
+          isUpdateStatusOrderDelivery: false,
         }
       }).then(response => {
-        setOrder(response.data);
         setIsLoading(false);
+        handleOpenAlertVariant(`${data.loaiHoaDon == OrderTypeString.DELIVERY ? "Đặt hàng thành công!" : "Thanh toán thành công!"}`, Notistack.SUCCESS);
         navigate(`/dashboard/order-detail/${order.ma}`);
       });
     } catch (error) { }
   };
-
-  const [validate, setValidate] = useState("");
-  const processingOrder = () => {
-    if (productsInCart && productsInCart.length == 0 && open1 == false) {
-      handleOpen1();
-      setValidate("Giỏ hàng đang trống!")
-      setIsValidate(false);
+  const updateOrder = async (idVoucher) => {
+    const message = `${idVoucher != null || idVoucher != "" ? "Áp dụng thành công mã giảm giá!" : "Mã giảm giá đã được gỡ bỏ thành công!"}`;
+    setIsLoading(true);
+    const orderRequest = {
+      // ghiChu: description,
+      // soDienThoaiNguoiNhan: "",
+      // tenNguoiNhan: "",
+      // diaChiNguoiNhan: "",
+      voucher: {
+        id: idVoucher,
+      },
+      isPayment: false,
+      // paymentMethod: paymentMethod,
+    };
+    try {
+      await axios.put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        params: {
+          isUpdateStatusOrderDelivery: false,
+        }
+      }).then(response => {
+        setOrder(response.data.data);
+        setDiscount(response.data.data.voucher.ma);
+        setDiscountValue(response.data.data.voucher.giaTriVoucher);
+        getAllOrdersPending();
+        setIsLoading(false);
+        handleOpenAlertVariant(message, Notistack.SUCCESS);
+        // setOpenAlertMui(true);
+        // setAlert({
+        //   message: "Áp dụng thành công mã giảm giá!",
+        //   color: "success",
+        // })
+      });
+    } catch (error) { }
+  };
+  const handleAddOrRemoveVoucher = (idVoucher, loading, keep) => {
+    const message = `${idVoucher === null ? "Mã giảm giá đã được gỡ bỏ thành công!" : "Áp dụng thành công mã giảm giá!"}`;
+    const orderRequest = {
+      voucher: {
+        id: idVoucher,
+      },
+      isPayment: false,
+    };
+    if (idVoucher === null && loading) {
+      setLoadingInside(true);
+      setTimeout(() => {
+        try {
+          axios.put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+            headers: {
+              "Content-Type": "application/json",
+            },
+            params: {
+              isUpdateStatusOrderDelivery: false,
+            }
+          }).then(response => {
+            setOrder(response.data.data);
+            setDiscount("");
+            setIdVoucher("");
+            setDiscountValue(0);
+            setDiscountValidate("");
+            getAllOrdersPending();
+            handleOpenAlertVariant(message, Notistack.SUCCESS);
+            setLoadingInside(false);
+          });
+        } catch (error) {
+          console.log(error);
+        }
+      }, 1000)
     }
-    else if (productsInCart && productsInCart.length > 0) {
-      const totalMoney = handleCountTotalMoney();
-      const status = delivery == true ? 0 : 3;
-      const hasPlaceOrder = true;
-      const orderHistoryCounter = {
+    else if (idVoucher === null && !loading) {
+      try {
+        axios.put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          params: {
+            isUpdateStatusOrderDelivery: false,
+          }
+        }).then(response => {
+          setOrder(response.data.data);
+          setIdVoucher("");
+          if (!keep) {
+            setDiscountValue(0);
+            setDiscount("");
+            setDiscountValidate("");
+          }
+          getAllOrdersPending();
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    else if (idVoucher != null && loading) {
+      setLoadingInside(true);
+      setTimeout(() => {
+        try {
+          axios.put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+            headers: {
+              "Content-Type": "application/json",
+            },
+            params: {
+              isUpdateStatusOrderDelivery: false,
+            }
+          }).then(response => {
+            setOrder(response.data.data);
+            setDiscount(response.data.data.voucher.ma);
+            setIdVoucher(response.data.data.voucher.id);
+            setDiscountValue(response.data.data.voucher.giaTriVoucher);
+            setDiscountValidate("");
+            getAllOrdersPending();
+            handleOpenAlertVariant(message, Notistack.SUCCESS);
+            setLoadingInside(false);
+          });
+        } catch (error) {
+          console.log(error);
+        }
+      }, 1000);
+    }
+    else {
+      try {
+        axios.put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          params: {
+            isUpdateStatusOrderDelivery: false,
+          }
+        }).then(response => {
+          setOrder(response.data.data);
+          setIdVoucher(response.data.data.voucher.id);
+          setDiscount(response.data.data.voucher.ma);
+          setDiscountValue(response.data.data.voucher.giaTriVoucher);
+          setDiscountValidate("");
+          getAllOrdersPending();
+          handleOpenAlertVariant(message, Notistack.SUCCESS);
+          setLoadingInside(false);
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
+  const processingPaymentOrder = () => {
+    if (cartItems && cartItems.length > 0) {
+      const statusOrder = delivery ? OrderStatusString.PENDING_CONFIRM : OrderStatusString.HAD_PAID;
+      const typeOrder = delivery ? OrderTypeString.DELIVERY : OrderTypeString.AT_COUNTER;
+      const orderHistory = {
         thaoTac: "Đã Thanh Toán",
-        loaiThaoTac: 3,
-        moTa: "Khách hàng đã thanh toán",
+        loaiThaoTac: 6,
+        moTa: "Khách hàng đã thanh toán đơn hàng",
         createdAt: new Date(),
+        createdBy: "Admin",
+        hoaDon: {
+          id: order.id
+        },
       }
-      const paymentMethod = {
-        loaiThanhToan: 0,
-        hinhThucThanhToan: payment,
-        soTienThanhToan: totalMoney,
-        trangThai: 1,
-        nguoiXacNhan: "Admin",
-        createdAt: new Date(),
+      const data = {
+        trangThai: statusOrder,
+        loaiHoaDon: typeOrder,
+        orderHistory: delivery ? null : orderHistory,
       }
-      updateOrder(status, totalMoney, delivery == true ? null : orderHistoryCounter, hasPlaceOrder, paymentMethod);
-      // const message = delivery == false ? "Thanh toán thành công" : "Đặt hàng thành công";
-      // setTimeout(() => {
-      //   navigate(`/dashboard/order-detail/${order.ma}`, {
-      //     state: {
-      //       data: {
-      //         message: message,
-      //       }
-      //     }
-      //   });
-      //   setOpen1(false);
-      // }, 500);
+      // const paymentMethod = {
+      //   loaiThanhToan: 0,
+      //   hinhThucThanhToan: payment,
+      //   soTienThanhToan: totalMoney,
+      //   trangThai: 1,
+      //   nguoiXacNhan: "Admin",
+      //   createdAt: new Date(),
+      // }
+      paymentOrder(data);
     }
   }
 
   const handleUpdateDescriptionOrder = (event) => {
     const value = event.target.value;
     setDescription(value);
-    updateOrder(null, null, null);
+    paymentOrder(null, null, null);
   }
 
   const getAllOrdersPending = () => {
     axios
-      .get(`http://localhost:8080/api/orders`, {
-        params: {
-          isPending: true,
-          pageSize: 20,
-          sort: "New",
-        }
+      .get(`http://localhost:8080/api/orders/pending`, {
       })
       .then((response) => {
-        setOrders(response.data.content);
+        setOrders(response.data.data);
+
+        if (isFirstGet) {
+          setOrder(response && response.data.data[0])
+          setCartId(response && response.data.data[0].cart.id);
+          setCartItems(response && response.data.data[0].cart.cartItems);
+          // setShipFee(response ? response.data.data[0].tienShip : 0);
+          setDiscount(response && response.data.data[0].voucher.ma);
+          setIdVoucher(response && response.data.data[0].voucher.id);
+          setDiscountValue(response && response.data.data[0].voucher.giaTriVoucher);
+          setIsFirstGet(false);
+        }
       })
       .catch((error) => {
         console.error(error);
       })
   }
-
-  const getCartDetails = (cartId) => {
+  const getVouchersIsActive = () => {
     axios
-      .get(`http://localhost:8080/api/carts/${cartId}`)
+      .get(`http://localhost:8080/voucher/voucherActive`)
       .then((response) => {
-        setProductsInCart(response.data);
-        // console.log(response.data);
+        setVouchers(response.data.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
+  const getOrderPendingAfterAddOrDeleteCartItems = () => {
+    axios
+      .get(`http://localhost:8080/api/orders/pending/${order.id}`)
+      .then((response) => {
+        setCartItems(response.data.data.cart.cartItems);
+        setChangedCartItems(changedCartItems + 1);
       })
       .catch((error) => {
         console.error(error);
@@ -203,43 +386,21 @@ const PointOfSales = () => {
 
   const getOrderPendingLastRemove = () => {
     axios
-      .get(`http://localhost:8080/api/orders`, {
-        params: {
-          isPending: true,
-          pageSize: 20,
-          sort: "New",
-        }
+      .get(`http://localhost:8080/api/orders/pending`, {
       })
       .then((response) => {
-        setOrders(response.data.content);
-        const dataOrder = response.data.content;
-        const lastItem = dataOrder[dataOrder.length - 1];
-        setOrder(lastItem);
-        setCartId(lastItem.gioHang.id);
-        getCartDetails(lastItem.gioHang.id);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }
-  const getOrderPendingDefault = () => {
-    axios
-      .get(`http://localhost:8080/api/orders`, {
-        params: {
-          isPending: true,
-          pageSize: 20,
-          sort: "New",
+        const orders = response.data.data;
+        setOrders(orders);
+        const lastOrder = orders[orders.length - 1];
+        setOrder(lastOrder);
+        setCartId(lastOrder.cart.id);
+        setCartItems(lastOrder.cart.cartItems);
+        if (lastOrder.voucher != null) {
+          setDiscount(lastOrder.voucher.ma);
+          setDiscount(lastOrder.voucher.id);
+          setDiscountValue(lastOrder.voucher.giaTriVoucher);
         }
-      })
-      .then((response) => {
-        setOrder(response.data.content[0]);
-        setCartId(response.data.content[0].gioHang.id)
-        getCartDetails(response.data.content[0].gioHang.id);
-        let total = 0;
-        response.data.content[0].gioHang && response.data.content[0].gioHang.cartDetails.map((item, index) => {
-          total += item.donGia;
-        })
-        setSurplusMoney(customerPayment - total);
+        setValueTabs(orders.length);
       })
       .catch((error) => {
         console.error(error);
@@ -250,24 +411,26 @@ const PointOfSales = () => {
     axios
       .post(`http://localhost:8080/api/orders?isPending=true`)
       .then(response => {
-        setValueTabs(orders.length + 1);
         getAllOrdersPending();
-        setOrder(response.data);
-        setCartId(response.data.gioHang.id);
-        setProductsInCart([]);
+        setValueTabs(orders.length + 1);
+        setOrder(response.data.data);
+        setCartId(response.data.data.cart.id);
+        setCartItems([]);
+        setDiscount("");
+        setIdVoucher("");
+        setDiscountValue(0);
       }).catch(error => {
         console.log(error);
       })
   }
 
-  const handleDeleteCartDetailsById = async (id) => {
-    setIsLoading(false);
+  const handleDeleteCartItemById = async (id) => {
+    setIsLoading(true);
     try {
       await axios.delete(`http://localhost:8080/api/carts/${id}`);
-      getCartDetails(cartId);
+      getOrderPendingAfterAddOrDeleteCartItems();
       getAllOrdersPending();
-      // getOrderById(order.ma);
-      setIsLoading(true);
+      setIsLoading(false);
     } catch (error) {
       console.log(error);
     }
@@ -276,7 +439,6 @@ const PointOfSales = () => {
   const handleDeleteOrderPendingById = async (id) => {
     try {
       await axios.delete(`http://localhost:8080/api/orders/${id}`);
-      setValueTabs(orders.length - 1);
       getOrderPendingLastRemove();
     } catch (error) {
       console.log(error);
@@ -288,21 +450,26 @@ const PointOfSales = () => {
       handleDeleteOrderPendingById(id);
     }
     else {
-      handleOpenDialogOrderClose(true);
+      handleOpenDialogOrderClose();
     }
   }
 
-  const getOrderById = (id) => {
-    axios
-      .get(`http://localhost:8080/api/orders/${id}`)
-      .then((response) => {
-        setOrder(response.data);
-        setCartId(response.data.gioHang.id);
-        setProductsInCart(response.data.gioHang.cartDetails);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+  const getOrderPendingByTabIndex = (index) => {
+    const order = orders[index - 1];
+    setOrder(order);
+    setCartId(order.cart.id);
+    setCartItems(order.cart.cartItems);
+    if (order && order.voucher) {
+      setIdVoucher(order && order.voucher && order.voucher.id);
+      setDiscount(order && order.voucher && order.voucher.ma);
+      setDiscountValue(order && order.voucher && order.voucher.giaTriVoucher);
+    }
+    else {
+      setIdVoucher("");
+      setDiscount("");
+      setDiscountValue(0);
+    }
+
   }
 
   const getCustomerById = async (id) => {
@@ -332,12 +499,51 @@ const PointOfSales = () => {
         console.error("Error");
       })
   }
+
+  const handleCheckVoucher = (value) => {
+    setLoadingInside(true);
+    setTimeout(() => {
+      axios.get(`http://localhost:8080/voucher/findVoucher`, {
+        params: {
+          input: value,
+          tongTien: handleCountTotalMoney(),
+        }
+      })
+        .then(response => {
+          setDiscountValidate("");
+          if (response.data.status === true) {
+            handleAddOrRemoveVoucher(response.data.voucher.id, false);
+            setDiscountValidate("");
+          }
+          if (response.data.status === null) {
+            setDiscountValidate(response.data.message);
+            if (discountValue != 0) {
+              setDiscountValue(0);
+              handleAddOrRemoveVoucher(null, false, true);
+            }
+          }
+          setLoadingInside(false);
+        }).catch(error => {
+          console.error("Error");
+        })
+    }, 1000);
+  }
+
   const handleCountTotalSurplus = () => {
     let total = 0;
-    productsInCart && productsInCart.map((item, index) => {
+    cartItems && cartItems.map((item) => {
       total += item.donGia;
     })
-    const surplus = customerPayment - total;
+    const result = (customerPayment - (total + shipFee - discountValue || 0));
+    return result;
+
+  }
+  const handleCountTotalSurplusFormat = () => {
+    let total = 0;
+    cartItems && cartItems.map((item) => {
+      total += item.donGia;
+    })
+    const surplus = (customerPayment - (total + shipFee - discountValue || 0));
     const result = surplus
       .toLocaleString("vi-VN", {
         style: "currency",
@@ -348,7 +554,7 @@ const PointOfSales = () => {
   }
   const handleCountTotalMoney = () => {
     let total = 0;
-    productsInCart && productsInCart.map((item, index) => {
+    cartItems && cartItems.map((item) => {
       total += item.donGia;
     })
     return total;
@@ -356,7 +562,7 @@ const PointOfSales = () => {
   }
   const handleCountTotalMoneyFormat = () => {
     let total = 0;
-    productsInCart && productsInCart.map((item, index) => {
+    cartItems && cartItems.map((item) => {
       total += item.donGia;
     })
     const result = total
@@ -367,12 +573,20 @@ const PointOfSales = () => {
     return result;
   }
   const handleCountTotalMoneyCustomerNeedPay = () => {
-    let result = "";
     let total = 0;
-    productsInCart && productsInCart.map((item, index) => {
+    cartItems && cartItems.map((item) => {
       total += item.donGia;
     })
-    let totalFinal = total + shipFee;
+    const result = total + shipFee - (discountValue || 0);
+    return result;
+  }
+  const handleCountTotalMoneyCustomerNeedPayFormat = () => {
+    let result = "";
+    let total = 0;
+    cartItems && cartItems.map((item) => {
+      total += item.donGia;
+    })
+    let totalFinal = total + shipFee - (discountValue || 0);
     result = totalFinal
       .toLocaleString("vi-VN", {
         style: "currency",
@@ -381,21 +595,33 @@ const PointOfSales = () => {
     return result;
   }
 
+
+  const handleChangeDiscount = (event) => {
+    setDiscountValidate("");
+    const value = event.target.value;
+    setDiscount(value)
+    if (value === null || value === "" || value.trim().length === 0) {
+      setDiscount("")
+      setDiscountValidate("");
+    }
+    else if (value.trim().length === 10) {
+      handleCheckVoucher(value);
+    }
+
+  }
+
   useEffect(() => {
     getAllOrdersPending();
-    getOrderPendingDefault();
     getAllCustomers();
-    // setCustomerNeedPayFormat(handleCountTotalMoneyCustomerNeedPay());
-
+    // getAllProducts();
   }, []);
 
-  const [idProduct, setIdProduct] = useState();
-  const [priceProduct, setPriceProduct] = useState();
+  // const [idProduct, setIdProduct] = useState();
+  // const [priceProduct, setPriceProduct] = useState();
   const [openProducts, setOpenProducts] = useState(false);
   const [openProductDetails, setOpenProductDetails] = useState(false);
-  const handleOpenDialogProductDetails = (id, price) => {
-    setIdProduct(id)
-    setPriceProduct(price);
+
+  const handleOpenDialogProductDetails = () => {
     setOpenProductDetails(true);
   }
 
@@ -418,38 +644,38 @@ const PointOfSales = () => {
     setOpenProducts(false);
   }
 
-  const addProductAndCartToCartDetails = async (cartDetails) => {
-    setIsLoading(false);
-    const addCartDetails = {
-      amount: cartDetails.amount,
-      price: cartDetails.price,
-      cartId: cartDetails.cartId,
-      productId: cartDetails.productId,
-      orderId: cartDetails.orderId,
+  const addCartItemsToCart = async (cartItems) => {
+    setIsLoading(true);
+    const data = {
+      amount: cartItems.amount,
+      price: cartItems.price,
+      cartId: cartItems.cartId,
+      productId: cartItems.productId,
+      // orderId: cartItems.orderId,
     };
     try {
-      await axios.post(`http://localhost:8080/api/carts`, addCartDetails, {
+      await axios.post(`http://localhost:8080/api/carts`, data, {
         headers: {
           "Content-Type": "application/json",
         },
       }).then(response => {
-        getCartDetails(cartId);
         getAllOrdersPending();
-        setIsLoading(true);
+        getOrderPendingAfterAddOrDeleteCartItems();
+        setIsLoading(false);
         handleCloseDialogProductDetails();
         handleCloseDialogProducts();
       });
     } catch (error) { }
   };
-  const handleAddProductToCart = () => {
-    const cartDetails = {
-      amount: 1,
+  const handleAddProductToCart = (priceProduct, idProduct, amount) => {
+    const cartItems = {
+      amount: amount,
       price: priceProduct,
       cartId: cartId,
       productId: idProduct,
-      orderId: order.id,
+      // orderId: order.id,
     }
-    addProductAndCartToCartDetails(cartDetails);
+    addCartItemsToCart(cartItems);
   }
 
   const handleDeliveryChange = (event) => {
@@ -466,34 +692,25 @@ const PointOfSales = () => {
     setPaymentWhenReceive(event.target.checked);
   };
 
-  const handleCustomerPaymentAndSurplusMoney = (event) => {
+  const handleCustomerPayment = (event) => {
 
     const value = event.target.value;
-    const parseNumber = parseFloat(value.replace(/[^0-9.-]+/g, ""));
+    const parseNumberPayment = parseFloat(value.replace(/[^0-9.-]+/g, ""));
     let valueFinal;
 
     valueFinal = value
       .replace(/[^0-9]+/g, "")
       .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     setCustomerPaymentFormat(valueFinal);
-    setCustomerPayment(parseNumber);
+    setCustomerPayment(parseNumberPayment);
 
     if (value == null || value == "") {
-      const final = handleCountTotalMoney();
-      setCustomerPayment(0);
-      setCustomerPaymentFormat("");
-      setSurplusMoney(-final);
-    }
-    else if (parseNumber > 100000000000) {
-      const final = handleCountTotalMoney();
-      setSurplusMoney(-final);
       setCustomerPayment(0);
       setCustomerPaymentFormat("");
     }
-    else {
-      const customerNeedPayment = handleCountTotalMoney();
-      const surplusMoneyOurCustomer = parseNumber - customerNeedPayment;
-      setSurplusMoney(surplusMoneyOurCustomer);
+    else if (parseNumberPayment > 100000000000) {
+      setCustomerPayment(0);
+      setCustomerPaymentFormat("");
     }
   }
 
@@ -553,22 +770,23 @@ const PointOfSales = () => {
     return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
   });
   const [isValidate, setIsValidate] = useState(false);
-  const [open, setOpen] = React.useState(false);
+  const [openAlertMui, setOpenAlertMui] = React.useState(false);
 
 
   const handleClick = () => {
-    setOpen(true);
+    setOpenAlertMui(true);
   };
 
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;
     }
-    setOpen(false);
+    setOpenAlertMui(false);
   };
 
 
-  const [openCustomer, setOpenCustomer] = useState();
+  const [openCustomers, setOpenCustomers] = useState();
+  const [openVouchers, setOpenVouchers] = useState();
   const [openOrderClose, setOpenOrderClose] = useState();
 
   const handleOpenDialogOrderClose = () => {
@@ -583,12 +801,23 @@ const PointOfSales = () => {
     setOpenOrderClose(false);
   }
 
+  const handleOpenDialogVouchers = () => {
+    getVouchersIsActive();
+    setOpenVouchers(true);
+  }
+  const handleCloseNoActionDialogVouchers = () => {
+    setOpenVouchers(false);
+  }
+
+  const handleCloseDialogVouchers = () => {
+    setOpenVouchers(false);
+  }
   const handleOpenDialogCustomers = () => {
-    setOpenCustomer(true);
+    setOpenCustomers(true);
   }
 
   const handleCloseDialogCustomers = () => {
-    setOpenCustomer(false);
+    setOpenCustomers(false);
   }
 
   // const [receiveName, setReceiveName] = useState("");
@@ -608,24 +837,20 @@ const PointOfSales = () => {
 
   const handleChange = (event, newValue) => {
     setValueTabs(newValue);
+    getOrderPendingByTabIndex(newValue)
   };
 
-  const [open1, setOpen1] = React.useState(false);
+  const [openAlert, setOpenAlert] = React.useState(false);
   const [open2, setOpen2] = React.useState(false);
   const handleClose2 = () => {
     setOpen2(false);
   };
 
   const handleClose1 = () => {
-    setOpen1(false);
+    setAlert(false);
   };
-  const handleOpen1 = () => {
-    setOpen1(true);
-    setTimeout(() => {
-      setOpen1(false);
-      setOpen(true);
-    }, 350);
-    setOpen(false);
+  const handleOpenAlert = () => {
+    setAlert(true);
 
   };
 
@@ -718,19 +943,16 @@ const PointOfSales = () => {
                     {orders && orders.map((item, index) => {
                       return (
                         <Tab sx={{ height: "20px" }}
-                          onClick={() => {
-                            getOrderById(item.ma)
-                          }}
                           style={{ borderRadius: "8px 8px 0 0", color: "black" }} label={
                             <div className='d-flex' style={{}}>
                               <span className='active' style={{ fontWeight: "", fontSize: "15px", textTransform: "capitalize" }}>Đơn hàng {item.ma.substring(8)}</span>
-                              <StyledBadge showZero={true} className='ms-2' badgeContent={item && item.gioHang && item.gioHang.cartDetails && item.gioHang.cartDetails.length} color="primary">
+                              <StyledBadge showZero={true} className='ms-2' badgeContent={item && item.cart && item.cart.cartItems && item.cart.cartItems.length} color="primary">
                                 <img style={{ width: "15px", height: "19px" }} src="https://www.svgrepo.com/show/224235/shopping-cart.svg" />
                               </StyledBadge>
                               <div className='ms-1'></div>
                               {orders && orders.length > 1 ?
                                 <>
-                                  <div onClick={(event) => { event.stopPropagation() }} onMouseDown={() => { handleConfirmBeforeDeleteOrderPendingHasProduct(item && item.gioHang && item.gioHang.cartDetails && item.gioHang.cartDetails.length, item.id); setItemMa(item.ma); setItemId(item.id) }} className='ms-2 ps-1 iconButton' style={{ position: "relative" }}>
+                                  <div onClick={(event) => { event.stopPropagation() }} onMouseDown={() => { handleConfirmBeforeDeleteOrderPendingHasProduct(item && item.cart && item.cart.cartItems && item.cart.cartItems.length, item.id); setItemMa(item.ma); setItemId(item.id) }} className='ms-2 ps-1 iconButton' style={{ position: "relative" }}>
                                     <div className='' style={{ position: "absolute", bottom: "-5px" }}>
                                       <Tooltip title="Đóng" TransitionComponent={Zoom}>
                                         <IconButton aria-label="delete" size="small" className=''>
@@ -778,9 +1000,9 @@ const PointOfSales = () => {
                     closeDialogProductDetails={handleCloseDialogProductDetails}
                     closeNoActionDialogProductDetails={handleCloseNoActionDialogProductDetails}
                     add={handleAddProductToCart}
-                    remove={handleDeleteCartDetailsById}
+                    remove={handleDeleteCartItemById}
                     delivery={delivery}
-                    productsInCarts={productsInCart}
+                    cartItems={cartItems}
                   />
                 </TabPanel>
               </div>
@@ -886,43 +1108,64 @@ const PointOfSales = () => {
 
 
               <div className='ms-2 ps-1 mt-3'>
-                {isNotPayment == false ?
-                  <>
-                    <div className='d-flex mt-3' style={{ position: "relative" }}>
-                      <CssTextField size='small'
-                        InputLabelProps={{
-                          sx: {
-                            fontSize: "14.5px"
-                          }
-                        }}
-                        inputProps={{
-                          style: {
-                            height: "22.5px",
-                          },
-                        }}
-                        label="Mã Giảm Giá"
-                        sx={{ fontSize: "13px" }} className='me-2' style={{ width: "150px" }} />
-                      <div style={{ position: "absolute", left: "2px", top: "36px", display: "none" }}>
-                        <FormHelperText><span style={{ color: "#dc1111" }}>
-                          Mã giảm giá không tồn tại
-                        </span></FormHelperText>
-                      </div>
-                      <Button
-                        className="rounded-2 button-mui"
-                        type="primary"
-                        style={{ height: "38.8px", width: "auto", fontSize: "15px" }}
-                      >
-                        <span
-                          className="text-white"
-                          style={{ marginBottom: "3px", fontSize: "13.5px", fontWeight: "500" }}
-                        >
-                          Chọn Mã Giảm Giá
-                        </span>
-                      </Button>
+                <>
+                  <div className='d-flex mt-3' style={{ position: "relative" }}>
+                    <TextField size='small'
+                      onChange={handleChangeDiscount}
+                      value={discount}
+                      InputLabelProps={{
+                        sx: {
+                          fontSize: "14.5px"
+                        }
+                      }}
+                      InputProps={{
+                        readOnly: discountValue && true,
+                        endAdornment: loadingInside === true ? <CircularProgress
+                          size={25}
+                          sx={{
+                            position: 'relative',
+                            display: 'flex',
+                            justifyContent: 'flex-end',
+                            alignItems: 'center',
+                          }}
+                        />
+                          : discountValue != 0 ? <Tooltip
+                            title="Bỏ chọn" className='' TransitionComponent={Zoom}>
+                            <IconButton size='small' sx={{ marginLeft: "5px" }}
+                              onClick={() => handleAddOrRemoveVoucher(null, true)}
+                            >
+                              <CloseOutlined style={{ fontSize: "18px" }} />
+                            </IconButton>
+                          </Tooltip> : ""
+                      }}
+                      inputProps={{
+                        maxLength: 10,
+                        style: {
+                          height: "22.5px",
+                        },
+                      }}
+                      label="Mã Giảm Giá"
+                      sx={{ fontSize: "13px" }} className='me-2' style={{ width: "170px" }} />
+                    <div style={{ position: "absolute", left: "2px", top: "36px" }}>
+                      <FormHelperText><span style={{ color: "#dc1111" }}>
+                        {(discount === "" || discount.length === 0) ? "" : discountValidate}
+                      </span></FormHelperText>
                     </div>
-                  </>
-                  : ""
-                }
+                    <Button
+                      onClick={() => handleOpenDialogVouchers()}
+                      className="rounded-2 button-mui"
+                      type="warning"
+                      style={{ height: "38.8px", width: "auto", fontSize: "15px" }}
+                    >
+                      <span
+                        className="text-dark"
+                        style={{ marginBottom: "3px", fontSize: "13.5px", fontWeight: "500" }}
+                      >
+                        Chọn Mã Giảm Giá
+                      </span>
+                    </Button>
+                  </div>
+                </>
                 <div className='d-flex justify-content-between mt-4' style={{ marginLeft: "1px" }}>
                   <span className='' style={{ fontSize: "15px", marginTop: "1px" }}>Tổng tiền hàng</span>
                   <span className='text-dark me-2' style={{ fontSize: "17.5px" }}>
@@ -931,8 +1174,18 @@ const PointOfSales = () => {
                     }
                   </span>
                 </div>
-                {/*
-*/}
+                <div className='d-flex justify-content-between mt-4' style={{ marginLeft: "1px" }}>
+                  <span className='' style={{ fontSize: "15px", marginTop: "1px" }}>Giảm giá</span>
+                  <span className='text-dark me-2' style={{ fontSize: "17.5px" }}>
+                    {
+                      discountValue.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })
+                    }
+                  </span>
+                </div>
+
                 {delivery == false ?
                   <>
                     <div className='d-flex justify-content-between mt-4' style={{ marginLeft: "1px" }}>
@@ -940,15 +1193,15 @@ const PointOfSales = () => {
                       </span>
                       <span className='me-2 fw-bold' style={{ fontSize: "17.5px", color: "#dc1111" }}>
                         {
-                          handleCountTotalMoneyCustomerNeedPay()}
+                          handleCountTotalMoneyCustomerNeedPayFormat()}
                       </span>
                     </div>
-                    {isNotPayment == false && productsInCart.length > 0 ?
+                    {cartItems.length > 0 ?
                       <div className='d-flex justify-content-between mt-3' style={{ marginLeft: "1px" }}>
                         <span className='fw-bold text-dark' style={{ fontSize: "15px", color: "#777", marginTop: "10px" }}>Khách thanh toán
                         </span>
                         <TextField className='me-2'
-                          onChange={handleCustomerPaymentAndSurplusMoney}
+                          onChange={handleCustomerPayment}
                           value={customerPaymentFormat}
                           InputProps={{
                             style: { fontSize: '16.5px' }
@@ -976,16 +1229,16 @@ const PointOfSales = () => {
                       <span className='fw-bold' style={{ fontSize: "15px", marginTop: "1px" }}>Tổng cộng</span>
                       <span className='me-2 fw-bold' style={{ fontSize: "17.5px", color: "#dc1111" }}>
                         {
-                          handleCountTotalMoneyCustomerNeedPay()
+                          handleCountTotalMoneyCustomerNeedPayFormat()
                         }
                       </span>
                     </div>
                     {
-                      paymentWhenReceive == false && isNotPayment == false && productsInCart.length > 0 ?
+                      paymentWhenReceive == false && cartItems.length > 0 ?
                         <div className='d-flex justify-content-between mt-3 pt-1' style={{ marginLeft: "1px" }}>
                           <span className='fw-bold text-dark' style={{ fontSize: "15px", color: "#777", marginTop: "10px" }}>Khách thanh toán</span>
                           <TextField className='me-2'
-                            onChange={handleCustomerPaymentAndSurplusMoney}
+                            onChange={handleCustomerPayment}
                             value={customerPaymentFormat}
                             variant="standard"
                             style={{ width: "120px", fontSize: "17px" }} />
@@ -996,15 +1249,15 @@ const PointOfSales = () => {
                 }
               </div>
 
-              {(customerPayment != (handleCountTotalMoney()) && isNotPayment == false) && (delivery == true || delivery == false) && paymentWhenReceive == false && productsInCart.length > 0 ?
+              {(customerPayment != (handleCountTotalMoneyCustomerNeedPay())) && (delivery == true || delivery == false) && paymentWhenReceive == false && cartItems.length > 0 ?
                 <div className={`d-flex justify-content-between ${`${paymentWhenReceive == false && delivery == true ? "pt-4 mt-1" : "pt-3 mt-2"}`} ms-2`} style={{ marginLeft: "1px" }} >
                   <span className='ms-1' style={{ fontSize: "15px", marginTop: "2px" }}>Tiền thừa trả khách</span>
                   <span className='me-2' style={{ fontSize: "17.5px" }}>{
-                    handleCountTotalSurplus()
+                    handleCountTotalSurplusFormat()
                   }</span>
                 </div> : ""
               }
-              {isNotPayment == false && delivery == true ?
+              {delivery == true ?
                 <div className='mt-3 ms-3'>
                   <FormControlLabel
                     checked={paymentWhenReceive}
@@ -1018,7 +1271,7 @@ const PointOfSales = () => {
                 : ""
               }
 
-              {(delivery == true && paymentWhenReceive == true) || isNotPayment == true || productsInCart.length == 0 ? "" :
+              {(delivery == true && paymentWhenReceive == true) || cartItems.length == 0 ? "" :
                 <div className={
                   delivery == false ?
                     'mt-4 ms-2 pt-1' : "ms-2 mt-3"}>
@@ -1069,7 +1322,7 @@ const PointOfSales = () => {
                         flexDirection: 'column',
                         alignItems: 'center',
                         p: 0.5,
-                        minWidth: 95,
+                        minWidth: "28%",
                       }}
                     >
                       <Radio value={"Tiền mặt"} checkedIcon={<CheckCircleOutlineOutlinedIcon />} />
@@ -1086,7 +1339,7 @@ const PointOfSales = () => {
                         flexDirection: 'column',
                         alignItems: 'center',
                         p: 0.5,
-                        minWidth: 125,
+                        minWidth: "35%",
                       }}
                     >
                       <Radio value={"Chuyển khoản"} checkedIcon={<CheckCircleOutlineOutlinedIcon />} />
@@ -1103,7 +1356,7 @@ const PointOfSales = () => {
                         flexDirection: 'column',
                         alignItems: 'center',
                         p: 0.5,
-                        minWidth: 90,
+                        minWidth: "27%",
                       }}
                     >
                       <Radio value={"Cả 2"} checkedIcon={<CheckCircleOutlineOutlinedIcon />} />
@@ -1116,15 +1369,15 @@ const PointOfSales = () => {
               }
             </div>
 
-            <div className="mt-1">
+            <div className="mt-3">
               <div className=''>
                 <div className='text-center'>
-                  <button onClick={processingOrder}
-                    type="button" class="__add-cart0 add-to-cart trigger ms-1">
-                    <span class="" style={{ fontSize: "17.5px" }}>
+                  <Button type="primary" onClick={handleOpenDialogConfirmPayment}
+                    className="__add-cart0 add-to-cart trigger ms-1">
+                    <span class="" style={{ fontSize: "17.5px", fontWeight: "450" }}>
                       {delivery == true ? "ĐẶT HÀNG" : "THANH TOÁN"}
                     </span>
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -1132,18 +1385,37 @@ const PointOfSales = () => {
           </div>
         </Col>
       </Row >
-      <CustomerDialog open={openCustomer} onCloseNoAction={handleCloseDialogCustomers} data={customers} />
+      <CustomersDialog
+        open={openCustomers}
+        onCloseNoAction={handleCloseDialogCustomers}
+        data={customers} />
+      <VouchersDialog
+        open={openVouchers}
+        onCloseNoAction={handleCloseNoActionDialogVouchers}
+        onClose={handleCloseDialogVouchers}
+        data={vouchers}
+        add={handleAddOrRemoveVoucher}
+        discount={idVoucher}
+        total={handleCountTotalMoney}
+        checkDieuKien={getDieuKien}
+      />
+      <ConfirmPaymentDialog
+        open={openDialogConfirmPayment}
+        onCloseNoAction={handleCloseDialogConfirmPayment}
+        confirmPayment={processingPaymentOrder}
+
+      />
       <OrderPendingConfirmCloseDialog open={openOrderClose} onClose={handleCloseNoActionDialogOrderClose} ma={itemMa && itemMa.substring(8)} deleteOrder={() => handleCloseDialogOrderClose(itemId)} />
       <Snackbar
         anchorOrigin={{
           vertical: 'top',
           horizontal: 'right',
-        }} open={open} autoHideDuration={3000} onClose={handleClose}>
-        <Alert variant="filled" onClose={handleClose} severity="error" sx={{ width: '100%' }}>
-          {validate}
+        }} open={openAlertMui} autoHideDuration={3000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity={alert && alert.color} sx={{ width: '100%', height: "50px", fontSize: "15.5px" }}>
+          {alert && alert.message}
         </Alert>
       </Snackbar>
-      {!isLoading && <LoadingIndicator />}
+      {isLoading && <LoadingIndicator />}
     </>
   )
 }

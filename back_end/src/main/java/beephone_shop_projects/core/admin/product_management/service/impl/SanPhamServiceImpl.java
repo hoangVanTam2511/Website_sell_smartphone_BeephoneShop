@@ -63,11 +63,11 @@ public class SanPhamServiceImpl {
         SanPham sanPham = new SanPham();
         sanPham.setMa(sanPhamRepository.getNewCode());
         sanPham.setTenSanPham(req.getTenSanPham());
-        sanPham.setIdDongSanPham(dongSanPham);
-        sanPham.setIdNhaSanXuat(nhaSanXuat);
-        sanPham.setIdChip(chip);
-        sanPham.setIdPin(pin);
-        sanPham.setIdManHinh(manHinh);
+        sanPham.setDongSanPham(dongSanPham);
+        sanPham.setNhaSanXuat(nhaSanXuat);
+        sanPham.setChip(chip);
+        sanPham.setPin(pin);
+        sanPham.setManHinh(manHinh);
         sanPham.setMoTa(req.getMoTa());
         sanPham.setHeDieuHanh(req.getHeDieuHanh());
         sanPham.setSim(req.getSim());
