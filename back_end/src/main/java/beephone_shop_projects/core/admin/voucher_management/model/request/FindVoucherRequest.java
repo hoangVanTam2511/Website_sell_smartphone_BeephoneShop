@@ -39,4 +39,6 @@ public class FindVoucherRequest {
 
     private Integer pageSize;
 
+    private BigDecimal tongTien;
+
 }

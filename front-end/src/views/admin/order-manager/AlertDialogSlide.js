@@ -7,6 +7,7 @@ import { useTheme } from '@mui/material/styles';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import { Drawer, Dialog, Input, Select as SelectMui, IconButton, Slide, TextField, FormControl, InputLabel, MenuItem, DialogTitle, DialogContent, DialogContentText, DialogActions, Box, InputAdornment } from '@mui/material'
 import styleCss from './style.css'
+import { Empty } from 'antd';
 import { format } from 'date-fns'
 import { styled } from '@mui/system';
 import Table from '@mui/material/Table';
@@ -424,6 +425,7 @@ export function ProductsDialog(props) {
                   <TableCell style={{ fontWeight: "500" }} align="center">Hãng</TableCell>
                   <TableCell style={{ fontWeight: "500" }} align="center">Hệ điều hành</TableCell>
                   <TableCell style={{ fontWeight: "500" }} align="center">Giá</TableCell>
+                  <TableCell style={{ fontWeight: "500" }} align="center">Số lượng tồn</TableCell>
                   <TableCell style={{ fontWeight: "500" }} align="center">Thao Tác</TableCell>
                 </TableRow>
               </StyledTableHead>
@@ -452,6 +454,7 @@ export function ProductsDialog(props) {
                       </span>
 
                     </TableCell>
+                    <TableCell align="center" style={{ fontSize: "16px", width: "" }}>{item.soLuongTonKho}</TableCell>
                     <TableCell align="center" style={{ width: "230px" }}>
                       <Button
                         onClick={() => {
@@ -574,33 +577,6 @@ export function ProductsDialog(props) {
 
   const [configurations, setConfigurations] = useState([]);
   const [colors, setColors] = useState([]);
-  const getListConfigurations = (id) => {
-    axios
-      .get(`http://localhost:8080/san-pham/configs/${id}`, {
-      })
-      .then((response) => {
-        const convertedData = response.data.map(item => `${item.ram}/${item.rom}GB`);
-        setConfigurations(convertedData);
-      })
-      .catch((error) => {
-        console.error(error);
-      })
-  }
-
-  const getListColors = (id) => {
-    axios
-      .get(`http://localhost:8080/san-pham/colors/${id}`, {
-      })
-      .then((response) => {
-        // const convertedData = response.data.map(item => `${item.tenMauSac}|${item.duongDan}`);
-        // setColors(convertedData);
-        setColors(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      })
-
-  }
 
   const handleChangeCount = (value) => {
     changeCount(value);
@@ -661,11 +637,11 @@ export function ProductsDialog(props) {
     //   const isDuplicate = data.some((i, iIndex) => i.donGia === item.donGia && iIndex < index);
     //   return !isDuplicate;
     // });
-
+    const getIdByItem = item && item.sanPham.id;
     const uniqueItems = Object.values(data.reduce((acc, item) => {
-      if (!acc[item.ma] || (acc[item.ma].donGia > item.donGia && !acc[item.ma].isDuplicate)) {
+      if ((!acc[item.ma] || (acc[item.ma].donGia > item.donGia && !acc[item.ma].isDuplicate)) && item.sanPham.id === getIdByItem) {
         acc[item.ma] = item;
-      } else if (acc[item.ma].isDuplicate && acc[item.ma].donGia > item.donGia) {
+      } else if (acc[item.ma] && acc[item.ma].isDuplicate && acc[item.ma].donGia > item.donGia) {
         acc[item.ma] = {
           ...item,
           isDuplicate: false
@@ -675,6 +651,7 @@ export function ProductsDialog(props) {
     }, {}));
     const sortedProductItems = uniqueItems.sort((a, b) => a.donGia - b.donGia);
     setProductItems(sortedProductItems);
+    console.log(sortedProductItems);
 
     const getProductItems1 = data.filter(i => i.ma == item.ma);
     const sortedProductItems1 = getProductItems1.sort((a, b) => a.donGia - b.donGia);
@@ -1403,6 +1380,8 @@ export function VouchersDialog(props) {
     checkDieuKien(dieuKien);
   }
 
+
+
   const handleAddOrRemoveVoucherToOrder = (id, dieuKien) => {
     getDieuKien(dieuKien || 0);
     if (total() < dieuKien) {
@@ -1429,6 +1408,8 @@ export function VouchersDialog(props) {
 
   const classes = useStyles();
 
+  const filteredData = data.filter((item) => total() >= item.dieuKienApDung);
+
   const TableVouchers = () => {
     return (
       <>
@@ -1437,19 +1418,19 @@ export function VouchersDialog(props) {
             <Table sx={{ minWidth: 650, boxShadow: "none" }} aria-label="simple table" className={classes.tableContainer}>
               <StyledTableHead>
                 <TableRow>
-                  <TableCell style={{ fontWeight: "550" }} align="center">STT</TableCell>
-                  <TableCell style={{ fontWeight: "550" }} align="center">Mã</TableCell>
-                  <TableCell style={{ fontWeight: "550" }} align="center">Giá trị</TableCell>
-                  <TableCell style={{ fontWeight: "550" }} align="center">Giảm tối đa</TableCell>
-                  <TableCell style={{ fontWeight: "550" }} align="center">Số lượng</TableCell>
-                  <TableCell style={{ fontWeight: "550" }} align="center">Điều kiện áp dụng</TableCell>
-                  <TableCell style={{ fontWeight: "550" }} align="center">Trạng thái</TableCell>
-                  <TableCell style={{ fontWeight: "550" }} align="center">Tình trạng đơn hàng</TableCell>
-                  <TableCell style={{ fontWeight: "550" }} align="center">Thao Tác</TableCell>
+                  <TableCell style={{ fontWeight: "500" }} align="center">STT</TableCell>
+                  <TableCell style={{ fontWeight: "500" }} align="center">Mã</TableCell>
+                  <TableCell style={{ fontWeight: "500" }} align="center">Giá trị</TableCell>
+                  <TableCell style={{ fontWeight: "500" }} align="center">Giảm tối đa</TableCell>
+                  <TableCell style={{ fontWeight: "500" }} align="center">Số lượng</TableCell>
+                  <TableCell style={{ fontWeight: "500" }} align="center">Điều kiện áp dụng</TableCell>
+                  <TableCell style={{ fontWeight: "500" }} align="center">Trạng thái</TableCell>
+                  <TableCell style={{ fontWeight: "500" }} align="center">Tình trạng đơn hàng</TableCell>
+                  <TableCell style={{ fontWeight: "500" }} align="center">Thao Tác</TableCell>
                 </TableRow>
               </StyledTableHead>
               <TableBody>
-                {data.map((item, index) => (
+                {filteredData.length > 0 ? (filteredData.map((item, index) => (
                   <TableRow
                     key={index}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -1472,36 +1453,6 @@ export function VouchersDialog(props) {
                     <TableCell align="center" style={{ width: "", fontSize: "15px" }}>
                       {item.soLuong}
                     </TableCell>
-                    {/*
-                    <TableCell align="center" style={{ width: "", fontSize: "15px", color: "white" }}>
-                      <div
-                        className="rounded-pill badge-primary"
-                        style={{
-                          height: "35px",
-                          width: "auto",
-                          padding: "7.5px",
-                        }}
-                      >
-                        <span className="text-white p-2" style={{}}>
-                          {item &&
-                            item.ngayBatDau &&
-                            format(
-                              new Date(item.ngayBatDau),
-                              "dd/MM/yyyy"
-                            )}
-                        </span>
-                        {"-"}
-                        <span className="text-white p-2" style={{}}>
-                          {item &&
-                            item.ngayKetThuc &&
-                            format(
-                              new Date(item.ngayKetThuc),
-                              "dd/MM/yyyy"
-                            )}
-                        </span>
-                      </div>
-                    </TableCell>
-*/}
                     <TableCell align="center" style={{ width: "200px", fontSize: "15px", whiteSpace: "pre-line" }}>
                       Áp dụng cho đơn tối thiểu
                       <span className='' style={{}}>
@@ -1558,7 +1509,10 @@ export function VouchersDialog(props) {
 
                     </TableCell>
                   </TableRow>
-                ))}
+                ))) :
+                  <div className='mt-4' style={{ position: "absolute", left: "500px" }}>
+                    <Empty description="Không có dữ liệu!" />
+                  </div>}
               </TableBody>
             </Table>
           </StyledTableContainer>
@@ -2000,71 +1954,139 @@ export const ProductDetailsDialog = (props) => {
     }
   }
 
-    const [keyRadio, setKeyRadio] = useState(0);
-    const handleSetKey = () => {
-      setKeyRadio(keyRadio + 1);
-    }
+  const [keyRadio, setKeyRadio] = useState(0);
+  const handleSetKey = () => {
+    setKeyRadio(keyRadio + 1);
+  }
 
-    return (
-      <div className='rounded-pill'>
-        <Dialog
-          open={open}
-          TransitionComponent={Transition}
-          onClose={onCloseNoAction}
-          aria-describedby="alert-dialog-slide-description1"
-          maxWidth="lg"
-          maxHeight="lg"
-          sx={{
-          }}
-        >
-          <DialogContent >
-            <div className='' style={{ width: "auto", height: "500px" }}>
-              <div className='wrapper-header d-flex justify-content-between'>
-                <span style={{ fontWeight: "500", fontSize: "25px" }}>
-                  {productItem1 && productItem1.sanPham.tenSanPham + " " + productItem1.cauHinh.ram.kichThuoc + "/" + productItem1.cauHinh.rom.kichThuoc + "GB"}
-                  <span className='ms-2' style={{ fontSize: "13.5px", color: "gray" }}>(No.9001)</span>
-                </span>
-                <Tooltip title="Đóng" TransitionComponent={Zoom}>
-                  <IconButton size='small' onClick={onCloseNoAction}>
-                    <CloseOutlinedIcon />
-                  </IconButton>
-                </Tooltip>
+  return (
+    <div className='rounded-pill'>
+      <Dialog
+        open={open}
+        TransitionComponent={Transition}
+        onClose={onCloseNoAction}
+        aria-describedby="alert-dialog-slide-description1"
+        maxWidth="lg"
+        maxHeight="lg"
+        sx={{
+        }}
+      >
+        <DialogContent >
+          <div className='' style={{ width: "auto", height: "500px" }}>
+            <div className='wrapper-header d-flex justify-content-between'>
+              <span style={{ fontWeight: "500", fontSize: "25px" }}>
+                {productItem1 && productItem1.sanPham.tenSanPham + " " + productItem1.cauHinh.ram.kichThuoc + "/" + productItem1.cauHinh.rom.kichThuoc + "GB"}
+                <span className='ms-2' style={{ fontSize: "13.5px", color: "gray" }}>(No.9001)</span>
+              </span>
+              <Tooltip title="Đóng" TransitionComponent={Zoom}>
+                <IconButton size='small' onClick={onCloseNoAction}>
+                  <CloseOutlinedIcon />
+                </IconButton>
+              </Tooltip>
+            </div>
+            <div className='mt-2' style={{ borderBottom: "2px solid #C7C7C7", width: "100%", borderWidth: "1px" }}></div>
+            <div className='wrapper-product d-flex'>
+              <div className='product-img' style={{ width: "350px" }}>
+                <img className='mt-4 pt-4' style={{ width: "370px", height: "380px" }} src={productItem2 && productItem2.images[0].duongDan} alt="" />
               </div>
-              <div className='mt-2' style={{ borderBottom: "2px solid #C7C7C7", width: "100%", borderWidth: "1px" }}></div>
-              <div className='wrapper-product d-flex'>
-                <div className='product-img' style={{ width: "350px" }}>
-                  <img className='mt-4 pt-4' style={{ width: "370px", height: "380px" }} src={productItem2 && productItem2.images[0].duongDan} alt="" />
+              <div className='product-details mt-5 ms-3 ps-1'>
+                <div className="box-choose">
+                  <span style={{ fontWeight: "550", fontSize: "14px" }}>
+                    LỰA CHỌN CẤU HÌNH VÀ MÀU SẮC
+                  </span>
                 </div>
-                <div className='product-details mt-5 ms-3 ps-1'>
-                  <div className="box-choose">
-                    <span style={{ fontWeight: "550", fontSize: "14px" }}>
-                      LỰA CHỌN CẤU HÌNH VÀ MÀU SẮC
-                    </span>
-                  </div>
-                  <div className='choose1 mt-3 d-flex'>
-                    <RadioGroup orientation='horizontal' aria-labelledby="storage-label"
-                      defaultValue={productItem && productItem.cauHinh.ram.kichThuoc + "/" + productItem.cauHinh.rom.kichThuoc + "GB"}
-                      size="lg"
-                      sx={{ gap: 1.7 }}
-                    >
-                      {getProductItems && getProductItems.map((item) => (
-                        <Sheet
-                          key={item.id}
-                          sx={{
-                            width: "auto",
-                            borderRadius: 'md',
-                            boxShadow: 'sm',
+                <div className='choose1 mt-3 d-flex'>
+                  <RadioGroup orientation='horizontal' aria-labelledby="storage-label"
+                    defaultValue={productItem && productItem.cauHinh.ram.kichThuoc + "/" + productItem.cauHinh.rom.kichThuoc + "GB"}
+                    size="lg"
+                    sx={{ gap: 1.7 }}
+                  >
+                    {getProductItems && getProductItems.map((item) => (
+                      <Sheet
+                        key={item.id}
+                        sx={{
+                          width: "auto",
+                          borderRadius: 'md',
+                          boxShadow: 'sm',
+                        }}
+                      >
+                        <Radio
+                          label={
+                            <>
+                              <div className='p-1'>
+                                <div>
+                                  <span className="p-2" style={{ fontSize: "14px", fontWeight: "450" }}>{productItem && productItem.sanPham.tenSanPham + " " + item.cauHinh.ram.kichThuoc + "/" + item.cauHinh.rom.kichThuoc + "GB"}</span>
+                                </div>
+                                <div className='text-center'>
+                                  <span style={{ fontSize: "14px" }}>
+                                    {
+                                      item && item.donGia.toLocaleString("vi-VN", {
+                                        style: "currency",
+                                        currency: "VND",
+                                      })
+                                    }
+                                  </span>
+                                </div>
+                              </div>
+                            </>
+                          }
+                          onChange={() => handleChangeCauHinh(item.id)}
+                          onClick={() => handleSetKey()}
+                          overlay
+                          disableIcon
+                          value={item.cauHinh.ram.kichThuoc + "/" + item.cauHinh.rom.kichThuoc + "GB"}
+                          slotProps={{
+                            label: ({ checked }) => ({
+                              sx: {
+                                fontWeight: 'lg',
+                                fontSize: 'md',
+                                color: checked ? 'text.primary' : 'text.secondary',
+                              },
+                            }),
+                            action: ({ checked }) => ({
+                              sx: (theme) => ({
+                                ...(checked && {
+                                  '--variant-borderWidth': '2px',
+                                  '&&': {
+                                    // && to increase the specificity to win the base :hover styles
+                                    borderColor: "#2f80ed",
+                                  },
+                                }),
+                              }),
+                            }),
                           }}
-                        >
-                          <Radio
-                            label={
-                              <>
-                                <div className='p-1'>
-                                  <div>
-                                    <span className="p-2" style={{ fontSize: "14px", fontWeight: "450" }}>{productItem && productItem.sanPham.tenSanPham + " " + item.cauHinh.ram.kichThuoc + "/" + item.cauHinh.rom.kichThuoc + "GB"}</span>
-                                  </div>
-                                  <div className='text-center'>
-                                    <span style={{ fontSize: "14px" }}>
+                        />
+                      </Sheet>
+                    ))}
+                  </RadioGroup>
+                </div>
+                <div className='choose2 mt-3'>
+                  <RadioGroup orientation='horizontal' key={keyRadio}
+                    aria-labelledby="storage-label"
+                    defaultValue={productItem2 && productItem2.cauHinh.mauSac.tenMauSac}
+                    size="lg"
+                    sx={{ gap: 1.7 }}
+                  >
+                    {getProductItems1 && getProductItems1.map((item) => (
+                      <Sheet
+                        key={item.id}
+                        sx={{
+                          borderRadius: 'md',
+                          boxShadow: 'sm',
+                        }}
+                      >
+                        <Radio
+                          label={
+                            <>
+                              <div className='p-1 d-flex' style={{ width: "143px", height: "56px" }}>
+                                <div>
+                                  <img className='' style={{ width: "40px", height: "40px", marginTop: "4px" }} src={item.images && item.images[0].duongDan} alt="" />
+                                </div>
+                                <div className='' style={{ marginTop: "", }}>
+                                  <span className='p-2' style={{ fontSize: "14px", fontWeight: "500", textTransform: "capitalize" }}>{item.cauHinh.mauSac.tenMauSac}</span>
+                                  <div className='' style={{ marginTop: "" }}>
+                                    <span className='p-2' style={{ fontSize: "13px" }}>
+
                                       {
                                         item && item.donGia.toLocaleString("vi-VN", {
                                           style: "currency",
@@ -2074,165 +2096,97 @@ export const ProductDetailsDialog = (props) => {
                                     </span>
                                   </div>
                                 </div>
-                              </>
-                            }
-                            onChange={() => handleChangeCauHinh(item.id)}
-                            onClick={() => handleSetKey()}
-                            overlay
-                            disableIcon
-                            value={item.cauHinh.ram.kichThuoc + "/" + item.cauHinh.rom.kichThuoc + "GB"}
-                            slotProps={{
-                              label: ({ checked }) => ({
-                                sx: {
-                                  fontWeight: 'lg',
-                                  fontSize: 'md',
-                                  color: checked ? 'text.primary' : 'text.secondary',
-                                },
-                              }),
-                              action: ({ checked }) => ({
-                                sx: (theme) => ({
-                                  ...(checked && {
-                                    '--variant-borderWidth': '2px',
-                                    '&&': {
-                                      // && to increase the specificity to win the base :hover styles
-                                      borderColor: "#2f80ed",
-                                    },
-                                  }),
+                              </div>
+                            </>
+                          }
+                          onChange={() => handleChangeMauSac(item.id)}
+                          overlay
+                          disabled={item.soLuongTonKho <= 0 ? true : false}
+                          disableIcon
+                          value={item.cauHinh.mauSac.tenMauSac}
+                          slotProps={{
+                            label: ({ checked }) => ({
+                              sx: {
+                                fontWeight: 'lg',
+                                fontSize: 'md',
+                                color: checked ? 'text.primary' : 'text.secondary',
+                                opacity: item.soLuongTonKho == 0 ? "0.5" : "1",
+                              },
+                            }),
+                            action: ({ checked }) => ({
+                              sx: (theme) => ({
+                                ...(checked && {
+                                  '--variant-borderWidth': '2px',
+                                  '&&': {
+                                    // && to increase the specificity to win the base :hover styles
+                                    borderColor: "#2f80ed",
+                                  },
                                 }),
                               }),
-                            }}
-                          />
-                        </Sheet>
-                      ))}
-                    </RadioGroup>
-                  </div>
-                  <div className='choose2 mt-3'>
-                    <RadioGroup orientation='horizontal' key={keyRadio}
-                      aria-labelledby="storage-label"
-                      defaultValue={productItem2 && productItem2.cauHinh.mauSac.tenMauSac}
-                      size="lg"
-                      sx={{ gap: 1.7 }}
-                    >
-                      {getProductItems1 && getProductItems1.map((item) => (
-                        <Sheet
-                          key={item.id}
-                          sx={{
-                            borderRadius: 'md',
-                            boxShadow: 'sm',
+                            }),
                           }}
-                        >
-                          <Radio
-                            label={
-                              <>
-                                <div className='p-1 d-flex' style={{ width: "143px", height: "56px" }}>
-                                  <div>
-                                    <img className='' style={{ width: "40px", height: "40px", marginTop: "4px" }} src={item.images && item.images[0].duongDan} alt="" />
-                                  </div>
-                                  <div className='' style={{ marginTop: "", }}>
-                                    <span className='p-2' style={{ fontSize: "14px", fontWeight: "500", textTransform: "capitalize" }}>{item.cauHinh.mauSac.tenMauSac}</span>
-                                    <div className='' style={{ marginTop: "" }}>
-                                      <span className='p-2' style={{ fontSize: "13px" }}>
-
-                                        {
-                                          item && item.donGia.toLocaleString("vi-VN", {
-                                            style: "currency",
-                                            currency: "VND",
-                                          })
-                                        }
-                                      </span>
-                                    </div>
-                                  </div>
-                                </div>
-                              </>
-                            }
-                            onChange={() => handleChangeMauSac(item.id)}
-                            overlay
-                            disabled={item.soLuongTonKho <= 0 ? true : false}
-                            disableIcon
-                            value={item.cauHinh.mauSac.tenMauSac}
-                            slotProps={{
-                              label: ({ checked }) => ({
-                                sx: {
-                                  fontWeight: 'lg',
-                                  fontSize: 'md',
-                                  color: checked ? 'text.primary' : 'text.secondary',
-                                  opacity: item.soLuongTonKho == 0 ? "0.5" : "1",
-                                },
-                              }),
-                              action: ({ checked }) => ({
-                                sx: (theme) => ({
-                                  ...(checked && {
-                                    '--variant-borderWidth': '2px',
-                                    '&&': {
-                                      // && to increase the specificity to win the base :hover styles
-                                      borderColor: "#2f80ed",
-                                    },
-                                  }),
-                                }),
-                              }),
-                            }}
-                          />
-                        </Sheet>
-                      ))}
-                    </RadioGroup>
-                  </div>
-                  <div className='product-price mt-4'>
-                    <span style={{ color: "#dc3333", fontSize: "23px", fontWeight: "550" }}>
-                      {
-                        productItem2 && productItem2.donGia.toLocaleString("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        })
-                      }
-                    </span>
-                    <span className='ms-2 ps-1' style={{ textDecoration: "line-through", color: "grey", fontSize: "14.5px", fontWeight: "400" }}>29.990.000₫</span>
-                  </div>
-                  <div className='d-flex mt-3'>
-                    <div class="number-input2">
-                      <button disabled={count == 1 ? true : false} onClick={() => {
-                        clickCount1();
-                      }}
-                        class="minus">
-                        <div className='wrap-minus'>
-                          <span>
-                            <RemoveOutlinedIcon style={{ fontSize: "20px" }} />
-                          </span>
-                        </div>
-                      </button>
-                      <input value={count} min="1" max="4" onChange={(e) => handleChangeCount(e)}
-                        name="quantity" class="quantity"
-                        type="number" />
-                      <button class="" onClick={() => {
-                        clickCount();
-                      }
-                      }
-                      >
-                        <div className='wrap-plus'>
-                          <span >
-                            <AddOutlinedIcon style={{ fontSize: "20px" }} />
-                          </span>
-                        </div>
-                      </button>
-                    </div>
-                    <div className='ms-2 ps-1' style={{ marginTop: "7px" }}>
-                      <span className='' style={{ fontSize: "13.5px", color: "gray" }}>{productItem2 && productItem2.soLuongTonKho} sản phẩm có sẵn</span>
-                    </div>
-                  </div>
-                  <div className='mt-3'>
-                    <button onClick={() => {
-                      addProductItemsToCart(productItem2 && productItem2.donGia, productItem2 && productItem2.id);
+                        />
+                      </Sheet>
+                    ))}
+                  </RadioGroup>
+                </div>
+                <div className='product-price mt-4'>
+                  <span style={{ color: "#dc3333", fontSize: "23px", fontWeight: "550" }}>
+                    {
+                      productItem2 && productItem2.donGia.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })
+                    }
+                  </span>
+                  <span className='ms-2 ps-1' style={{ textDecoration: "line-through", color: "grey", fontSize: "14.5px", fontWeight: "400" }}>29.990.000₫</span>
+                </div>
+                <div className='d-flex mt-3'>
+                  <div class="number-input2">
+                    <button disabled={count == 1 ? true : false} onClick={() => {
+                      clickCount1();
                     }}
-                      type="button" class="__add-cart1 add-to-cart trigger mt-1">
-                      <span class="" style={{ fontSize: "16px" }}>
-                        THÊM VÀO GIỎ HÀNG
-                      </span>
+                      class="minus">
+                      <div className='wrap-minus'>
+                        <span>
+                          <RemoveOutlinedIcon style={{ fontSize: "20px" }} />
+                        </span>
+                      </div>
+                    </button>
+                    <input value={count} min="1" max="4" onChange={(e) => handleChangeCount(e)}
+                      name="quantity" class="quantity"
+                      type="number" />
+                    <button class="" onClick={() => {
+                      clickCount();
+                    }
+                    }
+                    >
+                      <div className='wrap-plus'>
+                        <span >
+                          <AddOutlinedIcon style={{ fontSize: "20px" }} />
+                        </span>
+                      </div>
                     </button>
                   </div>
+                  <div className='ms-2 ps-1' style={{ marginTop: "7px" }}>
+                    <span className='' style={{ fontSize: "13.5px", color: "gray" }}>{productItem2 && productItem2.soLuongTonKho} sản phẩm có sẵn</span>
+                  </div>
+                </div>
+                <div className='mt-3'>
+                  <button onClick={() => {
+                    addProductItemsToCart(productItem2 && productItem2.donGia, productItem2 && productItem2.id);
+                  }}
+                    type="button" class="__add-cart1 add-to-cart trigger mt-1">
+                    <span class="" style={{ fontSize: "16px" }}>
+                      THÊM VÀO GIỎ HÀNG
+                    </span>
+                  </button>
                 </div>
               </div>
             </div>
-          </DialogContent>
-        </Dialog>
-      </div>
-    );
-  }
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
