@@ -7,10 +7,8 @@ import org.springframework.data.rest.core.config.Projection;
 import java.math.BigDecimal;
 import java.util.List;
 
-@Projection(types = { Ram.class, Rom.class, ManHinh.class,
-        Pin.class})
+@Projection(types = { Ram.class, Rom.class, MauSac.class, SanPhamChiTiet.class})
 public interface CauHinhResponce {
-
 
     @Value("#{target.kich_thuoc_ram}")
     Integer getKichThuocRam();
@@ -27,11 +25,11 @@ public interface CauHinhResponce {
     @Value("#{target.don_gia}")
     BigDecimal getDonGia();
 
-    @Value(("#{target.id}"))
+    @Value("#{target.id}")
     String getId();
 
-    @Value("#{target.imei}")
-    List<Imei> getImei();
+//    @Value("#{target.imei}")
+//    List<Imei> getImei();
 
     @Value("#{target.id_san_pham}")
     String getIdSanPham();

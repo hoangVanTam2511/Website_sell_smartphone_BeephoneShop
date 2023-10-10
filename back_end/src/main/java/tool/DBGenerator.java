@@ -578,7 +578,7 @@ public class DBGenerator implements CommandLineRunner {
 
         CauHinh cauHinh7 = new CauHinh();
         cauHinh7.setRam(ram);
-        cauHinh7.setRom(rom);
+        cauHinh7.setRom(rom1);
         cauHinh7.setMauSac(mauSac3);
         cauHinh7.setId(cauHinhRepository.save(cauHinh7).getId());
 

@@ -1,74 +1,90 @@
-import React, { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import Slider from '@mui/material/Slider';
-import { Button, Table as TableAntd } from 'antd'
-import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined';
-import { useTheme } from '@mui/material/styles';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import { Drawer, Dialog, Input, Select as SelectMui, IconButton, Slide, TextField, FormControl, InputLabel, MenuItem, DialogTitle, DialogContent, DialogContentText, DialogActions, Box, InputAdornment } from '@mui/material'
-import styleCss from './style.css'
-import { format } from 'date-fns'
-import { styled } from '@mui/system';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import Avatar from '@mui/material/Avatar';
-import axios from 'axios';
-import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
-import Tooltip from '@mui/material/Tooltip';
-import Zoom from '@mui/material/Zoom';
-import FormLabel from '@mui/joy/FormLabel';
-import Radio from '@mui/joy/Radio';
-import RadioGroup from '@mui/joy/RadioGroup';
-import Sheet from '@mui/joy/Sheet';
-import RemoveOutlinedIcon from '@mui/icons-material/RemoveOutlined';
-import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
-import LoadingIndicator from '../../../utilities/loading.js'
-import { Notistack, OrderStatusString } from './enum';
-import { parseInt } from 'lodash';
-import { useSnackbar } from 'notistack';
-import useCustomSnackbar from '../../../utilities/notistack';
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import Slider from "@mui/material/Slider";
+import { Button, Table as TableAntd } from "antd";
+import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
+import { useTheme } from "@mui/material/styles";
+import OutlinedInput from "@mui/material/OutlinedInput";
+import {
+  Drawer,
+  Dialog,
+  Input,
+  Select as SelectMui,
+  IconButton,
+  Slide,
+  TextField,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Box,
+  InputAdornment,
+} from "@mui/material";
+import styleCss from "./style.css";
+import { format } from "date-fns";
+import { styled } from "@mui/system";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
+import Avatar from "@mui/material/Avatar";
+import axios from "axios";
+import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
+import Tooltip from "@mui/material/Tooltip";
+import Zoom from "@mui/material/Zoom";
+import FormLabel from "@mui/joy/FormLabel";
+import Radio from "@mui/joy/Radio";
+import RadioGroup from "@mui/joy/RadioGroup";
+import Sheet from "@mui/joy/Sheet";
+import RemoveOutlinedIcon from "@mui/icons-material/RemoveOutlined";
+import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
+import LoadingIndicator from "../../../utilities/loading.js";
+import { Notistack, OrderStatusString } from "./enum";
+import { parseInt } from "lodash";
+import { useSnackbar } from "notistack";
+import useCustomSnackbar from "../../../utilities/notistack";
 
 const PrettoSlider = styled(Slider)({
-
-  color: '#2f80ed',
+  color: "#2f80ed",
   height: 8,
-  '& .MuiSlider-track': {
-    border: 'none',
+  "& .MuiSlider-track": {
+    border: "none",
   },
-  '& .MuiSlider-thumb': {
+  "& .MuiSlider-thumb": {
     height: 18,
     width: 18,
-    backgroundColor: '#fff',
-    border: '2px solid currentColor',
-    '&:focus, &:hover, &.Mui-active, &.Mui-focusVisible': {
-      boxShadow: 'inherit',
+    backgroundColor: "#fff",
+    border: "2px solid currentColor",
+    "&:focus, &:hover, &.Mui-active, &.Mui-focusVisible": {
+      boxShadow: "inherit",
     },
-    '&:before': {
-      display: 'none',
+    "&:before": {
+      display: "none",
     },
   },
-  '& .MuiSlider-valueLabel': {
+  "& .MuiSlider-valueLabel": {
     lineHeight: 1.2,
     fontSize: 12,
-    background: 'unset',
+    background: "unset",
     padding: 0,
     width: 25,
     height: 25,
-    borderRadius: '50% 50% 50% 0',
-    backgroundColor: '#2f80ed',
-    transformOrigin: 'bottom left',
-    transform: 'translate(50%, -100%) rotate(-45deg) scale(0)',
-    '&:before': { display: 'none' },
-    '&.MuiSlider-valueLabelOpen': {
-      transform: 'translate(50%, -100%) rotate(-45deg) scale(1)',
+    borderRadius: "50% 50% 50% 0",
+    backgroundColor: "#2f80ed",
+    transformOrigin: "bottom left",
+    transform: "translate(50%, -100%) rotate(-45deg) scale(0)",
+    "&:before": { display: "none" },
+    "&.MuiSlider-valueLabelOpen": {
+      transform: "translate(50%, -100%) rotate(-45deg) scale(1)",
     },
-    '& > *': {
-      transform: 'rotate(45deg)',
+    "& > *": {
+      transform: "rotate(45deg)",
     },
   },
 });
@@ -84,7 +100,7 @@ export function OrderPendingConfirmCloseDialog(props) {
   const { open, onClose, ma, deleteOrder } = props;
 
   return (
-    <div className='rounded-pill'>
+    <div className="rounded-pill">
       <Dialog
         TransitionComponent={Transition1}
         open={open}
@@ -98,25 +114,62 @@ export function OrderPendingConfirmCloseDialog(props) {
           },
         }}
       >
-        <div className='p-2' style={{
-        }}
-        >
-          <DialogTitle sx={{ color: "#dc3333", fontWeight: "bold", fontSize: "18px" }} id="alert-dialog-title">
+        <div className="p-2" style={{}}>
+          <DialogTitle
+            sx={{ color: "#dc3333", fontWeight: "bold", fontSize: "18px" }}
+            id="alert-dialog-title"
+          >
             {"Đóng đơn hàng " + ma}
           </DialogTitle>
           <DialogContent>
-            <DialogContentText sx={{ color: "black" }} id="alert-dialog-description">
-              Thông tin của <span className='' style={{ fontWeight: "500" }}> Đơn hàng {ma}</span> sẽ không được lưu lại. Bạn có chắc chắn muốn đóng
+            <DialogContentText
+              sx={{ color: "black" }}
+              id="alert-dialog-description"
+            >
+              Thông tin của{" "}
+              <span className="" style={{ fontWeight: "500" }}>
+                {" "}
+                Đơn hàng {ma}
+              </span>{" "}
+              sẽ không được lưu lại. Bạn có chắc chắn muốn đóng
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={deleteOrder} className="rounded-2 me-2 button-mui" type="primary" style={{ height: "40px", width: "auto", fontSize: "16px", marginBottom: "20px" }}>
-              <span className='text-white' style={{ fontWeight: "500", marginBottom: "2px" }}>
-                Xác nhận</span>
+            <Button
+              onClick={deleteOrder}
+              className="rounded-2 me-2 button-mui"
+              type="primary"
+              style={{
+                height: "40px",
+                width: "auto",
+                fontSize: "16px",
+                marginBottom: "20px",
+              }}
+            >
+              <span
+                className="text-white"
+                style={{ fontWeight: "500", marginBottom: "2px" }}
+              >
+                Xác nhận
+              </span>
             </Button>
-            <Button onClick={onClose} className="rounded-2 me-3 ant-btn-danger" type="primary" style={{ height: "40px", width: "auto", fontSize: "16px", marginBottom: "20px" }}>
-              <span className='text-white' style={{ fontWeight: "500", marginBottom: "2px" }}>
-                Hủy bỏ</span>
+            <Button
+              onClick={onClose}
+              className="rounded-2 me-3 ant-btn-danger"
+              type="primary"
+              style={{
+                height: "40px",
+                width: "auto",
+                fontSize: "16px",
+                marginBottom: "20px",
+              }}
+            >
+              <span
+                className="text-white"
+                style={{ fontWeight: "500", marginBottom: "2px" }}
+              >
+                Hủy bỏ
+              </span>
             </Button>
           </DialogActions>
         </div>
@@ -126,7 +179,6 @@ export function OrderPendingConfirmCloseDialog(props) {
 }
 
 export function UpdateRecipientOrderDialog(props) {
-
   const ITEM_HEIGHT = 98;
   const ITEM_PADDING_TOP = 8;
   const MenuProps = {
@@ -139,16 +191,16 @@ export function UpdateRecipientOrderDialog(props) {
   };
 
   const names = [
-    'Oliver Hansen',
-    'Van Henry',
-    'April Tucker',
-    'Ralph Hubbard',
-    'Omar Alexander',
-    'Carlos Abbott',
-    'Miriam Wagner',
-    'Bradley Wilkerson',
-    'Virginia Andrews',
-    'Kelly Snyder',
+    "Oliver Hansen",
+    "Van Henry",
+    "April Tucker",
+    "Ralph Hubbard",
+    "Omar Alexander",
+    "Carlos Abbott",
+    "Miriam Wagner",
+    "Bradley Wilkerson",
+    "Virginia Andrews",
+    "Kelly Snyder",
   ];
 
   function getStyles(name, personName, theme) {
@@ -167,15 +219,13 @@ export function UpdateRecipientOrderDialog(props) {
     const {
       target: { value },
     } = event;
-    setPersonName(
-      typeof value === 'string' ? value.split(',') : value,
-    );
+    setPersonName(typeof value === "string" ? value.split(",") : value);
   };
 
   const { open, onClose, onCloseNoAction } = props;
 
   return (
-    <div className='rounded-pill'>
+    <div className="rounded-pill">
       <Dialog
         open={open}
         TransitionComponent={Transition}
@@ -189,30 +239,42 @@ export function UpdateRecipientOrderDialog(props) {
         }}
       >
         <DialogTitle id="alert-dialog-title">
-          {<span className='fs-4 text-dark text-uppercase'>Cập Nhật Thông Tin</span>}
+          {
+            <span className="fs-4 text-dark text-uppercase">
+              Cập Nhật Thông Tin
+            </span>
+          }
         </DialogTitle>
         <DialogContent>
           <div>
-            <TextField label="Họ và tên"
+            <TextField
+              label="Họ và tên"
               inputProps={{
                 style: {
                   width: "755px",
                 },
               }}
-              size='medium' className='mt-1' />
+              size="medium"
+              className="mt-1"
+            />
           </div>
           <div>
-            <TextField label="Số điện thoại"
+            <TextField
+              label="Số điện thoại"
               inputProps={{
                 style: {
                   width: "755px",
                 },
               }}
-              size='medium' className='mt-3' />
+              size="medium"
+              className="mt-3"
+            />
           </div>
-          <div className='d-flex mt-3'>
+          <div className="d-flex mt-3">
             <FormControl sx={{ width: 250 }}>
-              <InputLabel id="demo-multiple-name-label">Tỉnh / Thành Phố</InputLabel>
+              <InputLabel id="demo-multiple-name-label">
+                Tỉnh / Thành Phố
+              </InputLabel>
               <SelectMui
                 labelId="demo-multiple-name-label"
                 id="demo-multiple-name"
@@ -231,8 +293,10 @@ export function UpdateRecipientOrderDialog(props) {
                 ))}
               </SelectMui>
             </FormControl>
-            <FormControl sx={{ width: 250 }} className='ms-3'>
-              <InputLabel id="demo-multiple-name-label">Quận / Huyện</InputLabel>
+            <FormControl sx={{ width: 250 }} className="ms-3">
+              <InputLabel id="demo-multiple-name-label">
+                Quận / Huyện
+              </InputLabel>
               <SelectMui
                 labelId="demo-multiple-name-label"
                 id="demo-multiple-name"
@@ -251,7 +315,7 @@ export function UpdateRecipientOrderDialog(props) {
                 ))}
               </SelectMui>
             </FormControl>
-            <FormControl sx={{ width: 250 }} className='ms-3'>
+            <FormControl sx={{ width: 250 }} className="ms-3">
               <InputLabel id="demo-multiple-name-label">Phường / Xã</InputLabel>
               <SelectMui
                 labelId="demo-multiple-name-label"
@@ -273,34 +337,71 @@ export function UpdateRecipientOrderDialog(props) {
             </FormControl>
           </div>
           <div>
-            <TextField label="Địa chỉ"
+            <TextField
+              label="Địa chỉ"
               inputProps={{
                 style: {
                   width: "755px",
                 },
               }}
-              size='medium' className='mt-3' />
+              size="medium"
+              className="mt-3"
+            />
           </div>
           <div>
-            <TextField label="Mô tả"
+            <TextField
+              label="Mô tả"
               inputProps={{
                 style: {
                   width: "755px",
-                  paddingBottom: "60px"
+                  paddingBottom: "60px",
                 },
               }}
-              size='medium' className='mt-3' />
+              size="medium"
+              className="mt-3"
+            />
           </div>
         </DialogContent>
         <DialogActions>
-          <Link to={''}>
-            <Button onClick={onClose} danger className="rounded-2 me-3 bg-primary" type="primary" style={{ height: "50px", width: "auto", fontSize: "16px", marginBottom: "20px" }}>
-              <span className='text-white' style={{ fontWeight: "550", marginBottom: "2px" }}>
-                Xác nhận</span>
+          <Link to={""}>
+            <Button
+              onClick={onClose}
+              danger
+              className="rounded-2 me-3 bg-primary"
+              type="primary"
+              style={{
+                height: "50px",
+                width: "auto",
+                fontSize: "16px",
+                marginBottom: "20px",
+              }}
+            >
+              <span
+                className="text-white"
+                style={{ fontWeight: "550", marginBottom: "2px" }}
+              >
+                Xác nhận
+              </span>
             </Button>
-            <Button onClick={onCloseNoAction} danger className="rounded-2 me-3" type="primary" style={{ height: "50px", width: "auto", fontSize: "16px", marginBottom: "20px", backgroundColor: "#dc3333" }}>
-              <span className='text-white' style={{ fontWeight: "550", marginBottom: "2px" }}>
-                Hủy bỏ</span>
+            <Button
+              onClick={onCloseNoAction}
+              danger
+              className="rounded-2 me-3"
+              type="primary"
+              style={{
+                height: "50px",
+                width: "auto",
+                fontSize: "16px",
+                marginBottom: "20px",
+                backgroundColor: "#dc3333",
+              }}
+            >
+              <span
+                className="text-white"
+                style={{ fontWeight: "550", marginBottom: "2px" }}
+              >
+                Hủy bỏ
+              </span>
             </Button>
           </Link>
         </DialogActions>
@@ -310,11 +411,10 @@ export function UpdateRecipientOrderDialog(props) {
 }
 
 export function PaymentDialog(props) {
-
   const { open, onClose, onCloseNoAction } = props;
 
   return (
-    <div className='rounded-pill'>
+    <div className="rounded-pill">
       <Dialog
         open={open}
         TransitionComponent={Transition}
@@ -328,42 +428,98 @@ export function PaymentDialog(props) {
         }}
       >
         <DialogTitle id="alert-dialog-title">
-          {<span className='fs-4 text-dark text-uppercase'>Tiến Hành Thanh Toán</span>}
+          {
+            <span className="fs-4 text-dark text-uppercase">
+              Tiến Hành Thanh Toán
+            </span>
+          }
         </DialogTitle>
         <DialogContent>
           <div>
-            <TextField label="Số tiền"
+            <TextField
+              label="Số tiền"
               inputProps={{
                 style: {
                   width: "755px",
                 },
               }}
-              size='medium' className='mt-2' />
+              size="medium"
+              className="mt-2"
+            />
           </div>
           <div>
-            <TextField label="Ghi chú"
+            <TextField
+              label="Ghi chú"
               inputProps={{
                 style: {
                   width: "755px",
-                  paddingBottom: "60px"
+                  paddingBottom: "60px",
                 },
               }}
-              size='medium' className='mt-3' />
+              size="medium"
+              className="mt-3"
+            />
           </div>
         </DialogContent>
         <DialogActions>
-          <Link to={''}>
-            <Button onClick={onClose} danger className="rounded-2 me-3 bg-primary" type="primary" style={{ height: "50px", width: "auto", fontSize: "16px", marginBottom: "20px" }}>
-              <span className='text-white' style={{ fontWeight: "550", marginBottom: "2px" }}>
-                Tiền mặt</span>
+          <Link to={""}>
+            <Button
+              onClick={onClose}
+              danger
+              className="rounded-2 me-3 bg-primary"
+              type="primary"
+              style={{
+                height: "50px",
+                width: "auto",
+                fontSize: "16px",
+                marginBottom: "20px",
+              }}
+            >
+              <span
+                className="text-white"
+                style={{ fontWeight: "550", marginBottom: "2px" }}
+              >
+                Tiền mặt
+              </span>
             </Button>
-            <Button onClick={onClose} danger className="rounded-2 me-3 bg-success" type="primary" style={{ height: "50px", width: "auto", fontSize: "16px", marginBottom: "20px" }}>
-              <span className='text-white' style={{ fontWeight: "550", marginBottom: "2px" }}>
-                Chuyển khoản</span>
+            <Button
+              onClick={onClose}
+              danger
+              className="rounded-2 me-3 bg-success"
+              type="primary"
+              style={{
+                height: "50px",
+                width: "auto",
+                fontSize: "16px",
+                marginBottom: "20px",
+              }}
+            >
+              <span
+                className="text-white"
+                style={{ fontWeight: "550", marginBottom: "2px" }}
+              >
+                Chuyển khoản
+              </span>
             </Button>
-            <Button onClick={onCloseNoAction} danger className="rounded-2 me-3" type="primary" style={{ height: "50px", width: "auto", fontSize: "16px", marginBottom: "20px", backgroundColor: "#dc3333" }}>
-              <span className='text-white' style={{ fontWeight: "550", marginBottom: "2px" }}>
-                Hủy bỏ</span>
+            <Button
+              onClick={onCloseNoAction}
+              danger
+              className="rounded-2 me-3"
+              type="primary"
+              style={{
+                height: "50px",
+                width: "auto",
+                fontSize: "16px",
+                marginBottom: "20px",
+                backgroundColor: "#dc3333",
+              }}
+            >
+              <span
+                className="text-white"
+                style={{ fontWeight: "550", marginBottom: "2px" }}
+              >
+                Hủy bỏ
+              </span>
             </Button>
           </Link>
         </DialogActions>
@@ -372,13 +528,24 @@ export function PaymentDialog(props) {
   );
 }
 
-
 export function ProductsDialog(props) {
-
-  const { open, onClose, onCloseNoAction, data, add, openProductDetails, openDialogProductItems,
-    closeDialogProductDetails, closeNoActionDialogProductDetails, count, changeCount, clickCount, clickCount1 } = props;
+  const {
+    open,
+    onClose,
+    onCloseNoAction,
+    data,
+    add,
+    openProductDetails,
+    openDialogProductItems,
+    closeDialogProductDetails,
+    closeNoActionDialogProductDetails,
+    count,
+    changeCount,
+    clickCount,
+    clickCount1,
+  } = props;
   const StyledTableContainer = styled(TableContainer)({
-    boxShadow: 'none',
+    boxShadow: "none",
   });
 
   const [openSelect, setOpenSelect] = useState(false);
@@ -394,106 +561,186 @@ export function ProductsDialog(props) {
 
   const addProductToCart = (priceProduct, idProduct, amount) => {
     add(priceProduct, idProduct, amount);
-  }
+  };
 
   const StyledTableHead = styled(TableHead)`
-  & tr:hover th{
-    background-color: white !important;
-  }
-`;
+    & tr:hover th {
+      background-color: white !important;
+    }
+  `;
 
-  const useStyles = () => ({
-  });
+  const useStyles = () => ({});
 
   const classes = useStyles();
 
   const TableProduct = () => {
     return (
       <>
-        <div className=''>
+        <div className="">
           <StyledTableContainer component={Paper}>
-            <Table sx={{ minWidth: 650, boxShadow: "none" }} aria-label="simple table" className={classes.tableContainer}>
+            <Table
+              sx={{ minWidth: 650, boxShadow: "none" }}
+              aria-label="simple table"
+              className={classes.tableContainer}
+            >
               <StyledTableHead>
                 <TableRow>
-                  <TableCell style={{ fontWeight: "500" }} align="center">Ảnh</TableCell>
-                  <TableCell style={{ fontWeight: "500" }} align="center">Mã Sản Phẩm</TableCell>
-                  <TableCell style={{ fontWeight: "500" }} align="center">Tên Sản Phẩm</TableCell>
-                  <TableCell style={{ fontWeight: "500" }} align="center">RAM</TableCell>
-                  <TableCell style={{ fontWeight: "500" }} align="center">ROM</TableCell>
-                  <TableCell style={{ fontWeight: "500" }} align="center">Màu sắc</TableCell>
-                  <TableCell style={{ fontWeight: "500" }} align="center">Hãng</TableCell>
-                  <TableCell style={{ fontWeight: "500" }} align="center">Hệ điều hành</TableCell>
-                  <TableCell style={{ fontWeight: "500" }} align="center">Giá</TableCell>
-                  <TableCell style={{ fontWeight: "500" }} align="center">Thao Tác</TableCell>
+                  <TableCell style={{ fontWeight: "500" }} align="center">
+                    Ảnh
+                  </TableCell>
+                  <TableCell style={{ fontWeight: "500" }} align="center">
+                    Mã Sản Phẩm
+                  </TableCell>
+                  <TableCell style={{ fontWeight: "500" }} align="center">
+                    Tên Sản Phẩm
+                  </TableCell>
+                  <TableCell style={{ fontWeight: "500" }} align="center">
+                    RAM
+                  </TableCell>
+                  <TableCell style={{ fontWeight: "500" }} align="center">
+                    ROM
+                  </TableCell>
+                  <TableCell style={{ fontWeight: "500" }} align="center">
+                    Màu sắc
+                  </TableCell>
+                  <TableCell style={{ fontWeight: "500" }} align="center">
+                    Hãng
+                  </TableCell>
+                  <TableCell style={{ fontWeight: "500" }} align="center">
+                    Hệ điều hành
+                  </TableCell>
+                  <TableCell style={{ fontWeight: "500" }} align="center">
+                    Giá
+                  </TableCell>
+                  <TableCell style={{ fontWeight: "500" }} align="center">
+                    Thao Tác
+                  </TableCell>
                 </TableRow>
               </StyledTableHead>
               <TableBody>
-                {data && data.map((item, index) => (
-                  <TableRow
-                    key={index}
-                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                  >
-                    <TableCell component="th" scope="row" align='center' style={{ width: "200px" }}>
-                      <img src={item.url} alt="" style={{ width: "110px", height: "110px" }} />
-                    </TableCell>
-                    <TableCell align="center" style={{ fontSize: "16px", width: "" }}>No.900{index + 1}</TableCell>
-                    <TableCell align="center" style={{ width: "430px", fontSize: "16px", whiteSpace: "pre-line" }}>{item && item.sanPham && item.sanPham.tenSanPham + " " + item.cauHinh.ram.kichThuoc + "/" + item.cauHinh.rom.kichThuoc + "GB"}</TableCell>
-                    <TableCell align="center" style={{ fontSize: "16px", width: "120px" }}>{item.cauHinh.ram.kichThuoc + "GB"}</TableCell>
-                    <TableCell align="center" style={{ fontSize: "16px", width: "120px" }}>{item.cauHinh.rom.kichThuoc + "GB"}</TableCell>
-                    <TableCell align="center" style={{ fontSize: "16px", width: "120px" }}>{item.cauHinh.mauSac.tenMauSac}</TableCell>
-                    <TableCell align="center" style={{ fontSize: "16px", width: "120px" }}>{"Apple"}</TableCell>
-                    <TableCell align="center" style={{ fontSize: "16px", width: "120px" }}>{"IOS"}</TableCell>
-                    <TableCell align="center" style={{ width: "150px", fontSize: "16px" }}>
-                      <span style={{ color: "#dc1111" }}>
-                        {item && item.donGia ? item.donGia.toLocaleString("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        }) : ""}
-                      </span>
-
-                    </TableCell>
-                    <TableCell align="center" style={{ width: "230px" }}>
-                      <Button
-                        onClick={() => {
-                          handleOpenDialogProductItems(item)
-
-                        }
-                        }
-                        className="rounded-2 button-mui"
-                        type="primary"
-                        style={{ width: "82px", fontSize: "14px" }}
+                {data &&
+                  data.map((item, index) => (
+                    <TableRow
+                      key={index}
+                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                    >
+                      <TableCell
+                        component="th"
+                        scope="row"
+                        align="center"
+                        style={{ width: "200px" }}
                       >
-                        <span
-                          className=""
-                          style={{ fontWeight: "500", marginBottom: "3px" }}
-                        >
-                          Chọn
-                        </span>
-                      </Button>
-                      <Button
-                        className="rounded-2 ms-2 ant-btn-warning"
-                        onClick={toggleDrawer("left", true)}
-                        type="primary"
-                        style={{ width: "82px", fontSize: "14px" }}
+                        <img
+                          src={item && item.images[0].duongDan}
+                          alt=""
+                          style={{ width: "110px", height: "110px" }}
+                        />
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        style={{ fontSize: "16px", width: "" }}
                       >
-                        <span
-                          className=""
-                          style={{ fontWeight: "500", marginBottom: "3px" }}
-                        >
-                          Chi tiết
+                        No.900{index + 1}
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        style={{
+                          width: "430px",
+                          fontSize: "16px",
+                          whiteSpace: "pre-line",
+                        }}
+                      >
+                        {item &&
+                          item.sanPham &&
+                          item.sanPham.tenSanPham +
+                            " " +
+                            item.cauHinh.ram.kichThuoc +
+                            "/" +
+                            item.cauHinh.rom.kichThuoc +
+                            "GB"}
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        style={{ fontSize: "16px", width: "120px" }}
+                      >
+                        {item.cauHinh.ram.kichThuoc + "GB"}
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        style={{ fontSize: "16px", width: "120px" }}
+                      >
+                        {item.cauHinh.rom.kichThuoc + "GB"}
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        style={{ fontSize: "16px", width: "120px" }}
+                      >
+                        {item.cauHinh.mauSac.tenMauSac}
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        style={{ fontSize: "16px", width: "120px" }}
+                      >
+                        {"Apple"}
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        style={{ fontSize: "16px", width: "120px" }}
+                      >
+                        {"IOS"}
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        style={{ width: "150px", fontSize: "16px" }}
+                      >
+                        <span style={{ color: "#dc1111" }}>
+                          {item && item.donGia
+                            ? item.donGia.toLocaleString("vi-VN", {
+                                style: "currency",
+                                currency: "VND",
+                              })
+                            : ""}
                         </span>
-                      </Button>
-
-                    </TableCell>
-                  </TableRow>
-                ))}
+                      </TableCell>
+                      <TableCell align="center" style={{ width: "230px" }}>
+                        <Button
+                          onClick={() => {
+                            handleOpenDialogProductItems(item);
+                          }}
+                          className="rounded-2 button-mui"
+                          type="primary"
+                          style={{ width: "82px", fontSize: "14px" }}
+                        >
+                          <span
+                            className=""
+                            style={{ fontWeight: "500", marginBottom: "3px" }}
+                          >
+                            Chọn
+                          </span>
+                        </Button>
+                        <Button
+                          className="rounded-2 ms-2 ant-btn-warning"
+                          onClick={toggleDrawer("left", true)}
+                          type="primary"
+                          style={{ width: "82px", fontSize: "14px" }}
+                        >
+                          <span
+                            className=""
+                            style={{ fontWeight: "500", marginBottom: "3px" }}
+                          >
+                            Chi tiết
+                          </span>
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
           </StyledTableContainer>
         </div>
       </>
-    )
-  }
+    );
+  };
 
   const handleCloseSelect = () => {
     setOpenSelect(false);
@@ -502,7 +749,6 @@ export function ProductsDialog(props) {
   const handleOpenSelect = () => {
     setOpenSelect(true);
   };
-
 
   const handleCloseSelect1 = () => {
     setOpenSelect1(false);
@@ -576,21 +822,21 @@ export function ProductsDialog(props) {
   const [colors, setColors] = useState([]);
   const getListConfigurations = (id) => {
     axios
-      .get(`http://localhost:8080/san-pham/configs/${id}`, {
-      })
+      .get(`http://localhost:8080/san-pham/configs/${id}`, {})
       .then((response) => {
-        const convertedData = response.data.map(item => `${item.ram}/${item.rom}GB`);
+        const convertedData = response.data.map(
+          (item) => `${item.ram}/${item.rom}GB`
+        );
         setConfigurations(convertedData);
       })
       .catch((error) => {
         console.error(error);
-      })
-  }
+      });
+  };
 
   const getListColors = (id) => {
     axios
-      .get(`http://localhost:8080/san-pham/colors/${id}`, {
-      })
+      .get(`http://localhost:8080/san-pham/colors/${id}`, {})
       .then((response) => {
         // const convertedData = response.data.map(item => `${item.tenMauSac}|${item.duongDan}`);
         // setColors(convertedData);
@@ -598,13 +844,12 @@ export function ProductsDialog(props) {
       })
       .catch((error) => {
         console.error(error);
-      })
-
-  }
+      });
+  };
 
   const handleChangeCount = (value) => {
     changeCount(value);
-  }
+  };
 
   const [productItem, setProductItem] = useState();
   const [productItem1, setProductItem1] = useState();
@@ -613,7 +858,6 @@ export function ProductsDialog(props) {
   const [productItems, setProductItems] = useState([]);
   const [productItems1, setProductItems1] = useState([]);
 
-
   const handleChangeInfoProductItem = (item, color) => {
     const product = {
       id: item.id,
@@ -621,24 +865,30 @@ export function ProductsDialog(props) {
       donGia: item.donGia,
       sanPham: item.sanPham,
       // images: item.images,
-    }
+    };
 
-    const getProductItems1 = data.filter(i => i.ma == item.ma);
-    const sortedProductItems1 = getProductItems1.sort((a, b) => a.donGia - b.donGia);
+    const getProductItems1 = data.filter((i) => i.ma == item.ma);
+    const sortedProductItems1 = getProductItems1.sort(
+      (a, b) => a.donGia - b.donGia
+    );
     setProductItems1(sortedProductItems1);
     setProductItem1(product);
 
-    const findColor = data.find(i => i.cauHinh.mauSac.tenMauSac === color && i.ma === item.ma && i.soLuongTonKho !== 0);
+    const findColor = data.find(
+      (i) =>
+        i.cauHinh.mauSac.tenMauSac === color &&
+        i.ma === item.ma &&
+        i.soLuongTonKho !== 0
+    );
     if (findColor) {
       setProductItem2(findColor);
-    }
-    else {
+    } else {
       setProductItem2(item);
       // Tìm vè giá be nhat ?? chưa làm
     }
     console.log(findColor);
     // console.log(product);
-  }
+  };
   const handleChangeProductImage = (item) => {
     const product = {
       id: item.id,
@@ -646,10 +896,10 @@ export function ProductsDialog(props) {
       soLuongTonKho: item.soLuongTonKho,
       cauHinh: item.cauHinh,
       donGia: item.donGia,
-    }
+    };
     setProductItem2(product);
     console.log(product);
-  }
+  };
 
   const handleOpenDialogProductItems = (item) => {
     openDialogProductItems();
@@ -662,27 +912,37 @@ export function ProductsDialog(props) {
     //   return !isDuplicate;
     // });
 
-    const uniqueItems = Object.values(data.reduce((acc, item) => {
-      if (!acc[item.ma] || (acc[item.ma].donGia > item.donGia && !acc[item.ma].isDuplicate)) {
-        acc[item.ma] = item;
-      } else if (acc[item.ma].isDuplicate && acc[item.ma].donGia > item.donGia) {
-        acc[item.ma] = {
-          ...item,
-          isDuplicate: false
-        };
-      }
-      return acc;
-    }, {}));
+    const uniqueItems = Object.values(
+      data.reduce((acc, item) => {
+        if (
+          !acc[item.ma] ||
+          (acc[item.ma].donGia > item.donGia && !acc[item.ma].isDuplicate)
+        ) {
+          acc[item.ma] = item;
+        } else if (
+          acc[item.ma].isDuplicate &&
+          acc[item.ma].donGia > item.donGia
+        ) {
+          acc[item.ma] = {
+            ...item,
+            isDuplicate: false,
+          };
+        }
+        return acc;
+      }, {})
+    );
     const sortedProductItems = uniqueItems.sort((a, b) => a.donGia - b.donGia);
     setProductItems(sortedProductItems);
 
-    const getProductItems1 = data.filter(i => i.ma == item.ma);
-    const sortedProductItems1 = getProductItems1.sort((a, b) => a.donGia - b.donGia);
+    const getProductItems1 = data.filter((i) => i.ma == item.ma);
+    const sortedProductItems1 = getProductItems1.sort(
+      (a, b) => a.donGia - b.donGia
+    );
     setProductItems1(sortedProductItems1);
-  }
+  };
 
   const [open1, setOpen1] = useState(false);
-  const [placement, setPlacement] = useState('left');
+  const [placement, setPlacement] = useState("left");
   const showDrawer = () => {
     setOpen1(true);
   };
@@ -704,7 +964,10 @@ export function ProductsDialog(props) {
   });
 
   const toggleDrawer = (anchor, open) => (event) => {
-    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+    if (
+      event.type === "keydown" &&
+      (event.key === "Tab" || event.key === "Shift")
+    ) {
       return;
     }
 
@@ -717,8 +980,7 @@ export function ProductsDialog(props) {
       role="dialog"
       onClick={toggleDrawer(anchor, false)}
       onKeyDown={toggleDrawer(anchor, false)}
-    >
-    </Box>
+    ></Box>
   );
 
   const handleFormatValue = (value) => {
@@ -728,17 +990,20 @@ export function ProductsDialog(props) {
       .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
     return valueFinal;
-
-  }
+  };
 
   const [valueSlider, setValueSlider] = React.useState([0, 51990000]);
-  const [valueStart, setValueStart] = React.useState(valueSlider && handleFormatValue(valueSlider[0]));
-  const [valueEnd, setValueEnd] = React.useState(valueSlider && handleFormatValue(valueSlider[1]));
+  const [valueStart, setValueStart] = React.useState(
+    valueSlider && handleFormatValue(valueSlider[0])
+  );
+  const [valueEnd, setValueEnd] = React.useState(
+    valueSlider && handleFormatValue(valueSlider[1])
+  );
 
   const handleChangeSlider = (event, newValue) => {
     setValueSlider(newValue);
-    setValueStart(newValue && handleFormatValue(newValue[0]))
-    setValueEnd(newValue && handleFormatValue(newValue[1]))
+    setValueStart(newValue && handleFormatValue(newValue[0]));
+    setValueEnd(newValue && handleFormatValue(newValue[1]));
   };
 
   const handleChangeValueEnd = (event) => {
@@ -755,8 +1020,7 @@ export function ProductsDialog(props) {
     if (value === null || value === "") {
       setValueEnd("");
       setValueSlider([valueSliderFirst, 0]);
-    }
-    else if (parseValueToNumber > 51900000) {
+    } else if (parseValueToNumber > 51900000) {
       let valueOld = 51900000;
       valueFinal = String(valueOld)
         .replace(/[^0-9]+/g, "")
@@ -764,8 +1028,7 @@ export function ProductsDialog(props) {
       setValueEnd(valueFinal);
       setValueSlider([valueSliderFirst, valueOld]);
     }
-
-  }
+  };
   const handleChangeValueStart = (event) => {
     const valueSliderEnd = valueSlider[1];
     const value = event.target.value;
@@ -780,8 +1043,7 @@ export function ProductsDialog(props) {
     if (value === null || value === "") {
       setValueStart("");
       setValueSlider([0, valueSliderEnd]);
-    }
-    else if (parseValueToNumber > 51900000) {
+    } else if (parseValueToNumber > 51900000) {
       let valueOld = 51900000;
       valueFinal = String(valueOld)
         .replace(/[^0-9]+/g, "")
@@ -789,8 +1051,7 @@ export function ProductsDialog(props) {
       setValueStart(valueFinal);
       setValueSlider([valueOld, valueSliderEnd]);
     }
-
-  }
+  };
 
   const [selectedValues, setSelectedValues] = React.useState([0]);
   const [selectedValues1, setSelectedValues1] = React.useState([0]);
@@ -803,10 +1064,10 @@ export function ProductsDialog(props) {
   const [selectedValues8, setSelectedValues8] = React.useState([0]);
   const [selectedValues9, setSelectedValues9] = React.useState([0]);
 
-
   return (
-    <div className='rounded-pill'>
-      <Dialog className=''
+    <div className="rounded-pill">
+      <Dialog
+        className=""
         open={open}
         TransitionComponent={Transition}
         keepMounted
@@ -830,13 +1091,18 @@ export function ProductsDialog(props) {
           {list("left")}
         </Drawer>
         <DialogTitle id="alert-dialog-title">
-          <div className='d-flex justify-content-between mt-1'>
+          <div className="d-flex justify-content-between mt-1">
             <div>
-              <span className='text-dark' style={{ fontSize: "22px", fontWeight: "500" }}>Tìm Kiếm Sản Phẩm</span>
+              <span
+                className="text-dark"
+                style={{ fontSize: "22px", fontWeight: "500" }}
+              >
+                Tìm Kiếm Sản Phẩm
+              </span>
             </div>
             <div>
               <Tooltip title="Đóng" TransitionComponent={Zoom}>
-                <IconButton size='small' onClick={onCloseNoAction}>
+                <IconButton size="small" onClick={onCloseNoAction}>
                   <CloseOutlinedIcon />
                 </IconButton>
               </Tooltip>
@@ -844,7 +1110,7 @@ export function ProductsDialog(props) {
           </div>
         </DialogTitle>
         <DialogContent style={{ height: "600px" }}>
-          <div className='mt-1 pt-1 d-flex'>
+          <div className="mt-1 pt-1 d-flex">
             <TextField
               label="Tìm sản phẩm"
               // onChange={handleGetValueFromInputTextField}
@@ -868,7 +1134,12 @@ export function ProductsDialog(props) {
               // onClick={handleRefreshData}
               className="rounded-2 ms-3"
               type="warning"
-              style={{ height: "40px", width: "100px", fontSize: "15px", backgroundColor: "#FFB61E" }}
+              style={{
+                height: "40px",
+                width: "100px",
+                fontSize: "15px",
+                backgroundColor: "#FFB61E",
+              }}
             >
               <span
                 className="text-dark"
@@ -877,9 +1148,17 @@ export function ProductsDialog(props) {
                 Làm Mới
               </span>
             </Button>
-            <div className='ms-3 d-flex' style={{ height: "40px", cursor: "pointer" }}>
+            <div
+              className="ms-3 d-flex"
+              style={{ height: "40px", cursor: "pointer" }}
+            >
               <div onClick={handleOpenSelect} className="mt-2">
-                <span className='ms-2 ps-1' style={{ fontSize: "15px", fontWeight: "450" }}>Nhu cầu: </span>
+                <span
+                  className="ms-2 ps-1"
+                  style={{ fontSize: "15px", fontWeight: "450" }}
+                >
+                  Nhu cầu:{" "}
+                </span>
               </div>
               <FormControl sx={{ maxWidth: 180 }} size="small">
                 <SelectMui
@@ -887,18 +1166,18 @@ export function ProductsDialog(props) {
                   MenuProps={{
                     PaperProps: {
                       style: {
-                        borderRadius: '7px'
+                        borderRadius: "7px",
                       },
                     },
                   }}
                   IconComponent={KeyboardArrowDownOutlinedIcon}
                   sx={{
-                    '& .MuiOutlinedInput-notchedOutline': {
-                      border: 'none !important',
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none !important",
                     },
-                    '& .MuiSelect-select': {
-                      color: '#288ad6',
-                      fontWeight: "500"
+                    "& .MuiSelect-select": {
+                      color: "#288ad6",
+                      fontWeight: "500",
                     },
                   }}
                   open={openSelect}
@@ -906,10 +1185,16 @@ export function ProductsDialog(props) {
                   onOpen={handleOpenSelect}
                   defaultValue={selectedValues}
                   value={selectedValues}
-                  onChange={(e) => { setSelectedValues(e.target.value); }}
+                  onChange={(e) => {
+                    setSelectedValues(e.target.value);
+                  }}
                 >
                   {selectedValues.length === 1 && selectedValues[0] == 0 && (
-                    <MenuItem className='' value={0} style={{ display: 'none' }}>
+                    <MenuItem
+                      className=""
+                      value={0}
+                      style={{ display: "none" }}
+                    >
                       Chọn nhu cầu
                     </MenuItem>
                   )}
@@ -923,29 +1208,40 @@ export function ProductsDialog(props) {
               </FormControl>
             </div>
 
-            <div className='ms-1 d-flex' style={{ height: "40px", cursor: "pointer" }}>
+            <div
+              className="ms-1 d-flex"
+              style={{ height: "40px", cursor: "pointer" }}
+            >
               <div onClick={handleOpenSelect1} className="mt-2">
-                <span className='ms-2 ps-1' style={{ fontSize: "15px", fontWeight: "450" }}>Hãng: </span>
+                <span
+                  className="ms-2 ps-1"
+                  style={{ fontSize: "15px", fontWeight: "450" }}
+                >
+                  Hãng:{" "}
+                </span>
               </div>
-              <FormControl sx={{
-                maxWidth: 150,
-              }} size="small">
+              <FormControl
+                sx={{
+                  maxWidth: 150,
+                }}
+                size="small"
+              >
                 <SelectMui
                   MenuProps={{
                     PaperProps: {
                       style: {
-                        borderRadius: '7px'
+                        borderRadius: "7px",
                       },
                     },
                   }}
                   IconComponent={KeyboardArrowDownOutlinedIcon}
                   sx={{
-                    '& .MuiOutlinedInput-notchedOutline': {
-                      border: 'none !important',
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none !important",
                     },
-                    '& .MuiSelect-select': {
-                      color: '#288ad6',
-                      fontWeight: "500"
+                    "& .MuiSelect-select": {
+                      color: "#288ad6",
+                      fontWeight: "500",
                     },
                   }}
                   open={openSelect1}
@@ -953,11 +1249,17 @@ export function ProductsDialog(props) {
                   onOpen={handleOpenSelect1}
                   defaultValue={selectedValues1}
                   value={selectedValues1}
-                  onChange={(e) => { setSelectedValues1(e.target.value); }}
+                  onChange={(e) => {
+                    setSelectedValues1(e.target.value);
+                  }}
                   multiple
                 >
                   {selectedValues1.length === 1 && selectedValues[0] == 0 && (
-                    <MenuItem className='' value={0} style={{ display: 'none' }}>
+                    <MenuItem
+                      className=""
+                      value={0}
+                      style={{ display: "none" }}
+                    >
                       Chọn hãng
                     </MenuItem>
                   )}
@@ -972,29 +1274,40 @@ export function ProductsDialog(props) {
               </FormControl>
             </div>
 
-            <div className='ms-1 d-flex' style={{ height: "40px", cursor: "pointer" }}>
+            <div
+              className="ms-1 d-flex"
+              style={{ height: "40px", cursor: "pointer" }}
+            >
               <div onClick={handleOpenSelect2} className="mt-2">
-                <span className='ms-2 ps-1' style={{ fontSize: "15px", fontWeight: "450" }}>Loại điện thoại: </span>
+                <span
+                  className="ms-2 ps-1"
+                  style={{ fontSize: "15px", fontWeight: "450" }}
+                >
+                  Loại điện thoại:{" "}
+                </span>
               </div>
-              <FormControl sx={{
-                maxWidth: 150,
-              }} size="small">
+              <FormControl
+                sx={{
+                  maxWidth: 150,
+                }}
+                size="small"
+              >
                 <SelectMui
                   MenuProps={{
                     PaperProps: {
                       style: {
-                        borderRadius: '7px'
+                        borderRadius: "7px",
                       },
                     },
                   }}
                   IconComponent={KeyboardArrowDownOutlinedIcon}
                   sx={{
-                    '& .MuiOutlinedInput-notchedOutline': {
-                      border: 'none !important',
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none !important",
                     },
-                    '& .MuiSelect-select': {
-                      color: '#288ad6',
-                      fontWeight: "500"
+                    "& .MuiSelect-select": {
+                      color: "#288ad6",
+                      fontWeight: "500",
                     },
                   }}
                   open={openSelect2}
@@ -1003,10 +1316,16 @@ export function ProductsDialog(props) {
                   multiple
                   defaultValue={selectedValues2}
                   value={selectedValues2}
-                  onChange={(e) => { setSelectedValues2(e.target.value); }}
+                  onChange={(e) => {
+                    setSelectedValues2(e.target.value);
+                  }}
                 >
                   {selectedValues2.length === 1 && selectedValues[0] == 0 && (
-                    <MenuItem className='' value={0} style={{ display: 'none' }}>
+                    <MenuItem
+                      className=""
+                      value={0}
+                      style={{ display: "none" }}
+                    >
                       Chọn loại
                     </MenuItem>
                   )}
@@ -1015,29 +1334,40 @@ export function ProductsDialog(props) {
                 </SelectMui>
               </FormControl>
             </div>
-            <div className='ms-1 d-flex' style={{ height: "40px", cursor: "pointer" }}>
+            <div
+              className="ms-1 d-flex"
+              style={{ height: "40px", cursor: "pointer" }}
+            >
               <div onClick={handleOpenSelect3} className="mt-2">
-                <span className='ms-2 ps-1' style={{ fontSize: "15px", fontWeight: "450" }}>Chip xử lý: </span>
+                <span
+                  className="ms-2 ps-1"
+                  style={{ fontSize: "15px", fontWeight: "450" }}
+                >
+                  Chip xử lý:{" "}
+                </span>
               </div>
-              <FormControl sx={{
-                maxWidth: 160,
-              }} size="small">
+              <FormControl
+                sx={{
+                  maxWidth: 160,
+                }}
+                size="small"
+              >
                 <SelectMui
                   MenuProps={{
                     PaperProps: {
                       style: {
-                        borderRadius: '7px'
+                        borderRadius: "7px",
                       },
                     },
                   }}
                   IconComponent={KeyboardArrowDownOutlinedIcon}
                   sx={{
-                    '& .MuiOutlinedInput-notchedOutline': {
-                      border: 'none !important',
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none !important",
                     },
-                    '& .MuiSelect-select': {
-                      color: '#288ad6',
-                      fontWeight: "500"
+                    "& .MuiSelect-select": {
+                      color: "#288ad6",
+                      fontWeight: "500",
                     },
                   }}
                   open={openSelect3}
@@ -1045,11 +1375,17 @@ export function ProductsDialog(props) {
                   onOpen={handleOpenSelect3}
                   defaultValue={selectedValues3}
                   value={selectedValues3}
-                  onChange={(e) => { setSelectedValues3(e.target.value); }}
+                  onChange={(e) => {
+                    setSelectedValues3(e.target.value);
+                  }}
                   multiple
                 >
                   {selectedValues3.length === 1 && selectedValues[0] == 0 && (
-                    <MenuItem className='' value={0} style={{ display: 'none' }}>
+                    <MenuItem
+                      className=""
+                      value={0}
+                      style={{ display: "none" }}
+                    >
                       Chọn chip
                     </MenuItem>
                   )}
@@ -1061,34 +1397,44 @@ export function ProductsDialog(props) {
                 </SelectMui>
               </FormControl>
             </div>
-
           </div>
 
-          <div className='d-flex mt-3 mx-auto ms-4 ps-3'>
-            <div className='d-flex' style={{ height: "40px", cursor: "pointer" }}>
+          <div className="d-flex mt-3 mx-auto ms-4 ps-3">
+            <div
+              className="d-flex"
+              style={{ height: "40px", cursor: "pointer" }}
+            >
               <div onClick={handleOpenSelect4} className="mt-2">
-                <span className='ms-2 ps-1' style={{ fontSize: "15px", fontWeight: "450" }}>Giá: </span>
+                <span
+                  className="ms-2 ps-1"
+                  style={{ fontSize: "15px", fontWeight: "450" }}
+                >
+                  Giá:{" "}
+                </span>
               </div>
-              <FormControl sx={{
-                minWidth: 50,
-              }} size="small">
+              <FormControl
+                sx={{
+                  minWidth: 50,
+                }}
+                size="small"
+              >
                 <SelectMui
                   MenuProps={{
                     PaperProps: {
                       style: {
-                        borderRadius: '7px'
+                        borderRadius: "7px",
                       },
                     },
                   }}
                   IconComponent={KeyboardArrowDownOutlinedIcon}
                   sx={{
-                    'backgroundColor': "white",
-                    '& .MuiOutlinedInput-notchedOutline': {
-                      border: 'none !important',
+                    backgroundColor: "white",
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none !important",
                     },
-                    '& .MuiSelect-select': {
-                      color: '#288ad6',
-                      fontWeight: "500"
+                    "& .MuiSelect-select": {
+                      color: "#288ad6",
+                      fontWeight: "500",
                     },
                   }}
                   open={openSelect4}
@@ -1098,32 +1444,60 @@ export function ProductsDialog(props) {
                   // onChange={(e) => setValue()}
                   value={0}
                 >
-                  {isRangePrice == false ?
-                    <MenuItem className='' value={0} style={{ display: "none" }}>Chọn mức giá</MenuItem> :
-                    <MenuItem className='' value={0} style={{ display: "none" }}>{fromPrice + "₫" + " - " + toPrice + "₫"}</MenuItem>
-                  }
-                  <MenuItem className='' value={1} disableRipple
-                    style={{ backgroundColor: 'transparent' }}
+                  {isRangePrice == false ? (
+                    <MenuItem
+                      className=""
+                      value={0}
+                      style={{ display: "none" }}
+                    >
+                      Chọn mức giá
+                    </MenuItem>
+                  ) : (
+                    <MenuItem
+                      className=""
+                      value={0}
+                      style={{ display: "none" }}
+                    >
+                      {fromPrice + "₫" + " - " + toPrice + "₫"}
+                    </MenuItem>
+                  )}
+                  <MenuItem
+                    className=""
+                    value={1}
+                    disableRipple
+                    style={{ backgroundColor: "transparent" }}
                   >
-                    <div className='p-2' style={{ height: "140px" }}>
-                      <div className='d-flex justify-content-between'>
+                    <div className="p-2" style={{ height: "140px" }}>
+                      <div className="d-flex justify-content-between">
                         <Input
-                          endAdornment={<InputAdornment position="end">đ</InputAdornment>}
-                          onChange={handleChangeValueStart} value={valueStart} placeholder='Từ' sx={{ width: "100px" }} />
+                          endAdornment={
+                            <InputAdornment position="end">đ</InputAdornment>
+                          }
+                          onChange={handleChangeValueStart}
+                          value={valueStart}
+                          placeholder="Từ"
+                          sx={{ width: "100px" }}
+                        />
                         <Input
                           onChange={handleChangeValueEnd}
-                          endAdornment={<InputAdornment position="end">đ</InputAdornment>}
-                          value={valueEnd} placeholder='Đến' sx={{ width: "100px" }} />
+                          endAdornment={
+                            <InputAdornment position="end">đ</InputAdornment>
+                          }
+                          value={valueEnd}
+                          placeholder="Đến"
+                          sx={{ width: "100px" }}
+                        />
                       </div>
                       <div>
-                        <PrettoSlider sx={{ width: "300px", marginTop: "15px" }}
+                        <PrettoSlider
+                          sx={{ width: "300px", marginTop: "15px" }}
                           value={valueSlider}
                           onChange={handleChangeSlider}
                           min={0}
                           max={51900000}
                         />
                       </div>
-                      <div className='d-flex mt-2'>
+                      <div className="d-flex mt-2">
                         <Button
                           onClick={() => {
                             handleCloseSelect4();
@@ -1132,11 +1506,19 @@ export function ProductsDialog(props) {
                           }}
                           className="rounded-2"
                           type="warning"
-                          style={{ height: "38.8px", width: "145px", fontSize: "15px" }}
+                          style={{
+                            height: "38.8px",
+                            width: "145px",
+                            fontSize: "15px",
+                          }}
                         >
                           <span
                             className="text-dark"
-                            style={{ marginBottom: "3px", fontSize: "13.5px", fontWeight: "500" }}
+                            style={{
+                              marginBottom: "3px",
+                              fontSize: "13.5px",
+                              fontWeight: "500",
+                            }}
                           >
                             Đóng
                           </span>
@@ -1150,16 +1532,23 @@ export function ProductsDialog(props) {
                           }}
                           className="rounded-2 button-mui ms-2"
                           type="primary"
-                          style={{ height: "38.8px", width: "145px", fontSize: "15px" }}
+                          style={{
+                            height: "38.8px",
+                            width: "145px",
+                            fontSize: "15px",
+                          }}
                         >
                           <span
                             className="text-white"
-                            style={{ marginBottom: "3px", fontSize: "13.5px", fontWeight: "500" }}
+                            style={{
+                              marginBottom: "3px",
+                              fontSize: "13.5px",
+                              fontWeight: "500",
+                            }}
                           >
                             Xem kết quả
                           </span>
                         </Button>
-
                       </div>
                     </div>
                   </MenuItem>
@@ -1167,29 +1556,40 @@ export function ProductsDialog(props) {
               </FormControl>
             </div>
 
-            <div className='ms-1 d-flex' style={{ height: "40px", cursor: "pointer" }}>
+            <div
+              className="ms-1 d-flex"
+              style={{ height: "40px", cursor: "pointer" }}
+            >
               <div onClick={handleOpenSelect5} className="mt-2">
-                <span className='ms-2 ps-1' style={{ fontSize: "15px", fontWeight: "450" }}>Bộ nhớ trong: </span>
+                <span
+                  className="ms-2 ps-1"
+                  style={{ fontSize: "15px", fontWeight: "450" }}
+                >
+                  Bộ nhớ trong:{" "}
+                </span>
               </div>
-              <FormControl sx={{
-                maxWidth: 150,
-              }} size="small">
+              <FormControl
+                sx={{
+                  maxWidth: 150,
+                }}
+                size="small"
+              >
                 <SelectMui
                   MenuProps={{
                     PaperProps: {
                       style: {
-                        borderRadius: '7px'
+                        borderRadius: "7px",
                       },
                     },
                   }}
                   IconComponent={KeyboardArrowDownOutlinedIcon}
                   sx={{
-                    '& .MuiOutlinedInput-notchedOutline': {
-                      border: 'none !important',
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none !important",
                     },
-                    '& .MuiSelect-select': {
-                      color: '#288ad6',
-                      fontWeight: "500"
+                    "& .MuiSelect-select": {
+                      color: "#288ad6",
+                      fontWeight: "500",
                     },
                   }}
                   open={openSelect5}
@@ -1197,11 +1597,17 @@ export function ProductsDialog(props) {
                   onOpen={handleOpenSelect5}
                   defaultValue={selectedValues5}
                   value={selectedValues5}
-                  onChange={(e) => { setSelectedValues5(e.target.value); }}
+                  onChange={(e) => {
+                    setSelectedValues5(e.target.value);
+                  }}
                   multiple
                 >
                   {selectedValues5.length === 1 && selectedValues[0] == 0 && (
-                    <MenuItem className='' value={0} style={{ display: 'none' }}>
+                    <MenuItem
+                      className=""
+                      value={0}
+                      style={{ display: "none" }}
+                    >
                       Chọn bộ nhớ
                     </MenuItem>
                   )}
@@ -1216,29 +1622,40 @@ export function ProductsDialog(props) {
               </FormControl>
             </div>
 
-            <div className='ms-1 d-flex' style={{ height: "40px", cursor: "pointer" }}>
+            <div
+              className="ms-1 d-flex"
+              style={{ height: "40px", cursor: "pointer" }}
+            >
               <div onClick={handleOpenSelect6} className="mt-2">
-                <span className='ms-2 ps-1' style={{ fontSize: "15px", fontWeight: "450" }}>Dung lượng RAM: </span>
+                <span
+                  className="ms-2 ps-1"
+                  style={{ fontSize: "15px", fontWeight: "450" }}
+                >
+                  Dung lượng RAM:{" "}
+                </span>
               </div>
-              <FormControl sx={{
-                maxWidth: 130,
-              }} size="small">
+              <FormControl
+                sx={{
+                  maxWidth: 130,
+                }}
+                size="small"
+              >
                 <SelectMui
                   MenuProps={{
                     PaperProps: {
                       style: {
-                        borderRadius: '7px'
+                        borderRadius: "7px",
                       },
                     },
                   }}
                   IconComponent={KeyboardArrowDownOutlinedIcon}
                   sx={{
-                    '& .MuiOutlinedInput-notchedOutline': {
-                      border: 'none !important',
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none !important",
                     },
-                    '& .MuiSelect-select': {
-                      color: '#288ad6',
-                      fontWeight: "500"
+                    "& .MuiSelect-select": {
+                      color: "#288ad6",
+                      fontWeight: "500",
                     },
                   }}
                   open={openSelect6}
@@ -1246,11 +1663,17 @@ export function ProductsDialog(props) {
                   onOpen={handleOpenSelect6}
                   defaultValue={selectedValues6}
                   value={selectedValues6}
-                  onChange={(e) => { setSelectedValues6(e.target.value); }}
+                  onChange={(e) => {
+                    setSelectedValues6(e.target.value);
+                  }}
                   multiple
                 >
                   {selectedValues6.length === 1 && selectedValues[0] == 0 && (
-                    <MenuItem className='' value={0} style={{ display: 'none' }}>
+                    <MenuItem
+                      className=""
+                      value={0}
+                      style={{ display: "none" }}
+                    >
                       Chọn RAM
                     </MenuItem>
                   )}
@@ -1264,30 +1687,40 @@ export function ProductsDialog(props) {
               </FormControl>
             </div>
 
-
-            <div className='ms-1 d-flex' style={{ height: "40px", cursor: "pointer" }}>
+            <div
+              className="ms-1 d-flex"
+              style={{ height: "40px", cursor: "pointer" }}
+            >
               <div onClick={handleOpenSelect7} className="mt-2">
-                <span className='ms-2 ps-1' style={{ fontSize: "15px", fontWeight: "450" }}>Màn hình: </span>
+                <span
+                  className="ms-2 ps-1"
+                  style={{ fontSize: "15px", fontWeight: "450" }}
+                >
+                  Màn hình:{" "}
+                </span>
               </div>
-              <FormControl sx={{
-                maxWidth: 170,
-              }} size="small">
+              <FormControl
+                sx={{
+                  maxWidth: 170,
+                }}
+                size="small"
+              >
                 <SelectMui
                   MenuProps={{
                     PaperProps: {
                       style: {
-                        borderRadius: '7px'
+                        borderRadius: "7px",
                       },
                     },
                   }}
                   IconComponent={KeyboardArrowDownOutlinedIcon}
                   sx={{
-                    '& .MuiOutlinedInput-notchedOutline': {
-                      border: 'none !important',
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none !important",
                     },
-                    '& .MuiSelect-select': {
-                      color: '#288ad6',
-                      fontWeight: "500"
+                    "& .MuiSelect-select": {
+                      color: "#288ad6",
+                      fontWeight: "500",
                     },
                   }}
                   open={openSelect7}
@@ -1295,11 +1728,17 @@ export function ProductsDialog(props) {
                   onOpen={handleOpenSelect7}
                   defaultValue={selectedValues7}
                   value={selectedValues7}
-                  onChange={(e) => { setSelectedValues7(e.target.value); }}
+                  onChange={(e) => {
+                    setSelectedValues7(e.target.value);
+                  }}
                   multiple
                 >
                   {selectedValues7.length === 1 && selectedValues[0] == 0 && (
-                    <MenuItem className='' value={0} style={{ display: 'none' }}>
+                    <MenuItem
+                      className=""
+                      value={0}
+                      style={{ display: "none" }}
+                    >
                       Chọn kích thước
                     </MenuItem>
                   )}
@@ -1309,29 +1748,40 @@ export function ProductsDialog(props) {
               </FormControl>
             </div>
 
-            <div className='ms-1 d-flex' style={{ height: "40px", cursor: "pointer" }}>
+            <div
+              className="ms-1 d-flex"
+              style={{ height: "40px", cursor: "pointer" }}
+            >
               <div onClick={handleOpenSelect8} className="mt-2">
-                <span className='ms-2 ps-1' style={{ fontSize: "15px", fontWeight: "450" }}>Tính năng đặc biệt: </span>
+                <span
+                  className="ms-2 ps-1"
+                  style={{ fontSize: "15px", fontWeight: "450" }}
+                >
+                  Tính năng đặc biệt:{" "}
+                </span>
               </div>
-              <FormControl sx={{
-                maxWidth: 160,
-              }} size="small">
+              <FormControl
+                sx={{
+                  maxWidth: 160,
+                }}
+                size="small"
+              >
                 <SelectMui
                   MenuProps={{
                     PaperProps: {
                       style: {
-                        borderRadius: '7px'
+                        borderRadius: "7px",
                       },
                     },
                   }}
                   IconComponent={KeyboardArrowDownOutlinedIcon}
                   sx={{
-                    '& .MuiOutlinedInput-notchedOutline': {
-                      border: 'none !important',
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none !important",
                     },
-                    '& .MuiSelect-select': {
-                      color: '#288ad6',
-                      fontWeight: "500"
+                    "& .MuiSelect-select": {
+                      color: "#288ad6",
+                      fontWeight: "500",
                     },
                   }}
                   open={openSelect8}
@@ -1339,11 +1789,17 @@ export function ProductsDialog(props) {
                   onOpen={handleOpenSelect8}
                   defaultValue={selectedValues8}
                   value={selectedValues8}
-                  onChange={(e) => { setSelectedValues8(e.target.value); }}
+                  onChange={(e) => {
+                    setSelectedValues8(e.target.value);
+                  }}
                   multiple
                 >
                   {selectedValues8.length === 1 && selectedValues[0] == 0 && (
-                    <MenuItem className='' value={0} style={{ display: 'none' }}>
+                    <MenuItem
+                      className=""
+                      value={0}
+                      style={{ display: "none" }}
+                    >
                       Chọn tính năng
                     </MenuItem>
                   )}
@@ -1355,16 +1811,12 @@ export function ProductsDialog(props) {
                 </SelectMui>
               </FormControl>
             </div>
-
-
           </div>
-          <div className='mt-3'>
+          <div className="mt-3">
             <TableProduct />
           </div>
-
         </DialogContent>
-        <DialogActions>
-        </DialogActions>
+        <DialogActions></DialogActions>
       </Dialog>
       <ProductDetailsDialog
         open={openProductDetails}
@@ -1384,7 +1836,6 @@ export function ProductsDialog(props) {
         clickCount={clickCount}
         clickCount1={clickCount1}
         changeCount={handleChangeCount}
-
       />
     </div>
   );
@@ -1393,83 +1844,120 @@ export function ProductsDialog(props) {
 export function VouchersDialog(props) {
   const { handleOpenAlertVariant } = useCustomSnackbar();
 
-  const { open, onClose, onCloseNoAction, data, add, discount, total, checkDieuKien } = props;
+  const {
+    open,
+    onClose,
+    onCloseNoAction,
+    data,
+    add,
+    discount,
+    total,
+    checkDieuKien,
+  } = props;
   const [voucherId, setVoucherId] = useState();
   const StyledTableContainer = styled(TableContainer)({
-    boxShadow: 'none',
+    boxShadow: "none",
   });
 
   const getDieuKien = (dieuKien) => {
     checkDieuKien(dieuKien);
-  }
+  };
 
   const handleAddOrRemoveVoucherToOrder = (id, dieuKien) => {
     getDieuKien(dieuKien || 0);
     if (total() < dieuKien) {
       handleOpenAlertVariant("Đơn hàng không đủ điều kiện!", Notistack.ERROR);
-    }
-    else if (discount === id) {
+    } else if (discount === id) {
       add(null, true);
       onClose();
-    }
-    else {
+    } else {
       add(id, true);
       onClose();
     }
-  }
+  };
 
   const StyledTableHead = styled(TableHead)`
-  & tr:hover th{
-    background-color: white !important;
-  }
-`;
+    & tr:hover th {
+      background-color: white !important;
+    }
+  `;
 
-  const useStyles = () => ({
-  });
+  const useStyles = () => ({});
 
   const classes = useStyles();
 
   const TableVouchers = () => {
     return (
       <>
-        <div className=''>
+        <div className="">
           <StyledTableContainer component={Paper}>
-            <Table sx={{ minWidth: 650, boxShadow: "none" }} aria-label="simple table" className={classes.tableContainer}>
+            <Table
+              sx={{ minWidth: 650, boxShadow: "none" }}
+              aria-label="simple table"
+              className={classes.tableContainer}
+            >
               <StyledTableHead>
                 <TableRow>
-                  <TableCell style={{ fontWeight: "550" }} align="center">STT</TableCell>
-                  <TableCell style={{ fontWeight: "550" }} align="center">Mã</TableCell>
-                  <TableCell style={{ fontWeight: "550" }} align="center">Giá trị</TableCell>
-                  <TableCell style={{ fontWeight: "550" }} align="center">Giảm tối đa</TableCell>
-                  <TableCell style={{ fontWeight: "550" }} align="center">Số lượng</TableCell>
-                  <TableCell style={{ fontWeight: "550" }} align="center">Điều kiện áp dụng</TableCell>
-                  <TableCell style={{ fontWeight: "550" }} align="center">Trạng thái</TableCell>
-                  <TableCell style={{ fontWeight: "550" }} align="center">Tình trạng đơn hàng</TableCell>
-                  <TableCell style={{ fontWeight: "550" }} align="center">Thao Tác</TableCell>
+                  <TableCell style={{ fontWeight: "550" }} align="center">
+                    STT
+                  </TableCell>
+                  <TableCell style={{ fontWeight: "550" }} align="center">
+                    Mã
+                  </TableCell>
+                  <TableCell style={{ fontWeight: "550" }} align="center">
+                    Giá trị
+                  </TableCell>
+                  <TableCell style={{ fontWeight: "550" }} align="center">
+                    Giảm tối đa
+                  </TableCell>
+                  <TableCell style={{ fontWeight: "550" }} align="center">
+                    Số lượng
+                  </TableCell>
+                  <TableCell style={{ fontWeight: "550" }} align="center">
+                    Điều kiện áp dụng
+                  </TableCell>
+                  <TableCell style={{ fontWeight: "550" }} align="center">
+                    Trạng thái
+                  </TableCell>
+                  <TableCell style={{ fontWeight: "550" }} align="center">
+                    Tình trạng đơn hàng
+                  </TableCell>
+                  <TableCell style={{ fontWeight: "550" }} align="center">
+                    Thao Tác
+                  </TableCell>
                 </TableRow>
               </StyledTableHead>
               <TableBody>
                 {data.map((item, index) => (
                   <TableRow
                     key={index}
-                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                   >
-                    <TableCell component="th" scope="row" align='center'>
+                    <TableCell component="th" scope="row" align="center">
                       {index + 1}
                     </TableCell>
-                    <TableCell align="center" style={{ fontSize: "15px" }}>{item.ma}</TableCell>
-                    <TableCell align="center" style={{ width: "", fontSize: "15px", color: "#dc1111" }}>
-                      {
-                        item.giaTriVoucher.toLocaleString("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        })
-                      }
+                    <TableCell align="center" style={{ fontSize: "15px" }}>
+                      {item.ma}
                     </TableCell>
-                    <TableCell align="center" style={{ width: "", fontSize: "15px" }}>
+                    <TableCell
+                      align="center"
+                      style={{ width: "", fontSize: "15px", color: "#dc1111" }}
+                    >
+                      {item.giaTriVoucher.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })}
+                    </TableCell>
+                    <TableCell
+                      align="center"
+                      style={{ width: "", fontSize: "15px" }}
+                    >
                       {item.loaiVoucher === "VNĐ" ? "..." : item.giaTriToiDa}
                     </TableCell>
-                    <TableCell align="center" style={{ width: "", fontSize: "15px" }}>
+                    <TableCell
+                      align="center"
+                      style={{ width: "", fontSize: "15px" }}
+                    >
                       {item.soLuong}
                     </TableCell>
                     {/*
@@ -1502,18 +1990,27 @@ export function VouchersDialog(props) {
                       </div>
                     </TableCell>
 */}
-                    <TableCell align="center" style={{ width: "200px", fontSize: "15px", whiteSpace: "pre-line" }}>
+                    <TableCell
+                      align="center"
+                      style={{
+                        width: "200px",
+                        fontSize: "15px",
+                        whiteSpace: "pre-line",
+                      }}
+                    >
                       Áp dụng cho đơn tối thiểu
-                      <span className='' style={{}}>
+                      <span className="" style={{}}>
                         {" " +
                           item.dieuKienApDung.toLocaleString("vi-VN", {
                             style: "currency",
                             currency: "VND",
-                          })
-                        }
+                          })}
                       </span>
                     </TableCell>
-                    <TableCell align="center" style={{ width: "", fontSize: "15px" }}>
+                    <TableCell
+                      align="center"
+                      style={{ width: "", fontSize: "15px" }}
+                    >
                       <div
                         className="rounded-pill badge-primary"
                         style={{
@@ -1527,9 +2024,20 @@ export function VouchersDialog(props) {
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell align="center" style={{ width: "200px", fontSize: "15px", whiteSpace: "pre-line" }}>
+                    <TableCell
+                      align="center"
+                      style={{
+                        width: "200px",
+                        fontSize: "15px",
+                        whiteSpace: "pre-line",
+                      }}
+                    >
                       <div
-                        className={`${item.dieuKienApDung <= total() ? "rounded-pill badge-success" : "rounded-pill badge-danger"}`}
+                        className={`${
+                          item.dieuKienApDung <= total()
+                            ? "rounded-pill badge-success"
+                            : "rounded-pill badge-danger"
+                        }`}
                         style={{
                           height: "35px",
                           width: "auto",
@@ -1537,25 +2045,45 @@ export function VouchersDialog(props) {
                         }}
                       >
                         <span className="text-white p-2" style={{}}>
-                          <span>{`${item.dieuKienApDung <= total() ? "Có thể áp dụng" : "Không thể áp dụng"}`}</span>
+                          <span>{`${
+                            item.dieuKienApDung <= total()
+                              ? "Có thể áp dụng"
+                              : "Không thể áp dụng"
+                          }`}</span>
                         </span>
                       </div>
                     </TableCell>
                     <TableCell align="center" style={{ width: "" }}>
                       <Button
                         onClick={() =>
-                          handleAddOrRemoveVoucherToOrder(item.id, item.dieuKienApDung)}
+                          handleAddOrRemoveVoucherToOrder(
+                            item.id,
+                            item.dieuKienApDung
+                          )
+                        }
                         className="rounded-2"
-                        type={discount === item.id ? "danger" : discount !== item.id ? "warning" : ""}
-                        style={{ height: "35px", width: "auto", fontSize: "14px" }}
+                        type={
+                          discount === item.id
+                            ? "danger"
+                            : discount !== item.id
+                            ? "warning"
+                            : ""
+                        }
+                        style={{
+                          height: "35px",
+                          width: "auto",
+                          fontSize: "14px",
+                        }}
                       >
                         <span
-                          className={discount === item.id ? "text-white" : "text-dark"}
+                          className={
+                            discount === item.id ? "text-white" : "text-dark"
+                          }
                           style={{ fontWeight: "500", marginBottom: "3px" }}
                         >
-                          {discount === item.id ? "Bỏ áp dụng" : "Áp dụng"}                        </span>
+                          {discount === item.id ? "Bỏ áp dụng" : "Áp dụng"}{" "}
+                        </span>
                       </Button>
-
                     </TableCell>
                   </TableRow>
                 ))}
@@ -1564,11 +2092,12 @@ export function VouchersDialog(props) {
           </StyledTableContainer>
         </div>
       </>
-    )
-  }
+    );
+  };
   return (
-    <div className='rounded-pill'>
-      <Dialog className=''
+    <div className="rounded-pill">
+      <Dialog
+        className=""
         open={open}
         TransitionComponent={Transition}
         keepMounted
@@ -1577,18 +2106,19 @@ export function VouchersDialog(props) {
         maxWidth="lg"
         maxHeight="lg"
         fullWidth="lg"
-        sx={{
-        }}
+        sx={{}}
       >
         <DialogTitle id="alert-dialog-title">
-          <div className='d-flex justify-content-between mt-1'>
+          <div className="d-flex justify-content-between mt-1">
             <div>
-              <span className='text-dark' style={{ fontSize: "22px" }}>Tìm Kiếm Voucher</span>
+              <span className="text-dark" style={{ fontSize: "22px" }}>
+                Tìm Kiếm Voucher
+              </span>
             </div>
           </div>
         </DialogTitle>
         <DialogContent style={{ height: "600px" }}>
-          <div className='mt-2 d-flex'>
+          <div className="mt-2 d-flex">
             <TextField
               label="Tìm Voucher"
               // onChange={handleGetValueFromInputTextField}
@@ -1622,75 +2152,103 @@ export function VouchersDialog(props) {
               </span>
             </Button>
           </div>
-          <div className='mt-3'>
+          <div className="mt-3">
             <TableVouchers />
           </div>
-
         </DialogContent>
-        <DialogActions>
-        </DialogActions>
+        <DialogActions></DialogActions>
       </Dialog>
     </div>
   );
 }
 
-
 export function CustomersDialog(props) {
-
   const { open, onClose, onCloseNoAction, data, add } = props;
   const [customerId, setCustomerId] = useState();
   const StyledTableContainer = styled(TableContainer)({
-    boxShadow: 'none',
+    boxShadow: "none",
   });
 
   const handleSelectCustomer = (id) => {
     add(id);
-  }
+  };
 
   const StyledTableHead = styled(TableHead)`
-  & tr:hover th{
-    background-color: white !important;
-  }
-`;
+    & tr:hover th {
+      background-color: white !important;
+    }
+  `;
 
-  const useStyles = () => ({
-  });
+  const useStyles = () => ({});
 
   const classes = useStyles();
 
   const TableCusomter = () => {
     return (
       <>
-        <div className=''>
+        <div className="">
           <StyledTableContainer component={Paper}>
-            <Table sx={{ minWidth: 650, boxShadow: "none" }} aria-label="simple table" className={classes.tableContainer}>
+            <Table
+              sx={{ minWidth: 650, boxShadow: "none" }}
+              aria-label="simple table"
+              className={classes.tableContainer}
+            >
               <StyledTableHead>
                 <TableRow>
-                  <TableCell style={{ fontWeight: "550" }} align="center">Avatar</TableCell>
-                  <TableCell style={{ fontWeight: "550" }} align="center">Mã</TableCell>
-                  <TableCell style={{ fontWeight: "550" }} align="center">Tên Khách Hàng</TableCell>
-                  <TableCell style={{ fontWeight: "550" }} align="center">Email</TableCell>
-                  <TableCell style={{ fontWeight: "550" }} align="center">Số Điện Thoại</TableCell>
-                  <TableCell style={{ fontWeight: "550" }} align="center">Thao Tác</TableCell>
+                  <TableCell style={{ fontWeight: "550" }} align="center">
+                    Avatar
+                  </TableCell>
+                  <TableCell style={{ fontWeight: "550" }} align="center">
+                    Mã
+                  </TableCell>
+                  <TableCell style={{ fontWeight: "550" }} align="center">
+                    Tên Khách Hàng
+                  </TableCell>
+                  <TableCell style={{ fontWeight: "550" }} align="center">
+                    Email
+                  </TableCell>
+                  <TableCell style={{ fontWeight: "550" }} align="center">
+                    Số Điện Thoại
+                  </TableCell>
+                  <TableCell style={{ fontWeight: "550" }} align="center">
+                    Thao Tác
+                  </TableCell>
                 </TableRow>
               </StyledTableHead>
               <TableBody>
                 {data.map((item, index) => (
                   <TableRow
                     key={index}
-                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                   >
-                    <TableCell component="th" scope="row" align='center'>
-                      <div className='' style={{ marginLeft: "33px" }}>
+                    <TableCell component="th" scope="row" align="center">
+                      <div className="" style={{ marginLeft: "33px" }}>
                         <Avatar src="https://ecdn.game4v.com/g4v-content/uploads/2021/02/ava-1.png" />
                       </div>
                     </TableCell>
-                    <TableCell align="center" style={{ fontSize: "15px" }}>{item.ma}</TableCell>
-                    <TableCell align="center" style={{ width: "px", fontSize: "15px", whiteSpace: "pre-line" }}>{item.hoVaTen}</TableCell>
-                    <TableCell align="center" style={{ width: "px", fontSize: "15px" }}>
+                    <TableCell align="center" style={{ fontSize: "15px" }}>
+                      {item.ma}
+                    </TableCell>
+                    <TableCell
+                      align="center"
+                      style={{
+                        width: "px",
+                        fontSize: "15px",
+                        whiteSpace: "pre-line",
+                      }}
+                    >
+                      {item.hoVaTen}
+                    </TableCell>
+                    <TableCell
+                      align="center"
+                      style={{ width: "px", fontSize: "15px" }}
+                    >
                       {item.email}
                     </TableCell>
-                    <TableCell align="center" style={{ width: "px", fontSize: "15px" }}>
+                    <TableCell
+                      align="center"
+                      style={{ width: "px", fontSize: "15px" }}
+                    >
                       {item.soDienThoai}
                     </TableCell>
                     <TableCell align="center" style={{ width: "" }}>
@@ -1698,7 +2256,11 @@ export function CustomersDialog(props) {
                         onClick={() => handleSelectCustomer(item.id)}
                         className="rounded-2"
                         type="primary"
-                        style={{ height: "40px", width: "82px", fontSize: "14px" }}
+                        style={{
+                          height: "40px",
+                          width: "82px",
+                          fontSize: "14px",
+                        }}
                       >
                         <span
                           className="text-white"
@@ -1707,7 +2269,6 @@ export function CustomersDialog(props) {
                           Chọn
                         </span>
                       </Button>
-
                     </TableCell>
                   </TableRow>
                 ))}
@@ -1716,11 +2277,12 @@ export function CustomersDialog(props) {
           </StyledTableContainer>
         </div>
       </>
-    )
-  }
+    );
+  };
   return (
-    <div className='rounded-pill'>
-      <Dialog className=''
+    <div className="rounded-pill">
+      <Dialog
+        className=""
         open={open}
         TransitionComponent={Transition}
         keepMounted
@@ -1729,18 +2291,19 @@ export function CustomersDialog(props) {
         maxWidth="lg"
         maxHeight="lg"
         fullWidth="lg"
-        sx={{
-        }}
+        sx={{}}
       >
         <DialogTitle id="alert-dialog-title">
-          <div className='d-flex justify-content-between mt-1'>
+          <div className="d-flex justify-content-between mt-1">
             <div>
-              <span className='text-dark' style={{ fontSize: "22px" }}>Tìm Kiếm Khách Hàng</span>
+              <span className="text-dark" style={{ fontSize: "22px" }}>
+                Tìm Kiếm Khách Hàng
+              </span>
             </div>
           </div>
         </DialogTitle>
         <DialogContent style={{ height: "600px" }}>
-          <div className='mt-2 d-flex'>
+          <div className="mt-2 d-flex">
             <TextField
               label="Tìm Khách Hàng"
               // onChange={handleGetValueFromInputTextField}
@@ -1774,24 +2337,21 @@ export function CustomersDialog(props) {
               </span>
             </Button>
           </div>
-          <div className='mt-3'>
+          <div className="mt-3">
             <TableCusomter />
           </div>
-
         </DialogContent>
-        <DialogActions>
-        </DialogActions>
+        <DialogActions></DialogActions>
       </Dialog>
     </div>
   );
 }
 
 export function OrderHistoryDialog(props) {
-
   const { columns, open, onClose, dataSource } = props;
 
   return (
-    <div className='rounded-pill'>
+    <div className="rounded-pill">
       <Dialog
         open={open}
         TransitionComponent={Transition}
@@ -1819,26 +2379,25 @@ export function OrderHistoryDialog(props) {
 }
 
 export function ConfirmPaymentDialog(props) {
-
   const { open, onCloseNoAction, confirmPayment } = props;
   const [description, setDescription] = useState("");
 
   const handleGetValueFromInputTextField = (event) => {
     const value = event.target.value;
     setDescription(value);
-  }
+  };
 
   const handleCloseDialog = () => {
     setDescription("");
     onCloseNoAction();
-  }
+  };
 
   const confirm = (description) => {
     confirmPayment(description);
-  }
+  };
 
   return (
-    <div className='rounded-pill'>
+    <div className="rounded-pill">
       <Dialog
         TransitionComponent={Transition}
         keepMounted
@@ -1852,10 +2411,11 @@ export function ConfirmPaymentDialog(props) {
         }}
       >
         <DialogTitle id="alert-dialog-title">
-          {<span className='fs-4 text-dark'>{"Xác nhận thanh toán"}</span>}
+          {<span className="fs-4 text-dark">{"Xác nhận thanh toán"}</span>}
         </DialogTitle>
         <DialogContent>
-          <TextField label="Ghi chú đơn hàng"
+          <TextField
+            label="Ghi chú đơn hàng"
             value={description}
             onChange={handleGetValueFromInputTextField}
             multiline
@@ -1863,19 +2423,49 @@ export function ConfirmPaymentDialog(props) {
             inputProps={{
               style: {
                 width: "755px",
-                paddingBottom: "80px"
+                paddingBottom: "80px",
               },
             }}
-            size='medium' className='mt-2' />
+            size="medium"
+            className="mt-2"
+          />
         </DialogContent>
         <DialogActions>
-          <Button onClick={confirm} className="rounded-2 me-2" type="primary" style={{ height: "40px", width: "auto", fontSize: "16px", marginBottom: "20px" }}>
-            <span className='text-white' style={{ fontWeight: "500", marginBottom: "2px" }}>
-              Xác nhận</span>
+          <Button
+            onClick={confirm}
+            className="rounded-2 me-2"
+            type="primary"
+            style={{
+              height: "40px",
+              width: "auto",
+              fontSize: "16px",
+              marginBottom: "20px",
+            }}
+          >
+            <span
+              className="text-white"
+              style={{ fontWeight: "500", marginBottom: "2px" }}
+            >
+              Xác nhận
+            </span>
           </Button>
-          <Button onClick={handleCloseDialog} className="rounded-2 me-3" type="danger" style={{ height: "40px", width: "auto", fontSize: "16px", marginBottom: "20px" }}>
-            <span className='text-white' style={{ fontWeight: "500", marginBottom: "2px" }}>
-              Hủy bỏ</span>
+          <Button
+            onClick={handleCloseDialog}
+            className="rounded-2 me-3"
+            type="danger"
+            style={{
+              height: "40px",
+              width: "auto",
+              fontSize: "16px",
+              marginBottom: "20px",
+            }}
+          >
+            <span
+              className="text-white"
+              style={{ fontWeight: "500", marginBottom: "2px" }}
+            >
+              Hủy bỏ
+            </span>
           </Button>
         </DialogActions>
       </Dialog>
@@ -1883,28 +2473,34 @@ export function ConfirmPaymentDialog(props) {
   );
 }
 export function ConfirmDialog(props) {
-
-  const { open, status, confirmPreparing, confirmOrderInfo, confirmDelivery, confirmFinish, confirmCancel, onCloseNoAction } = props;
+  const {
+    open,
+    status,
+    confirmPreparing,
+    confirmOrderInfo,
+    confirmDelivery,
+    confirmFinish,
+    confirmCancel,
+    onCloseNoAction,
+  } = props;
   const [description, setDescription] = useState("");
 
   const handleGetValueFromInputTextField = (event) => {
     const value = event.target.value;
     setDescription(value);
-  }
+  };
 
   const handleCloseDialog = () => {
     setDescription("");
     onCloseNoAction();
-  }
+  };
 
   const handleConfirm = () => {
     if (status === OrderStatusString.PENDING_CONFIRM) {
       confirmOrderInfo(description);
-    }
-    else if (status === OrderStatusString.CONFIRMED) {
+    } else if (status === OrderStatusString.CONFIRMED) {
       confirmPreparing(description);
-    }
-    else if (status === OrderStatusString.PREPARING) {
+    } else if (status === OrderStatusString.PREPARING) {
       confirmDelivery(description);
     } else if (status === OrderStatusString.DELIVERING) {
       confirmFinish(description);
@@ -1915,20 +2511,20 @@ export function ConfirmDialog(props) {
   };
   const returnConfirmHeader = () => {
     if (status === OrderStatusString.PENDING_CONFIRM) {
-      return "Xác nhận đơn hàng"
+      return "Xác nhận đơn hàng";
     } else if (status === OrderStatusString.CONFIRMED) {
-      return "Xác nhận đang chuẩn bị hàng"
+      return "Xác nhận đang chuẩn bị hàng";
     } else if (status === OrderStatusString.PREPARING) {
-      return "Xác nhận giao hàng"
+      return "Xác nhận giao hàng";
     } else if (status === OrderStatusString.DELIVERING) {
-      return "Xác nhận đã giao"
+      return "Xác nhận đã giao";
     } else if (status === OrderStatusString.CANCELLED) {
-      return "Xác nhận hủy đơn"
+      return "Xác nhận hủy đơn";
     }
   };
 
   return (
-    <div className='rounded-pill'>
+    <div className="rounded-pill">
       <Dialog
         TransitionComponent={Transition}
         keepMounted
@@ -1942,10 +2538,11 @@ export function ConfirmDialog(props) {
         }}
       >
         <DialogTitle id="alert-dialog-title">
-          {<span className='fs-4 text-dark'>{returnConfirmHeader()}</span>}
+          {<span className="fs-4 text-dark">{returnConfirmHeader()}</span>}
         </DialogTitle>
         <DialogContent>
-          <TextField label="Ghi chú"
+          <TextField
+            label="Ghi chú"
             value={description}
             onChange={handleGetValueFromInputTextField}
             multiline
@@ -1953,19 +2550,49 @@ export function ConfirmDialog(props) {
             inputProps={{
               style: {
                 width: "755px",
-                paddingBottom: "80px"
+                paddingBottom: "80px",
               },
             }}
-            size='medium' className='mt-2' />
+            size="medium"
+            className="mt-2"
+          />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleConfirm} className="rounded-2 me-2" type="primary" style={{ height: "40px", width: "auto", fontSize: "16px", marginBottom: "20px" }}>
-            <span className='text-white' style={{ fontWeight: "500", marginBottom: "2px" }}>
-              Xác nhận</span>
+          <Button
+            onClick={handleConfirm}
+            className="rounded-2 me-2"
+            type="primary"
+            style={{
+              height: "40px",
+              width: "auto",
+              fontSize: "16px",
+              marginBottom: "20px",
+            }}
+          >
+            <span
+              className="text-white"
+              style={{ fontWeight: "500", marginBottom: "2px" }}
+            >
+              Xác nhận
+            </span>
           </Button>
-          <Button onClick={handleCloseDialog} className="rounded-2 me-3" type="danger" style={{ height: "40px", width: "auto", fontSize: "16px", marginBottom: "20px" }}>
-            <span className='text-white' style={{ fontWeight: "500", marginBottom: "2px" }}>
-              Hủy bỏ</span>
+          <Button
+            onClick={handleCloseDialog}
+            className="rounded-2 me-3"
+            type="danger"
+            style={{
+              height: "40px",
+              width: "auto",
+              fontSize: "16px",
+              marginBottom: "20px",
+            }}
+          >
+            <span
+              className="text-white"
+              style={{ fontWeight: "500", marginBottom: "2px" }}
+            >
+              Hủy bỏ
+            </span>
           </Button>
         </DialogActions>
       </Dialog>
@@ -1974,103 +2601,164 @@ export function ConfirmDialog(props) {
 }
 export const ProductDetailsDialog = (props) => {
   const { handleOpenAlertVariant } = useCustomSnackbar();
-  const { open, onClose, onCloseNoAction, addProduct, productItem, productItem1, productItem2,
-    getProductItems, getProductItems1, changeProductItem, changeProductImage, count, clickCount1, clickCount,
-    changeCount } = props;
+  const {
+    open,
+    onClose,
+    onCloseNoAction,
+    addProduct,
+    productItem,
+    productItem1,
+    productItem2,
+    getProductItems,
+    getProductItems1,
+    changeProductItem,
+    changeProductImage,
+    count,
+    clickCount1,
+    clickCount,
+    changeCount,
+  } = props;
 
   const handleChangeCount = (e) => {
     changeCount(e.target.value);
-  }
+  };
 
   const addProductItemsToCart = (productPrice, productId, amount) => {
     addProduct(productPrice, productId, count);
-  }
+  };
 
   const handleChangeCauHinh = (id) => {
     const item = getProductItems.find((item) => item.id === id);
     if (item) {
-      changeProductItem(item, productItem2 && productItem2.cauHinh.mauSac.tenMauSac);
+      changeProductItem(
+        item,
+        productItem2 && productItem2.cauHinh.mauSac.tenMauSac
+      );
     }
-  }
+  };
 
   const handleChangeMauSac = (id) => {
     const item = getProductItems1.find((item) => item.id === id);
     if (item) {
       changeProductImage(item);
     }
-  }
+  };
 
-    const [keyRadio, setKeyRadio] = useState(0);
-    const handleSetKey = () => {
-      setKeyRadio(keyRadio + 1);
-    }
+  const [keyRadio, setKeyRadio] = useState(0);
+  const handleSetKey = () => {
+    setKeyRadio(keyRadio + 1);
+  };
 
-    return (
-      <div className='rounded-pill'>
-        <Dialog
-          open={open}
-          TransitionComponent={Transition}
-          onClose={onCloseNoAction}
-          aria-describedby="alert-dialog-slide-description1"
-          maxWidth="lg"
-          maxHeight="lg"
-          sx={{
-          }}
-        >
-          <DialogContent >
-            <div className='' style={{ width: "auto", height: "500px" }}>
-              <div className='wrapper-header d-flex justify-content-between'>
-                <span style={{ fontWeight: "500", fontSize: "25px" }}>
-                  {productItem1 && productItem1.sanPham.tenSanPham + " " + productItem1.cauHinh.ram.kichThuoc + "/" + productItem1.cauHinh.rom.kichThuoc + "GB"}
-                  <span className='ms-2' style={{ fontSize: "13.5px", color: "gray" }}>(No.9001)</span>
+  return (
+    <div className="rounded-pill">
+      <Dialog
+        open={open}
+        TransitionComponent={Transition}
+        onClose={onCloseNoAction}
+        aria-describedby="alert-dialog-slide-description1"
+        maxWidth="lg"
+        maxHeight="lg"
+        sx={{}}
+      >
+        <DialogContent>
+          <div className="" style={{ width: "auto", height: "500px" }}>
+            <div className="wrapper-header d-flex justify-content-between">
+              <span style={{ fontWeight: "500", fontSize: "25px" }}>
+                {productItem1 &&
+                  productItem1.sanPham.tenSanPham +
+                    " " +
+                    productItem1.cauHinh.ram.kichThuoc +
+                    "/" +
+                    productItem1.cauHinh.rom.kichThuoc +
+                    "GB"}
+                <span
+                  className="ms-2"
+                  style={{ fontSize: "13.5px", color: "gray" }}
+                >
+                  (No.9001)
                 </span>
-                <Tooltip title="Đóng" TransitionComponent={Zoom}>
-                  <IconButton size='small' onClick={onCloseNoAction}>
-                    <CloseOutlinedIcon />
-                  </IconButton>
-                </Tooltip>
+              </span>
+              <Tooltip title="Đóng" TransitionComponent={Zoom}>
+                <IconButton size="small" onClick={onCloseNoAction}>
+                  <CloseOutlinedIcon />
+                </IconButton>
+              </Tooltip>
+            </div>
+            <div
+              className="mt-2"
+              style={{
+                borderBottom: "2px solid #C7C7C7",
+                width: "100%",
+                borderWidth: "1px",
+              }}
+            ></div>
+            <div className="wrapper-product d-flex">
+              <div className="product-img" style={{ width: "350px" }}>
+                <img
+                  className="mt-4 pt-4"
+                  style={{ width: "370px", height: "380px" }}
+                  src={productItem2 && productItem2.images[0].duongDan}
+                  alt=""
+                />
               </div>
-              <div className='mt-2' style={{ borderBottom: "2px solid #C7C7C7", width: "100%", borderWidth: "1px" }}></div>
-              <div className='wrapper-product d-flex'>
-                <div className='product-img' style={{ width: "350px" }}>
-                  <img className='mt-4 pt-4' style={{ width: "370px", height: "380px" }} src={productItem2 && productItem2.images[0].duongDan} alt="" />
+              <div className="product-details mt-5 ms-3 ps-1">
+                <div className="box-choose">
+                  <span style={{ fontWeight: "550", fontSize: "14px" }}>
+                    LỰA CHỌN CẤU HÌNH VÀ MÀU SẮC
+                  </span>
                 </div>
-                <div className='product-details mt-5 ms-3 ps-1'>
-                  <div className="box-choose">
-                    <span style={{ fontWeight: "550", fontSize: "14px" }}>
-                      LỰA CHỌN CẤU HÌNH VÀ MÀU SẮC
-                    </span>
-                  </div>
-                  <div className='choose1 mt-3 d-flex'>
-                    <RadioGroup orientation='horizontal' aria-labelledby="storage-label"
-                      defaultValue={productItem && productItem.cauHinh.ram.kichThuoc + "/" + productItem.cauHinh.rom.kichThuoc + "GB"}
-                      size="lg"
-                      sx={{ gap: 1.7 }}
-                    >
-                      {getProductItems && getProductItems.map((item) => (
+                <div className="choose1 mt-3 d-flex">
+                  <RadioGroup
+                    orientation="horizontal"
+                    aria-labelledby="storage-label"
+                    defaultValue={
+                      productItem &&
+                      productItem.cauHinh.ram.kichThuoc +
+                        "/" +
+                        productItem.cauHinh.rom.kichThuoc +
+                        "GB"
+                    }
+                    size="lg"
+                    sx={{ gap: 1.7 }}
+                  >
+                    {getProductItems &&
+                      getProductItems.map((item) => (
                         <Sheet
                           key={item.id}
                           sx={{
                             width: "auto",
-                            borderRadius: 'md',
-                            boxShadow: 'sm',
+                            borderRadius: "md",
+                            boxShadow: "sm",
                           }}
                         >
                           <Radio
                             label={
                               <>
-                                <div className='p-1'>
+                                <div className="p-1">
                                   <div>
-                                    <span className="p-2" style={{ fontSize: "14px", fontWeight: "450" }}>{productItem && productItem.sanPham.tenSanPham + " " + item.cauHinh.ram.kichThuoc + "/" + item.cauHinh.rom.kichThuoc + "GB"}</span>
+                                    <span
+                                      className="p-2"
+                                      style={{
+                                        fontSize: "14px",
+                                        fontWeight: "450",
+                                      }}
+                                    >
+                                      {productItem &&
+                                        productItem.sanPham.tenSanPham +
+                                          " " +
+                                          item.cauHinh.ram.kichThuoc +
+                                          "/" +
+                                          item.cauHinh.rom.kichThuoc +
+                                          "GB"}
+                                    </span>
                                   </div>
-                                  <div className='text-center'>
+                                  <div className="text-center">
                                     <span style={{ fontSize: "14px" }}>
-                                      {
-                                        item && item.donGia.toLocaleString("vi-VN", {
+                                      {item &&
+                                        item.donGia.toLocaleString("vi-VN", {
                                           style: "currency",
                                           currency: "VND",
-                                        })
-                                      }
+                                        })}
                                     </span>
                                   </div>
                                 </div>
@@ -2080,20 +2768,27 @@ export const ProductDetailsDialog = (props) => {
                             onClick={() => handleSetKey()}
                             overlay
                             disableIcon
-                            value={item.cauHinh.ram.kichThuoc + "/" + item.cauHinh.rom.kichThuoc + "GB"}
+                            value={
+                              item.cauHinh.ram.kichThuoc +
+                              "/" +
+                              item.cauHinh.rom.kichThuoc +
+                              "GB"
+                            }
                             slotProps={{
                               label: ({ checked }) => ({
                                 sx: {
-                                  fontWeight: 'lg',
-                                  fontSize: 'md',
-                                  color: checked ? 'text.primary' : 'text.secondary',
+                                  fontWeight: "lg",
+                                  fontSize: "md",
+                                  color: checked
+                                    ? "text.primary"
+                                    : "text.secondary",
                                 },
                               }),
                               action: ({ checked }) => ({
                                 sx: (theme) => ({
                                   ...(checked && {
-                                    '--variant-borderWidth': '2px',
-                                    '&&': {
+                                    "--variant-borderWidth": "2px",
+                                    "&&": {
                                       // && to increase the specificity to win the base :hover styles
                                       borderColor: "#2f80ed",
                                     },
@@ -2104,41 +2799,70 @@ export const ProductDetailsDialog = (props) => {
                           />
                         </Sheet>
                       ))}
-                    </RadioGroup>
-                  </div>
-                  <div className='choose2 mt-3'>
-                    <RadioGroup orientation='horizontal' key={keyRadio}
-                      aria-labelledby="storage-label"
-                      defaultValue={productItem2 && productItem2.cauHinh.mauSac.tenMauSac}
-                      size="lg"
-                      sx={{ gap: 1.7 }}
-                    >
-                      {getProductItems1 && getProductItems1.map((item) => (
+                  </RadioGroup>
+                </div>
+                <div className="choose2 mt-3">
+                  <RadioGroup
+                    orientation="horizontal"
+                    key={keyRadio}
+                    aria-labelledby="storage-label"
+                    defaultValue={
+                      productItem2 && productItem2.cauHinh.mauSac.tenMauSac
+                    }
+                    size="lg"
+                    sx={{ gap: 1.7 }}
+                  >
+                    {getProductItems1 &&
+                      getProductItems1.map((item) => (
                         <Sheet
                           key={item.id}
                           sx={{
-                            borderRadius: 'md',
-                            boxShadow: 'sm',
+                            borderRadius: "md",
+                            boxShadow: "sm",
                           }}
                         >
                           <Radio
                             label={
                               <>
-                                <div className='p-1 d-flex' style={{ width: "143px", height: "56px" }}>
+                                <div
+                                  className="p-1 d-flex"
+                                  style={{ width: "143px", height: "56px" }}
+                                >
                                   <div>
-                                    <img className='' style={{ width: "40px", height: "40px", marginTop: "4px" }} src={item.images && item.images[0].duongDan} alt="" />
+                                    <img
+                                      className=""
+                                      style={{
+                                        width: "40px",
+                                        height: "40px",
+                                        marginTop: "4px",
+                                      }}
+                                      src={
+                                        item.images && item.images[0].duongDan
+                                      }
+                                      alt=""
+                                    />
                                   </div>
-                                  <div className='' style={{ marginTop: "", }}>
-                                    <span className='p-2' style={{ fontSize: "14px", fontWeight: "500", textTransform: "capitalize" }}>{item.cauHinh.mauSac.tenMauSac}</span>
-                                    <div className='' style={{ marginTop: "" }}>
-                                      <span className='p-2' style={{ fontSize: "13px" }}>
-
-                                        {
-                                          item && item.donGia.toLocaleString("vi-VN", {
+                                  <div className="" style={{ marginTop: "" }}>
+                                    <span
+                                      className="p-2"
+                                      style={{
+                                        fontSize: "14px",
+                                        fontWeight: "500",
+                                        textTransform: "capitalize",
+                                      }}
+                                    >
+                                      {item.cauHinh.mauSac.tenMauSac}
+                                    </span>
+                                    <div className="" style={{ marginTop: "" }}>
+                                      <span
+                                        className="p-2"
+                                        style={{ fontSize: "13px" }}
+                                      >
+                                        {item &&
+                                          item.donGia.toLocaleString("vi-VN", {
                                             style: "currency",
                                             currency: "VND",
-                                          })
-                                        }
+                                          })}
                                       </span>
                                     </div>
                                   </div>
@@ -2153,17 +2877,20 @@ export const ProductDetailsDialog = (props) => {
                             slotProps={{
                               label: ({ checked }) => ({
                                 sx: {
-                                  fontWeight: 'lg',
-                                  fontSize: 'md',
-                                  color: checked ? 'text.primary' : 'text.secondary',
-                                  opacity: item.soLuongTonKho == 0 ? "0.5" : "1",
+                                  fontWeight: "lg",
+                                  fontSize: "md",
+                                  color: checked
+                                    ? "text.primary"
+                                    : "text.secondary",
+                                  opacity:
+                                    item.soLuongTonKho == 0 ? "0.5" : "1",
                                 },
                               }),
                               action: ({ checked }) => ({
                                 sx: (theme) => ({
                                   ...(checked && {
-                                    '--variant-borderWidth': '2px',
-                                    '&&': {
+                                    "--variant-borderWidth": "2px",
+                                    "&&": {
                                       // && to increase the specificity to win the base :hover styles
                                       borderColor: "#2f80ed",
                                     },
@@ -2174,65 +2901,102 @@ export const ProductDetailsDialog = (props) => {
                           />
                         </Sheet>
                       ))}
-                    </RadioGroup>
-                  </div>
-                  <div className='product-price mt-4'>
-                    <span style={{ color: "#dc3333", fontSize: "23px", fontWeight: "550" }}>
-                      {
-                        productItem2 && productItem2.donGia.toLocaleString("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        })
-                      }
-                    </span>
-                    <span className='ms-2 ps-1' style={{ textDecoration: "line-through", color: "grey", fontSize: "14.5px", fontWeight: "400" }}>29.990.000₫</span>
-                  </div>
-                  <div className='d-flex mt-3'>
-                    <div class="number-input2">
-                      <button disabled={count == 1 ? true : false} onClick={() => {
+                  </RadioGroup>
+                </div>
+                <div className="product-price mt-4">
+                  <span
+                    style={{
+                      color: "#dc3333",
+                      fontSize: "23px",
+                      fontWeight: "550",
+                    }}
+                  >
+                    {productItem2 &&
+                      productItem2.donGia.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })}
+                  </span>
+                  <span
+                    className="ms-2 ps-1"
+                    style={{
+                      textDecoration: "line-through",
+                      color: "grey",
+                      fontSize: "14.5px",
+                      fontWeight: "400",
+                    }}
+                  >
+                    29.990.000₫
+                  </span>
+                </div>
+                <div className="d-flex mt-3">
+                  <div class="number-input2">
+                    <button
+                      disabled={count == 1 ? true : false}
+                      onClick={() => {
                         clickCount1();
                       }}
-                        class="minus">
-                        <div className='wrap-minus'>
-                          <span>
-                            <RemoveOutlinedIcon style={{ fontSize: "20px" }} />
-                          </span>
-                        </div>
-                      </button>
-                      <input value={count} min="1" max="4" onChange={(e) => handleChangeCount(e)}
-                        name="quantity" class="quantity"
-                        type="number" />
-                      <button class="" onClick={() => {
+                      class="minus"
+                    >
+                      <div className="wrap-minus">
+                        <span>
+                          <RemoveOutlinedIcon style={{ fontSize: "20px" }} />
+                        </span>
+                      </div>
+                    </button>
+                    <input
+                      value={count}
+                      min="1"
+                      max="4"
+                      onChange={(e) => handleChangeCount(e)}
+                      name="quantity"
+                      class="quantity"
+                      type="number"
+                    />
+                    <button
+                      class=""
+                      onClick={() => {
                         clickCount();
-                      }
-                      }
-                      >
-                        <div className='wrap-plus'>
-                          <span >
-                            <AddOutlinedIcon style={{ fontSize: "20px" }} />
-                          </span>
-                        </div>
-                      </button>
-                    </div>
-                    <div className='ms-2 ps-1' style={{ marginTop: "7px" }}>
-                      <span className='' style={{ fontSize: "13.5px", color: "gray" }}>{productItem2 && productItem2.soLuongTonKho} sản phẩm có sẵn</span>
-                    </div>
-                  </div>
-                  <div className='mt-3'>
-                    <button onClick={() => {
-                      addProductItemsToCart(productItem2 && productItem2.donGia, productItem2 && productItem2.id);
-                    }}
-                      type="button" class="__add-cart1 add-to-cart trigger mt-1">
-                      <span class="" style={{ fontSize: "16px" }}>
-                        THÊM VÀO GIỎ HÀNG
-                      </span>
+                      }}
+                    >
+                      <div className="wrap-plus">
+                        <span>
+                          <AddOutlinedIcon style={{ fontSize: "20px" }} />
+                        </span>
+                      </div>
                     </button>
                   </div>
+                  <div className="ms-2 ps-1" style={{ marginTop: "7px" }}>
+                    <span
+                      className=""
+                      style={{ fontSize: "13.5px", color: "gray" }}
+                    >
+                      {productItem2 && productItem2.soLuongTonKho} sản phẩm có
+                      sẵn
+                    </span>
+                  </div>
+                </div>
+                <div className="mt-3">
+                  <button
+                    onClick={() => {
+                      addProductItemsToCart(
+                        productItem2 && productItem2.donGia,
+                        productItem2 && productItem2.id
+                      );
+                    }}
+                    type="button"
+                    class="__add-cart1 add-to-cart trigger mt-1"
+                  >
+                    <span class="" style={{ fontSize: "16px" }}>
+                      THÊM VÀO GIỎ HÀNG
+                    </span>
+                  </button>
                 </div>
               </div>
             </div>
-          </DialogContent>
-        </Dialog>
-      </div>
-    );
-  }
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
