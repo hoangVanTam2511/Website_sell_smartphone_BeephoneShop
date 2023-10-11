@@ -25,8 +25,8 @@ import {
   apiURLrom
 } from '../../../../service/api'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faList, faFilter, faEye } from '@fortawesome/free-solid-svg-icons'
-import '../../../../assets/scss/product.scss'
+import { faEye } from '@fortawesome/free-solid-svg-icons'
+import '../../../../assets/scss/product.css'
 import { Link, useNavigate } from 'react-router-dom'
 import { SearchOutlined } from '@ant-design/icons'
 import Highlighter from 'react-highlight-words'
@@ -526,7 +526,7 @@ const HienThiKH = () => {
 
         <div
           className='btn-add'
-          style={{ width: 1020, marginRight: 20, justifyContent: 'center' }}
+          style={{ width: 1020, marginRight: 20, justifyContent: 'center', marginTop: `2%` }}
         >
           {/* <Select
           defaultValue="Chọn sản phẩm"

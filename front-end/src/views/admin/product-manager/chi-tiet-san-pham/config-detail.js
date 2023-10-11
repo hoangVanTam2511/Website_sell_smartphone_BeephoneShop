@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Button, Modal, Col, Row, Carousel } from 'antd'
 import { faList, faFilter, faEye } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import '../../../../assets/scss/config-detail.scss'
+import '../../../../assets/scss/config-detail.css'
 import axios from 'axios'
 import {
   apiURLAnh
