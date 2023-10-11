@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
@@ -16,56 +17,40 @@ import java.util.Date;
 @Setter
 public class CreateVoucherRequest {
 
+    @Length(max = 255)
     private String ma;
 
     private Integer trangThai;
 
-
-    @NotBlank(message = "Không để trống Tên !!!")
+    @NotBlank
+    @Length(max = 255)
     private String ten;
 
     private BigDecimal giaTriToiDa;
 
-    @NotNull(message = "Không để trống Số Lượng !!!")
+    @NotNull
     private Integer soLuong;
 
-    @NotNull(message = "Không để trống Điều Kiện Áp Dung")
-    @Min(value = 0, message = "Giá Trị Tối Thiểu Là 0 !!!")
+    @NotNull
+    @Min(value = 0)
+    @Max(value = 100000000)
     private BigDecimal dieuKienApDung;
 
-    @NotNull(message = "Không để trống Loại Voucher !!!")
-    private Integer loaiVoucher;
+    private String loaiVoucher;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @FutureOrPresent(message = "Không chọn ngày quá khứ !!!")
-    @NotNull(message = "Không để trống Ngày Bắt Đầu !!!")
+    @FutureOrPresent
+    @NotNull
     private Date ngayBatDau;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @FutureOrPresent(message = "Không chọn ngày quá khứ !!!")
-    @NotNull(message = "Không để trống Ngày Kết Thúc !!!")
+    @FutureOrPresent
+    @NotNull
     private Date ngayKetThuc;
 
-    @NotNull(message = "Không để trống giá trị Voucher !!!")
-    @Min(value = 0, message = "Giá Trị Tối Thiểu Là 0 VNĐ !!!")
-    @Max(value = 100000000, message = "Giá Trị Tối Đa là 1.000.000 VNĐ !!!")
+    @NotNull
+    @Min(value = 0)
+    @Max(value = 100000000)
     private BigDecimal giaTriVoucher;
-
-
-//    public String getMa() {
-//        return ma;
-//    }
-//
-//    public void setMa(String ma) {
-//        this.ma = ma;
-//    }
-//
-//    public Integer getTrangThai() {
-//        return trangThai;
-//    }
-//
-//    public void setTrangThai(Integer trangThai) {
-//        this.trangThai = trangThai;
-//    }
 
 }

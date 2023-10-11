@@ -26,11 +26,10 @@ import java.util.List;
 @Service
 @Validated
 @Component
-
-public class VoucherServiceImpl implements VoucherService {
+public class    VoucherServiceImpl implements VoucherService {
 
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    private static final int CODE_LENGTH = 10;
+    private static final int CODE_LENGTH = 7;
 
     @Autowired
     private VoucherRepository voucherRepository;
@@ -43,19 +42,21 @@ public class VoucherServiceImpl implements VoucherService {
         List<Voucher> list = voucherRepository.checkToStartAfterAndStatus(dateTime, 3);
         List<Voucher> list1 = voucherRepository.checkEndDateAndStatus(dateTime, 2);
         List<Voucher> list3 = voucherRepository.checkToStartBeforDateNowAndStatus(dateTime, 1);
+        List<Voucher> list4 = voucherRepository.checkToStartBeforDateNowAndStatus(dateTime, 4);
 
         listToUpdate.addAll(list);
         listToUpdate.addAll(list1);
         listToUpdate.addAll(list3);
+        listToUpdate.addAll(list4);
 
         for (Voucher v : listToUpdate) {
-            if (list.contains(v)) {
+            if (list.contains(v) && list4.contains(v)) {
                 v.setTrangThai(3);
             }
             if (list1.contains(v)) {
                 v.setTrangThai(2);
             }
-            if (list3.contains(v)) {
+            if (list3.contains(v) && list4.contains(v)) {
                 v.setTrangThai(1);
             }
         }
@@ -91,12 +92,20 @@ public class VoucherServiceImpl implements VoucherService {
         if (request.getNgayKetThuc().after(dateTime)) {
             status = 3;
         }
+
+        String codeVoucher = request.getMa().trim();
+        if (request.getMa().isBlank()){
+            codeVoucher = "BEE"+generateRandomCode();
+        }
+        if (voucherRepository.findCodeVoucher(request.getMa()) != null){
+            // in ra lỗi trùng mã
+        }
         Voucher voucher = Voucher.builder()
-                .ma(generateRandomCode())
-                .ten(request.getTen())
+                .ma(codeVoucher)
+                .ten(request.getTen().trim())
                 .dieuKienApDung(request.getDieuKienApDung())
                 .giaTriToiDa(request.getGiaTriToiDa())
-                .loaiVoucher(request.getLoaiVoucher())
+                .loaiVoucher(request.getLoaiVoucher().trim())
                 .soLuong(request.getSoLuong())
                 .ngayBatDau(request.getNgayBatDau())
                 .ngayKetThuc(request.getNgayKetThuc())
@@ -109,10 +118,14 @@ public class VoucherServiceImpl implements VoucherService {
     @Override
     public Voucher updateVoucher(@Valid UpdateVoucherRequest request, String id) {
         Voucher voucher = voucherRepository.findById(id).get();
+        if (voucherRepository.findCodeVoucher(request.getMa()) != null){
+            // in ra lỗi không tồn tại
+        }
         if (voucher != null) {
-            voucher.setTen(request.getTen());
+            voucher.setMa(request.getMa().trim());
+            voucher.setTen(request.getTen().trim());
             voucher.setGiaTriToiDa(request.getGiaTriToiDa());
-            voucher.setLoaiVoucher(request.getLoaiVoucher());
+            voucher.setLoaiVoucher(request.getLoaiVoucher().trim());
             voucher.setDieuKienApDung(request.getDieuKienApDung());
             voucher.setSoLuong(request.getSoLuong());
             voucher.setNgayBatDau(request.getNgayBatDau());
@@ -134,13 +147,22 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
-    public Boolean doiTrangThai(String id) {
+    public Voucher doiTrangThai(String id) {
         Voucher voucher = voucherRepository.findById(id).get();
-        if (voucher != null) {
-            voucherRepository.doiTrangThai(id);
-            return true;
+
+        if (voucherRepository.findById(id) != null){
+            // in ra lỗi
         }
-        return false;
+        if (voucher.getTrangThai() == 1 || voucher.getTrangThai() == 3) {
+            voucher.setTrangThai(4);
+        } else if (voucher.getTrangThai() == 4) {
+            if (voucher.getNgayBatDau().after(new Date())) {
+                voucher.setTrangThai(3);
+            } else if (voucher.getNgayKetThuc().after(new Date())) {
+                voucher.setTrangThai(1);
+            }
+        }
+        return voucherRepository.save(voucher);
     }
 
     @Override

@@ -5,7 +5,7 @@ import axios from "axios";
 
 import { Link, useSearchParams } from "react-router-dom";
 import { apiURLKhuyenMai } from "../../../service/api";
-import "../../../assets/scss/quanLyPromotion.scss";
+// import "../promotion-manager/style.css";
 import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -47,6 +47,7 @@ const HienThiKhuyenMai = () => {
     setSearchNgayBatDau("");
     setSearchNgayKetThuc("");
     setSearchTrangThai("");
+    setSearchParams("");
   };
 
   // cutstom load data
@@ -113,38 +114,15 @@ const HienThiKhuyenMai = () => {
     return false;
   };
 
-  const doiTrangThaiVoucher = (id) => {
-    Swal.fire({
-      icon: "warning",
-      title: "Xác nhận",
-      text: "Bạn có chắc chắn muốn thay đổi trạng thái?",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Đồng ý",
-      cancelButtonText: "Hủy",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        axios
-          .put(apiURLKhuyenMai + "/doi-trang-thai/" + id)
-          .then((response) => {
-            loadDataListKhuyenMai(currentPage);
-            Swal.fire({
-              icon: "success",
-              title: "Thành công!",
-              text: "Trạng thái đã được thay đổi",
-            });
-          })
-          .catch((error) => {
-            console.error("Đã xảy ra lỗi khi đổi trạng thái");
-            Swal.fire({
-              icon: "error",
-              title: "Oops...",
-              text: "Đã xảy ra lỗi khi đổi trạng thái",
-            });
-          });
-      }
-    });
+  const doiTrangThaiKhuyenMai = (id) => {
+    axios
+      .put(apiURLKhuyenMai + `/doi-trang-thai/${id}`)
+      .then((response) => {
+        loadDataListKhuyenMai(currentPage);
+      })
+      .catch((error) => {
+        console.error("Đã xảy ra lỗi khi đổi trạng thái");
+      });
   };
 
   //Ten column
@@ -157,12 +135,7 @@ const HienThiKhuyenMai = () => {
       render: (text) => <span>{text}</span>,
       sorter: (a, b) => a.stt - b.stt,
     },
-    {
-      title: "Mã",
-      dataIndex: "ma",
-      width: "10%",
-      align: "center",
-    },
+
     {
       title: "Tên",
       dataIndex: "tenKhuyenMai",
@@ -187,10 +160,10 @@ const HienThiKhuyenMai = () => {
       align: "center",
       render: (value, record) => {
         let formattedValue = value;
-        if (record.loaiKhuyenMai === 1) {
+        if (record.loaiKhuyenMai === "VNĐ") {
           formattedValue =
             numeral(record.giaTriKhuyenMai).format("0,0 VND") + " VNĐ";
-        } else if (record.loaiKhuyenMai === 2) {
+        } else if (record.loaiKhuyenMai === "%") {
           formattedValue = `${record.giaTriKhuyenMai} %`;
         }
         return (
@@ -346,7 +319,19 @@ const HienThiKhuyenMai = () => {
                   : ""
               }
             >
-              <IconButton size="" className="ms-2" style={{ marginTop: "6px" }}>
+              <IconButton
+                size=""
+                onClick={() => doiTrangThaiKhuyenMai(record.id)}
+                className="ms-2"
+                style={{ marginTop: "6px" }}
+                disabled={
+                  record.trangThai === 2 ||
+                  (record.trangThai === 4 &&
+                    isDateFuture(record.ngayKetThuc) === true)
+                    ? true
+                    : false
+                }
+              >
                 <AssignmentOutlinedIcon
                   color={
                     record.trangThai === 1 || record.trangThai === 3
@@ -386,6 +371,9 @@ const HienThiKhuyenMai = () => {
   const handleSearchTrangThaiChange = (event) => {
     const selectedValue = event.target.value;
     setSearchTrangThai(selectedValue); // Cập nhật giá trị khi Select thay đổi
+    if (selectedValue === 5) {
+      setSearchTrangThai("");
+    }
     searchParams.set("trangThai", selectedValue);
     setSearchParams(searchParams);
   };

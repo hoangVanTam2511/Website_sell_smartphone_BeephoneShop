@@ -28,7 +28,7 @@ public class KhuyenMai extends PrimaryEntity implements IsIdentified {
 
     private BigDecimal giaTriKhuyenMai;
 
-    private Integer loaiKhuyenMai;
+    private String loaiKhuyenMai;
 
     private Date ngayBatDau;
 

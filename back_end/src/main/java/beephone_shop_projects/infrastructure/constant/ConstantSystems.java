@@ -13,7 +13,7 @@ public class ConstantSystems {
     public static final String PROPERTIES_VALIDATION = "messages.properties";
   }
 
-  public class PaginationConstants {
+  public static class PaginationConstants {
     public static final Integer currentPage = 1;
     public static final Integer pageSize = 5;
   }

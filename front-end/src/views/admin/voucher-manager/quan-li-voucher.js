@@ -1,14 +1,11 @@
-import { Form, Table, Input, Button, Space, Modal, AutoComplete } from "antd";
+import { Form, Table, Button, Modal } from "antd";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import { Link, useSearchParams } from "react-router-dom";
 import { apiURLVoucher } from "../../../service/api";
-import "../../../assets/scss/quanLyVoucher.scss";
-import { useNavigate } from "react-router-dom";
+import "../voucher-manager/style.css";
 import dayjs from "dayjs"; // Import thư viện Day.js
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -31,24 +28,27 @@ import { PlusOutlined } from "@ant-design/icons";
 import Card from "../../../components/Card";
 import style from "./style.css";
 import { parseInt } from "lodash";
+import LoadingIndicator from "../../../utilities/loading";
+import { current } from "@reduxjs/toolkit";
 
 //show
 const HienThiVoucher = () => {
   const [form] = Form.useForm();
-  let [listVoucher, setListVoucher] = useState([]);
+  const [listVoucher, setListVoucher] = useState([]);
   const [voucher, setVoucher] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [searchNgayBatDau, setSearchNgayBatDau] = useState("");
   const [searchNgayKetThuc, setSearchNgayKetThuc] = useState("");
   const [searchTrangThai, setSearchTrangThai] = useState("");
-  let [searchTatCa, setSearchTatCa] = useState("");
+  const [searchTatCa, setSearchTatCa] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
-  const [statusVoucher, setStatusVoucher] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [id, setId] = useState("");
-  const navigate = useNavigate();
+  const [ma, setMa] = useState("");
+  const [ten, setTen] = useState("");
 
-  // cutstom load data
   const loadDataListVoucher = (page) => {
     axios
       .get(`${apiURLVoucher}/vouchers`, {
@@ -84,19 +84,26 @@ const HienThiVoucher = () => {
   ]);
 
   const handleReset = () => {
-    setSearchTatCa("");
-    setSearchNgayBatDau(null);
-    setSearchNgayKetThuc(null);
-    setSearchTrangThai("");
-    setCurrentPage(1);
+    setIsLoading(false);
+    setTimeout(() => {
+      setSearchTatCa("");
+      setSearchNgayBatDau(null);
+      setSearchNgayKetThuc(null);
+      setSearchTrangThai("");
+      setCurrentPage(1);
+      setIsLoading(true);
+      setSearchParams("");
+    }, 200);
   };
 
   const doiTrangThaiVoucher = (id) => {
+    setIsLoading(false);
     axios
-      .put(apiURLVoucher + "/deleteTrangThaiVoucher/" + id)
+      .put(`${apiURLVoucher}/deleteTrangThaiVoucher/${id}`)
       .then((response) => {
         loadDataListVoucher(currentPage);
         showToast("success", "Đổi trạng thái thành công");
+        setIsLoading(true);
       })
       .catch((error) => {
         console.error("Đã xảy ra lỗi khi đổi trạng thái");
@@ -115,6 +122,9 @@ const HienThiVoucher = () => {
   const handleSearchTrangThaiChange = (event) => {
     const selectedValue = event.target.value;
     setSearchTrangThai(parseInt(selectedValue)); // Cập nhật giá trị khi Select thay đổi
+    if (selectedValue === 5) {
+      setSearchTrangThai("");
+    }
     searchParams.set("trangThai", parseInt(selectedValue));
     setSearchParams(searchParams);
   };
@@ -127,6 +137,20 @@ const HienThiVoucher = () => {
   const handleSearchNgayKetThucChange = (selectedDate) => {
     const value = selectedDate.format("DD/MM/YYYY");
     setSearchNgayKetThuc(value); // Cập nhật giá trị khi Select thay đổi
+  };
+
+  const showModal = (id, ma, ten) => {
+    setId(id);
+    setMa(ma);
+    setTen(ten);
+    setIsModalOpen(true);
+  };
+  const handleOk = () => {
+    doiTrangThaiVoucher(id);
+    setIsModalOpen(false);
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
   };
 
   //Ten column
@@ -153,12 +177,12 @@ const HienThiVoucher = () => {
       align: "center",
       render: (value, record) => {
         let formattedValue = value;
-        if (record.loaiVoucher === 1) {
+        if (record.loaiVoucher === "VNĐ") {
           formattedValue = record.giaTriVoucher.toLocaleString("vi-VN", {
             style: "currency",
             currency: "VND",
           });
-        } else if (record.loaiVoucher === 2) {
+        } else if (record.loaiVoucher === "%") {
           formattedValue = `${record.giaTriVoucher} %`;
         }
         return (
@@ -175,9 +199,9 @@ const HienThiVoucher = () => {
       align: "center",
       render: (value, record) => {
         let formattedValue = value;
-        if (record.loaiVoucher === 1) {
+        if (record.loaiVoucher === "VNĐ") {
           formattedValue = "...";
-        } else if (record.loaiVoucher === 2) {
+        } else if (record.loaiVoucher === "%") {
           formattedValue = record.giaTriToiDa.toLocaleString("vi-VN", {
             style: "currency",
             currency: "VND",
@@ -232,19 +256,23 @@ const HienThiVoucher = () => {
         <>
           <div
             className={`rounded-pill mx-auto ${
-              record.trangThai == 1
+              record.trangThai === 1 && isDatePast(record.ngayBatDau) === true
+                ? "badge-light"
+                : record.trangThai === 1 &&
+                  isDateFuture(record.ngayKetThuc) === false
                 ? "badge-primary"
-                : record.trangThai == 2
+                : record.trangThai === 2
                 ? "badge-danger"
-                : record.trangThai == 3
+                : record.trangThai === 3
                 ? "badge-light"
-                : record.trangThai == 4 &&
-                  isDateFuture(record.ngayKetThuc) == true
+                : record.trangThai === 4 &&
+                  isDateFuture(record.ngayKetThuc) === true
                 ? "badge-danger"
-                : record.trangThai == 4 && isDatePast(record.ngayBatDau) == true
+                : record.trangThai === 4 &&
+                  isDatePast(record.ngayBatDau) === true
                 ? "badge-light"
-                : record.trangThai == 4 &&
-                  isRangeDate(record.ngayBatDau, record.ngayKetThuc) == true
+                : record.trangThai === 4 &&
+                  isRangeDate(record.ngayBatDau, record.ngayKetThuc) === true
                 ? "badge-primary"
                 : ""
             }`}
@@ -256,10 +284,13 @@ const HienThiVoucher = () => {
           >
             <span
               className={`p-2 ${
-                record.trangThai == 3
+                record.trangThai === 3
                   ? "text-dark"
-                  : record.trangThai == 4 &&
-                    isDatePast(record.ngayBatDau) == true
+                  : record.trangThai === 4 &&
+                    isDatePast(record.ngayBatDau) === true
+                  ? "text-dark"
+                  : record.trangThai === 1 &&
+                    isDatePast(record.ngayBatDau) === true
                   ? "text-dark"
                   : "text-white"
               }`}
@@ -277,7 +308,7 @@ const HienThiVoucher = () => {
       dataIndex: "trangThai",
       width: "10%",
       align: "center",
-      onFilter: (value, record) => record.trangThai == value,
+      onFilter: (value, record) => record.trangThai === value,
       filterSearch: true,
       render: (text, record) => (
         <span>
@@ -320,7 +351,7 @@ const HienThiVoucher = () => {
                 Chưa diễn ra
               </span>
             </div>
-          ) : record.trangThai == 4 ? (
+          ) : record.trangThai === 4 ? (
             <div
               className="rounded-pill mx-auto badge-danger"
               style={{
@@ -348,7 +379,7 @@ const HienThiVoucher = () => {
         return (
           <>
             <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
-              <Link to={`/sua-voucher/${record.id}`}>
+              <Link to={`/dashboard/update-voucher/${record.id}`}>
                 <IconButton size="">
                   <BorderColorOutlinedIcon color="primary" />
                 </IconButton>
@@ -361,30 +392,45 @@ const HienThiVoucher = () => {
                 record.trangThai === 1 || record.trangThai === 3
                   ? "Ngừng kích hoạt"
                   : record.trangThai === 4 &&
-                    isDatePast(record.ngayBatDau) == true
+                    isDatePast(record.ngayBatDau) === true
                   ? "Kích hoạt"
                   : record.trangThai === 4 &&
-                    isRangeDate(record.ngayBatDau, record.ngayKetThuc) == true
+                    isRangeDate(record.ngayBatDau, record.ngayKetThuc) === true
                   ? "Kích hoạt"
+                  : record.trangThai === 2
+                  ? "Không thể đổi"
                   : ""
               }
             >
-              <IconButton size="" className="ms-2" style={{ marginTop: "6px" }}>
+              <IconButton
+                disabled={
+                  record.trangThai === 2 ||
+                  (record.trangThai === 4 &&
+                    isDateFuture(record.ngayKetThuc) === true)
+                    ? true
+                    : false
+                }
+                size=""
+                className="ms-2"
+                style={{ marginTop: "6px" }}
+                onClick={() => showModal(record.id, record.ma, record.ten)}
+              >
                 <AssignmentOutlinedIcon
                   color={
-                    record.trangThai == 1 || record.trangThai == 3
+                    record.trangThai === 1 || record.trangThai === 3
                       ? "error"
-                      : record.trangThai == 4 &&
-                        isDatePast(record.ngayBatDau) == true
+                      : record.trangThai === 4 &&
+                        isDatePast(record.ngayBatDau) === true
                       ? "success"
-                      : record.trangThai == 4 &&
-                        isRangeDate(record.ngayBatDau, record.ngayKetThuc) ==
+                      : record.trangThai === 4 &&
+                        isRangeDate(record.ngayBatDau, record.ngayKetThuc) ===
                           true
                       ? "success"
                       : "disabled"
                   }
                 />
               </IconButton>
+              <ToastContainer />
             </Tooltip>
           </>
         );
@@ -465,6 +511,17 @@ const HienThiVoucher = () => {
       >
         <Card className="">
           <Card.Header className="">
+            <Modal
+              title="Xác nhận đổi trạng thái"
+              open={isModalOpen}
+              onOk={handleOk}
+              onCancel={handleCancel}
+            >
+              <h6 style={{ fontWeight: "normal" }}>
+                Bạn có chắc chắn muốn thực hiện hành động đổi trạng thái voucher
+                có mã "{ma}" và tên "{ten}" này không?
+              </h6>
+            </Modal>
             <div className="header-title mt-2">
               <TextField
                 label="Tìm voucher"
@@ -548,7 +605,7 @@ const HienThiVoucher = () => {
               </LocalizationProvider>
             </div>
             <div className="mt-2">
-              <Link to="/them-voucher">
+              <Link to="/dashboard/add-voucher">
                 <Button
                   className="rounded-2 button-mui"
                   type="primary"
@@ -623,7 +680,7 @@ const HienThiVoucher = () => {
                   defaultValue={5}
                   onChange={handleSearchTrangThaiChange}
                 >
-                  <MenuItem className="" value={0}>
+                  <MenuItem className="" value={5}>
                     Tất cả
                   </MenuItem>
                   <MenuItem value={1}>Hoạt động</MenuItem>
@@ -709,213 +766,8 @@ const HienThiVoucher = () => {
           </div>
           <div className="mt-4"></div>
         </Card>
+        {!isLoading && <LoadingIndicator />}
       </div>
-      {/* Code cũ */}
-      {/* <Modal
-        title="Voucher Details"
-        open={isModalOpen}
-        onCancel={handleCancel}
-        width={700}
-        height={AutoComplete}
-        footer={[
-          // Chỉ giữ lại nút "Cancel"
-          <Button key="cancel" onClick={handleCancel}>
-            Cancel
-          </Button>,
-        ]}
-      >
-        <div className="row detail-voucher">
-          <div className="col-6">
-            <h6>Mã: {voucher.ma}</h6>
-          </div>
-          <div className="col-6">
-            <h6>Tên: {voucher.ten}</h6>
-          </div>
-        </div>
-        <div className="row detail-voucher">
-          <div className="col-6">
-            <h6>Số lượng: {voucher.soLuong}</h6>
-          </div>
-          <div className="col-6">
-            <h6>
-              Điều kiện áp dụng:{" "}
-              {numeral(voucher.dieuKienApDung).format("0,0 VND") + " VNĐ"}
-            </h6>
-          </div>
-        </div>
-        <div className="row detail-voucher">
-          <div className="col-6">
-            <h6>
-              Giá trị voucher:{" "}
-              {voucher.loaiVoucher === 1
-                ? numeral(voucher.giaTriVoucher).format("0,0 VND") + " VNĐ"
-                : voucher.giaTriVoucher + " %"}
-            </h6>
-          </div>
-          <div className="col-6">
-            <h6>
-              Giá trị tối đa:{" "}
-              {numeral(voucher.giaTriToiDa).format("0,0 VND") + " VNĐ"}
-            </h6>
-          </div>
-        </div>
-        <div className="row detail-voucher">
-          <div className="col-6">
-            <h6>
-              Loại voucher:{" "}
-              {voucher.loaiVoucher === 2
-                ? " Giảm Giá Theo %"
-                : "Giảm Giá Theo VNĐ"}
-            </h6>
-          </div>
-          <div className="col-6">
-            <h6>
-              Trạng thái:{" "}
-              {voucher.trangThai === 1
-                ? "Còn hiệu lực"
-                : voucher.trangThai === 2
-                ? "Hết hiệu lực"
-                : "Chưa bắt đầu"}
-            </h6>
-          </div>
-        </div>
-        <div className="row detail-voucher">
-          <div className="col-6">
-            <h6>
-              Ngày bắt đầu:{" "}
-              {dayjs(voucher.ngayBatDau).format("HH:mm - DD/MM/YYYY")}
-            </h6>
-          </div>
-          <div className="col-6">
-            <h6>
-              Ngày kết thúc:{" "}
-              {dayjs(voucher.ngayKetThuc).format("HH:mm - DD/MM/YYYY")}
-            </h6>
-          </div>
-        </div>
-      </Modal>
-      <div className="search-component-container">
-        <h6 className="boloc-voucher" style={{ color: "black" }}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            height="1em"
-            viewBox="0 0 512 512"
-          >
-            <path d="M3.9 54.9C10.5 40.9 24.5 32 40 32H472c15.5 0 29.5 8.9 36.1 22.9s4.6 30.5-5.2 42.5L320 320.9V448c0 12.1-6.8 23.2-17.7 28.6s-23.8 4.3-33.5-3l-64-48c-8.1-6-12.8-15.5-12.8-25.6V320.9L9 97.3C-.7 85.4-2.8 68.8 3.9 54.9z" />
-          </svg>
-          &nbsp; Bộ Lọc
-        </h6>
-        <div className="row-search">
-          <span>
-            <Form style={{ width: "20em", display: "inline-block" }}>
-              <Input placeholder="Search" />
-            </Form>
-          </span>
-          <div className="btn-search"></div>
-          &nbsp;&nbsp;&nbsp;
-          <div className="btn-reset">
-            <Button
-              className="btn-search-reset"
-              onClick={() => {
-                handleReset();
-              }}
-            >
-              <FontAwesomeIcon icon={faArrowsRotate} />
-              &nbsp; Làm Mới{" "}
-            </Button>
-          </div>
-        </div>
-        <div className="boloc-trangThai">
-          <div className="search1">
-            <span className="boloc-nho">
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DemoContainer components={["DatePicker"]}>
-                  <DatePicker
-                    label="Ngày Bắt Đầu"
-                    value={
-                      searchNgayBatDau
-                        ? dayjs(searchNgayBatDau, "DD/MM/YYYY")
-                        : null
-                    }
-                    format="DD/MM/YYYY"
-                    onChange={handleSearchNgayBatDauChange}
-                  />
-                </DemoContainer>
-              </LocalizationProvider>
-            </span>
-          </div>
-
-          <div className="search1">
-            <span className="boloc-nho">
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DemoContainer components={["DatePicker"]}>
-                  <DatePicker
-                    label="Ngày Kết Thúc"
-                    value={
-                      searchNgayKetThuc
-                        ? dayjs(searchNgayKetThuc, "DD/MM/YYYY")
-                        : null
-                    }
-                    format="DD/MM/YYYY"
-                    onChange={handleSearchNgayKetThucChange}
-                  />
-                </DemoContainer>
-              </LocalizationProvider>
-            </span>
-          </div>
-          <div className="search1">
-            <span className="boloc-nho">
-              <FormControl sx={{ width: "15em", marginTop: "7px" }}>
-                <InputLabel id="demo-select-small-label">
-                  Chọn Trạng Thái
-                </InputLabel>
-                <Select
-                  labelId="demo-select-small-label"
-                  id="demo-select-small"
-                  value={searchTrangThai}
-                  label="Chọn Trạng Thái"
-                  onChange={handleSearchTrangThaiChange}
-                >
-                  <MenuItem value={parseInt(1)}>Còn Hiệu lực</MenuItem>
-                  <MenuItem value={parseInt(2)}>Hết Hiệu lực</MenuItem>
-                  <MenuItem value={parseInt(3)}>Chưa Bắt Đầu</MenuItem>
-                </Select>
-              </FormControl>
-            </span>
-          </div>
-        </div>
-      </div>
-      <div className="your-component-container d-flex justify-content-between">
-        <div className="btn-add">
-          <Link to="/them-voucher">
-            <Button
-              className="rounded-2 button-mui"
-              type="primary"
-              style={{ height: "40px", width: "140px", fontSize: "15px" }}
-            >
-              <PlusOutlined
-                className="ms-1"
-                style={{
-                  position: "absolute",
-                  bottom: "12.5px",
-                  left: "12px",
-                }}
-              />
-              <span
-                className="ms-3 ps-1"
-                style={{ marginBottom: "3px", fontWeight: "500" }}
-              >
-                Tạo voucher
-              </span>
-            </Button>
-          </Link>
-        </div>
-        <div className="form-tbl">
-          <Form form={form}>
-            <div className="phan-trang"></div>
-          </Form>
-        </div>
-      </div> */}
     </>
   );
 };

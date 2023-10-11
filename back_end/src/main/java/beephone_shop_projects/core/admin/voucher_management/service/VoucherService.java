@@ -21,7 +21,7 @@ public interface VoucherService {
 
     Boolean deleteVoucher(String ma);
 
-    Boolean doiTrangThai(String id);
+    Voucher doiTrangThai(String id);
 
     Page<Voucher> getAll(FindVoucherRequest request);
 

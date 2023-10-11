@@ -1,23 +1,22 @@
-
-.txt-danger{
+.txt-danger {
   color: #e5383b;
 }
-.badge-success{
+.badge-success {
   background-color: #09a129;
 }
-.badge-light{
+.badge-light {
   background-color: #e1e1e1;
 }
-.badge-light span{
+.badge-light span {
   color: black;
 }
-.badge-warning{
+.badge-warning {
   background-color: #ffd500;
 }
-.badge-primary{
+.badge-primary {
   background-color: #2f80ed;
 }
-.badge-danger{
+.badge-danger {
   background-color: #e5383b;
 }
 
@@ -43,31 +42,31 @@
   font-weight: 500;
 }
 .ant-btn-danger:hover {
-    background-color: #ee6055 !important;
-    color: white !important;
+  background-color: #ee6055 !important;
+  color: white !important;
   border: 1px solid #ee6055 !important;
   height: 40px;
   font-weight: 500;
 }
-.button-mui{
+.button-mui {
   border: 1px solid #2f80ed;
   background-color: #2f80ed;
   color: white;
   height: 40px;
   font-weight: 500;
 }
-.mui-select:hover{
+.mui-select:hover {
   background-color: #f8f8f8;
   transition: all 0.2s linear;
 }
-.mui-select{
+.mui-select {
   cursor: pointer;
   transition: all 0.2s linear;
   border-radius: 10px;
   /* padding: 0 8px 0 8px; */
 }
-*{
-font-family: 'Roboto', sans-serif;
+* {
+  font-family: "Roboto", sans-serif;
   font-weight: 400;
 }
 .ant-table-thead .ant-table-cell {
@@ -76,14 +75,69 @@ font-family: 'Roboto', sans-serif;
 }
 
 .ant-table-row {
-    font-size: 16px !important;
-    height: 70px !important;
+  font-size: 16px !important;
+  height: 70px !important;
 }
 
 tr:hover {
-    background: #f0f0f0 !important;
+  background: #f0f0f0 !important;
 }
 
 .ant-table-tbody > tr.ant-table-row:hover > td {
-    background: #f0f0f0 !important;
+  background: #f0f0f0 !important;
 }
+
+.add-voucher-container {
+  width: 58%;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* text-align: center; */
+  padding-top: 10px;
+}
+
+.btn-accept {
+  margin-right: 45px;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+.validate-value {
+  margin-top: 5px;
+  font-size: 14px;
+  color: red;
+  margin-left: 40px;
+  text-align: start;
+  display: block;
+}
+
+.validate {
+  margin-top: 5px;
+  font-size: 14px;
+  color: red;
+  display: flex;
+}
+
+.validate-date {
+  margin-top: 5px;
+  font-size: 14px;
+  color: red;
+  display: block;
+}
+
+/* .row-input {
+  margin-bottom: 30px;
+  display: block;
+}
+
+
+
+
+
+/* .select-value {
+  width: 100%;
+  padding-left: 50px;
+  display: flex;
+  justify-content: flex-start;
+} */

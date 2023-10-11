@@ -194,88 +194,83 @@ export const DefaultRouter = [
             element: <ThemMauSac />,
         },
 
-        {
-            path: "them-khach-hang",
-            element: <AddKH />,
-        },
-        {
-            path: "/update-khach-hang/:id",
-            element: <UpdateKH />,
-        },
-        {
-            path: "/update-nhan-vien/:id",
-            element: <UpdateNV />,
-        },
-        {
-            path: "diachi-khach-hang",
-            element: <AddressForm />,
-        },
-        ,
-        {
-            path: "nhap-excel-khach-hang",
-            element: <NhapTuFileKH />,
-        },
-        {
-            path: "nhan-vien",
-            element: <NhanVien />,
-        },
-        {
-            path: "them-nhan-vien",
-            element: <AddNv />,
-        },
-        {
-            path: "imei/:idChiTietSanPham",
-            element: <Imei />,
-        },
-        {
-            path: "them-imei",
-            element: <ThemImei />,
-        },
-        {
-            path: "nhap-excel-nhan-vien",
-            element: <NhapTuFileNV />,
-        },
-        {
-            path: "chuc-vu",
-            element: <Role />,
-        },
-        {
-            path: "them-chuc-vu",
-            element: <AddRole />,
-        },
-        {
-            path: "them-voucher",
-            element: <AddVoucher />,
-        },
-
-        {
-            path: "voucher",
-            element: <HienThiVoucher />,
-        },
-        {
-            path: "them-voucher",
-            element: <AddVoucher />,
-        },
-        {
-            path: "sua-voucher/:id",
-            element: <UpdateVoucher />,
-        },
-        {
-            path: "khuyen-mai",
-            element: <HienThiKhuyenMai />,
-        },
-        {
-            path: "them-khuyen-mai",
-            element: <AddKhuyenMai />,
-        },
-        // {
-        //   path: "san-pham-chi-tiet-1/:id",
-        //   element: <AddKhuyenMai />,
-        // },
-        {
-            path: "sua-khuyen-mai/:id",
-            element: <SuaKhuyenMai />,
-        },
+      {
+        path: "them-khach-hang",
+        element: <AddKH />,
+      },
+      {
+        path: "/update-khach-hang/:id",
+        element: <UpdateKH />,
+      },
+      {
+        path: "/update-nhan-vien/:id",
+        element: <UpdateNV />,
+      },
+      {
+        path: "diachi-khach-hang",
+        element: <AddressForm />,
+      },
+      ,
+      {
+        path: "nhap-excel-khach-hang",
+        element: <NhapTuFileKH />,
+      },
+      {
+        path: "nhan-vien",
+        element: <NhanVien />,
+      },
+      {
+        path: "them-nhan-vien",
+        element: <AddNv />,
+      },
+      {
+        path: "imei/:idChiTietSanPham",
+        element: <Imei />,
+      },
+      {
+        path: "them-imei",
+        element: <ThemImei />,
+      },
+      {
+        path: "nhap-excel-nhan-vien",
+        element: <NhapTuFileNV />,
+      },
+      {
+        path: "chuc-vu",
+        element: <Role />,
+      },
+      {
+        path: "them-chuc-vu",
+        element: <AddRole />,
+      },
+      {
+        path: "dashboard/voucher",
+        element: <HienThiVoucher />,
+      },
+      {
+        path: "dashboard/add-voucher",
+        element: <AddVoucher />,
+      },
+      {
+        path: "dashboard/update-voucher/:id",
+        element: <UpdateVoucher />,
+      },
+      {
+        path: "khuyen-mai",
+        element: <HienThiKhuyenMai />,
+      },
+      {
+        path: "them-khuyen-mai",
+        element: <AddKhuyenMai />,
+      },
+      // {
+      //   path: "san-pham-chi-tiet-1/:id",
+      //   element: <AddKhuyenMai />,
+      // },
+      {
+        path: "sua-khuyen-mai/:id",
+        element: <SuaKhuyenMai />,
+      },
       {
         path: 'dashboard/management-orders',
         element: <ManagementOrders />,

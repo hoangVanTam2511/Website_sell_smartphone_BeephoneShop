@@ -48,14 +48,19 @@ public class KhuyenMaiChiTietServiceImpl implements KhuyenMaiChiTietService {
         return null;
     }
 
+    @Override
+    public Boolean deleteKhuyenMaiChiTiet(String ma) {
+        return null;
+    }
+
     public BigDecimal donGiaSauKhuyenMai(CreateKhuyenMaiChiTietRequest request) {
-        Integer loaiKhuyenMai = khuyenMaiRepository.findById(request.getIdKhuyenMai()).get().getLoaiKhuyenMai();
+        String loaiKhuyenMai = khuyenMaiRepository.findById(request.getIdKhuyenMai()).get().getLoaiKhuyenMai();
         BigDecimal giaTriKhuyenMai = khuyenMaiRepository.findById(request.getIdKhuyenMai()).get().getGiaTriKhuyenMai();
         BigDecimal donGia = sanPhamChiTietKhuyenMaiRepository.findById(request.getIdSanPhamChiTiet()).get().getDonGia();
-        if (loaiKhuyenMai == 1) {
+        if (loaiKhuyenMai.equals("VNĐ")) {
             return donGia.subtract(giaTriKhuyenMai);
-        } else if (loaiKhuyenMai == 2) {
-            return donGia.subtract(donGia.multiply(giaTriKhuyenMai.divide(new BigDecimal(100))));
+        } else if (loaiKhuyenMai.equals("%")) {
+            return donGia.subtract((donGia.multiply(giaTriKhuyenMai)).divide(new BigDecimal(100)));
         }
         return null;
     }

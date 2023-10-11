@@ -50,6 +50,11 @@ public interface VoucherRepository extends IVoucherRepository, CustomVoucherRepo
     List<Voucher> checkToStartBeforDateNowAndStatus(@Param("date1") Date dateTime, @Param("status") Integer status);
 
     @Query(value = """
+            SELECT v FROM Voucher v WHERE :date1 BETWEEN v.ngayBatDau AND v.ngayKetThuc AND v.trangThai = :status
+            """)
+    List<Voucher> checkToStartBeforDateNowAndStatus1(@Param("date1") Date dateTime, @Param("status") Integer status);
+
+    @Query(value = """
             SELECT v FROM Voucher v WHERE v.ngayKetThuc < ?1 AND v.trangThai <> ?2
             """)
     List<Voucher> checkEndDateAndStatus(Date dateTime, Integer status);

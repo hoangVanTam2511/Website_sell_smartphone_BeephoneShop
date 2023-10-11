@@ -9,13 +9,9 @@ import beephone_shop_projects.core.admin.promotion_management.service.KhuyenMaiS
 import beephone_shop_projects.entity.KhuyenMai;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -32,7 +28,7 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
     private static final int CODE_LENGTH = 10;
     @Autowired
     private KhuyenMaiRepository khuyenMaiRepository;
-
+    //    @Scheduled(fixedRate = 5000, initialDelay = 30000)
     public List<KhuyenMai> updateStatusKhuyenMai() {
         Date dateTime = new Date();
         List<KhuyenMai> listToUpdate = new ArrayList<>();
@@ -40,19 +36,21 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
         List<KhuyenMai> list = khuyenMaiRepository.checkToStartAfterAndStatus(dateTime, 3);
         List<KhuyenMai> list1 = khuyenMaiRepository.checkEndDateAndStatus(dateTime, 2);
         List<KhuyenMai> list3 = khuyenMaiRepository.checkToStartBeforDateNowAndStatus(dateTime, 1);
+        List<KhuyenMai> list4 = khuyenMaiRepository.checkToStartBeforDateNowAndStatus(dateTime, 4);
 
         listToUpdate.addAll(list);
         listToUpdate.addAll(list1);
         listToUpdate.addAll(list3);
+        listToUpdate.addAll(list4);
 
         for (KhuyenMai v : listToUpdate) {
-            if (list.contains(v)) {
+            if (list.contains(v) && list4.contains(v)) {
                 v.setTrangThai(3);
             }
             if (list1.contains(v)) {
                 v.setTrangThai(2);
             }
-            if (list3.contains(v)) {
+            if (list3.contains(v) && list4.contains(v)) {
                 v.setTrangThai(1);
             }
         }
@@ -61,16 +59,16 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
 
     @Override
     public Page<KhuyenMai> getAll(FindKhuyenMaiRequest request) {
-        if (request.getPageNo() == null){
+        if (request.getPageNo() == null) {
             request.setPageNo(1);
         }
-        if (request.getPageSize() == null){
+        if (request.getPageSize() == null) {
             request.setPageSize(5);
         }
-        if (request.getKeyword() == null){
+        if (request.getKeyword() == null) {
             request.setKeyword("");
         }
-        Pageable pageable = PageRequest.of(request.getPageNo()-1, request.getPageSize());
+        Pageable pageable = PageRequest.of(request.getPageNo() - 1, request.getPageSize());
         Page<KhuyenMai> page = khuyenMaiRepository.findAllKhuyenMai(pageable, request);
         updateStatusKhuyenMai();
         return page;
@@ -91,17 +89,18 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
         }
         return code.toString();
     }
+
     @Override
     public KhuyenMai addKhuyenMai(@Valid CreateKhuyenMaiRequest request) {
         Integer status = 0;
         Date dateTime = new Date();
-        if (request.getNgayBatDau().after(dateTime) && request.getNgayKetThuc().before(dateTime)){
+        if (request.getNgayBatDau().after(dateTime) && request.getNgayKetThuc().before(dateTime)) {
             status = 1;
         }
-        if (request.getNgayBatDau().before(dateTime)){
+        if (request.getNgayBatDau().before(dateTime)) {
             status = 2;
         }
-        if (request.getNgayKetThuc().after(dateTime)){
+        if (request.getNgayKetThuc().after(dateTime)) {
             status = 3;
         }
         KhuyenMai khuyenMai = KhuyenMai.builder()
@@ -143,13 +142,17 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
     }
 
     @Override
-    public Boolean doiTrangThai(String id) {
+    public KhuyenMai doiTrangThai(String id) {
         KhuyenMai findKhuyenMai = khuyenMaiRepository.findById(id).get();
-        if (findKhuyenMai != null) {
-            khuyenMaiRepository.doiTrangThai(id);
-            return true;
-        } else {
-            return false;
+        if (findKhuyenMai.getTrangThai() == 1 || findKhuyenMai.getTrangThai() == 3) {
+            findKhuyenMai.setTrangThai(4);
+        } else if (findKhuyenMai.getTrangThai() == 4) {
+            if (findKhuyenMai.getNgayBatDau().after(new Date())) {
+                findKhuyenMai.setTrangThai(3);
+            } else if (findKhuyenMai.getNgayKetThuc().after(new Date())) {
+                findKhuyenMai.setTrangThai(1);
+            }
         }
+        return khuyenMaiRepository.save(findKhuyenMai);
     }
 }

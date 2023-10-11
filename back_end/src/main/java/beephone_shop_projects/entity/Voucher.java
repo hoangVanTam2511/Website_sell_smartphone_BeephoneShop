@@ -38,7 +38,7 @@ public class Voucher extends PrimaryEntity implements IsIdentified {
 
     private BigDecimal giaTriToiDa;
 
-    private Integer loaiVoucher;
+    private String loaiVoucher;
 
     private Integer soLuong;
 

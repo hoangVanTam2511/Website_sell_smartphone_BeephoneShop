@@ -15,7 +15,6 @@ import React, {
 const SubHeader = memo((props) => {
   return (
     <div style={{ height: "50px" }}>
-
       <br />
       <br />
     </div>

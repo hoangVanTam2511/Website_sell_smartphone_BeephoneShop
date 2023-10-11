@@ -21,6 +21,6 @@ public interface KhuyenMaiService {
 
     Boolean deleteKhuyenMai(String ma);
 
-    Boolean doiTrangThai(String id);
+    KhuyenMai doiTrangThai(String id);
 
 }

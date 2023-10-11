@@ -356,7 +356,7 @@ const TabItem = (props) => {
                           key={index}
                           sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                         >
-                          <TableCell className="" style={{ width: "200px", paddingRight: "40px" }}>
+                          <TableCell className="" style={{ width: "350px", paddingRight: "40px" }}>
                             <div className='d-flex'>
                               <Tooltip TransitionComponent={Zoom} title="Chi tiết sản phẩm" style={{ cursor: "pointer" }} placement="top">
                                 <div className="product-img">

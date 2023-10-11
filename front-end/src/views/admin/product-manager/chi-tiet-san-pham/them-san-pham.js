@@ -26,7 +26,7 @@ import {
 import {
     FontAwesomeIcon
 } from "@fortawesome/react-fontawesome";
-import "../../../../assets/scss/addProduct.scss";
+import "../../../../assets/scss/addProduct.css";
 import Button from '@mui/material/Button';
 import { useNavigate } from 'react-router-dom'
 import Chip from '@mui/material/Chip';
@@ -347,6 +347,7 @@ const ThemSanPham = () => {
         setTimeout(() => {
             setLoading(false);
             setOpenFormCamera(false);
+            loadDataComboBox()
         }, 300);
     };
     const handleCancelFormCamera = () => {
@@ -1629,24 +1630,73 @@ const ThemSanPham = () => {
                                                                                     }}>
                                                                                     <p>
                                                                                         <CloseOutlined className='button_exit_form_config' onClick={(event) => handleClickExitForm(item.id)} />
-                                                                                        <Form.Label htmlFor="pwd" style={{ width: 150, color: 'black', transform: `translate(-26px, -1px)` }} >Thêm ảnh</Form.Label>
-                                                                                        <div style={{ display: 'flex', justifyContent: 'center', height: 100 }}>
-                                                                                            <div class="image-upload">
-                                                                                                {urlImage.get(`image1${index}`) ?
-                                                                                                    <FontAwesomeIcon style={{ color: `${pinImage.get(`image1${index}`) == true ? 'rgb(5 128 215)' : '#1b1b1b6b'}` }} className='icon_pin_image' icon={faThumbtack} onClick={(event) => clickPinImage(event, `image1${index}`)} />
-                                                                                                    : <FontAwesomeIcon className='icon_pin_image' style={{ border: 0, color: 'white' }} icon={faThumbtack} />
-                                                                                                }
-                                                                                                <label for={id1}>
-                                                                                                    <div class="upload-icon" style={{ backgroundImage: `url(${urlImage.get(`image1${index}`)}`, backgroundSize: 'cover' }}>
-                                                                                                        {urlImage.get(`image1${index}`) ?
-                                                                                                            <FontAwesomeIcon className='upload-icon-minus' icon={faMinus} onClick={(event) => confirmDelete(event, `image1${index}`)} />
-                                                                                                            :
-                                                                                                            <FontAwesomeIcon className='upload-icon-img' icon={faPlus} />
+
+                                                                                        {/* price of products */}
+                                                                                        <Row>
+                                                                                            <Col span={4}>
+                                                                                                <Form.Label htmlFor="pwd" style={{ width: 150, color: 'black' }} >Đơn giá</Form.Label>
+                                                                                            </Col>
+                                                                                            <Col span={20   }> 
+                                                                                                <CurrencyInput
+                                                                                                        id="input-example"
+                                                                                                        name="input-name"
+                                                                                                        suffix=" VND"
+                                                                                                        className=" form-control d-inline-block"
+                                                                                                        style={{ width: `100%` }}
+                                                                                                        placeholder="Vui lòng nhập số tiền "
+                                                                                                        defaultValue={1000}
+                                                                                                        decimalsLimit={2}
+                                                                                                        onValueChange={
+                                                                                                            (value, name) => {
+                                                                                                                item.donGia = value
+                                                                                                            }
                                                                                                         }
-                                                                                                    </div>
-                                                                                                </label>
-                                                                                                <input id={id1} type="file" onChange={(event) => handleFileChangeImage(event, `image1${index}`)} />
-                                                                                            </div>
+                                                                                                    />                                                                                          
+                                                                                            </Col>
+                                                                                        </Row>
+
+                                                                                        
+                                                                                        {/* quantity of products */}
+                                                                                        <Row style={{marginTop:20}}>
+                                                                                            <Col span={4}>
+                                                                                                <Form.Label htmlFor="pwd" style={{ width: 150, color: 'black' }} > Số lượng </Form.Label>
+                                                                                            </Col>
+                                                                                            <Col span={20}> 
+                                                                                                <Form.Control type="number"
+                                                                                                        className=" form-control d-inline-block"
+                                                                                                        style={{ width: `50%` }}
+                                                                                                        placeholder='Nhập số lượng sản phẩm'
+                                                                                                        name=''
+                                                                                                        onBlur={
+                                                                                                            (value) => {
+                                                                                                                item.soLuong = value.target.value
+                                                                                                            }
+                                                                                                        }
+                                                                                                        id="quantity`" />  
+                                                                                                 <Button className='btn-them-tu-file' variant="contained"  style={{ height: "39px", width: "auto", fontSize: "15px", marginLeft:20, transform: `translateY(-3px)` }}>
+                                                                                                {/* <ExcelExportHelper data={listMauSac} /> */} + Thêm imei
+                                                                                                </Button>                                                                                      
+                                                                                            </Col>
+                                                                                        </Row>
+
+                                                                                        <Form.Label htmlFor="pwd" style={{ width: 150, color: 'black', transform: `translate(0px, 24px)` }} >Thêm ảnh</Form.Label>
+                                                                                            <div style={{ display: 'flex', justifyContent: 'center', height: 100 }}>
+                                                                                                <div class="image-upload">
+                                                                                                    {urlImage.get(`image1${index}`) ?
+                                                                                                        <FontAwesomeIcon style={{ color: `${pinImage.get(`image1${index}`) == true ? 'rgb(5 128 215)' : '#1b1b1b6b'}` }} className='icon_pin_image' icon={faThumbtack} onClick={(event) => clickPinImage(event, `image1${index}`)} />
+                                                                                                        : <FontAwesomeIcon className='icon_pin_image' style={{ border: 0, color: 'white' }} icon={faThumbtack} />
+                                                                                                    }
+                                                                                                    <label for={id1}>
+                                                                                                        <div class="upload-icon" style={{ backgroundImage: `url(${urlImage.get(`image1${index}`)}`, backgroundSize: 'cover' }}>
+                                                                                                            {urlImage.get(`image1${index}`) ?
+                                                                                                                <FontAwesomeIcon className='upload-icon-minus' icon={faMinus} onClick={(event) => confirmDelete(event, `image1${index}`)} />
+                                                                                                                :
+                                                                                                                <FontAwesomeIcon className='upload-icon-img' icon={faPlus} />
+                                                                                                            }
+                                                                                                        </div>
+                                                                                                    </label>
+                                                                                                    <input id={id1} type="file" onChange={(event) => handleFileChangeImage(event, `image1${index}`)} />
+                                                                                                </div>
 
                                                                                             <div class="image-upload">
                                                                                                 {urlImage.get(`image2${index}`) ?
@@ -1723,23 +1773,7 @@ const ThemSanPham = () => {
 
                                                                                     <Row>
 
-                                                                                        <Col span={12}>
-                                                                                            <Form.Group className="form-group">
-
-                                                                                                <Form.Label htmlFor="pwd" style={{ width: 150, color: 'black' }} >Số lượng</Form.Label>
-                                                                                                <Form.Control type="number"
-                                                                                                    className=" form-control d-inline-block"
-                                                                                                    style={{ width: 400 }}
-                                                                                                    placeholder='Nhập số lượng sản phẩm'
-                                                                                                    name=''
-                                                                                                    onBlur={
-                                                                                                        (value) => {
-                                                                                                            item.soLuong = value.target.value
-                                                                                                        }
-                                                                                                    }
-                                                                                                    id="quantity`" />
-                                                                                            </Form.Group>
-                                                                                        </Col>
+                                                                                      
 
                                                                                         {/* modal quantity */}
 
@@ -1780,24 +1814,10 @@ const ThemSanPham = () => {
 
                                                                                         <Col span={12}>
                                                                                             <Form.Group className="form-group">
+                                                                                            
 
-                                                                                                <Form.Label htmlFor="pwd" style={{ width: 150, color: 'black' }} >Đơn giá </Form.Label>
-
-                                                                                                <CurrencyInput
-                                                                                                    id="input-example"
-                                                                                                    name="input-name"
-                                                                                                    suffix=" VND"
-                                                                                                    className=" form-control d-inline-block"
-                                                                                                    style={{ width: 400 }}
-                                                                                                    placeholder="Vui lòng nhập số tiền "
-                                                                                                    defaultValue={1000}
-                                                                                                    decimalsLimit={2}
-                                                                                                    onValueChange={
-                                                                                                        (value, name) => {
-                                                                                                            item.donGia = value
-                                                                                                        }
-                                                                                                    }
-                                                                                                />
+                                                                                           
+                                                                                               
 
                                                                                             </Form.Group>
                                                                                         </Col>

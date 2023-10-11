@@ -39,4 +39,14 @@ public class SanPhamKhuyenMaiController {
         return new ResponseEntity(sanPhamChiTietKhuyenMaiService.getOne(id), HttpStatus.OK);
     }
 
+    @GetMapping("/chi-tiet-khuyen-mai/detail/{id}")
+    public ResponseEntity detailChiTietKhuyenMai(@PathVariable("id") String id){
+        return new ResponseEntity(sanPhamChiTietKhuyenMaiService.getListKhuyenMai(id), HttpStatus.OK);
+    }
+
+    @GetMapping("/detail/khuyen-mai/{id}")
+    public ResponseEntity detailKhuyenMai(@PathVariable("id") String id){
+        return new ResponseEntity(sanPhamChiTietKhuyenMaiService.getDetailKhuyenMai(id), HttpStatus.OK);
+    }
+
 }
