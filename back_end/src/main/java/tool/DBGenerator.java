@@ -19,6 +19,8 @@ import beephone_shop_projects.entity.Rom;
 import beephone_shop_projects.entity.SanPham;
 import beephone_shop_projects.entity.SanPhamChiTiet;
 import beephone_shop_projects.entity.Voucher;
+import beephone_shop_projects.infrastructure.constant.StatusDiscount;
+import beephone_shop_projects.infrastructure.constant.TypeDiscount;
 import beephone_shop_projects.repository.IAccountRepository;
 import beephone_shop_projects.repository.IAnhRepository;
 import beephone_shop_projects.repository.ICauHinhRepository;
@@ -468,7 +470,7 @@ public class DBGenerator implements CommandLineRunner {
         voucher.setDieuKienApDung(new BigDecimal(5000000));
         voucher.setGiaTriToiDa(null);
         voucher.setSoLuong(1000);
-        voucher.setLoaiVoucher("VNĐ");
+        voucher.setLoaiVoucher(TypeDiscount.VND);
         SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd-MM-yyyy");
 //        Date ngayBatDau1 = null;
         Date ngayKetThuc1 = null;
@@ -480,7 +482,7 @@ public class DBGenerator implements CommandLineRunner {
         }
         voucher.setNgayBatDau(new Date());
         voucher.setNgayKetThuc(ngayKetThuc1);
-        voucher.setTrangThai(3);
+        voucher.setTrangThai(StatusDiscount.CHUA_DIEN_RA);
         voucher.setId(voucherRepository.save(voucher).getId());
 
         Voucher voucher2 = new Voucher();
@@ -492,7 +494,7 @@ public class DBGenerator implements CommandLineRunner {
         voucher2.setDieuKienApDung(new BigDecimal(50000000));
         voucher2.setGiaTriToiDa(null);
         voucher2.setSoLuong(1000);
-        voucher2.setLoaiVoucher("VNĐ");
+        voucher2.setLoaiVoucher(TypeDiscount.VND);
         SimpleDateFormat dateFormat2 = new SimpleDateFormat("dd-MM-yyyy");
         Date ngayBatDau2 = null;
         Date ngayKetThuc2 = null;
@@ -504,7 +506,7 @@ public class DBGenerator implements CommandLineRunner {
         }
         voucher2.setNgayBatDau(ngayBatDau2);
         voucher2.setNgayKetThuc(ngayKetThuc2);
-        voucher2.setTrangThai(3);
+        voucher2.setTrangThai(StatusDiscount.CHUA_DIEN_RA);
         voucher2.setId(voucherRepository.save(voucher2).getId());
 
         Voucher voucher3 = new Voucher();
@@ -516,7 +518,7 @@ public class DBGenerator implements CommandLineRunner {
         voucher3.setDieuKienApDung(new BigDecimal(15000000));
         voucher3.setGiaTriToiDa(new BigDecimal(3000000));
         voucher3.setSoLuong(1000);
-        voucher3.setLoaiVoucher("%");
+        voucher3.setLoaiVoucher(TypeDiscount.PERCENT);
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
         Date ngayBatDau = null;
         Date ngayKetThuc = null;
@@ -526,7 +528,7 @@ public class DBGenerator implements CommandLineRunner {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        voucher3.setTrangThai(3);
+        voucher3.setTrangThai(StatusDiscount.CHUA_DIEN_RA);
         voucher3.setNgayBatDau(ngayBatDau);
         voucher3.setNgayKetThuc(ngayKetThuc);
         voucher3.setId(voucherRepository.save(voucher3).getId());

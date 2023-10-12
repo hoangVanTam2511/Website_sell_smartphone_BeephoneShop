@@ -1,4 +1,4 @@
-import { Form, Table, Button, Modal } from "antd";
+import { Form, Table, Button, Modal, Popconfirm } from "antd";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import MenuItem from "@mui/material/MenuItem";
@@ -29,7 +29,14 @@ import Card from "../../../components/Card";
 import style from "./style.css";
 import { parseInt } from "lodash";
 import LoadingIndicator from "../../../utilities/loading";
-import { current } from "@reduxjs/toolkit";
+import {
+  Notistack,
+  StatusDiscount,
+  StatusDiscountNumber,
+  TypeDiscountString,
+} from "../order-manager/enum";
+import { ConvertStatusVoucherNumberToString } from "../../../utilities/convertEnum";
+import useCustomSnackbar from "../../../utilities/notistack";
 
 //show
 const HienThiVoucher = () => {
@@ -44,33 +51,61 @@ const HienThiVoucher = () => {
   const [searchTatCa, setSearchTatCa] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
   const [isLoading, setIsLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [id, setId] = useState("");
-  const [ma, setMa] = useState("");
-  const [ten, setTen] = useState("");
+  const { handleOpenAlertVariant } = useCustomSnackbar();
+  const [open, setOpen] = useState(false);
 
   const loadDataListVoucher = (page) => {
+    setIsLoading(false);
     axios
       .get(`${apiURLVoucher}/vouchers`, {
         params: {
           keyword: searchTatCa,
           pageNo: page,
-          trangThai: searchTrangThai,
+          trangThai: ConvertStatusVoucherNumberToString(searchTrangThai),
           ngayBatDau: searchNgayBatDau,
           ngayKetThuc: searchNgayKetThuc,
         },
       })
       .then((response) => {
-        setListVoucher(response.data.content);
+        setListVoucher(response.data.data);
+        setTotalPages(response.data.totalPages);
+        setIsLoading(true);
+      })
+      .catch((error) => {
+        handleOpenAlertVariant(
+          "Đã xảy ra lỗi, vui lòng liên hệ quản trị viên.",
+          Notistack.ERROR
+        );
+      });
+  };
+
+  const loadDataListVoucher1 = (page) => {
+    axios
+      .get(`${apiURLVoucher}/vouchers`, {
+        params: {
+          keyword: searchTatCa,
+          pageNo: page,
+          trangThai: ConvertStatusVoucherNumberToString(searchTrangThai),
+          ngayBatDau: searchNgayBatDau,
+          ngayKetThuc: searchNgayKetThuc,
+        },
+      })
+      .then((response) => {
+        setListVoucher(response.data.data);
         setTotalPages(response.data.totalPages);
       })
-      .catch((error) => {});
+      .catch((error) => {
+        handleOpenAlertVariant(
+          "Đã xảy ra lỗi, vui lòng liên hệ quản trị viên.",
+          Notistack.ERROR
+        );
+      });
   };
 
   useEffect(() => {
-    loadDataListVoucher(currentPage);
     const intervalId = setInterval(() => {
-      loadDataListVoucher(currentPage);
+      loadDataListVoucher1(currentPage);
     }, 10000);
     // Xóa interval khi component unmounted
     return () => clearInterval(intervalId);
@@ -83,6 +118,9 @@ const HienThiVoucher = () => {
     totalPages,
   ]);
 
+  useEffect(() => {
+    loadDataListVoucher(currentPage);
+  }, []);
   const handleReset = () => {
     setIsLoading(false);
     setTimeout(() => {
@@ -102,55 +140,48 @@ const HienThiVoucher = () => {
       .put(`${apiURLVoucher}/deleteTrangThaiVoucher/${id}`)
       .then((response) => {
         loadDataListVoucher(currentPage);
-        showToast("success", "Đổi trạng thái thành công");
+        handleOpenAlertVariant("Đổi trạng thái thành công!", Notistack.SUCCESS);
         setIsLoading(true);
       })
       .catch((error) => {
         console.error("Đã xảy ra lỗi khi đổi trạng thái");
-        showToast("error", "Đã xảy ra lỗi khi đổi trạng thái");
+        handleOpenAlertVariant(
+          "Đã xảy ra lỗi khi đổi trạng thái!",
+          Notistack.ERROR
+        );
+        setIsLoading(true);
       });
-  };
-
-  const showToast = (type, message) => {
-    if (type === "success") {
-      toast.success(message);
-    } else if (type === "error") {
-      toast.error(message);
-    }
   };
 
   const handleSearchTrangThaiChange = (event) => {
     const selectedValue = event.target.value;
     setSearchTrangThai(parseInt(selectedValue)); // Cập nhật giá trị khi Select thay đổi
-    if (selectedValue === 5) {
-      setSearchTrangThai("");
-    }
     searchParams.set("trangThai", parseInt(selectedValue));
     setSearchParams(searchParams);
+    if (selectedValue === 5) {
+      setSearchParams("");
+    }
+    setCurrentPage(1);
+  };
+
+  const handleSearchTatCaChange = (event) => {
+    const searchTatCaInput = event.target.value;
+    setSearchTatCa(searchTatCaInput);
+    setCurrentPage(1);
   };
 
   const handleSearchNgayBatDauChange = (selectedDate) => {
-    const value = selectedDate.format("DD/MM/YYYY");
-    setSearchNgayBatDau(value);
+    const formattedDate = selectedDate
+      ? dayjs(selectedDate).format("DD/MM/YYYY")
+      : ""; // Kiểm tra nếu date không null
+    setSearchNgayBatDau(formattedDate);
+    setCurrentPage(1);
   };
 
   const handleSearchNgayKetThucChange = (selectedDate) => {
     const value = selectedDate.format("DD/MM/YYYY");
     setSearchNgayKetThuc(value); // Cập nhật giá trị khi Select thay đổi
-  };
-
-  const showModal = (id, ma, ten) => {
-    setId(id);
-    setMa(ma);
-    setTen(ten);
-    setIsModalOpen(true);
-  };
-  const handleOk = () => {
-    doiTrangThaiVoucher(id);
-    setIsModalOpen(false);
-  };
-  const handleCancel = () => {
-    setIsModalOpen(false);
+    setCurrentPage(1);
   };
 
   //Ten column
@@ -177,12 +208,12 @@ const HienThiVoucher = () => {
       align: "center",
       render: (value, record) => {
         let formattedValue = value;
-        if (record.loaiVoucher === "VNĐ") {
+        if (record.loaiVoucher === TypeDiscountString.VND) {
           formattedValue = record.giaTriVoucher.toLocaleString("vi-VN", {
             style: "currency",
             currency: "VND",
           });
-        } else if (record.loaiVoucher === "%") {
+        } else if (record.loaiVoucher === TypeDiscountString.PERCENT) {
           formattedValue = `${record.giaTriVoucher} %`;
         }
         return (
@@ -199,9 +230,9 @@ const HienThiVoucher = () => {
       align: "center",
       render: (value, record) => {
         let formattedValue = value;
-        if (record.loaiVoucher === "VNĐ") {
+        if (record.loaiVoucher === TypeDiscountString.VND) {
           formattedValue = "...";
-        } else if (record.loaiVoucher === "%") {
+        } else if (record.loaiVoucher === TypeDiscountString.PERCENT) {
           formattedValue = record.giaTriToiDa.toLocaleString("vi-VN", {
             style: "currency",
             currency: "VND",
@@ -256,22 +287,23 @@ const HienThiVoucher = () => {
         <>
           <div
             className={`rounded-pill mx-auto ${
-              record.trangThai === 1 && isDatePast(record.ngayBatDau) === true
+              record.trangThai === StatusDiscount.HOAT_DONG &&
+              isDatePast(record.ngayBatDau) === true
                 ? "badge-light"
-                : record.trangThai === 1 &&
+                : record.trangThai === StatusDiscount.HOAT_DONG &&
                   isDateFuture(record.ngayKetThuc) === false
                 ? "badge-primary"
-                : record.trangThai === 2
+                : record.trangThai === StatusDiscount.NGUNG_HOAT_DONG
                 ? "badge-danger"
-                : record.trangThai === 3
+                : record.trangThai === StatusDiscount.CHUA_DIEN_RA
                 ? "badge-light"
-                : record.trangThai === 4 &&
+                : record.trangThai === StatusDiscount.DA_HUY &&
                   isDateFuture(record.ngayKetThuc) === true
                 ? "badge-danger"
-                : record.trangThai === 4 &&
+                : record.trangThai === StatusDiscount.DA_HUY &&
                   isDatePast(record.ngayBatDau) === true
                 ? "badge-light"
-                : record.trangThai === 4 &&
+                : record.trangThai === StatusDiscount.DA_HUY &&
                   isRangeDate(record.ngayBatDau, record.ngayKetThuc) === true
                 ? "badge-primary"
                 : ""
@@ -284,12 +316,12 @@ const HienThiVoucher = () => {
           >
             <span
               className={`p-2 ${
-                record.trangThai === 3
+                record.trangThai === StatusDiscount.CHUA_DIEN_RA
                   ? "text-dark"
-                  : record.trangThai === 4 &&
+                  : record.trangThai === StatusDiscount.DA_HUY &&
                     isDatePast(record.ngayBatDau) === true
                   ? "text-dark"
-                  : record.trangThai === 1 &&
+                  : record.trangThai === StatusDiscount.HOAT_DONG &&
                     isDatePast(record.ngayBatDau) === true
                   ? "text-dark"
                   : "text-white"
@@ -312,7 +344,7 @@ const HienThiVoucher = () => {
       filterSearch: true,
       render: (text, record) => (
         <span>
-          {record.trangThai === 1 ? (
+          {record.trangThai === StatusDiscount.HOAT_DONG ? (
             <div
               className="rounded-pill mx-auto badge-primary"
               style={{
@@ -325,7 +357,7 @@ const HienThiVoucher = () => {
                 Hoạt động
               </span>
             </div>
-          ) : record.trangThai === 2 ? (
+          ) : record.trangThai === StatusDiscount.NGUNG_HOAT_DONG ? (
             <div
               className="rounded-pill mx-auto badge-danger"
               style={{
@@ -338,7 +370,7 @@ const HienThiVoucher = () => {
                 Ngừng hoạt động
               </span>
             </div>
-          ) : record.trangThai === 3 ? (
+          ) : record.trangThai === StatusDiscount.CHUA_DIEN_RA ? (
             <div
               className="rounded-pill mx-auto badge-light"
               style={{
@@ -351,7 +383,7 @@ const HienThiVoucher = () => {
                 Chưa diễn ra
               </span>
             </div>
-          ) : record.trangThai === 4 ? (
+          ) : record.trangThai === StatusDiscount.DA_HUY ? (
             <div
               className="rounded-pill mx-auto badge-danger"
               style={{
@@ -386,52 +418,61 @@ const HienThiVoucher = () => {
               </Link>
             </Tooltip>
 
-            <Tooltip
-              TransitionComponent={Zoom}
-              title={
-                record.trangThai === 1 || record.trangThai === 3
-                  ? "Ngừng kích hoạt"
-                  : record.trangThai === 4 &&
-                    isDatePast(record.ngayBatDau) === true
-                  ? "Kích hoạt"
-                  : record.trangThai === 4 &&
-                    isRangeDate(record.ngayBatDau, record.ngayKetThuc) === true
-                  ? "Kích hoạt"
-                  : record.trangThai === 2
-                  ? "Không thể đổi"
-                  : ""
-              }
+            <Popconfirm
+              description="Bạn có chắc chắn muốn đổi trạng thái không?"
+              onConfirm={handleOkConfirm}
+              onCancel={handleCancelConfirm}
+              onClick={() => setId(record.id)}
+              placement="topLeft"
             >
-              <IconButton
-                disabled={
-                  record.trangThai === 2 ||
-                  (record.trangThai === 4 &&
-                    isDateFuture(record.ngayKetThuc) === true)
-                    ? true
-                    : false
+              <Tooltip
+                TransitionComponent={Zoom}
+                title={
+                  record.trangThai === StatusDiscount.HOAT_DONG ||
+                  record.trangThai === StatusDiscount.CHUA_DIEN_RA
+                    ? "Ngừng kích hoạt"
+                    : record.trangThai === StatusDiscount.DA_HUY &&
+                      isDatePast(record.ngayBatDau) === true
+                    ? "Kích hoạt"
+                    : record.trangThai === StatusDiscount.DA_HUY &&
+                      isRangeDate(record.ngayBatDau, record.ngayKetThuc) ===
+                        true
+                    ? "Kích hoạt"
+                    : record.trangThai === StatusDiscount.NGUNG_HOAT_DONG
+                    ? "Không thể đổi"
+                    : ""
                 }
-                size=""
-                className="ms-2"
-                style={{ marginTop: "6px" }}
-                onClick={() => showModal(record.id, record.ma, record.ten)}
               >
-                <AssignmentOutlinedIcon
-                  color={
-                    record.trangThai === 1 || record.trangThai === 3
-                      ? "error"
-                      : record.trangThai === 4 &&
-                        isDatePast(record.ngayBatDau) === true
-                      ? "success"
-                      : record.trangThai === 4 &&
-                        isRangeDate(record.ngayBatDau, record.ngayKetThuc) ===
-                          true
-                      ? "success"
-                      : "disabled"
+                <IconButton
+                  disabled={
+                    record.trangThai === StatusDiscount.NGUNG_HOAT_DONG ||
+                    (record.trangThai === StatusDiscount.DA_HUY &&
+                      isDateFuture(record.ngayKetThuc) === true)
+                      ? true
+                      : false
                   }
-                />
-              </IconButton>
-              <ToastContainer />
-            </Tooltip>
+                  size=""
+                  className="ms-2"
+                  style={{ marginTop: "6px" }}
+                >
+                  <AssignmentOutlinedIcon
+                    color={
+                      record.trangThai === StatusDiscount.HOAT_DONG ||
+                      record.trangThai === StatusDiscount.CHUA_DIEN_RA
+                        ? "error"
+                        : record.trangThai === StatusDiscount.DA_HUY &&
+                          isDatePast(record.ngayBatDau) === true
+                        ? "success"
+                        : record.trangThai === StatusDiscount.DA_HUY &&
+                          isRangeDate(record.ngayBatDau, record.ngayKetThuc) ===
+                            true
+                        ? "success"
+                        : "disabled"
+                    }
+                  />
+                </IconButton>
+              </Tooltip>
+            </Popconfirm>
           </>
         );
       },
@@ -441,16 +482,6 @@ const HienThiVoucher = () => {
   const chuyenTrang = (event, page) => {
     setCurrentPage(page);
     loadDataListVoucher(page);
-  };
-
-  const detailVoucher = (id) => {
-    axios
-      .get(apiURLVoucher + "/get-by-id/" + id)
-      .then((response) => {
-        setVoucher(response.data);
-        console.log(voucher.ma);
-      })
-      .catch((error) => {});
   };
 
   const isDateFuture = (toDate) => {
@@ -500,6 +531,14 @@ const HienThiVoucher = () => {
     setOpenSelect(true);
   };
 
+  const handleOkConfirm = () => {
+    doiTrangThaiVoucher(id);
+  };
+  const handleCancelConfirm = () => {
+    console.log("Clicked cancel button");
+    setOpen(false);
+  };
+
   return (
     <>
       <div
@@ -511,22 +550,11 @@ const HienThiVoucher = () => {
       >
         <Card className="">
           <Card.Header className="">
-            <Modal
-              title="Xác nhận đổi trạng thái"
-              open={isModalOpen}
-              onOk={handleOk}
-              onCancel={handleCancel}
-            >
-              <h6 style={{ fontWeight: "normal" }}>
-                Bạn có chắc chắn muốn thực hiện hành động đổi trạng thái voucher
-                có mã "{ma}" và tên "{ten}" này không?
-              </h6>
-            </Modal>
             <div className="header-title mt-2">
               <TextField
                 label="Tìm voucher"
                 value={searchTatCa}
-                onChange={(e) => setSearchTatCa(e.target.value)}
+                onChange={handleSearchTatCaChange}
                 InputLabelProps={{
                   sx: {
                     marginTop: "",
@@ -683,10 +711,18 @@ const HienThiVoucher = () => {
                   <MenuItem className="" value={5}>
                     Tất cả
                   </MenuItem>
-                  <MenuItem value={1}>Hoạt động</MenuItem>
-                  <MenuItem value={2}>Ngừng hoạt động</MenuItem>
-                  <MenuItem value={3}>Chưa diễn ra</MenuItem>
-                  <MenuItem value={4}>Đã hủy</MenuItem>
+                  <MenuItem value={StatusDiscountNumber.HOAT_DONG}>
+                    Hoạt động
+                  </MenuItem>
+                  <MenuItem value={StatusDiscountNumber.NGUNG_HOAT_DONG}>
+                    Ngừng hoạt động
+                  </MenuItem>
+                  <MenuItem value={StatusDiscountNumber.CHUA_DIEN_RA}>
+                    Chưa diễn ra
+                  </MenuItem>
+                  <MenuItem value={StatusDiscountNumber.DA_HUY}>
+                    Đã hủy
+                  </MenuItem>
                 </Select>
               </FormControl>
             </div>
