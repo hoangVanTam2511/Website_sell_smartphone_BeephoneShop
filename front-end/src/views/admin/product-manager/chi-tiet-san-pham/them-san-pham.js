@@ -1555,7 +1555,7 @@ const ThemSanPham = () => {
                                 </Col>
                             </Row>
                             <br />
-                            <Button variant="contained" endIcon={<ArrowRightOutlined />} style={{ width: `14%`, fontSize: `89%`, transform: `translateX(280%)`, marginBottom: `2%` }} onClick={() => handleClickStepTwo()}>
+                            <Button variant="contained" endIcon={<ArrowRightOutlined />} style={{ width: `15%`, fontSize: `89%`, transform: `translateX(280%)`, marginBottom: `2%` }} onClick={() => handleClickStepTwo()}>
                                 Tiếp theo
                             </Button>
 
@@ -1846,7 +1846,7 @@ const ThemSanPham = () => {
                                                                         </Button>
 
                                                                         <Button variant="contained" color="success" endIcon={<CheckOutlined />} style={{
-                                                                            transform: `translate(404%, -1%)`,
+                                                                            transform: `translate(358%, -1%)`,
                                                                             fontSize: `16px`,
                                                                             marginBottom: `2%`
                                                                         }}

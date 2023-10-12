@@ -445,6 +445,7 @@ const HienThiKH = () => {
             onChange={(value) => {
               setCurrentPage(value - 1);
             }}
+            page={parseInt(currentPage + 1)}
             total={totalPages * 10}
           />
         </Form>

@@ -495,7 +495,7 @@ const HienThiKH = () => {
     <>
       <h2 className='text-center font-weight-bold'>Quản lí sản phẩm</h2>
       <br />
-      <div className='card ' style={{ padding: ` 0 73px` }}>
+      <div className='card ' style={{ padding: ` 2% 3%` }}>
       
         <div className='btn-add'>
           <span>
@@ -510,7 +510,7 @@ const HienThiKH = () => {
           </span>
 
           {/* Search */}
-          <FontAwesomeIcon style={{ marginLeft: '5px' }} />
+          <FontAwesomeIcon style={{ marginLeft: '3%' }} />
           <span className='bl-add'>
             
             <Button className='btn-them-tu-file'  style={{ height: "40px", width: "auto", fontSize: "15px" }}>
@@ -526,11 +526,11 @@ const HienThiKH = () => {
 
         <div
           className='btn-add'
-          style={{ width: 1020, marginRight: 20, justifyContent: 'center', marginTop: `2%` }}
+          style={{ width: `100%`, marginRight: 20, justifyContent: 'center', marginTop: `2%` }}
         >
           {/* <Select
           defaultValue="Chọn sản phẩm"
-          style={{ width: 200,marginRight:15,marginBottom:20 }}
+          style={{ width: `23%`,marginRight:15,marginBottom:20 }}
           onChange={handleChange}
           options={[
             {
@@ -542,7 +542,7 @@ const HienThiKH = () => {
 
           <Select
             defaultValue='Chọn dòng sản phẩm'
-            style={{ width: 200, marginRight: 15, marginBottom: 20 }}
+            style={{ width: `23%`, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
@@ -556,7 +556,7 @@ const HienThiKH = () => {
             listItemHeight={10}
             listHeight={250}
             defaultValue='Chọn nhà sản xuất'
-            style={{ width: 200, marginRight: 15, marginBottom: 20 }}
+            style={{ width: `23%`, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
@@ -568,7 +568,7 @@ const HienThiKH = () => {
 
           <Select
             defaultValue='Chọn màu sắc'
-            style={{ width: 200, marginRight: 15, marginBottom: 20 }}
+            style={{ width: `23%`, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
@@ -580,7 +580,7 @@ const HienThiKH = () => {
 
           <Select
             defaultValue='Chọn pin'
-            style={{ width: 200, marginRight: 15, marginBottom: 20 }}
+            style={{ width: `23%`, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
@@ -592,7 +592,7 @@ const HienThiKH = () => {
 
           <Select
             defaultValue='Chọn ram'
-            style={{ width: 200, marginRight: 15, marginBottom: 20 }}
+            style={{ width: `23%`, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
@@ -604,7 +604,7 @@ const HienThiKH = () => {
 
           <Select
             defaultValue='Chọn rom'
-            style={{ width: 200, marginRight: 15, marginBottom: 20 }}
+            style={{ width: `23%`, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
@@ -616,7 +616,7 @@ const HienThiKH = () => {
 
           <Select
             defaultValue='Chọn chip'
-            style={{ width: 200, marginRight: 15, marginBottom: 20 }}
+            style={{ width: `23%`, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
@@ -628,7 +628,7 @@ const HienThiKH = () => {
 
           <Select
             defaultValue='Chọn kích cỡ màn hình'
-            style={{ width: 200, marginRight: 15, marginBottom: 20 }}
+            style={{ width: `23%`, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
@@ -731,11 +731,12 @@ const HienThiKH = () => {
             />
 
             <Pagination
-              style={{ transform: `translateX(${450}px)`, width: 200 }}
+              style={{ transform: `translateX(${450}px)`, width: `23%` }}
               simplecurrent={currentPage + 1}
               onChange={value => {
                 setCurrentPage(value - 1)
               }}
+              page={parseInt(currentPage + 1)}
               total={totalPages * 10}
             />
           </Form>
