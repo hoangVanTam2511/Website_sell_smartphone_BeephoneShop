@@ -29,8 +29,8 @@ public class DongSanPhamRestController {
     private DongSanPhamServiceImpl dongSanPhamService;
 
     @GetMapping("/view-all")
-    public Page<DongSanPham> viewAll(@RequestParam(value = "page",defaultValue = "0") Integer page) {
-        Pageable pageable = PageRequest.of(page,5);
+    public Page<DongSanPham> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
+        Pageable pageable = PageRequest.of(page-1,5);
         return dongSanPhamService.getAll(pageable);
     }
 

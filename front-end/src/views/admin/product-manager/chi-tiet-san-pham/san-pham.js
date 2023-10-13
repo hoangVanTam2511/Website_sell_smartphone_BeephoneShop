@@ -5,12 +5,12 @@ import {
   Input,
   Button,
   Select,
-  Pagination,
   Space,
   Switch,
   Slider,
   Tag
 } from 'antd'
+import { Pagination, } from "@mui/material";
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import {
@@ -77,8 +77,8 @@ const EditableCell = ({
 const HienThiKH = () => {
   const [form] = Form.useForm()
   let [listMauSac, setlistMauSac] = useState([])
-  const [currentPage, setCurrentPage] = useState(0)
-  const [totalPages, setTotalPages] = useState(0)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
   const [editingNgaySinh, setEditingNgaySinh] = useState(null)
   const [filterStatus, setFilterStatus] = useState(null)
   const [searchText, setSearchText] = useState('')
@@ -118,6 +118,10 @@ const HienThiKH = () => {
     clearFilters()
     setSearchText('')
   }
+
+  const chuyenTrang = (event, page) => {
+    setCurrentPage(page);
+  };
 
   const getColumnSearchProps = dataIndex => ({
     filterDropdown: ({
@@ -218,7 +222,7 @@ const HienThiKH = () => {
 
   // cutstom load data
   const loadDatalistMauSac = async currentPage => {
-    if (currentPage == undefined) currentPage = 0
+    if (currentPage == undefined) currentPage = 1
     axios
       .post(apiURLSanPham + '/products?page=' + currentPage, chiTietSanPham)
       .then(response => {
@@ -228,7 +232,7 @@ const HienThiKH = () => {
         }))
         console.log(modifiedData)
         setlistMauSac(modifiedData)
-        setCurrentPage(response.data.number)
+        setCurrentPage(response.data.number == 0 ? 1 : response.data.number + 1) 
         setTotalPages(response.data.totalPages)
       })
 
@@ -732,12 +736,10 @@ const HienThiKH = () => {
 
             <Pagination
               style={{ transform: `translateX(${450}px)`, width: `23%` }}
-              simplecurrent={currentPage + 1}
-              onChange={value => {
-                setCurrentPage(value - 1)
-              }}
-              page={parseInt(currentPage + 1)}
-              total={totalPages * 10}
+              page={parseInt( currentPage )}
+              count={totalPages}
+              onChange={chuyenTrang}
+              color="primary"
             />
           </Form>
         </div>

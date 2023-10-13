@@ -29,8 +29,8 @@ public class RamRestController {
     private RamServiceImpl ramService;
 
     @GetMapping("/view-all")
-    public Page<Ram> viewAll(@RequestParam(value = "page",defaultValue = "0") Integer page) {
-        Pageable pageable = PageRequest.of(page,5);
+    public Page<Ram> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
+        Pageable pageable = PageRequest.of(page-1,5);
         return ramService.getAll(pageable);
     }
 

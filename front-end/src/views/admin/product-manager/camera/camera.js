@@ -5,7 +5,6 @@ import {
   Input,
   Button,
   Select,
-  Pagination,
   Space, Modal,
 } from "antd";
 import Swal from 'sweetalert2'
@@ -14,7 +13,8 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { apiURLCamera, apiURLMauSac } from "../../../../service/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import TextField from "@mui/material/TextField";
+import TextField from '@mui/material/TextField';
+import { Pagination, } from "@mui/material";
 import {
   faPencilAlt,
   faTrashAlt,
@@ -22,7 +22,6 @@ import {
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import "../../../../assets/scss/HienThiNV.scss";
-import { Link } from "react-router-dom";
 import { SearchOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
 const { Option } = Select;
@@ -98,7 +97,7 @@ const EditableCell = ({
 const HienThiKH = () => {
   const [form] = Form.useForm();
   let [listMauSac, setlistMauSac] = useState([]);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [editingNgaySinh, setEditingNgaySinh] = useState(null);
   const [filterStatus, setFilterStatus] = useState(null);
@@ -111,6 +110,7 @@ const HienThiKH = () => {
     resolutionCamera: ""
   })
   const [resolutionCameraError, setResoluTionCameraError] = useState("")
+
   const [formSubmitted, setFormSubmitted] = useState(false);
   const showModal = () => {
     setOpen(true);
@@ -129,19 +129,25 @@ const HienThiKH = () => {
       loadDataListCamera();
     }, 300);
   };
+
   const handleCancel = () => {
     setOpen(false);
   };
+
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
     setSearchText(selectedKeys[0]);
     setSearchedColumn(dataIndex);
   };
+
   const handleReset = (clearFilters) => {
     clearFilters();
     setSearchText("");
   };
 
+  const chuyenTrang = (event, page) => {
+    setCurrentPage(page);
+  };
 
   const getColumnSearchProps = (dataIndex) => ({
     filterDropdown: ({
@@ -251,7 +257,7 @@ const HienThiKH = () => {
       }));
       console.log(response)
       setlistMauSac(modifiedData);
-      setCurrentPage(response.data.number);
+      setCurrentPage(response.data.number == 0 ? 1 : response.data.number + 1);
       setTotalPages(response.data.totalPages);
     }).catch((error) =>console.log(error));
   };
@@ -493,11 +499,11 @@ const HienThiKH = () => {
           />
 
           <Pagination
-            simplecurrent={currentPage + 1}
-            onChange={(value) => {
-              setCurrentPage(value - 1);
-            }}
-            total={totalPages * 10}
+            style={{ marginLeft: `35%`}}
+            page={parseInt( currentPage )}
+            count={totalPages}
+            onChange={chuyenTrang}
+            color="primary"
           />
         </Form>
       </div>

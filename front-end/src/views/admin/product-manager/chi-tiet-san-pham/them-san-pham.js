@@ -56,7 +56,7 @@ const ThemSanPham = () => {
     const [hiddenConfig, sethiddenConfig] = useState(false)
     const [listCauHinhSelected, setListCauHinhSelected] = useState([])
 
-    const [currentPage, setCurrentPage] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [nameStorage, setNameStorage] = useState("images/")
     const imageListRef = ref(storage, nameStorage);
@@ -483,7 +483,7 @@ const ThemSanPham = () => {
     }
 
     const loadDataListCauHinh = async (currentPage) => {
-        axios.get(apiURLCauHinh + "/view-all?page=" + currentPage).then((response) => {
+        axios.get(apiURLCauHinh + "/view-all?page=1").then((response) => {
             const modifiedData = response.data.content.map((item, index) => ({
                 ...item,
                 'key': item.id,

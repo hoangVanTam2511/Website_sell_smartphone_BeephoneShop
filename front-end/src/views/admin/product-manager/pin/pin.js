@@ -5,16 +5,14 @@ import {
   Input,
   Button,
   Select,
-  Pagination,
   Space,
 } from "antd";
 import Swal from 'sweetalert2'
-import moment from "moment";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { apiURLPin } from "../../../../service/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
+import { Pagination, } from "@mui/material";
 import {
   faPencilAlt,
   faTrashAlt,
@@ -75,7 +73,7 @@ const EditableCell = ({
 const HienThiKH = () => {
   const [form] = Form.useForm();
   let [listMauSac, setlistMauSac] = useState([]);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [editingNgaySinh, setEditingNgaySinh] = useState(null);
   const [filterStatus, setFilterStatus] = useState(null);
@@ -185,11 +183,13 @@ const HienThiKH = () => {
       ),
   });
 
-
   useEffect(() => {
     loadDatalistMauSac(currentPage);
   }, [currentPage]);
 
+  const chuyenTrang = (event, page) => {
+    setCurrentPage(page);
+  };
 
   // cutstom load data
   const loadDatalistMauSac = (currentPage) => {
@@ -200,7 +200,7 @@ const HienThiKH = () => {
         stt: index + 1,
       }));
       setlistMauSac(modifiedData);
-      setCurrentPage(response.data.number);
+      setCurrentPage(response.data.number == 0 ? 1 : response.data.number + 1);
       setTotalPages(response.data.totalPages);
     });
   };
@@ -440,11 +440,11 @@ const HienThiKH = () => {
           />
 
           <Pagination
-            simplecurrent={currentPage + 1}
-            onChange={(value) => {
-              setCurrentPage(value - 1);
-            }}
-            total={totalPages * 10}
+            style={{ marginLeft: `35%`}}
+            page={parseInt( currentPage )}
+            count={totalPages}
+            onChange={chuyenTrang}
+            color="primary"
           />
         </Form>
       </div>

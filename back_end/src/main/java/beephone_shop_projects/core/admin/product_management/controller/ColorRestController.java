@@ -29,8 +29,8 @@ public class ColorRestController {
     private ColorServiceImpl mauSacService;
 
     @GetMapping("/view-all")
-    public Page<MauSac> viewAll(@RequestParam(value = "page",defaultValue = "0") Integer page) {
-        Pageable pageable = PageRequest.of(page,2);
+    public Page<MauSac> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
+        Pageable pageable = PageRequest.of(page-1,2);
         return mauSacService.getAll(pageable);
     }
 

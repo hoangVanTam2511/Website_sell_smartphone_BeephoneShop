@@ -29,8 +29,8 @@ public class PinRestController {
     private PinServiceImpl pinService;
 
     @GetMapping("/view-all")
-    public Page<Pin> viewAll(@RequestParam(value = "page",defaultValue = "0") Integer page) {
-        Pageable pageable = PageRequest.of(page,5);
+    public Page<Pin> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
+        Pageable pageable = PageRequest.of(page-1,5);
         return pinService.getAll(pageable);
     }
 
