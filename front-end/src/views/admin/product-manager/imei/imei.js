@@ -76,7 +76,7 @@ const EditableCell = ({
 const HienThiKH = () => {
   const [form] = Form.useForm();
   let [listMauSac, setlistMauSac] = useState([]);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [editingNgaySinh, setEditingNgaySinh] = useState(null);
   const [filterStatus, setFilterStatus] = useState(null);

@@ -2,7 +2,7 @@ package beephone_shop_projects.utils;
 
 import beephone_shop_projects.infrastructure.constant.ConstantSystems;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,7 +16,7 @@ public class PropertiesReader {
 
   private static Properties applicationProperties = new Properties();
   private static Properties validationProperties = new Properties();
-  private static Logger logger = Logger.getLogger(PropertiesReader.class);
+//  private static Logger logger = Logger.getLogger(PropertiesReader.class);
 
   static {
     // Load application properties file
@@ -25,7 +25,7 @@ public class PropertiesReader {
             InputStreamReader reader = new InputStreamReader(is, ConstantSystems.ENCODING_UTF8);) {
       applicationProperties.load(reader);
     } catch (IOException e) {
-      logger.error(e.getMessage());
+//      logger.error(e.getMessage());
     }
     // Load validation properties file
     try (
@@ -34,7 +34,7 @@ public class PropertiesReader {
     ) {
       validationProperties.load(reader);
     } catch (IOException e) {
-      logger.error(e.getMessage());
+//      logger.error(e.getMessage());
     }
   }
 

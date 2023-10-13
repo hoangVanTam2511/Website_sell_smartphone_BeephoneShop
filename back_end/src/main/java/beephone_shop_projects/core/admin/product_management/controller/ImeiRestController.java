@@ -31,8 +31,8 @@ public class ImeiRestController {
 
     @GetMapping("/view-all/{id}")
     public Page<Imei> viewAll(@PathVariable("id")String id,
-                              @RequestParam(value = "page",defaultValue = "0") Integer page) {
-        Pageable pageable = PageRequest.of(page,5);
+                              @RequestParam(value = "page",defaultValue = "1") Integer page) {
+        Pageable pageable = PageRequest.of(page-1,5);
         return imeiService.getAllByIdChiTietSanPham(id,pageable);
     }
 

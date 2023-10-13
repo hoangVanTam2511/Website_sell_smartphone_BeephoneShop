@@ -31,7 +31,7 @@ public class SanPhamRestControler {
     private SanPhamServiceImpl sanPhamService;
 
     @GetMapping("/view-all")
-    public Page<SanPhamResponce> viewAll(@RequestParam(value = "page",defaultValue = "0") Integer page) {
+    public Page<SanPhamResponce> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
         Pageable pageable = PageRequest.of(page,5);
         return sanPhamService.getAllByDelected(pageable);
     }
@@ -54,7 +54,7 @@ public class SanPhamRestControler {
     @PostMapping("/products")
     public Page<SanPhamResponce> search(@RequestParam(value = "page",defaultValue = "1") Integer page,
                                                @RequestBody(required = false) SearchChiTietSanPhamRequest chiTietSanPhamRequest) {
-        Pageable pageable = PageRequest.of(page,5);
+        Pageable pageable = PageRequest.of(page-1,5);
         return sanPhamService.searchByAllPosition(chiTietSanPhamRequest,pageable);
     }
 

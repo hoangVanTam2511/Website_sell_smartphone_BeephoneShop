@@ -5,12 +5,12 @@ import {
   Input,
   Button,
   Select,
-  Pagination,
   Space,
   Switch,
   Slider,
   Tag
 } from 'antd'
+import { Pagination, } from "@mui/material";
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import {
@@ -25,8 +25,8 @@ import {
   apiURLrom
 } from '../../../../service/api'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faList, faFilter, faEye } from '@fortawesome/free-solid-svg-icons'
-import '../../../../assets/scss/product.scss'
+import { faEye } from '@fortawesome/free-solid-svg-icons'
+import '../../../../assets/scss/product.css'
 import { Link, useNavigate } from 'react-router-dom'
 import { SearchOutlined } from '@ant-design/icons'
 import Highlighter from 'react-highlight-words'
@@ -77,8 +77,8 @@ const EditableCell = ({
 const HienThiKH = () => {
   const [form] = Form.useForm()
   let [listMauSac, setlistMauSac] = useState([])
-  const [currentPage, setCurrentPage] = useState(0)
-  const [totalPages, setTotalPages] = useState(0)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
   const [editingNgaySinh, setEditingNgaySinh] = useState(null)
   const [filterStatus, setFilterStatus] = useState(null)
   const [searchText, setSearchText] = useState('')
@@ -118,6 +118,10 @@ const HienThiKH = () => {
     clearFilters()
     setSearchText('')
   }
+
+  const chuyenTrang = (event, page) => {
+    setCurrentPage(page);
+  };
 
   const getColumnSearchProps = dataIndex => ({
     filterDropdown: ({
@@ -218,7 +222,7 @@ const HienThiKH = () => {
 
   // cutstom load data
   const loadDatalistMauSac = async currentPage => {
-    if (currentPage == undefined) currentPage = 0
+    if (currentPage == undefined) currentPage = 1
     axios
       .post(apiURLSanPham + '/products?page=' + currentPage, chiTietSanPham)
       .then(response => {
@@ -228,7 +232,7 @@ const HienThiKH = () => {
         }))
         console.log(modifiedData)
         setlistMauSac(modifiedData)
-        setCurrentPage(response.data.number)
+        setCurrentPage(response.data.number == 0 ? 1 : response.data.number + 1) 
         setTotalPages(response.data.totalPages)
       })
 
@@ -495,7 +499,7 @@ const HienThiKH = () => {
     <>
       <h2 className='text-center font-weight-bold'>Quản lí sản phẩm</h2>
       <br />
-      <div className='card ' style={{ padding: ` 0 73px` }}>
+      <div className='card ' style={{ padding: ` 2% 3%` }}>
       
         <div className='btn-add'>
           <span>
@@ -510,7 +514,7 @@ const HienThiKH = () => {
           </span>
 
           {/* Search */}
-          <FontAwesomeIcon style={{ marginLeft: '5px' }} />
+          <FontAwesomeIcon style={{ marginLeft: '3%' }} />
           <span className='bl-add'>
             
             <Button className='btn-them-tu-file'  style={{ height: "40px", width: "auto", fontSize: "15px" }}>
@@ -526,11 +530,11 @@ const HienThiKH = () => {
 
         <div
           className='btn-add'
-          style={{ width: 1020, marginRight: 20, justifyContent: 'center' }}
+          style={{ width: `100%`, marginRight: 20, justifyContent: 'center', marginTop: `2%` }}
         >
           {/* <Select
           defaultValue="Chọn sản phẩm"
-          style={{ width: 200,marginRight:15,marginBottom:20 }}
+          style={{ width: `23%`,marginRight:15,marginBottom:20 }}
           onChange={handleChange}
           options={[
             {
@@ -542,7 +546,7 @@ const HienThiKH = () => {
 
           <Select
             defaultValue='Chọn dòng sản phẩm'
-            style={{ width: 200, marginRight: 15, marginBottom: 20 }}
+            style={{ width: `23%`, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
@@ -556,7 +560,7 @@ const HienThiKH = () => {
             listItemHeight={10}
             listHeight={250}
             defaultValue='Chọn nhà sản xuất'
-            style={{ width: 200, marginRight: 15, marginBottom: 20 }}
+            style={{ width: `23%`, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
@@ -568,7 +572,7 @@ const HienThiKH = () => {
 
           <Select
             defaultValue='Chọn màu sắc'
-            style={{ width: 200, marginRight: 15, marginBottom: 20 }}
+            style={{ width: `23%`, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
@@ -580,7 +584,7 @@ const HienThiKH = () => {
 
           <Select
             defaultValue='Chọn pin'
-            style={{ width: 200, marginRight: 15, marginBottom: 20 }}
+            style={{ width: `23%`, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
@@ -592,7 +596,7 @@ const HienThiKH = () => {
 
           <Select
             defaultValue='Chọn ram'
-            style={{ width: 200, marginRight: 15, marginBottom: 20 }}
+            style={{ width: `23%`, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
@@ -604,7 +608,7 @@ const HienThiKH = () => {
 
           <Select
             defaultValue='Chọn rom'
-            style={{ width: 200, marginRight: 15, marginBottom: 20 }}
+            style={{ width: `23%`, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
@@ -616,7 +620,7 @@ const HienThiKH = () => {
 
           <Select
             defaultValue='Chọn chip'
-            style={{ width: 200, marginRight: 15, marginBottom: 20 }}
+            style={{ width: `23%`, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
@@ -628,7 +632,7 @@ const HienThiKH = () => {
 
           <Select
             defaultValue='Chọn kích cỡ màn hình'
-            style={{ width: 200, marginRight: 15, marginBottom: 20 }}
+            style={{ width: `23%`, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
@@ -731,12 +735,11 @@ const HienThiKH = () => {
             />
 
             <Pagination
-              style={{ transform: `translateX(${450}px)`, width: 200 }}
-              simplecurrent={currentPage + 1}
-              onChange={value => {
-                setCurrentPage(value - 1)
-              }}
-              total={totalPages * 10}
+              style={{ transform: `translateX(${450}px)`, width: `23%` }}
+              page={parseInt( currentPage )}
+              count={totalPages}
+              onChange={chuyenTrang}
+              color="primary"
             />
           </Form>
         </div>
