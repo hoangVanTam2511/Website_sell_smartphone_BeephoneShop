@@ -7,6 +7,8 @@ import beephone_shop_projects.core.admin.account_management.service.impl.DiaChiS
 import beephone_shop_projects.core.admin.account_management.service.impl.ExportServiceImpl;
 import beephone_shop_projects.core.admin.account_management.service.impl.KhachHangServiceImpl;
 import beephone_shop_projects.core.admin.account_management.service.impl.RoleServiceImpl;
+import beephone_shop_projects.core.admin.order_management.model.response.OrderResponse;
+import beephone_shop_projects.core.common.base.ResponsePage;
 import beephone_shop_projects.entity.Account;
 import beephone_shop_projects.entity.DiaChi;
 import jakarta.validation.Valid;
@@ -26,7 +28,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/khach-hang/")
-@CrossOrigin(origins = {"*"})
+@CrossOrigin(origins = "*")
 public class KhachHangRestcontroller {
     @Autowired
     private KhachHangServiceImpl accService;
@@ -36,14 +38,11 @@ public class KhachHangRestcontroller {
     private DiaChiServiceImpl diaChiService;
 
     @GetMapping("hien-thi")
-    public ResponseEntity hienThi(@RequestParam(name = "page", defaultValue = "0") Integer pageNo) {
-        return new ResponseEntity(accService.getAllKH(pageNo), HttpStatus.OK);
+    public ResponsePage<AccountResponse> hienThi(@RequestParam(name = "page", defaultValue = "1") Integer pageNo) throws Exception{
+        Page<AccountResponse> getAll=accService.getAllKH(pageNo);
+        return new ResponsePage(getAll);
     }
 
-    @GetMapping("hien-thi-theo/{id}")
-    public Account getOne(@PathVariable("id") UUID id) {
-        return accService.getOne(id);
-    }
 
     @GetMapping("search-all")
     public ResponseEntity searchAll(@RequestParam("tenKH") String hoVaTen, @RequestParam(name = "page", defaultValue = "0") Integer pageNo) {
@@ -149,6 +148,10 @@ public class KhachHangRestcontroller {
     @GetMapping("dia-chi/get-one/{id}")
     public DiaChi getOneDiaChi(@PathVariable("id") String id, @RequestParam String account) {
         return diaChiService.getOneDiaChi(id, account);
+    }
+    @GetMapping("hien-thi-theo/{id}")
+    public Account getOne(@PathVariable("id") UUID id) {
+        return accService.getOne(id);
     }
 
 }

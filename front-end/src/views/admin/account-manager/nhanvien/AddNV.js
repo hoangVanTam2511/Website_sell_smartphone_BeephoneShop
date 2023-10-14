@@ -7,7 +7,7 @@ import TextField from "@mui/material/TextField";
 import "../../../../assets/scss/HienThiNV.scss";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import {
   Box,
   FormControl,
@@ -19,18 +19,24 @@ import {
 import AddressForm from "./DiaChi";
 import ImageUploadComponent from "./Anh";
 import IDScan from "./QuetCanCuoc";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faExclamationCircle,
   faFloppyDisk,
 } from "@fortawesome/free-solid-svg-icons";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import * as dayjs from "dayjs";
 const AddNV = () => {
   let [listKH, setListKH] = useState([]);
   let [hoVaTen, setTen] = useState("");
   // let [id, setID] = useState("");
-  let [ngaySinh, setNgaySinh] = useState(null);
+  let [ngaySinh, setNgaySinh] = useState("");
   let [soDienThoai, setSdt] = useState("");
   let [email, setEmail] = useState("");
+  const [error, setError] = React.useState(null);
   let [xaPhuong, setXaPhuong] = useState("");
   let [quanHuyen, setQuanHuyen] = useState("");
   let [tinhThanhPho, setTinhThanhPho] = useState("");
@@ -170,7 +176,7 @@ const AddNV = () => {
     };
     if (
       !hoVaTen ||
-      ngaySinh == null ||
+      !ngaySinh ||
       !email ||
       !soDienThoai ||
       !diaChi ||
@@ -210,6 +216,10 @@ const AddNV = () => {
   };
   const today = new Date().toISOString().split("T")[0]; // Get the current date in "yyyy-mm-dd" format
 
+  const handleChangeDate = (date) => {
+    const value = date.format("DD/MM/YYYY");
+    setNgaySinh(value);
+  };
   return (
     <>
       <Card bordered={false} style={{ width: "100%" }}>
@@ -275,6 +285,27 @@ const AddNV = () => {
                   }}
                 >
                   {/* Ngày sinh */}
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DemoContainer components={["DatePicker"]}>
+                      <DatePicker
+                        label="Ngày Sinh"
+                        value={ngaySinh ? dayjs(ngaySinh, "DD/MM/YYYY") : null}
+                        format="DD/MM/YYYY"
+                        onChange={handleChangeDate}
+                        slotProps={{ textField: { size: "small" } }}
+                        sx={{
+                          position: "relative",
+                          width: "50px",
+                          "& .MuiInputBase-root": {
+                            width: "85%",
+                          },
+                        }}
+                        renderInput={(params) => (
+                          <TextField helperText="date" {...params} />
+                        )}
+                      />
+                    </DemoContainer>
+                  </LocalizationProvider>
                   <Box
                     component="form"
                     sx={{

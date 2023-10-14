@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 
-const host = "https://provinces.open-api.vn/api/";
+const host = "https://online-gateway.ghn.vn/shiip/public-api/master-data/";
 
 const AddressForm = ({
   required,
@@ -37,16 +37,21 @@ const AddressForm = ({
     if (!selectedWard) {
       setWardError(true);
     }
-    return axios.get(api).then((response) => {
-      return response.data;
-    });
+    return axios
+      .get(api, {
+        headers: {
+          token: "c2f01f86-3164-11ee-af43-6ead57e9219a",
+        },
+      })
+      .then((response) => {
+        return response.data;
+      });
   };
 
   const fetchProvinces = () => {
-    callAPI(host + "?depth=1")
+    callAPI(host + "province")
       .then((data) => {
-        setProvinces(data);
-        // console.log(data.provinceCode);
+        setProvinces(data.data);
       })
       .catch((error) => {
         console.error("Error fetching provinces:", error);
@@ -54,10 +59,10 @@ const AddressForm = ({
   };
 
   const fetchDistricts = (provinceCode) => {
-    callAPI(host + "p/" + provinceCode + "?depth=2")
+    callAPI(host + "district?province_id=" + provinceCode)
       .then((data) => {
-        setDistricts(data.districts);
-        setSelectedDistrict("");
+        setDistricts(data.data);
+        setSelectedDistrict(""); // Reset selected district when fetching new districts
       })
       .catch((error) => {
         console.error("Error fetching districts:", error);
@@ -65,9 +70,9 @@ const AddressForm = ({
   };
 
   const fetchWards = (districtCode) => {
-    callAPI(host + "d/" + districtCode + "?depth=2")
+    callAPI(host + "ward?district_id=" + districtCode)
       .then((data) => {
-        setWards(data.wards);
+        setWards(data.data);
         setSelectedWard(""); // Reset selected ward when fetching new wards
       })
       .catch((error) => {
@@ -83,12 +88,16 @@ const AddressForm = ({
         setSelectedProvince("");
       }
     }
+    // setSelectedProvince(value.target.value);
+    // setSelectedDistrict("");
+    // setSelectedWard("");
+    // fetchDistricts(value.target.value);
+    // onProvinceChange(value.target.value);
+    setProvinceError(false);
     setSelectedProvince(value.target.value);
     setSelectedDistrict("");
     setSelectedWard("");
     fetchDistricts(value.target.value);
-    onProvinceChange(value.target.value);
-    setProvinceError(false);
   };
 
   const handleDistrictChange = (value) => {
@@ -111,68 +120,51 @@ const AddressForm = ({
     setWardError(false);
     if (submitted) {
       // Nếu đã ấn nút "Lưu" thì kiểm tra trạng thái select
-      if (!value.target.value) {
+      if (!value) {
         setWardError(true);
       }
     }
   };
 
   useEffect(() => {
-    if (selectedProvince) {
+    if (selectedDistrict && selectedProvince && selectedWard) {
       const selectedProvinceName = provinces.find(
-        (province) => province.code === selectedProvince
-      )?.name;
-      onProvinceChange(selectedProvinceName);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedProvince, onProvinceChange]);
-
-  useEffect(() => {
-    if (selectedDistrict) {
+        (province) => province.ProvinceID === selectedProvince
+      ).ProvinceName;
       const selectedDistrictName = districts.find(
-        (district) => district.code === selectedDistrict
-      )?.name;
-      onDistrictChange(selectedDistrictName);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedDistrict, onDistrictChange]);
-
-  useEffect(() => {
-    if (selectedWard) {
+        (district) => district.DistrictID === selectedDistrict
+      ).DistrictName;
       const selectedWardName = wards.find(
-        (ward) => ward.code === selectedWard
-      )?.name;
+        (ward) => ward.WardCode === selectedWard
+      ).WardName;
+      onProvinceChange(selectedProvinceName);
+      onDistrictChange(selectedDistrictName);
       onWardChange(selectedWardName);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedWard, onWardChange]);
-
+  }, [selectedProvince, selectedDistrict, selectedWard]);
   return (
     <>
       <div
-        className="text-f"
         style={{
           marginBottom: "20px",
           marginTop: "20px",
         }}
       >
-        <FormControl style={{ width: "100%" }}>
-          <InputLabel id="demo-simple-select-label">
-            Chọn Tỉnh/Thành phố
-          </InputLabel>
+        <FormControl
+          style={{ width: "100%", height: "auto" }}
+          fullWidth
+          size="lg"
+        >
+          <InputLabel>Chọn Tỉnh/Thành phố</InputLabel>
           <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
             label="Chọn Tỉnh/Thành phố"
             onChange={handleProvinceChange}
             value={selectedProvince}
-            size="large"
             error={formSubmitted && !selectedProvince}
-            style={{ width: "100%" }}
           >
             {provinces.map((province) => (
-              <MenuItem key={province.code} value={province.code}>
-                {province.name}
+              <MenuItem key={province.ProvinceID} value={province.ProvinceID}>
+                {province.ProvinceName}
               </MenuItem>
             ))}
           </Select>
@@ -198,20 +190,18 @@ const AddressForm = ({
         }}
       >
         <FormControl style={{ width: "100%" }}>
-          <InputLabel id="demo-simple-select-label">Chọn Quận/Huyện</InputLabel>
+          <InputLabel>Chọn Quận/Huyện</InputLabel>
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
             label="Chọn Quận/Huyện"
             onChange={handleDistrictChange}
             value={selectedDistrict}
-            size="large"
             error={formSubmitted && !selectedDistrict}
-            style={{ width: "100%" }}
           >
             {districts.map((district) => (
-              <MenuItem key={district.code} value={district.code}>
-                {district.name}
+              <MenuItem key={district.DistrictID} value={district.DistrictID}>
+                {district.DistrictName}
               </MenuItem>
             ))}
           </Select>
@@ -249,8 +239,8 @@ const AddressForm = ({
             style={{ width: "100%" }}
           >
             {wards.map((ward) => (
-              <MenuItem key={ward.code} value={ward.code}>
-                {ward.name}
+              <MenuItem key={ward.WardCode} value={ward.WardCode}>
+                {ward.WardName}
               </MenuItem>
             ))}
           </Select>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { FormControl, InputLabel, MenuItem, Select, Grid } from "@mui/material";
 
-const host = "https://provinces.open-api.vn/api/";
+const host = "https://online-gateway.ghn.vn/shiip/public-api/master-data/";
 
 const AddressFormUpdate = ({
   required,
@@ -33,8 +33,8 @@ const AddressFormUpdate = ({
   useEffect(() => {
     if (selectedTinhThanhPho && !editing) {
       const selectedProvinceCode = provinces.find(
-        (province) => province.name === selectedTinhThanhPho
-      )?.code;
+        (province) => province.ProvinceName === selectedTinhThanhPho
+      )?.ProvinceID;
       setSelectedProvince(selectedProvinceCode);
       fetchDistricts(selectedProvinceCode);
     }
@@ -44,8 +44,8 @@ const AddressFormUpdate = ({
   useEffect(() => {
     if (selectedQuanHuyen) {
       const selectedDistrictCode = districts.find(
-        (district) => district.name === selectedQuanHuyen
-      )?.code;
+        (district) => district.DistrictName === selectedQuanHuyen
+      )?.DistrictID;
 
       if (selectedDistrictCode) {
         setSelectedDistrict(selectedDistrictCode);
@@ -59,31 +59,37 @@ const AddressFormUpdate = ({
   useEffect(() => {
     if (selectedXaPhuong) {
       const selectedWardCode = wards.find(
-        (ward) => ward.name === selectedXaPhuong
-      )?.code;
+        (ward) => ward.WardName === selectedXaPhuong
+      )?.WardCode;
       setSelectedWard(selectedWardCode);
     }
   }, [selectedXaPhuong, wards]);
 
   const callAPI = async (api) => {
-    // if (!selectedProvince) {
-    //   setProvinceError(true);
-    // }
+    if (!selectedProvince) {
+      setProvinceError(true);
+    }
     if (!selectedDistrict) {
       setDistrictError(true);
     }
     if (!selectedWard) {
       setWardError(true);
     }
-    const response = await axios.get(api);
-    return response.data;
+    return axios
+      .get(api, {
+        headers: {
+          token: "c2f01f86-3164-11ee-af43-6ead57e9219a",
+        },
+      })
+      .then((response) => {
+        return response.data;
+      });
   };
 
   const fetchProvinces = () => {
-    callAPI(host + "?depth=1")
+    callAPI(host + "province")
       .then((data) => {
-        setProvinces(data);
-        // console.log(data);
+        setProvinces(data.data);
       })
       .catch((error) => {
         console.error("Error fetching provinces:", error);
@@ -91,15 +97,10 @@ const AddressFormUpdate = ({
   };
 
   const fetchDistricts = (provinceCode) => {
-    callAPI(host + "p/" + provinceCode + "?depth=2")
+    callAPI(host + "district?province_id=" + provinceCode)
       .then((data) => {
-        if (data && data.districts) {
-          setDistricts(data.districts);
-          setSelectedDistrict("");
-        }
-        // else {
-        //   console.error("Error fetching districts: Invalid response format");
-        // }
+        setDistricts(data.data);
+        setSelectedDistrict(""); // Reset selected district when fetching new districts
       })
       .catch((error) => {
         console.error("Error fetching districts:", error);
@@ -107,10 +108,10 @@ const AddressFormUpdate = ({
   };
 
   const fetchWards = (districtCode) => {
-    callAPI(host + "d/" + districtCode + "?depth=2")
+    callAPI(host + "ward?district_id=" + districtCode)
       .then((data) => {
-        setWards(data.wards);
-        setSelectedWard("");
+        setWards(data.data);
+        setSelectedWard(""); // Reset selected ward when fetching new wards
       })
       .catch((error) => {
         console.error("Error fetching wards:", error);
@@ -167,34 +168,22 @@ const AddressFormUpdate = ({
     }
   };
   useEffect(() => {
-    if (selectedProvince) {
+    if (selectedDistrict && selectedProvince && selectedWard) {
       const selectedProvinceName = provinces.find(
-        (province) => province.code === selectedProvince
-      )?.name;
-      onProvinceChange(selectedProvinceName);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedProvince, onProvinceChange]);
-
-  useEffect(() => {
-    if (selectedDistrict) {
+        (province) => province.ProvinceID === selectedProvince
+      ).ProvinceName;
       const selectedDistrictName = districts.find(
-        (district) => district.code === selectedDistrict
-      )?.name;
-      onDistrictChange(selectedDistrictName);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedDistrict, onDistrictChange]);
-
-  useEffect(() => {
-    if (selectedWard) {
+        (district) => district.DistrictID === selectedDistrict
+      ).DistrictName;
       const selectedWardName = wards.find(
-        (ward) => ward.code === selectedWard
-      )?.name;
+        (ward) => ward.WardCode === selectedWard
+      ).WardName;
+      onProvinceChange(selectedProvinceName);
+      onDistrictChange(selectedDistrictName);
       onWardChange(selectedWardName);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedWard, onWardChange]);
+  }, [selectedProvince, selectedDistrict, selectedWard]);
+
   return (
     <div>
       <Grid container spacing={3.3}>
@@ -215,8 +204,8 @@ const AddressFormUpdate = ({
               }
             >
               {provinces.map((province) => (
-                <MenuItem key={province.code} value={province.code}>
-                  {province.name}
+                <MenuItem key={province.ProvinceID} value={province.ProvinceID}>
+                  {province.ProvinceName}
                 </MenuItem>
               ))}
             </Select>
@@ -248,8 +237,8 @@ const AddressFormUpdate = ({
               error={formSubmitted && !selectedDistrict}
             >
               {districts.map((district) => (
-                <MenuItem key={district.code} value={district.code}>
-                  {district.name}
+                <MenuItem key={district.DistrictID} value={district.DistrictID}>
+                  {district.DistrictName}
                 </MenuItem>
               ))}
             </Select>
@@ -281,8 +270,8 @@ const AddressFormUpdate = ({
               error={formSubmitted && !selectedWard}
             >
               {wards.map((ward) => (
-                <MenuItem key={ward.code} value={ward.code}>
-                  {ward.name}
+                <MenuItem key={ward.WardCode} value={ward.WardCode}>
+                  {ward.WardName}
                 </MenuItem>
               ))}
             </Select>
