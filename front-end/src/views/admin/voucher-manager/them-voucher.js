@@ -1,6 +1,6 @@
-import { Button } from "antd";
+import { Button, Col, Row } from "antd";
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faCheck } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
@@ -18,9 +18,15 @@ import "react-toastify/dist/ReactToastify.css";
 import Box from "@mui/joy/Box";
 import Radio, { radioClasses } from "@mui/joy/Radio";
 import RadioGroup from "@mui/joy/RadioGroup";
+import {
+  Notistack,
+  TypeDiscountNumber,
+  TypeDiscountString,
+} from "../order-manager/enum";
+import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
+import useCustomSnackbar from "../../../utilities/notistack";
 
 const AddVoucher = () => {
-  const [listVoucher, setListVoucher] = useState([]);
   const [ma, setMa] = useState("");
   const [ten, setTen] = useState("");
   const [ngayBatDau, setNgayBatDau] = useState(dayjs());
@@ -32,24 +38,57 @@ const AddVoucher = () => {
   const [value, setValue] = React.useState();
   const [value1, setValue1] = React.useState();
   const [value2, setValue2] = React.useState();
-  const [selectDiscount, setSeclectDiscount] = useState("VNĐ");
+  const [selectDiscount, setSeclectDiscount] = useState(TypeDiscountString.VND);
   const [giaTriToiDa, setGiaTriToiDa] = useState();
   const [valueToiThieu, setValueToiThieu] = React.useState();
   const [valueToiDa, setValueToiDa] = React.useState();
   const [isLoading, setIsLoading] = useState(false);
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const { handleOpenAlertVariant } = useCustomSnackbar();
 
-  const loadDataListVoucher = (page) => {
-    axios
-      .get(`${apiURLVoucher}/vouchers`)
-      .then((response) => {
-        setListVoucher(response.data.content);
-        console.log(response);
-      })
-      .catch((error) => {});
+  const handleOpenDialogConfirmAdd = () => {
+    setOpenConfirm(true);
   };
 
+  const handleCloseDialogConfirmAdd = () => {
+    setOpenConfirm(false);
+  };
+
+  const Header = () => {
+    return (
+      <>
+        <span className="">Xác nhận thêm voucher</span>
+      </>
+    );
+  };
+  const Title = () => {
+    return (
+      <>
+        <span>
+          Bạn có chắc chắc muốn thêm voucher có tên là{" "}
+          <span style={{ color: "red" }}>{ten}</span> và với giá trị{" "}
+          <span style={{ color: "red" }}>{value}</span>
+          <span style={{ color: "red" }}>
+            {selectDiscount === TypeDiscountString.VND ? "VND" : "%"}
+          </span>{" "}
+          không ?
+        </span>
+      </>
+    );
+  };
+
+  // const loadDataListVoucher = (page) => {
+  //   axios
+  //     .get(`${apiURLVoucher}/vouchers`)
+  //     .then((response) => {
+  //       setListVoucher(response.data.data);
+  //       console.log(response);
+  //     })
+  //     .catch((error) => {});
+  // };
+
   const handleChange = (event) => {
-    if (selectDiscount === "VNĐ") {
+    if (selectDiscount === TypeDiscountString.VND) {
       const inputValue = event.target.value;
       const numericValue = parseFloat(inputValue.replace(/[^0-9.-]+/g, ""));
       const formattedValue = inputValue
@@ -58,7 +97,7 @@ const AddVoucher = () => {
       setValue(formattedValue);
       setGiaTriVoucherConvert(numericValue);
     }
-    if (selectDiscount === "%") {
+    if (selectDiscount === TypeDiscountString.PERCENT) {
       let inputValue = event.target.value;
       // Loại bỏ các ký tự không phải số
       inputValue = inputValue.replace(/\D/g, "");
@@ -71,6 +110,20 @@ const AddVoucher = () => {
       setValue(inputValue);
       setGiaTriVoucherConvert(inputValue);
     }
+  };
+
+  const handleInputNumberVoucher = (e) => {
+    // Loại bỏ tất cả các ký tự không phải số sử dụng regex
+    const sanitizedValue = e.target.value.replace(/[^0-9]/g, "");
+
+    setSoLuong(sanitizedValue);
+  };
+
+  const handleInputCodeVoucher = (e) => {
+    // Sử dụng regex để chỉ cho phép chữ cái và số, loại bỏ ký tự đặc biệt
+    let inputValue = e.target.value;
+    let sanitizedValue = inputValue.toUpperCase();
+    setMa(sanitizedValue);
   };
 
   const handleChange1 = (event) => {
@@ -119,7 +172,7 @@ const AddVoucher = () => {
         }, 2000);
       })
       .catch((error) => {
-        toast.error("Đã xảy ra lỗi khi thêm voucher.");
+        handleOpenAlertVariant(error.response.data.message, Notistack.ERROR);
       });
   };
 
@@ -130,16 +183,9 @@ const AddVoucher = () => {
       msg.ten = "Tên không được để trống !!!";
     }
 
-    // if (/^\s+|\s+$/.test(ten)) {
-    //   msg.ten = "Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi";
-    // }
     if (soLuong == null || soLuong === "") {
       msg.soLuong = "Số lượng không được để trống !!!";
     }
-    // if (/^\s+|\s+$/.test(soLuong)) {
-    //   msg.soLuong =
-    //     "Số lượng không chứa ký tự khoảng trống ở đầu và cuối chuỗi";
-    // }
 
     if (soLuong <= 0 || soLuong > 10000) {
       msg.soLuong = "Số lượng cho phép từ 1 đến 10000";
@@ -163,24 +209,29 @@ const AddVoucher = () => {
       msg.value = "Giá trị voucher không được để trống !!!";
     }
 
+    if (selectDiscount === TypeDiscountString.PERCENT && value <= 0) {
+      msg.value = "Giá trị tối đa chỉ nằm trong khoảng 1% - 100% !!!";
+    }
+
     if (
-      (selectDiscount === "VNĐ" && numericValue2 <= 0) ||
-      (selectDiscount === "VNĐ" && numericValue2 > 100000000)
+      (selectDiscount === TypeDiscountString.VND && numericValue2 <= 0) ||
+      (selectDiscount === TypeDiscountString.VND && numericValue2 > 100000000)
     ) {
       msg.value = "Giá trị voucher từ 1đ đến 100.000.000đ";
     }
 
     const numericValue3 = parseFloat(valueToiDa?.replace(/[^0-9.-]+/g, ""));
     if (
-      (selectDiscount === "%" && valueToiDa === null) ||
-      (selectDiscount === "%" && valueToiDa === "")
+      (selectDiscount === TypeDiscountString.PERCENT && valueToiDa === null) ||
+      (selectDiscount === TypeDiscountString.PERCENT && valueToiDa === "")
     ) {
       msg.valueToiDa = "Giá trị tối đa không được để trống !!!";
     }
 
     if (
-      (selectDiscount === "%" && numericValue3 <= 0) ||
-      (selectDiscount === "%" && numericValue3 > 100000000)
+      (selectDiscount === TypeDiscountString.PERCENT && numericValue3 <= 0) ||
+      (selectDiscount === TypeDiscountString.PERCENT &&
+        numericValue3 > 100000000)
     ) {
       msg.valueToiDa = "Giá trị tối đa từ 1đ đến 100.000.000đ";
     }
@@ -206,7 +257,7 @@ const AddVoucher = () => {
   const handleSubmit = () => {
     const isValid = validationAll();
     if (!isValid) return;
-    addVoucher();
+    handleOpenDialogConfirmAdd();
   };
 
   const handleChangeToggleButtonDiscount = (event, newAlignment) => {
@@ -220,6 +271,7 @@ const AddVoucher = () => {
     if (newAlignment == null) {
       setSeclectDiscount(oldAligment);
     }
+    console.log(oldAligment);
     handleReset();
   };
 
@@ -255,19 +307,17 @@ const AddVoucher = () => {
                 placeholder="Nhập hoặc để mã tự động "
                 value={ma}
                 id="fullWidth"
-                onChange={(e) => {
-                  setMa(e.target.value);
-                }}
-                style={{ width: "300px" }}
+                onInput={handleInputCodeVoucher}
+                style={{ width: "330px" }}
                 inputProps={{
-                  maxLength: 100, // Giới hạn tối đa 10 ký tự
+                  maxLength: 15, // Giới hạn tối đa 10 ký tự
                 }}
               />
               <span className="validate" style={{ color: "red" }}>
                 {validationMsg.ma}
               </span>
             </div>
-            <div className="ms-3">
+            <div className="ms-4">
               <TextField
                 label="Tên Voucher"
                 value={ten}
@@ -275,7 +325,7 @@ const AddVoucher = () => {
                 onChange={(e) => {
                   setTen(e.target.value);
                 }}
-                style={{ width: "300px" }}
+                style={{ width: "330px" }}
                 inputProps={{
                   maxLength: 100, // Giới hạn tối đa 10 ký tự
                 }}
@@ -294,10 +344,8 @@ const AddVoucher = () => {
                 label="Số Lượng"
                 value={soLuong}
                 id="fullWidth"
-                onChange={(e) => {
-                  setSoLuong(e.target.value);
-                }}
-                style={{ width: "300px" }}
+                onChange={handleInputNumberVoucher}
+                style={{ width: "330px" }}
                 inputProps={{
                   maxLength: 10, // Giới hạn tối đa 10 ký tự
                 }}
@@ -306,7 +354,7 @@ const AddVoucher = () => {
                 {validationMsg.soLuong}
               </span>
             </div>
-            <div className="ms-3">
+            <div className="ms-4">
               {" "}
               <TextField
                 label="Điều kiện áp dụng khi đơn hàng đạt"
@@ -319,7 +367,7 @@ const AddVoucher = () => {
                     <InputAdornment position="start">VND</InputAdornment>
                   ),
                 }}
-                style={{ width: "300px" }}
+                style={{ width: "330px" }}
                 inputProps={{
                   maxLength: 20, // Giới hạn tối đa 10 ký tự
                 }}
@@ -344,49 +392,57 @@ const AddVoucher = () => {
                 onChange={handleChangeToggleButtonDiscount}
                 sx={{ borderRadius: "12px" }}
               >
-                {["VNĐ", "%"].map((item) => (
-                  <Box
-                    key={item}
-                    sx={(theme) => ({
-                      position: "relative",
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      width: 50,
-                      height: 54,
-                      "&:not([data-first-child])": {
-                        borderLeft: "1px solid",
-                        borderdivor: "divider",
-                      },
-                      [`&[data-first-child] .${radioClasses.action}`]: {
-                        borderTopLeftRadius: `calc(${theme.vars.radius.sm} + 5px)`,
-                        borderBottomLeftRadius: `calc(${theme.vars.radius.sm} + 5px)`,
-                      },
-                      [`&[data-last-child] .${radioClasses.action}`]: {
-                        borderTopRightRadius: `calc(${theme.vars.radius.sm} + 5px)`,
-                        borderBottomRightRadius: `calc(${theme.vars.radius.sm} + 5px)`,
-                      },
-                    })}
-                  >
-                    <Radio
-                      value={item}
-                      disableIcon
-                      overlay
-                      label={[item]}
-                      variant={selectDiscount === item ? "solid" : "plain"}
-                      slotProps={{
-                        input: { "aria-label": item },
-                        action: {
-                          sx: { borderRadius: 0, transition: "none" },
+                {[TypeDiscountString.VND, TypeDiscountString.PERCENT].map(
+                  (item) => (
+                    <Box
+                      key={item}
+                      sx={(theme) => ({
+                        position: "relative",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        width: 50,
+                        height: 54,
+                        "&:not([data-first-child])": {
+                          borderLeft: "1px solid",
+                          borderdivor: "divider",
                         },
-                        label: { sx: { lineHeight: 0 } },
-                      }}
-                    />
-                  </Box>
-                ))}
+                        [`&[data-first-child] .${radioClasses.action}`]: {
+                          borderTopLeftRadius: `calc(${theme.vars.radius.sm} + 5px)`,
+                          borderBottomLeftRadius: `calc(${theme.vars.radius.sm} + 5px)`,
+                        },
+                        [`&[data-last-child] .${radioClasses.action}`]: {
+                          borderTopRightRadius: `calc(${theme.vars.radius.sm} + 5px)`,
+                          borderBottomRightRadius: `calc(${theme.vars.radius.sm} + 5px)`,
+                        },
+                      })}
+                    >
+                      <Radio
+                        value={item}
+                        disableIcon
+                        overlay
+                        label={[
+                          item === TypeDiscountString.VND
+                            ? "VND"
+                            : item === TypeDiscountString.PERCENT
+                            ? "%"
+                            : "",
+                        ]}
+                        variant={selectDiscount === item ? "solid" : "plain"}
+                        slotProps={{
+                          input: { "aria-label": item },
+                          action: {
+                            sx: { borderRadius: 0, transition: "none" },
+                          },
+                          label: { sx: { lineHeight: 0 } },
+                        }}
+                      />
+                    </Box>
+                  )
+                )}
               </RadioGroup>
             </div>
-            <div className="ms-3">
+            <div className="ms-4">
               <TextField
                 label="Nhập Giá Trị Voucher"
                 value={value}
@@ -396,12 +452,16 @@ const AddVoucher = () => {
                   inputMode: "numeric",
                   startAdornment: (
                     <InputAdornment position="start">
-                      {selectDiscount === "VNĐ" ? "VND" : "%"}
+                      {selectDiscount === TypeDiscountString.VND
+                        ? TypeDiscountString.VND
+                        : TypeDiscountString.PERCENT
+                        ? "%"
+                        : ""}
                     </InputAdornment>
                   ),
                 }}
                 style={{
-                  width: "240.5px",
+                  width: "267px",
                 }}
                 inputProps={{
                   maxLength: 20, // Giới hạn tối đa 10 ký tự
@@ -416,7 +476,7 @@ const AddVoucher = () => {
                 {validationMsg.value}
               </span>
             </div>
-            <div className="ms-3">
+            <div className="ms-4">
               <TextField
                 label="Giá Trị Tối Đa"
                 value={valueToiDa}
@@ -428,9 +488,11 @@ const AddVoucher = () => {
                     <InputAdornment position="start">VND</InputAdornment>
                   ),
                 }}
-                disabled={selectDiscount === "VNĐ" ? true : false}
+                disabled={
+                  selectDiscount === TypeDiscountString.VND ? true : false
+                }
                 style={{
-                  width: "240.5px",
+                  width: "267px",
                 }}
                 inputProps={{
                   maxLength: 20, // Giới hạn tối đa 10 ký tự
@@ -461,8 +523,9 @@ const AddVoucher = () => {
                     value={ngayBatDau}
                     onChange={(e) => {
                       setNgayBatDau(e);
+                      setNgayKetThuc(e);
                     }}
-                    sx={{ width: "295px" }}
+                    sx={{ width: "330px" }}
                   />
                 </DemoContainer>
               </LocalizationProvider>
@@ -482,7 +545,7 @@ const AddVoucher = () => {
                     onChange={(e) => {
                       setNgayKetThuc(e);
                     }}
-                    sx={{ width: "295px" }}
+                    sx={{ width: "330px" }}
                   />
                 </DemoContainer>
               </LocalizationProvider>
@@ -526,6 +589,13 @@ const AddVoucher = () => {
           </Button>
         </div>
       </div>
+      <ConfirmDialog
+        open={openConfirm}
+        onClose={handleCloseDialogConfirmAdd}
+        add={addVoucher}
+        title={<Title />}
+        header={<Header />}
+      />
     </>
   );
 };

@@ -1,5 +1,9 @@
 package beephone_shop_projects.core.admin.voucher_management.model.request;
 
+import beephone_shop_projects.infrastructure.constant.StatusDiscount;
+import beephone_shop_projects.infrastructure.constant.TypeDiscount;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -20,7 +24,7 @@ public class CreateVoucherRequest {
     @Length(max = 255)
     private String ma;
 
-    private Integer trangThai;
+    private StatusDiscount trangThai;
 
     @NotBlank
     @Length(max = 255)
@@ -36,7 +40,8 @@ public class CreateVoucherRequest {
     @Max(value = 100000000)
     private BigDecimal dieuKienApDung;
 
-    private String loaiVoucher;
+    @Enumerated(EnumType.STRING)
+    private TypeDiscount loaiVoucher;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @FutureOrPresent

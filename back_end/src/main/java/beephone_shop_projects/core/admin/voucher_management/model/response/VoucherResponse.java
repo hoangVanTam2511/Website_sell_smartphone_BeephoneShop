@@ -1,5 +1,7 @@
 package beephone_shop_projects.core.admin.voucher_management.model.response;
 
+import beephone_shop_projects.infrastructure.constant.StatusDiscount;
+import beephone_shop_projects.infrastructure.constant.TypeDiscount;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.math.BigDecimal;
@@ -22,7 +24,7 @@ public interface VoucherResponse {
     BigDecimal getDieuKienApDung();
 
     @Value("#{target.loaiVoucher}")
-    String getLoaiVoucher();
+    Integer getLoaiVoucher();
 
     @Value("#{target.ngayBatDau}")
     Date getNgayBatDau();

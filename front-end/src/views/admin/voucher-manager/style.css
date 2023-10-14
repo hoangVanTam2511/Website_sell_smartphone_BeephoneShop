@@ -88,7 +88,7 @@ tr:hover {
 }
 
 .add-voucher-container {
-  width: 58%;
+  width: 64%;
   background-color: #fff;
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -125,19 +125,3 @@ tr:hover {
   color: red;
   display: block;
 }
-
-/* .row-input {
-  margin-bottom: 30px;
-  display: block;
-}
-
-
-
-
-
-/* .select-value {
-  width: 100%;
-  padding-left: 50px;
-  display: flex;
-  justify-content: flex-start;
-} */
