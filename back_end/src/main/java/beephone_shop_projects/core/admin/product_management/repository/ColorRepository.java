@@ -1,5 +1,7 @@
 package beephone_shop_projects.core.admin.product_management.repository;
 
+import beephone_shop_projects.core.admin.product_management.model.responce.ColorResponce;
+import beephone_shop_projects.core.admin.product_management.model.responce.DisplayResponce;
 import beephone_shop_projects.core.admin.product_management.model.responce.PointOfSaleColorResponce;
 import beephone_shop_projects.entity.MauSac;
 import beephone_shop_projects.repository.IMauSacRepository;
@@ -44,4 +46,13 @@ public interface ColorRepository extends IMauSacRepository {
     """,nativeQuery = true)
     List<PointOfSaleColorResponce> getListMauSacByIdProduct(@Param("idProduct")String idProduct);
 
+    @Query(value = """
+            SELECT ROW_NUMBER() OVER() AS stt, color.id, color.ma, 
+            color.ten_mau_sac
+            FROM mau_sac AS color
+            WHERE (color.ten_mau_sac LIKE :text 
+            OR color.ma LIKE :text )
+            AND delected = :delected
+            """, nativeQuery = true)
+    Page<ColorResponce> searchColorByDelected(@Param("text") String text, Pageable pageable, @Param("delected") Integer delected);
 }

@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 public class CreateRom {
 
-    private String marom;
+    private String idRom;
 
-    private Integer tenrom;
+    private Integer capacityRom;
 }

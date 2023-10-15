@@ -12,12 +12,12 @@ import java.math.BigDecimal;
 @ToString
 public class CreateProductDetailRequest {
 
-    private String idSanPham;
+    private String idProduct;
 
     private String id;
 
-    private Integer soLuong;
+    private Integer quantity;
 
-    private BigDecimal donGia;
+    private BigDecimal price;
 
 }

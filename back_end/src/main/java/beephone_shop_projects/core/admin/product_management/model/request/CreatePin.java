@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @Setter
 public class CreatePin {
 
-    private String mapin;
+    private String idPin;
 
-    private Integer tenpin;
+    private Integer capacityPin;
 }

@@ -9,6 +9,8 @@ import lombok.Setter;
 @Setter
 public class CreateCamera {
 
+    String idCamera;
+
     @NotBlank(message = "Độ phân giải trống")
     String resolutionCamera;
 }

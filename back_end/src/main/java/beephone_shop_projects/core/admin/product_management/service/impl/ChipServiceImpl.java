@@ -1,6 +1,7 @@
 package beephone_shop_projects.core.admin.product_management.service.impl;
 
 import beephone_shop_projects.core.admin.product_management.model.request.CreateChip;
+import beephone_shop_projects.core.admin.product_management.model.responce.ChipResponce;
 import beephone_shop_projects.core.admin.product_management.repository.ChipRepository;
 import beephone_shop_projects.core.admin.product_management.service.IService;
 import beephone_shop_projects.entity.Chip;
@@ -10,37 +11,41 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
-public class ChipServiceImpl implements IService<Chip> {
+public class ChipServiceImpl {
 
     @Autowired
     private ChipRepository chipRepository;
 
 
-    @Override
     public Page<Chip> getAll(Pageable pageable) {
         return chipRepository.findAllByDelected(true,pageable);
     }
 
-    @Override
     public void insert(Chip chip) {
        chipRepository.save(chip);
     }
 
     public void insert(CreateChip req) {
-        Chip chip = new Chip();
-        chip.setTenChip(req.getTenChip());
-        chip.setMa(req.getMaChip());
+
+        if(!req.getIdChip().isEmpty()) update(req);
+        else {
+            String newCode = this.chipRepository.getNewCode() == null ? "CHIP_0" : "CHIP_" + this.chipRepository.getNewCode();
+            Chip chip = new Chip();
+            chip.setTenChip(req.getNameChip());
+            chip.setMa(newCode);
+            chipRepository.save(chip);
+        }
+    }
+
+    public void update(CreateChip req) {
+        Chip chip = this.chipRepository.findById(req.getIdChip()).get();
+        chip.setTenChip(req.getNameChip());
         chipRepository.save(chip);
     }
 
-    @Override
-    public void update(Chip chip, String id) {
-       chipRepository.save(chip);
-    }
-
-    @Override
     public void delete(String id) {
        chipRepository.updateDelected(false,id);
     }
@@ -55,5 +60,9 @@ public class ChipServiceImpl implements IService<Chip> {
 
     public String generateNewCode(){
         return this.chipRepository.getNewCode() == null ?"CHIP_0":"CHIP_"+ this.chipRepository.getNewCode() ;
+    }
+
+    public Page<ChipResponce> searchChip(String name, Pageable pageable){
+        return chipRepository.searchChip("%" + name + "%", pageable, 1);
     }
 }

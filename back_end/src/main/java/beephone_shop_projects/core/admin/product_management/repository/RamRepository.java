@@ -1,5 +1,7 @@
 package beephone_shop_projects.core.admin.product_management.repository;
 
+import beephone_shop_projects.core.admin.product_management.model.responce.RamResponce;
+import beephone_shop_projects.core.admin.product_management.model.responce.RomResponce;
 import beephone_shop_projects.entity.Ram;
 import beephone_shop_projects.repository.IRamRepository;
 import jakarta.transaction.Transactional;
@@ -30,4 +32,10 @@ public interface RamRepository extends IRamRepository {
     SELECT SUBSTRING(ma,5) + 1  FROM ram ORDER BY ma DESC LIMIT 0,1
     """,nativeQuery = true)
     String getNewCode();
+
+    @Query(value = """
+            SELECT ROW_NUMBER() OVER() AS stt, ram.id, ram.ma, ram.kich_thuoc AS kich_thuoc_ram FROM ram
+            WHERE (ram.kich_thuoc LIKE :text OR ram.ma LIKE :text) AND delected = :delected
+            """, nativeQuery = true)
+    Page<RamResponce> searchRamByDelected(@Param("text") String text, Pageable pageable, @Param("delected")Integer delected);
 }

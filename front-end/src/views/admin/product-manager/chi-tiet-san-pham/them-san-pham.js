@@ -10,7 +10,7 @@ import CurrencyInput from 'react-currency-input-field';
 import { faPlus, faTrashAlt, faCheck, faThumbtack, faMinus, faCircleXmark } from '@fortawesome/free-solid-svg-icons'
 import { storage } from "./firebase"
 import { ref, uploadBytes, listAll, getDownloadURL, deleteObject } from 'firebase/storage'
-import { apiURLCamera, apiURLCauHinh, apiURLChip, apiURLDongSanPham, apiURLManHinh, apiURLMauSac, apiURLNhaSanXuat, apiURLPin, apiURLram, apiURLrom } from '../../../../service/api';
+import { apiURLCamera, apiURLCauHinh, apiURLChip, apiURLDongSanPham, apiURLManHinh, apiURLMauSac, apiURLHang, apiURLPin, apiURLram, apiURLrom } from '../../../../service/api';
 import {
     Col, Row,
     Input, Card,
@@ -745,7 +745,7 @@ const ThemSanPham = () => {
             }));
             setListDongSanPham(modifiedData);
         }).catch((res) => console.log(res));
-        axios.get(apiURLNhaSanXuat + "/get-list").then((response) => {
+        axios.get(apiURLHang + "/get-list").then((response) => {
             const modifiedData = response.data.map((item, index) => ({
                 label: item.tenNhaSanXuat,
                 value: "nhaSanXuat:" + item.tenNhaSanXuat,

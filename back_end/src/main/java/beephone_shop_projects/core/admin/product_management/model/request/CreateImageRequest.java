@@ -7,11 +7,11 @@ import lombok.Setter;
 @Setter
 public class CreateImageRequest {
 
-    private String tenAnh;
+    private String nameImage;
 
-    private String duongDan;
+    private String urlImage;
 
-    private String idChiTietSanPham;
+    private String idProductDetail;
 
-    private Boolean trangThai;
+    private Boolean state;
 }

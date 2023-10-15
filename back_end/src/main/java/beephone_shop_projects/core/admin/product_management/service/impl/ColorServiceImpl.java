@@ -1,6 +1,7 @@
 package beephone_shop_projects.core.admin.product_management.service.impl;
 
-import beephone_shop_projects.core.admin.product_management.model.request.CreateMauSac;
+import beephone_shop_projects.core.admin.product_management.model.request.CreateColor;
+import beephone_shop_projects.core.admin.product_management.model.responce.ColorResponce;
 import beephone_shop_projects.core.admin.product_management.repository.ColorRepository;
 import beephone_shop_projects.core.admin.product_management.service.IService;
 import beephone_shop_projects.entity.MauSac;
@@ -9,36 +10,41 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
-public class ColorServiceImpl implements IService<MauSac> {
+public class ColorServiceImpl{
 
     @Autowired
     private ColorRepository colorRepository;
 
 
-    @Override
     public Page<MauSac> getAll(Pageable pageable) {
         return colorRepository.findAllByDelected(true,pageable);
     }
 
-    @Override
     public void insert(MauSac mauSac) {
         colorRepository.save(mauSac);
     }
 
-    public void insert(CreateMauSac req) {
-        MauSac mauSac  = new MauSac(req.getMamauSac(),req.getTenmauSac());
+    public void insert(CreateColor req) {
+
+        if(!req.getIdColor().isEmpty()) update(req);
+        else {
+            String newCode = this.colorRepository.getNewCode() == null ? "COLOR_0" + "_" : "COLOR_" + this.colorRepository.getNewCode();
+            MauSac mauSac = new MauSac(newCode, req.getNameColor());
+            colorRepository.save(mauSac);
+        }
+    }
+
+    public void update(CreateColor req) {
+        MauSac mauSac = this.colorRepository.findById(req.getIdColor()).get();
+        mauSac.setTenMauSac(req.getNameColor());
         colorRepository.save(mauSac);
     }
 
-    @Override
-    public void update(MauSac mauSac, String id) {
-        colorRepository.save(mauSac);
-    }
-
-    @Override
     public void delete(String id) {
         colorRepository.updateDelected(false,id);
     }
@@ -53,5 +59,9 @@ public class ColorServiceImpl implements IService<MauSac> {
 
     public String generateNewCode(){
         return this.colorRepository.getNewCode() == null ?"COLOR_0":"COLOR_"+ this.colorRepository.getNewCode() ;
+    }
+
+    public Page<ColorResponce> searchColor(String name, Pageable pageable){
+        return colorRepository.searchColorByDelected("%" + name + "%", pageable, 1);
     }
 }

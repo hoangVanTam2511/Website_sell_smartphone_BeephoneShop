@@ -1,6 +1,7 @@
 package beephone_shop_projects.core.admin.product_management.service.impl;
 
 import beephone_shop_projects.core.admin.product_management.model.request.CreateRom;
+import beephone_shop_projects.core.admin.product_management.model.responce.RomResponce;
 import beephone_shop_projects.core.admin.product_management.repository.RomRepository;
 import beephone_shop_projects.core.admin.product_management.service.IService;
 import beephone_shop_projects.entity.Rom;
@@ -10,35 +11,37 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 @Service
-public class RomServiceImpl implements IService<Rom> {
+public class RomServiceImpl {
 
     @Autowired
     private RomRepository romRepository;
 
-    @Override
     public Page<Rom> getAll(Pageable pageable) {
         return romRepository.findAllByDelected(true,pageable);
     }
 
-    @Override
     public void insert(Rom rom) {
       romRepository.save(rom);
     }
 
     public void insert(CreateRom req) {
-        Rom rom = new Rom(req.getMarom(),req.getTenrom());
-        romRepository.save(rom);
+        if(!req.getIdRom().isEmpty()) update(req);
+        else {
+            String newCode = this.romRepository.getNewCode() == null ? "ROM_0" : "ROM_" + this.romRepository.getNewCode();
+            Rom rom = new Rom(newCode, req.getCapacityRom());
+            romRepository.save(rom);
+        }
     }
 
-    @Override
-    public void update(Rom rom, String id) {
-        romRepository.save(rom);
-    }
+    public void update(CreateRom req) {
+        Rom rom = this.romRepository.findById(req.getIdRom()).get();
+        rom.setKichThuoc(req.getCapacityRom());
+        romRepository.save(rom);}
 
-    @Override
     public void delete(String id) {
         romRepository.updateDelected(false,id);
     }
@@ -53,5 +56,9 @@ public class RomServiceImpl implements IService<Rom> {
 
     public String generateNewCode(){
         return this.romRepository.getNewCode() == null ?"ROM_0":"ROM_"+ this.romRepository.getNewCode() ;
+    }
+
+    public Page<RomResponce> searchRom(String name, Pageable pageable){
+        return romRepository.searchRomByDelected("%" + name + "%", pageable, 1);
     }
 }

@@ -12,28 +12,28 @@ import java.util.ArrayList;
 @ToString
 public class CreateProductRequest {
 
-    private String tenSanPham;
+    private String nameProduct;
 
-    private String moTa;
+    private String description;
 
     private String chip;
 
     private Integer pin;
 
-    private BigDecimal manHinh;
+    private BigDecimal display;
 
-    private String dongSanPham;
+    private String productLine;
 
-    private String nhaSanXuat;
+    private String brand;
 
-    private String heDieuHanh;
+    private String operatingSystem;
 
     private Integer sim;
 
-    private String congSac;
+    private String chargingPort;
 
-    private ArrayList<String> cameraTruoc;
+    private ArrayList<String> cameraFront;
 
-    private ArrayList<String> cameraSau;
+    private ArrayList<String> cameraAfter;
 
 }
