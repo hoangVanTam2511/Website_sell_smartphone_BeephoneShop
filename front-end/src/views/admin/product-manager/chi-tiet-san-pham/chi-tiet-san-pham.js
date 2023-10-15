@@ -21,7 +21,7 @@ import {
   apiURLDongSanPham,
   apiURLManHinh,
   apiURLMauSac,
-  apiURLNhaSanXuat,
+  apiURLHang,
   apiURLPin,
   apiURLram,
   apiURLrom,
@@ -313,7 +313,7 @@ const HienThiChiTietSanPham = () => {
       modifiedData.unshift(itemAll)
       setListDongSanPham(modifiedData)
     })
-    axios.get(apiURLNhaSanXuat + '/get-list').then(response => {
+    axios.get(apiURLHang + '/get-list').then(response => {
       var itemAll = {
         label: 'Tất cả',
         value: 'nhaSanXuat:'
