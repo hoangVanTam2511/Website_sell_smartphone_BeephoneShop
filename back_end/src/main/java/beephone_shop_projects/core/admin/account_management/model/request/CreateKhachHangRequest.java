@@ -55,7 +55,7 @@ public class CreateKhachHangRequest {
 
     private String anhDaiDien;
 
-    @Enumerated(EnumType.STRING)
+//    @Enumerated(EnumType.STRING)
     private StatusAccountCus trangThai;
 
     private String idRole;

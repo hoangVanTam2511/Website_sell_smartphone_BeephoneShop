@@ -54,7 +54,7 @@ public class CreateAccountRequest {
 
     private String anhDaiDien;
 
-    @Enumerated(EnumType.STRING)
+//    @Enumerated(EnumType.STRING)
     private StatusAccountCus trangThai;
 
     private String idRole;
