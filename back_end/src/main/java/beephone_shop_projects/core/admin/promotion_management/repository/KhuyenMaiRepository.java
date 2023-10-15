@@ -2,6 +2,7 @@ package beephone_shop_projects.core.admin.promotion_management.repository;
 
 import beephone_shop_projects.core.admin.promotion_management.model.reponse.KhuyenMaiResponse;
 import beephone_shop_projects.entity.KhuyenMai;
+import beephone_shop_projects.infrastructure.constant.StatusDiscount;
 import beephone_shop_projects.repository.IKhuyenMaiRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -16,12 +17,6 @@ import java.util.List;
 
 @Repository
 public interface KhuyenMaiRepository extends IKhuyenMaiRepository, CustomKhuyenMaiRepository {
-
-//    @Query(value = """
-//            SELECT k.id, k.ma, k.ten_khuyen_mai, k.muc_giam_gia_theo_phan_tram, k.muc_giam_gia_theo_so_tien, k.ngay_bat_dau,
-//            k.ngay_ket_thuc, k.dieu_kien_giam_gia, k.trang_thai FROM khuyen_mai k
-//            """, nativeQuery = true)
-//    Page<KhuyenMaiResponse> getAllKhuyenMai(Pageable pageable);
 
     @Query(value = """
             SELECT k.id, k.ma, k.ten_khuyen_mai, k.gia_tri_khuyen_mai, k.loai_khuyen_mai, k.ngay_bat_dau, 
@@ -46,15 +41,20 @@ public interface KhuyenMaiRepository extends IKhuyenMaiRepository, CustomKhuyenM
     @Query(value = """
             SELECT k FROM KhuyenMai k WHERE :date1 BETWEEN k.ngayBatDau AND k.ngayKetThuc AND k.trangThai <> :status
             """)
-    List<KhuyenMai> checkToStartBeforDateNowAndStatus(@Param("date1") Date dateTime, @Param("status") Integer status);
+    List<KhuyenMai> checkToStartBeforDateNowAndStatus(@Param("date1") Date dateTime, @Param("status") StatusDiscount status);
 
     @Query(value = """
             SELECT k FROM KhuyenMai k WHERE k.ngayKetThuc < ?1 AND k.trangThai <> ?2
             """)
-    List<KhuyenMai> checkEndDateAndStatus(@Param("dateTime") Date dateTime, Integer status);
+    List<KhuyenMai> checkEndDateAndStatus(@Param("dateTime") Date dateTime, StatusDiscount status);
 
     @Query(value = """
             SELECT k FROM KhuyenMai k WHERE k.ngayBatDau > ?1 AND k.trangThai <> ?2
             """)
-    List<KhuyenMai> checkToStartAfterAndStatus(@Param("dateTime") Date dateTime, Integer status);
+    List<KhuyenMai> checkToStartAfterAndStatus(@Param("dateTime") Date dateTime, StatusDiscount status);
+
+    @Query(value = """
+            SELECT k FROM KhuyenMai k WHERE k.tenKhuyenMai = ?1
+            """)
+    List<KhuyenMai> findNamePromotion(@Param("tenKhuyenMai") String tenKhuyenMai);
 }

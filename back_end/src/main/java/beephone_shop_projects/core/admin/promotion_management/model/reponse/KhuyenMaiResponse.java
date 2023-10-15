@@ -1,5 +1,7 @@
 package beephone_shop_projects.core.admin.promotion_management.model.reponse;
 
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.math.BigDecimal;
@@ -20,7 +22,7 @@ public interface KhuyenMaiResponse {
     BigDecimal getGiaTriKhuyenMai();
 
     @Value("#{target.loai_khuyen_mai}")
-    String getLoaiKhuyenMai();
+    Integer getLoaiKhuyenMai();
 
     @Value("#{target.ngay_bat_dau}")
     Date getNgayBatDau();

@@ -7,6 +7,7 @@ import beephone_shop_projects.core.admin.promotion_management.repository.SanPham
 import beephone_shop_projects.core.admin.promotion_management.service.KhuyenMaiChiTietService;
 import beephone_shop_projects.entity.KhuyenMaiChiTiet;
 import beephone_shop_projects.entity.KhuyenMaiChiTietId;
+import beephone_shop_projects.infrastructure.constant.TypeDiscount;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,12 +55,12 @@ public class KhuyenMaiChiTietServiceImpl implements KhuyenMaiChiTietService {
     }
 
     public BigDecimal donGiaSauKhuyenMai(CreateKhuyenMaiChiTietRequest request) {
-        String loaiKhuyenMai = khuyenMaiRepository.findById(request.getIdKhuyenMai()).get().getLoaiKhuyenMai();
+        Integer loaiKhuyenMai = khuyenMaiRepository.findById(request.getIdKhuyenMai()).get().getLoaiKhuyenMai().ordinal();
         BigDecimal giaTriKhuyenMai = khuyenMaiRepository.findById(request.getIdKhuyenMai()).get().getGiaTriKhuyenMai();
         BigDecimal donGia = sanPhamChiTietKhuyenMaiRepository.findById(request.getIdSanPhamChiTiet()).get().getDonGia();
-        if (loaiKhuyenMai.equals("VNĐ")) {
+        if (loaiKhuyenMai == TypeDiscount.VND.ordinal()) {
             return donGia.subtract(giaTriKhuyenMai);
-        } else if (loaiKhuyenMai.equals("%")) {
+        } else if (loaiKhuyenMai == TypeDiscount.PERCENT.ordinal()) {
             return donGia.subtract((donGia.multiply(giaTriKhuyenMai)).divide(new BigDecimal(100)));
         }
         return null;

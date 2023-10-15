@@ -15,6 +15,7 @@ import java.util.List;
 public class SanPhamChiTietKhuyenMaiServiceImpl implements SanPhamChiTietKhuyenMaiService {
 
     List<SanPhamChiTietKhuyenMaiResponse> listAo = new ArrayList<>();
+    List<SanPhamChiTietKhuyenMaiResponseCustom> listResult = new ArrayList<>();
 
     @Autowired
     private SanPhamChiTietKhuyenMaiRepository sanPhamChiTietKhuyenMaiRepository;
@@ -22,7 +23,6 @@ public class SanPhamChiTietKhuyenMaiServiceImpl implements SanPhamChiTietKhuyenM
     @Override
     public List<SanPhamChiTietKhuyenMaiResponseCustom> getAllSanPhamChiTietKhuyenMai(String id, Boolean check) {
         List<SanPhamChiTietKhuyenMaiResponse> result = sanPhamChiTietKhuyenMaiRepository.findAllChiTietSanPham(id);
-        List<SanPhamChiTietKhuyenMaiResponseCustom> listResult = new ArrayList<>();
         BigDecimal tong = BigDecimal.ZERO;
         if (check == true) {
             listAo.addAll(result);
@@ -44,6 +44,7 @@ public class SanPhamChiTietKhuyenMaiServiceImpl implements SanPhamChiTietKhuyenM
                 responseCustom.setKichThuocRom(sp.getKichThuocRom());
                 responseCustom.setDonGia(sp.getDonGia());
                 responseCustom.setDelected(sp.getDelected());
+                responseCustom.setIdSanPham(sp.getIdSanPham());
                 List<KhuyenMaiChiTietResponse> kmct = sanPhamChiTietKhuyenMaiRepository.getListKhuyenMai(sp.getId());
                 responseCustom.setKhuyenMaiChiTietResponse(kmct);
                 responseCustom.setSize(kmct.size());
@@ -66,15 +67,20 @@ public class SanPhamChiTietKhuyenMaiServiceImpl implements SanPhamChiTietKhuyenM
             }
             return listResult;
         } else if (check == false) {
-            List<SanPhamChiTietKhuyenMaiResponse> itemsToRemove = new ArrayList<>();
+            List<SanPhamChiTietKhuyenMaiResponseCustom> itemsToRemove = new ArrayList<>();
             for (SanPhamChiTietKhuyenMaiResponse item : result) {
-                for (SanPhamChiTietKhuyenMaiResponse uniqueItem : listAo) {
-                    if (uniqueItem.getId().equals(item.getId())) {
+                System.out.println("for 1" + item);
+                for (SanPhamChiTietKhuyenMaiResponseCustom uniqueItem : listResult) {
+                    System.out.println("for 2" + uniqueItem);
+                    if (uniqueItem.getIdSanPham().equals(item.getIdSanPham())) {
+                        System.out.println("ID Sản Phẩm" + uniqueItem.getId());
+                        System.out.println("ID Sản Phẩm" + item.getId());
                         itemsToRemove.add(uniqueItem);
                     }
                 }
             }
-            listAo.removeAll(itemsToRemove);
+            listResult.removeAll(itemsToRemove);
+
         }
         return listResult;
     }

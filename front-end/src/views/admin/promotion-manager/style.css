@@ -94,6 +94,36 @@ tr:hover {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.add-promotion-inProduct-container {
+  width: 100%;
+  height: 420px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.add-promotion-inProduct-detail-container {
+  width: 100%;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.button-add-promotion {
+  display: flex;
+  justify-content: flex-end;
+  padding-bottom: 20px;
+  padding-right: 40px;
+}
+.title-promotion {
+  padding: 10px;
+  padding-top: 15px;
+}
+
+.title-product {
+  padding-left: 30px;
+  padding-top: 15px;
+}
+
 /* .validate {
   margin-top: 15px;
   margin-bottom: 10px;
