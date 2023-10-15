@@ -23,6 +23,7 @@ import {
   faPenToSquare,
 } from "@fortawesome/free-solid-svg-icons";
 import ExcelExportHelper from "../khachhang/ExcelExportHelper";
+import { StatusAccountCus, StatusCusNumber } from "./enum";
 
 //show
 const HienThiKH = () => {
@@ -128,6 +129,7 @@ const HienThiKH = () => {
       .get(apiURLKH + "/hien-thi?page=" + currentPage)
       .then((response) => {
         setListKH(response.data.data);
+        console.log(response);
         setTotalPages(response.totalPages);
       })
       .catch(() => {});
@@ -210,8 +212,7 @@ const HienThiKH = () => {
       filterSearch: true,
       render: (text, record) => (
         <span>
-          {/*  eslint-disable-next-line eqeqeq */}
-          {record.trangThai == 1 ? (
+          {record.trangThai === StatusCusNumber.HOAT_DONG ? (
             <div
               className="rounded-pill mx-auto badge-primary"
               style={{
@@ -224,8 +225,7 @@ const HienThiKH = () => {
                 Hoạt động
               </span>
             </div>
-          ) : // eslint-disable-next-line eqeqeq
-          record.trangThai == 2 ? (
+          ) : record.trangThai === StatusCusNumber.NGUNG_HOAT_DONG ? (
             <div
               className="rounded-pill mx-auto badge-danger"
               style={{
@@ -281,10 +281,14 @@ const HienThiKH = () => {
             <Popconfirm
               title={`Đổi trạng thái tài khoản từ ${
                 // eslint-disable-next-line eqeqeq
-                record.trangThai == 1 ? `"Hoạt Động"` : `"Ngừng Hoạt Động"`
+                record.trangThai == StatusAccountCus.HOAT_DONG
+                  ? `"Hoạt Động"`
+                  : `"Ngừng Hoạt Động"`
               } sang ${
                 // eslint-disable-next-line eqeqeq
-                record.trangThai == 1 ? `"Ngừng Hoạt Động"` : `"Hoạt Động"`
+                record.trangThai == StatusAccountCus.HOAT_DONG
+                  ? `"Ngừng Hoạt Động"`
+                  : `"Hoạt Động"`
               } `}
               onConfirm={() => {
                 doChangeTrangThai(record.id);
@@ -304,7 +308,10 @@ const HienThiKH = () => {
                   style={{
                     cursor: "pointer",
                     // eslint-disable-next-line eqeqeq
-                    color: record.trangThai == 1 ? "#e5383b" : "#2f80ed",
+                    color:
+                      record.trangThai === StatusAccountCus.HOAT_DONG
+                        ? "#e5383b"
+                        : "#2f80ed",
                     marginRight: "20px",
                   }}
                 />

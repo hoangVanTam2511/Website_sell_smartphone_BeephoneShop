@@ -5,6 +5,7 @@ import beephone_shop_projects.core.admin.account_management.repository.AccountRe
 import beephone_shop_projects.core.admin.account_management.repository.RoleRepository;
 import beephone_shop_projects.core.admin.account_management.service.NhanVienService;
 import beephone_shop_projects.entity.Account;
+import beephone_shop_projects.infrastructure.constant.StatusAccountCus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,7 +42,7 @@ public class NhanVienServiceImpl implements NhanVienService {
         String code = String.format("NV%04d", number);
         Date date = null;
         try {
-            date = new SimpleDateFormat("yyyy-MM-dd").parse(request.getNgaySinh());
+            date = new SimpleDateFormat("DD/MM/YYYY").parse(request.getNgaySinh());
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
@@ -65,7 +66,7 @@ public class NhanVienServiceImpl implements NhanVienService {
                 .xaPhuong(request.getXaPhuong())
                 .canCuocCongDan(request.getCanCuocCongDan())
                 .tinhThanhPho(request.getTinhThanhPho())
-                .trangThai(1)
+                .trangThai(StatusAccountCus.LAM_VIEC)
                 .ma(code)
                 .matKhau(matKhau)
                 .soDienThoai(request.getSoDienThoai())
@@ -76,7 +77,7 @@ public class NhanVienServiceImpl implements NhanVienService {
 
     @Override
     public void doiTrangThai(String id) {
-        accountRepository.doiTrangThai(id);
+        accountRepository.doiTrangThaiNV(id);
     }
 
     @Override

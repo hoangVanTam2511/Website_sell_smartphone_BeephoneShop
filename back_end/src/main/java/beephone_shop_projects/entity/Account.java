@@ -2,6 +2,8 @@ package beephone_shop_projects.entity;
 
 import beephone_shop_projects.entity.base.IsIdentified;
 import beephone_shop_projects.entity.base.PrimaryEntity;
+import beephone_shop_projects.infrastructure.constant.StatusAccountCus;
+import beephone_shop_projects.infrastructure.constant.StatusDiscount;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -48,7 +50,8 @@ public class Account extends PrimaryEntity implements IsIdentified {
 
     private String canCuocCongDan;
 
-    private Integer trangThai;
+    @Enumerated(EnumType.ORDINAL)
+    private StatusAccountCus trangThai;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_role")

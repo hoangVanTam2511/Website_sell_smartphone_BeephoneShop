@@ -191,7 +191,7 @@ const AddKH = () => {
       );
 
       // Lấy mã khách hàng từ response
-      const generatedMaKhachHang = khachHangResponse.data.id;
+      const generatedMaKhachHang = khachHangResponse.data.data.id;
       addDiaChiList(generatedMaKhachHang);
       redirectToHienThiKH(generatedMaKhachHang);
 
@@ -250,7 +250,7 @@ const AddKH = () => {
         alert("Thêm thất bại");
       });
   };
-  
+
   const today = new Date().toISOString().split("T")[0]; // Get the current date in "yyyy-mm-dd" format
 
   return (
@@ -438,7 +438,7 @@ const AddKH = () => {
                 borderRadius: 0,
                 height: "100%", // Set Card height to 100% of its parent container
                 overflowY: "auto", // Add a vertical scrollbar when content overflows
-                maxHeight: "calc(120vh - 100px)",
+                maxHeight: "calc(111vh - 100px)",
               }}
             >
               {/* <h4 style={{ color: "gray" }}>Địa chỉ mặc định</h4> */}

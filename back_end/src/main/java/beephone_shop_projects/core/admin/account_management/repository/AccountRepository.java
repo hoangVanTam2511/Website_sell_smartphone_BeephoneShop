@@ -45,6 +45,19 @@ public interface AccountRepository extends IAccountRepository {
 
             """)
     void doiTrangThai(@Param("idBanGhi") String id);
+    @Transactional
+    @Modifying
+    @Query(value = """
+            UPDATE Account e
+            SET e.trangThai = CASE
+                WHEN e.trangThai = 3 THEN 4
+                WHEN e.trangThai = 4 THEN 3
+                ELSE e.trangThai
+            END
+            WHERE e.id = :idBanGhi
+
+            """)
+    void doiTrangThaiNV(@Param("idBanGhi") String id);
 
     @Query(value = """
                 SELECT  ac FROM Account ac

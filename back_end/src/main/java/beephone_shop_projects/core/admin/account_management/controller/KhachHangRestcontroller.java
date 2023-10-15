@@ -4,24 +4,20 @@ import beephone_shop_projects.core.admin.account_management.model.request.Create
 import beephone_shop_projects.core.admin.account_management.model.request.DiaChiKhachHangRequest;
 import beephone_shop_projects.core.admin.account_management.model.response.AccountResponse;
 import beephone_shop_projects.core.admin.account_management.service.impl.DiaChiServiceImpl;
-import beephone_shop_projects.core.admin.account_management.service.impl.ExportServiceImpl;
 import beephone_shop_projects.core.admin.account_management.service.impl.KhachHangServiceImpl;
-import beephone_shop_projects.core.admin.account_management.service.impl.RoleServiceImpl;
-import beephone_shop_projects.core.admin.order_management.model.response.OrderResponse;
+import beephone_shop_projects.core.common.base.ResponseObject;
 import beephone_shop_projects.core.common.base.ResponsePage;
 import beephone_shop_projects.entity.Account;
 import beephone_shop_projects.entity.DiaChi;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+
 
 import java.io.IOException;
 import java.util.*;
@@ -33,8 +29,6 @@ public class KhachHangRestcontroller {
     @Autowired
     private KhachHangServiceImpl accService;
     @Autowired
-    private ExportServiceImpl excelExportService;
-    @Autowired
     private DiaChiServiceImpl diaChiService;
 
     @GetMapping("hien-thi")
@@ -45,20 +39,20 @@ public class KhachHangRestcontroller {
 
 
     @GetMapping("search-all")
-    public ResponseEntity searchAll(@RequestParam("tenKH") String hoVaTen, @RequestParam(name = "page", defaultValue = "0") Integer pageNo) {
+    public ResponsePage<AccountResponse> searchAll(@RequestParam("tenKH") String hoVaTen, @RequestParam(name = "page", defaultValue = "0") Integer pageNo) {
         Optional<String> opTen = Optional.ofNullable(hoVaTen);
-        return new ResponseEntity(accService.search(opTen,pageNo), HttpStatus.OK);
+        return new ResponsePage(accService.search(opTen,pageNo));
     }
 
 
     @PostMapping("add")
-    public ResponseEntity add(@RequestBody CreateKhachHangRequest request) {
-        return new ResponseEntity(accService.addKH(request), HttpStatus.CREATED);
+    public ResponseObject<Account> add(@RequestBody CreateKhachHangRequest request) {
+        return new ResponseObject(accService.addKH(request));
     }
 
     @PutMapping("update/{id}")
-    public ResponseEntity update(@RequestBody CreateKhachHangRequest request, @PathVariable("id") String id) {
-        return new ResponseEntity(accService.updateKH(request, id), HttpStatus.OK);
+    public ResponseObject<Account> update(@RequestBody CreateKhachHangRequest request, @PathVariable("id") String id) {
+        return new ResponseObject(accService.updateKH(request, id));
     }
 
     @PutMapping("{id}/doi-tt")
@@ -70,29 +64,6 @@ public class KhachHangRestcontroller {
     @CrossOrigin(origins = {"*"})
     public void thietLapMacDinh(@PathVariable("id") String id, @RequestParam String account) {
         diaChiService.doiTrangThai(id, account);
-    }
-
-    @GetMapping(value = "/export", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    public ResponseEntity<byte[]> exportExcel(@RequestParam(name = "page", defaultValue = "0") Integer pageNo) throws IOException {
-        byte[] excelBytes = excelExportService.exportExcelData(pageNo);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        headers.setContentDispositionFormData("attachment", "Thông tin khách hàng.xlsx");
-
-        return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);
-
-    }
-
-    @PostMapping("import")
-    public ResponseEntity<String> importExcel(@RequestParam("file") MultipartFile file) {
-        try {
-            accService.importExcelData(file.getInputStream());
-            return ResponseEntity.ok("Data imported successfully.");
-        } catch (IOException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to import data.");
-        }
     }
 
     @GetMapping("dia-chi/hien-thi/{id}")

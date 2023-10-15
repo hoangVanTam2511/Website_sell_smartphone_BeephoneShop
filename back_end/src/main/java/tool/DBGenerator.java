@@ -19,6 +19,7 @@ import beephone_shop_projects.entity.Rom;
 import beephone_shop_projects.entity.SanPham;
 import beephone_shop_projects.entity.SanPhamChiTiet;
 import beephone_shop_projects.entity.Voucher;
+import beephone_shop_projects.infrastructure.constant.StatusAccountCus;
 import beephone_shop_projects.infrastructure.constant.StatusDiscount;
 import beephone_shop_projects.infrastructure.constant.TypeDiscount;
 import beephone_shop_projects.repository.IAccountRepository;
@@ -132,7 +133,7 @@ public class DBGenerator implements CommandLineRunner {
         Account admin = new Account();
         admin.setMa("Account1");
         admin.setHoVaTen("Nguyễn Phùng Dũng");
-        admin.setAnhDaiDien("haha");
+        admin.setAnhDaiDien("https://www.hellokpop.com/wp-content/uploads/2019/09/jung-hae-in-esquire-sg-jan-2019-cover-interview-body4-e1568440568417.jpg");
         admin.setCanCuocCongDan("0191231002");
         admin.setNgaySinh(new Date());
         admin.setGioiTinh(true);
@@ -143,25 +144,25 @@ public class DBGenerator implements CommandLineRunner {
         admin.setQuanHuyen("Quận Bắc Từ Liêm");
         admin.setTinhThanhPho("Thành phố Hà Nội");
         admin.setMatKhau("12345");
-        admin.setTrangThai(1);
+        admin.setTrangThai(StatusAccountCus.HOAT_DONG);
         admin.setIdRole(chuCuaHang);
         admin.setId(accountRepository.save(admin).getId());
 
         Account accountNhanVien = new Account();
         accountNhanVien.setMa("Account2");
         accountNhanVien.setHoVaTen("Trần Quang Hà");
-        accountNhanVien.setAnhDaiDien("haha");
+        accountNhanVien.setAnhDaiDien("https://i.pinimg.com/736x/c8/44/25/c84425742604c8e5b1d827a7b40cfa1c.jpg");
         accountNhanVien.setCanCuocCongDan("0191231002");
         accountNhanVien.setNgaySinh(new Date());
         accountNhanVien.setGioiTinh(true);
         accountNhanVien.setEmail("hatq@gmail.com");
         accountNhanVien.setSoDienThoai("0913010291");
         accountNhanVien.setDiaChi("Kiều mai");
-        accountNhanVien.setXaPhuong("Phường kiều mai");
+        accountNhanVien.setXaPhuong("Phường Đại Mỗ");
         accountNhanVien.setQuanHuyen("Quận Nam Từ Liêm");
         accountNhanVien.setTinhThanhPho("Thành phố Hà Nội");
         accountNhanVien.setMatKhau("12345");
-        accountNhanVien.setTrangThai(1);
+        accountNhanVien.setTrangThai(StatusAccountCus.LAM_VIEC);
         accountNhanVien.setIdRole(nhanVien);
         accountNhanVien.setId(accountRepository.save(accountNhanVien).getId());
 

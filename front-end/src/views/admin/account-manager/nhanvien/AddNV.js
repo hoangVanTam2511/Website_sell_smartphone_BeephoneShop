@@ -30,13 +30,12 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import * as dayjs from "dayjs";
 const AddNV = () => {
-  let [listKH, setListKH] = useState([]);
+  let [listNV, setListNV] = useState([]);
   let [hoVaTen, setTen] = useState("");
   // let [id, setID] = useState("");
   let [ngaySinh, setNgaySinh] = useState("");
   let [soDienThoai, setSdt] = useState("");
   let [email, setEmail] = useState("");
-  const [error, setError] = React.useState(null);
   let [xaPhuong, setXaPhuong] = useState("");
   let [quanHuyen, setQuanHuyen] = useState("");
   let [tinhThanhPho, setTinhThanhPho] = useState("");
@@ -180,9 +179,9 @@ const AddNV = () => {
       !email ||
       !soDienThoai ||
       !diaChi ||
-      !xaPhuong ||
-      !quanHuyen ||
-      !tinhThanhPho
+      xaPhuong === "" ||
+      quanHuyen === "" ||
+      tinhThanhPho === ""
     ) {
       message.error("Vui lòng điền đủ thông tin");
       setIsConfirmVisible(false);
@@ -205,8 +204,8 @@ const AddNV = () => {
           anhDaiDien: anhDaiDien,
           canCuocCongDan: cccd,
         };
-        const generatedMaKhachHang = response.data.id;
-        setListKH([newKhachHangResponse, ...listKH]);
+        const generatedMaKhachHang = response.data.data.id;
+        setListNV([newKhachHangResponse, ...listNV]);
         message.success("Thêm nhân viên thành công");
         redirectToHienThiKH(generatedMaKhachHang);
       })
@@ -214,8 +213,6 @@ const AddNV = () => {
         alert("Thêm thất bại");
       });
   };
-  const today = new Date().toISOString().split("T")[0]; // Get the current date in "yyyy-mm-dd" format
-
   const handleChangeDate = (date) => {
     const value = date.format("DD/MM/YYYY");
     setNgaySinh(value);
@@ -292,7 +289,7 @@ const AddNV = () => {
                         value={ngaySinh ? dayjs(ngaySinh, "DD/MM/YYYY") : null}
                         format="DD/MM/YYYY"
                         onChange={handleChangeDate}
-                        slotProps={{ textField: { size: "small" } }}
+                        // slotProps={{ textField: { size: "small" } }}
                         sx={{
                           position: "relative",
                           width: "50px",
@@ -300,9 +297,15 @@ const AddNV = () => {
                             width: "85%",
                           },
                         }}
-                        renderInput={(params) => (
-                          <TextField helperText="date" {...params} />
-                        )}
+                        slotProps={{
+                          textField: {
+                            error: formSubmitted && !ngaySinh,
+                            helperText:
+                              formSubmitted && !ngaySinh
+                                ? "Chưa chọn ngày sinh"
+                                : "",
+                          },
+                        }}
                       />
                     </DemoContainer>
                   </LocalizationProvider>
@@ -318,7 +321,7 @@ const AddNV = () => {
                     noValidate
                     autoComplete="off"
                   >
-                    <TextField
+                    {/* <TextField
                       label="Ngày sinh"
                       type="date"
                       value={ngaySinh}
@@ -332,10 +335,13 @@ const AddNV = () => {
                         max: today, // Set the maximum allowed date to today
                       }}
                       error={formSubmitted && !ngaySinh} // Show error if form submitted and hoVaTen is empty
-                      helperText={
-                        formSubmitted && !ngaySinh && "Chưa chọn ngày sinh"
-                      }
-                    />
+                      slotProps={{
+                        textField: {
+                          error: formSubmitted && !ngaySinh,
+                          helperText: !ngaySinh ? "My error message" : "",
+                        },
+                      }}
+                    /> */}
                   </Box>
                 </div>
                 <div
