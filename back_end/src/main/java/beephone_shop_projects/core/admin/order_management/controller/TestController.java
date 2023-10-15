@@ -8,7 +8,7 @@ import beephone_shop_projects.core.admin.order_management.repository.impl.CartRe
 import beephone_shop_projects.core.admin.order_management.repository.impl.HinhThucThanhToanRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.repository.impl.OrderRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.service.impl.HoaDonServiceImpl;
-import beephone_shop_projects.core.admin.product_management.repository.SanPhamChiTietRepository;
+import beephone_shop_projects.core.admin.product_management.repository.ProductDetailRepository;
 import beephone_shop_projects.core.common.base.ResponseObject;
 import beephone_shop_projects.entity.GioHang;
 import beephone_shop_projects.entity.GioHangChiTiet;
@@ -39,7 +39,7 @@ import java.util.Optional;
 public class TestController {
 
   @Autowired
-  private SanPhamChiTietRepository sanPhamChiTietRepository;
+  private ProductDetailRepository productDetailRepository;
 
   @Autowired
   private CartItemRepository cartItemRepository;
@@ -73,7 +73,7 @@ public class TestController {
 
   @GetMapping("/products")
   public ResponseObject home1() {
-    return new ResponseObject(sanPhamChiTietRepository.getProducts().stream().map(s -> modelMapper.map(s, ProductItemResponse.class)));
+    return new ResponseObject(productDetailRepository.getProducts().stream().map(s -> modelMapper.map(s, ProductItemResponse.class)));
   }
 
 //  @GetMapping("/carts/{id}")
@@ -91,7 +91,7 @@ public class TestController {
   @PostMapping("/carts")
   public ResponseEntity<?> home2(@RequestBody CartDetailDto cartDetailDto) throws Exception {
     GioHang gioHang = gioHangRepository.findOneById(cartDetailDto.getCartId());
-    Optional<SanPhamChiTiet> sanPhamChiTiet = sanPhamChiTietRepository.findById(cartDetailDto.getProductId());
+    Optional<SanPhamChiTiet> sanPhamChiTiet = productDetailRepository.findById(cartDetailDto.getProductId());
     Optional<GioHangChiTiet> gioHangChiTiet = cartItemRepository.findProductItem(sanPhamChiTiet.get().getId(), gioHang.getId());
     GioHangChiTiet cartDetail = new GioHangChiTiet();
     if (gioHangChiTiet.isPresent()) {
@@ -110,7 +110,7 @@ public class TestController {
       cartDetail.setGioHang(gioHang);
       cartDetail.setSanPhamChiTiet(sanPhamChiTiet.get());
       sanPhamChiTiet.get().setSoLuongTonKho(sanPhamChiTiet.get().getSoLuongTonKho() - cartDetail.getSoLuong());
-      sanPhamChiTietRepository.save(sanPhamChiTiet.get());
+      productDetailRepository.save(sanPhamChiTiet.get());
       cartItemRepository.save(cartDetail);
     }
 

@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.admin.product_management.repository;
 
+import beephone_shop_projects.core.admin.product_management.model.responce.ProductLineResponce;
 import beephone_shop_projects.entity.DongSanPham;
 import beephone_shop_projects.repository.IDongSanPhamRepository;
 import jakarta.transaction.Transactional;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface DongSanPhamRepository extends IDongSanPhamRepository {
+public interface ProductLineRepository extends IDongSanPhamRepository {
     Page<DongSanPham> findAllByDelected(Boolean delected, Pageable pageable);
 
     @Modifying
@@ -33,4 +34,12 @@ public interface DongSanPhamRepository extends IDongSanPhamRepository {
     """,nativeQuery = true)
     String getNewCode();
 
+    @Query(value = """
+            SELECT ROW_NUMBER() OVER() AS stt, pdl.id, pdl.ma, 
+            pdl.ten_dong_san_pham
+            FROM dong_san_pham AS pdl
+            WHERE pdl.ten_dong_san_pham LIKE :text 
+            OR pdl.ma LIKE :text 
+            """, nativeQuery = true)
+    List<ProductLineResponce> searchColor(@Param("text") String text);
 }

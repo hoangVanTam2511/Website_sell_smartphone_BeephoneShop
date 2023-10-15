@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @ToString
-public class SearchChiTietSanPhamRequest {
+public class SearchProductDetailRequest {
 
     private String chip;
 

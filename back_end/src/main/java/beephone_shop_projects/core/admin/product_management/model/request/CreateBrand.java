@@ -5,9 +5,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CreateMauSac {
+public class CreateBrand {
 
-    private String mamauSac;
+    private String idBrand;
 
-    private String tenmauSac;
+    private String nameBrand;
+
 }

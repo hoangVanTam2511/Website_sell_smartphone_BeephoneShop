@@ -1,6 +1,6 @@
 package beephone_shop_projects.core.admin.product_management.controller;
 
-import beephone_shop_projects.core.admin.product_management.repository.SanPhamRepository;
+import beephone_shop_projects.core.admin.product_management.repository.ProductRepository;
 import beephone_shop_projects.core.admin.product_management.service.impl.ImeiServiceImpl;
 import beephone_shop_projects.entity.Imei;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ public class ImeiRestController {
     private ImeiServiceImpl imeiService;
 
     @Autowired
-    private SanPhamRepository chiTietSanPhamRepository;
+    private ProductRepository chiTietProductRepository;
 
     @GetMapping("/view-all/{id}")
     public Page<Imei> viewAll(@PathVariable("id")String id,
@@ -43,8 +43,6 @@ public class ImeiRestController {
 
     @PostMapping("/save/{id}")
     public void save(@PathVariable("id")String id,@RequestBody Imei imei) {
-//        imei.setIdSanPham(chiTietSanPhamReponsitory.findById(id).get());
-//        imei.setTrangThai(1);
         imeiService.insert(imei);
     }
 

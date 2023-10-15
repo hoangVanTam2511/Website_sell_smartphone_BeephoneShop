@@ -7,11 +7,11 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
-public class CreateManHinh {
+public class CreateDisplay {
 
-    private String mamanHinh;
+    private String idDisplay;
 
-    private BigDecimal tenmanHinh;
+    private BigDecimal sizeDisplay;
 
-    private String doPhanGiai;
+    private String resolutionDisplay;
 }

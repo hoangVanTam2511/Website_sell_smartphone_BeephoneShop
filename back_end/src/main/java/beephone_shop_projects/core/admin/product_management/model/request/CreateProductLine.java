@@ -5,10 +5,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CreateNhaSanXuat {
+public class CreateProductLine {
 
-    private String maNhaSanXuat;
+    private String idProductLine;
 
-    private String tenNhaSanXuat;
-
+    private String nameProductLine;
 }

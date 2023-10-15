@@ -1,6 +1,8 @@
 package beephone_shop_projects.core.admin.product_management.service.impl;
 
 import beephone_shop_projects.core.admin.product_management.model.request.CreatePin;
+import beephone_shop_projects.core.admin.product_management.model.responce.ChipResponce;
+import beephone_shop_projects.core.admin.product_management.model.responce.PinResponce;
 import beephone_shop_projects.core.admin.product_management.repository.PinRepository;
 import beephone_shop_projects.core.admin.product_management.service.IService;
 import beephone_shop_projects.entity.Pin;
@@ -10,35 +12,38 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
-public class PinServiceImpl implements IService<Pin> {
+public class PinServiceImpl {
 
     @Autowired
     private PinRepository pinRepository;
 
 
-    @Override
     public Page<Pin> getAll(Pageable pageable) {
         return pinRepository.findAllByDelected(true,pageable);
     }
 
-    @Override
     public void insert(Pin pin) {
         pinRepository.save(pin);
     }
 
     public void insert(CreatePin req) {
-        Pin pin = new Pin(req.getMapin(),req.getTenpin());
+        if(!req.getIdPin().isEmpty()) update(req);
+        else {
+            String newCode = this.pinRepository.getNewCode() == null ? "PIN_0" : "PIN_" + this.pinRepository.getNewCode();
+            Pin pin = new Pin(newCode, req.getCapacityPin());
+            pinRepository.save(pin);
+        }
+    }
+
+    public void update(CreatePin req) {
+        Pin pin = this.pinRepository.findById(req.getIdPin()).get();
+        pin.setDungLuong(req.getCapacityPin());
         pinRepository.save(pin);
     }
 
-    @Override
-    public void update(Pin pin, String id) {
-        pinRepository.save(pin);
-    }
-
-    @Override
     public void delete(String id) {
         pinRepository.updateDelected(false,id);
     }
@@ -53,5 +58,9 @@ public class PinServiceImpl implements IService<Pin> {
 
     public String generateNewCode(){
         return this.pinRepository.getNewCode() == null ?"PIN_0":"PIN_"+ this.pinRepository.getNewCode() ;
+    }
+
+    public Page<PinResponce> searchPin(String name, Pageable pageable){
+        return pinRepository.searchPinByDelected("%" + name + "%", pageable, 1);
     }
 }

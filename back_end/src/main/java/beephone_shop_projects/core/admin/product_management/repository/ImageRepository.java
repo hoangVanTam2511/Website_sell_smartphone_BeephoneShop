@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 @Repository
 
-public interface AnhRepository extends IAnhRepository {
+public interface ImageRepository extends IAnhRepository {
 
     Page<Anh> findAllByDelected(Boolean delected, Pageable pageable);
 

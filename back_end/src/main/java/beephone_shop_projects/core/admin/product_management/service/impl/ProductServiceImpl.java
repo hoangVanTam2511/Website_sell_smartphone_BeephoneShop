@@ -1,7 +1,7 @@
 package beephone_shop_projects.core.admin.product_management.service.impl;
 
 import beephone_shop_projects.core.admin.product_management.model.request.CreateProductRequest;
-import beephone_shop_projects.core.admin.product_management.model.request.SearchChiTietSanPhamRequest;
+import beephone_shop_projects.core.admin.product_management.model.request.SearchProductDetailRequest;
 import beephone_shop_projects.core.admin.product_management.model.responce.*;
 import beephone_shop_projects.core.admin.product_management.repository.*;
 import beephone_shop_projects.entity.*;
@@ -14,22 +14,22 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class SanPhamServiceImpl {
+public class ProductServiceImpl {
 
     @Autowired
-    private SanPhamRepository sanPhamRepository;
+    private ProductRepository productRepository;
 
     @Autowired
-    private NhaSanXuatRepository nhaSanXuatRepository;
+    private BrandRepository brandRepository;
 
     @Autowired
     private ChipRepository chipRepository;
 
     @Autowired
-    private DongSanPhamRepository dongSanPhamRepository;
+    private ProductLineRepository productLineRepository;
 
     @Autowired
-    private ManHinhRepository manHinhRepository;
+    private DisplayRepository displayRepository;
 
     @Autowired
     private PinRepository pinRepository;
@@ -41,7 +41,7 @@ public class SanPhamServiceImpl {
     private CauHinhRepository cauHinhRepository;
 
     @Autowired
-    private SanPhamChiTietRepository sanPhamChiTietRepository;
+    private ProductDetailRepository productDetailRepository;
 
     @Autowired
     private CameraRepository cameraRepository;
@@ -50,37 +50,37 @@ public class SanPhamServiceImpl {
     private CameraDetailRepository cameraDetailRepository;
 
     public Page<SanPham> getAll(Pageable pageable) {
-        return sanPhamRepository.findAllByDelected(true, pageable);
+        return productRepository.findAllByDelected(true, pageable);
     }
 
     public Page<SanPhamResponce> getAllByDelected(Pageable pageable) {
-        return sanPhamRepository.findAllChiTietSanPham(pageable);
+        return productRepository.findAllChiTietSanPham(pageable);
     }
 
     public SanPham insert(CreateProductRequest req) {
         Chip chip = chipRepository.findByTenChip(req.getChip());
-        NhaSanXuat nhaSanXuat = nhaSanXuatRepository.findByTenNhaSanXuat(req.getNhaSanXuat());
-        DongSanPham dongSanPham = dongSanPhamRepository.findByTenDongSanPham(req.getDongSanPham());
-        ManHinh manHinh = manHinhRepository.findByKichThuoc(req.getManHinh());
+        Hang hang = brandRepository.findBytenHang(req.getBrand());
+        DongSanPham dongSanPham = productLineRepository.findByTenDongSanPham(req.getProductLine());
+        ManHinh manHinh = displayRepository.findByKichThuoc(req.getDisplay());
         Pin pin = pinRepository.findByDungLuong(req.getPin());
 
         SanPham sanPham = new SanPham();
-        sanPham.setMa(sanPhamRepository.getNewCode() == null ? "PRODUCT_0" : "PRODUCT_" + sanPhamRepository.getNewCode());
-        sanPham.setTenSanPham(req.getTenSanPham());
+        sanPham.setMa(productRepository.getNewCode() == null ? "PRODUCT_0" : "PRODUCT_" + productRepository.getNewCode());
+        sanPham.setTenSanPham(req.getNameProduct());
         sanPham.setDongSanPham(dongSanPham);
-        sanPham.setNhaSanXuat(nhaSanXuat);
+        sanPham.setHang(hang);
         sanPham.setChip(chip);
         sanPham.setPin(pin);
         sanPham.setManHinh(manHinh);
-        sanPham.setMoTa(req.getMoTa());
-        sanPham.setHeDieuHanh(req.getHeDieuHanh());
+        sanPham.setMoTa(req.getDescription());
+        sanPham.setHeDieuHanh(req.getOperatingSystem());
         sanPham.setSim(req.getSim());
-        sanPham.setCongSac(req.getCongSac());
+        sanPham.setCongSac(req.getChargingPort());
         sanPham.setDelected(false);
 
-        SanPham product = sanPhamRepository.save(sanPham);
+        SanPham product = productRepository.save(sanPham);
 
-        req.getCameraSau().forEach((item) -> {
+        req.getCameraAfter().forEach((item) -> {
             //   find camera by do phan giai
             Integer index  = item.indexOf(" ");
             // cắt chuỗi và lưu vào db
@@ -92,7 +92,7 @@ public class SanPhamServiceImpl {
             cameraDetailRepository.save(cameraDetail);
         });
 
-        req.getCameraTruoc().forEach((item) -> {
+        req.getCameraFront().forEach((item) -> {
             //   find camera by do phan giai
             Integer index  = item.indexOf(" ");
             Camera camera = cameraRepository.findByDoPhanGiai(item.substring(0,index));
@@ -107,20 +107,20 @@ public class SanPhamServiceImpl {
     }
 
     public void update(SanPham sanPham, String id) {
-        sanPhamRepository.save(sanPham);
+        productRepository.save(sanPham);
     }
 
 
     public void delete(String id) {
-        SanPham sanPham = sanPhamRepository.findById(id).get();
+        SanPham sanPham = productRepository.findById(id).get();
         if (sanPham.getDelected() == true)
-            sanPhamRepository.updateDelected(false, id);
+            productRepository.updateDelected(false, id);
         else
-            sanPhamRepository.updateDelected(true, id);
+            productRepository.updateDelected(true, id);
     }
 
-    public Page<SanPhamResponce> searchByAllPosition(SearchChiTietSanPhamRequest chiTietSanPhamRequest, Pageable pageable) {
-        return this.sanPhamRepository.searchByAllPosition(pageable,
+    public Page<SanPhamResponce> searchByAllPosition(SearchProductDetailRequest chiTietSanPhamRequest, Pageable pageable) {
+        return this.productRepository.searchByAllPosition(pageable,
                 chiTietSanPhamRequest.getRam() == null ? "%%" : "%" + chiTietSanPhamRequest.getRam() + "%",
                 chiTietSanPhamRequest.getRom() == null ? "%%" : "%" + chiTietSanPhamRequest.getRom() + "%",
                 chiTietSanPhamRequest.getNhaSanXuat() == null ? "%%" : "%" + chiTietSanPhamRequest.getNhaSanXuat() + "%",
@@ -136,11 +136,11 @@ public class SanPhamServiceImpl {
 
 
     public Double getPriceMax() {
-        return this.sanPhamRepository.getDonGiaLonNhat();
+        return this.productRepository.getDonGiaLonNhat();
     }
 
     public SanPham getOne(String id) {
-        return this.sanPhamRepository.findById(id).get();
+        return this.productRepository.findById(id).get();
     }
 
     public List<PointOfSaleColorResponce> getListColorByIDProduct(String idProduct) {
@@ -153,11 +153,11 @@ public class SanPhamServiceImpl {
 
     public List<PointOfSaleProductResponce> getListConfigByIDProduct(String idProduct, Integer ram,
                                                                      Integer rom, String tenMauSac) {
-        return sanPhamChiTietRepository.getPointOfSaleProductResponce(idProduct, ram, rom, tenMauSac);
+        return productDetailRepository.getPointOfSaleProductResponce(idProduct, ram, rom, tenMauSac);
     }
 
     public List<PointOfSaleOneProductResponce> getListProducts() {
-        return sanPhamRepository.getPOSProduct();
+        return productRepository.getPOSProduct();
     }
 
 

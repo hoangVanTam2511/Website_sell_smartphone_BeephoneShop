@@ -25,8 +25,8 @@ public interface SanPhamResponce {
     @Value("#{target.ten_san_pham}")
     String getTenSanPham();
 
-    @Value("#{target.ten_nha_san_xuat}")
-    String getTenNhaSanXuat();
+    @Value("#{target.ten_hang}")
+    String getTenHang();
 
     @Value("#{target.ten_dong_san_pham}")
     String getTenDongSanPham();

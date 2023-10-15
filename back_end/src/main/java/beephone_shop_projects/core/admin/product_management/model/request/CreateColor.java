@@ -5,9 +5,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CreateDongSanPham {
+public class CreateColor {
 
-    private String maDongSanPham;
+    private String idColor;
 
-    private String tenDongSanPham;
+    private String nameColor;
 }

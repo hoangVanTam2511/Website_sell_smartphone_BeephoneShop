@@ -5,46 +5,36 @@ import { ToastContainer } from "react-toastify";
 
 // chip
 import Chip from "../views/admin/product-manager/chip/chip";
-import ThemChip from "../views/admin/product-manager/chip/them-chip";
 
 // dong-san-pham
 import DongSanPham from "../views/admin/product-manager/dong-san-pham/dong-san-pham";
-import ThemDongSanPham from "../views/admin/product-manager/dong-san-pham/them-dong-san-pham";
 
 // man-hinh
 import ManHinh from "../views/admin/product-manager/man-hinh/man-hinh";
-import ThemManHinh from "../views/admin/product-manager/man-hinh/them-man-hinh";
 
 // pin
 import Pin from "../views/admin/product-manager/pin/pin";
-import ThemPin from "../views/admin/product-manager/pin/them-pin";
 
 // ram
 import Ram from "../views/admin/product-manager/ram/ram";
-import ThemRam from "../views/admin/product-manager/ram/them-ram";
 
-// nha-san-xuat
-import NhaSanXuat from "../views/admin/product-manager/nha-san-xuat/nha-san-xuat";
-import ThemNhaSanXuat from "../views/admin/product-manager/nha-san-xuat/them-nha-san-xuat";
+// hang
+import NhaSanXuat from "../views/admin/product-manager/hang/hang";
 
 // rom
 import Rom from "../views/admin/product-manager/rom/rom";
-import ThemRom from "../views/admin/product-manager/rom/them-rom";
 
 // rom
 import Camera from "../views/admin/product-manager/camera/camera";
 
 // mau_sac
-import MauSac from "../views/admin/product-manager/mau-sac/quan-li-mau-sac";
-import ThemMauSac from "../views/admin/product-manager/mau-sac/them-mau-sac";
+import MauSac from "../views/admin/product-manager/mau-sac/mau-sac";
 
 // chi-tiet-san-pham
 import SanPham from "../views/admin/product-manager/chi-tiet-san-pham/san-pham";
-import ThemChiTietSanPham from "../views/admin/product-manager/chi-tiet-san-pham/them-san-pham";
 
 // // imei
 import Imei from "../views/admin/product-manager/imei/imei";
-import ThemImei from "../views/admin/product-manager/imei/them-imei";
 
 // khach hang
 import KhachHang from "../views/admin/account-manager/khachhang/HienThiKH";
@@ -66,6 +56,7 @@ import AddRole from "../views/admin/account-manager/role/AddRole";
 
 // sanpham
 import ChiTietSanPham from "../views/admin/product-manager/chi-tiet-san-pham/chi-tiet-san-pham";
+import ThemSanPham from"../views/admin/product-manager/chi-tiet-san-pham/them-san-pham";
 
 import Default from "../layouts/dashboard/default";
 import ManagementOrders from "../views/admin/order-manager/management-orders";
@@ -110,56 +101,28 @@ export const DefaultRouter = [
             element: <Chip />,
         },
         {
-            path: "them-chip",
-            element: <ThemChip />,
-        },
-        {
             path: "dong-san-pham",
             element: <DongSanPham />,
-        },
-        {
-            path: "them-dong-san-pham",
-            element: <ThemDongSanPham />,
         },
         {
             path: "nha-san-xuat",
             element: <NhaSanXuat />,
         },
         {
-            path: "them-nha-san-xuat",
-            element: <ThemNhaSanXuat />,
-        },
-        {
             path: "man-hinh",
             element: <ManHinh />,
-        },
-        {
-            path: "them-man-hinh",
-            element: <ThemManHinh />,
         },
         {
             path: "pin",
             element: <Pin />,
         },
         {
-            path: "them-pin",
-            element: <ThemPin />,
-        },
-        {
             path: "ram",
             element: <Ram />,
         },
         {
-            path: "them-ram",
-            element: <ThemRam />,
-        },
-        {
             path: "rom",
             element: <Rom />,
-        },
-        {
-            path: "them-rom",
-            element: <ThemRom />,
         },
         {
             path: "camera",
@@ -175,7 +138,7 @@ export const DefaultRouter = [
         },
         {
             path: "them-san-pham",
-            element: <ThemChiTietSanPham />,
+            element: <ThemSanPham />,
         },
         {
             path: "khach-hang",
@@ -188,10 +151,6 @@ export const DefaultRouter = [
         {
             path: "mau-sac",
             element: <MauSac />,
-        },
-        {
-            path: "them-mau-sac",
-            element: <ThemMauSac />,
         },
 
       {
@@ -226,10 +185,6 @@ export const DefaultRouter = [
       {
         path: "imei/:idChiTietSanPham",
         element: <Imei />,
-      },
-      {
-        path: "them-imei",
-        element: <ThemImei />,
       },
       {
         path: "nhap-excel-nhan-vien",

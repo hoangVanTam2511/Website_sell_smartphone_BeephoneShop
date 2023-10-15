@@ -12,14 +12,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public interface SanPhamChiTietRepository extends ISanPhamChiTietRepository {
+public interface ProductDetailRepository extends ISanPhamChiTietRepository {
   @Query("SELECT P FROM SanPhamChiTiet P")
   List<SanPhamChiTiet> getAll();
 
   @Query("""
                 select P, I, C, CH from SanPhamChiTiet P join fetch P.images I
                 join fetch P.sanPham C
-                join fetch C.pin join fetch C.nhaSanXuat join fetch C.dongSanPham
+                join fetch C.pin join fetch C.hang join fetch C.dongSanPham
                 join fetch C.manHinh join fetch C.chip join P.cauHinh CH
                 join fetch CH.mauSac join fetch CH.ram join fetch CH.rom
           """)

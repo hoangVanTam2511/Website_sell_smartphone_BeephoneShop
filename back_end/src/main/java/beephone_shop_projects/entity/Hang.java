@@ -14,10 +14,10 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "nha_san_xuat")
-public class NhaSanXuat  extends PrimaryEntity implements IsIdentified {
+@Table(name = "hang")
+public class Hang extends PrimaryEntity implements IsIdentified {
 
     private String ma;
 
-    private String tenNhaSanXuat;
+    private String tenHang;
 }

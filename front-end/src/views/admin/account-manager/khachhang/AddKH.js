@@ -155,9 +155,11 @@ const AddKH = () => {
   const handleWardChange = (value) => {
     setXaPhuong(value);
   };
+  
   const handleAnhDaiDienChange = (imageURL) => {
     setAnhDaiDien(imageURL);
   };
+
   const AddKH = async () => {
     setSubmitted(true);
     setFormSubmitted(true);

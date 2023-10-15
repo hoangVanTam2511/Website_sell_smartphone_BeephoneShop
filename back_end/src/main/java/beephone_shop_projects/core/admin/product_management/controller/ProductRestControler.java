@@ -1,9 +1,9 @@
 package beephone_shop_projects.core.admin.product_management.controller;
 
 import beephone_shop_projects.core.admin.product_management.model.request.CreateProductRequest;
-import beephone_shop_projects.core.admin.product_management.model.request.SearchChiTietSanPhamRequest;
+import beephone_shop_projects.core.admin.product_management.model.request.SearchProductDetailRequest;
 import beephone_shop_projects.core.admin.product_management.model.responce.SanPhamResponce;
-import beephone_shop_projects.core.admin.product_management.service.impl.SanPhamServiceImpl;
+import beephone_shop_projects.core.admin.product_management.service.impl.ProductServiceImpl;
 import beephone_shop_projects.entity.SanPham;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,10 +25,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/san-pham")
 @CrossOrigin(origins = "http://localhost:3000")
-public class SanPhamRestControler {
+public class ProductRestControler {
     
     @Autowired
-    private SanPhamServiceImpl sanPhamService;
+    private ProductServiceImpl sanPhamService;
 
     @GetMapping("/view-all")
     public Page<SanPhamResponce> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
@@ -53,7 +53,7 @@ public class SanPhamRestControler {
 
     @PostMapping("/products")
     public Page<SanPhamResponce> search(@RequestParam(value = "page",defaultValue = "1") Integer page,
-                                               @RequestBody(required = false) SearchChiTietSanPhamRequest chiTietSanPhamRequest) {
+                                               @RequestBody(required = false) SearchProductDetailRequest chiTietSanPhamRequest) {
         Pageable pageable = PageRequest.of(page-1,5);
         return sanPhamService.searchByAllPosition(chiTietSanPhamRequest,pageable);
     }

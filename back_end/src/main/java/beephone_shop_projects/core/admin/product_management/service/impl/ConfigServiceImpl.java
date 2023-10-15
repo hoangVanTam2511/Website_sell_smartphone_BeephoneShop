@@ -3,7 +3,7 @@ package beephone_shop_projects.core.admin.product_management.service.impl;
 import beephone_shop_projects.core.admin.product_management.model.request.CreateCauHinhRequest;
 import beephone_shop_projects.core.admin.product_management.model.responce.CauHinhResponce;
 import beephone_shop_projects.core.admin.product_management.repository.CauHinhRepository;
-import beephone_shop_projects.core.admin.product_management.repository.ManHinhRepository;
+import beephone_shop_projects.core.admin.product_management.repository.DisplayRepository;
 import beephone_shop_projects.core.admin.product_management.repository.ColorRepository;
 import beephone_shop_projects.core.admin.product_management.repository.PinRepository;
 import beephone_shop_projects.core.admin.product_management.repository.RamRepository;
@@ -18,17 +18,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CauHinhServiceImpl  {
+public class ConfigServiceImpl {
 
     @Autowired
     private RamRepository ramRepository;
-
 
     @Autowired
     private RomRepository romRepository;
 
     @Autowired
-    private ManHinhRepository manHinhRepository;
+    private DisplayRepository displayRepository;
 
     @Autowired
     private ColorRepository colorRepository;

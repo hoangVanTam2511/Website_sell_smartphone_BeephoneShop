@@ -2,9 +2,7 @@ package beephone_shop_projects.core.admin.product_management.controller;
 
 import beephone_shop_projects.core.admin.product_management.model.request.CreateCauHinhRequest;
 import beephone_shop_projects.core.admin.product_management.model.responce.CauHinhResponce;
-import beephone_shop_projects.core.admin.product_management.service.impl.CauHinhServiceImpl;
-import beephone_shop_projects.entity.CauHinh;
-import beephone_shop_projects.entity.Chip;
+import beephone_shop_projects.core.admin.product_management.service.impl.ConfigServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,10 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/cau-hinh")
 @CrossOrigin(origins = "http://localhost:3000")
-public class CauHinhController {
+public class ConfigController {
 
     @Autowired
-    private CauHinhServiceImpl cauHinhService;
+    private ConfigServiceImpl cauHinhService;
 
     @GetMapping("/view-all")
     public Page<CauHinhResponce> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {

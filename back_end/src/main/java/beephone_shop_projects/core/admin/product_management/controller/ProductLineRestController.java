@@ -1,7 +1,7 @@
 package beephone_shop_projects.core.admin.product_management.controller;
 
-import beephone_shop_projects.core.admin.product_management.model.request.CreateDongSanPham;
-import beephone_shop_projects.core.admin.product_management.service.impl.DongSanPhamServiceImpl;
+import beephone_shop_projects.core.admin.product_management.model.request.CreateProductLine;
+import beephone_shop_projects.core.admin.product_management.service.impl.ProductLineServiceImpl;
 import beephone_shop_projects.entity.DongSanPham;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,10 +23,10 @@ import java.util.ArrayList;
 @RestController
 @RequestMapping("/dong-san-pham")
 @CrossOrigin(origins = "http://localhost:3000")
-public class DongSanPhamRestController {
+public class ProductLineRestController {
 
     @Autowired
-    private DongSanPhamServiceImpl dongSanPhamService;
+    private ProductLineServiceImpl dongSanPhamService;
 
     @GetMapping("/view-all")
     public Page<DongSanPham> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
@@ -45,7 +45,7 @@ public class DongSanPhamRestController {
     }
 
     @PostMapping("/save")
-    public void save(@RequestBody CreateDongSanPham anh) {
+    public void save(@RequestBody CreateProductLine anh) {
         dongSanPhamService.insert(anh);
     }
 
