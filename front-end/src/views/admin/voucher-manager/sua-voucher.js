@@ -30,6 +30,8 @@ import {
   TypeDiscountString,
 } from "../order-manager/enum";
 import useCustomSnackbar from "../../../utilities/notistack";
+import LoadingIndicator from "../../../utilities/loading";
+import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
 
 const UpdateVoucher = () => {
   const [ma, setMa] = useState("");
@@ -47,10 +49,43 @@ const UpdateVoucher = () => {
   const [selectDiscount, setSelectDiscount] = useState("");
   const [giaTriToiDa, setGiaTriToiDa] = useState(0);
   const [valueToiDa, setValueToiDa] = React.useState();
+  const [isLoading, setIsLoading] = useState(true);
   const { handleOpenAlertVariant } = useCustomSnackbar();
+  const [openConfirm, setOpenConfirm] = useState(false);
 
   const redirectToHienThiVoucher = () => {
     window.location.href = "/dashboard/voucher";
+  };
+
+  const handleOpenDialogConfirmUpdate = () => {
+    setOpenConfirm(true);
+  };
+
+  const handleCloseDialogConfirmUpdate = () => {
+    setOpenConfirm(false);
+  };
+
+  const Header = () => {
+    return (
+      <>
+        <span className="">Xác nhận chỉnh sửa voucher</span>
+      </>
+    );
+  };
+  const Title = () => {
+    return (
+      <>
+        <span>
+          Bạn có chắc chắc muốn chỉnh sửa voucher có tên là{" "}
+          <span style={{ color: "red" }}>"{ten}"</span> và với giá trị{" "}
+          <span style={{ color: "red" }}>{value}</span>
+          <span style={{ color: "red" }}>
+            {selectDiscount === TypeDiscountString.VND ? "VND" : "%"}
+          </span>{" "}
+          không ?
+        </span>
+      </>
+    );
   };
 
   const handleChange = (event) => {
@@ -175,13 +210,8 @@ const UpdateVoucher = () => {
     detailVoucher();
   }, []);
 
-  let isToastVisible = false;
-
   const updateVoucher = () => {
-    if (isToastVisible) {
-      return;
-    }
-
+    setIsLoading(true);
     let obj = {
       ma: ma,
       ten: ten,
@@ -197,10 +227,12 @@ const UpdateVoucher = () => {
       .put(apiURLVoucher + "/updateVoucher/" + id, obj)
       .then((response) => {
         handleOpenAlertVariant("Cập nhật thành công!!!", Notistack.SUCCESS);
-
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 1000);
         setTimeout(() => {
           redirectToHienThiVoucher();
-        }, 2000);
+        }, 1000);
       })
       .catch((error) => {
         handleOpenAlertVariant(error.response.data.message, Notistack.ERROR);
@@ -212,15 +244,9 @@ const UpdateVoucher = () => {
       msg.ten = "Tên không được để trống !!!";
     }
 
-    // if (/^\s+|\s+$/.test(ten)) {
-    //   msg.ten = "Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi";
-    // }
     if (soLuong == null || soLuong === "") {
       msg.soLuong = "Số lượng không được để trống !!!";
     }
-    // if (/^\s+|\s+$/.test(soLuong)) {
-    //   msg.soLuong = "Số lượng không chứa ký tự khoảng trống ở đầu và cuối chuỗi";
-    // }
 
     if (soLuong <= 0 || soLuong > 10000) {
       msg.soLuong = "Số lượng cho phép từ 1 đến 10000";
@@ -235,10 +261,6 @@ const UpdateVoucher = () => {
       msg.value1 = "Điều kiện áp dụng từ 1đ đến 100.000.000đ";
     }
 
-    // if (ngayBatDau.isAfter(ngayKetThuc)) {
-    //   msg.ngayBatDau = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc !!!";
-    // }
-
     const numericValue2 = parseFloat(value?.replace(/[^0-9.-]+/g, ""));
     if (value == null || value === "") {
       msg.value = "Giá trị voucher không được trống !!!";
@@ -249,6 +271,10 @@ const UpdateVoucher = () => {
       (selectDiscount === TypeDiscountString.VND && numericValue2 > 100000000)
     ) {
       msg.value = "Giá trị voucher từ 1đ đến 100.000.000đ";
+    }
+
+    if (selectDiscount === TypeDiscountString.PERCENT && value <= 0) {
+      msg.value = "Giá trị tối đa chỉ nằm trong khoảng 1% - 100% !!!";
     }
 
     const numericValue3 = parseFloat(valueToiDa?.replace(/[^0-9.-]+/g, ""));
@@ -279,7 +305,7 @@ const UpdateVoucher = () => {
   const handleSubmit = () => {
     const isValid = validationAll();
     if (!isValid) return;
-    updateVoucher();
+    handleOpenDialogConfirmUpdate();
   };
 
   return (
@@ -313,7 +339,7 @@ const UpdateVoucher = () => {
                 }}
                 style={{ width: "330px" }}
                 inputProps={{
-                  maxLength: 100, // Giới hạn tối đa 10 ký tự
+                  maxLength: 15, // Giới hạn tối đa 10 ký tự
                 }}
               />
               <span className="validate" style={{ color: "red" }}>
@@ -581,7 +607,10 @@ const UpdateVoucher = () => {
             type="primary"
             style={{ height: "35px", width: "120px", fontSize: "15px" }}
             onClick={() => {
-              redirectToHienThiVoucher();
+              setTimeout(() => {
+                setIsLoading(false);
+                redirectToHienThiVoucher();
+              }, 200);
             }}
           >
             <FontAwesomeIcon icon={faArrowLeft} />
@@ -594,143 +623,14 @@ const UpdateVoucher = () => {
           </Button>
         </div>
       </div>
-      {/* <div className="add-voucher-container">
-        
-        
-          <div className="row-input">
-            <div className="select-value">
-              <div className="">
-                <ToggleButtonGroup
-                  color="primary"
-                  value={selectDiscount}
-                  exclusive
-                  onChange={handleChangeToggleButtonDiscount}
-                  aria-label="Platform"
-                >
-                  <ToggleButton
-                    style={{
-                      height: "55px",
-                      borderRadius: "10px",
-                      width: "40px",
-                    }}
-                    value="1"
-                    onClick={() => handleReset()}
-                  >
-                    VND
-                  </ToggleButton>
-                  <ToggleButton
-                    style={{
-                      height: "55px",
-                      borderRadius: "10px",
-                      width: "40px",
-                    }}
-                    value="2"
-                    onClick={() => handleReset()}
-                  >
-                    %
-                  </ToggleButton>
-                </ToggleButtonGroup>
-              </div>
-              <div className="">
-                <TextField
-                  label="Nhập Giá Trị Voucher"
-                  value={giaTriVoucher}
-                  onChange={handleChange}
-                  id="outlined-start-adornment"
-                  InputProps={{
-                    inputMode: "numeric",
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        {selectDiscount === "1" ? "VND" : "%"}
-                      </InputAdornment>
-                    ),
-                  }}
-                  style={{
-                    marginLeft: "18px",
-                    width: selectDiscount === "1" ? "670px" : "390px",
-                  }}
-                />
-              </div>
-              <div className="ms-4">
-                <TextField
-                  label="Giá Trị Tối Đa:"
-                  value={giaTriToiDa}
-                  id="outlined-start-adornment"
-                  onChange={handleChangeGiaTriToiDa}
-                  InputProps={{
-                    inputMode: "numeric",
-                    startAdornment: (
-                      <InputAdornment position="start">VND</InputAdornment>
-                    ),
-                  }}
-                  style={{
-                    width: "250px",
-                    display: selectDiscount === "2" ? "block" : "none",
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          className="row-input"
-          style={{ display: "flex", justifyContent: "center" }}
-        >
-          <div className="input-container">
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DemoContainer components={["DateTimePicker"]}>
-                <DateTimePicker
-                  ampm={true}
-                  disablePast={true}
-                  label="Ngày Bắt Đầu"
-                  value={dayjs(ngayBatDau)}
-                  format="HH:mm DD/MM/YYYY"
-                  onChange={(e) => {
-                    setNgayBatDau(e);
-                  }}
-                  sx={{
-                    width: "368px",
-                  }}
-                />
-              </DemoContainer>
-            </LocalizationProvider>
-          </div>
-          <div className="input-container">
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DemoContainer components={["DateTimePicker"]}>
-                <DateTimePicker
-                  ampm={true}
-                  label="Ngày Kết Thúc"
-                  value={dayjs(ngayKetThuc)}
-                  disablePast={true}
-                  format="HH:mm DD/MM/YYYY"
-                  onChange={(e) => {
-                    setNgayKetThuc(e);
-                  }}
-                  sx={{
-                    width: "368px",
-                  }}
-                />
-              </DemoContainer>
-            </LocalizationProvider>
-          </div>
-        </div>
-
-        <div className="btn-accept">
-          <Button type="primary" onClick={handleSubmit} htmlType="submit">
-            <FontAwesomeIcon icon={faCheck} />
-            &nbsp; Xác nhận{" "}
-          </Button>
-          <ToastContainer />
-          &nbsp; &nbsp;
-          <Link to="/dashboard/voucher">
-            <Button type="primary" htmlType="submit">
-              <FontAwesomeIcon icon={faArrowLeft} />
-              &nbsp; Quay Về{" "}
-            </Button>
-          </Link>
-        </div>
-      </div> */}
+      <ConfirmDialog
+        open={openConfirm}
+        onClose={handleCloseDialogConfirmUpdate}
+        add={updateVoucher}
+        title={<Title />}
+        header={<Header />}
+      />
+      {!isLoading && <LoadingIndicator />}
     </>
   );
 };

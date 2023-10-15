@@ -104,23 +104,18 @@ const HienThiVoucher = () => {
   };
 
   useEffect(() => {
+    loadDataListVoucher1(currentPage);
     const intervalId = setInterval(() => {
       loadDataListVoucher1(currentPage);
     }, 10000);
     // Xóa interval khi component unmounted
     return () => clearInterval(intervalId);
-  }, [
-    searchTatCa,
-    searchTrangThai,
-    searchNgayBatDau,
-    searchNgayKetThuc,
-    currentPage,
-    totalPages,
-  ]);
+  }, [searchTatCa, currentPage, totalPages]);
 
   useEffect(() => {
     loadDataListVoucher(currentPage);
-  }, []);
+  }, [searchTrangThai, searchNgayBatDau, searchNgayKetThuc]);
+
   const handleReset = () => {
     setIsLoading(false);
     setTimeout(() => {
