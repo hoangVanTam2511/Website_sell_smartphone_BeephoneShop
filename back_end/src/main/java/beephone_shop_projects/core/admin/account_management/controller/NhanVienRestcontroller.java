@@ -7,6 +7,7 @@ import beephone_shop_projects.core.admin.account_management.service.NhanVienServ
 import beephone_shop_projects.core.common.base.ResponseObject;
 import beephone_shop_projects.core.common.base.ResponsePage;
 import beephone_shop_projects.entity.Account;
+import beephone_shop_projects.infrastructure.constant.StatusAccountCus;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -36,20 +37,13 @@ public class NhanVienRestcontroller {
     }
 
     @PostMapping("add")
-    public ResponseObject<AccountResponse> add( @RequestBody CreateAccountRequest request) {
+    public ResponseObject<Account> add( @RequestBody CreateAccountRequest request) {
         return new ResponseObject(accService.addNV(request));
     }
 
     @PutMapping("update/{id}")
-    public ResponseObject<AccountResponse> updateNV(@Valid @RequestBody CreateAccountRequest request, BindingResult result,
+    public ResponseObject<Account> updateNV(@Valid @RequestBody CreateAccountRequest request, BindingResult result,
                                    @PathVariable("id") String id) {
-        if (result.hasErrors()) {
-            Map<String, String> errors = new HashMap<>();
-            for (FieldError error : result.getFieldErrors()) {
-                errors.put(error.getField(), error.getDefaultMessage());
-            }
-            return null;
-        }
         return new ResponseObject(accService.updateNV(request, id));
     }
 
@@ -62,11 +56,10 @@ public class NhanVienRestcontroller {
     public Page<Account> searchAll(@RequestParam("tenKH") String hoVaTen,
                                    @RequestParam(name = "page", defaultValue = "0") Integer pageNo) {
         Optional<String> opTen = Optional.ofNullable(hoVaTen);
-//        accService.searchAllKH(hoVaTen, PageRequest.of(pageNo, pageSize))
         return accService.search(opTen, pageNo);
     }
     @GetMapping("/filter")
-    public Page<Account> filterStatus(@RequestParam("trangThai") Integer trangThai,
+    public Page<Account> filterStatus(@RequestParam("trangThai") StatusAccountCus trangThai,
                                       @RequestParam(name = "page", defaultValue = "0") Integer pageNo) {
         return accService.filterTrangThai(trangThai, pageNo);
     }

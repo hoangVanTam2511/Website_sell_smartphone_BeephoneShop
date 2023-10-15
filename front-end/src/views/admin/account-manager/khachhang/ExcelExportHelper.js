@@ -68,7 +68,7 @@ const ExcelExportHelper = ({ data }) => {
         H: "Pin",
         I: "Hệ điều hành",
         J: "Số sim",
-        K: "Mô tả"
+        K: "Mô tả",
       },
     ];
 
@@ -84,8 +84,8 @@ const ExcelExportHelper = ({ data }) => {
       heDieuHanh: item.heDieuHanh,
       sim: item.sim,
       mota: item.mota,
-      ma: item.ma
-    }))
+      ma: item.ma,
+    }));
 
     products.forEach((product) => {
       table1.push({
@@ -99,13 +99,11 @@ const ExcelExportHelper = ({ data }) => {
         H: product.dungLuong + " mah",
         I: product.heDieuHanh,
         J: product.sim + " sim",
-        K: product.mota
+        K: product.mota,
       });
-
     });
 
-    table1 = table1
-      .concat([""]);
+    table1 = table1.concat([""]);
 
     const finalData = [...title, ...table1];
 
@@ -232,8 +230,7 @@ const ExcelExportHelper = ({ data }) => {
         //     // bold: true,
         //   });
         // }
-
-            });
+      });
 
       return workbook
         .outputAsync()
@@ -248,7 +245,7 @@ const ExcelExportHelper = ({ data }) => {
       }}
       type="primary"
     >
-      + Export
+      Export
     </span>
   );
 };

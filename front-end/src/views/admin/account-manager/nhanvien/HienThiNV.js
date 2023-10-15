@@ -1,4 +1,4 @@
-import { Form, Popconfirm, Table, Button } from "antd";
+import { Form, Popconfirm, Table, Button, message } from "antd";
 import moment from "moment";
 import { useState, useEffect } from "react";
 import axios from "axios";
@@ -143,6 +143,7 @@ const HienThiNV = () => {
       .put(apiURLNV + `/${id}/doi-tt`)
       .then((response) => {
         loadDataListRole(currentPage);
+        message.success("Đổi trạng thái thành công");
       })
       .catch((error) => {
         console.error("Đã xảy ra lỗi khi thay đổi trạng thái", error);
@@ -275,7 +276,6 @@ const HienThiNV = () => {
               } `}
               onConfirm={() => {
                 doChangeTrangThai(record.id);
-                console.log(record.id);
               }}
               okText="Đồng ý"
               cancelText="Hủy"
@@ -411,8 +411,12 @@ const HienThiNV = () => {
                         <MenuItem className="" value={0}>
                           Tất cả
                         </MenuItem>
-                        <MenuItem value={3}>Làm việc</MenuItem>
-                        <MenuItem value={4}>Đã nghỉ</MenuItem>
+                        <MenuItem value={StatusAccountCus.LAM_VIEC}>
+                          Làm việc
+                        </MenuItem>
+                        <MenuItem value={StatusAccountCus.DA_NGHI}>
+                          Đã nghỉ
+                        </MenuItem>
                       </SelectMui>
                     </FormControl>
                   </div>

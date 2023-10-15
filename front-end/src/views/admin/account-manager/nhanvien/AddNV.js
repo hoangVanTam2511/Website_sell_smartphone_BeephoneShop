@@ -9,7 +9,6 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import {
-  Box,
   FormControl,
   FormControlLabel,
   Grid,
@@ -179,9 +178,9 @@ const AddNV = () => {
       !email ||
       !soDienThoai ||
       !diaChi ||
-      xaPhuong === "" ||
-      quanHuyen === "" ||
-      tinhThanhPho === ""
+      !xaPhuong ||
+      !quanHuyen ||
+      !tinhThanhPho
     ) {
       message.error("Vui lòng điền đủ thông tin");
       setIsConfirmVisible(false);
@@ -277,8 +276,8 @@ const AddNV = () => {
                 <div
                   className="text-f"
                   style={{
-                    marginBottom: "20px",
-                    width: "65%",
+                    marginBottom: "30px",
+                    width: "45%",
                   }}
                 >
                   {/* Ngày sinh */}
@@ -289,12 +288,11 @@ const AddNV = () => {
                         value={ngaySinh ? dayjs(ngaySinh, "DD/MM/YYYY") : null}
                         format="DD/MM/YYYY"
                         onChange={handleChangeDate}
-                        // slotProps={{ textField: { size: "small" } }}
                         sx={{
                           position: "relative",
-                          width: "50px",
+
                           "& .MuiInputBase-root": {
-                            width: "85%",
+                            width: "100%",
                           },
                         }}
                         slotProps={{
@@ -309,46 +307,11 @@ const AddNV = () => {
                       />
                     </DemoContainer>
                   </LocalizationProvider>
-                  <Box
-                    component="form"
-                    sx={{
-                      "& .MuiTextField-root": {
-                        mt: 2,
-                        width: "100%",
-                        mb: 2,
-                      },
-                    }}
-                    noValidate
-                    autoComplete="off"
-                  >
-                    {/* <TextField
-                      label="Ngày sinh"
-                      type="date"
-                      value={ngaySinh}
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                      onChange={(e) => {
-                        setNgaySinh(e.target.value); // Cập nhật giá trị ngaySinh sau khi thay đổi
-                      }}
-                      inputProps={{
-                        max: today, // Set the maximum allowed date to today
-                      }}
-                      error={formSubmitted && !ngaySinh} // Show error if form submitted and hoVaTen is empty
-                      slotProps={{
-                        textField: {
-                          error: formSubmitted && !ngaySinh,
-                          helperText: !ngaySinh ? "My error message" : "",
-                        },
-                      }}
-                    /> */}
-                  </Box>
                 </div>
                 <div
                   className="text-f"
                   style={{
-                    marginBottom: "15px",
-                    marginLeft: "50px",
+                    marginBottom: "30px",
                   }}
                 >
                   {/* Giới tính */}

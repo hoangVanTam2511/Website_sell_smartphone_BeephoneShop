@@ -193,11 +193,12 @@ public class DBGenerator implements CommandLineRunner {
         //Bảng Địa chỉ
         DiaChi diaChi = new DiaChi();
         diaChi.setHoTenKH("Nguyễn Thúy Hằng");
+        diaChi.setTrangThai(1);
         diaChi.setSoDienThoaiKhachHang("01993910212");
         diaChi.setDiaChi("Hoàng Quốc Việt");
         diaChi.setXaPhuong("Phường Cổ Nhuế");
         diaChi.setQuanHuyen("Quận Bắc Từ Liêm");
-        diaChi.setTinhThanhPho("Thành Phố Hà Nội");
+        diaChi.setTinhThanhPho("Hà Nội");
         diaChi.setAccount(admin);
         diaChi.setId(diaChiRepository.save(diaChi).getId());
 
@@ -205,19 +206,19 @@ public class DBGenerator implements CommandLineRunner {
         diaChi1.setHoTenKH("Trần Thanh phong");
         diaChi1.setSoDienThoaiKhachHang("0918239812");
         diaChi1.setDiaChi("Hồ Tùng Mậu");
-        diaChi1.setXaPhuong("Phường Cổ Nhuế");
-        diaChi1.setQuanHuyen("Quận Cầu Giấy");
-        diaChi1.setTinhThanhPho("Thành Phố Hà Nội");
+        diaChi1.setXaPhuong("Xã An Lĩnh");
+        diaChi1.setQuanHuyen("Huyện Tuy Hòa");
+        diaChi1.setTinhThanhPho("Phú Yên");
         diaChi1.setAccount(admin);
         diaChi1.setId(diaChiRepository.save(diaChi1).getId());
 
         DiaChi diaChi2 = new DiaChi();
         diaChi2.setHoTenKH("Vũ Văn Nguyên");
         diaChi2.setSoDienThoaiKhachHang("0391928712");
-        diaChi2.setDiaChi("Xuân Thủy");
-        diaChi2.setXaPhuong("Phường Dịch Vọng");
-        diaChi2.setQuanHuyen("Quận Cầu Giấy");
-        diaChi2.setTinhThanhPho("Thành Phố Hà Nội");
+        diaChi2.setDiaChi("Xóm 4, Thôn Lai Ổn");
+        diaChi2.setXaPhuong("Xã An Quí");
+        diaChi2.setQuanHuyen("Huyện Quỳnh Phụ");
+        diaChi2.setTinhThanhPho("Thái Bình");
         diaChi2.setAccount(accountNhanVien);
         diaChi2.setId(diaChiRepository.save(diaChi2).getId());
 

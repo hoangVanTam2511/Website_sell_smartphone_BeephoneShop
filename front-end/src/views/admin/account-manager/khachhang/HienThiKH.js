@@ -68,10 +68,9 @@ const HienThiKH = () => {
       //     trangThai: filterStatus,
       //     page: currentPage
       //   }
-      // // })
+      // })
       // setListKH(response.data.content)
       // setTotalPages(response.data.totalPages)
-      // setCurrentPage(currentPage);
     } catch (error) {
       console.error("Error fetching employee data:", error);
     }
@@ -94,8 +93,8 @@ const HienThiKH = () => {
           page: currentPage,
         },
       });
-      setListKH(response.data.content);
-      setTotalPages(response.data.totalPages);
+      setListKH(response.data.data);
+      setTotalPages(response.totalPages);
       setCurrentPage(targetPage);
     } catch (error) {
       console.log("Error searching accounts:", error);
@@ -129,7 +128,6 @@ const HienThiKH = () => {
       .get(apiURLKH + "/hien-thi?page=" + currentPage)
       .then((response) => {
         setListKH(response.data.data);
-        console.log(response);
         setTotalPages(response.totalPages);
       })
       .catch(() => {});
@@ -280,15 +278,9 @@ const HienThiKH = () => {
             </Tooltip>
             <Popconfirm
               title={`Đổi trạng thái tài khoản từ ${
-                // eslint-disable-next-line eqeqeq
-                record.trangThai == StatusAccountCus.HOAT_DONG
-                  ? `"Hoạt Động"`
-                  : `"Ngừng Hoạt Động"`
+                record.trangThai === 0 ? `"Hoạt Động"` : `"Ngừng Hoạt Động"`
               } sang ${
-                // eslint-disable-next-line eqeqeq
-                record.trangThai == StatusAccountCus.HOAT_DONG
-                  ? `"Ngừng Hoạt Động"`
-                  : `"Hoạt Động"`
+                record.trangThai === 0 ? `"Ngừng Hoạt Động"` : `"Hoạt Động"`
               } `}
               onConfirm={() => {
                 doChangeTrangThai(record.id);
@@ -308,10 +300,7 @@ const HienThiKH = () => {
                   style={{
                     cursor: "pointer",
                     // eslint-disable-next-line eqeqeq
-                    color:
-                      record.trangThai === StatusAccountCus.HOAT_DONG
-                        ? "#e5383b"
-                        : "#2f80ed",
+                    color: record.trangThai == 0 ? "#e5383b" : "#2f80ed",
                     marginRight: "20px",
                   }}
                 />
@@ -426,8 +415,12 @@ const HienThiKH = () => {
                       <MenuItem className="" value={0}>
                         Tất cả
                       </MenuItem>
-                      <MenuItem value={1}>Hoạt động</MenuItem>
-                      <MenuItem value={2}>Ngừng hoạt động</MenuItem>
+                      <MenuItem value={StatusCusNumber.HOAT_DONG}>
+                        Hoạt động
+                      </MenuItem>
+                      <MenuItem value={StatusCusNumber.NGUNG_HOAT_DONG}>
+                        Ngừng hoạt động
+                      </MenuItem>
                     </SelectMui>
                   </FormControl>
                 </div>

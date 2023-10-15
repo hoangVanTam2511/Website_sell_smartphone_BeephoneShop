@@ -42,7 +42,7 @@ public class NhanVienServiceImpl implements NhanVienService {
         String code = String.format("NV%04d", number);
         Date date = null;
         try {
-            date = new SimpleDateFormat("DD/MM/YYYY").parse(request.getNgaySinh());
+            date = new SimpleDateFormat("dd/MM/yyyy").parse(request.getNgaySinh());
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
@@ -85,7 +85,7 @@ public class NhanVienServiceImpl implements NhanVienService {
         Optional<Account> optional = accountRepository.findById(id);
         Date date = null;
         try {
-            date = new SimpleDateFormat("yyyy-MM-dd").parse(String.valueOf(request.getNgaySinh()));
+            date = new SimpleDateFormat("dd/MM/yyyy").parse(String.valueOf(request.getNgaySinh()));
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
@@ -124,7 +124,7 @@ public class NhanVienServiceImpl implements NhanVienService {
     }
 
     @Override
-    public Page<Account> filterTrangThai(Integer trangThai, Integer pageableNo) {
+    public Page<Account> filterTrangThai(StatusAccountCus trangThai, Integer pageableNo) {
         Pageable pageable = PageRequest.of(pageableNo - 1, 100);
         return accountRepository.filterTrangThai(trangThai, pageable);
     }

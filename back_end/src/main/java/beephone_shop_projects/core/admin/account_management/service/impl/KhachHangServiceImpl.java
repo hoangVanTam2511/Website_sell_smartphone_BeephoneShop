@@ -51,7 +51,7 @@ public class KhachHangServiceImpl implements KhachHangService {
         String hoVaTenWithoutSpaces = hoVaTen.replaceAll("\\s+", "");
         Date date = null;
         try {
-            date = new SimpleDateFormat("yyyy-MM-dd").parse(request.getNgaySinh());
+            date = new SimpleDateFormat("dd/MM/yyyy").parse(request.getNgaySinh());
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
@@ -85,7 +85,7 @@ public class KhachHangServiceImpl implements KhachHangService {
         Optional<Account> optional = accountRepository.findById(id);
         Date date = null;
         try {
-            date = new SimpleDateFormat("yyyy-MM-dd").parse(request.getNgaySinh());
+            date = new SimpleDateFormat("dd/MM/yyyy").parse(request.getNgaySinh());
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
@@ -109,7 +109,7 @@ public class KhachHangServiceImpl implements KhachHangService {
 
     @Override
     public Page<AccountResponse> search(Optional<String> tenSearch, Integer pageNo) {
-        Pageable pageable = PageRequest.of(pageNo, 10);
+        Pageable pageable = PageRequest.of(pageNo-1, 10);
         return accountRepository.searchAllKH(tenSearch, pageable);
     }
 
