@@ -219,7 +219,7 @@ const PointOfSales = () => {
       phiShip: delivery === true ? shipFee : null,
       // ghiChu: description,
       soDienThoaiNguoiNhan: customer && customer.soDienThoai,
-      tenNguoiNhan: customer && customer.hoVaTen,
+      tenNguoiNhan: customer && customer.hoVaTen || null,
       diaChiNguoiNhan: customer && customer.diaChi,
       orderHistory: data.orderHistory,
       cart: order.cart,
@@ -1089,7 +1089,7 @@ const PointOfSales = () => {
           <div className='mt-2'>
             <div style={{ height: "583px" }}>
               <div className='mt-3 ms-2'>
-                <InputSearchCustomer getCustomer={getIdCustomer} />
+                <InputSearchCustomer getCustomer={getIdCustomer} handleOpenDialogCustomers={handleOpenDialogCustomers}/>
               </div>
               <div className='mt-3 pt-1 d-flex' style={{ marginLeft: "14px" }}>
                 <FormControlLabel
