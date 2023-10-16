@@ -1470,6 +1470,7 @@ const ThemSanPham = () => {
                       title="Thêm hãng"
                       open={open}
                       confirmLoading={confirmLoading}
+                      onCancel={handleCancel}
                       footer={[
                         <Button
                           type="danger"
@@ -1576,6 +1577,7 @@ const ThemSanPham = () => {
                       title="Thêm chip"
                       open={openFormChip}
                       confirmLoading={confirmLoading}
+                      onCancel={handleCancel}
                       footer={[
                         <Button
                           type="danger"
@@ -1679,6 +1681,7 @@ const ThemSanPham = () => {
                       title="Thêm dòng sản phẩm"
                       open={openFormDongSanPham}
                       confirmLoading={confirmLoading}
+                      onCancel={handleCancel}
                       footer={[
                         <Button
                           type="danger"
@@ -1785,6 +1788,7 @@ const ThemSanPham = () => {
                       title="Thêm màn hình"
                       open={openFormmanHinh}
                       confirmLoading={confirmLoading}
+                      onCancel={handleCancel}
                       footer={[
                         <Button
                           type="danger"
@@ -1920,6 +1924,7 @@ const ThemSanPham = () => {
                       title="Thêm dung lượng pin"
                       open={openFormpin}
                       confirmLoading={confirmLoading}
+                      onCancel={handleCancel}
                       footer={[
                         <Button
                           type="danger"
@@ -2727,6 +2732,7 @@ const ThemSanPham = () => {
                                                 title="Thêm rom"
                                                 open={openFormrom}
                                                 confirmLoading={confirmLoading}
+                                                onCancel={handleCancel}
                                                 footer={[
                                                   <Button
                                                     type="danger"
