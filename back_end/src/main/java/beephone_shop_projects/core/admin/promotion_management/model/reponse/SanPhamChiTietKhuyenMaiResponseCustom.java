@@ -37,4 +37,6 @@ public class SanPhamChiTietKhuyenMaiResponseCustom {
     private Integer size;
 
     private BigDecimal giaTriKhuyenMai;
+
+    private String idSanPham;
 }

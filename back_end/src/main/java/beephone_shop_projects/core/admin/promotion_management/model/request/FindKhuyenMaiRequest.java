@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.admin.promotion_management.model.request;
 
+import beephone_shop_projects.infrastructure.constant.StatusDiscount;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -27,7 +28,7 @@ public class FindKhuyenMaiRequest {
 
     private String dieuKienGiamGia;
 
-    private Integer trangThai;
+    private StatusDiscount trangThai;
 
     private String keyword;
 

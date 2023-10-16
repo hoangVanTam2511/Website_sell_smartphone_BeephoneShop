@@ -28,7 +28,7 @@ public interface BrandRepository extends INhaSanXuatRepository {
 
     List<Hang> findAllByDelected(Boolean delected);
 
-    Hang findBytenHang(String tenHang);
+    List<Hang> findBytenHang(String tenHang);
 
     @Query(value = """
     SELECT SUBSTRING(ma,10) + 1  FROM hang ORDER BY ma DESC LIMIT 0,1

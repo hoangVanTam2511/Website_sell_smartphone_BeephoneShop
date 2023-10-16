@@ -1,9 +1,6 @@
-import { Form, Popconfirm, Table, Button } from "antd";
+import { Form, Popconfirm, Table, Button, message } from "antd";
 import moment from "moment";
-import {
-  useState,
-  useEffect, 
-} from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { apiURLNV } from "../../../../service/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -24,7 +21,7 @@ import {
   Pagination,
   FormControl,
 } from "@mui/material";
-// const currentDate = new Date().toISOString().split("T")[0];
+import { StatusAccountCus } from "../khachhang/enum";
 
 //show
 const HienThiNV = () => {
@@ -107,8 +104,8 @@ const HienThiNV = () => {
     axios
       .get(apiURLNV + "/hien-thi?page=" + currentPage)
       .then((response) => {
-        setListNV(response.data.content);
-        setTotalPages(response.data.totalPages);
+        setListNV(response.data.data);
+        setTotalPages(response.totalPages);
       })
       .catch(() => {});
   };
@@ -146,6 +143,7 @@ const HienThiNV = () => {
       .put(apiURLNV + `/${id}/doi-tt`)
       .then((response) => {
         loadDataListRole(currentPage);
+        message.success("Đổi trạng thái thành công");
       })
       .catch((error) => {
         console.error("Đã xảy ra lỗi khi thay đổi trạng thái", error);
@@ -229,11 +227,11 @@ const HienThiNV = () => {
       filterSearch: true,
       render: (text, record) => (
         <span>
-          {record.trangThai == 1 ? (
+          {record.trangThai === StatusAccountCus.LAM_VIEC ? (
             <Button type="primary" style={{ borderRadius: "30px" }}>
               Làm việc
             </Button>
-          ) : record.trangThai == 2 ? (
+          ) : record.trangThai === StatusAccountCus.DA_NGHI ? (
             <Button type="primary" danger style={{ borderRadius: "30px" }}>
               Đã nghỉ
             </Button>
@@ -268,11 +266,13 @@ const HienThiNV = () => {
             </Tooltip>
             <Popconfirm
               title={`Đổi trạng thái tài khoản từ ${
-                // eslint-disable-next-line eqeqeq
-                record.trangThai == 1 ? `"Làm việc"` : `"Đã nghỉ"`
+                record.trangThai === StatusAccountCus.LAM_VIEC
+                  ? `"Làm việc"`
+                  : `"Đã nghỉ"`
               } sang ${
-                // eslint-disable-next-line eqeqeq
-                record.trangThai == 1 ? `"Đã nghỉ"` : `"Làm việc"`
+                record.trangThai === StatusAccountCus.LAM_VIEC
+                  ? `"Đã nghỉ"`
+                  : `"Làm việc"`
               } `}
               onConfirm={() => {
                 doChangeTrangThai(record.id);
@@ -291,7 +291,10 @@ const HienThiNV = () => {
                   style={{
                     cursor: "pointer",
                     // eslint-disable-next-line eqeqeq
-                    color: record.trangThai == 1 ? "#e5383b" : "#2f80ed",
+                    color:
+                      record.trangThai == StatusAccountCus.LAM_VIEC
+                        ? "#e5383b"
+                        : "#2f80ed",
                   }}
                   transform={{ rotate: 90 }}
                   size="lg"
@@ -408,8 +411,12 @@ const HienThiNV = () => {
                         <MenuItem className="" value={0}>
                           Tất cả
                         </MenuItem>
-                        <MenuItem value={1}>Làm việc</MenuItem>
-                        <MenuItem value={2}>Đã nghỉ</MenuItem>
+                        <MenuItem value={StatusAccountCus.LAM_VIEC}>
+                          Làm việc
+                        </MenuItem>
+                        <MenuItem value={StatusAccountCus.DA_NGHI}>
+                          Đã nghỉ
+                        </MenuItem>
                       </SelectMui>
                     </FormControl>
                   </div>

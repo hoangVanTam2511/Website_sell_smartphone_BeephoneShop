@@ -4,6 +4,7 @@ import beephone_shop_projects.core.admin.voucher_management.model.request.Create
 import beephone_shop_projects.core.admin.voucher_management.model.request.FindVoucherRequest;
 import beephone_shop_projects.core.admin.voucher_management.model.request.UpdateVoucherRequest;
 import beephone_shop_projects.core.admin.voucher_management.service.VoucherService;
+import beephone_shop_projects.core.common.base.ResponseObject;
 import beephone_shop_projects.core.common.base.ResponsePage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,39 +31,39 @@ public class VoucherRestController {
   private VoucherService voucherService;
 
   @GetMapping("/get-by-id/{id}")
-  public ResponseEntity getOneVoucher(@PathVariable("id") String id) {
-    return new ResponseEntity(voucherService.getOne(id), HttpStatus.OK);
+  public ResponseObject getOneVoucher(@PathVariable("id") String id) {
+    return new ResponseObject(voucherService.getOne(id));
   }
 
   @PostMapping("/addVoucher")
-  public ResponseEntity addVoucher(@RequestBody CreateVoucherRequest request) {
-    return new ResponseEntity(voucherService.addVoucher(request), HttpStatus.CREATED);
+  public ResponseObject addVoucher(@RequestBody CreateVoucherRequest request) {
+    return new ResponseObject(voucherService.addVoucher(request));
   }
 
   @PutMapping("/updateVoucher/{id}")
-  public ResponseEntity updateVoucher(@PathVariable("id") String id, @RequestBody UpdateVoucherRequest request) {
-    return new ResponseEntity(voucherService.updateVoucher(request, id), HttpStatus.OK);
+  public ResponseObject updateVoucher(@PathVariable("id") String id, @RequestBody UpdateVoucherRequest request) {
+    return new ResponseObject(voucherService.updateVoucher(request, id));
   }
 
   @DeleteMapping("/deleteVoucher/{id}")
-  public ResponseEntity deleteVoucher(@PathVariable("id") String id) {
-    return new ResponseEntity(voucherService.deleteVoucher(id), HttpStatus.OK);
+  public ResponseObject deleteVoucher(@PathVariable("id") String id) {
+    return new ResponseObject(voucherService.deleteVoucher(id));
   }
 
   @PutMapping("/deleteTrangThaiVoucher/{id}")
-  public ResponseEntity deleteTrangThaiVoucher(@PathVariable("id") String id) {
-    return new ResponseEntity(voucherService.doiTrangThai(id), HttpStatus.OK);
+  public ResponseObject deleteTrangThaiVoucher(@PathVariable("id") String id) {
+    return new ResponseObject(voucherService.doiTrangThai(id));
   }
 
   @GetMapping("/vouchers")
-  public ResponseEntity hienThiVoucher(@ModelAttribute FindVoucherRequest request) {
-    return new ResponseEntity(voucherService.getAll(request), HttpStatus.OK);
+  public ResponsePage hienThiVoucher(@ModelAttribute FindVoucherRequest request) {
+    return new ResponsePage(voucherService.getAll(request));
   }
 
   @GetMapping("/findVoucher")
-  public ResponseEntity getList(@RequestParam(value = "input", defaultValue = "") String input,
+  public ResponseObject getList(@RequestParam(value = "input", defaultValue = "") String input,
                                 @RequestParam(value = "tongTien", defaultValue = "0") BigDecimal tongTien) {
-    return new ResponseEntity(voucherService.checkVoucher(input, tongTien), HttpStatus.OK);
+    return new ResponseObject(voucherService.checkVoucher(input, tongTien));
   }
 
   @GetMapping("/voucherActive")

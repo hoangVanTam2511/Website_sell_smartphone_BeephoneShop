@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { FormControl, Grid, InputLabel, MenuItem, Select } from "@mui/material";
+import {
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+} from "@mui/material";
 
-const host = "https://provinces.open-api.vn/api/";
+const host = "https://online-gateway.ghn.vn/shiip/public-api/master-data/";
 
 const ModalAddDiaChiKhachHang = ({
   required,
@@ -28,25 +35,21 @@ const ModalAddDiaChiKhachHang = ({
   }, []);
 
   const callAPI = (api) => {
-    if (!selectedProvince) {
-      setProvinceError(true);
-    }
-    if (!selectedDistrict) {
-      setDistrictError(true);
-    }
-    if (!selectedWard) {
-      setWardError(true);
-    }
-    return axios.get(api).then((response) => {
-      return response.data;
-    });
+    return axios
+      .get(api, {
+        headers: {
+          token: "c2f01f86-3164-11ee-af43-6ead57e9219a",
+        },
+      })
+      .then((response) => {
+        return response.data;
+      });
   };
 
   const fetchProvinces = () => {
-    callAPI(host + "?depth=1")
+    callAPI(host + "province")
       .then((data) => {
-        setProvinces(data);
-        // console.log(data.provinceCode);
+        setProvinces(data.data);
       })
       .catch((error) => {
         console.error("Error fetching provinces:", error);
@@ -54,10 +57,10 @@ const ModalAddDiaChiKhachHang = ({
   };
 
   const fetchDistricts = (provinceCode) => {
-    callAPI(host + "p/" + provinceCode + "?depth=2")
+    callAPI(host + "district?province_id=" + provinceCode)
       .then((data) => {
-        setDistricts(data.districts);
-        setSelectedDistrict("");
+        setDistricts(data.data);
+        setSelectedDistrict(""); // Reset selected district when fetching new districts
       })
       .catch((error) => {
         console.error("Error fetching districts:", error);
@@ -65,9 +68,9 @@ const ModalAddDiaChiKhachHang = ({
   };
 
   const fetchWards = (districtCode) => {
-    callAPI(host + "d/" + districtCode + "?depth=2")
+    callAPI(host + "ward?district_id=" + districtCode)
       .then((data) => {
-        setWards(data.wards);
+        setWards(data.data);
         setSelectedWard(""); // Reset selected ward when fetching new wards
       })
       .catch((error) => {
@@ -79,16 +82,14 @@ const ModalAddDiaChiKhachHang = ({
     if (submitted) {
       // Nếu đã ấn nút "Lưu" thì kiểm tra trạng thái select
       if (!value.target.value) {
-        setProvinceError(true);
         setSelectedProvince("");
       }
     }
+
     setSelectedProvince(value.target.value);
     setSelectedDistrict("");
     setSelectedWard("");
     fetchDistricts(value.target.value);
-    onProvinceChange(value.target.value);
-    setProvinceError(false);
   };
 
   const handleDistrictChange = (value) => {
@@ -96,11 +97,10 @@ const ModalAddDiaChiKhachHang = ({
     setSelectedWard("");
     fetchWards(value.target.value);
     onDistrictChange(value.target.value);
-    setDistrictError(false);
     if (submitted) {
       // Nếu đã ấn nút "Lưu" thì kiểm tra trạng thái select
       if (!value.target.value) {
-        setDistrictError(true);
+        setSelectedDistrict("");
       }
     }
   };
@@ -108,152 +108,88 @@ const ModalAddDiaChiKhachHang = ({
   const handleWardChange = (value) => {
     setSelectedWard(value.target.value);
     onWardChange(value.target.value);
-    setWardError(false);
     if (submitted) {
       // Nếu đã ấn nút "Lưu" thì kiểm tra trạng thái select
-      if (!value.target.value) {
-        setWardError(true);
+      if (!value) {
+        setSelectedWard("");
       }
     }
   };
 
   useEffect(() => {
-    if (selectedProvince) {
+    if (selectedDistrict && selectedProvince && selectedWard) {
       const selectedProvinceName = provinces.find(
-        (province) => province.code === selectedProvince
-      )?.name;
-      onProvinceChange(selectedProvinceName);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedProvince, onProvinceChange]);
-
-  useEffect(() => {
-    if (selectedDistrict) {
+        (province) => province.ProvinceID === selectedProvince
+      ).ProvinceName;
       const selectedDistrictName = districts.find(
-        (district) => district.code === selectedDistrict
-      )?.name;
-      onDistrictChange(selectedDistrictName);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedDistrict, onDistrictChange]);
-
-  useEffect(() => {
-    if (selectedWard) {
+        (district) => district.DistrictID === selectedDistrict
+      ).DistrictName;
       const selectedWardName = wards.find(
-        (ward) => ward.code === selectedWard
-      )?.name;
+        (ward) => ward.WardCode === selectedWard
+      ).WardName;
+      onProvinceChange(selectedProvinceName);
+      onDistrictChange(selectedDistrictName);
       onWardChange(selectedWardName);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedWard, onWardChange]);
+  }, [selectedProvince, selectedDistrict, selectedWard]);
 
   return (
     <>
       <Grid container spacing={3.3}>
         <Grid item xs={4}>
-          <FormControl style={{ width: "100%" }}>
-            <InputLabel id="demo-simple-select-label">
-              Chọn Tỉnh/Thành phố
-            </InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              label="Chọn Tỉnh/Thành phố"
-              onChange={handleProvinceChange}
-              value={selectedProvince}
-              size="large"
-              error={formSubmitted && !selectedProvince}
-              style={{ width: "100%" }}
-            >
-              {provinces.map((province) => (
-                <MenuItem key={province.code} value={province.code}>
-                  {province.name}
-                </MenuItem>
-              ))}
-            </Select>
-            {required && submitted && provinceError && (
-              <p
-                style={{
-                  color: " #d32f2f",
-                  paddingLeft: "15px",
-                  fontSize: "12px",
-                  textAlign: "left",
-                }}
-              >
-                Vui lòng chọn
-              </p>
-            )}
-          </FormControl>
+          <TextField
+            select
+            label="Chọn Tỉnh/Thành phố"
+            value={selectedProvince}
+            onChange={handleProvinceChange}
+            error={formSubmitted && !selectedProvince}
+            helperText={
+              formSubmitted && !selectedProvince ? "Vui lòng chọn" : ""
+            }
+            style={{ width: "100%" }}
+          >
+            {provinces.map((province) => (
+              <MenuItem key={province.ProvinceID} value={province.ProvinceID}>
+                {province.ProvinceName}
+              </MenuItem>
+            ))}
+          </TextField>
         </Grid>
         <Grid item xs={4}>
-          <FormControl style={{ width: "100%" }}>
-            <InputLabel id="demo-simple-select-label">
-              Chọn Quận/Huyện
-            </InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              label="Chọn Quận/Huyện"
-              onChange={handleDistrictChange}
-              value={selectedDistrict}
-              size="large"
-              error={formSubmitted && !selectedDistrict}
-              style={{ width: "100%" }}
-            >
-              {districts.map((district) => (
-                <MenuItem key={district.code} value={district.code}>
-                  {district.name}
-                </MenuItem>
-              ))}
-            </Select>
-            {required && submitted && districtError && (
-              <p
-                style={{
-                  color: " #d32f2f",
-                  paddingLeft: "15px",
-                  fontSize: "12px",
-                  textAlign: "left",
-                }}
-              >
-                Vui lòng chọn
-              </p>
-            )}
-          </FormControl>
+          <TextField
+            select
+            label="Chọn Quận/Huyện"
+            value={selectedDistrict}
+            onChange={handleDistrictChange}
+            error={formSubmitted && !selectedDistrict}
+            helperText={
+              formSubmitted && !selectedDistrict ? "Vui lòng chọn" : ""
+            }
+            style={{ width: "100%" }}
+          >
+            {districts.map((district) => (
+              <MenuItem key={district.DistrictID} value={district.DistrictID}>
+                {district.DistrictName}
+              </MenuItem>
+            ))}
+          </TextField>
         </Grid>
         <Grid item xs={4}>
-          <FormControl style={{ width: "100%" }}>
-            <InputLabel id="demo-simple-select-label">
-              Chọn Phường/Xã
-            </InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              label="Chọn Phường/Xã"
-              onChange={handleWardChange}
-              value={selectedWard}
-              size="large"
-              error={formSubmitted && !selectedWard}
-              style={{ width: "100%" }}
-            >
-              {wards.map((ward) => (
-                <MenuItem key={ward.code} value={ward.code}>
-                  {ward.name}
-                </MenuItem>
-              ))}
-            </Select>
-            {required && submitted && wardError && (
-              <p
-                style={{
-                  color: " #d32f2f",
-                  fontSize: "12px",
-                  textAlign: "left",
-                  paddingLeft: "15px",
-                }}
-              >
-                Vui lòng chọn
-              </p>
-            )}
-          </FormControl>
+          <TextField
+            select
+            label="Chọn Phường/Xã"
+            value={selectedWard}
+            onChange={handleWardChange}
+            error={formSubmitted && !selectedWard}
+            helperText={formSubmitted && !selectedWard ? "Vui lòng chọn" : ""}
+            style={{ width: "100%" }}
+          >
+            {wards.map((ward) => (
+              <MenuItem key={ward.WardCode} value={ward.WardCode}>
+                {ward.WardName}
+              </MenuItem>
+            ))}
+          </TextField>
         </Grid>
       </Grid>
     </>

@@ -1,13 +1,11 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { styled } from '@mui/material/styles';
 import { Row, Col } from "react-bootstrap";
-import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
-import _ from 'lodash';
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Button, Table } from "antd";
 import axios from "axios";
 import { FaTruck, FaRegCalendarCheck, FaRegFileAlt, FaRegCalendarTimes, FaBusinessTime } from "react-icons/fa";
-import { MdCancelPresentation } from "react-icons/md";
-import { Table as TableMui } from '@mui/material';
+import { Table as TableMui, Tooltip, Zoom } from '@mui/material';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
@@ -16,64 +14,21 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import LoadingIndicator from '../../../utilities/loading';
 import EditIcon from '@mui/icons-material/Edit';
-import RemoveOutlinedIcon from '@mui/icons-material/RemoveOutlined';
-import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
-import {
-  Dialog,
-  Select as SelectMui,
-  IconButton,
-  Button as MuiButton,
-  TextField,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  CardActionArea,
-  CardMedia,
-  CardContent,
-  Typography,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-} from "@mui/material";
+import Radio from '@mui/joy/Radio';
+import RadioGroup from '@mui/joy/RadioGroup';
+import Sheet from '@mui/joy/Sheet';
 import Card from "../../../components/Card";
-import {
-  DeleteFilled,
-  DeleteOutlined,
-  DeleteRowOutlined,
-  DeleteTwoTone,
-  EditFilled,
-  PlusOutlined,
-} from "@ant-design/icons";
 import styleCss from "./style.css";
 import { format } from "date-fns";
 import { Timeline, TimelineEvent } from "@mailtop/horizontal-timeline";
-import { useTheme } from "@mui/material/styles";
-import OutlinedInput from "@mui/material/OutlinedInput";
 import {
   UpdateRecipientOrderDialog,
   PaymentDialog,
-  ConfirmOrderDialog,
-  ConfirmDeliveryOrderDialog,
-  ConfirmFinishOrderDialog,
   OrderHistoryDialog,
-  ConfirmCancelOrderDialog,
   ConfirmDialog,
 } from "./AlertDialogSlide.js";
-import list from "./data";
-import useFormItemStatus from "antd/es/form/hooks/useFormItemStatus";
-import LocalShippingOutlined from "@mui/icons-material/LocalShippingOutlined";
-import AddCircleOutline from '@mui/icons-material/AddCircleOutline';
-import { Alert, AlertTitle, FormHelperText, Slide } from '@mui/material';
-import { TextareaAutosize } from '@mui/base/TextareaAutosize';
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert from '@mui/material/Alert';
 import { OrderStatusString, OrderTypeString, Notistack } from './enum';
 import useCustomSnackbar from '../../../utilities/notistack';
-
-const Transition = (props) => {
-  return <Slide {...props} direction="left" />;
-};
 
 const OrderDetail = (props) => {
   const navigate = useNavigate();
@@ -90,12 +45,14 @@ const OrderDetail = (props) => {
   const { handleOpenAlertVariant } = useCustomSnackbar();
 
   const getOrderItemsById = () => {
+    setIsLoading(true);
     axios
       .get(`http://localhost:8080/api/orders/${id}`)
       .then((response) => {
         setOrder(response.data.data);
         setOrderHistories(response.data.data.orderHistories);
         setPaymentHistorys(response.data.data.paymentMethods)
+        setIsLoading(false);
       })
       .catch((error) => {
         console.error(error);
@@ -104,9 +61,15 @@ const OrderDetail = (props) => {
 
   useEffect(() => {
     getOrderItemsById();
-    // delete location.state.data;
-
   }, []);
+
+  const totalItem = (amount, price) => {
+    return amount * price;
+  }
+
+  const totalOrder = (total, discount, feeShip) => {
+    return total - discount + feeShip;
+  }
 
   const IconTrash = () => {
     return (
@@ -158,33 +121,57 @@ const OrderDetail = (props) => {
   };
   const columnsTableOrderHistories = [
     {
-      title: "",
-      align: "center",
-      width: "15%",
-      dataIndex: "loaiThaoTac",
-      render: (text, record) => (
-        <span style={{ fontWeight: "550" }}>{
-          record.loaiThaoTac == 0
-            ? FaRegFileAlt
-            : record.loaiThaoTac == 1
-              ? FaRegFileAlt
-              : record.loaiThaoTac == 2
-                ? FaBusinessTime
-                : record.loaiThaoTac == 3
-                  ? FaTruck
-                  : record.loaiThaoTac == 4
-                    ? FaRegCalendarCheck
-                    : record.loaiThaoTac == 5
-                      ? FaRegCalendarTimes
-                      : ""
-        }</span>
-      ),
-    },
-    {
-      title: "Thao Tác",
-      align: "center",
-      dataIndex: "thaoTac",
       width: "10%",
+      dataIndex: "loaiThaoTac",
+      render: (text, item) => (
+        <div className="ms-5">
+          <span className="text-center" style={{ fontWeight: "" }}>{
+            item.loaiThaoTac == 0
+              ?
+              <>
+                <FaRegFileAlt color="#09a129" size={"40px"} style={{ marginBottom: "5px" }} />
+                <span className="ms-4">{item.thaoTac}</span>
+              </>
+              : item.loaiThaoTac == 1
+                ?
+                <>
+                  <FaRegFileAlt color="#09a129" size={"40px"} style={{ marginBottom: "5px" }} />
+                  <span className="ms-4">{item.thaoTac}</span>
+                </>
+                : item.loaiThaoTac == 2
+                  ?
+                  <>
+                    <FaBusinessTime color="#ffd500" size={"40px"} style={{ marginBottom: "5px" }} />
+                    <span className="ms-4">{item.thaoTac}</span>
+                  </>
+                  : item.loaiThaoTac == 3
+                    ?
+                    <>
+                      <FaTruck color="#09a129" size={"40px"} style={{ marginBottom: "5px" }} />
+                      <span className="ms-4">{item.thaoTac}</span>
+                    </>
+                    : item.loaiThaoTac == 4
+                      ?
+                      <>
+                        <FaRegCalendarCheck color="#09a129" size={"40px"} style={{ marginBottom: "5px" }} />
+                        <span className="ms-4">{item.thaoTac}</span>
+                      </>
+                      : item.loaiThaoTac == 5
+                        ?
+                        <>
+                          <FaRegCalendarTimes color="#e5383b" size={"40px"} style={{ marginBottom: "5px" }} />
+                          <span className="ms-4">{item.thaoTac}</span>
+                        </>
+                        : item.loaiThaoTac == 6
+                          ?
+                          <>
+                            <FaRegCalendarCheck color="#09a129" size={"40px"} style={{ marginBottom: "5px" }} />
+                            <span className="ms-4">{item.thaoTac}</span>
+                          </>
+                          : ""
+          }</span>
+        </div>
+      ),
     },
     {
       title: "Thời Gian",
@@ -272,7 +259,7 @@ const OrderDetail = (props) => {
             className="rounded-pill mx-auto badge-success"
             style={{
               height: "35px",
-              width: "130px",
+              width: "140px",
               padding: "4px",
             }}
           >
@@ -737,7 +724,7 @@ const OrderDetail = (props) => {
   const OrderInfo = () => {
     return (
 
-      <div className="wrap-order-detail mt-4">
+      <div className="wrap-order-detail mt-4" style={{ height: order.loaiHoaDon === OrderTypeString.AT_COUNTER ? "340px" : "480px" }}>
         <div className="p-3">
           <div className="d-flex justify-content-between">
             <div className="ms-2" style={{ marginTop: "3px" }}>
@@ -756,7 +743,7 @@ const OrderDetail = (props) => {
               >
                 <span
                   className=""
-                  style={{ fontWeight: "500", marginBottom: "3px" }}
+                  style={{ fontWeight: "500", marginBottom: "2px" }}
                 >
                   Cập nhật
                 </span>
@@ -769,7 +756,7 @@ const OrderDetail = (props) => {
         <Row>
           <Col sm="5">
             <div className="ms-4 mt-3 d-flex" style={{ height: "30px" }}>
-              <div className="ms-2 mt-1" style={{ width: "130px" }}>
+              <div className="ms-2 mt-1" style={{ width: "140px" }}>
                 <span className="" style={{ fontSize: "17px" }}>Mã Đơn Hàng</span>
               </div>
               <div className="ms-5 ps-5">
@@ -789,7 +776,7 @@ const OrderDetail = (props) => {
               </div>
             </div>
             <div className="ms-4 mt-4 d-flex" style={{ height: "30px" }}>
-              <div className="ms-2 mt-1" style={{ width: "130px" }}>
+              <div className="ms-2 mt-1" style={{ width: "140px" }}>
                 <span style={{ fontSize: "17px" }}>Loại Đơn Hàng</span>
               </div>
               <div className="ms-5 ps-5">
@@ -829,7 +816,7 @@ const OrderDetail = (props) => {
               </div>
             </div>
             <div className="ms-4 mt-4 d-flex" style={{ height: "30px" }}>
-              <div className="ms-2 mt-1" style={{ width: "130px" }}>
+              <div className="ms-2 mt-1" style={{ width: "140px" }}>
                 <span style={{ fontSize: "17px" }}>Trạng Thái</span>
               </div>
               <div className="ms-5 ps-5">
@@ -956,9 +943,9 @@ const OrderDetail = (props) => {
               </div>
             </div>
             <div className="ms-4 mt-4 d-flex" style={{ height: "30px" }}>
-              <div className="ms-2 mt-1" style={{ width: "130px" }}>
+              <div className="ms-2 mt-1" style={{ width: "140px" }}>
                 <span style={{ fontSize: "17px" }}>
-                  Ngày nhận hàng dự kiến</span>
+                  {order.loaiHoaDon === OrderTypeString.AT_COUNTER ? "Ngày Tạo" : "Ngày Đặt Hàng"}</span>
               </div>
               <div className="ms-5 ps-5">
                 <div
@@ -975,16 +962,72 @@ const OrderDetail = (props) => {
                       order.createdAt &&
                       format(
                         new Date(order.createdAt),
-                        "dd/MM/yyyy"
+                        "dd/MM/yyyy - HH:mm:ss"
                       )}
                   </span>
                 </div>
               </div>
             </div>
+            {order.loaiHoaDon === OrderTypeString.DELIVERY ?
+              <div className="ms-4 mt-4 d-flex" style={{ height: "30px" }}>
+                <div className="ms-2 mt-1" style={{ width: "140px" }}>
+                  <span style={{ fontSize: "17px" }}>
+                    Ngày Thanh Toán</span>
+                </div>
+                <div className="ms-5 ps-5">
+                  <div
+                    className="rounded-pill"
+                    style={{
+                      height: "35px",
+                      width: "auto",
+                      padding: "5px",
+                      backgroundColor: "#e1e1e1",
+                    }}
+                  >
+                    <span className="text-dark p-2" style={{ fontSize: "14px" }}>
+                      {order &&
+                        order.createdAt &&
+                        format(
+                          new Date(order.createdAt),
+                          "dd/MM/yyyy - HH:mm:ss"
+                        )}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              : ""}
+            {order.loaiHoaDon === OrderTypeString.DELIVERY ?
+              <div className="ms-4 mt-4 d-flex" style={{ height: "30px" }}>
+                <div className="ms-2 mt-1" style={{ width: "140px" }}>
+                  <span style={{ fontSize: "17px" }}>
+                    Ngày giao hàng cho bên vận chuyển</span>
+                </div>
+                <div className="ms-5 ps-5">
+                  <div
+                    className="rounded-pill"
+                    style={{
+                      height: "35px",
+                      width: "auto",
+                      padding: "5px",
+                      backgroundColor: "#e1e1e1",
+                    }}
+                  >
+                    <span className="text-dark p-2" style={{ fontSize: "14px" }}>
+                      {order &&
+                        order.createdAt &&
+                        format(
+                          new Date(order.createdAt),
+                          "dd/MM/yyyy - HH:mm:ss"
+                        )}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              : ""}
           </Col>
           <Col sm="6" className="ms-5">
             <div className="ms-4 mt-3 d-flex" style={{ height: "30px" }}>
-              <div className="ms-2 mt-1" style={{ width: "130px" }}>
+              <div className="ms-2 mt-1" style={{ width: "140px" }}>
                 <span style={{ fontSize: "17px" }}>Tên Khách Hàng</span>
               </div>
               <div className="ms-5 ps-5">
@@ -1007,7 +1050,7 @@ const OrderDetail = (props) => {
               </div>
             </div>
             <div className="ms-4 mt-4 mt-1 d-flex" style={{ height: "30px" }}>
-              <div className="ms-2 mt-1" style={{ width: "130px" }}>
+              <div className="ms-2 mt-1" style={{ width: "140px" }}>
                 <span style={{ fontSize: "17px" }}>Số Điện Thoại</span>
               </div>
               <div className="ms-5 ps-5 mt-1">
@@ -1017,18 +1060,18 @@ const OrderDetail = (props) => {
               </div>
             </div>
             <div className="ms-4 mt-4 mt-1 d-flex" style={{ height: "30px" }}>
-              <div className="ms-2 mt-1" style={{ width: "130px" }}>
+              <div className="ms-2 mt-1" style={{ width: "140px" }}>
                 <span style={{ fontSize: "17px" }}>Email</span>
               </div>
               <div className="ms-5 ps-5 mt-1">
                 <span className="text-dark ms-1" style={{ fontSize: "17px" }}>
-                  haog@gmail.com
+                  {order.account === null ? "..." : order && order.account && order.account.email}
                 </span>
               </div>
             </div>
             <div className="ms-4 mt-4 mt-1 d-flex" style={{ height: "30px" }}>
-              <div className="ms-2 mt-1" style={{ width: "130px" }}>
-                <span style={{ fontSize: "17px" }}>Địa Chỉ</span>
+              <div className="ms-2 mt-1" style={{ width: "140px" }}>
+                <span style={{ fontSize: "17px" }}>Địa Chỉ Nhận</span>
               </div>
               <div
                 className="ms-5 ps-5 mt-1"
@@ -1039,6 +1082,49 @@ const OrderDetail = (props) => {
                 </span>
               </div>
             </div>
+            {order.loaiHoaDon === OrderTypeString.DELIVERY ?
+              <div className="ms-4 mt-4 mt-1 d-flex" style={{ height: "30px" }}>
+                <div className="ms-2 mt-1" style={{ width: "140px" }}>
+                  <span style={{ fontSize: "17px" }}>Ghi Chú Shipper</span>
+                </div>
+                <div
+                  className="ms-5 ps-5 mt-1"
+                  style={{ whiteSpace: "pre-line", flex: "1" }}
+                >
+                  <span className="text-dark ms-1" style={{ fontSize: "17px" }}>
+                    {order.diaChiNguoiNhan == null ? "..." : order.diaChiNguoiNhan}
+                  </span>
+                </div>
+              </div>
+              : ""}
+            {order.loaiHoaDon === OrderTypeString.DELIVERY ?
+              <div className="ms-4 mt-4 d-flex" style={{ height: "30px" }}>
+                <div className="ms-2 mt-1" style={{ width: "140px" }}>
+                  <span style={{ fontSize: "17px" }}>
+                    Ngày hoàn thành đơn</span>
+                </div>
+                <div className="ms-5 ps-5">
+                  <div
+                    className="rounded-pill"
+                    style={{
+                      height: "35px",
+                      width: "auto",
+                      padding: "5px",
+                      backgroundColor: "#e1e1e1",
+                    }}
+                  >
+                    <span className="text-dark p-2" style={{ fontSize: "14px" }}>
+                      {order &&
+                        order.createdAt &&
+                        format(
+                          new Date(order.createdAt),
+                          "dd/MM/yyyy - HH:mm:ss"
+                        )}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              : ""}
           </Col>
         </Row>
       </div>
@@ -1068,7 +1154,7 @@ const OrderDetail = (props) => {
               >
                 <span
                   className=""
-                  style={{ fontWeight: "500", marginBottom: "3px" }}
+                  style={{ fontWeight: "500", marginBottom: "2px" }}
                 >
                   Thanh toán
                 </span>
@@ -1139,7 +1225,7 @@ const OrderDetail = (props) => {
         <div className="">
           <div className="d-flex justify-content-between">
             <div className="ms-2" style={{ marginTop: "3px" }}>
-              <span className='' style={{ fontSize: "25px" }}>SẢN PHẨM ĐÃ MUA</span>
+              <span className='' style={{ fontSize: "25px" }}>DANH SÁCH SẢN PHẨM</span>
             </div>
             <div className="">
               <Button
@@ -1168,24 +1254,29 @@ const OrderDetail = (props) => {
                   <TableMui sx={{ minWidth: 650, boxShadow: "none" }} aria-label="simple table" className={classes.tableContainer}>
                     <StyledTableHead>
                       <TableRow>
+                        <TableCell align="center">Ảnh</TableCell>
+                        <TableCell align="center">Sản Phẩm</TableCell>
+                        <TableCell align="center">Số lượng</TableCell>
+                        <TableCell align="center">Thành tiền</TableCell>
+                        <TableCell align="center">Thao Tác</TableCell>
                       </TableRow>
                     </StyledTableHead>
                     <StyledTableBody>
-                      {list.slice(0, 2).map((item, index) => (
+                      {order && order.orderItems && order.orderItems.map((item, index) => (
                         <TableRow
                           key={index}
                           sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                         >
                           <TableCell align='center'>
-                            <img src={item.img} class='' alt="" style={{ width: "155px", height: "155px" }} />
+                            <img src={item && item.sanPhamChiTiet.images[0].duongDan} class='' alt="" style={{ width: "155px", height: "155px" }} />
                           </TableCell>
-                          <TableCell align="center">
+                          <TableCell align="center" style={{ width: "350px" }}>
                             <div>
-                              <span className='' style={{ whiteSpace: "pre-line", fontSize: "18px" }}>{item.title}</span>
+                              <span className='' style={{ whiteSpace: "pre-line", fontSize: "18px" }}>{item.sanPhamChiTiet.sanPham.tenSanPham}</span>
                             </div>
                             <div className='mt-2'>
                               <span style={{ color: "#dc1111", fontSize: "17px" }}>
-                                {item && item.price ? item.price.toLocaleString("vi-VN", {
+                                {item && item.donGia ? item.donGia.toLocaleString("vi-VN", {
                                   style: "currency",
                                   currency: "VND",
                                 }) : ""}
@@ -1202,33 +1293,94 @@ const OrderDetail = (props) => {
                               <div></div>
                               <div></div>
                               <div></div>
-                              <div
-                                className="rounded-pill"
-                                style={{
-                                  height: "31px",
-                                  width: "auto",
-                                  padding: "5px",
-                                  backgroundColor: "#e1e1e1",
-                                }}
+                              <RadioGroup orientation='horizontal'
+                                aria-labelledby="storage-label"
+                                size="lg"
+                                sx={{ gap: 1.7 }}
                               >
-                                <span className="text-dark p-2" style={{ fontSize: "14px" }}>
-                                  12/256GB
-                                </span>
-                              </div>
-                              <div
-                                className="rounded-pill"
-                                style={{
-                                  marginLeft: "10px",
-                                  height: "31px",
-                                  width: "auto",
-                                  padding: "5px",
-                                  backgroundColor: "#e1e1e1",
-                                }}
+                                <Sheet
+                                  sx={{
+                                    borderRadius: 'md',
+                                    boxShadow: 'sm',
+                                  }}
+                                >
+                                  <Radio disabled
+                                    label={
+                                      <>
+                                        <div>
+                                          <span className="p-2" style={{ fontSize: "15px", fontWeight: "500" }}>{item.sanPhamChiTiet.cauHinh.ram.kichThuoc + "/" + item.sanPhamChiTiet.cauHinh.rom.kichThuoc + "GB"}</span>
+                                        </div>
+                                      </>
+                                    }
+                                    overlay
+                                    disableIcon
+                                    slotProps={{
+                                      label: ({ checked }) => ({
+                                        sx: {
+                                          fontWeight: 'lg',
+                                          fontSize: 'md',
+                                          color: checked ? 'text.primary' : 'text.secondary',
+                                        },
+                                      }),
+                                      action: ({ checked }) => ({
+                                        sx: (theme) => ({
+                                          ...(checked && {
+                                            '--variant-borderWidth': '2px',
+                                            '&&': {
+                                              // && to increase the specificity to win the base :hover styles
+                                              borderColor: "#2f80ed",
+                                            },
+                                          }),
+                                        }),
+                                      }),
+                                    }}
+                                  />
+                                </Sheet>
+                              </RadioGroup>
+                              <RadioGroup orientation='horizontal' className="ms-2"
+                                aria-labelledby="storage-label"
+                                size="lg"
+                                sx={{ gap: 1.7 }}
                               >
-                                <span className="text-dark p-2" style={{ fontSize: "14px" }}>
-                                  Rose Pine
-                                </span>
-                              </div>
+                                <Sheet
+                                  sx={{
+                                    borderRadius: 'md',
+                                    boxShadow: 'sm',
+                                  }}
+                                >
+                                  <Radio disabled
+                                    label={
+                                      <>
+                                        <div className="">
+                                          <span className="p-2" style={{ fontSize: "15px", fontWeight: "500" }}>{item.sanPhamChiTiet.cauHinh.mauSac.tenMauSac}</span>
+                                        </div>
+                                      </>
+                                    }
+                                    overlay
+                                    disableIcon
+                                    slotProps={{
+                                      label: ({ checked }) => ({
+                                        sx: {
+                                          fontWeight: 'lg',
+                                          fontSize: 'md',
+                                          color: checked ? 'text.primary' : 'text.secondary',
+                                        },
+                                      }),
+                                      action: ({ checked }) => ({
+                                        sx: (theme) => ({
+                                          ...(checked && {
+                                            '--variant-borderWidth': '2px',
+                                            '&&': {
+                                              // && to increase the specificity to win the base :hover styles
+                                              borderColor: "#2f80ed",
+                                            },
+                                          }),
+                                        }),
+                                      }),
+                                    }}
+                                  />
+                                </Sheet>
+                              </RadioGroup>
                               <div></div>
                               <div></div>
                               <div></div>
@@ -1241,53 +1393,88 @@ const OrderDetail = (props) => {
                               <div></div>
                             </div>
                           </TableCell>
-                          <TableCell align="center" style={{ width: "100px" }}>
-                    <div class="number-input2">
-                      <button                        class="minus">
-                        <div className='wrap-minus'>
-                          <span>
-                            <RemoveOutlinedIcon style={{ fontSize: "20px" }} />
-                          </span>
-                        </div>
-                      </button>
-                      <input value={1} min="1" max="4"
-                        name="quantity" class="quantity"
-                        type="number" />
-                      <button class=""                      >
-                        <div className='wrap-plus'>
-                          <span >
-                            <AddOutlinedIcon style={{ fontSize: "20px" }} />
-                          </span>
-                        </div>
-                      </button>
-                    </div>
+                          <TableCell align="center" style={{ fontSize: "15px" }}>
+                            <div className="ms-5">
+                              <RadioGroup orientation='horizontal'
+                                aria-labelledby="storage-label"
+                                size="lg"
+                                sx={{ gap: 1.7 }}
+                              >
+                                <Sheet
+                                  sx={{
+                                    borderRadius: 'md',
+                                    boxShadow: 'sm',
+                                  }}
+                                >
+                                  <Radio disabled
+                                    label={
+                                      <>
+                                        <div>
+                                          <span className="p-2" style={{ fontSize: "15px", fontWeight: "500" }}>{"x" + item.soLuong}</span>
+                                        </div>
+                                      </>
+                                    }
+                                    overlay
+                                    disableIcon
+                                    slotProps={{
+                                      label: ({ checked }) => ({
+                                        sx: {
+                                          fontWeight: 'lg',
+                                          fontSize: 'md',
+                                          color: checked ? 'text.primary' : 'text.secondary',
+                                        },
+                                      }),
+                                      action: ({ checked }) => ({
+                                        sx: (theme) => ({
+                                          ...(checked && {
+                                            '--variant-borderWidth': '2px',
+                                            '&&': {
+                                              // && to increase the specificity to win the base :hover styles
+                                              borderColor: "#2f80ed",
+                                            },
+                                          }),
+                                        }),
+                                      }),
+                                    }}
+                                  />
+                                </Sheet>
+                              </RadioGroup>
+                            </div>
                           </TableCell>
-                          <TableCell align="center" style={{ color: "#dc1111", fontSize: "15px", width: "200px" }}>
+                          <TableCell align="center" style={{ color: "#dc1111", fontSize: "15px" }}>
                             <span style={{ color: "#dc1111", fontSize: "17.5px" }}>
-                              {item && item.price ? item.price.toLocaleString("vi-VN", {
+                              {item && totalItem(item.soLuong, item.donGia).toLocaleString("vi-VN", {
                                 style: "currency",
                                 currency: "VND",
-                              }) : ""}
+                              })}
                             </span>
                           </TableCell>
-                          <TableCell align="center" className='' style={{ width: "200px" }}>
-                            <Button className=''
-                              icon={
-                                <EditIcon />
-                              }
-                              type="primary"
-                              style={{ fontSize: "13px" }}
-                            >
-                            </Button>
-                            <Button className='ms-2'
-                              // onClick={() => handleDeleteCartDetailsById(item.id)}
-                              icon={
-                                <IconTrash />
-                              }
-                              type="primary"
-                              style={{ fontSize: "13px", backgroundColor: "#dc3333" }}
-                            >
-                            </Button>
+                          <TableCell align="center" className=''>
+                            <Tooltip TransitionComponent={Zoom} title="Cập nhật">
+                              <Button className=''
+                                icon={
+                                  <EditIcon />
+                                }
+                                // onClick={() => openDialogProductDetails()}
+                                type="primary"
+                                style={{ fontSize: "13px", height: "32.5px" }}
+                              >
+                              </Button>
+
+                            </Tooltip>
+                            <Tooltip TransitionComponent={Zoom} title="Xóa khỏi giỏ hàng">
+                              <Button className='ms-2'
+                                // onClick={() => removeProductInCart(item.id)}
+                                icon={
+                                  <IconTrash />
+                                }
+                                type="danger"
+                                style={{ fontSize: "13px", height: "32.5px" }}
+                              >
+                              </Button>
+
+
+                            </Tooltip>
 
                           </TableCell>
                         </TableRow>
@@ -1312,69 +1499,132 @@ const OrderDetail = (props) => {
           >
             <div className="p-4">
               <div className="d-flex justify-content-between">
-                <span className="" style={{ fontSize: "15px", color: "" }}>
-                  Tổng Tiền Hàng
+                <span className="" style={{ fontSize: "16px", color: "" }}>
+                  Tổng tiền hàng
                 </span>
                 <span
-                  className="fw-bold text-dark"
-                  style={{ fontSize: "16px" }}
+                  className="text-dark"
+                  style={{ fontSize: "17px" }}
                 >
-                  12.190.000 ₫
+                  {order && order.tongTien && order.tongTien.toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  })}
                 </span>
               </div>
               <div className="d-flex justify-content-between mt-3">
-                <span className="" style={{ fontSize: "15px", color: "" }}>
-                  Giảm Giá
+                <span className="" style={{ fontSize: "16px", color: "" }}>
+                  Giảm giá
                 </span>
                 <span
-                  className="fw-bold text-dark"
-                  style={{ fontSize: "16px" }}
+                  className="text-dark"
+                  style={{ fontSize: "17px" }}
                 >
-                  0 ₫
+                  {order && order.voucher && order.voucher.giaTriVoucher && order.voucher.giaTriVoucher.toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  }) || "Không"}
                 </span>
               </div>
-              <div className="d-flex justify-content-between mt-3">
-                <span className="" style={{ fontSize: "15px", color: "" }}>
-                  Phí Vận Chuyển
-                </span>
-                <span
-                  className="fw-bold text-dark"
-                  style={{ fontSize: "16px" }}
-                >
-                  0 ₫
-                </span>
-              </div>
-              <hr
-                className=""
-                style={{
-                  borderStyle: "dashed",
-                  borderWidth: "1px",
-                  borderColor: "#333",
-                }}
-              />
-              <div className="d-flex justify-content-between mt-4">
-                <span
-                  className="fw-bold text-dark"
-                  style={{ fontSize: "18px", color: "" }}
-                >
-                  Tổng cộng
-                </span>
-                <span
-                  className="fw-bold"
-                  style={{ fontSize: "18px", color: "#dc1111" }}
-                >
-                  {order &&
-                    order.tongTien &&
-                    order.tongTien.toLocaleString("vi-VN", {
+              {order.loaiHoaDon === OrderTypeString.AT_COUNTER ?
+                <>
+                  <div className="d-flex justify-content-between mt-3">
+                    <span className="" style={{ fontSize: "16px", color: "" }}>
+                      Khách cần trả
+                    </span>
+                    <span
+                      className="text-dark"
+                      style={{ fontSize: "17px" }}
+                    >
+                      {order && order.tongTienSauKhiGiam && order.tongTienSauKhiGiam.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })}
+                    </span>
+                  </div>
+                  <div className="d-flex justify-content-between mt-3">
+                    <span className="" style={{ fontSize: "16px", fontWeight: "500" }}>
+                      Khách thanh toán
+                    </span>
+                    <span
+                      className="fw-bold"
+                      style={{ fontSize: "17px", color: "#dc1111" }}
+                    >
+                      {order && order.tienKhachTra && order.tienKhachTra.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })}
+                    </span>
+                  </div>
+                </> :
+                <>
+                  <div className="d-flex justify-content-between mt-3">
+                    <span className="" style={{ fontSize: "16px", color: "" }}>
+                      Phí vận chuyển
+                    </span>
+                    <span
+                      className="text-dark"
+                      style={{ fontSize: "17px" }}
+                    >
+                      {order && order.phiShip && order.phiShip.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })}
+                    </span>
+                  </div>
+                  <div className="d-flex justify-content-between mt-3">
+                    <span
+                      className="text-dark"
+                      style={{ fontSize: "16px", color: "", fontWeight: "500" }}
+                    >
+                      Tổng cộng
+                    </span>
+                    <span
+                      className="fw-bold"
+                      style={{ fontSize: "17px", color: "#dc1111" }}
+                    >
+                      {order &&
+                        totalOrder(order.tongTien, order.voucher && order.voucher.giaTriVoucher, order.phiShip).toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                    </span>
+                  </div>
+                  <div className="d-flex justify-content-between mt-3">
+                    <span className="" style={{ fontSize: "16px", color: "" }}>
+                      Khách thanh toán
+                    </span>
+                    <span
+                      className="fw-bold"
+                      style={{ fontSize: "17px", color: order.tienKhachTra && "#dc1111" || "#2f80ed" }}
+                    >
+                      {order && order.tienKhachTra && order.tienKhachTra.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      }) || "Chưa thanh toán"}
+                    </span>
+                  </div>
+                </>
+              }
+              {order.tienThua !== 0 ?
+                <div className="d-flex justify-content-between mt-3">
+                  <span className="" style={{ fontSize: "16px", color: "" }}>
+                    Tiền thừa trả khách
+                  </span>
+                  <span
+                    className="text-dark"
+                    style={{ fontSize: "17px" }}
+                  >
+                    {order && order.tienThua && order.tienThua.toLocaleString("vi-VN", {
                       style: "currency",
                       currency: "VND",
                     })}
-                </span>
-              </div>
+                  </span>
+                </div>
+                : ""}
             </div>
           </div>
         </div>
-        <div style={{ height: "10px" }}></div>
       </div>
     )
   }
@@ -1425,8 +1675,8 @@ const OrderDetail = (props) => {
         onCloseNoAction={handleCloseNoActionDialogUpdateRecipientOrder}
       />
 
-      <div className="mt-5"></div>
       {isLoading && <LoadingIndicator />}
+      <div className="mt-4"></div>
     </>
   );
 };

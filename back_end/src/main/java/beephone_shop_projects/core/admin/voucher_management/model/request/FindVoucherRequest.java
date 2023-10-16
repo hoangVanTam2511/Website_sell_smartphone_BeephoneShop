@@ -1,5 +1,9 @@
 package beephone_shop_projects.core.admin.voucher_management.model.request;
 
+import beephone_shop_projects.infrastructure.constant.StatusDiscount;
+import beephone_shop_projects.infrastructure.constant.TypeDiscount;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -29,9 +33,9 @@ public class FindVoucherRequest {
 
     private Integer soLuong;
 
-    private String loaiVoucher;
+    private TypeDiscount loaiVoucher;
 
-    private Integer trangThai;
+    private StatusDiscount trangThai;
 
     private String keyword;
 

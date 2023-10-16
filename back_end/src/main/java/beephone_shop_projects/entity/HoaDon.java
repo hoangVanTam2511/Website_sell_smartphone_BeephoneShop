@@ -84,7 +84,7 @@ public class HoaDon extends PrimaryEntity implements IsIdentified {
   @OneToMany(mappedBy = "hoaDon", cascade = CascadeType.REMOVE)
   private Set<LichSuHoaDon> orderHistories;
 
-//  @OneToMany(mappedBy = "hoaDon", cascade = CascadeType.REMOVE)
-//  private Set<HoaDonChiTiet> orderDetails;
+  @OneToMany(mappedBy = "hoaDon")
+  private Set<HoaDonChiTiet> orderItems;
 
 }

@@ -1,5 +1,6 @@
 import {
   Button,
+  message,
   // DatePicker, Form, Input, Radio, Select
 } from "antd";
 import React, { useEffect } from "react";
@@ -23,6 +24,14 @@ import "react-toastify/dist/ReactToastify.css";
 import Box from "@mui/joy/Box";
 import Radio, { radioClasses } from "@mui/joy/Radio";
 import RadioGroup from "@mui/joy/RadioGroup";
+import {
+  Notistack,
+  TypeDiscountNumber,
+  TypeDiscountString,
+} from "../order-manager/enum";
+import useCustomSnackbar from "../../../utilities/notistack";
+import LoadingIndicator from "../../../utilities/loading";
+import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
 
 const UpdateVoucher = () => {
   const [ma, setMa] = useState("");
@@ -40,13 +49,47 @@ const UpdateVoucher = () => {
   const [selectDiscount, setSelectDiscount] = useState("");
   const [giaTriToiDa, setGiaTriToiDa] = useState(0);
   const [valueToiDa, setValueToiDa] = React.useState();
+  const [isLoading, setIsLoading] = useState(true);
+  const { handleOpenAlertVariant } = useCustomSnackbar();
+  const [openConfirm, setOpenConfirm] = useState(false);
 
   const redirectToHienThiVoucher = () => {
     window.location.href = "/dashboard/voucher";
   };
 
+  const handleOpenDialogConfirmUpdate = () => {
+    setOpenConfirm(true);
+  };
+
+  const handleCloseDialogConfirmUpdate = () => {
+    setOpenConfirm(false);
+  };
+
+  const Header = () => {
+    return (
+      <>
+        <span className="">Xác nhận chỉnh sửa voucher</span>
+      </>
+    );
+  };
+  const Title = () => {
+    return (
+      <>
+        <span>
+          Bạn có chắc chắc muốn chỉnh sửa voucher có tên là{" "}
+          <span style={{ color: "red" }}>"{ten}"</span> và với giá trị{" "}
+          <span style={{ color: "red" }}>{value}</span>
+          <span style={{ color: "red" }}>
+            {selectDiscount === TypeDiscountString.VND ? "VND" : "%"}
+          </span>{" "}
+          không ?
+        </span>
+      </>
+    );
+  };
+
   const handleChange = (event) => {
-    if (selectDiscount === "VNĐ") {
+    if (selectDiscount === TypeDiscountString.VND) {
       const inputValue = event.target.value;
       const numericValue = parseFloat(inputValue.replace(/[^0-9.-]+/g, ""));
       const formattedValue = inputValue
@@ -55,7 +98,7 @@ const UpdateVoucher = () => {
       setValue(formattedValue);
       setGiaTriVoucher(numericValue);
     }
-    if (selectDiscount === "%") {
+    if (selectDiscount === TypeDiscountString.PERCENT) {
       let inputValue = event.target.value;
       // Loại bỏ các ký tự không phải số
       inputValue = inputValue.replace(/\D/g, "");
@@ -73,22 +116,30 @@ const UpdateVoucher = () => {
   const detailVoucher = async () => {
     try {
       const response = await axios.get(apiURLVoucher + "/get-by-id/" + id);
-      setMa(response.data.ma);
-      setTen(response.data.ten);
-      setSoLuong(response.data.soLuong);
-      setNgayBatDau(response.data.ngayBatDau);
-      setNgayKetThuc(response.data.ngayKetThuc);
-      setValueToiDa(response.data.giaTriToiDa);
-      setValue1(response.data.dieuKienApDung);
-      setValue(response.data.giaTriVoucher);
-      setSelectDiscount(response.data.loaiVoucher);
+      setMa(response.data.data.ma);
+      setTen(response.data.data.ten);
+      setSoLuong(response.data.data.soLuong);
+      setNgayBatDau(response.data.data.ngayBatDau);
+      setNgayKetThuc(response.data.data.ngayKetThuc);
+      setValueToiDa(response.data.data.giaTriToiDa);
+      setValue1(response.data.data.dieuKienApDung);
+      setValue(response.data.data.giaTriVoucher);
+      setSelectDiscount(
+        response.data.data.loaiVoucher === TypeDiscountNumber.VND
+          ? TypeDiscountString.VND
+          : TypeDiscountString.PERCENT
+      );
       convertTien(
-        response.data.dieuKienApDung,
-        response.data.giaTriVoucher,
-        response.data.giaTriToiDa
+        response.data.data.dieuKienApDung,
+        response.data.data.giaTriVoucher,
+        response.data.data.giaTriToiDa
       );
     } catch (error) {
       // Xử lý lỗi nếu cần
+      handleOpenAlertVariant(
+        "Đã xảy ra lỗi, vui lòng liên hệ quản trị viên!!!",
+        Notistack.ERROR
+      );
     }
   };
 
@@ -159,13 +210,8 @@ const UpdateVoucher = () => {
     detailVoucher();
   }, []);
 
-  let isToastVisible = false;
-
   const updateVoucher = () => {
-    if (isToastVisible) {
-      return;
-    }
-
+    setIsLoading(true);
     let obj = {
       ma: ma,
       ten: ten,
@@ -180,13 +226,16 @@ const UpdateVoucher = () => {
     axios
       .put(apiURLVoucher + "/updateVoucher/" + id, obj)
       .then((response) => {
-        toast.success("Cập Nhật thành công!");
+        handleOpenAlertVariant("Cập nhật thành công!!!", Notistack.SUCCESS);
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 1000);
         setTimeout(() => {
           redirectToHienThiVoucher();
-        }, 2000);
+        }, 1000);
       })
       .catch((error) => {
-        toast.error("Đã xảy ra lỗi khi Cập Nhật voucher.");
+        handleOpenAlertVariant(error.response.data.message, Notistack.ERROR);
       });
   };
   const validationAll = () => {
@@ -195,15 +244,9 @@ const UpdateVoucher = () => {
       msg.ten = "Tên không được để trống !!!";
     }
 
-    // if (/^\s+|\s+$/.test(ten)) {
-    //   msg.ten = "Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi";
-    // }
     if (soLuong == null || soLuong === "") {
       msg.soLuong = "Số lượng không được để trống !!!";
     }
-    // if (/^\s+|\s+$/.test(soLuong)) {
-    //   msg.soLuong = "Số lượng không chứa ký tự khoảng trống ở đầu và cuối chuỗi";
-    // }
 
     if (soLuong <= 0 || soLuong > 10000) {
       msg.soLuong = "Số lượng cho phép từ 1 đến 10000";
@@ -218,33 +261,34 @@ const UpdateVoucher = () => {
       msg.value1 = "Điều kiện áp dụng từ 1đ đến 100.000.000đ";
     }
 
-    // if (ngayBatDau.isAfter(ngayKetThuc)) {
-    //   msg.ngayBatDau = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc !!!";
-    // }
-
     const numericValue2 = parseFloat(value?.replace(/[^0-9.-]+/g, ""));
     if (value == null || value === "") {
       msg.value = "Giá trị voucher không được trống !!!";
     }
 
     if (
-      (selectDiscount === "VNĐ" && numericValue2 <= 0) ||
-      (selectDiscount === "VNĐ" && numericValue2 > 100000000)
+      (selectDiscount === TypeDiscountString.VND && numericValue2 <= 0) ||
+      (selectDiscount === TypeDiscountString.VND && numericValue2 > 100000000)
     ) {
       msg.value = "Giá trị voucher từ 1đ đến 100.000.000đ";
     }
 
+    if (selectDiscount === TypeDiscountString.PERCENT && value <= 0) {
+      msg.value = "Giá trị tối đa chỉ nằm trong khoảng 1% - 100% !!!";
+    }
+
     const numericValue3 = parseFloat(valueToiDa?.replace(/[^0-9.-]+/g, ""));
     if (
-      (selectDiscount === "%" && valueToiDa === null) ||
-      (selectDiscount === "%" && valueToiDa === "")
+      (selectDiscount === TypeDiscountString.PERCENT && valueToiDa === null) ||
+      (selectDiscount === TypeDiscountString.PERCENT && valueToiDa === "")
     ) {
       msg.valueToiDa = "Giá trị tối đa không được để trống !!!";
     }
 
     if (
-      (selectDiscount === "%" && numericValue3 <= 0) ||
-      (selectDiscount === "%" && numericValue3 > 100000000)
+      (selectDiscount === TypeDiscountString.PERCENT && numericValue3 <= 0) ||
+      (selectDiscount === TypeDiscountString.PERCENT &&
+        numericValue3 > 100000000)
     ) {
       msg.valueToiDa = "Giá trị tối đa từ 1đ đến 100.000.000đ";
     }
@@ -261,7 +305,7 @@ const UpdateVoucher = () => {
   const handleSubmit = () => {
     const isValid = validationAll();
     if (!isValid) return;
-    updateVoucher();
+    handleOpenDialogConfirmUpdate();
   };
 
   return (
@@ -293,16 +337,16 @@ const UpdateVoucher = () => {
                 onChange={(e) => {
                   setMa(e.target.value);
                 }}
-                style={{ width: "300px" }}
+                style={{ width: "330px" }}
                 inputProps={{
-                  maxLength: 100, // Giới hạn tối đa 10 ký tự
+                  maxLength: 15, // Giới hạn tối đa 10 ký tự
                 }}
               />
               <span className="validate" style={{ color: "red" }}>
                 {validationMsg.ma}
               </span>
             </div>
-            <div className="ms-3">
+            <div className="ms-4">
               <TextField
                 label="Tên Voucher"
                 value={ten}
@@ -310,7 +354,7 @@ const UpdateVoucher = () => {
                 onChange={(e) => {
                   setTen(e.target.value);
                 }}
-                style={{ width: "300px" }}
+                style={{ width: "330px" }}
                 inputProps={{
                   maxLength: 100, // Giới hạn tối đa 10 ký tự
                 }}
@@ -332,7 +376,7 @@ const UpdateVoucher = () => {
                 onChange={(e) => {
                   setSoLuong(e.target.value);
                 }}
-                style={{ width: "300px" }}
+                style={{ width: "330px" }}
                 inputProps={{
                   maxLength: 10, // Giới hạn tối đa 10 ký tự
                 }}
@@ -341,7 +385,7 @@ const UpdateVoucher = () => {
                 {validationMsg.soLuong}
               </span>
             </div>
-            <div className="ms-3">
+            <div className="ms-4">
               {" "}
               <TextField
                 label="Điều kiện áp dụng khi đơn hàng đạt"
@@ -354,7 +398,7 @@ const UpdateVoucher = () => {
                     <InputAdornment position="start">VND</InputAdornment>
                   ),
                 }}
-                style={{ width: "300px" }}
+                style={{ width: "330px" }}
                 inputProps={{
                   maxLength: 20, // Giới hạn tối đa 10 ký tự
                 }}
@@ -375,50 +419,63 @@ const UpdateVoucher = () => {
                 value={selectDiscount}
                 onChange={handleChangeToggleButtonDiscount}
                 sx={{ borderRadius: "12px" }}
+                defaultValue={"VND"}
               >
-                {["VNĐ", "%"].map((item) => (
-                  <Box
-                    key={item}
-                    sx={(theme) => ({
-                      position: "relative",
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      width: 55,
-                      height: 54,
-                      "&:not([data-first-child])": {
-                        borderLeft: "1px solid",
-                        borderdivor: "divider",
-                      },
-                      [`&[data-first-child] .${radioClasses.action}`]: {
-                        borderTopLeftRadius: `calc(${theme.vars.radius.sm} + 5px)`,
-                        borderBottomLeftRadius: `calc(${theme.vars.radius.sm} + 5px)`,
-                      },
-                      [`&[data-last-child] .${radioClasses.action}`]: {
-                        borderTopRightRadius: `calc(${theme.vars.radius.sm} + 5px)`,
-                        borderBottomRightRadius: `calc(${theme.vars.radius.sm} + 5px)`,
-                      },
-                    })}
-                  >
-                    <Radio
-                      value={item}
-                      disableIcon
-                      overlay
-                      label={[item]}
-                      variant={selectDiscount === item ? "solid" : "plain"}
-                      slotProps={{
-                        input: { "aria-label": item },
-                        action: {
-                          sx: { borderRadius: 0, transition: "none" },
+                {[TypeDiscountString.VND, TypeDiscountString.PERCENT].map(
+                  (item) => (
+                    <Box
+                      key={item}
+                      sx={(theme) => ({
+                        position: "relative",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        width: 55,
+                        height: 54,
+                        "&:not([data-first-child])": {
+                          borderLeft: "1px solid",
+                          borderdivor: "divider",
                         },
-                        label: { sx: { lineHeight: 0 } },
-                      }}
-                    />
-                  </Box>
-                ))}
+                        [`&[data-first-child] .${radioClasses.action}`]: {
+                          borderTopLeftRadius: `calc(${theme.vars.radius.sm} + 5px)`,
+                          borderBottomLeftRadius: `calc(${theme.vars.radius.sm} + 5px)`,
+                        },
+                        [`&[data-last-child] .${radioClasses.action}`]: {
+                          borderTopRightRadius: `calc(${theme.vars.radius.sm} + 5px)`,
+                          borderBottomRightRadius: `calc(${theme.vars.radius.sm} + 5px)`,
+                        },
+                      })}
+                    >
+                      <Radio
+                        value={
+                          item === TypeDiscountString.VND
+                            ? TypeDiscountString.VND
+                            : TypeDiscountString.PERCENT
+                        }
+                        disableIcon
+                        overlay
+                        label={[
+                          item === TypeDiscountString.VND
+                            ? "VND"
+                            : item === TypeDiscountString.PERCENT
+                            ? "%"
+                            : "",
+                        ]}
+                        variant={selectDiscount === item ? "solid" : "plain"}
+                        slotProps={{
+                          input: { "aria-label": item },
+                          action: {
+                            sx: { borderRadius: 0, transition: "none" },
+                          },
+                          label: { sx: { lineHeight: 0 } },
+                        }}
+                      />
+                    </Box>
+                  )
+                )}
               </RadioGroup>
             </div>
-            <div className="ms-3">
+            <div className="ms-4">
               <TextField
                 label="Nhập Giá Trị Voucher"
                 value={value}
@@ -428,12 +485,16 @@ const UpdateVoucher = () => {
                   inputMode: "numeric",
                   startAdornment: (
                     <InputAdornment position="start">
-                      {selectDiscount === "VNĐ" ? "VND" : "%"}
+                      {selectDiscount === TypeDiscountString.VND
+                        ? TypeDiscountString.VND
+                        : TypeDiscountString.PERCENT
+                        ? "%"
+                        : ""}
                     </InputAdornment>
                   ),
                 }}
                 style={{
-                  width: "235.5px",
+                  width: "262px",
                 }}
                 inputProps={{
                   maxLength: 20, // Giới hạn tối đa 10 ký tự
@@ -448,7 +509,7 @@ const UpdateVoucher = () => {
                 {validationMsg.value}
               </span>
             </div>
-            <div className="ms-3">
+            <div className="ms-4">
               <TextField
                 label="Giá Trị Tối Đa"
                 value={valueToiDa}
@@ -460,9 +521,11 @@ const UpdateVoucher = () => {
                     <InputAdornment position="start">VND</InputAdornment>
                   ),
                 }}
-                disabled={selectDiscount === "VNĐ" ? true : false}
+                disabled={
+                  selectDiscount === TypeDiscountString.VND ? true : false
+                }
                 style={{
-                  width: "235.5px",
+                  width: "262px",
                 }}
                 inputProps={{
                   maxLength: 20, // Giới hạn tối đa 10 ký tự
@@ -491,7 +554,7 @@ const UpdateVoucher = () => {
                     onChange={(e) => {
                       setNgayBatDau(e);
                     }}
-                    sx={{ width: "295px" }}
+                    sx={{ width: "330px" }}
                   />
                 </DemoContainer>
               </LocalizationProvider>
@@ -511,7 +574,7 @@ const UpdateVoucher = () => {
                     onChange={(e) => {
                       setNgayKetThuc(e);
                     }}
-                    sx={{ width: "295px" }}
+                    sx={{ width: "330px" }}
                   />
                 </DemoContainer>
               </LocalizationProvider>
@@ -544,7 +607,10 @@ const UpdateVoucher = () => {
             type="primary"
             style={{ height: "35px", width: "120px", fontSize: "15px" }}
             onClick={() => {
-              redirectToHienThiVoucher();
+              setTimeout(() => {
+                setIsLoading(false);
+                redirectToHienThiVoucher();
+              }, 200);
             }}
           >
             <FontAwesomeIcon icon={faArrowLeft} />
@@ -557,143 +623,14 @@ const UpdateVoucher = () => {
           </Button>
         </div>
       </div>
-      {/* <div className="add-voucher-container">
-        
-        
-          <div className="row-input">
-            <div className="select-value">
-              <div className="">
-                <ToggleButtonGroup
-                  color="primary"
-                  value={selectDiscount}
-                  exclusive
-                  onChange={handleChangeToggleButtonDiscount}
-                  aria-label="Platform"
-                >
-                  <ToggleButton
-                    style={{
-                      height: "55px",
-                      borderRadius: "10px",
-                      width: "40px",
-                    }}
-                    value="1"
-                    onClick={() => handleReset()}
-                  >
-                    VND
-                  </ToggleButton>
-                  <ToggleButton
-                    style={{
-                      height: "55px",
-                      borderRadius: "10px",
-                      width: "40px",
-                    }}
-                    value="2"
-                    onClick={() => handleReset()}
-                  >
-                    %
-                  </ToggleButton>
-                </ToggleButtonGroup>
-              </div>
-              <div className="">
-                <TextField
-                  label="Nhập Giá Trị Voucher"
-                  value={giaTriVoucher}
-                  onChange={handleChange}
-                  id="outlined-start-adornment"
-                  InputProps={{
-                    inputMode: "numeric",
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        {selectDiscount === "1" ? "VND" : "%"}
-                      </InputAdornment>
-                    ),
-                  }}
-                  style={{
-                    marginLeft: "18px",
-                    width: selectDiscount === "1" ? "670px" : "390px",
-                  }}
-                />
-              </div>
-              <div className="ms-4">
-                <TextField
-                  label="Giá Trị Tối Đa:"
-                  value={giaTriToiDa}
-                  id="outlined-start-adornment"
-                  onChange={handleChangeGiaTriToiDa}
-                  InputProps={{
-                    inputMode: "numeric",
-                    startAdornment: (
-                      <InputAdornment position="start">VND</InputAdornment>
-                    ),
-                  }}
-                  style={{
-                    width: "250px",
-                    display: selectDiscount === "2" ? "block" : "none",
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          className="row-input"
-          style={{ display: "flex", justifyContent: "center" }}
-        >
-          <div className="input-container">
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DemoContainer components={["DateTimePicker"]}>
-                <DateTimePicker
-                  ampm={true}
-                  disablePast={true}
-                  label="Ngày Bắt Đầu"
-                  value={dayjs(ngayBatDau)}
-                  format="HH:mm DD/MM/YYYY"
-                  onChange={(e) => {
-                    setNgayBatDau(e);
-                  }}
-                  sx={{
-                    width: "368px",
-                  }}
-                />
-              </DemoContainer>
-            </LocalizationProvider>
-          </div>
-          <div className="input-container">
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DemoContainer components={["DateTimePicker"]}>
-                <DateTimePicker
-                  ampm={true}
-                  label="Ngày Kết Thúc"
-                  value={dayjs(ngayKetThuc)}
-                  disablePast={true}
-                  format="HH:mm DD/MM/YYYY"
-                  onChange={(e) => {
-                    setNgayKetThuc(e);
-                  }}
-                  sx={{
-                    width: "368px",
-                  }}
-                />
-              </DemoContainer>
-            </LocalizationProvider>
-          </div>
-        </div>
-
-        <div className="btn-accept">
-          <Button type="primary" onClick={handleSubmit} htmlType="submit">
-            <FontAwesomeIcon icon={faCheck} />
-            &nbsp; Xác nhận{" "}
-          </Button>
-          <ToastContainer />
-          &nbsp; &nbsp;
-          <Link to="/dashboard/voucher">
-            <Button type="primary" htmlType="submit">
-              <FontAwesomeIcon icon={faArrowLeft} />
-              &nbsp; Quay Về{" "}
-            </Button>
-          </Link>
-        </div>
-      </div> */}
+      <ConfirmDialog
+        open={openConfirm}
+        onClose={handleCloseDialogConfirmUpdate}
+        add={updateVoucher}
+        title={<Title />}
+        header={<Header />}
+      />
+      {!isLoading && <LoadingIndicator />}
     </>
   );
 };

@@ -34,4 +34,7 @@ public interface SanPhamChiTietKhuyenMaiResponse {
 
     @Value("#{target.delected}")
     Boolean getDelected();
+
+    @Value("#{target.id_san_pham}")
+    String getIdSanPham();
 }

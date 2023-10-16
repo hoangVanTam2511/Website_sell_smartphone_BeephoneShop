@@ -23,7 +23,9 @@ public class CameraServiceImpl {
     }
 
     public void insert(CreateCamera req) {
-        if (!req.getIdCamera().isEmpty()) update(req);
+        if (req.getIdCamera() == null){
+            update(req);
+        }
         else if (cameraRepository.findByDoPhanGiai(req.getResolutionCamera()) == null) {
             String newCode = cameraRepository.getNewCode() == null ? "CAMERA_0" : "CAMERA_" + cameraRepository.getNewCode();
             Camera camera = new Camera(newCode, req.getResolutionCamera());

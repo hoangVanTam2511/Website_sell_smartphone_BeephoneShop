@@ -4,8 +4,14 @@ import beephone_shop_projects.core.admin.order_management.model.request.CartItem
 import beephone_shop_projects.core.admin.order_management.model.response.CartItemResponse;
 import beephone_shop_projects.core.admin.order_management.service.GenericService;
 
+import java.util.List;
+
 public interface CartItemService extends GenericService<CartItemResponse, CartItemRequest, String> {
 
-  public CartItemResponse getCartItemById(String id);
+  CartItemResponse addProductItemToCart(CartItemRequest req) throws Exception;
+
+  boolean removeCartItemById(String id) throws Exception;
+
+  CartItemResponse updateAmountItemInCart(CartItemRequest req) throws Exception;
 
 }

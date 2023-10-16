@@ -7,8 +7,8 @@ import TextField from "@mui/material/TextField";
 import "../../../../assets/scss/HienThiNV.scss";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import * as dayjs from "dayjs";
 import {
-  Box,
   FormControl,
   FormControlLabel,
   // FormLabel,
@@ -21,6 +21,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
 import { useParams } from "react-router-dom";
 import AddressFormUpdate from "./DiaChiUpdate";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 const UpdateNV = () => {
   const { id } = useParams();
   let [hoVaTen, setTen] = useState("");
@@ -102,6 +105,10 @@ const UpdateNV = () => {
   const handleAnhDaiDienChange = (imageURL) => {
     setAnhDaiDien(imageURL);
   };
+  const handleChangeDate = (date) => {
+    const value = date.format("DD/MM/YYYY");
+    setNgaySinh(value);
+  };
   const handleHoVaTenChange = (e) => {
     const value = e.target.value;
     const specialCharPattern = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+/;
@@ -170,7 +177,7 @@ const UpdateNV = () => {
     setFormSubmitted(true);
     if (
       !hoVaTen ||
-      ngaySinh == null ||
+      !ngaySinh ||
       !email ||
       !soDienThoai ||
       !diaChi ||
@@ -281,42 +288,37 @@ const UpdateNV = () => {
                 <div
                   className="text-f"
                   style={{
-                    marginBottom: "20px",
-                    width: "65%",
+                    marginBottom: "30px",
+                    width: "70%",
                   }}
                 >
                   {/* Ngày sinh */}
-                  <Box
-                    component="form"
-                    sx={{
-                      "& .MuiTextField-root": {
-                        mt: 2,
-                        width: "100%",
-                        mb: 2,
-                      },
-                    }}
-                    inputProps={{
-                      max: today, // Set the maximum allowed date to today
-                    }}
-                    noValidate
-                    autoComplete="off"
-                  >
-                    <TextField
-                      label="Ngày sinh"
-                      type="date"
-                      value={ngaySinh}
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                      onChange={(e) => {
-                        setNgaySinh(e.target.value); // Cập nhật giá trị ngaySinh sau khi thay đổi
-                      }}
-                      error={formSubmitted && !ngaySinh} // Show error if form submitted and hoVaTen is empty
-                      helperText={
-                        formSubmitted && !ngaySinh && "Chưa chọn ngày sinh"
-                      }
-                    />
-                  </Box>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DemoContainer components={["DatePicker"]}>
+                      <DatePicker
+                        label="Ngày Sinh"
+                        value={dayjs(ngaySinh)}
+                        format="DD/MM/YYYY"
+                        onChange={handleChangeDate}
+                        sx={{
+                          position: "relative",
+
+                          "& .MuiInputBase-root": {
+                            width: "100%",
+                          },
+                        }}
+                        slotProps={{
+                          textField: {
+                            error: formSubmitted && !ngaySinh,
+                            helperText:
+                              formSubmitted && !ngaySinh
+                                ? "Chưa chọn ngày sinh"
+                                : "",
+                          },
+                        }}
+                      />
+                    </DemoContainer>
+                  </LocalizationProvider>
                 </div>
                 <div
                   className="text-f"

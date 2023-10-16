@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProductDetailRepository extends ISanPhamChiTietRepository {
@@ -24,6 +25,16 @@ public interface ProductDetailRepository extends ISanPhamChiTietRepository {
                 join fetch CH.mauSac join fetch CH.ram join fetch CH.rom
           """)
   List<SanPhamChiTiet> getProducts();
+
+  @Query("""
+                select P, I, C, CH from SanPhamChiTiet P join fetch P.images I
+                join fetch P.sanPham C
+                join fetch C.pin join fetch C.hang join fetch C.dongSanPham
+                join fetch C.manHinh join fetch C.chip join P.cauHinh CH
+                join fetch CH.mauSac join fetch CH.ram join fetch CH.rom
+                where P.id = ?1
+          """)
+  Optional<SanPhamChiTiet> findProductById(String id);
 
   @Query(value = """
         SELECT SUBSTRING(ma,16) + 1 FROM san_pham_chi_tiet ORDER BY ma DESC LIMIT 0,1

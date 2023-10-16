@@ -19,6 +19,8 @@ public class AccountResponse {
 
   private String hoVaTen;
 
+  private String email;
+
   private String diaChi;
 
   private String soDienThoai;

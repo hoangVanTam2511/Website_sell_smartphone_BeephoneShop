@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react'
-import { toast } from "react-toastify";
+import React, { useEffect, useState, memo } from 'react'
 import { TextField, FormControl, InputLabel, Select as SelectMui, OutlinedInput, MenuItem, IconButton, Tooltip, Zoom } from '@mui/material'
 import style from './style.css'
 import Table from '@mui/material/Table';
@@ -9,67 +8,120 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 import axios from 'axios';
 import { styled } from '@mui/material/styles';
-import { Button } from 'antd'
+import { Button, Table as TableAntd } from 'antd'
 import { ProductDetailsDialog, ProductsDialog } from './AlertDialogSlide';
-import data from "./data.js"
 import RemoveOutlinedIcon from '@mui/icons-material/RemoveOutlined';
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
-import LoadingIndicator from '../../../utilities/loading.js'
 import Radio from '@mui/joy/Radio';
 import RadioGroup from '@mui/joy/RadioGroup';
 import Sheet from '@mui/joy/Sheet';
-import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import EditIcon from '@mui/icons-material/Edit';
-import PointOfSales from './point-of-sales';
 import { parseInt } from 'lodash';
 import { Notistack } from './enum';
 import useCustomSnackbar from '../../../utilities/notistack';
+import CircularProgress from '@mui/material/CircularProgress';
+import LoadingIndicator from '../../../utilities/loading';
+import InputNumberAmountCart from './input-number-amount-cart';
+import { TextFieldAddress, TextFieldName, TextFieldPhone } from './text-field-info-ship';
 
-const TabItem = (props) => {
+const TabItem = ({
+  getCustomer, idCustomer, update, getAmount, isOpen, delivery, cartItems, add, remove, openProductDetails, openDialogProductDetails, closeDialogProductDetails, closeNoActionDialogProductDetails,
+  openProducts, openDialogProducts, closeDialogProducts, getShipFee
+}) => {
   const { handleOpenAlertVariant } = useCustomSnackbar();
-  const { delivery, cartItems, add, remove, openProductDetails, openDialogProductDetails, closeDialogProductDetails, closeNoActionDialogProductDetails,
-    openProducts, openDialogProducts, closeDialogProducts, closeNoActionDialogProducts, getShipFee, count, clickCount, changeCount, clickCount1
-  } = props;
+  const [loadingChild, setLoadingChild] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [products, setProducts] = useState([]);
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
   const [selectedProvince, setSelectedProvince] = useState('');
-  const [selectedWard, setSelectedWard] = useState('');
-  const [selectedDistrict, setSelectedDistrict] = useState('');
+  const [selectedWard, setSelectedWard] = useState("");
+  const [selectedDistrict, setSelectedDistrict] = useState("");
   const [receiveDate, setReceiveDate] = useState();
-  const [count1, setCount1] = useState(1);
+  const [customer, setCustomer] = useState({});
+  const [customerName, setCustomerName] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
+  const [customerAddress, setCustomerAddress] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
+  const [customerProvince, setCustomerProvince] = useState("");
+  const [customerDistrict, setCustomerDistrict] = useState("");
+  const [customerWard, setCustomerWard] = useState("");
 
-  const handleChangeCount1 = (value) => {
-    let newValue = parseInt(value);
-    newValue = newValue > 4 ? 4 : newValue;
-    newValue = newValue < 1 ? 1 : newValue;
-    setCount1(newValue);
+  useEffect(() => {
+    if (idCustomer === "") {
+      setCustomer(null);
+      setCustomerName("");
+      setCustomerPhone("");
+      setCustomerAddress("");
+
+      getAllProvinceGhn();
+      setSelectedWard("");
+      setSelectedProvince("");
+      setSelectedDistrict("");
+      setDistricts([]);
+      setWards([]);
+    }
+    else {
+      getCustomerById();
+    }
+  }, [idCustomer])
+
+  useEffect(() => {
+    const customer = {
+      hoVaTen: customerName,
+      soDienThoai: customerPhone,
+      diaChi: customerAddress,
+    }
+    getCustomer(customer);
+
+  }, [customerAddress, customerName, customerPhone])
+
+  const getPhone = (phone) => {
+    setCustomerPhone(phone);
+  }
+  const getName = (name) => {
+    setCustomerName(name);
+  }
+  const getAddress = (address) => {
+    setCustomerAddress(address);
+  }
+
+  const getCustomerById = async () => {
+    setIsLoading(true);
+    await axios
+      .get(`http://localhost:8080/khach-hang/hien-thi-theo/${idCustomer}`)
+      .then(async (response) => {
+        const data = response.data;
+        setCustomer(data);
+        setCustomerName(data.hoVaTen);
+        setCustomerPhone(data.soDienThoai);
+        setCustomerAddress(data.diaChi);
+        setCustomerEmail(data.email);
+
+        const listAddress = data && data.diaChiList;
+        const address = listAddress.find((a) => a.trangThai === 1);
+
+        const province = provinces.find((item) => item.ProvinceName === address.tinhThanhPho);
+        setSelectedProvince(province.ProvinceID);
+
+        const district = districts.find((item) => item.DistrictName === address.quanHuyen);
+        setSelectedDistrict(district.DistrictID);
+
+        await getAllWardGhnByIdDistrict(district.DistrictID, true, address.xaPhuong);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error(error);
+        setIsLoading(false);
+      });
   };
 
-  const handleClickCount1 = () => {
-    if (count == 1) {
-      handleOpenAlertVariant("Tối thiểu 1 sản phẩm!", Notistack.ERROR);
-    }
-    else {
-      setCount1(count - 1);
-    }
-  }
-  const handleClickCount = () => {
-    if (count == 4) {
-      handleOpenAlertVariant("Tối đa 4 sản phẩm!", Notistack.ERROR);
-    }
-    else {
-      setCount1(count + 1);
-    }
-  }
-
-  const handleChangeCount = (value) => {
-    changeCount(value);
-  }
+  useEffect(() => {
+    getAllDistrictGhnByIdProvince(selectedProvince);
+  }, [selectedProvince])
 
   const openDialogProductItems = () => {
     openDialogProductDetails();
@@ -81,12 +133,24 @@ const TabItem = (props) => {
   const addProductToCart = (priceProduct, idProduct, amount) => {
     add(priceProduct, idProduct, amount);
   }
-  // const openProductsDialog = () => {
-  //   openDialogProducts();
-  // }
 
-  const getAllProducts = () => {
-    axios.get(`http://localhost:8080/api/products`)
+  const updateAmount = (id, amount) => {
+    update(id, amount);
+    console.log(cartItems)
+  }
+
+  const closeProductsDialog = () => {
+    closeDialogProducts();
+    setProducts([]);
+  }
+
+  const openProductsDialog = () => {
+    getAllProducts();
+    openDialogProducts();
+  }
+
+  const getAllProducts = async () => {
+    await axios.get(`http://localhost:8080/api/products`)
       .then(response => {
         setProducts(response.data.data);
       }).catch(error => {
@@ -116,8 +180,8 @@ const TabItem = (props) => {
     )
   }
 
-  const getAllWardGhnByIdDistrict = (districtId) => {
-    axios.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward`, {
+  const getAllWardGhnByIdDistrict = async (districtId, selectWard, district) => {
+    await axios.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward`, {
       params: {
         district_id: districtId,
       },
@@ -128,12 +192,17 @@ const TabItem = (props) => {
     }).then(
       (response) => {
         setWards(response.data.data);
+        if (selectWard) {
+          const ward = response.data.data.find((item) => item.WardName === district);
+          setSelectedWard(ward.WardCode);
+          console.log(ward);
+        }
       }
     )
   }
 
-  const getAllDistrictGhnByIdProvince = (provinceId) => {
-    axios.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district`, {
+  const getAllDistrictGhnByIdProvince = async (provinceId) => {
+    await axios.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district`, {
       params: {
         province_id: provinceId,
       },
@@ -165,6 +234,8 @@ const TabItem = (props) => {
   const serviceID = 53320;
   const shopDistrictId = 1482;
   const shopWardCode = 11007;
+
+  const cartItemsSort = cartItems.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   const getReceiveDate = () => {
     axios.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/leadtime`, {
@@ -198,21 +269,20 @@ const TabItem = (props) => {
     return formattedDate;
   }
 
+
   useEffect(() => {
-    if (selectedProvince != "" && selectedDistrict != "" && selectedWard != "") {
+    if (selectedProvince != "" && selectedDistrict != "" && selectedWard != "" && delivery === true) {
       getReceiveDate();
       getShipFeeGhn();
     }
     else {
       getShipFee(0);
     }
-  }, [selectedWard, selectedDistrict, selectedProvince])
+  }, [selectedWard, selectedDistrict, selectedProvince, delivery])
 
   useEffect(() => {
-    if (delivery == true) {
-      getAllProvinceGhn();
-    }
-  }, [delivery]);
+    getAllProvinceGhn();
+  }, []);
 
   const handleChangeProvince = (event) => {
     const value = event.target.value;
@@ -226,6 +296,7 @@ const TabItem = (props) => {
   const handleChangeWard = (event) => {
     const value = event.target.value;
     setSelectedWard(value);
+    alert(value);
   };
 
   const handleChangeDistrict = (event) => {
@@ -234,31 +305,6 @@ const TabItem = (props) => {
     getAllWardGhnByIdDistrict(value);
     setSelectedWard("");
   };
-
-  useEffect(() => {
-    getAllProducts();
-  }, [])
-
-
-  const CssTextField = styled(TextField)({
-    "& label.Mui-focused": {
-      color: "#2f80ed"
-    },
-    "& .MuiInput-underline:after": {
-      borderBottomColor: "#2f80ed"
-    },
-    "& .MuiOutlinedInput-root": {
-      "& fieldset": {
-        borderColor: "#d8d8d8"
-      },
-      "&:hover fieldset": {
-        borderColor: "#d8d8d8" // use the same color as original border color
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: "#2f80ed"
-      }
-    }
-  });
 
   const IconTrash = () => {
     return (
@@ -288,7 +334,6 @@ const TabItem = (props) => {
 
   }
 
-
   const StyledTableContainer = styled(TableContainer)({
     boxShadow: 'none',
   });
@@ -305,11 +350,94 @@ const TabItem = (props) => {
   }
 `;
 
-
   const useStyles = () => ({
   });
 
   const classes = useStyles();
+
+  const columns = [
+    {
+      title: "Sản phẩm",
+      width: "40%",
+      align: "center",
+      render: (text, item) => (
+
+        <div className='d-flex'>
+          <Tooltip TransitionComponent={Zoom} title="Chi tiết sản phẩm" style={{ cursor: "pointer" }} placement="top">
+            <div className="product-img">
+              <img src={item && item.sanPhamChiTiet && item.sanPhamChiTiet.images && item.sanPhamChiTiet.images[0].duongDan} class='' alt="" style={{ width: "115px", height: "115px" }} />
+            </div>
+          </Tooltip>
+          <div className='product ms-3 text-start'>
+            <div classNamountme='product-name'>
+              <span className='' style={{ whiteSpace: "pre-line", fontSize: "15px", fontWeight: "500" }}>{item.sanPhamChiTiet.sanPham.tenSanPham + "\u00A0" + item.sanPhamChiTiet.cauHinh.ram.kichThuoc + "/" + item.sanPhamChiTiet.cauHinh.rom.kichThuoc + "GB" + " " + `(${item.sanPhamChiTiet.cauHinh.mauSac.tenMauSac})`}</span>
+            </div>
+            <div className=''>
+              <span className='product-price txt-price' style={{ fontSize: "16px", fontWeight: "500" }}>
+                {item && item.sanPhamChiTiet.donGia ? item.sanPhamChiTiet.donGia.toLocaleString("vi-VN", {
+                  style: "currency",
+                  currency: "VND",
+                }) : ""}
+              </span>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Số lượng",
+      align: "center",
+      dataIndex: "soLuong",
+      width: "1%",
+      render: (text, item) =>
+        <InputNumberAmountCart id={item.id} amountCurrent={item.soLuong} update={updateAmount} />,
+    },
+    {
+      title: "Thành tiền",
+      align: "center",
+      dataIndex: "donGia",
+      width: "20%",
+      render: (text, item) =>
+        <span style={{ fontSize: "17.5px", fontWeight: "500" }} className="txt-price">
+          {
+            item && total(item.donGia, item.soLuong).toLocaleString("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            })}
+        </span>
+    },
+    {
+      title: "Thao tác",
+      align: "center",
+      dataIndex: "actions",
+      width: "10%",
+      render: (text, item) =>
+        <div>
+          <Tooltip TransitionComponent={Zoom} title="Cập nhật">
+            <Button className=''
+              icon={
+                <EditIcon />
+              }
+              onClick={() => openDialogProductDetails()}
+              type="primary"
+              style={{ fontSize: "13px", height: "32.5px" }}
+            >
+            </Button>
+          </Tooltip>
+          <Tooltip TransitionComponent={Zoom} title="Xóa khỏi giỏ hàng">
+            <Button className='ms-2'
+              onClick={() => removeProductInCart(item.id)}
+              icon={
+                <IconTrash />
+              }
+              type="danger"
+              style={{ fontSize: "13px", height: "32.5px" }}
+            >
+            </Button>
+          </Tooltip>
+        </div>
+    },
+  ];
 
   return (
     <>
@@ -321,7 +449,7 @@ const TabItem = (props) => {
             </div>
             <div className="">
               <Button
-                onClick={() => openDialogProducts()}
+                onClick={() => openProductsDialog()}
                 className="rounded-2 button-mui"
                 type="primary"
                 style={{ height: "38px", width: "140px", fontSize: "15px" }}
@@ -337,214 +465,24 @@ const TabItem = (props) => {
           </div>
           <div className='ms-2 ps-1 mt-2' style={{ borderBottom: "2px solid #C7C7C7", width: "98.5%", borderWidth: "2px" }}></div>
           <div >
-            {cartItems.length == 0 ? <CartEmpty /> :
-
-              <div className='' style={{ height: "auto" }}>
-                <StyledTableContainer component={Paper}>
-                  <Table sx={{ minWidth: 650, boxShadow: "none" }} aria-label="simple table" className={classes.tableContainer}>
-                    <StyledTableHead>
-                      <TableRow>
-                        <TableCell align="center">Sản Phẩm</TableCell>
-                        <TableCell align="center">Số lượng</TableCell>
-                        <TableCell align="center">Thành tiền</TableCell>
-                        <TableCell align="center">Thao Tác</TableCell>
-                      </TableRow>
-                    </StyledTableHead>
-                    <StyledTableBody>
-                      {cartItems.map((item, index) => (
-                        <TableRow
-                          key={index}
-                          sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                        >
-                          <TableCell className="" style={{ width: "350px", paddingRight: "40px" }}>
-                            <div className='d-flex'>
-                              <Tooltip TransitionComponent={Zoom} title="Chi tiết sản phẩm" style={{ cursor: "pointer" }} placement="top">
-                                <div className="product-img">
-                                  <img src={item && item.sanPhamChiTiet && item.sanPhamChiTiet.images && item.sanPhamChiTiet.images[0].duongDan} class='' alt="" style={{ width: "115px", height: "115px" }} />
-                                </div>
-                              </Tooltip>
-                              <div className='product ms-3'>
-                                <div classNamountme='product-name'>
-                                  <span className='' style={{ whiteSpace: "pre-line", fontSize: "15px", fontWeight: "500" }}>{item.sanPhamChiTiet.sanPham.tenSanPham + "\u00A0" + item.sanPhamChiTiet.cauHinh.ram.kichThuoc + "/" + item.sanPhamChiTiet.cauHinh.rom.kichThuoc + "GB"}</span>
-                                </div>
-                                <div className='mt-2'>
-                                  <span className='product-price txt-price' style={{ fontSize: "16px", fontWeight: "500" }}>
-                                    {item && item.sanPhamChiTiet.donGia ? item.sanPhamChiTiet.donGia.toLocaleString("vi-VN", {
-                                      style: "currency",
-                                      currency: "VND",
-                                    }) : ""}
-                                  </span>
-                                </div>
-                                <div className='mt-2 pt-1 d-flex' style={{ width: "150px" }}>
-                                  <RadioGroup orientation='horizontal'
-                                    aria-labelledby="storage-label"
-                                    size="lg"
-                                    sx={{ gap: 1.7 }}
-                                  >
-                                    <Sheet
-                                      sx={{
-                                        borderRadius: 'md',
-                                        boxShadow: 'sm',
-                                      }}
-                                    >
-                                      <Radio disabled
-                                        label={
-                                          <>
-                                            <div>
-                                              <span className="p-2" style={{ fontSize: "14px", fontWeight: "500" }}>{item.sanPhamChiTiet.cauHinh.ram.kichThuoc + "/" + item.sanPhamChiTiet.cauHinh.rom.kichThuoc + "GB"}</span>
-                                            </div>
-                                          </>
-                                        }
-                                        overlay
-                                        disableIcon
-                                        slotProps={{
-                                          label: ({ checked }) => ({
-                                            sx: {
-                                              fontWeight: 'lg',
-                                              fontSize: 'md',
-                                              color: checked ? 'text.primary' : 'text.secondary',
-                                            },
-                                          }),
-                                          action: ({ checked }) => ({
-                                            sx: (theme) => ({
-                                              ...(checked && {
-                                                '--variant-borderWidth': '2px',
-                                                '&&': {
-                                                  // && to increase the specificity to win the base :hover styles
-                                                  borderColor: "#2f80ed",
-                                                },
-                                              }),
-                                            }),
-                                          }),
-                                        }}
-                                      />
-                                    </Sheet>
-                                  </RadioGroup>
-                                  <div className="ms-2 ps-1">
-                                    <RadioGroup orientation='horizontal'
-                                      aria-labelledby="storage-label"
-                                      size="lg"
-                                      sx={{ gap: 1.7 }}
-                                    >
-                                      <Sheet
-                                        sx={{
-                                          borderRadius: 'md',
-                                          boxShadow: 'sm',
-                                        }}
-                                      >
-                                        <Radio disabled
-                                          label={
-                                            <>
-                                              <div>
-                                                <span className="p-2" style={{ fontSize: "14px", fontWeight: "500" }}>{item.sanPhamChiTiet.cauHinh.mauSac.tenMauSac}</span>
-                                              </div>
-                                            </>
-                                          }
-                                          overlay
-                                          disableIcon
-                                          slotProps={{
-                                            label: ({ checked }) => ({
-                                              sx: {
-                                                fontWeight: 'lg',
-                                                fontSize: 'md',
-                                                color: checked ? 'text.primary' : 'text.secondary',
-                                              },
-                                            }),
-                                            action: ({ checked }) => ({
-                                              sx: (theme) => ({
-                                                ...(checked && {
-                                                  '--variant-borderWidth': '2px',
-                                                  '&&': {
-                                                    // && to increase the specificity to win the base :hover styles
-                                                    borderColor: "#2f80ed",
-                                                  },
-                                                }),
-                                              }),
-                                            }),
-                                          }}
-                                        />
-                                      </Sheet>
-                                    </RadioGroup>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </TableCell>
-                          <TableCell className='' align="center" style={{ width: "100px" }}>
-                            <div class="number-input1 ">
-                              <button onClick={() => handleClickCount1()}
-                                class="minus">
-                                <div className='wrap-minus'>
-                                  <span>
-                                    <RemoveOutlinedIcon style={{ fontSize: "18px" }} />
-                                  </span>
-                                </div>
-                              </button>
-                              <input value={item.soLuong} min="1" max="4" onChange={(e) => handleChangeCount(e)}
-                                name="quantity" class="quantity"
-                                type="number" />
-                              <button class="" onClick={() => handleClickCount()}>
-                                <div className='wrap-plus'>
-                                  <span >
-                                    <AddOutlinedIcon style={{ fontSize: "18px" }} />
-                                  </span>
-                                </div>
-                              </button>
-                            </div>
-                          </TableCell>
-                          <TableCell align="center" style={{ fontSize: "17px", width: "170px" }}>
-                            <span style={{ fontSize: "17.5px", fontWeight: "500" }} className="txt-price">
-                              {
-                                item && total(item.donGia, item.soLuong).toLocaleString("vi-VN", {
-                                  style: "currency",
-                                  currency: "VND",
-                                })}
-                            </span>
-                          </TableCell>
-                          <TableCell align="center">
-                            <Tooltip TransitionComponent={Zoom} title="Cập nhật">
-                              <Button className=''
-                                icon={
-                                  <EditIcon />
-                                }
-                                // onClick={() => openDialogProductDetails()}
-                                type="primary"
-                                style={{ fontSize: "13px", height: "32.5px" }}
-                              >
-                              </Button>
-
-                            </Tooltip>
-                            <Tooltip TransitionComponent={Zoom} title="Xóa khỏi giỏ hàng">
-                              <Button className='ms-2'
-                                onClick={() => removeProductInCart(item.id)}
-                                icon={
-                                  <IconTrash />
-                                }
-                                type="danger"
-                                style={{ fontSize: "13px", height: "32.5px" }}
-                              >
-                              </Button>
-
-
-                            </Tooltip>
-
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </StyledTableBody>
-                  </Table>
-                </StyledTableContainer>
-              </div>
-            }
-            {cartItems.length == 1 ?
-              <div className='' style={{ height: "320px" }}>
+            {cartItemsSort && cartItemsSort.length === 0 ? <CartEmpty /> :
+              <TableAntd
+                className='table-cart'
+                columns={columns}
+                dataSource={cartItemsSort}
+                pagination={false}
+                rowKey={"id"}
+                key={"id"}
+              />}
+            {cartItems && cartItems.length == 1 ?
+              <div className='' style={{ height: "320.5px" }}>
               </div>
               :
-              cartItems.length === 2 ?
-                <div className='' style={{ height: "172px" }}>
+              cartItems && cartItems.length === 2 ?
+                <div className='' style={{ height: "173px" }}>
                 </div>
-                : cartItems.length > 2 ?
-                  <div className='' style={{ height: "24.5px" }}>
+                : cartItems && cartItems.length > 2 ?
+                  <div className='' style={{ height: "25px" }}>
                   </div> : ""
             }
           </div>
@@ -558,6 +496,7 @@ const TabItem = (props) => {
                 </div>
                 <div className="">
                   <Button
+                    onClick={() => alert(customer)}
                     className="rounded-2 button-mui"
                     type="primary"
                     style={{ height: "35px", width: "130px", fontSize: "15px" }}
@@ -577,20 +516,10 @@ const TabItem = (props) => {
                   {delivery ?
                     <div style={{ width: "99.5%" }} className="">
                       <div>
-                        <TextField label="Tên người nhận"
-                          // value={receiveName}
-                          // onChange={handleChangeReceiveName}
-                          style={{ width: "100%" }}
-                          size='medium' className='mt-1' />
+                        <TextFieldName nameDefault={customerName} getName={getName} />
                       </div>
                       <div>
-                        <TextField label="Số điện thoại"
-                          style={{ width: "100%" }}
-                          inputProps={{
-                            style: {
-                            },
-                          }}
-                          size='medium' className='mt-3' />
+                        <TextFieldPhone phoneDefault={customerPhone} getPhone={getPhone} />
                       </div>
                       <div className='d-flex mt-3'>
                         <FormControl style={{ width: "100%" }}>
@@ -600,7 +529,7 @@ const TabItem = (props) => {
                             input={<OutlinedInput label="Tỉnh / Thành Phố" />}
                             value={selectedProvince}
                           >
-                            {provinces.map((province) => (
+                            {provinces && provinces.map((province) => (
                               <MenuItem
                                 key={province.ProvinceID}
                                 value={province.ProvinceID}
@@ -648,13 +577,7 @@ const TabItem = (props) => {
                         </FormControl>
                       </div>
                       <div>
-                        <TextField label="Địa chỉ"
-                          style={{ width: "100%" }}
-                          inputProps={{
-                            style: {
-                            },
-                          }}
-                          size='medium' className='mt-3' />
+                        <TextFieldAddress addressDefault={customerAddress} getAddress={getAddress} />
                       </div>
                       <TextField
                         multiline
@@ -700,25 +623,21 @@ const TabItem = (props) => {
               <div className='mt-3'></div>
             </div>
             <div style={{ marginTop: "24.5px" }}></div>
-          </> : ""
+          </> : null
         }
         <div className='mt-3'></div>
       </div>
       <ProductsDialog
+        getAmount={getAmount}
+        isOpen={isOpen}
         open={openProducts}
-        onClose={closeDialogProducts}
-        onCloseNoAction={closeNoActionDialogProducts}
+        onClose={closeProductsDialog}
         data={products}
         add={addProductToCart}
         openProductDetails={openProductDetails}
         openDialogProductItems={openDialogProductItems}
         closeDialogProductDetails={closeDialogProductDetails}
         closeNoActionDialogProductDetails={closeNoActionDialogProductDetails}
-        count={count}
-        changeCount={handleChangeCount}
-        clickCount={clickCount}
-        clickCount1={clickCount1}
-
       />
       <ProductDetailsDialog
       // open={openProductDetails}
@@ -727,7 +646,8 @@ const TabItem = (props) => {
       // addProduct={addProductToCart}
       />
 
+      {isLoading && <LoadingIndicator />}
     </>
   )
-}
-export default TabItem;
+};
+export default memo(TabItem);

@@ -9,6 +9,7 @@ import beephone_shop_projects.entity.CauHinh;
 import beephone_shop_projects.entity.GioHang;
 import beephone_shop_projects.entity.GioHangChiTiet;
 import beephone_shop_projects.entity.HoaDon;
+import beephone_shop_projects.entity.HoaDonChiTiet;
 import beephone_shop_projects.entity.MauSac;
 import beephone_shop_projects.entity.Ram;
 import beephone_shop_projects.entity.Rom;
@@ -53,6 +54,7 @@ public class OrderRepositoryImpl extends AbstractRepositoryImpl<HoaDon, String> 
       CriteriaQuery<HoaDon> criteriaQuery = criteriaBuilder.createQuery(this.getPersistenceClass());
 
       Root<HoaDon> root = criteriaQuery.from(this.getPersistenceClass());
+      Fetch<HoaDon, HoaDonChiTiet> joinOrderItems = root.fetch("orderItems", JoinType.LEFT);
       Fetch<HoaDon, GioHang> joinCart = root.fetch("cart", JoinType.INNER);
       Fetch<GioHang, GioHangChiTiet> joinCartItems = joinCart.
               fetch("cartItems", JoinType.LEFT);
@@ -90,6 +92,14 @@ public class OrderRepositoryImpl extends AbstractRepositoryImpl<HoaDon, String> 
 
 //      Fetch<HoaDon, HoaDonChiTiet> joinOrderItems = root.fetch("orderItems", JoinType.INNER);
       Root<HoaDon> root = criteriaQuery.from(this.getPersistenceClass());
+      Fetch<HoaDon, HoaDonChiTiet> joinOrderItems = root.fetch("orderItems", JoinType.LEFT);
+      Fetch<HoaDonChiTiet, SanPhamChiTiet> joinProductDetails = joinOrderItems.fetch("sanPhamChiTiet", JoinType.LEFT);
+      Fetch<SanPhamChiTiet, Anh> joinImages = joinProductDetails.fetch("images", JoinType.LEFT);
+      Fetch<SanPhamChiTiet, SanPham> joinProduct = joinProductDetails.fetch("sanPham", JoinType.LEFT);
+      Fetch<SanPhamChiTiet, CauHinh> joinConfiguration = joinProductDetails.fetch("cauHinh", JoinType.LEFT);
+      Fetch<CauHinh, Ram> joinRam = joinConfiguration.fetch("ram", JoinType.LEFT);
+      Fetch<CauHinh, Rom> joinRom = joinConfiguration.fetch("rom", JoinType.LEFT);
+      Fetch<CauHinh, MauSac> joinMauSac = joinConfiguration.fetch("mauSac", JoinType.LEFT);
 
       root.fetch("paymentMethods", JoinType.LEFT);
       root.fetch("orderHistories", JoinType.LEFT);
@@ -164,12 +174,14 @@ public class OrderRepositoryImpl extends AbstractRepositoryImpl<HoaDon, String> 
       CriteriaQuery<HoaDon> criteriaQuery = criteriaBuilder.createQuery(this.getPersistenceClass());
 
       Root<HoaDon> root = criteriaQuery.from(this.getPersistenceClass());
+      Fetch<HoaDon, HoaDonChiTiet> joinOrderItems = root.fetch("orderItems", JoinType.LEFT);
       Fetch<HoaDon, GioHang> joinCart = root.fetch("cart", JoinType.INNER);
       Fetch<GioHang, GioHangChiTiet> joinCartItems = joinCart.
               fetch("cartItems", JoinType.LEFT);
       Fetch<GioHangChiTiet, SanPhamChiTiet> joinProductDetails = joinCartItems.fetch("sanPhamChiTiet", JoinType.LEFT);
       Fetch<SanPhamChiTiet, SanPham> joinProduct = joinProductDetails.fetch("sanPham", JoinType.LEFT);
       Fetch<SanPhamChiTiet, CauHinh> joinConfiguration = joinProductDetails.fetch("cauHinh", JoinType.LEFT);
+      Fetch<SanPhamChiTiet, Anh> joinImages = joinProductDetails.fetch("images", JoinType.LEFT);
       Fetch<CauHinh, Ram> joinRam = joinConfiguration.fetch("ram", JoinType.LEFT);
       Fetch<CauHinh, Rom> joinRom = joinConfiguration.fetch("rom", JoinType.LEFT);
       Fetch<CauHinh, MauSac> joinMauSac = joinConfiguration.fetch("mauSac", JoinType.LEFT);
@@ -255,7 +267,7 @@ public class OrderRepositoryImpl extends AbstractRepositoryImpl<HoaDon, String> 
     }
 
     if (isPending != null && !isPending && state == null) {
-      Integer[] states = {0, 1, 2, 3, 4, 5};
+      Integer[] states = {0, 1, 2, 3, 4, 5, 7};
       predicates.add(root.get(fieldState).in(states));
       countPredicates.add(countRoot.get(fieldState).in(states));
     }

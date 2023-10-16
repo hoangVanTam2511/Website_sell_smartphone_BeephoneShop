@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react'
-import { makeStyles } from "@material-ui/core/styles";
+import React, { useEffect, useRef, useState } from 'react'
 import { Row, Col } from 'react-bootstrap'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { styled } from '@mui/material/styles';
@@ -16,15 +15,12 @@ import Box from '@mui/material/Box';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert from '@mui/material/Alert';
-import { FormHelperText, Slide, Tooltip } from '@mui/material';
+import { FormHelperText, Tooltip } from '@mui/material';
 import CreditScoreOutlinedIcon from '@mui/icons-material/CreditScoreOutlined';
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 import Badge from '@mui/material/Badge';
 import Zoom from '@mui/material/Zoom';
 
-import { toast } from "react-toastify";
 import { IoPersonCircle } from "react-icons/io5";
 import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 import { tabsClasses } from '@mui/material/Tabs';
@@ -36,7 +32,7 @@ import style from './style.css'
 import { ConfirmPaymentDialog, CustomersDialog, OrderPendingConfirmCloseDialog, ProductsDialog, ShipFeeInput, VouchersDialog } from './AlertDialogSlide';
 import axios from 'axios';
 import { FaRegMoneyBillAlt } from 'react-icons/fa';
-import { isNaN, map, parseInt, debounce } from 'lodash';
+import { isNaN, map, parseInt, debounce, update } from 'lodash';
 import { AutoComplete, InputGroup } from 'rsuite';
 import 'rsuite/dist/rsuite-no-reset.min.css';
 import CloseOutlined from '@mui/icons-material/CloseOutlined';
@@ -44,11 +40,64 @@ import TabItem from './tab-item';
 import LoadingIndicator from '../../../utilities/loading';
 import { OrderStatusString, OrderTypeString, Notistack } from './enum';
 import useCustomSnackbar from '../../../utilities/notistack';
+import InputSearchCustomer from './input-search-customer.js';
+
+const IOSSwitch = styled((props) => (
+  <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
+))(({ theme }) => ({
+  width: 42,
+  height: 26,
+  padding: 0,
+  '& .MuiSwitch-switchBase': {
+    padding: 0,
+    margin: 2,
+    transitionDuration: '300ms',
+    '&.Mui-checked': {
+      transform: 'translateX(16px)',
+      color: '#fff',
+      '& + .MuiSwitch-track': {
+        backgroundColor: theme.palette.mode === 'dark' ? '#2ECA45' : '#65C466',
+        opacity: 1,
+        border: 0,
+      },
+      '&.Mui-disabled + .MuiSwitch-track': {
+        opacity: 0.5,
+      },
+    },
+    '&.Mui-focusVisible .MuiSwitch-thumb': {
+      color: '#33cf4d',
+      border: '6px solid #fff',
+    },
+    '&.Mui-disabled .MuiSwitch-thumb': {
+      color:
+        theme.palette.mode === 'light'
+          ? theme.palette.grey[100]
+          : theme.palette.grey[600],
+    },
+    '&.Mui-disabled + .MuiSwitch-track': {
+      opacity: theme.palette.mode === 'light' ? 0.7 : 0.3,
+    },
+  },
+  '& .MuiSwitch-thumb': {
+    boxSizing: 'border-box',
+    width: 22,
+    height: 22,
+  },
+  '& .MuiSwitch-track': {
+    borderRadius: 26 / 2,
+    backgroundColor: theme.palette.mode === 'light' ? '#E9E9EA' : '#39393D',
+    opacity: 1,
+    transition: theme.transitions.create(['background-color'], {
+      duration: 500,
+    }),
+  },
+}));
 
 const PointOfSales = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [loadingInside, setLoadingInside] = useState(false);
+  const [clear, setClear] = useState(false);
+  const [loadingChild, setLoadingChild] = useState(false);
   const [delivery, setDelivery] = React.useState(false);
   const [paymentWhenReceive, setPaymentWhenReceive] = useState(false);
   const [description, setDescription] = useState('');
@@ -57,6 +106,8 @@ const PointOfSales = () => {
   const [discountValidate, setDiscountValidate] = useState("");
   const [discountFormat, setDiscountFormat] = useState('');
   const [shipFee, setShipFee] = useState(0);
+  const [isOpen, setIsOpen] = useState(false);
+  const [clearCus, setClearCus] = useState(false);
 
   const [products, setProducts] = useState([]);
   const [cartItems, setCartItems] = useState([]);
@@ -67,6 +118,7 @@ const PointOfSales = () => {
   const [customerPaymentFormat, setCustomerPaymentFormat] = useState("");
   const [customers, setCustomers] = useState([]);
   const [customer, setCustomer] = useState({});
+  const [idCustomer, setIdCustomer] = useState("");
   const [customerNeedPay, setCustomerNeedPay] = useState(null);
   const [customerNeedPayFormat, setCustomerNeedPayFormat] = useState(0);
 
@@ -76,8 +128,12 @@ const PointOfSales = () => {
   const [cartId, setCartId] = useState("");
   const [orders, setOrders] = useState([]);
   const [changedCartItems, setChangedCartItems] = useState(0);
-  const [alert, setAlert] = useState({});
   const [dieuKien, setDieuKien] = useState(0);
+  const [sizeCartItems, setSizeCartItems] = useState(0);
+  const [showAlert, setShowAlert] = useState(false);
+  const [customerName, setCustomerName] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
+  const [customerAddress, setCustomerAddress] = useState("");
 
   const { handleOpenAlertVariant } = useCustomSnackbar();
 
@@ -86,6 +142,18 @@ const PointOfSales = () => {
   const handleOpenDialogConfirmPayment = () => {
     if (cartItems && cartItems.length == 0) {
       handleOpenAlertVariant("Giỏ hàng chưa có sản phẩm!", Notistack.ERROR);
+    }
+    else if (customerPaymentFormat === "" && delivery === false) {
+      handleOpenAlertVariant("Vui lòng nhập số tiền thanh toán!", Notistack.ERROR);
+    }
+    else if (paymentWhenReceive === false && delivery === true && customerPaymentFormat === "") {
+      handleOpenAlertVariant("Vui lòng nhập số tiền thanh toán!", Notistack.ERROR);
+    }
+    else if (customerPayment < handleCountTotalMoneyCustomerNeedPay() && delivery == false) {
+      handleOpenAlertVariant("Số tiền thanh toán không khớp với số tiền cần trả!", Notistack.ERROR);
+    }
+    else if (customerPayment < handleCountTotalMoneyCustomerNeedPay() && delivery == true && paymentWhenReceive === false) {
+      handleOpenAlertVariant("Số tiền thanh toán không khớp với số tiền cần trả!", Notistack.ERROR);
     }
     else {
       setOpenDialogConfirmPayment(true);
@@ -102,6 +170,23 @@ const PointOfSales = () => {
     setDieuKien(dieuKien);
   }
 
+  const getCustomer = (customer) => {
+    setCustomer(customer);
+  }
+  const getClear = (clear) => {
+    setClear(clear);
+  }
+
+  let amountProductItem = 1;
+
+  const getAmount = (amount) => {
+    amountProductItem = amount;
+  }
+
+  const getIdCustomer = (id) => {
+    setIdCustomer(id);
+  }
+
   useEffect(() => {
     if (cartItems.length === 0 && discountValue != 0) {
       handleCheckVoucher(discount);
@@ -111,8 +196,6 @@ const PointOfSales = () => {
         if (discount.trim().length === 10) {
           handleCheckVoucher(discount);
         }
-        // if (discountValidate !== "Mã giảm giá không tồn tại.") {
-        // }
       }
       else if (discount != "" && discountValue != 0) {
         if (handleCountTotalMoney() < dieuKien) {
@@ -123,22 +206,26 @@ const PointOfSales = () => {
 
   }, [changedCartItems])
 
+
   const paymentOrder = async (data) => {
     setIsLoading(true);
     const orderRequest = {
       tongTien: handleCountTotalMoney(),
-      tienThua: handleCountTotalSurplus(),
+      tienThua: paymentWhenReceive === true ? 0 : handleCountTotalSurplus(),
       tongTienSauKhiGiam: handleCountTotalMoneyCustomerNeedPay(),
-      tienKhachTra: customerPayment || 0,
+      tienKhachTra: paymentWhenReceive === true ? null : customerPayment,
       trangThai: data.trangThai,
       loaiHoaDon: data.loaiHoaDon,
+      phiShip: delivery === true ? shipFee : null,
       // ghiChu: description,
-      // soDienThoaiNguoiNhan: "",
-      // tenNguoiNhan: "",
-      // diaChiNguoiNhan: "",
+      soDienThoaiNguoiNhan: customer && customer.soDienThoai,
+      tenNguoiNhan: customer && customer.hoVaTen,
+      diaChiNguoiNhan: customer && customer.diaChi,
       orderHistory: data.orderHistory,
       cart: order.cart,
       isPayment: true,
+      isUpdateInfo: false,
+      isUpdateVoucher: false,
       // paymentMethod: paymentMethod,
     };
     try {
@@ -153,22 +240,30 @@ const PointOfSales = () => {
         setIsLoading(false);
         handleOpenAlertVariant(`${data.loaiHoaDon == OrderTypeString.DELIVERY ? "Đặt hàng thành công!" : "Thanh toán thành công!"}`, Notistack.SUCCESS);
         navigate(`/dashboard/order-detail/${order.ma}`);
+        console.log(orderRequest);
       });
     } catch (error) { }
   };
-  const updateOrder = async (idVoucher) => {
-    const message = `${idVoucher != null || idVoucher != "" ? "Áp dụng thành công mã giảm giá!" : "Mã giảm giá đã được gỡ bỏ thành công!"}`;
-    setIsLoading(true);
+
+  // useEffect(() => {
+  //   updateOrder();
+  // }, [customer, idCustomer])
+
+  const updateOrder = async () => {
+    // setIsLoading(true);
     const orderRequest = {
       // ghiChu: description,
-      // soDienThoaiNguoiNhan: "",
-      // tenNguoiNhan: "",
-      // diaChiNguoiNhan: "",
-      voucher: {
-        id: idVoucher,
-      },
+      soDienThoaiNguoiNhan: customer && customer.soDienThoai,
+      tenNguoiNhan: customer && customer.hoVaTen,
+      diaChiNguoiNhan: customer && customer.diaChi,
+      // phiShip: shipFee,
+      loaiHoaDon: delivery ? OrderTypeString.DELIVERY : OrderTypeString.AT_COUNTER,
       isPayment: false,
-      // paymentMethod: paymentMethod,
+      isUpdateInfo: true,
+      isUpdateVoucher: false,
+      account: {
+        id: idCustomer,
+      }
     };
     try {
       await axios.put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
@@ -180,29 +275,26 @@ const PointOfSales = () => {
         }
       }).then(response => {
         setOrder(response.data.data);
-        setDiscount(response.data.data.voucher.ma);
-        setDiscountValue(response.data.data.voucher.giaTriVoucher);
+        setShipFee(response.data.data.phiShip);
         getAllOrdersPending();
-        setIsLoading(false);
-        handleOpenAlertVariant(message, Notistack.SUCCESS);
-        // setOpenAlertMui(true);
-        // setAlert({
-        //   message: "Áp dụng thành công mã giảm giá!",
-        //   color: "success",
-        // })
+        console.log(response.data.data)
+        // setIsLoading(false);
+        // handleOpenAlertVariant(message, Notistack.SUCCESS);
       });
     } catch (error) { }
   };
-  const handleAddOrRemoveVoucher = (idVoucher, loading, keep) => {
+  const handleAddOrRemoveVoucher = async (idVoucher, loading, keep) => {
     const message = `${idVoucher === null ? "Mã giảm giá đã được gỡ bỏ thành công!" : "Áp dụng thành công mã giảm giá!"}`;
     const orderRequest = {
       voucher: {
         id: idVoucher,
       },
       isPayment: false,
+      isUpdateInfo: false,
+      isUpdateVoucher: true,
     };
     if (idVoucher === null && loading) {
-      setLoadingInside(true);
+      setLoadingChild(true);
       setTimeout(() => {
         try {
           axios.put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
@@ -220,7 +312,7 @@ const PointOfSales = () => {
             setDiscountValidate("");
             getAllOrdersPending();
             handleOpenAlertVariant(message, Notistack.SUCCESS);
-            setLoadingInside(false);
+            setLoadingChild(false);
           });
         } catch (error) {
           console.log(error);
@@ -251,7 +343,7 @@ const PointOfSales = () => {
       }
     }
     else if (idVoucher != null && loading) {
-      setLoadingInside(true);
+      setLoadingChild(true);
       setTimeout(() => {
         try {
           axios.put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
@@ -269,7 +361,7 @@ const PointOfSales = () => {
             setDiscountValidate("");
             getAllOrdersPending();
             handleOpenAlertVariant(message, Notistack.SUCCESS);
-            setLoadingInside(false);
+            setLoadingChild(false);
           });
         } catch (error) {
           console.log(error);
@@ -278,7 +370,7 @@ const PointOfSales = () => {
     }
     else {
       try {
-        axios.put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+        await axios.put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -293,7 +385,7 @@ const PointOfSales = () => {
           setDiscountValidate("");
           getAllOrdersPending();
           handleOpenAlertVariant(message, Notistack.SUCCESS);
-          setLoadingInside(false);
+          setLoadingChild(false);
         });
       } catch (error) {
         console.log(error);
@@ -301,12 +393,36 @@ const PointOfSales = () => {
     }
   };
 
+  const handleUpdateAmountCartItem = async (id, amount) => {
+    setIsLoading(true);
+    const request = {
+      id: id,
+      amount: amount,
+    }
+    try {
+      await axios.put(`http://localhost:8080/api/carts/amount`, request, {
+        headers: {
+          "Content-Type": "application/json",
+        }
+      });
+      await getAllOrdersPending();
+      await getCartItems();
+      handleOpenAlertVariant("Cập nhật số lượng thành công!", Notistack.SUCCESS);
+      setIsLoading(false);
+    }
+    catch (error) {
+      setIsLoading(false);
+      console.error("Error");
+    }
+  }
+
+
   const processingPaymentOrder = () => {
     if (cartItems && cartItems.length > 0) {
       const statusOrder = delivery ? OrderStatusString.PENDING_CONFIRM : OrderStatusString.HAD_PAID;
       const typeOrder = delivery ? OrderTypeString.DELIVERY : OrderTypeString.AT_COUNTER;
       const orderHistory = {
-        thaoTac: "Đã Thanh Toán",
+        thaoTac: "Thanh Toán Thành Công",
         loaiThaoTac: 6,
         moTa: "Khách hàng đã thanh toán đơn hàng",
         createdAt: new Date(),
@@ -338,28 +454,32 @@ const PointOfSales = () => {
     paymentOrder(null, null, null);
   }
 
-  const getAllOrdersPending = () => {
-    axios
+  const getAllOrdersPending = async () => {
+    await axios
       .get(`http://localhost:8080/api/orders/pending`, {
       })
       .then((response) => {
         setOrders(response.data.data);
+        setIsLoading(false);
 
         if (isFirstGet) {
           setOrder(response && response.data.data[0])
           setCartId(response && response.data.data[0].cart.id);
+          setShipFee(response && response.data.data[0].phiShip || 0);
+          setDelivery(response && response.data.data[0].loaiHoaDon === OrderTypeString.DELIVERY ? true : false);
           setCartItems(response && response.data.data[0].cart.cartItems);
-          // setShipFee(response ? response.data.data[0].tienShip : 0);
           setDiscount(response && response.data.data[0].voucher.ma);
           setIdVoucher(response && response.data.data[0].voucher.id);
           setDiscountValue(response && response.data.data[0].voucher.giaTriVoucher);
-          setIsFirstGet(false);
         }
       })
       .catch((error) => {
         console.error(error);
+      }).finally(() => {
+        setIsFirstGet(false);
       })
   }
+
   const getVouchersIsActive = () => {
     axios
       .get(`http://localhost:8080/voucher/voucherActive`)
@@ -371,11 +491,26 @@ const PointOfSales = () => {
       });
   }
 
-  const getOrderPendingAfterAddOrDeleteCartItems = () => {
-    axios
+  const getCartItems = async () => {
+    await axios
       .get(`http://localhost:8080/api/orders/pending/${order.id}`)
       .then((response) => {
-        setCartItems(response.data.data.cart.cartItems);
+        const data = response.data.data;
+        setOrder(data);
+        setCartItems(data.cart.cartItems);
+
+        let total = 0 - discountValue;
+        data && data.cart.cartItems.map((item) => {
+          total += item.donGia * item.soLuong;
+        });
+        let result = "";
+        result = String(total)
+          .replace(/[^0-9]+/g, "")
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        setCustomerPaymentFormat(result);
+        setCustomerPayment(total);
+
+
         setChangedCartItems(changedCartItems + 1);
       })
       .catch((error) => {
@@ -383,8 +518,8 @@ const PointOfSales = () => {
       });
   }
 
-  const getOrderPendingLastRemove = () => {
-    axios
+  const getOrderPendingLastRemove = async () => {
+    await axios
       .get(`http://localhost:8080/api/orders/pending`, {
       })
       .then((response) => {
@@ -393,11 +528,19 @@ const PointOfSales = () => {
         const lastOrder = orders[orders.length - 1];
         setOrder(lastOrder);
         setCartId(lastOrder.cart.id);
+        setShipFee(lastOrder.shipFee || 0);
         setCartItems(lastOrder.cart.cartItems);
+        // setDelivery(lastOrder.loaiHoaDon === OrderTypeString.DELIVERY ? true : false);
+        // setPaymentWhenReceive(order.loaiHoaDon === OrderTypeString.DELIVERY ? true : false);
         if (lastOrder.voucher != null) {
           setDiscount(lastOrder.voucher.ma);
-          setDiscount(lastOrder.voucher.id);
+          setIdVoucher(lastOrder.voucher.id);
           setDiscountValue(lastOrder.voucher.giaTriVoucher);
+        }
+        else {
+          setDiscount("");
+          setIdVoucher("");
+          setDiscountValue(0);
         }
         setValueTabs(orders.length);
       })
@@ -406,41 +549,60 @@ const PointOfSales = () => {
       });
   }
 
-  const handleAddOrderPending = () => {
-    axios
-      .post(`http://localhost:8080/api/orders?isPending=true`)
-      .then(response => {
-        getAllOrdersPending();
+  const handleAddOrderPending = async () => {
+    if (orders.length === 5) {
+      handleOpenAlertVariant("Tối đa 5 tab!", "warning");
+    }
+    else {
+      const data = {
+        id: order.id
+      };
+      try {
+        const response = await axios.post(`http://localhost:8080/api/orders?isPending=true`, data);
+        await getAllOrdersPending();
         setValueTabs(orders.length + 1);
         setOrder(response.data.data);
         setCartId(response.data.data.cart.id);
+        // setDelivery(delivery ? true : false);
+        // setPaymentWhenReceive(order.loaiHoaDon === OrderTypeString.DELIVERY ? true : false);
         setCartItems([]);
+        setShipFee(response.data.data.phiShip || 0);
         setDiscount("");
         setIdVoucher("");
         setDiscountValue(0);
-      }).catch(error => {
+      } catch (error) {
         console.log(error);
-      })
+      }
+    }
   }
 
   const handleDeleteCartItemById = async (id) => {
     setIsLoading(true);
     try {
       await axios.delete(`http://localhost:8080/api/carts/${id}`);
-      getOrderPendingAfterAddOrDeleteCartItems();
-      getAllOrdersPending();
+      await getCartItems();
+      await getAllOrdersPending();
       setIsLoading(false);
+      handleOpenAlertVariant("Xóa thành công sản phẩm khỏi giỏ hàng!", Notistack.SUCCESS);
     } catch (error) {
       console.log(error);
     }
   };
 
   const handleDeleteOrderPendingById = async (id) => {
+    if (sizeCartItems > 0) {
+      setIsLoading(true);
+    }
     try {
       await axios.delete(`http://localhost:8080/api/orders/${id}`);
-      getOrderPendingLastRemove();
+      await getOrderPendingLastRemove();
+      if (sizeCartItems > 0) {
+        setIsLoading(false);
+      }
     } catch (error) {
       console.log(error);
+    } finally {
+      setSizeCartItems(0);
     }
   };
 
@@ -458,6 +620,11 @@ const PointOfSales = () => {
     setOrder(order);
     setCartId(order.cart.id);
     setCartItems(order.cart.cartItems);
+    // setDelivery(order.loaiHoaDon === OrderTypeString.DELIVERY ? true : false)
+    // setPaymentWhenReceive(order.loaiHoaDon === OrderTypeString.DELIVERY ? true : false);
+    if (order.loaiHoaDon === OrderTypeString.DELIVERY) {
+      setShipFee(order.phiShip || 0);
+    }
     if (order && order.voucher) {
       setIdVoucher(order && order.voucher && order.voucher.id);
       setDiscount(order && order.voucher && order.voucher.ma);
@@ -468,39 +635,20 @@ const PointOfSales = () => {
       setDiscount("");
       setDiscountValue(0);
     }
-
-  }
-
-  const getCustomerById = async (id) => {
-    try {
-      const response = await axios.get(`http://localhost:8080/khach-hang/hien-thi-theo/${id}`);
-      setCustomer(response.data);
-    } catch (error) {
-      console.error(error);
-    }
+    setDiscountValidate("");
   }
 
   const getAllCustomers = () => {
     axios.get(`http://localhost:8080/khach-hang/hien-thi`)
-      // axios.get(`http://localhost:8080/api/customers`)
       .then(response => {
-        setCustomers(response.data.content);
-      }).catch(error => {
-        console.error("Error");
-      })
-  }
-
-  const getAllProducts = () => {
-    axios.get(`http://localhost:8080/api/products`)
-      .then(response => {
-        setProducts(response.data);
+        setCustomers(response.data.data);
       }).catch(error => {
         console.error("Error");
       })
   }
 
   const handleCheckVoucher = (value) => {
-    setLoadingInside(true);
+    setLoadingChild(true);
     setTimeout(() => {
       axios.get(`http://localhost:8080/voucher/findVoucher`, {
         params: {
@@ -510,18 +658,18 @@ const PointOfSales = () => {
       })
         .then(response => {
           setDiscountValidate("");
-          if (response.data.status === true) {
-            handleAddOrRemoveVoucher(response.data.voucher.id, false);
+          if (response.data.data.status === true) {
+            handleAddOrRemoveVoucher(response.data.data.voucher.id, false);
             setDiscountValidate("");
           }
-          if (response.data.status === null) {
-            setDiscountValidate(response.data.message);
+          if (response.data.data.status === null) {
+            setDiscountValidate(response.data.data.message);
             if (discountValue != 0) {
               setDiscountValue(0);
               handleAddOrRemoveVoucher(null, false, true);
             }
           }
-          setLoadingInside(false);
+          setLoadingChild(false);
         }).catch(error => {
           console.error("Error");
         })
@@ -610,13 +758,12 @@ const PointOfSales = () => {
   }
 
   useEffect(() => {
+    setIsLoading(true);
     getAllOrdersPending();
     getAllCustomers();
     // getAllProducts();
   }, []);
 
-  // const [idProduct, setIdProduct] = useState();
-  // const [priceProduct, setPriceProduct] = useState();
   const [openProducts, setOpenProducts] = useState(false);
   const [openProductDetails, setOpenProductDetails] = useState(false);
 
@@ -635,37 +782,39 @@ const PointOfSales = () => {
 
   const handleOpenDialogProducts = () => {
     setOpenProducts(true);
+    setIsOpen(true);
   }
 
   const handleCloseDialogProducts = () => {
     setOpenProducts(false);
+    setIsOpen(false);
   }
   const handleCloseNoActionDialogProducts = () => {
     setOpenProducts(false);
   }
   const [count, setCount] = useState(1);
   const handleChangeCount = (value) => {
-    let newValue = parseInt(value);
-    newValue = newValue > 4 ? 4 : newValue;
-    newValue = newValue < 1 ? 1 : newValue;
+    let newValue = value;
+    // newValue = newValue > 4 ? 4 : newValue;
+    // newValue = newValue < 1 ? 1 : newValue;
     setCount(newValue);
   };
 
   const handleClickCount1 = () => {
-    if (count == 1) {
-      handleOpenAlertVariant("Tối thiểu 1 sản phẩm!", Notistack.ERROR);
-    }
-    else {
-      setCount(count - 1);
-    }
+    // if (count == 1) {
+    //   handleOpenAlertVariant("Tối thiểu 1 sản phẩm!", Notistack.ERROR);
+    // }
+    // else {
+    setCount(count - 1);
+    // }
   }
   const handleClickCount = () => {
-    if (count == 4) {
-      handleOpenAlertVariant("Tối đa 4 sản phẩm!", Notistack.ERROR);
-    }
-    else {
-      setCount(count + 1);
-    }
+    // if (count == 4) {
+    //   handleOpenAlertVariant("Tối đa 4 sản phẩm!", Notistack.ERROR);
+    // }
+    // else {
+    setCount(count + 1);
+    // }
   }
 
   const addCartItemsToCart = async (cartItems) => {
@@ -673,37 +822,43 @@ const PointOfSales = () => {
     const data = {
       amount: cartItems.amount,
       price: cartItems.price,
-      cartId: cartItems.cartId,
-      productId: cartItems.productId,
-      // orderId: cartItems.orderId,
+      cart: {
+        id: cartItems.cartId,
+      },
+      productItem: {
+        id: cartItems.productId
+      },
     };
     try {
-      await axios.post(`http://localhost:8080/api/carts`, data, {
+      await axios.put(`http://localhost:8080/api/carts`, data, {
         headers: {
           "Content-Type": "application/json",
         },
-      }).then(response => {
-        getAllOrdersPending();
-        getOrderPendingAfterAddOrDeleteCartItems();
-        setIsLoading(false);
-        handleCloseDialogProductDetails();
-        handleCloseDialogProducts();
-        handleOpenAlertVariant("Thêm vào giỏ hàng thành công ", Notistack.SUCCESS);
       });
+      await getAllOrdersPending();
+      await getCartItems();
+      handleCloseDialogProductDetails();
+      handleCloseDialogProducts();
+      handleOpenAlertVariant("Thêm vào giỏ hàng thành công ", Notistack.SUCCESS);
+      setIsLoading(false);
+      setIsOpen(false);
+
     } catch (error) {
       handleOpenAlertVariant(error.response.data.message, Notistack.ERROR);
       setIsLoading(false);
+      setIsOpen(false);
     }
   };
-  const handleAddProductToCart = (priceProduct, idProduct, amount) => {
+  const handleAddProductToCart = (priceProduct, idProduct) => {
+    const amount = amountProductItem;
     const cartItems = {
       amount: amount,
       price: priceProduct,
       cartId: cartId,
       productId: idProduct,
-      // orderId: order.id,
+
     }
-    if (isNaN(amount) || amount === 0 || amount === null || amount === "") {
+    if (isNaN(cartItems.amount) || cartItems.amount === 0 || cartItems.amount === null || cartItems.amount === "") {
       handleOpenAlertVariant("Vui lòng nhập số lượng!", Notistack.ERROR);
     }
     else {
@@ -747,77 +902,6 @@ const PointOfSales = () => {
     }
   }
 
-  const IOSSwitch = styled((props) => (
-    <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
-  ))(({ theme }) => ({
-    width: 42,
-    height: 26,
-    padding: 0,
-    '& .MuiSwitch-switchBase': {
-      padding: 0,
-      margin: 2,
-      transitionDuration: '300ms',
-      '&.Mui-checked': {
-        transform: 'translateX(16px)',
-        color: '#fff',
-        '& + .MuiSwitch-track': {
-          backgroundColor: theme.palette.mode === 'dark' ? '#2ECA45' : '#65C466',
-          opacity: 1,
-          border: 0,
-        },
-        '&.Mui-disabled + .MuiSwitch-track': {
-          opacity: 0.5,
-        },
-      },
-      '&.Mui-focusVisible .MuiSwitch-thumb': {
-        color: '#33cf4d',
-        border: '6px solid #fff',
-      },
-      '&.Mui-disabled .MuiSwitch-thumb': {
-        color:
-          theme.palette.mode === 'light'
-            ? theme.palette.grey[100]
-            : theme.palette.grey[600],
-      },
-      '&.Mui-disabled + .MuiSwitch-track': {
-        opacity: theme.palette.mode === 'light' ? 0.7 : 0.3,
-      },
-    },
-    '& .MuiSwitch-thumb': {
-      boxSizing: 'border-box',
-      width: 22,
-      height: 22,
-    },
-    '& .MuiSwitch-track': {
-      borderRadius: 26 / 2,
-      backgroundColor: theme.palette.mode === 'light' ? '#E9E9EA' : '#39393D',
-      opacity: 1,
-      transition: theme.transitions.create(['background-color'], {
-        duration: 500,
-      }),
-    },
-  }));
-
-
-  const Alert = React.forwardRef(function Alert(props, ref) {
-    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-  });
-  const [isValidate, setIsValidate] = useState(false);
-  const [openAlertMui, setOpenAlertMui] = React.useState(false);
-
-
-  const handleClick = () => {
-    setOpenAlertMui(true);
-  };
-
-  const handleClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setOpenAlertMui(false);
-  };
-
-
   const [openCustomers, setOpenCustomers] = useState();
   const [openVouchers, setOpenVouchers] = useState();
   const [openOrderClose, setOpenOrderClose] = useState();
@@ -828,6 +912,7 @@ const PointOfSales = () => {
 
   const handleCloseNoActionDialogOrderClose = () => {
     setOpenOrderClose(false);
+    setSizeCartItems(0);
   }
   const handleCloseDialogOrderClose = (id) => {
     handleDeleteOrderPendingById(id);
@@ -859,36 +944,18 @@ const PointOfSales = () => {
   //   setReceiveName(value);
   // };
 
-  const removeCustomerInput = () => {
-    setDataCus("");
-    setCustomerInput("");
-  }
-
   const [valueTabs, setValueTabs] = React.useState(1);
   const [itemMa, setItemMa] = React.useState("");
   const [itemId, setItemId] = React.useState("");
 
   const handleChange = (event, newValue) => {
+    setIsLoading(true);
     setValueTabs(newValue);
     getOrderPendingByTabIndex(newValue)
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 250);
   };
-
-  const [openAlert, setOpenAlert] = React.useState(false);
-  const [open2, setOpen2] = React.useState(false);
-  const handleClose2 = () => {
-    setOpen2(false);
-  };
-
-  const handleClose1 = () => {
-    setAlert(false);
-  };
-  const handleOpenAlert = () => {
-    setAlert(true);
-
-  };
-
-  const [openAutocompleteCustomers, setOpenAutocompleteCustomers] = useState(false);
-  const [inputValue, setInputValue] = useState("");
 
   const StyledBadge = styled(Badge)(({ theme }) => ({
     '& .MuiBadge-badge': {
@@ -919,36 +986,6 @@ const PointOfSales = () => {
     }
   });
 
-  const [dataCus, setDataCus] = useState("");
-  const [openCus, setOpenCus] = useState(false);
-  const [customerInput, setCustomerInput] = useState("");
-  const handleGetDataCustomer = value => {
-    const newValue = String(value.split(" - ")[0]);
-    setDataCus(newValue);
-  }
-  const handleGetSelectDataCustomer = value => {
-    setCustomerInput(value);
-  }
-
-  const data1 = customers.map((customer) =>
-    customer.hoVaTen + " - " +
-    customer.ma + " - " +
-    customer.soDienThoai
-  );
-
-  const [showParentTooltip, setShowParentTooltip] = useState(false);
-
-  const handleMouseEnterChild = (event) => {
-    event.stopPropagation(); // Ngăn chặn sự kiện lan truyền lên đến tooltip cha
-  };
-  const [showPlaceholderTooltip, setShowPlaceholderTooltip] = useState(false);
-
-  const handleKeyDown = (event) => {
-    if (customerInput != "") {
-      event.preventDefault();
-    }
-  }
-
   return (
     <>
       <Row className='mt-4 d-flex' style={{ height: "auto", margin: "auto" }}>
@@ -964,7 +1001,7 @@ const PointOfSales = () => {
                     variant="scrollable"
                     TabIndicatorProps={{
                       title: "indicator",
-                      sx: { backgroundColor: "#0B6BCB", height: 3.4 } //width: "25% !important"
+                      sx: { backgroundColor: "#0B6BCB", height: 4 } //width: "25% !important"
                     }}
                     sx={{
                       [`& .${tabsClasses.scrollButtons}`]: {
@@ -985,7 +1022,7 @@ const PointOfSales = () => {
                               <div className='ms-1'></div>
                               {orders && orders.length > 1 ?
                                 <>
-                                  <div onClick={(event) => { event.stopPropagation() }} onMouseDown={() => { handleConfirmBeforeDeleteOrderPendingHasProduct(item && item.cart && item.cart.cartItems && item.cart.cartItems.length, item.id); setItemMa(item.ma); setItemId(item.id) }} className='ms-2 ps-1 iconButton' style={{ position: "relative" }}>
+                                  <div onClick={(event) => { event.stopPropagation() }} onMouseDown={() => { handleConfirmBeforeDeleteOrderPendingHasProduct(item && item.cart && item.cart.cartItems && item.cart.cartItems.length, item.id); setItemMa(item.ma); setItemId(item.id); setSizeCartItems(item.cart.cartItems.length || 0) }} className='ms-2 ps-1 iconButton' style={{ position: "relative" }}>
                                     <div className='' style={{ position: "absolute", bottom: "-5px" }}>
                                       <Tooltip title="Đóng" TransitionComponent={Zoom}>
                                         <IconButton aria-label="delete" size="small" className=''>
@@ -1022,7 +1059,13 @@ const PointOfSales = () => {
               </Box>
               <div className='scroll-container3' style={{ width: "100.6%" }}>
                 <TabPanel className='' sx={{ margin: 0.1, padding: 0 }} value={valueTabs}>
+                  {/*
+*/}
                   <TabItem
+                    getCustomer={getCustomer}
+                    idCustomer={idCustomer}
+                    getAmount={getAmount}
+                    isOpen={isOpen}
                     getShipFee={getShipFee}
                     openProducts={openProducts}
                     openDialogProducts={handleOpenDialogProducts}
@@ -1036,10 +1079,7 @@ const PointOfSales = () => {
                     remove={handleDeleteCartItemById}
                     delivery={delivery}
                     cartItems={cartItems}
-                    count={count}
-                    changeCount={handleChangeCount}
-                    clickCount={handleClickCount}
-                    clickCount1={handleClickCount1}
+                    update={handleUpdateAmountCartItem}
                   />
                 </TabPanel>
               </div>
@@ -1050,86 +1090,7 @@ const PointOfSales = () => {
           <div className='mt-2'>
             <div style={{ height: "583px" }}>
               <div className='mt-3 ms-2'>
-                <InputGroup
-                  className={`${customerInput == "" ? "" : "active"}`}
-                  inside style={{
-                    width: "auto", height: 38, position: ""
-                  }}>
-                  <InputGroup.Button tabIndex={-1} className="disable-hover">
-                    {customerInput != "" ?
-                      <Tooltip title="Xem khách hàng">
-                        <IoPersonCircle style={{ fontSize: "23px" }} />
-                      </Tooltip> :
-                      <svg style={{ color: "darkgray", marginBottom: "1px" }} fill="none" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-                        <circle cx="11.7669" cy="11.7666" r="8.98856" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                        <path d="M18.0186 18.4851L21.5426 22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                      </svg>
-                    }
-                  </InputGroup.Button>
-                  <AutoComplete className={``}
-                    onKeyDown={handleKeyDown}
-                    // readOnly={customerInput != "" ? true : false}
-                    value={dataCus}
-                    onChange={handleGetDataCustomer}
-                    onSelect={handleGetSelectDataCustomer}
-                    renderMenuItem={item => {
-                      const [hoVaTen, ma, soDienThoai] = item.split(" - ");
-
-                      return (
-                        <>
-                          {customerInput != "" ?
-
-                            <div className="text-dark" style={{ fontSize: "14.5px" }}>
-                              <div className="d-flex justify-content-between">
-                                <div className='info-left'>
-                                  <span>{hoVaTen + " - " + ma}</span>
-                                  <div className='info-lett-bottom'>
-                                    <span>SĐT: {soDienThoai == undefined ? ma : soDienThoai}</span>
-                                  </div>
-                                </div>
-                                <div className='info-right mt-2 me-2'>
-                                  <Tooltip TransitionComponent={Zoom} title="Cập nhật">
-                                    <BorderColorOutlinedIcon color='primary' />
-                                  </Tooltip>
-                                </div>
-                              </div>
-                            </div> :
-                            <div className="text-dark" style={{ fontSize: "14.5px" }}>
-                              <div className="d-flex justify-content-between">
-                                <div className='info-left'>
-                                  <span>{hoVaTen + " - " + ma}</span>
-                                  <div className='info-lett-bottom'>
-                                    <span>SĐT: {soDienThoai == undefined ? ma : soDienThoai}</span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          }
-                        </>
-                      )
-                    }
-                    }
-                    data={data1} placeholder="Tìm kiếm khách hàng" >
-                  </AutoComplete>
-                  <InputGroup.Addon
-                    className="disable-hover1" style={{ position: "absolute", bottom: "0px" }}>
-                    {customerInput != "" ?
-                      <Tooltip
-                        onClick={(e) => { removeCustomerInput(e.stopPropagation()); }} style={{}} title="Bỏ chọn" className='ms-2 open-click' TransitionComponent={Zoom}>
-                        <IconButton size='small'>
-                          <CloseOutlined style={{ fontSize: "20px" }} />
-                        </IconButton>
-                      </Tooltip> :
-                      <Tooltip onClick={() => {
-                        handleOpenDialogCustomers()
-                      }} style={{}} title="Thêm mới khách hàng" className='ms-2 open-click' TransitionComponent={Zoom}>
-                        <IconButton size='small'>
-                          <AddCircleOutlineIcon />
-                        </IconButton>
-                      </Tooltip>
-                    }
-                  </InputGroup.Addon>
-                </InputGroup>
+                <InputSearchCustomer getCustomer={getIdCustomer} />
               </div>
               <div className='mt-3 pt-1 d-flex' style={{ marginLeft: "14px" }}>
                 <FormControlLabel
@@ -1157,7 +1118,7 @@ const PointOfSales = () => {
                       }}
                       InputProps={{
                         readOnly: discountValue && true,
-                        endAdornment: loadingInside === true ? <CircularProgress
+                        endAdornment: loadingChild === true ? <CircularProgress
                           size={25}
                           sx={{
                             position: 'relative',
@@ -1384,7 +1345,7 @@ const PointOfSales = () => {
                       <PaymentIcon style={{ fontSize: "24px" }} className='' />
                     </Sheet>
                     <Sheet
-                      key={"Cả 2"}
+                      key={"Thẻ"}
                       variant="outlined"
                       sx={{
                         borderRadius: 'md',
@@ -1396,8 +1357,8 @@ const PointOfSales = () => {
                         minWidth: "27%",
                       }}
                     >
-                      <Radio value={"Cả 2"} checkedIcon={<CheckCircleOutlineOutlinedIcon />} />
-                      <FormLabel htmlFor={"Cả 2"}>Cả 2</FormLabel>
+                      <Radio value={"Thẻ"} checkedIcon={<CheckCircleOutlineOutlinedIcon />} />
+                      <FormLabel htmlFor={"Thẻ"}>Thẻ</FormLabel>
                       <CreditScoreOutlinedIcon style={{ fontSize: "24px" }} />
 
                     </Sheet>
@@ -1440,18 +1401,8 @@ const PointOfSales = () => {
         open={openDialogConfirmPayment}
         onCloseNoAction={handleCloseDialogConfirmPayment}
         confirmPayment={processingPaymentOrder}
-
       />
       <OrderPendingConfirmCloseDialog open={openOrderClose} onClose={handleCloseNoActionDialogOrderClose} ma={itemMa && itemMa.substring(8)} deleteOrder={() => handleCloseDialogOrderClose(itemId)} />
-      <Snackbar
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }} open={openAlertMui} autoHideDuration={3000} onClose={handleClose}>
-        <Alert onClose={handleClose} severity={alert && alert.color} sx={{ width: '100%', height: "50px", fontSize: "15.5px" }}>
-          {alert && alert.message}
-        </Alert>
-      </Snackbar>
       {isLoading && <LoadingIndicator />}
     </>
   )

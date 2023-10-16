@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Table } from "antd";
-import { IconButton, Pagination, TextField, Tooltip, } from "@mui/material";
+import { Box, IconButton, Pagination, TextField, Tooltip, } from "@mui/material";
 import { PlusOutlined } from "@ant-design/icons";
 import Card from "../../../components/Card";
 import { format } from "date-fns";
@@ -15,9 +15,11 @@ import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 import Zoom from '@mui/material/Zoom';
 import * as dayjs from "dayjs";
 import { OrderStatusString, OrderTypeString } from "./enum";
+import LoadingIndicator from '../../../utilities/loading';
 
 const ManagementOrders = () => {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
   const [orders, setOrders] = useState([]);
   const [totalPages, setTotalPages] = useState();
   const [refreshPage, setRefreshPage] = useState(1);
@@ -29,6 +31,7 @@ const ManagementOrders = () => {
   const [state, setState] = useState(searchParams.get('state'));
   const [type, setType] = useState(searchParams.get('type'));
   const [sort, setSort] = useState(searchParams.get('sort'));
+
 
   const findOrdersByMultipleCriteriaWithPagination = (page) => {
     axios
@@ -44,6 +47,7 @@ const ManagementOrders = () => {
       .then((response) => {
         setOrders(response.data.data);
         setTotalPages(response.data.totalPages);
+        setIsLoading(false);
         // localStorage.setItem('orders', response.data.content);
         // localStorage.setItem('totalPages', response.data.totalPages);
       })
@@ -78,9 +82,13 @@ const ManagementOrders = () => {
     // if (savedOrders) {
     //   setOrders(savedOrders);
     // }
-
     findOrdersByMultipleCriteriaWithPagination(currentPage);
   }, [fromDate, toDate, keyword, currentPage]);
+
+  useEffect(() => {
+    setIsLoading(true);
+    findOrdersByMultipleCriteriaWithPagination(currentPage);
+  }, [])
 
   const handleRefreshData = () => {
     navigate(`/dashboard/management-orders`);
@@ -556,6 +564,7 @@ const ManagementOrders = () => {
           <div className="mt-4"></div>
         </Card>
       </div>
+      {isLoading && <LoadingIndicator />}
     </>
   );
 };

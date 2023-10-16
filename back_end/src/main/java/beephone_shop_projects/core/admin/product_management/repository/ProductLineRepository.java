@@ -27,7 +27,7 @@ public interface ProductLineRepository extends IDongSanPhamRepository {
 
     List<DongSanPham> findAllByDelected(Boolean delected);
 
-    DongSanPham findByTenDongSanPham(String tenDongSanPham);
+    List<DongSanPham> findByTenDongSanPham(String tenDongSanPham);
 
     @Query(value = """
     SELECT SUBSTRING(ma,14) + 1  FROM dong_san_pham ORDER BY ma DESC LIMIT 0,1
