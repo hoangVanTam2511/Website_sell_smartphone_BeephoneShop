@@ -90,7 +90,7 @@ const AddProperty = (props) => {
       <Button
         className="rounded-2 button-mui"
         type="primary"
-        style={{ height: "40px", width: "150px", fontSize: "15px" }}
+        style={{ height: "40px", width: "250px", fontSize: "15px" }}
         onClick={handleClick}
       >
         <PlusOutlined

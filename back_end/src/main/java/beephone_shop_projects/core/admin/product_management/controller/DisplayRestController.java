@@ -54,7 +54,7 @@ public class DisplayRestController {
     }
 
     @PutMapping("/update/{id}")
-    public void update(@RequestBody ManHinh anh ,@PathVariable("id")String id) {
+        public void update(@RequestBody ManHinh anh ,@PathVariable("id")String id) {
         displayService.insert(anh);
     }
 

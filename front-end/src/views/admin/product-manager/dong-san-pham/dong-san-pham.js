@@ -12,8 +12,8 @@ import {
   faTrashAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import "../../../../assets/scss/HienThiNV.scss";
-import AddProperty from "../man-hinh/add-property";
-import UpdateProperty from "../man-hinh/update-property"
+import AddProperty from "../dong-san-pham/add-property";
+import UpdateProperty from "../dong-san-pham/update-property"
 import { TextField } from "@mui/material";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
@@ -137,9 +137,9 @@ const HienThiKH = () => {
           <span>
             <Form
               style={{
-                width: "20em",
+                width: "40em",
                 display: "inline-block",
-                margin: `2% 35%`,
+                margin: `2% 28%`,
               }}
             >
               <h2>Quản lí dòng sản phẩm</h2>
@@ -174,7 +174,7 @@ const HienThiKH = () => {
             </Form>
           </span>
           <span className="bl-add">
-            <AddProperty colors={listProductLine} loadData={loadDatalistProductLine} />
+            <AddProperty productLines={listProductLine} loadData={loadDatalistProductLine} />
           </span>
         </div>
 

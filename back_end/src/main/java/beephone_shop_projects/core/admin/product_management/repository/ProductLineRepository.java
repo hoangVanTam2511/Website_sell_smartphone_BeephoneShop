@@ -38,8 +38,8 @@ public interface ProductLineRepository extends IDongSanPhamRepository {
             SELECT ROW_NUMBER() OVER() AS stt, pdl.id, pdl.ma, 
             pdl.ten_dong_san_pham
             FROM dong_san_pham AS pdl
-            WHERE pdl.ten_dong_san_pham LIKE :text 
-            OR pdl.ma LIKE :text 
+            WHERE (pdl.ten_dong_san_pham LIKE :text 
+            OR pdl.ma LIKE :text ) AND delected = :delected
             """, nativeQuery = true)
-    List<ProductLineResponce> searchColor(@Param("text") String text);
+    Page<ProductLineResponce> searchProductLine(@Param("text") String text, Pageable pageable, @Param("delected")Integer delected);
 }

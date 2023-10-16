@@ -62,7 +62,7 @@ const AddProperty = (props) => {
       }
     });
 
-    if (flag == true) {
+    if (flag === true) {
       showNotification("error", "Đã có lỗi.Vui lòng kiểm tra và thử lại")
       return;
     }
@@ -85,7 +85,6 @@ const AddProperty = (props) => {
 
 
   const handleInputChangeFormnameColor = (e) => {
-    const nameColorValue = e.target.value.trim();
       setnameColorError("");
       setcolorForm({ ...colorForm, [e.target.name]: e.target.value });
   };

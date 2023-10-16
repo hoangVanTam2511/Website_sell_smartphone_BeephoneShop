@@ -179,7 +179,7 @@ const HienThiKH = () => {
             </Form>
           </span>
           <span className="bl-add">
-            <AddProperty colors={listDisplay} loadData={loadDatalistDisplay} />
+            <AddProperty displays={listDisplay} loadData={loadDatalistDisplay} />
           </span>
         </div>
 
