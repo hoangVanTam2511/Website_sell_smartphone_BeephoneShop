@@ -438,8 +438,8 @@ const PointOfSales = () => {
       }
       // const paymentMethod = {
       //   loaiThanhToan: 0,
-      //   hinhThucThanhToan: payment,
-      //   soTienThanhToan: totalMoney,
+      //   hinhThucThanhToan: 0,
+      //   soTienThanhToan: customerPayment,
       //   trangThai: 1,
       //   nguoiXacNhan: "Admin",
       //   createdAt: new Date(),
@@ -499,17 +499,16 @@ const PointOfSales = () => {
         setOrder(data);
         setCartItems(data.cart.cartItems);
 
-        let total = 0 - discountValue;
-        data && data.cart.cartItems.map((item) => {
-          total += item.donGia * item.soLuong;
-        });
-        let result = "";
-        result = String(total)
-          .replace(/[^0-9]+/g, "")
-          .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        setCustomerPaymentFormat(result);
-        setCustomerPayment(total);
-
+        // let total = 0 - discountValue;
+        // data && data.cart.cartItems.map((item) => {
+        //   total += item.donGia * item.soLuong;
+        // });
+        // let result = "";
+        // result = String(total)
+        //   .replace(/[^0-9]+/g, "")
+        //   .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        // setCustomerPaymentFormat(result);
+        // setCustomerPayment(total);
 
         setChangedCartItems(changedCartItems + 1);
       })
