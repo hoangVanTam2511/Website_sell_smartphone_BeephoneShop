@@ -106,6 +106,7 @@ const PointOfSales = () => {
   const [discountFormat, setDiscountFormat] = useState('');
   const [shipFee, setShipFee] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
+  const [clearCus, setClearCus] = useState(false);
 
   const [products, setProducts] = useState([]);
   const [cartItems, setCartItems] = useState([]);
@@ -240,9 +241,9 @@ const PointOfSales = () => {
     } catch (error) { }
   };
 
-  useEffect(() => {
-    updateOrder();
-  }, [customer, idCustomer])
+  // useEffect(() => {
+  //   updateOrder();
+  // }, [customer, idCustomer])
 
   const updateOrder = async () => {
     // setIsLoading(true);
@@ -622,7 +623,7 @@ const PointOfSales = () => {
   const getAllCustomers = () => {
     axios.get(`http://localhost:8080/khach-hang/hien-thi`)
       .then(response => {
-        setCustomers(response.data.content);
+        setCustomers(response.data.data);
       }).catch(error => {
         console.error("Error");
       })
@@ -639,12 +640,12 @@ const PointOfSales = () => {
       })
         .then(response => {
           setDiscountValidate("");
-          if (response.data.status === true) {
-            handleAddOrRemoveVoucher(response.data.voucher.id, false);
+          if (response.data.data.status === true) {
+            handleAddOrRemoveVoucher(response.data.data.voucher.id, false);
             setDiscountValidate("");
           }
-          if (response.data.status === null) {
-            setDiscountValidate(response.data.message);
+          if (response.data.data.status === null) {
+            setDiscountValidate(response.data.data.message);
             if (discountValue != 0) {
               setDiscountValue(0);
               handleAddOrRemoveVoucher(null, false, true);

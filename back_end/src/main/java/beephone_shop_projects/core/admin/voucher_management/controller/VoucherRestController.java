@@ -67,8 +67,8 @@ public class VoucherRestController {
   }
 
   @GetMapping("/voucherActive")
-  public ResponseObject getVoucherActive(@ModelAttribute FindVoucherRequest request) {
-    return new ResponseObject(voucherService.getVoucherStatusIsActive(request));
+  public ResponsePage getVoucherActive(@ModelAttribute FindVoucherRequest request) {
+    return new ResponsePage(voucherService.getVoucherStatusIsActive(request));
   }
 
 }

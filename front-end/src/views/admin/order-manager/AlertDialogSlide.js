@@ -45,7 +45,7 @@ import Sheet from "@mui/joy/Sheet";
 import RemoveOutlinedIcon from "@mui/icons-material/RemoveOutlined";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import LoadingIndicator from "../../../utilities/loading.js";
-import { Notistack, OrderStatusString } from "./enum";
+import { Notistack, OrderStatusString, TypeDiscountNumber, TypeDiscountString } from "./enum";
 import { parseInt } from "lodash";
 import { useSnackbar } from "notistack";
 import useCustomSnackbar from "../../../utilities/notistack";
@@ -1777,7 +1777,7 @@ export function VouchersDialog(props) {
                       align="center"
                       style={{ width: "", fontSize: "15px" }}
                     >
-                      {item.loaiVoucher === 1 ? "..." : item.giaTriToiDa}
+                      {item.loaiVoucher === TypeDiscountNumber.VND ? "..." : item.giaTriToiDa}
                     </TableCell>
                     <TableCell
                       align="center"

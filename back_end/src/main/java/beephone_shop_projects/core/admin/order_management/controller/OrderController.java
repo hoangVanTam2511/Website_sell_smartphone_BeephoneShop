@@ -46,7 +46,7 @@ public class OrderController {
   }
 
   @GetMapping("/pending")
-  public ResponseObject<OrderResponse> getOrdersPending() {
+  public ResponseObject<OrderResponse> getOrdersPending() throws Exception {
     List<OrderResponse> ordersPending = hoaDonService.getOrdersPending();
     return new ResponseObject(ordersPending);
   }

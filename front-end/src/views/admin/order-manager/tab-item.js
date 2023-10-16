@@ -339,7 +339,7 @@ const TabItem = ({
             <div classNamountme='product-name'>
               <span className='' style={{ whiteSpace: "pre-line", fontSize: "15px", fontWeight: "500" }}>{item.sanPhamChiTiet.sanPham.tenSanPham + "\u00A0" + item.sanPhamChiTiet.cauHinh.ram.kichThuoc + "/" + item.sanPhamChiTiet.cauHinh.rom.kichThuoc + "GB" + " " + `(${item.sanPhamChiTiet.cauHinh.mauSac.tenMauSac})`}</span>
             </div>
-            <div className='mt-2'>
+            <div className=''>
               <span className='product-price txt-price' style={{ fontSize: "16px", fontWeight: "500" }}>
                 {item && item.sanPhamChiTiet.donGia ? item.sanPhamChiTiet.donGia.toLocaleString("vi-VN", {
                   style: "currency",

@@ -85,7 +85,7 @@ public class KhachHangServiceImpl implements KhachHangService {
         Optional<Account> optional = accountRepository.findById(id);
         Date date = null;
         try {
-            date = new SimpleDateFormat("dd/MM/yyyy").parse(request.getNgaySinh());
+            date = new SimpleDateFormat("yyyy-MM-dd").parse(request.getNgaySinh());
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
@@ -101,7 +101,6 @@ public class KhachHangServiceImpl implements KhachHangService {
             optional.get().setGioiTinh(request.getGioiTinh());
             optional.get().setHoVaTen(request.getHoVaTen());
             optional.get().setSoDienThoai(request.getSoDienThoai());
-            accountRepository.save(optional.get());
             return accountRepository.save(optional.get());
         }
         return optional.get();

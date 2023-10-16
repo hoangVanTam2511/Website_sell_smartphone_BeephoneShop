@@ -15,16 +15,16 @@ public class VoucherRequest {
 
   private String id;
 
-  private String ma;
-
-  private BigDecimal giaTriVoucher;
-
-  private Integer loaiVoucher;
-
-  private Integer soLuong;
-
-  private BigDecimal giaTriToiDa;
-
-  private BigDecimal dieuKienApDung;
+//  private String ma;
+//
+//  private BigDecimal giaTriVoucher;
+//
+//  private Integer loaiVoucher;
+//
+//  private Integer soLuong;
+//
+//  private BigDecimal giaTriToiDa;
+//
+//  private BigDecimal dieuKienApDung;
 
 }

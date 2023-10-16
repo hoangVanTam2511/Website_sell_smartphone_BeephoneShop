@@ -14,7 +14,6 @@ const InputSearchCustomer = ({ getCustomer }) => {
 
 
   const [customers, setCustomers] = useState([]);
-  let [customersFormat, setCustomersFormat] = useState([]);
   const [dataCus, setDataCus] = useState("");
   const [customerInput, setCustomerInput] = useState("");
   const [loadingChild, setLoadingChild] = useState(false);
@@ -24,10 +23,11 @@ const InputSearchCustomer = ({ getCustomer }) => {
     await axios.get(`http://localhost:8080/khach-hang/search-all`, {
       params: {
         tenKH: dataCus,
+        page: 1,
       }
     })
       .then(response => {
-        const data = response.data.content;
+        const data = response.data.data;
         const format = data && data.map((customer) =>
           customer.hoVaTen + " - " +
           customer.ma + " - " +

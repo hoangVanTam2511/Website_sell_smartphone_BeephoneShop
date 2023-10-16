@@ -327,8 +327,8 @@ const UpdateKH = () => {
     }
   };
   const handleChangeDate = (date) => {
-    const value = date.format("DD/MM/YYYY");
-    setNgaySinh(value);
+    // const value = date.format("DD/MM/YYYY");
+    setNgaySinh(date);
   };
   return (
     <>
@@ -389,6 +389,7 @@ const UpdateKH = () => {
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                       <DemoContainer components={["DatePicker"]}>
                         <DatePicker
+                          disableFuture
                           label="Ngày Sinh"
                           value={dayjs(ngaySinh)}
                           format="DD/MM/YYYY"

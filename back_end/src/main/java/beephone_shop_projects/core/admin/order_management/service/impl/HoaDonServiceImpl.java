@@ -240,10 +240,9 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
       orderCurrent.setTenNguoiNhan(req.getTenNguoiNhan());
       orderCurrent.setSoDienThoaiNguoiNhan(req.getSoDienThoaiNguoiNhan());
       orderCurrent.setDiaChiNguoiNhan(req.getDiaChiNguoiNhan());
-      if (orderCurrent.getAccount().getId() != null){
+      if (req.getAccount().getId() != null) {
         orderCurrent.setAccount(accountConverter.convertRequestToResponse(req.getAccount()));
-      }
-      else{
+      } else {
         orderCurrent.setAccount(null);
       }
       HoaDon updateOrderPending = hoaDonRepository.save(orderConverter.convertResponseToEntity(orderCurrent));
@@ -264,8 +263,13 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
   }
 
   @Override
-  public List<OrderResponse> getOrdersPending() {
-    return orderConverter.convertToListResponse(hoaDonRepository.getOrdersPending());
+  public List<OrderResponse> getOrdersPending() throws Exception {
+    List<HoaDon> orders = hoaDonRepository.getOrdersPending();
+    if (orders.isEmpty()) {
+      orders = hoaDonRepository.getOrdersPending();
+      this.createOrderPending();
+    }
+    return orderConverter.convertToListResponse(orders);
   }
 
   @Override
