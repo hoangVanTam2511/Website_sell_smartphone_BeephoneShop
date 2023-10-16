@@ -2,6 +2,7 @@ package beephone_shop_projects.core.admin.account_management.repository;
 
 import beephone_shop_projects.core.admin.account_management.model.response.AccountResponse;
 import beephone_shop_projects.entity.Account;
+import beephone_shop_projects.infrastructure.constant.StatusAccountCus;
 import beephone_shop_projects.repository.IAccountRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -37,14 +38,27 @@ public interface AccountRepository extends IAccountRepository {
     @Query(value = """
             UPDATE Account e
             SET e.trangThai = CASE
-                WHEN e.trangThai = 1 THEN 2
-                WHEN e.trangThai = 2 THEN 1
+                WHEN e.trangThai = 0 THEN 1
+                WHEN e.trangThai = 1 THEN 0
                 ELSE e.trangThai
             END
             WHERE e.id = :idBanGhi
 
             """)
     void doiTrangThai(@Param("idBanGhi") String id);
+    @Transactional
+    @Modifying
+    @Query(value = """
+            UPDATE Account e
+            SET e.trangThai = CASE
+                WHEN e.trangThai = 2 THEN 3
+                WHEN e.trangThai = 3 THEN 2
+                ELSE e.trangThai
+            END
+            WHERE e.id = :idBanGhi
+
+            """)
+    void doiTrangThaiNV(@Param("idBanGhi") String id);
 
     @Query(value = """
                 SELECT  ac FROM Account ac
@@ -74,6 +88,6 @@ public interface AccountRepository extends IAccountRepository {
     Page<AccountResponse> searchAllKH(@Param("tenKH")Optional<String> tenKH, Pageable pageable);
 
     @Query("SELECT a FROM Account a WHERE  a.trangThai = :trangThai AND a.idRole.ma='role1' ")
-    Page<Account> filterTrangThai(@RequestParam("trangThai") Integer trangThai, Pageable pageable);
+    Page<Account> filterTrangThai(@RequestParam("trangThai") StatusAccountCus trangThai, Pageable pageable);
 
 }

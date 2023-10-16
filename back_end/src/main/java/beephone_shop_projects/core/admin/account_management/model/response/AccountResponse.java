@@ -31,7 +31,7 @@ public interface AccountResponse {
     String getIdRole();
 
     @Value("#{target.trang_thai}")
-    String getTrangThai();
+    Integer getTrangThai();
 
 
     @Value("#{target.so_dien_thoai}")

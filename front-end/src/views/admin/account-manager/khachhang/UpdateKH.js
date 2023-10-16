@@ -12,7 +12,6 @@ import axios from "axios";
 import { apiURLKH } from "../../../../service/api";
 import "react-toastify/dist/ReactToastify.css";
 import {
-  Box,
   FormControl,
   FormControlLabel,
   Radio,
@@ -21,6 +20,10 @@ import {
 import ImageUploadComponent from "./AnhUpdate";
 import AddressTable from "./HienThiDiaChi";
 import ModalAddDiaChiKhachHang from "./ModalAddDiaChiKhachHang";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import * as dayjs from "dayjs";
 
 const UpdateKH = () => {
   const { id } = useParams();
@@ -323,7 +326,10 @@ const UpdateKH = () => {
       console.error("Validate Failed:", errInfo);
     }
   };
-  const today = new Date().toISOString().split("T")[0];
+  const handleChangeDate = (date) => {
+    const value = date.format("DD/MM/YYYY");
+    setNgaySinh(value);
+  };
   return (
     <>
       {" "}
@@ -375,48 +381,42 @@ const UpdateKH = () => {
                   <div
                     className="text-f"
                     style={{
-                      marginBottom: "15px",
-                      textAlign: "left",
-                      width: "47%",
+                      marginBottom: "30px",
+                      width: "45%",
                     }}
                   >
                     {/* Ngày sinh */}
-                    <Box
-                      component="form"
-                      sx={{
-                        "& .MuiTextField-root": {
-                          mt: 2,
-                          width: "100%",
-                          mb: 2,
-                        },
-                      }}
-                      noValidate
-                      autoComplete="off"
-                    >
-                      <TextField
-                        label="Ngày sinh"
-                        type="date"
-                        value={ngaySinh}
-                        InputLabelProps={{
-                          shrink: true,
-                        }}
-                        inputProps={{
-                          max: today, // Set the maximum allowed date to today
-                        }}
-                        onChange={(e) => {
-                          setNgaySinh(e.target.value); // Cập nhật giá trị ngaySinh sau khi thay đổi
-                        }}
-                        error={formSubmitted && !ngaySinh} // Show error if form submitted and hoVaTen is empty
-                        helperText={
-                          formSubmitted && !ngaySinh && "Ngày sinh trống"
-                        }
-                      />
-                    </Box>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DemoContainer components={["DatePicker"]}>
+                        <DatePicker
+                          label="Ngày Sinh"
+                          value={dayjs(ngaySinh)}
+                          format="DD/MM/YYYY"
+                          onChange={handleChangeDate}
+                          sx={{
+                            position: "relative",
+
+                            "& .MuiInputBase-root": {
+                              width: "100%",
+                            },
+                          }}
+                          slotProps={{
+                            textField: {
+                              error: formSubmitted && !ngaySinh,
+                              helperText:
+                                formSubmitted && !ngaySinh
+                                  ? "Chưa chọn ngày sinh"
+                                  : "",
+                            },
+                          }}
+                        />
+                      </DemoContainer>
+                    </LocalizationProvider>
                   </div>
                   <div
                     className="text-f"
                     style={{
-                      marginBottom: "15px",
+                      marginBottom: "30px",
                       marginLeft: "50px",
                       marginTop: "20px",
                     }}
@@ -506,7 +506,7 @@ const UpdateKH = () => {
                   marginBottom: "20px",
                 }}
                 size="large"
-                onClick={() => {           
+                onClick={() => {
                   setIsModalVisibleS(true);
                 }}
               >

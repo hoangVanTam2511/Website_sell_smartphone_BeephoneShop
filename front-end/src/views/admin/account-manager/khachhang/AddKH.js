@@ -19,6 +19,10 @@ import AddressForm from "./DiaChi";
 import ImageUploadComponent from "./Anh";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import * as dayjs from "dayjs";
 const AddKH = () => {
   let [listKH, setListKH] = useState([]);
   let [hoVaTen, setTen] = useState("");
@@ -191,7 +195,7 @@ const AddKH = () => {
       );
 
       // Lấy mã khách hàng từ response
-      const generatedMaKhachHang = khachHangResponse.data.id;
+      const generatedMaKhachHang = khachHangResponse.data.data.id;
       addDiaChiList(generatedMaKhachHang);
       redirectToHienThiKH(generatedMaKhachHang);
 
@@ -250,9 +254,11 @@ const AddKH = () => {
         alert("Thêm thất bại");
       });
   };
-  
-  const today = new Date().toISOString().split("T")[0]; // Get the current date in "yyyy-mm-dd" format
 
+  const handleChangeDate = (date) => {
+    const value = date.format("DD/MM/YYYY");
+    setNgaySinh(value);
+  };
   return (
     <>
       <Card bordered="false" style={{ width: "100%" }}>
@@ -307,47 +313,44 @@ const AddKH = () => {
                   <div
                     className="text-f"
                     style={{
-                      marginBottom: "10px",
+                      marginBottom: "30px",
                       textAlign: "left",
                       width: "47%",
                     }}
                   >
-                    <Box
-                      component="form"
-                      sx={{
-                        "& .MuiTextField-root": {
-                          mt: 2,
-                          width: "100%",
-                          mb: 2,
-                        },
-                      }}
-                      noValidate
-                      autoComplete="off"
-                    >
-                      <TextField
-                        label="Ngày sinh"
-                        type="date"
-                        value={ngaySinh}
-                        InputLabelProps={{
-                          shrink: true,
-                        }}
-                        inputProps={{
-                          max: today, // Set the maximum allowed date to today
-                        }}
-                        onChange={(e) => {
-                          setNgaySinh(e.target.value); // Cập nhật giá trị ngaySinh sau khi thay đổi
-                        }}
-                        error={formSubmitted && !ngaySinh} // Show error if form submitted and hoVaTen is empty
-                        helperText={
-                          formSubmitted && !ngaySinh && "Chưa chọn ngày sinh"
-                        }
-                      />
-                    </Box>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DemoContainer components={["DatePicker"]}>
+                        <DatePicker
+                          label="Ngày Sinh"
+                          value={
+                            ngaySinh ? dayjs(ngaySinh, "DD/MM/YYYY") : null
+                          }
+                          format="DD/MM/YYYY"
+                          onChange={handleChangeDate}
+                          sx={{
+                            position: "relative",
+
+                            "& .MuiInputBase-root": {
+                              width: "100%",
+                            },
+                          }}
+                          slotProps={{
+                            textField: {
+                              error: formSubmitted && !ngaySinh,
+                              helperText:
+                                formSubmitted && !ngaySinh
+                                  ? "Chưa chọn ngày sinh"
+                                  : "",
+                            },
+                          }}
+                        />
+                      </DemoContainer>
+                    </LocalizationProvider>
                   </div>
                   <div
                     className="text-f"
                     style={{
-                      marginBottom: "10px",
+                      marginBottom: "20px",
                       marginLeft: "50px",
                       marginTop: "20px",
                     }}
@@ -438,7 +441,7 @@ const AddKH = () => {
                 borderRadius: 0,
                 height: "100%", // Set Card height to 100% of its parent container
                 overflowY: "auto", // Add a vertical scrollbar when content overflows
-                maxHeight: "calc(120vh - 100px)",
+                maxHeight: "calc(111vh - 100px)",
               }}
             >
               {/* <h4 style={{ color: "gray" }}>Địa chỉ mặc định</h4> */}

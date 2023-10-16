@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { FormControl, InputLabel, MenuItem, Select, Grid } from "@mui/material";
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Grid,
+  TextField,
+} from "@mui/material";
 
 const host = "https://provinces.open-api.vn/api/";
 
@@ -37,6 +44,7 @@ const AddressForm = ({
     if (!selectedWard) {
       setWardError(true);
     }
+
     return axios.get(api).then((response) => {
       return response.data;
     });
@@ -101,6 +109,7 @@ const AddressForm = ({
       // Nếu đã ấn nút "Lưu" thì kiểm tra trạng thái select
       if (!value.target.value) {
         setDistrictError(true);
+        setSelectedDistrict("");
       }
     }
   };
@@ -109,10 +118,11 @@ const AddressForm = ({
     setSelectedWard(value.target.value);
     onWardChange(value.target.value);
     setWardError(false);
-    if (submitted) {
+    if (formSubmitted) {
       // Nếu đã ấn nút "Lưu" thì kiểm tra trạng thái select
       if (!value.target.value) {
         setWardError(true);
+        setSelectedWard("");
       }
     }
   };
@@ -149,20 +159,18 @@ const AddressForm = ({
 
   return (
     <>
-      <Grid container spacing={3.3}>
-        <Grid item xs={4}>
-          <FormControl style={{ width: "100%" }}>
-            <InputLabel id="demo-simple-select-label">
-              Chọn Tỉnh/Thành phố
-            </InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
+      <div>
+        <Grid container spacing={3.3}>
+          <Grid item xs={4}>
+            <TextField
+              select
               label="Chọn Tỉnh/Thành phố"
-              onChange={handleProvinceChange}
               value={selectedProvince}
-              size="large"
+              onChange={handleProvinceChange}
               error={formSubmitted && !selectedProvince}
+              helperText={
+                formSubmitted && !selectedProvince ? "Vui lòng chọn" : ""
+              }
               style={{ width: "100%" }}
             >
               {provinces.map((province) => (
@@ -170,34 +178,18 @@ const AddressForm = ({
                   {province.name}
                 </MenuItem>
               ))}
-            </Select>
-            {required && submitted && provinceError && (
-              <p
-                style={{
-                  color: " #d32f2f",
-                  paddingLeft: "15px",
-                  fontSize: "12px",
-                  textAlign: "left",
-                }}
-              >
-                Vui lòng chọn
-              </p>
-            )}
-          </FormControl>
-        </Grid>
-        <Grid item xs={4}>
-          <FormControl style={{ width: "100%" }}>
-            <InputLabel id="demo-simple-select-label">
-              Chọn Quận/Huyện
-            </InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
+            </TextField>
+          </Grid>
+          <Grid item xs={4}>
+            <TextField
+              select
               label="Chọn Quận/Huyện"
-              onChange={handleDistrictChange}
               value={selectedDistrict}
-              size="large"
+              onChange={handleDistrictChange}
               error={formSubmitted && !selectedDistrict}
+              helperText={
+                formSubmitted && !selectedDistrict ? "Vui lòng chọn" : ""
+              }
               style={{ width: "100%" }}
             >
               {districts.map((district) => (
@@ -205,34 +197,16 @@ const AddressForm = ({
                   {district.name}
                 </MenuItem>
               ))}
-            </Select>
-            {required && submitted && districtError && (
-              <p
-                style={{
-                  color: " #d32f2f",
-                  paddingLeft: "15px",
-                  fontSize: "12px",
-                  textAlign: "left",
-                }}
-              >
-                Vui lòng chọn
-              </p>
-            )}
-          </FormControl>
-        </Grid>
-        <Grid item xs={4}>
-          <FormControl style={{ width: "100%" }}>
-            <InputLabel id="demo-simple-select-label">
-              Chọn Phường/Xã
-            </InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
+            </TextField>
+          </Grid>
+          <Grid item xs={4}>
+            <TextField
+              select
               label="Chọn Phường/Xã"
-              onChange={handleWardChange}
               value={selectedWard}
-              size="large"
+              onChange={handleWardChange}
               error={formSubmitted && !selectedWard}
+              helperText={formSubmitted && !selectedWard ? "Vui lòng chọn" : ""}
               style={{ width: "100%" }}
             >
               {wards.map((ward) => (
@@ -240,22 +214,10 @@ const AddressForm = ({
                   {ward.name}
                 </MenuItem>
               ))}
-            </Select>
-            {required && submitted && wardError && (
-              <p
-                style={{
-                  color: " #d32f2f",
-                  fontSize: "12px",
-                  textAlign: "left",
-                  paddingLeft: "15px",
-                }}
-              >
-                Vui lòng chọn
-              </p>
-            )}
-          </FormControl>
+            </TextField>
+          </Grid>
         </Grid>
-      </Grid>
+      </div>
     </>
   );
 };

@@ -19,6 +19,9 @@ import beephone_shop_projects.entity.Rom;
 import beephone_shop_projects.entity.SanPham;
 import beephone_shop_projects.entity.SanPhamChiTiet;
 import beephone_shop_projects.entity.Voucher;
+import beephone_shop_projects.infrastructure.constant.StatusAccountCus;
+import beephone_shop_projects.infrastructure.constant.StatusDiscount;
+import beephone_shop_projects.infrastructure.constant.TypeDiscount;
 import beephone_shop_projects.repository.IAccountRepository;
 import beephone_shop_projects.repository.IAnhRepository;
 import beephone_shop_projects.repository.ICauHinhRepository;
@@ -130,7 +133,7 @@ public class DBGenerator implements CommandLineRunner {
         Account admin = new Account();
         admin.setMa("Account1");
         admin.setHoVaTen("Nguyễn Phùng Dũng");
-        admin.setAnhDaiDien("haha");
+        admin.setAnhDaiDien("https://www.hellokpop.com/wp-content/uploads/2019/09/jung-hae-in-esquire-sg-jan-2019-cover-interview-body4-e1568440568417.jpg");
         admin.setCanCuocCongDan("0191231002");
         admin.setNgaySinh(new Date());
         admin.setGioiTinh(true);
@@ -141,25 +144,25 @@ public class DBGenerator implements CommandLineRunner {
         admin.setQuanHuyen("Quận Bắc Từ Liêm");
         admin.setTinhThanhPho("Thành phố Hà Nội");
         admin.setMatKhau("12345");
-        admin.setTrangThai(1);
+        admin.setTrangThai(StatusAccountCus.HOAT_DONG);
         admin.setIdRole(chuCuaHang);
         admin.setId(accountRepository.save(admin).getId());
 
         Account accountNhanVien = new Account();
         accountNhanVien.setMa("Account2");
         accountNhanVien.setHoVaTen("Trần Quang Hà");
-        accountNhanVien.setAnhDaiDien("haha");
+        accountNhanVien.setAnhDaiDien("https://i.pinimg.com/736x/c8/44/25/c84425742604c8e5b1d827a7b40cfa1c.jpg");
         accountNhanVien.setCanCuocCongDan("0191231002");
         accountNhanVien.setNgaySinh(new Date());
         accountNhanVien.setGioiTinh(true);
         accountNhanVien.setEmail("hatq@gmail.com");
         accountNhanVien.setSoDienThoai("0913010291");
         accountNhanVien.setDiaChi("Kiều mai");
-        accountNhanVien.setXaPhuong("Phường kiều mai");
+        accountNhanVien.setXaPhuong("Phường Đại Mỗ");
         accountNhanVien.setQuanHuyen("Quận Nam Từ Liêm");
         accountNhanVien.setTinhThanhPho("Thành phố Hà Nội");
         accountNhanVien.setMatKhau("12345");
-        accountNhanVien.setTrangThai(1);
+        accountNhanVien.setTrangThai(StatusAccountCus.LAM_VIEC);
         accountNhanVien.setIdRole(nhanVien);
         accountNhanVien.setId(accountRepository.save(accountNhanVien).getId());
 
@@ -190,11 +193,12 @@ public class DBGenerator implements CommandLineRunner {
         //Bảng Địa chỉ
         DiaChi diaChi = new DiaChi();
         diaChi.setHoTenKH("Nguyễn Thúy Hằng");
+        diaChi.setTrangThai(1);
         diaChi.setSoDienThoaiKhachHang("01993910212");
         diaChi.setDiaChi("Hoàng Quốc Việt");
         diaChi.setXaPhuong("Phường Cổ Nhuế");
         diaChi.setQuanHuyen("Quận Bắc Từ Liêm");
-        diaChi.setTinhThanhPho("Thành Phố Hà Nội");
+        diaChi.setTinhThanhPho("Hà Nội");
         diaChi.setAccount(admin);
         diaChi.setId(diaChiRepository.save(diaChi).getId());
 
@@ -202,19 +206,19 @@ public class DBGenerator implements CommandLineRunner {
         diaChi1.setHoTenKH("Trần Thanh phong");
         diaChi1.setSoDienThoaiKhachHang("0918239812");
         diaChi1.setDiaChi("Hồ Tùng Mậu");
-        diaChi1.setXaPhuong("Phường Cổ Nhuế");
-        diaChi1.setQuanHuyen("Quận Cầu Giấy");
-        diaChi1.setTinhThanhPho("Thành Phố Hà Nội");
+        diaChi1.setXaPhuong("Xã An Lĩnh");
+        diaChi1.setQuanHuyen("Huyện Tuy Hòa");
+        diaChi1.setTinhThanhPho("Phú Yên");
         diaChi1.setAccount(admin);
         diaChi1.setId(diaChiRepository.save(diaChi1).getId());
 
         DiaChi diaChi2 = new DiaChi();
         diaChi2.setHoTenKH("Vũ Văn Nguyên");
         diaChi2.setSoDienThoaiKhachHang("0391928712");
-        diaChi2.setDiaChi("Xuân Thủy");
-        diaChi2.setXaPhuong("Phường Dịch Vọng");
-        diaChi2.setQuanHuyen("Quận Cầu Giấy");
-        diaChi2.setTinhThanhPho("Thành Phố Hà Nội");
+        diaChi2.setDiaChi("Xóm 4, Thôn Lai Ổn");
+        diaChi2.setXaPhuong("Xã An Quí");
+        diaChi2.setQuanHuyen("Huyện Quỳnh Phụ");
+        diaChi2.setTinhThanhPho("Thái Bình");
         diaChi2.setAccount(accountNhanVien);
         diaChi2.setId(diaChiRepository.save(diaChi2).getId());
 
@@ -468,7 +472,7 @@ public class DBGenerator implements CommandLineRunner {
         voucher.setDieuKienApDung(new BigDecimal(5000000));
         voucher.setGiaTriToiDa(null);
         voucher.setSoLuong(1000);
-        voucher.setLoaiVoucher("VNĐ");
+        voucher.setLoaiVoucher(TypeDiscount.VND);
         SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd-MM-yyyy");
 //        Date ngayBatDau1 = null;
         Date ngayKetThuc1 = null;
@@ -480,7 +484,7 @@ public class DBGenerator implements CommandLineRunner {
         }
         voucher.setNgayBatDau(new Date());
         voucher.setNgayKetThuc(ngayKetThuc1);
-        voucher.setTrangThai(3);
+        voucher.setTrangThai(StatusDiscount.CHUA_DIEN_RA);
         voucher.setId(voucherRepository.save(voucher).getId());
 
         Voucher voucher2 = new Voucher();
@@ -492,7 +496,7 @@ public class DBGenerator implements CommandLineRunner {
         voucher2.setDieuKienApDung(new BigDecimal(50000000));
         voucher2.setGiaTriToiDa(null);
         voucher2.setSoLuong(1000);
-        voucher2.setLoaiVoucher("VNĐ");
+        voucher2.setLoaiVoucher(TypeDiscount.VND);
         SimpleDateFormat dateFormat2 = new SimpleDateFormat("dd-MM-yyyy");
         Date ngayBatDau2 = null;
         Date ngayKetThuc2 = null;
@@ -504,7 +508,7 @@ public class DBGenerator implements CommandLineRunner {
         }
         voucher2.setNgayBatDau(ngayBatDau2);
         voucher2.setNgayKetThuc(ngayKetThuc2);
-        voucher2.setTrangThai(3);
+        voucher2.setTrangThai(StatusDiscount.CHUA_DIEN_RA);
         voucher2.setId(voucherRepository.save(voucher2).getId());
 
         Voucher voucher3 = new Voucher();
@@ -516,7 +520,7 @@ public class DBGenerator implements CommandLineRunner {
         voucher3.setDieuKienApDung(new BigDecimal(15000000));
         voucher3.setGiaTriToiDa(new BigDecimal(3000000));
         voucher3.setSoLuong(1000);
-        voucher3.setLoaiVoucher("%");
+        voucher3.setLoaiVoucher(TypeDiscount.PERCENT);
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
         Date ngayBatDau = null;
         Date ngayKetThuc = null;
@@ -526,7 +530,7 @@ public class DBGenerator implements CommandLineRunner {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        voucher3.setTrangThai(3);
+        voucher3.setTrangThai(StatusDiscount.CHUA_DIEN_RA);
         voucher3.setNgayBatDau(ngayBatDau);
         voucher3.setNgayKetThuc(ngayKetThuc);
         voucher3.setId(voucherRepository.save(voucher3).getId());

@@ -19,10 +19,8 @@ public interface KhachHangService {
 //    Page<AccountResponse> searchAllKHang(Integer pageable);
     Account addKH(CreateKhachHangRequest request);
     Account getOne(UUID id);
-    Account findAccount(String ma);
     void doiTrangThai(String id);
 
     Account updateKH(CreateKhachHangRequest request, String id);
     Page<AccountResponse> search(Optional<String> tenSearch, Integer pageNo);
-    List<CreateAccountRequest> importExcelData(InputStream fileInputStream) throws IOException;
 }

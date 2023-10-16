@@ -2,6 +2,7 @@ package beephone_shop_projects.core.admin.account_management.service;
 
 import beephone_shop_projects.core.admin.account_management.model.request.CreateAccountRequest;
 import beephone_shop_projects.entity.Account;
+import beephone_shop_projects.infrastructure.constant.StatusAccountCus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
@@ -25,6 +26,6 @@ public interface NhanVienService {
 
     Account getOne(UUID id);
 
-    Page<Account> filterTrangThai(Integer trangThai, Integer pageableNo);
+    Page<Account> filterTrangThai(StatusAccountCus trangThai, Integer pageableNo);
 
 }
