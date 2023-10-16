@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.admin.order_management.model.response;
 
+import beephone_shop_projects.infrastructure.constant.TypeDiscount;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,7 +20,7 @@ public class VoucherResponse {
 
   private BigDecimal giaTriVoucher;
 
-  private Integer loaiVoucher;
+  private TypeDiscount loaiVoucher;
 
   private Integer soLuong;
 

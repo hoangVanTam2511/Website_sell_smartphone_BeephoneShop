@@ -21,7 +21,7 @@ import java.util.Date;
 @Setter
 public class CreateVoucherRequest {
 
-    @Length(max = 255)
+    @Length(max = 10)
     private String ma;
 
     private StatusDiscount trangThai;

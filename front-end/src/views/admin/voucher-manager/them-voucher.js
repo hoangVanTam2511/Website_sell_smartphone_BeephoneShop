@@ -171,6 +171,10 @@ const AddVoucher = () => {
   const validationAll = () => {
     const msg = {};
 
+    if (ma.length < 10) {
+      msg.ma = "Mã voucher phải đủ 10 ký tự !!!";
+    }
+
     if (!ten.trim("")) {
       msg.ten = "Tên không được để trống !!!";
     }
@@ -302,7 +306,7 @@ const AddVoucher = () => {
                 onInput={handleInputCodeVoucher}
                 style={{ width: "330px" }}
                 inputProps={{
-                  maxLength: 15, // Giới hạn tối đa 10 ký tự
+                  maxLength: 10, // Giới hạn tối đa 10 ký tự
                 }}
               />
               <span className="validate" style={{ color: "red" }}>

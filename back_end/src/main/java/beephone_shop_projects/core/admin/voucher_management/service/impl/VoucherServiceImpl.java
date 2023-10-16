@@ -190,7 +190,7 @@ public class VoucherServiceImpl implements VoucherService {
         } else {
             VoucherResponse voucher = voucherRepository.findCodeVoucher(input);
             if (voucher != null) {
-                if (!voucher.getMa().equals(input) || voucher.getTrangThai() == 1) {
+                if (!voucher.getMa().equals(input) || voucher.getTrangThai() != 1) {
                     response.setMessage("Mã giảm giá không tồn tại.");
                 } else if (voucher.getMa().equals(input) && voucher.getSoLuong() <= 0) {
                     response.setMessage("Mã giảm giá đã hết lượt sử dụng.");
