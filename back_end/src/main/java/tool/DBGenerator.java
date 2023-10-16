@@ -122,7 +122,7 @@ public class DBGenerator implements CommandLineRunner {
         admin.setEmail("dung@gmail.com");
         admin.setSoDienThoai("0395561234");
         admin.setDiaChi("Phú diễn");
-        admin.setXaPhuong("Phường phú diễn");
+        admin.setXaPhuong("Phường Phú Diễn");
         admin.setQuanHuyen("Quận Bắc Từ Liêm");
         admin.setTinhThanhPho("Thành phố Hà Nội");
         admin.setMatKhau("12345");
