@@ -1089,7 +1089,7 @@ const PointOfSales = () => {
           <div className='mt-2'>
             <div style={{ height: "583px" }}>
               <div className='mt-3 ms-2'>
-                <InputSearchCustomer getCustomer={getIdCustomer} handleOpenDialogCustomers={handleOpenDialogCustomers}/>
+                <InputSearchCustomer getCustomer={getIdCustomer} handleOpenDialogCustomers={handleOpenDialogCustomers} />
               </div>
               <div className='mt-3 pt-1 d-flex' style={{ marginLeft: "14px" }}>
                 <FormControlLabel
