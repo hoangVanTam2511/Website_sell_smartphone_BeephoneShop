@@ -1,6 +1,8 @@
 package beephone_shop_projects.core.admin.product_management.service.impl;
 
 import beephone_shop_projects.core.admin.product_management.model.request.CreateProductLine;
+import beephone_shop_projects.core.admin.product_management.model.responce.ProductLineResponce;
+import beephone_shop_projects.core.admin.product_management.model.responce.RamResponce;
 import beephone_shop_projects.core.admin.product_management.repository.ProductLineRepository;
 import beephone_shop_projects.entity.DongSanPham;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +29,7 @@ public class ProductLineServiceImpl {
 
     public void insert(CreateProductLine req) {
 
-        if(req.getIdProductLine() != null) update(req);
+        if(!req.getIdProductLine().isEmpty()) update(req);
 
         String newCode = this.productLineRepository.getNewCode() == null ? "PRODUCT_LINE_0" : "PRODUCT_LINE_" + this.productLineRepository.getNewCode();
         DongSanPham dongSanPham = new DongSanPham(newCode,req.getNameProductLine());
@@ -54,6 +56,10 @@ public class ProductLineServiceImpl {
 
     public String generateNewCode() {
         return this.productLineRepository.getNewCode() == null ? "PRODUCT_LINE_0" : "PRODUCT_LINE_" + this.productLineRepository.getNewCode();
+    }
+
+    public Page<ProductLineResponce> searchProductLine(String name, Pageable pageable){
+        return productLineRepository.searchProductLine("%" + name + "%", pageable, 1);
     }
 
 }

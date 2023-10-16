@@ -14,11 +14,13 @@ const AddProperty = (props) => {
   const [open, setOpen] = useState(false);
   const [openModalConfirm, setOpenModalConfirm] = useState(false)
 
-  const [chipForm, setchipForm] = useState({
-    idChip: "",
-    nameChip: "",
+  const [displayForm, setdisplayForm] = useState({
+    idDisplay: "",
+    sizeDisplay: "",
+    resolutionDisplay: "",
   });
-  const [nameChipError, setnameChipError] = useState("");
+  const [sizeDisplayError, setsizeDisplayError] = useState("");
+  const [resolutionDisplayError, setresolutionDisplayError] = useState("");
   const [formSubmitted, setFormSubmitted] = useState(false);
 
 
@@ -33,11 +35,14 @@ const AddProperty = (props) => {
 
   
   const handleClick = () => {
-    console.log(props.chip)
+    console.log(props.display)
+    setresolutionDisplayError("")
+    setsizeDisplayError("")
     setOpen(true);
-    setchipForm({
-      idChip : props.chip.id,
-      nameChip : props.chip.tenChip
+    setdisplayForm({
+      idDisplay : props.display.id,
+      sizeDisplay : props.display.kichThuocManHinh,
+      resolutionDisplay: props.display.doPhanGiai
     })
   };
 
@@ -46,17 +51,30 @@ const AddProperty = (props) => {
     setOpenModalConfirm(false)
     var flag = false;
 
-    if (!chipForm.nameChip) {
+    if (!displayForm.sizeDisplay) {
       setFormSubmitted(true);
-      setnameChipError("Tên chip không được bỏ trống");
+      setsizeDisplayError("Kích thước màn hình không được bỏ trống");
       flag = true;
     }
 
-    props.chips.forEach((chip) => {
-      if (chip.tenChip === chipForm.nameChip) {
+    if (!displayForm.resolutionDisplay) {
+      setFormSubmitted(true);
+      setsizeDisplayError("Độ phân giải không được bỏ trống");
+      flag = true;
+    }
+
+    props.displays.forEach((display) => {
+      if (display.kichCoManHinh === displayForm.sizeDisplay) {
         setFormSubmitted(true);
-        setnameChipError(
-          "Tên chip đã tồn tại trong hệ thống"
+        setsizeDisplayError(
+          "Kích cỡ màn hình đã tồn tại trong hệ thống"
+        );
+        flag = true;
+      }
+      if (display.doPhanGiai === displayForm.resolutionDisplay) {
+        setFormSubmitted(true);
+        setsizeDisplayError(
+          "Độ phân giải màn hình đã tồn tại trong hệ thống"
         );
         flag = true;
       }
@@ -68,7 +86,7 @@ const AddProperty = (props) => {
     }
 
     setLoading(true);
-    axios.post("http://localhost:8080/chip/save", chipForm);
+    axios.post("http://localhost:8080/man-hinh/save", displayForm);
     setTimeout(() => {
       props.loadData(props.currentPage)
       setLoading(false);
@@ -84,17 +102,23 @@ const AddProperty = (props) => {
   };
 
 
-  const handleInputChangeFormnameChip = (e) => {
-    const nameChipValue = e.target.value.trim();
-      setnameChipError("");
-      setchipForm({ ...chipForm, [e.target.name]: e.target.value });
+  const handleInputDisplay = (e) => {
+    if(e.target.name === "sizeDisplay"){
+      var sizeOfDisplayValue = e.target.value
+      if(isNaN(sizeOfDisplayValue)){
+        setsizeDisplayError("Kích thước màn hình phải là số")
+        return;
+      }
+    }
+     
+    setsizeDisplayError("");
+    setdisplayForm({ ...displayForm, [e.target.name]: e.target.value });
   };
 
 
   return (
     <>
       <ToastContainer />
-
       <FontAwesomeIcon
               icon={faPencilAlt}
               onClick={handleClick}
@@ -103,7 +127,7 @@ const AddProperty = (props) => {
                 color: "green",
               }}
             />
-      
+
       <Modal
         open={open}
         onOk={() => setOpenModalConfirm(true)}
@@ -129,28 +153,52 @@ const AddProperty = (props) => {
         <h2
           style={{ marginBottom: `2%`, textAlign: `center`, fontSize: `27px` }}
         >
-          Sửa 
+          Sửa màn hình
         </h2>
 
         <FormLabel style={{ marginLeft: `9px`, fontSize: `14px` }}>
           {" "}
-          Tên chip{" "}
+          Kích cỡ màn hình{" "}
         </FormLabel>
         <TextField
           label=""
           id="fullWidth"
-          name="nameChip"
-          value={chipForm.nameChip}
-          onChange={(e) => handleInputChangeFormnameChip(e)}
+          name="sizeDisplay"
+          value={displayForm.sizeDisplay}
+          onChange={(e) => handleInputDisplay(e)}
           error={
-            (formSubmitted && !chipForm.nameChip) ||
-            !!nameChipError
+            (formSubmitted && !displayForm.sizeDisplay) ||
+            !!sizeDisplayError
           }
           helperText={
-            nameChipError ||
+            sizeDisplayError ||
             (formSubmitted &&
-              !chipForm.nameChip &&
-              "Tên chip không được trống")
+              !displayForm.sizeDisplay &&
+              "Kích cỡ màn hình không được trống")
+          }
+          style={{ width: "100%" }}
+        />
+
+        <br/>
+        <FormLabel style={{ marginLeft: `9px`, fontSize: `14px` }}>
+          {" "}
+          Độ phân giải màn hình{" "}
+        </FormLabel>
+        <TextField
+          label=""
+          id="fullWidth"
+          name="resolutionDisplay"
+          value={displayForm.resolutionDisplay}
+          onChange={(e) => handleInputDisplay(e)}
+          error={
+            (formSubmitted && !displayForm.resolutionDisplay) ||
+            !!resolutionDisplayError
+          }
+          helperText={
+            resolutionDisplayError ||
+            (formSubmitted &&
+              !displayForm.resolutionDisplay   &&
+              "Độ phân phải màn hình không được trống")
           }
           style={{ width: "100%" }}
         />
@@ -165,7 +213,7 @@ const AddProperty = (props) => {
             onOk={handleOk}
             onCancel={() => setOpenModalConfirm(false)}
           >
-            Bạn có chắc sửa này ?
+            Bạn có chắc sửa màn hình này ?
       </Modal>
     </>
   );

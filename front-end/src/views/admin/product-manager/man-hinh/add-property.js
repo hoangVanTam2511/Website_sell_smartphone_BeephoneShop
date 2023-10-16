@@ -33,7 +33,9 @@ const AddProperty = (props) => {
 
   
   const handleClick = () => {
-    setOpen(true);
+    setOpen(true);  
+    setresolutionDisplayError("")
+    setsizeDisplayError("")
   };
 
 
@@ -93,6 +95,14 @@ const AddProperty = (props) => {
 
 
   const handleInputDisplay = (e) => {
+    if(e.target.name === "sizeDisplay"){
+      var sizeOfDisplayValue = e.target.value
+      if(isNaN(sizeOfDisplayValue)){
+        setsizeDisplayError("Kích thước màn hình phải là số")
+        return;
+      }
+    }
+     
     setsizeDisplayError("");
     setdisplayForm({ ...displayForm, [e.target.name]: e.target.value });
   };
