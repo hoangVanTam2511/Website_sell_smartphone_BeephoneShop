@@ -96,7 +96,7 @@ tr:hover {
 
 .add-promotion-inProduct-container {
   width: 100%;
-  height: 420px;
+  height: 433px;
   background-color: #fff;
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -106,6 +106,7 @@ tr:hover {
   background-color: #fff;
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-left: 1px;
 }
 
 .button-add-promotion {
@@ -115,15 +116,22 @@ tr:hover {
   padding-right: 40px;
 }
 .title-promotion {
-  padding: 10px;
   padding-top: 15px;
 }
 
 .title-product {
   padding-left: 30px;
   padding-top: 15px;
+  padding-bottom: 10px;
 }
 
+.btn-accept {
+  margin-right: 30px;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
 /* .validate {
   margin-top: 15px;
   margin-bottom: 10px;

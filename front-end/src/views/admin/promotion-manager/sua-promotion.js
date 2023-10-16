@@ -295,14 +295,22 @@ const SuaKhuyenMai = () => {
 
     const numericValue2 = parseFloat(value?.replace(/[^0-9.-]+/g, ""));
     if (value == null || value === "") {
-      msg.giaTriKhuyenMai = "Giá trị voucher không được để trống !!!";
+      msg.giaTriKhuyenMai = "Giá trị giảm giá không được để trống !!!";
     }
 
     if (
       (selectDiscount === TypeDiscountString.VND && numericValue2 <= 0) ||
       (selectDiscount === TypeDiscountString.VND && numericValue2 > 100000000)
     ) {
-      msg.giaTriKhuyenMai = "Giá trị voucher từ 1đ đến 100.000.000đ";
+      msg.giaTriKhuyenMai = "Giá trị giảm giá từ 1đ đến 100.000.000đ";
+    }
+
+    if (selectDiscount === TypeDiscountString.PERCENT && numericValue2 <= 0) {
+      msg.giaTriKhuyenMai = "Giá trị tối đa chỉ nằm trong khoảng 1% - 100% !!!";
+    }
+
+    if (selectDiscount === TypeDiscountString.PERCENT && value <= 0) {
+      msg.value = "Giá trị tối đa chỉ nằm trong khoảng 1% - 100% !!!";
     }
 
     // if (ngayKetThuc.isBefore(ngayBatDau)) {
@@ -598,32 +606,32 @@ const SuaKhuyenMai = () => {
         }
       },
     },
-    {
-      title: "Tình trạng",
-      dataIndex: "tinhTrang",
-      width: "10%",
-      align: "center",
-      render: (_, record) => {
-        return (
-          <>
-            <div style={{ textAlign: "center" }}>
-              <Tooltip title="Change">
-                <Button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setOpen(true);
-                    detailSanPhamSauKhuyenMai(record.id);
-                  }}
-                  style={{ border: "none", background: "none" }}
-                >
-                  <FontAwesomeIcon icon={faEye} />
-                </Button>{" "}
-              </Tooltip>
-            </div>
-          </>
-        );
-      },
-    },
+    // {
+    //   title: "Tình trạng",
+    //   dataIndex: "tinhTrang",
+    //   width: "10%",
+    //   align: "center",
+    //   render: (_, record) => {
+    //     return (
+    //       <>
+    //         <div style={{ textAlign: "center" }}>
+    //           <Tooltip title="Change">
+    //             <Button
+    //               onClick={(e) => {
+    //                 e.stopPropagation();
+    //                 setOpen(true);
+    //                 detailSanPhamSauKhuyenMai(record.id);
+    //               }}
+    //               style={{ border: "none", background: "none" }}
+    //             >
+    //               <FontAwesomeIcon icon={faEye} />
+    //             </Button>{" "}
+    //           </Tooltip>
+    //         </div>
+    //       </>
+    //     );
+    //   },
+    // },
   ];
 
   //Column Detail
@@ -796,11 +804,11 @@ const SuaKhuyenMai = () => {
 
   return (
     <>
-      <div className="row mt-4 add-promotion-container">
-        <div className="col-md-5 mt-3">
-          <div className="">
-            <h5 className="title-promotion mb-3 ms-4">Sửa Khuyến Mãi</h5>
-            <div className="row-input ms-3">
+      <div className="row">
+        <div className="col-5">
+          <div className="mt-3 add-promotion-container">
+            <h5 className="title-promotion ms-4">Sửa Khuyến Mãi</h5>
+            <div className="ms-3 mb-4">
               <div className="input-container">
                 <TextField
                   label="Tên Khuyến Mãi:"
@@ -815,10 +823,7 @@ const SuaKhuyenMai = () => {
                   }}
                 />
               </div>
-              <span
-                className="validate"
-                style={{ paddingLeft: "50px", color: "red" }}
-              >
+              <span className="validate" style={{ color: "red" }}>
                 {validationMsg.tenKhuyenMai}
               </span>
             </div>
@@ -917,7 +922,7 @@ const SuaKhuyenMai = () => {
 
                 <span
                   className="validate"
-                  style={{ color: "red", paddingLeft: "50px" }}
+                  style={{ color: "red", paddingLeft: "13px" }}
                 >
                   {validationMsg.giaTriKhuyenMai}
                 </span>
@@ -972,68 +977,80 @@ const SuaKhuyenMai = () => {
               </div>
             </div>
             <div className="btn-accept mt-3">
-              <Button type="primary" onClick={handleSubmit}>
-                Áp Dụng{" "}
-                <FontAwesomeIcon
-                  icon={faCheck}
-                  style={{ paddingLeft: "10px" }}
-                />
+              <Button
+                className="rounded-2 button-mui"
+                type="primary"
+                style={{ height: "35px", width: "100px", fontSize: "15px" }}
+                onClick={handleSubmit}
+              >
+                <FontAwesomeIcon icon={faCheck} />
+                <span
+                  className="ms-1"
+                  style={{ marginBottom: "3px", fontWeight: "500" }}
+                >
+                  Áp dụng
+                </span>
               </Button>
-              <ToastContainer />
               &nbsp;&nbsp;
               <Button
+                className="rounded-2 button-mui"
                 type="primary"
+                style={{ height: "35px", width: "100px", fontSize: "15px" }}
                 onClick={() => {
-                  redirectToHienThiKhuyenMai();
+                  setTimeout(() => {
+                    setIsLoading(false);
+                    redirectToHienThiKhuyenMai();
+                  }, 200);
                 }}
                 htmlType="submit"
               >
-                Quay Về{" "}
-                <FontAwesomeIcon
-                  icon={faArrowLeft}
-                  style={{ paddingLeft: "10px" }}
-                />
+                <FontAwesomeIcon icon={faArrowLeft} />
+                <span
+                  className="ms-1"
+                  style={{ marginBottom: "3px", fontWeight: "500" }}
+                >
+                  Quay về
+                </span>
               </Button>
             </div>
           </div>
         </div>
 
-        <div className="col-7 mt-3">
-          <div className="table-container ms-3">
-            <h4 className="mb-3 ms-3"> Danh sách sản Phẩm</h4>
-            <Table
-              dataSource={listSanPham}
-              columns={mergedColumns}
-              pagination={{ pageSize: 3 }}
-              rowKey="id"
-              style={{ marginBottom: "20px" }}
-              onRow={(record) => {
-                return {
-                  // onChange: () => {},
-                  onClick: () => {
-                    if (selectedRow === record) {
-                      handleRowClick(record);
-                    } else {
-                      handleRowClick(record);
-                      setSelectedRow(record);
-                    }
-                  },
-                  className: selectedRow === record ? "selected-row" : "",
-                };
-              }}
-            />
+        <div className="col-7">
+          <div className="add-promotion-inProduct-container">
+            <div className="mt-3">
+              <h4 className="title-product"> Danh sách sản Phẩm</h4>
+              <Table
+                dataSource={listSanPham}
+                columns={mergedColumns}
+                pagination={{ pageSize: 3 }}
+                rowKey="id"
+                style={{ marginBottom: "20px" }}
+                onRow={(record) => {
+                  return {
+                    // onChange: () => {},
+                    onClick: () => {
+                      if (selectedRow === record) {
+                        handleRowClick(record);
+                      } else {
+                        handleRowClick(record);
+                        setSelectedRow(record);
+                      }
+                    },
+                    className: selectedRow === record ? "selected-row" : "",
+                  };
+                }}
+              />
+            </div>
           </div>
         </div>
-        <div className="row ms-1">
-          <h4 className="mb-3 ms-3" style={{ marginTop: "20px" }}>
-            Danh sách chi tiết sản phẩm
-          </h4>
+        <div className="row mt-3 ms-1 mb-3 add-promotion-inProduct-detail-container">
+          <h4 style={{ marginTop: "20px" }}>Danh sách chi tiết sản phẩm</h4>
           <Table
             dataSource={listSanPhamChiTiet}
             columns={mergedColumns1}
             pagination={{ pageSize: 5 }}
             rowKey="id"
-            style={{ marginBottom: "20px" }}
             onRow={(record) => {
               return {
                 onClick: () => {

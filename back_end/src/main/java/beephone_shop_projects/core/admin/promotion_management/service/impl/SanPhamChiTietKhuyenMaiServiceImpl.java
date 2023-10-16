@@ -1,6 +1,10 @@
 package beephone_shop_projects.core.admin.promotion_management.service.impl;
 
-import beephone_shop_projects.core.admin.promotion_management.model.reponse.*;
+import beephone_shop_projects.core.admin.promotion_management.model.reponse.DetailKhuyenMaiResponse;
+import beephone_shop_projects.core.admin.promotion_management.model.reponse.KhuyenMaiChiTietResponse;
+import beephone_shop_projects.core.admin.promotion_management.model.reponse.SanPhamChiTietKhuyenMaiResponse;
+import beephone_shop_projects.core.admin.promotion_management.model.reponse.SanPhamChiTietKhuyenMaiResponseCustom;
+import beephone_shop_projects.core.admin.promotion_management.model.reponse.SanPhamChiTietSauKhuyenMaiResponse;
 import beephone_shop_projects.core.admin.promotion_management.repository.SanPhamChiTietKhuyenMaiRepository;
 import beephone_shop_projects.core.admin.promotion_management.service.SanPhamChiTietKhuyenMaiService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +19,14 @@ import java.util.List;
 public class SanPhamChiTietKhuyenMaiServiceImpl implements SanPhamChiTietKhuyenMaiService {
 
     List<SanPhamChiTietKhuyenMaiResponse> listAo = new ArrayList<>();
-    List<SanPhamChiTietKhuyenMaiResponseCustom> listResult = new ArrayList<>();
+
 
     @Autowired
     private SanPhamChiTietKhuyenMaiRepository sanPhamChiTietKhuyenMaiRepository;
 
     @Override
     public List<SanPhamChiTietKhuyenMaiResponseCustom> getAllSanPhamChiTietKhuyenMai(String id, Boolean check) {
+        List<SanPhamChiTietKhuyenMaiResponseCustom> listResult = new ArrayList<>();
         List<SanPhamChiTietKhuyenMaiResponse> result = sanPhamChiTietKhuyenMaiRepository.findAllChiTietSanPham(id);
         BigDecimal tong = BigDecimal.ZERO;
         if (check == true) {
@@ -61,25 +66,38 @@ public class SanPhamChiTietKhuyenMaiServiceImpl implements SanPhamChiTietKhuyenM
                     }
                     tong = tong.add(chuyenDoi);
                 }
-                if(kmct.size() > 0) {
-                responseCustom.setGiaTriKhuyenMai(tong.divide(new BigDecimal(kmct.size()), 2, RoundingMode.HALF_UP)) ;
+                if (kmct.size() > 0) {
+                    responseCustom.setGiaTriKhuyenMai(tong.divide(new BigDecimal(kmct.size()), 2, RoundingMode.HALF_UP));
                 }
             }
             return listResult;
-        } else if (check == false) {
-            List<SanPhamChiTietKhuyenMaiResponseCustom> itemsToRemove = new ArrayList<>();
+        }
+        if (check == false) {
+            List<SanPhamChiTietKhuyenMaiResponse> itemsToRemove = new ArrayList<>();
             for (SanPhamChiTietKhuyenMaiResponse item : result) {
-                System.out.println("for 1" + item);
-                for (SanPhamChiTietKhuyenMaiResponseCustom uniqueItem : listResult) {
-                    System.out.println("for 2" + uniqueItem);
+                for (SanPhamChiTietKhuyenMaiResponse uniqueItem : listAo) {
                     if (uniqueItem.getIdSanPham().equals(item.getIdSanPham())) {
-                        System.out.println("ID Sản Phẩm" + uniqueItem.getId());
-                        System.out.println("ID Sản Phẩm" + item.getId());
                         itemsToRemove.add(uniqueItem);
                     }
                 }
             }
-            listResult.removeAll(itemsToRemove);
+            listAo.removeAll(itemsToRemove);
+            for (SanPhamChiTietKhuyenMaiResponse sp : listAo) {
+                SanPhamChiTietKhuyenMaiResponseCustom responseCustom = new SanPhamChiTietKhuyenMaiResponseCustom();
+                responseCustom.setId(sp.getId());
+                responseCustom.setDuongDan(sp.getDuongDan());
+                responseCustom.setTenSanPham(sp.getTenSanPham());
+                responseCustom.setTenMauSac(sp.getTenMauSac());
+                responseCustom.setKichThuocRam(sp.getKichThuocRam());
+                responseCustom.setKichThuocRom(sp.getKichThuocRom());
+                responseCustom.setDonGia(sp.getDonGia());
+                responseCustom.setDelected(sp.getDelected());
+                responseCustom.setIdSanPham(sp.getIdSanPham());
+                List<KhuyenMaiChiTietResponse> kmct = sanPhamChiTietKhuyenMaiRepository.getListKhuyenMai(sp.getId());
+                responseCustom.setKhuyenMaiChiTietResponse(kmct);
+                responseCustom.setSize(kmct.size());
+                listResult.add(responseCustom);
+            }
 
         }
         return listResult;

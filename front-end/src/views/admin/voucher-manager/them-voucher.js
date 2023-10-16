@@ -77,16 +77,6 @@ const AddVoucher = () => {
     );
   };
 
-  // const loadDataListVoucher = (page) => {
-  //   axios
-  //     .get(`${apiURLVoucher}/vouchers`)
-  //     .then((response) => {
-  //       setListVoucher(response.data.data);
-  //       console.log(response);
-  //     })
-  //     .catch((error) => {});
-  // };
-
   const handleChange = (event) => {
     if (selectDiscount === TypeDiscountString.VND) {
       const inputValue = event.target.value;
@@ -555,14 +545,13 @@ const AddVoucher = () => {
             </div>
           </div>
         </div>
-        <div className="btn-accept mt-3">
+        <div className="btn-accept-voucher mt-3">
           <Button
             className="rounded-2 button-mui"
             type="primary"
             style={{ height: "35px", width: "120px", fontSize: "15px" }}
             onClick={() => handleSubmit()}
           >
-            <ToastContainer />
             <FontAwesomeIcon icon={faCheck} />
             <span
               className="ms-2 ps-1"
