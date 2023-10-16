@@ -5,31 +5,24 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
+import java.math.BigDecimal;
 
 @AllArgsConstructor
 @Getter
 @Setter
 @NoArgsConstructor
-public class AccountResponse {
+public class OrderItemResponse {
 
   private String id;
 
-  private String ma;
+  private BigDecimal donGia;
 
-  private String hoVaTen;
+  private BigDecimal donGiaSauGiam;
 
-  private String email;
+  private Integer soLuong;
 
-  private String diaChi;
+  private BigDecimal thanhTien;
 
-  private String soDienThoai;
-
-  private String xaPhuong;
-
-  private String quanHuyen;
-
-  private String tinhThanhPho;
-
+  private ProductItemResponse sanPhamChiTiet;
 
 }

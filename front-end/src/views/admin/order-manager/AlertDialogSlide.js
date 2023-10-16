@@ -49,6 +49,8 @@ import { Notistack, OrderStatusString } from "./enum";
 import { parseInt } from "lodash";
 import { useSnackbar } from "notistack";
 import useCustomSnackbar from "../../../utilities/notistack";
+import PriceSlider from "./rangePriceSlider";
+import InputNumberAmount from "./input-number-amount-product.js";
 
 const PrettoSlider = styled(Slider)({
   color: "#2f80ed",
@@ -530,23 +532,21 @@ export function PaymentDialog(props) {
 
 export function ProductsDialog(props) {
   const {
+    isOpen,
     open,
     onClose,
-    onCloseNoAction,
     data,
     add,
     openProductDetails,
     openDialogProductItems,
     closeDialogProductDetails,
     closeNoActionDialogProductDetails,
-    count,
-    changeCount,
-    clickCount,
-    clickCount1,
+    getAmount
   } = props;
   const StyledTableContainer = styled(TableContainer)({
     boxShadow: "none",
   });
+
 
   const [openSelect, setOpenSelect] = useState(false);
   const [openSelect1, setOpenSelect1] = useState(false);
@@ -559,6 +559,7 @@ export function ProductsDialog(props) {
   const [openSelect8, setOpenSelect8] = useState(false);
   const [openSelect9, setOpenSelect9] = useState(false);
 
+  const filterProducts = data.filter((i) => i.soLuongTonKho > 0);
   const addProductToCart = (priceProduct, idProduct, amount) => {
     add(priceProduct, idProduct, amount);
   };
@@ -613,13 +614,16 @@ export function ProductsDialog(props) {
                     Giá
                   </TableCell>
                   <TableCell style={{ fontWeight: "500" }} align="center">
+                    Số lượng tồn
+                  </TableCell>
+                  <TableCell style={{ fontWeight: "500" }} align="center">
                     Thao Tác
                   </TableCell>
                 </TableRow>
               </StyledTableHead>
               <TableBody>
                 {data &&
-                  data.map((item, index) => (
+                  filterProducts.map((item, index) => (
                     <TableRow
                       key={index}
                       sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -653,11 +657,11 @@ export function ProductsDialog(props) {
                         {item &&
                           item.sanPham &&
                           item.sanPham.tenSanPham +
-                            " " +
-                            item.cauHinh.ram.kichThuoc +
-                            "/" +
-                            item.cauHinh.rom.kichThuoc +
-                            "GB"}
+                          " " +
+                          item.cauHinh.ram.kichThuoc +
+                          "/" +
+                          item.cauHinh.rom.kichThuoc +
+                          "GB"}
                       </TableCell>
                       <TableCell
                         align="center"
@@ -696,11 +700,17 @@ export function ProductsDialog(props) {
                         <span style={{ color: "#dc1111" }}>
                           {item && item.donGia
                             ? item.donGia.toLocaleString("vi-VN", {
-                                style: "currency",
-                                currency: "VND",
-                              })
+                              style: "currency",
+                              currency: "VND",
+                            })
                             : ""}
                         </span>
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        style={{ fontSize: "16px", width: "" }}
+                      >
+                        {item.soLuongTonKho}
                       </TableCell>
                       <TableCell align="center" style={{ width: "230px" }}>
                         <Button
@@ -818,38 +828,6 @@ export function ProductsDialog(props) {
     setOpenSelect9(true);
   };
 
-  const [configurations, setConfigurations] = useState([]);
-  const [colors, setColors] = useState([]);
-  const getListConfigurations = (id) => {
-    axios
-      .get(`http://localhost:8080/san-pham/configs/${id}`, {})
-      .then((response) => {
-        const convertedData = response.data.map(
-          (item) => `${item.ram}/${item.rom}GB`
-        );
-        setConfigurations(convertedData);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
-
-  const getListColors = (id) => {
-    axios
-      .get(`http://localhost:8080/san-pham/colors/${id}`, {})
-      .then((response) => {
-        // const convertedData = response.data.map(item => `${item.tenMauSac}|${item.duongDan}`);
-        // setColors(convertedData);
-        setColors(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
-
-  const handleChangeCount = (value) => {
-    changeCount(value);
-  };
 
   const [productItem, setProductItem] = useState();
   const [productItem1, setProductItem1] = useState();
@@ -878,7 +856,7 @@ export function ProductsDialog(props) {
       (i) =>
         i.cauHinh.mauSac.tenMauSac === color &&
         i.ma === item.ma &&
-        i.soLuongTonKho !== 0
+        i.soLuongTonKho > 0
     );
     if (findColor) {
       setProductItem2(findColor);
@@ -912,15 +890,15 @@ export function ProductsDialog(props) {
     //   return !isDuplicate;
     // });
 
+    const getIdByItem = item && item.sanPham.id;
     const uniqueItems = Object.values(
       data.reduce((acc, item) => {
         if (
-          !acc[item.ma] ||
-          (acc[item.ma].donGia > item.donGia && !acc[item.ma].isDuplicate)
-        ) {
+          (!acc[item.ma] ||
+            (acc[item.ma].donGia > item.donGia && !acc[item.ma].isDuplicate)) && item.sanPham.id === getIdByItem) {
           acc[item.ma] = item;
         } else if (
-          acc[item.ma].isDuplicate &&
+          acc[item.ma] && acc[item.ma].isDuplicate &&
           acc[item.ma].donGia > item.donGia
         ) {
           acc[item.ma] = {
@@ -1071,7 +1049,7 @@ export function ProductsDialog(props) {
         open={open}
         TransitionComponent={Transition}
         keepMounted
-        onClose={onCloseNoAction}
+        onClose={onClose}
         aria-describedby="alert-dialog-slide-description1"
         maxWidth="xl"
         maxHeight="xl"
@@ -1102,7 +1080,7 @@ export function ProductsDialog(props) {
             </div>
             <div>
               <Tooltip title="Đóng" TransitionComponent={Zoom}>
-                <IconButton size="small" onClick={onCloseNoAction}>
+                <IconButton size="small" onClick={onClose}>
                   <CloseOutlinedIcon />
                 </IconButton>
               </Tooltip>
@@ -1110,715 +1088,566 @@ export function ProductsDialog(props) {
           </div>
         </DialogTitle>
         <DialogContent style={{ height: "600px" }}>
-          <div className="mt-1 pt-1 d-flex">
-            <TextField
-              label="Tìm sản phẩm"
-              // onChange={handleGetValueFromInputTextField}
-              // value={keyword}
-              InputLabelProps={{
-                sx: {
-                  textTransform: "capitalize",
-                },
-              }}
-              style={{ height: "23px" }}
-              inputProps={{
-                style: {
-                  // height: "23px",
-                  width: "250px",
-                },
-              }}
-              size="small"
-              className=""
-            />
-            <Button
-              // onClick={handleRefreshData}
-              className="rounded-2 ms-3"
-              type="warning"
-              style={{
-                height: "40px",
-                width: "100px",
-                fontSize: "15px",
-                backgroundColor: "#FFB61E",
-              }}
-            >
-              <span
-                className="text-dark"
-                style={{ fontWeight: "550", marginBottom: "2px" }}
-              >
-                Làm Mới
-              </span>
-            </Button>
-            <div
-              className="ms-3 d-flex"
-              style={{ height: "40px", cursor: "pointer" }}
-            >
-              <div onClick={handleOpenSelect} className="mt-2">
-                <span
-                  className="ms-2 ps-1"
-                  style={{ fontSize: "15px", fontWeight: "450" }}
-                >
-                  Nhu cầu:{" "}
-                </span>
-              </div>
-              <FormControl sx={{ maxWidth: 180 }} size="small">
-                <SelectMui
-                  multiple
-                  MenuProps={{
-                    PaperProps: {
-                      style: {
-                        borderRadius: "7px",
-                      },
+          {isOpen === true ?
+            <>
+              <div className="mt-1 pt-1 d-flex">
+                <TextField
+                  label="Tìm sản phẩm"
+                  // onChange={handleGetValueFromInputTextField}
+                  // value={keyword}
+                  InputLabelProps={{
+                    sx: {
+                      textTransform: "capitalize",
                     },
                   }}
-                  IconComponent={KeyboardArrowDownOutlinedIcon}
-                  sx={{
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      border: "none !important",
-                    },
-                    "& .MuiSelect-select": {
-                      color: "#288ad6",
-                      fontWeight: "500",
+                  style={{ height: "23px" }}
+                  inputProps={{
+                    style: {
+                      // height: "23px",
+                      width: "250px",
                     },
                   }}
-                  open={openSelect}
-                  onClose={handleCloseSelect}
-                  onOpen={handleOpenSelect}
-                  defaultValue={selectedValues}
-                  value={selectedValues}
-                  onChange={(e) => {
-                    setSelectedValues(e.target.value);
+                  size="small"
+                  className=""
+                />
+                <Button
+                  // onClick={handleRefreshData}
+                  className="rounded-2 ms-3"
+                  type="warning"
+                  style={{
+                    height: "40px",
+                    width: "100px",
+                    fontSize: "15px",
+                    backgroundColor: "#FFB61E",
                   }}
                 >
-                  {selectedValues.length === 1 && selectedValues[0] == 0 && (
-                    <MenuItem
-                      className=""
-                      value={0}
-                      style={{ display: "none" }}
-                    >
-                      Chọn nhu cầu
-                    </MenuItem>
-                  )}
-                  <MenuItem value={1}>Chơi game</MenuItem>
-                  <MenuItem value={2}>Pin trâu</MenuItem>
-                  <MenuItem value={3}>Chụp ảnh, quay phim</MenuItem>
-                  <MenuItem value={4}>Livestream</MenuItem>
-                  <MenuItem value={5}>Nhỏ gọn</MenuItem>
-                  <MenuItem value={6}>Cấu hình cao</MenuItem>
-                </SelectMui>
-              </FormControl>
-            </div>
-
-            <div
-              className="ms-1 d-flex"
-              style={{ height: "40px", cursor: "pointer" }}
-            >
-              <div onClick={handleOpenSelect1} className="mt-2">
-                <span
-                  className="ms-2 ps-1"
-                  style={{ fontSize: "15px", fontWeight: "450" }}
-                >
-                  Hãng:{" "}
-                </span>
-              </div>
-              <FormControl
-                sx={{
-                  maxWidth: 150,
-                }}
-                size="small"
-              >
-                <SelectMui
-                  MenuProps={{
-                    PaperProps: {
-                      style: {
-                        borderRadius: "7px",
-                      },
-                    },
-                  }}
-                  IconComponent={KeyboardArrowDownOutlinedIcon}
-                  sx={{
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      border: "none !important",
-                    },
-                    "& .MuiSelect-select": {
-                      color: "#288ad6",
-                      fontWeight: "500",
-                    },
-                  }}
-                  open={openSelect1}
-                  onClose={handleCloseSelect1}
-                  onOpen={handleOpenSelect1}
-                  defaultValue={selectedValues1}
-                  value={selectedValues1}
-                  onChange={(e) => {
-                    setSelectedValues1(e.target.value);
-                  }}
-                  multiple
-                >
-                  {selectedValues1.length === 1 && selectedValues[0] == 0 && (
-                    <MenuItem
-                      className=""
-                      value={0}
-                      style={{ display: "none" }}
-                    >
-                      Chọn hãng
-                    </MenuItem>
-                  )}
-                  <MenuItem value={1}>Iphone</MenuItem>
-                  <MenuItem value={2}>Samsung</MenuItem>
-                  <MenuItem value={3}>Oppo</MenuItem>
-                  <MenuItem value={4}>Xiaomi</MenuItem>
-                  <MenuItem value={5}>Readme</MenuItem>
-                  <MenuItem value={6}>Nokia</MenuItem>
-                  <MenuItem value={7}>Vivo</MenuItem>
-                </SelectMui>
-              </FormControl>
-            </div>
-
-            <div
-              className="ms-1 d-flex"
-              style={{ height: "40px", cursor: "pointer" }}
-            >
-              <div onClick={handleOpenSelect2} className="mt-2">
-                <span
-                  className="ms-2 ps-1"
-                  style={{ fontSize: "15px", fontWeight: "450" }}
-                >
-                  Loại điện thoại:{" "}
-                </span>
-              </div>
-              <FormControl
-                sx={{
-                  maxWidth: 150,
-                }}
-                size="small"
-              >
-                <SelectMui
-                  MenuProps={{
-                    PaperProps: {
-                      style: {
-                        borderRadius: "7px",
-                      },
-                    },
-                  }}
-                  IconComponent={KeyboardArrowDownOutlinedIcon}
-                  sx={{
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      border: "none !important",
-                    },
-                    "& .MuiSelect-select": {
-                      color: "#288ad6",
-                      fontWeight: "500",
-                    },
-                  }}
-                  open={openSelect2}
-                  onClose={handleCloseSelect2}
-                  onOpen={handleOpenSelect2}
-                  multiple
-                  defaultValue={selectedValues2}
-                  value={selectedValues2}
-                  onChange={(e) => {
-                    setSelectedValues2(e.target.value);
-                  }}
-                >
-                  {selectedValues2.length === 1 && selectedValues[0] == 0 && (
-                    <MenuItem
-                      className=""
-                      value={0}
-                      style={{ display: "none" }}
-                    >
-                      Chọn loại
-                    </MenuItem>
-                  )}
-                  <MenuItem value={1}>Iphone</MenuItem>
-                  <MenuItem value={2}>Android</MenuItem>
-                </SelectMui>
-              </FormControl>
-            </div>
-            <div
-              className="ms-1 d-flex"
-              style={{ height: "40px", cursor: "pointer" }}
-            >
-              <div onClick={handleOpenSelect3} className="mt-2">
-                <span
-                  className="ms-2 ps-1"
-                  style={{ fontSize: "15px", fontWeight: "450" }}
-                >
-                  Chip xử lý:{" "}
-                </span>
-              </div>
-              <FormControl
-                sx={{
-                  maxWidth: 160,
-                }}
-                size="small"
-              >
-                <SelectMui
-                  MenuProps={{
-                    PaperProps: {
-                      style: {
-                        borderRadius: "7px",
-                      },
-                    },
-                  }}
-                  IconComponent={KeyboardArrowDownOutlinedIcon}
-                  sx={{
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      border: "none !important",
-                    },
-                    "& .MuiSelect-select": {
-                      color: "#288ad6",
-                      fontWeight: "500",
-                    },
-                  }}
-                  open={openSelect3}
-                  onClose={handleCloseSelect3}
-                  onOpen={handleOpenSelect3}
-                  defaultValue={selectedValues3}
-                  value={selectedValues3}
-                  onChange={(e) => {
-                    setSelectedValues3(e.target.value);
-                  }}
-                  multiple
-                >
-                  {selectedValues3.length === 1 && selectedValues[0] == 0 && (
-                    <MenuItem
-                      className=""
-                      value={0}
-                      style={{ display: "none" }}
-                    >
-                      Chọn chip
-                    </MenuItem>
-                  )}
-                  <MenuItem value={1}>Snapdragon</MenuItem>
-                  <MenuItem value={2}>Apple A</MenuItem>
-                  <MenuItem value={3}>Mediatek Helio</MenuItem>
-                  <MenuItem value={4}>Mediatek Dimensity</MenuItem>
-                  <MenuItem value={5}>Exynos</MenuItem>
-                </SelectMui>
-              </FormControl>
-            </div>
-          </div>
-
-          <div className="d-flex mt-3 mx-auto ms-4 ps-3">
-            <div
-              className="d-flex"
-              style={{ height: "40px", cursor: "pointer" }}
-            >
-              <div onClick={handleOpenSelect4} className="mt-2">
-                <span
-                  className="ms-2 ps-1"
-                  style={{ fontSize: "15px", fontWeight: "450" }}
-                >
-                  Giá:{" "}
-                </span>
-              </div>
-              <FormControl
-                sx={{
-                  minWidth: 50,
-                }}
-                size="small"
-              >
-                <SelectMui
-                  MenuProps={{
-                    PaperProps: {
-                      style: {
-                        borderRadius: "7px",
-                      },
-                    },
-                  }}
-                  IconComponent={KeyboardArrowDownOutlinedIcon}
-                  sx={{
-                    backgroundColor: "white",
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      border: "none !important",
-                    },
-                    "& .MuiSelect-select": {
-                      color: "#288ad6",
-                      fontWeight: "500",
-                    },
-                  }}
-                  open={openSelect4}
-                  // onClose={handleCloseSelect4}
-                  onOpen={handleOpenSelect4}
-                  defaultValue={0}
-                  // onChange={(e) => setValue()}
-                  value={0}
-                >
-                  {isRangePrice == false ? (
-                    <MenuItem
-                      className=""
-                      value={0}
-                      style={{ display: "none" }}
-                    >
-                      Chọn mức giá
-                    </MenuItem>
-                  ) : (
-                    <MenuItem
-                      className=""
-                      value={0}
-                      style={{ display: "none" }}
-                    >
-                      {fromPrice + "₫" + " - " + toPrice + "₫"}
-                    </MenuItem>
-                  )}
-                  <MenuItem
-                    className=""
-                    value={1}
-                    disableRipple
-                    style={{ backgroundColor: "transparent" }}
+                  <span
+                    className="text-dark"
+                    style={{ fontWeight: "550", marginBottom: "2px" }}
                   >
-                    <div className="p-2" style={{ height: "140px" }}>
-                      <div className="d-flex justify-content-between">
-                        <Input
-                          endAdornment={
-                            <InputAdornment position="end">đ</InputAdornment>
-                          }
-                          onChange={handleChangeValueStart}
-                          value={valueStart}
-                          placeholder="Từ"
-                          sx={{ width: "100px" }}
-                        />
-                        <Input
-                          onChange={handleChangeValueEnd}
-                          endAdornment={
-                            <InputAdornment position="end">đ</InputAdornment>
-                          }
-                          value={valueEnd}
-                          placeholder="Đến"
-                          sx={{ width: "100px" }}
-                        />
-                      </div>
-                      <div>
-                        <PrettoSlider
-                          sx={{ width: "300px", marginTop: "15px" }}
-                          value={valueSlider}
-                          onChange={handleChangeSlider}
-                          min={0}
-                          max={51900000}
-                        />
-                      </div>
-                      <div className="d-flex mt-2">
-                        <Button
-                          onClick={() => {
-                            handleCloseSelect4();
-                            setValueStart(fromPrice || valueStart);
-                            setValueEnd(toPrice || valueEnd);
-                          }}
-                          className="rounded-2"
-                          type="warning"
-                          style={{
-                            height: "38.8px",
-                            width: "145px",
-                            fontSize: "15px",
-                          }}
+                    Làm Mới
+                  </span>
+                </Button>
+                <div
+                  className="ms-3 d-flex"
+                  style={{ height: "40px", cursor: "pointer" }}
+                >
+                  <div onClick={handleOpenSelect} className="mt-2">
+                    <span
+                      className="ms-2 ps-1"
+                      style={{ fontSize: "15px", fontWeight: "450" }}
+                    >
+                      Nhu cầu:{" "}
+                    </span>
+                  </div>
+                  <FormControl sx={{ maxWidth: 180 }} size="small">
+                    <SelectMui
+                      multiple
+                      MenuProps={{
+                        PaperProps: {
+                          style: {
+                            borderRadius: "7px",
+                          },
+                        },
+                      }}
+                      IconComponent={KeyboardArrowDownOutlinedIcon}
+                      sx={{
+                        "& .MuiOutlinedInput-notchedOutline": {
+                          border: "none !important",
+                        },
+                        "& .MuiSelect-select": {
+                          color: "#288ad6",
+                          fontWeight: "500",
+                        },
+                      }}
+                      open={openSelect}
+                      onClose={handleCloseSelect}
+                      onOpen={handleOpenSelect}
+                      defaultValue={selectedValues}
+                      value={selectedValues}
+                      onChange={(e) => {
+                        setSelectedValues(e.target.value);
+                      }}
+                    >
+                      {selectedValues.length === 1 && selectedValues[0] == 0 && (
+                        <MenuItem
+                          className=""
+                          value={0}
+                          style={{ display: "none" }}
                         >
-                          <span
-                            className="text-dark"
-                            style={{
-                              marginBottom: "3px",
-                              fontSize: "13.5px",
-                              fontWeight: "500",
-                            }}
-                          >
-                            Đóng
-                          </span>
-                        </Button>
-                        <Button
-                          onClick={() => {
-                            handleCloseSelect4();
-                            setIsRangePrice(true);
-                            setFromPrice(valueStart);
-                            setToPrice(valueEnd);
-                          }}
-                          className="rounded-2 button-mui ms-2"
-                          type="primary"
-                          style={{
-                            height: "38.8px",
-                            width: "145px",
-                            fontSize: "15px",
-                          }}
+                          Chọn nhu cầu
+                        </MenuItem>
+                      )}
+                      <MenuItem value={1}>Chơi game</MenuItem>
+                      <MenuItem value={2}>Pin trâu</MenuItem>
+                      <MenuItem value={3}>Chụp ảnh, quay phim</MenuItem>
+                      <MenuItem value={4}>Livestream</MenuItem>
+                      <MenuItem value={5}>Nhỏ gọn</MenuItem>
+                      <MenuItem value={6}>Cấu hình cao</MenuItem>
+                    </SelectMui>
+                  </FormControl>
+                </div>
+
+                <div
+                  className="ms-1 d-flex"
+                  style={{ height: "40px", cursor: "pointer" }}
+                >
+                  <div onClick={handleOpenSelect1} className="mt-2">
+                    <span
+                      className="ms-2 ps-1"
+                      style={{ fontSize: "15px", fontWeight: "450" }}
+                    >
+                      Hãng:{" "}
+                    </span>
+                  </div>
+                  <FormControl
+                    sx={{
+                      maxWidth: 150,
+                    }}
+                    size="small"
+                  >
+                    <SelectMui
+                      MenuProps={{
+                        PaperProps: {
+                          style: {
+                            borderRadius: "7px",
+                          },
+                        },
+                      }}
+                      IconComponent={KeyboardArrowDownOutlinedIcon}
+                      sx={{
+                        "& .MuiOutlinedInput-notchedOutline": {
+                          border: "none !important",
+                        },
+                        "& .MuiSelect-select": {
+                          color: "#288ad6",
+                          fontWeight: "500",
+                        },
+                      }}
+                      open={openSelect1}
+                      onClose={handleCloseSelect1}
+                      onOpen={handleOpenSelect1}
+                      defaultValue={selectedValues1}
+                      value={selectedValues1}
+                      onChange={(e) => {
+                        setSelectedValues1(e.target.value);
+                      }}
+                      multiple
+                    >
+                      {selectedValues1.length === 1 && selectedValues[0] == 0 && (
+                        <MenuItem
+                          className=""
+                          value={0}
+                          style={{ display: "none" }}
                         >
-                          <span
-                            className="text-white"
-                            style={{
-                              marginBottom: "3px",
-                              fontSize: "13.5px",
-                              fontWeight: "500",
-                            }}
-                          >
-                            Xem kết quả
-                          </span>
-                        </Button>
-                      </div>
-                    </div>
-                  </MenuItem>
-                </SelectMui>
-              </FormControl>
-            </div>
+                          Chọn hãng
+                        </MenuItem>
+                      )}
+                      <MenuItem value={1}>Iphone</MenuItem>
+                      <MenuItem value={2}>Samsung</MenuItem>
+                      <MenuItem value={3}>Oppo</MenuItem>
+                      <MenuItem value={4}>Xiaomi</MenuItem>
+                      <MenuItem value={5}>Readme</MenuItem>
+                      <MenuItem value={6}>Nokia</MenuItem>
+                      <MenuItem value={7}>Vivo</MenuItem>
+                    </SelectMui>
+                  </FormControl>
+                </div>
 
-            <div
-              className="ms-1 d-flex"
-              style={{ height: "40px", cursor: "pointer" }}
-            >
-              <div onClick={handleOpenSelect5} className="mt-2">
-                <span
-                  className="ms-2 ps-1"
-                  style={{ fontSize: "15px", fontWeight: "450" }}
+                <div
+                  className="ms-1 d-flex"
+                  style={{ height: "40px", cursor: "pointer" }}
                 >
-                  Bộ nhớ trong:{" "}
-                </span>
-              </div>
-              <FormControl
-                sx={{
-                  maxWidth: 150,
-                }}
-                size="small"
-              >
-                <SelectMui
-                  MenuProps={{
-                    PaperProps: {
-                      style: {
-                        borderRadius: "7px",
-                      },
-                    },
-                  }}
-                  IconComponent={KeyboardArrowDownOutlinedIcon}
-                  sx={{
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      border: "none !important",
-                    },
-                    "& .MuiSelect-select": {
-                      color: "#288ad6",
-                      fontWeight: "500",
-                    },
-                  }}
-                  open={openSelect5}
-                  onClose={handleCloseSelect5}
-                  onOpen={handleOpenSelect5}
-                  defaultValue={selectedValues5}
-                  value={selectedValues5}
-                  onChange={(e) => {
-                    setSelectedValues5(e.target.value);
-                  }}
-                  multiple
-                >
-                  {selectedValues5.length === 1 && selectedValues[0] == 0 && (
-                    <MenuItem
-                      className=""
-                      value={0}
-                      style={{ display: "none" }}
+                  <div onClick={handleOpenSelect2} className="mt-2">
+                    <span
+                      className="ms-2 ps-1"
+                      style={{ fontSize: "15px", fontWeight: "450" }}
                     >
-                      Chọn bộ nhớ
-                    </MenuItem>
-                  )}
-                  <MenuItem value={1}>16GB</MenuItem>
-                  <MenuItem value={2}>32GB</MenuItem>
-                  <MenuItem value={3}>64GB</MenuItem>
-                  <MenuItem value={4}>128GB</MenuItem>
-                  <MenuItem value={5}>256GB</MenuItem>
-                  <MenuItem value={6}>512GB</MenuItem>
-                  <MenuItem value={7}>1TB</MenuItem>
-                </SelectMui>
-              </FormControl>
-            </div>
+                      Loại điện thoại:{" "}
+                    </span>
+                  </div>
+                  <FormControl
+                    sx={{
+                      maxWidth: 150,
+                    }}
+                    size="small"
+                  >
+                    <SelectMui
+                      MenuProps={{
+                        PaperProps: {
+                          style: {
+                            borderRadius: "7px",
+                          },
+                        },
+                      }}
+                      IconComponent={KeyboardArrowDownOutlinedIcon}
+                      sx={{
+                        "& .MuiOutlinedInput-notchedOutline": {
+                          border: "none !important",
+                        },
+                        "& .MuiSelect-select": {
+                          color: "#288ad6",
+                          fontWeight: "500",
+                        },
+                      }}
+                      open={openSelect2}
+                      onClose={handleCloseSelect2}
+                      onOpen={handleOpenSelect2}
+                      multiple
+                      defaultValue={selectedValues2}
+                      value={selectedValues2}
+                      onChange={(e) => {
+                        setSelectedValues2(e.target.value);
+                      }}
+                    >
+                      {selectedValues2.length === 1 && selectedValues[0] == 0 && (
+                        <MenuItem
+                          className=""
+                          value={0}
+                          style={{ display: "none" }}
+                        >
+                          Chọn loại
+                        </MenuItem>
+                      )}
+                      <MenuItem value={1}>Iphone</MenuItem>
+                      <MenuItem value={2}>Android</MenuItem>
+                    </SelectMui>
+                  </FormControl>
+                </div>
+                <div
+                  className="ms-1 d-flex"
+                  style={{ height: "40px", cursor: "pointer" }}
+                >
+                  <div onClick={handleOpenSelect3} className="mt-2">
+                    <span
+                      className="ms-2 ps-1"
+                      style={{ fontSize: "15px", fontWeight: "450" }}
+                    >
+                      Chip xử lý:{" "}
+                    </span>
+                  </div>
+                  <FormControl
+                    sx={{
+                      maxWidth: 160,
+                    }}
+                    size="small"
+                  >
+                    <SelectMui
+                      MenuProps={{
+                        PaperProps: {
+                          style: {
+                            borderRadius: "7px",
+                          },
+                        },
+                      }}
+                      IconComponent={KeyboardArrowDownOutlinedIcon}
+                      sx={{
+                        "& .MuiOutlinedInput-notchedOutline": {
+                          border: "none !important",
+                        },
+                        "& .MuiSelect-select": {
+                          color: "#288ad6",
+                          fontWeight: "500",
+                        },
+                      }}
+                      open={openSelect3}
+                      onClose={handleCloseSelect3}
+                      onOpen={handleOpenSelect3}
+                      defaultValue={selectedValues3}
+                      value={selectedValues3}
+                      onChange={(e) => {
+                        setSelectedValues3(e.target.value);
+                      }}
+                      multiple
+                    >
+                      {selectedValues3.length === 1 && selectedValues[0] == 0 && (
+                        <MenuItem
+                          className=""
+                          value={0}
+                          style={{ display: "none" }}
+                        >
+                          Chọn chip
+                        </MenuItem>
+                      )}
+                      <MenuItem value={1}>Snapdragon</MenuItem>
+                      <MenuItem value={2}>Apple A</MenuItem>
+                      <MenuItem value={3}>Mediatek Helio</MenuItem>
+                      <MenuItem value={4}>Mediatek Dimensity</MenuItem>
+                      <MenuItem value={5}>Exynos</MenuItem>
+                    </SelectMui>
+                  </FormControl>
+                </div>
+              </div>
 
-            <div
-              className="ms-1 d-flex"
-              style={{ height: "40px", cursor: "pointer" }}
-            >
-              <div onClick={handleOpenSelect6} className="mt-2">
-                <span
-                  className="ms-2 ps-1"
-                  style={{ fontSize: "15px", fontWeight: "450" }}
+              <div className="d-flex mt-3 mx-auto ms-4 ps-3">
+                <PriceSlider />
+                <div
+                  className="ms-1 d-flex"
+                  style={{ height: "40px", cursor: "pointer" }}
                 >
-                  Dung lượng RAM:{" "}
-                </span>
-              </div>
-              <FormControl
-                sx={{
-                  maxWidth: 130,
-                }}
-                size="small"
-              >
-                <SelectMui
-                  MenuProps={{
-                    PaperProps: {
-                      style: {
-                        borderRadius: "7px",
-                      },
-                    },
-                  }}
-                  IconComponent={KeyboardArrowDownOutlinedIcon}
-                  sx={{
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      border: "none !important",
-                    },
-                    "& .MuiSelect-select": {
-                      color: "#288ad6",
-                      fontWeight: "500",
-                    },
-                  }}
-                  open={openSelect6}
-                  onClose={handleCloseSelect6}
-                  onOpen={handleOpenSelect6}
-                  defaultValue={selectedValues6}
-                  value={selectedValues6}
-                  onChange={(e) => {
-                    setSelectedValues6(e.target.value);
-                  }}
-                  multiple
-                >
-                  {selectedValues6.length === 1 && selectedValues[0] == 0 && (
-                    <MenuItem
-                      className=""
-                      value={0}
-                      style={{ display: "none" }}
+                  <div onClick={handleOpenSelect5} className="mt-2">
+                    <span
+                      className="ms-2 ps-1"
+                      style={{ fontSize: "15px", fontWeight: "450" }}
                     >
-                      Chọn RAM
-                    </MenuItem>
-                  )}
-                  <MenuItem value={1}>2GB</MenuItem>
-                  <MenuItem value={2}>3GB</MenuItem>
-                  <MenuItem value={3}>4GB</MenuItem>
-                  <MenuItem value={4}>6GB</MenuItem>
-                  <MenuItem value={5}>8GB</MenuItem>
-                  <MenuItem value={6}>12GB</MenuItem>
-                </SelectMui>
-              </FormControl>
-            </div>
+                      Bộ nhớ trong:{" "}
+                    </span>
+                  </div>
+                  <FormControl
+                    sx={{
+                      maxWidth: 150,
+                    }}
+                    size="small"
+                  >
+                    <SelectMui
+                      MenuProps={{
+                        PaperProps: {
+                          style: {
+                            borderRadius: "7px",
+                          },
+                        },
+                      }}
+                      IconComponent={KeyboardArrowDownOutlinedIcon}
+                      sx={{
+                        "& .MuiOutlinedInput-notchedOutline": {
+                          border: "none !important",
+                        },
+                        "& .MuiSelect-select": {
+                          color: "#288ad6",
+                          fontWeight: "500",
+                        },
+                      }}
+                      open={openSelect5}
+                      onClose={handleCloseSelect5}
+                      onOpen={handleOpenSelect5}
+                      defaultValue={selectedValues5}
+                      value={selectedValues5}
+                      onChange={(e) => {
+                        setSelectedValues5(e.target.value);
+                      }}
+                      multiple
+                    >
+                      {selectedValues5.length === 1 && selectedValues[0] == 0 && (
+                        <MenuItem
+                          className=""
+                          value={0}
+                          style={{ display: "none" }}
+                        >
+                          Chọn bộ nhớ
+                        </MenuItem>
+                      )}
+                      <MenuItem value={1}>16GB</MenuItem>
+                      <MenuItem value={2}>32GB</MenuItem>
+                      <MenuItem value={3}>64GB</MenuItem>
+                      <MenuItem value={4}>128GB</MenuItem>
+                      <MenuItem value={5}>256GB</MenuItem>
+                      <MenuItem value={6}>512GB</MenuItem>
+                      <MenuItem value={7}>1TB</MenuItem>
+                    </SelectMui>
+                  </FormControl>
+                </div>
 
-            <div
-              className="ms-1 d-flex"
-              style={{ height: "40px", cursor: "pointer" }}
-            >
-              <div onClick={handleOpenSelect7} className="mt-2">
-                <span
-                  className="ms-2 ps-1"
-                  style={{ fontSize: "15px", fontWeight: "450" }}
+                <div
+                  className="ms-1 d-flex"
+                  style={{ height: "40px", cursor: "pointer" }}
                 >
-                  Màn hình:{" "}
-                </span>
-              </div>
-              <FormControl
-                sx={{
-                  maxWidth: 170,
-                }}
-                size="small"
-              >
-                <SelectMui
-                  MenuProps={{
-                    PaperProps: {
-                      style: {
-                        borderRadius: "7px",
-                      },
-                    },
-                  }}
-                  IconComponent={KeyboardArrowDownOutlinedIcon}
-                  sx={{
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      border: "none !important",
-                    },
-                    "& .MuiSelect-select": {
-                      color: "#288ad6",
-                      fontWeight: "500",
-                    },
-                  }}
-                  open={openSelect7}
-                  onClose={handleCloseSelect7}
-                  onOpen={handleOpenSelect7}
-                  defaultValue={selectedValues7}
-                  value={selectedValues7}
-                  onChange={(e) => {
-                    setSelectedValues7(e.target.value);
-                  }}
-                  multiple
-                >
-                  {selectedValues7.length === 1 && selectedValues[0] == 0 && (
-                    <MenuItem
-                      className=""
-                      value={0}
-                      style={{ display: "none" }}
+                  <div onClick={handleOpenSelect6} className="mt-2">
+                    <span
+                      className="ms-2 ps-1"
+                      style={{ fontSize: "15px", fontWeight: "450" }}
                     >
-                      Chọn kích thước
-                    </MenuItem>
-                  )}
-                  <MenuItem value={1}>Dưới 6 inch</MenuItem>
-                  <MenuItem value={2}>Trên 6 inch</MenuItem>
-                </SelectMui>
-              </FormControl>
-            </div>
+                      Dung lượng RAM:{" "}
+                    </span>
+                  </div>
+                  <FormControl
+                    sx={{
+                      maxWidth: 130,
+                    }}
+                    size="small"
+                  >
+                    <SelectMui
+                      MenuProps={{
+                        PaperProps: {
+                          style: {
+                            borderRadius: "7px",
+                          },
+                        },
+                      }}
+                      IconComponent={KeyboardArrowDownOutlinedIcon}
+                      sx={{
+                        "& .MuiOutlinedInput-notchedOutline": {
+                          border: "none !important",
+                        },
+                        "& .MuiSelect-select": {
+                          color: "#288ad6",
+                          fontWeight: "500",
+                        },
+                      }}
+                      open={openSelect6}
+                      onClose={handleCloseSelect6}
+                      onOpen={handleOpenSelect6}
+                      defaultValue={selectedValues6}
+                      value={selectedValues6}
+                      onChange={(e) => {
+                        setSelectedValues6(e.target.value);
+                      }}
+                      multiple
+                    >
+                      {selectedValues6.length === 1 && selectedValues[0] == 0 && (
+                        <MenuItem
+                          className=""
+                          value={0}
+                          style={{ display: "none" }}
+                        >
+                          Chọn RAM
+                        </MenuItem>
+                      )}
+                      <MenuItem value={1}>2GB</MenuItem>
+                      <MenuItem value={2}>3GB</MenuItem>
+                      <MenuItem value={3}>4GB</MenuItem>
+                      <MenuItem value={4}>6GB</MenuItem>
+                      <MenuItem value={5}>8GB</MenuItem>
+                      <MenuItem value={6}>12GB</MenuItem>
+                    </SelectMui>
+                  </FormControl>
+                </div>
 
-            <div
-              className="ms-1 d-flex"
-              style={{ height: "40px", cursor: "pointer" }}
-            >
-              <div onClick={handleOpenSelect8} className="mt-2">
-                <span
-                  className="ms-2 ps-1"
-                  style={{ fontSize: "15px", fontWeight: "450" }}
+                <div
+                  className="ms-1 d-flex"
+                  style={{ height: "40px", cursor: "pointer" }}
                 >
-                  Tính năng đặc biệt:{" "}
-                </span>
-              </div>
-              <FormControl
-                sx={{
-                  maxWidth: 160,
-                }}
-                size="small"
-              >
-                <SelectMui
-                  MenuProps={{
-                    PaperProps: {
-                      style: {
-                        borderRadius: "7px",
-                      },
-                    },
-                  }}
-                  IconComponent={KeyboardArrowDownOutlinedIcon}
-                  sx={{
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      border: "none !important",
-                    },
-                    "& .MuiSelect-select": {
-                      color: "#288ad6",
-                      fontWeight: "500",
-                    },
-                  }}
-                  open={openSelect8}
-                  onClose={handleCloseSelect8}
-                  onOpen={handleOpenSelect8}
-                  defaultValue={selectedValues8}
-                  value={selectedValues8}
-                  onChange={(e) => {
-                    setSelectedValues8(e.target.value);
-                  }}
-                  multiple
-                >
-                  {selectedValues8.length === 1 && selectedValues[0] == 0 && (
-                    <MenuItem
-                      className=""
-                      value={0}
-                      style={{ display: "none" }}
+                  <div onClick={handleOpenSelect7} className="mt-2">
+                    <span
+                      className="ms-2 ps-1"
+                      style={{ fontSize: "15px", fontWeight: "450" }}
                     >
-                      Chọn tính năng
-                    </MenuItem>
-                  )}
-                  <MenuItem value={1}>Kháng nước, kháng bụi</MenuItem>
-                  <MenuItem value={2}>Hỗ trợ 5G</MenuItem>
-                  <MenuItem value={3}>Bảo mật vân tay</MenuItem>
-                  <MenuItem value={4}>Bảo mật khuôn mặt</MenuItem>
-                  <MenuItem value={5}>Sạc không dây</MenuItem>
-                </SelectMui>
-              </FormControl>
-            </div>
-          </div>
-          <div className="mt-3">
-            <TableProduct />
-          </div>
+                      Màn hình:{" "}
+                    </span>
+                  </div>
+                  <FormControl
+                    sx={{
+                      maxWidth: 170,
+                    }}
+                    size="small"
+                  >
+                    <SelectMui
+                      MenuProps={{
+                        PaperProps: {
+                          style: {
+                            borderRadius: "7px",
+                          },
+                        },
+                      }}
+                      IconComponent={KeyboardArrowDownOutlinedIcon}
+                      sx={{
+                        "& .MuiOutlinedInput-notchedOutline": {
+                          border: "none !important",
+                        },
+                        "& .MuiSelect-select": {
+                          color: "#288ad6",
+                          fontWeight: "500",
+                        },
+                      }}
+                      open={openSelect7}
+                      onClose={handleCloseSelect7}
+                      onOpen={handleOpenSelect7}
+                      defaultValue={selectedValues7}
+                      value={selectedValues7}
+                      onChange={(e) => {
+                        setSelectedValues7(e.target.value);
+                      }}
+                      multiple
+                    >
+                      {selectedValues7.length === 1 && selectedValues[0] == 0 && (
+                        <MenuItem
+                          className=""
+                          value={0}
+                          style={{ display: "none" }}
+                        >
+                          Chọn kích thước
+                        </MenuItem>
+                      )}
+                      <MenuItem value={1}>Dưới 6 inch</MenuItem>
+                      <MenuItem value={2}>Trên 6 inch</MenuItem>
+                    </SelectMui>
+                  </FormControl>
+                </div>
+
+                <div
+                  className="ms-1 d-flex"
+                  style={{ height: "40px", cursor: "pointer" }}
+                >
+                  <div onClick={handleOpenSelect8} className="mt-2">
+                    <span
+                      className="ms-2 ps-1"
+                      style={{ fontSize: "15px", fontWeight: "450" }}
+                    >
+                      Tính năng đặc biệt:{" "}
+                    </span>
+                  </div>
+                  <FormControl
+                    sx={{
+                      maxWidth: 160,
+                    }}
+                    size="small"
+                  >
+                    <SelectMui
+                      MenuProps={{
+                        PaperProps: {
+                          style: {
+                            borderRadius: "7px",
+                          },
+                        },
+                      }}
+                      IconComponent={KeyboardArrowDownOutlinedIcon}
+                      sx={{
+                        "& .MuiOutlinedInput-notchedOutline": {
+                          border: "none !important",
+                        },
+                        "& .MuiSelect-select": {
+                          color: "#288ad6",
+                          fontWeight: "500",
+                        },
+                      }}
+                      open={openSelect8}
+                      onClose={handleCloseSelect8}
+                      onOpen={handleOpenSelect8}
+                      defaultValue={selectedValues8}
+                      value={selectedValues8}
+                      onChange={(e) => {
+                        setSelectedValues8(e.target.value);
+                      }}
+                      multiple
+                    >
+                      {selectedValues8.length === 1 && selectedValues[0] == 0 && (
+                        <MenuItem
+                          className=""
+                          value={0}
+                          style={{ display: "none" }}
+                        >
+                          Chọn tính năng
+                        </MenuItem>
+                      )}
+                      <MenuItem value={1}>Kháng nước, kháng bụi</MenuItem>
+                      <MenuItem value={2}>Hỗ trợ 5G</MenuItem>
+                      <MenuItem value={3}>Bảo mật vân tay</MenuItem>
+                      <MenuItem value={4}>Bảo mật khuôn mặt</MenuItem>
+                      <MenuItem value={5}>Sạc không dây</MenuItem>
+                    </SelectMui>
+                  </FormControl>
+                </div>
+              </div>
+              <div className="mt-3">
+                <TableProduct />
+              </div>
+            </>
+            : null}
         </DialogContent>
+
         <DialogActions></DialogActions>
       </Dialog>
       <ProductDetailsDialog
+        isOpen={isOpen}
         open={openProductDetails}
         onCloseNoAction={closeDialogProductDetails}
         onClose={closeNoActionDialogProductDetails}
@@ -1826,16 +1655,11 @@ export function ProductsDialog(props) {
         productItem={productItem}
         productItem1={productItem1}
         productItem2={productItem2}
-        colors={colors}
-        configurations={configurations}
         getProductItems={productItems}
         getProductItems1={productItems1}
         changeProductItem={handleChangeInfoProductItem}
         changeProductImage={handleChangeProductImage}
-        count={count}
-        clickCount={clickCount}
-        clickCount1={clickCount1}
-        changeCount={handleChangeCount}
+        getAmount={getAmount}
       />
     </div>
   );
@@ -1885,6 +1709,7 @@ export function VouchersDialog(props) {
   const useStyles = () => ({});
 
   const classes = useStyles();
+  const filteredData = data.filter((item) => total() >= item.dieuKienApDung);
 
   const TableVouchers = () => {
     return (
@@ -1928,7 +1753,7 @@ export function VouchersDialog(props) {
                 </TableRow>
               </StyledTableHead>
               <TableBody>
-                {data.map((item, index) => (
+                {filteredData.length > 0 ? (filteredData.map((item, index) => (
                   <TableRow
                     key={index}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -1952,7 +1777,7 @@ export function VouchersDialog(props) {
                       align="center"
                       style={{ width: "", fontSize: "15px" }}
                     >
-                      {item.loaiVoucher === "VNĐ" ? "..." : item.giaTriToiDa}
+                      {item.loaiVoucher === 1 ? "..." : item.giaTriToiDa}
                     </TableCell>
                     <TableCell
                       align="center"
@@ -1960,36 +1785,6 @@ export function VouchersDialog(props) {
                     >
                       {item.soLuong}
                     </TableCell>
-                    {/*
-                    <TableCell align="center" style={{ width: "", fontSize: "15px", color: "white" }}>
-                      <div
-                        className="rounded-pill badge-primary"
-                        style={{
-                          height: "35px",
-                          width: "auto",
-                          padding: "7.5px",
-                        }}
-                      >
-                        <span className="text-white p-2" style={{}}>
-                          {item &&
-                            item.ngayBatDau &&
-                            format(
-                              new Date(item.ngayBatDau),
-                              "dd/MM/yyyy"
-                            )}
-                        </span>
-                        {"-"}
-                        <span className="text-white p-2" style={{}}>
-                          {item &&
-                            item.ngayKetThuc &&
-                            format(
-                              new Date(item.ngayKetThuc),
-                              "dd/MM/yyyy"
-                            )}
-                        </span>
-                      </div>
-                    </TableCell>
-*/}
                     <TableCell
                       align="center"
                       style={{
@@ -2033,11 +1828,10 @@ export function VouchersDialog(props) {
                       }}
                     >
                       <div
-                        className={`${
-                          item.dieuKienApDung <= total()
-                            ? "rounded-pill badge-success"
-                            : "rounded-pill badge-danger"
-                        }`}
+                        className={`${item.dieuKienApDung <= total()
+                          ? "rounded-pill badge-success"
+                          : "rounded-pill badge-danger"
+                          }`}
                         style={{
                           height: "35px",
                           width: "auto",
@@ -2045,11 +1839,10 @@ export function VouchersDialog(props) {
                         }}
                       >
                         <span className="text-white p-2" style={{}}>
-                          <span>{`${
-                            item.dieuKienApDung <= total()
-                              ? "Có thể áp dụng"
-                              : "Không thể áp dụng"
-                          }`}</span>
+                          <span>{`${item.dieuKienApDung <= total()
+                            ? "Có thể áp dụng"
+                            : "Không thể áp dụng"
+                            }`}</span>
                         </span>
                       </div>
                     </TableCell>
@@ -2066,8 +1859,8 @@ export function VouchersDialog(props) {
                           discount === item.id
                             ? "danger"
                             : discount !== item.id
-                            ? "warning"
-                            : ""
+                              ? "warning"
+                              : ""
                         }
                         style={{
                           height: "35px",
@@ -2086,7 +1879,7 @@ export function VouchersDialog(props) {
                       </Button>
                     </TableCell>
                   </TableRow>
-                ))}
+                ))) : ""}
               </TableBody>
             </Table>
           </StyledTableContainer>
@@ -2364,7 +2157,7 @@ export function OrderHistoryDialog(props) {
         }}
       >
         <DialogContent>
-          <div style={{ width: "1100px", maxHeight: "400px" }}>
+          <div style={{ width: "1100px", maxHeight: "500px" }}>
             <TableAntd
               className=""
               columns={columns}
@@ -2602,6 +2395,7 @@ export function ConfirmDialog(props) {
 export const ProductDetailsDialog = (props) => {
   const { handleOpenAlertVariant } = useCustomSnackbar();
   const {
+    isOpen,
     open,
     onClose,
     onCloseNoAction,
@@ -2613,18 +2407,11 @@ export const ProductDetailsDialog = (props) => {
     getProductItems1,
     changeProductItem,
     changeProductImage,
-    count,
-    clickCount1,
-    clickCount,
-    changeCount,
+    getAmount
   } = props;
 
-  const handleChangeCount = (e) => {
-    changeCount(e.target.value);
-  };
-
-  const addProductItemsToCart = (productPrice, productId, amount) => {
-    addProduct(productPrice, productId, count);
+  const addProductItemsToCart = (productPrice, productId) => {
+    addProduct(productPrice, productId);
   };
 
   const handleChangeCauHinh = (id) => {
@@ -2658,344 +2445,313 @@ export const ProductDetailsDialog = (props) => {
         aria-describedby="alert-dialog-slide-description1"
         maxWidth="lg"
         maxHeight="lg"
-        sx={{}}
       >
-        <DialogContent>
-          <div className="" style={{ width: "auto", height: "500px" }}>
-            <div className="wrapper-header d-flex justify-content-between">
-              <span style={{ fontWeight: "500", fontSize: "25px" }}>
-                {productItem1 &&
-                  productItem1.sanPham.tenSanPham +
-                    " " +
-                    productItem1.cauHinh.ram.kichThuoc +
-                    "/" +
-                    productItem1.cauHinh.rom.kichThuoc +
-                    "GB"}
-                <span
-                  className="ms-2"
-                  style={{ fontSize: "13.5px", color: "gray" }}
-                >
-                  (No.9001)
-                </span>
-              </span>
-              <Tooltip title="Đóng" TransitionComponent={Zoom}>
-                <IconButton size="small" onClick={onCloseNoAction}>
-                  <CloseOutlinedIcon />
-                </IconButton>
-              </Tooltip>
-            </div>
-            <div
-              className="mt-2"
-              style={{
-                borderBottom: "2px solid #C7C7C7",
-                width: "100%",
-                borderWidth: "1px",
-              }}
-            ></div>
-            <div className="wrapper-product d-flex">
-              <div className="product-img" style={{ width: "350px" }}>
-                <img
-                  className="mt-4 pt-4"
-                  style={{ width: "370px", height: "380px" }}
-                  src={productItem2 && productItem2.images[0].duongDan}
-                  alt=""
-                />
-              </div>
-              <div className="product-details mt-5 ms-3 ps-1">
-                <div className="box-choose">
-                  <span style={{ fontWeight: "550", fontSize: "14px" }}>
-                    LỰA CHỌN CẤU HÌNH VÀ MÀU SẮC
-                  </span>
-                </div>
-                <div className="choose1 mt-3 d-flex">
-                  <RadioGroup
-                    orientation="horizontal"
-                    aria-labelledby="storage-label"
-                    defaultValue={
-                      productItem &&
-                      productItem.cauHinh.ram.kichThuoc +
-                        "/" +
-                        productItem.cauHinh.rom.kichThuoc +
-                        "GB"
-                    }
-                    size="lg"
-                    sx={{ gap: 1.7 }}
-                  >
-                    {getProductItems &&
-                      getProductItems.map((item) => (
-                        <Sheet
-                          key={item.id}
-                          sx={{
-                            width: "auto",
-                            borderRadius: "md",
-                            boxShadow: "sm",
-                          }}
-                        >
-                          <Radio
-                            label={
-                              <>
-                                <div className="p-1">
-                                  <div>
-                                    <span
-                                      className="p-2"
-                                      style={{
-                                        fontSize: "14px",
-                                        fontWeight: "450",
-                                      }}
-                                    >
-                                      {productItem &&
-                                        productItem.sanPham.tenSanPham +
-                                          " " +
-                                          item.cauHinh.ram.kichThuoc +
-                                          "/" +
-                                          item.cauHinh.rom.kichThuoc +
-                                          "GB"}
-                                    </span>
-                                  </div>
-                                  <div className="text-center">
-                                    <span style={{ fontSize: "14px" }}>
-                                      {item &&
-                                        item.donGia.toLocaleString("vi-VN", {
-                                          style: "currency",
-                                          currency: "VND",
-                                        })}
-                                    </span>
-                                  </div>
-                                </div>
-                              </>
-                            }
-                            onChange={() => handleChangeCauHinh(item.id)}
-                            onClick={() => handleSetKey()}
-                            overlay
-                            disableIcon
-                            value={
-                              item.cauHinh.ram.kichThuoc +
-                              "/" +
-                              item.cauHinh.rom.kichThuoc +
-                              "GB"
-                            }
-                            slotProps={{
-                              label: ({ checked }) => ({
-                                sx: {
-                                  fontWeight: "lg",
-                                  fontSize: "md",
-                                  color: checked
-                                    ? "text.primary"
-                                    : "text.secondary",
-                                },
-                              }),
-                              action: ({ checked }) => ({
-                                sx: (theme) => ({
-                                  ...(checked && {
-                                    "--variant-borderWidth": "2px",
-                                    "&&": {
-                                      // && to increase the specificity to win the base :hover styles
-                                      borderColor: "#2f80ed",
-                                    },
-                                  }),
-                                }),
-                              }),
-                            }}
-                          />
-                        </Sheet>
-                      ))}
-                  </RadioGroup>
-                </div>
-                <div className="choose2 mt-3">
-                  <RadioGroup
-                    orientation="horizontal"
-                    key={keyRadio}
-                    aria-labelledby="storage-label"
-                    defaultValue={
-                      productItem2 && productItem2.cauHinh.mauSac.tenMauSac
-                    }
-                    size="lg"
-                    sx={{ gap: 1.7 }}
-                  >
-                    {getProductItems1 &&
-                      getProductItems1.map((item) => (
-                        <Sheet
-                          key={item.id}
-                          sx={{
-                            borderRadius: "md",
-                            boxShadow: "sm",
-                          }}
-                        >
-                          <Radio
-                            label={
-                              <>
-                                <div
-                                  className="p-1 d-flex"
-                                  style={{ width: "143px", height: "56px" }}
-                                >
-                                  <div>
-                                    <img
-                                      className=""
-                                      style={{
-                                        width: "40px",
-                                        height: "40px",
-                                        marginTop: "4px",
-                                      }}
-                                      src={
-                                        item.images && item.images[0].duongDan
-                                      }
-                                      alt=""
-                                    />
-                                  </div>
-                                  <div className="" style={{ marginTop: "" }}>
-                                    <span
-                                      className="p-2"
-                                      style={{
-                                        fontSize: "14px",
-                                        fontWeight: "500",
-                                        textTransform: "capitalize",
-                                      }}
-                                    >
-                                      {item.cauHinh.mauSac.tenMauSac}
-                                    </span>
-                                    <div className="" style={{ marginTop: "" }}>
-                                      <span
-                                        className="p-2"
-                                        style={{ fontSize: "13px" }}
-                                      >
-                                        {item &&
-                                          item.donGia.toLocaleString("vi-VN", {
-                                            style: "currency",
-                                            currency: "VND",
-                                          })}
-                                      </span>
-                                    </div>
-                                  </div>
-                                </div>
-                              </>
-                            }
-                            onChange={() => handleChangeMauSac(item.id)}
-                            overlay
-                            disabled={item.soLuongTonKho <= 0 ? true : false}
-                            disableIcon
-                            value={item.cauHinh.mauSac.tenMauSac}
-                            slotProps={{
-                              label: ({ checked }) => ({
-                                sx: {
-                                  fontWeight: "lg",
-                                  fontSize: "md",
-                                  color: checked
-                                    ? "text.primary"
-                                    : "text.secondary",
-                                  opacity:
-                                    item.soLuongTonKho == 0 ? "0.5" : "1",
-                                },
-                              }),
-                              action: ({ checked }) => ({
-                                sx: (theme) => ({
-                                  ...(checked && {
-                                    "--variant-borderWidth": "2px",
-                                    "&&": {
-                                      // && to increase the specificity to win the base :hover styles
-                                      borderColor: "#2f80ed",
-                                    },
-                                  }),
-                                }),
-                              }),
-                            }}
-                          />
-                        </Sheet>
-                      ))}
-                  </RadioGroup>
-                </div>
-                <div className="product-price mt-4">
-                  <span
-                    style={{
-                      color: "#dc3333",
-                      fontSize: "23px",
-                      fontWeight: "550",
-                    }}
-                  >
-                    {productItem2 &&
-                      productItem2.donGia.toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })}
-                  </span>
-                  <span
-                    className="ms-2 ps-1"
-                    style={{
-                      textDecoration: "line-through",
-                      color: "grey",
-                      fontSize: "14.5px",
-                      fontWeight: "400",
-                    }}
-                  >
-                    29.990.000₫
-                  </span>
-                </div>
-                <div className="d-flex mt-3">
-                  <div class="number-input2">
-                    <button
-                      disabled={count == 1 ? true : false}
-                      onClick={() => {
-                        clickCount1();
-                      }}
-                      class="minus"
-                    >
-                      <div className="wrap-minus">
-                        <span>
-                          <RemoveOutlinedIcon style={{ fontSize: "20px" }} />
-                        </span>
-                      </div>
-                    </button>
-                    <input
-                      value={count}
-                      min="1"
-                      max="4"
-                      onChange={(e) => handleChangeCount(e)}
-                      name="quantity"
-                      class="quantity"
-                      type="number"
-                    />
-                    <button
-                      class=""
-                      onClick={() => {
-                        clickCount();
-                      }}
-                    >
-                      <div className="wrap-plus">
-                        <span>
-                          <AddOutlinedIcon style={{ fontSize: "20px" }} />
-                        </span>
-                      </div>
-                    </button>
-                  </div>
-                  <div className="ms-2 ps-1" style={{ marginTop: "7px" }}>
+        {isOpen === true ?
+          <DialogContent>
+            <>
+              <div className="" style={{ width: "auto", height: "500px" }}>
+                <div className="wrapper-header d-flex justify-content-between">
+                  <span style={{ fontWeight: "500", fontSize: "25px" }}>
+                    {productItem1 &&
+                      productItem1.sanPham.tenSanPham +
+                      " " +
+                      productItem1.cauHinh.ram.kichThuoc +
+                      "/" +
+                      productItem1.cauHinh.rom.kichThuoc +
+                      "GB"}
                     <span
-                      className=""
+                      className="ms-2"
                       style={{ fontSize: "13.5px", color: "gray" }}
                     >
-                      {productItem2 && productItem2.soLuongTonKho} sản phẩm có
-                      sẵn
+                      (No.9001)
                     </span>
+                  </span>
+                  <Tooltip title="Đóng" TransitionComponent={Zoom}>
+                    <IconButton size="small" onClick={onCloseNoAction}>
+                      <CloseOutlinedIcon />
+                    </IconButton>
+                  </Tooltip>
+                </div>
+                <div
+                  className="mt-2"
+                  style={{
+                    borderBottom: "2px solid #C7C7C7",
+                    width: "100%",
+                    borderWidth: "1px",
+                  }}
+                ></div>
+                <div className="wrapper-product d-flex">
+                  <div className="product-img" style={{ width: "350px" }}>
+                    <img
+                      className="mt-4 pt-4"
+                      style={{ width: "370px", height: "380px" }}
+                      src={productItem2 && productItem2.images[0].duongDan}
+                      alt=""
+                    />
+                  </div>
+                  <div className="product-details mt-5 ms-3 ps-1">
+                    <div className="box-choose">
+                      <span style={{ fontWeight: "550", fontSize: "14px" }}>
+                        LỰA CHỌN CẤU HÌNH VÀ MÀU SẮC
+                      </span>
+                    </div>
+                    <div className="choose1 mt-3 d-flex">
+                      <RadioGroup
+                        orientation="horizontal"
+                        aria-labelledby="storage-label"
+                        defaultValue={
+                          productItem &&
+                          productItem.cauHinh.ram.kichThuoc +
+                          "/" +
+                          productItem.cauHinh.rom.kichThuoc +
+                          "GB"
+                        }
+                        size="lg"
+                        sx={{ gap: 1.7 }}
+                      >
+                        {getProductItems &&
+                          getProductItems.map((item) => (
+                            <Sheet
+                              key={item.id}
+                              sx={{
+                                maxWidth: "400px",
+                                borderRadius: "md",
+                                boxShadow: "sm",
+                              }}
+                            >
+                              <Radio
+                                label={
+                                  <>
+                                    <div className="p-1 text-center">
+                                      <div>
+                                        <span
+                                          className=""
+                                          style={{
+                                            fontSize: "14px",
+                                            fontWeight: "450",
+                                          }}
+                                        >
+                                          {productItem &&
+                                            productItem.sanPham.tenSanPham +
+                                            " " +
+                                            item.cauHinh.ram.kichThuoc +
+                                            "/" +
+                                            item.cauHinh.rom.kichThuoc +
+                                            "GB"}
+                                        </span>
+                                      </div>
+                                      <div className="text-center">
+                                        <span style={{ fontSize: "14px" }}>
+                                          {item &&
+                                            item.donGia.toLocaleString("vi-VN", {
+                                              style: "currency",
+                                              currency: "VND",
+                                            })}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </>
+                                }
+                                onChange={() => handleChangeCauHinh(item.id)}
+                                onClick={() => handleSetKey()}
+                                overlay
+                                disableIcon
+                                value={
+                                  item.cauHinh.ram.kichThuoc +
+                                  "/" +
+                                  item.cauHinh.rom.kichThuoc +
+                                  "GB"
+                                }
+                                slotProps={{
+                                  label: ({ checked }) => ({
+                                    sx: {
+                                      fontWeight: "lg",
+                                      fontSize: "md",
+                                      color: checked
+                                        ? "text.primary"
+                                        : "text.secondary",
+                                    },
+                                  }),
+                                  action: ({ checked }) => ({
+                                    sx: (theme) => ({
+                                      ...(checked && {
+                                        "--variant-borderWidth": "2px",
+                                        "&&": {
+                                          // && to increase the specificity to win the base :hover styles
+                                          borderColor: "#2f80ed",
+                                        },
+                                      }),
+                                    }),
+                                  }),
+                                }}
+                              />
+                            </Sheet>
+                          ))}
+                      </RadioGroup>
+                    </div>
+                    <div className="choose2 mt-3">
+                      <RadioGroup
+                        orientation="horizontal"
+                        key={keyRadio}
+                        aria-labelledby="storage-label"
+                        defaultValue={
+                          productItem2 && productItem2.cauHinh.mauSac.tenMauSac
+                        }
+                        size="lg"
+                        sx={{ gap: 1.7 }}
+                      >
+                        {getProductItems1 &&
+                          getProductItems1.map((item) => (
+                            <Sheet
+                              key={item.id}
+                              sx={{
+                                borderRadius: "md",
+                                boxShadow: "sm",
+                              }}
+                            >
+                              <Radio
+                                label={
+                                  <>
+                                    <div
+                                      className="p-1 d-flex"
+                                      style={{ width: "143px", height: "56px" }}
+                                    >
+                                      <div>
+                                        <img
+                                          className=""
+                                          style={{
+                                            width: "40px",
+                                            height: "40px",
+                                            marginTop: "4px",
+                                          }}
+                                          src={
+                                            item.images && item.images[0].duongDan
+                                          }
+                                          alt=""
+                                        />
+                                      </div>
+                                      <div className="" style={{ marginTop: "" }}>
+                                        <span
+                                          className="p-2"
+                                          style={{
+                                            fontSize: "14px",
+                                            fontWeight: "500",
+                                            textTransform: "capitalize",
+                                          }}
+                                        >
+                                          {item.cauHinh.mauSac.tenMauSac}
+                                        </span>
+                                        <div className="" style={{ marginTop: "" }}>
+                                          <span
+                                            className="p-2"
+                                            style={{ fontSize: "13px" }}
+                                          >
+                                            {item &&
+                                              item.donGia.toLocaleString("vi-VN", {
+                                                style: "currency",
+                                                currency: "VND",
+                                              })}
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </>
+                                }
+                                onChange={() => handleChangeMauSac(item.id)}
+                                overlay
+                                disabled={item.soLuongTonKho <= 0 ? true : false}
+                                disableIcon
+                                value={item.cauHinh.mauSac.tenMauSac}
+                                slotProps={{
+                                  label: ({ checked }) => ({
+                                    sx: {
+                                      fontWeight: "lg",
+                                      fontSize: "md",
+                                      color: checked
+                                        ? "text.primary"
+                                        : "text.secondary",
+                                      opacity:
+                                        item.soLuongTonKho <= 0 ? "0.5" : "1",
+                                    },
+                                  }),
+                                  action: ({ checked }) => ({
+                                    sx: (theme) => ({
+                                      ...(checked && {
+                                        "--variant-borderWidth": "2px",
+                                        "&&": {
+                                          // && to increase the specificity to win the base :hover styles
+                                          borderColor: "#2f80ed",
+                                        },
+                                      }),
+                                    }),
+                                  }),
+                                }}
+                              />
+                            </Sheet>
+                          ))}
+                      </RadioGroup>
+                    </div>
+                    <div className="product-price mt-4">
+                      <span
+                        style={{
+                          color: "#dc3333",
+                          fontSize: "23px",
+                          fontWeight: "550",
+                        }}
+                      >
+                        {productItem2 &&
+                          productItem2.donGia.toLocaleString("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          })}
+                      </span>
+                      <span
+                        className="ms-2 ps-1"
+                        style={{
+                          textDecoration: "line-through",
+                          color: "grey",
+                          fontSize: "14.5px",
+                          fontWeight: "400",
+                        }}
+                      >
+                        29.990.000₫
+                      </span>
+                    </div>
+                    <div className="d-flex mt-3">
+                      <InputNumberAmount getAmount={getAmount}
+                      />
+                      <div className="ms-2 ps-1" style={{ marginTop: "7px" }}>
+                        <span
+                          className=""
+                          style={{ fontSize: "13.5px", color: "gray" }}
+                        >
+                          {productItem2 && productItem2.soLuongTonKho} sản phẩm có
+                          sẵn
+                        </span>
+                      </div>
+                    </div>
+                    <div className="mt-3">
+                      <button
+                        onClick={() => {
+                          addProductItemsToCart(
+                            productItem2 && productItem2.donGia,
+                            productItem2 && productItem2.id
+                          );
+                        }}
+                        type="button"
+                        class="__add-cart1 add-to-cart trigger mt-1"
+                      >
+                        <span class="" style={{ fontSize: "16px" }}>
+                          THÊM VÀO GIỎ HÀNG
+                        </span>
+                      </button>
+                    </div>
                   </div>
                 </div>
-                <div className="mt-3">
-                  <button
-                    onClick={() => {
-                      addProductItemsToCart(
-                        productItem2 && productItem2.donGia,
-                        productItem2 && productItem2.id
-                      );
-                    }}
-                    type="button"
-                    class="__add-cart1 add-to-cart trigger mt-1"
-                  >
-                    <span class="" style={{ fontSize: "16px" }}>
-                      THÊM VÀO GIỎ HÀNG
-                    </span>
-                  </button>
-                </div>
               </div>
-            </div>
-          </div>
-        </DialogContent>
+            </>
+          </DialogContent>
+          : null}
       </Dialog>
     </div>
   );

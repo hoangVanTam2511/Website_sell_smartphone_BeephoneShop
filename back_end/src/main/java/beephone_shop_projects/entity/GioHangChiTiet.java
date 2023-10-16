@@ -34,7 +34,6 @@ public class GioHangChiTiet extends PrimaryEntity implements Serializable {
   private GioHang gioHang;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
   @JoinColumn(name = "id_chi_tiet_san_pham")
   private SanPhamChiTiet sanPhamChiTiet;
 

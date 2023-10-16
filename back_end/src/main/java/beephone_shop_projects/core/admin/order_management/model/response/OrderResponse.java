@@ -12,6 +12,7 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -62,5 +63,7 @@ public class OrderResponse {
   private VoucherResponse voucher;
 
   private List<OrderHistoryResponse> orderHistories;
+
+  private Set<OrderItemResponse> orderItems;
 
 }

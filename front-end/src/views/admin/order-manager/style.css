@@ -1,3 +1,13 @@
+.table-cart .ant-table-tbody > tr.ant-table-row:hover > td {
+    background: white !important;
+}
+.table-cart tr:hover {
+    background: white !important;
+}
+.table-cart .ant-table-thead .ant-table-cell {
+  background-color: white;
+  /* color: white; */
+}
 .txt-primary{
   color: #2f80ed;
 }
@@ -154,6 +164,10 @@ font-family: 'Roboto', sans-serif;
     margin: 0 3.5px;
 }
 
+.table-container .ant-table-thead .ant-table-cell {
+  background-color: #2e80ed;
+  color: white;
+}
 .table-container {
     /* margin: 0 -24px;  */
 }
@@ -183,7 +197,6 @@ font-family: 'Roboto', sans-serif;
 
 .wrap-order-detail {
     box-shadow: 0 0.1rem 0.4rem #00000060;
-    height: 340px;
     background-color: #ffffff;
 }
 
@@ -474,7 +487,7 @@ input[type="number"]::-ms-outer-spin-button {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    max-width: 90px;
+    max-width: 93px;
     height: 30px;
     border: 1px solid #ddd;
     overflow: hidden;
@@ -507,7 +520,7 @@ input[type="number"]::-ms-outer-spin-button {
     padding: 5px;
     border: none;
     outline: none;
-    font-size: 15px;
+    font-size: 17.5px;
     text-align: center;
     font-family: "Open Sans", sans-serif;
   border-bottom: 2px solid grey;

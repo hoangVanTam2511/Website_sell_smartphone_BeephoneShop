@@ -8,6 +8,7 @@ import beephone_shop_projects.core.admin.voucher_management.model.response.Vouch
 import beephone_shop_projects.core.admin.voucher_management.repository.VoucherRepository;
 import beephone_shop_projects.core.admin.voucher_management.service.VoucherService;
 import beephone_shop_projects.entity.Voucher;
+import beephone_shop_projects.infrastructure.exeption.rest.RestApiException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -120,6 +121,7 @@ public class    VoucherServiceImpl implements VoucherService {
         Voucher voucher = voucherRepository.findById(id).get();
         if (voucherRepository.findCodeVoucher(request.getMa()) != null){
             // in ra lỗi không tồn tại
+            throw new RestApiException("");
         }
         if (voucher != null) {
             voucher.setMa(request.getMa().trim());

@@ -2,22 +2,27 @@ package beephone_shop_projects.core.admin.order_management.service.impl;
 
 import beephone_shop_projects.core.admin.order_management.converter.AccountConverter;
 import beephone_shop_projects.core.admin.order_management.converter.OrderConverter;
+import beephone_shop_projects.core.admin.order_management.converter.ProductItemConverter;
 import beephone_shop_projects.core.admin.order_management.converter.VoucherConverter;
+import beephone_shop_projects.core.admin.order_management.model.request.CartRequest;
 import beephone_shop_projects.core.admin.order_management.model.request.OrderRequest;
 import beephone_shop_projects.core.admin.order_management.model.request.SearchFilterOrderDto;
+import beephone_shop_projects.core.admin.order_management.model.response.CartItemResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.OrderHistoryResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.OrderResponse;
+import beephone_shop_projects.core.admin.order_management.repository.OrderItemRepository;
 import beephone_shop_projects.core.admin.order_management.repository.impl.CartRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.repository.impl.HinhThucThanhToanRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.repository.impl.LichSuHoaDonRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.repository.impl.OrderRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.service.HoaDonService;
-import beephone_shop_projects.entity.Account;
+import beephone_shop_projects.core.admin.product_management.repository.SanPhamChiTietRepository;
 import beephone_shop_projects.entity.GioHang;
-import beephone_shop_projects.entity.HinhThucThanhToan;
+import beephone_shop_projects.entity.GioHangChiTiet;
 import beephone_shop_projects.entity.HoaDon;
+import beephone_shop_projects.entity.HoaDonChiTiet;
 import beephone_shop_projects.entity.LichSuHoaDon;
-import beephone_shop_projects.entity.Voucher;
+import beephone_shop_projects.entity.SanPhamChiTiet;
 import beephone_shop_projects.infrastructure.constant.Message;
 import beephone_shop_projects.infrastructure.constant.OrderStatus;
 import beephone_shop_projects.infrastructure.constant.OrderType;
@@ -30,6 +35,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -66,6 +72,15 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
   @Autowired
   private VoucherConverter voucherConverter;
 
+  @Autowired
+  private ProductItemConverter productItemConverter;
+
+  @Autowired
+  private SanPhamChiTietRepository sanPhamChiTietRepository;
+
+  @Autowired
+  private OrderItemRepository orderItemRepository;
+
   public HoaDonServiceImpl(OrderRepositoryImpl repo, OrderConverter converter) {
     super(repo, converter);
   }
@@ -83,7 +98,7 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
   }
 
   @Override
-  public OrderResponse placeOrder(Account account, Voucher voucher) throws Exception {
+  public OrderResponse placeOrder(OrderRequest orderRequest) throws Exception {
     HoaDon newOrder = new HoaDon();
     newOrder.setMa(hoaDonRepository.getMaxEntityCodeByClass());
     newOrder.setAccount(null);
@@ -100,7 +115,7 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
     LichSuHoaDon orderHistory = new LichSuHoaDon();
     orderHistory.setHoaDon(createdOrder);
     orderHistory.setCreatedAt(new Date());
-    orderHistory.setThaoTac("Tạo Đơn Hàng");
+    orderHistory.setThaoTac("Đặt Hàng");
     orderHistory.setMoTa("Khách hàng đặt hàng online");
     orderHistory.setLoaiThaoTac(0);
     lichSuHoaDonRepository.save(orderHistory);
@@ -178,10 +193,29 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
       orderCurrent.setTienKhachTra(req.getTienKhachTra());
       orderCurrent.setTienThua(req.getTienThua());
       orderCurrent.setLoaiHoaDon(req.getLoaiHoaDon());
-//      orderCurrent.setVoucher(req.getVou);
+      orderCurrent.setPhiShip(req.getPhiShip());
+      orderCurrent.setTenNguoiNhan(req.getTenNguoiNhan());
+      orderCurrent.setSoDienThoaiNguoiNhan(req.getSoDienThoaiNguoiNhan());
+      orderCurrent.setDiaChiNguoiNhan(req.getDiaChiNguoiNhan());
 
       HoaDon paymentOrder = hoaDonRepository.save(orderConverter.convertResponseToEntity(orderCurrent));
       gioHangService.deleteById(req.getCart().getId());
+
+      if (req.getCart() != null) {
+        System.out.println(req.getCart().getCartItems().size());
+        CartRequest cartRequest = req.getCart();
+        List<HoaDonChiTiet> orderItems = new ArrayList<>();
+        for (CartItemResponse cartItem : cartRequest.getCartItems()) {
+          HoaDonChiTiet orderItem = new HoaDonChiTiet();
+          orderItem.setHoaDon(paymentOrder);
+          orderItem.setDonGia(cartItem.getDonGia());
+          orderItem.setSoLuong(cartItem.getSoLuong());
+//          orderItem.setDonGiaSauGiam();
+          orderItem.setSanPhamChiTiet(productItemConverter.convertResponseToEntity(cartItem.getSanPhamChiTiet()));
+          orderItems.add(orderItem);
+        }
+        orderItemRepository.saveAll(orderItems);
+      }
 
 //      HinhThucThanhToan hinhThucThanhToan = new HinhThucThanhToan();
 //      hinhThucThanhToan.setHoaDon(orderConverter.convertResponseToEntity(orderCurrent));
@@ -200,10 +234,22 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
       }
       return orderConverter.convertEntityToResponse(paymentOrder);
 
-    } else {
-      orderCurrent.setGhiChu(req.getGhiChu());
-//      orderCurrent.setAccount(accountConverter.convertRequestToResponse(req.getAccount()));
+    } else if (req.getIsUpdateInfo()) {
+      orderCurrent.setLoaiHoaDon(req.getLoaiHoaDon());
+//      orderCurrent.setPhiShip(req.getPhiShip());
+      orderCurrent.setTenNguoiNhan(req.getTenNguoiNhan());
+      orderCurrent.setSoDienThoaiNguoiNhan(req.getSoDienThoaiNguoiNhan());
+      orderCurrent.setDiaChiNguoiNhan(req.getDiaChiNguoiNhan());
+      if (orderCurrent.getAccount().getId() != null){
+        orderCurrent.setAccount(accountConverter.convertRequestToResponse(req.getAccount()));
+      }
+      else{
+        orderCurrent.setAccount(null);
+      }
+      HoaDon updateOrderPending = hoaDonRepository.save(orderConverter.convertResponseToEntity(orderCurrent));
+      return orderConverter.convertEntityToResponse(updateOrderPending);
 
+    } else if (req.getIsUpdateVoucher()) {
       if (req.getVoucher().getId() == null) {
         orderCurrent.setVoucher(null);
       } else {
@@ -213,6 +259,8 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
       HoaDon updateOrderPending = hoaDonRepository.save(orderConverter.convertResponseToEntity(orderCurrent));
       return orderConverter.convertEntityToResponse(updateOrderPending);
     }
+    return orderCurrent;
+
   }
 
   @Override
@@ -232,12 +280,22 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
   @Override
   public Boolean deleteOrderPening(String id) throws Exception {
     OrderResponse getOrder = this.getOrderPendingById(id);
-    if (getOrder != null) {
+    try {
+      HoaDon convertOrder = orderConverter.convertResponseToEntity(getOrder);
       this.deleteById(getOrder.getId());
-      return true;
-    }
-    return false;
-  }
+      List<SanPhamChiTiet> productItemsToUpdate = new ArrayList<>();
 
+      for (GioHangChiTiet cartItem : convertOrder.getCart().getCartItems()) {
+        SanPhamChiTiet productItem = cartItem.getSanPhamChiTiet();
+        productItem.setSoLuongTonKho(productItem.getSoLuongTonKho() + cartItem.getSoLuong());
+        productItemsToUpdate.add(productItem);
+      }
+
+      sanPhamChiTietRepository.saveAll(productItemsToUpdate);
+      return true;
+    } catch (Exception e) {
+      return false;
+    }
+  }
 
 }

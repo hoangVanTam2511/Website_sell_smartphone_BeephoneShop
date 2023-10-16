@@ -16,6 +16,6 @@ public class ConfigurationResponse {
 
   private RomDto rom;
 
-  private ColorDto mauSac;
+  private ColorResponse mauSac;
 
 }

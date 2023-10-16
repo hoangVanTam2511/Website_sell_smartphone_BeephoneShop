@@ -13,7 +13,7 @@ public interface HoaDonService extends GenericService<OrderResponse, OrderReques
 
   OrderResponse getOrderDetailsById(String id);
 
-  OrderResponse placeOrder(Account account, Voucher voucher) throws Exception;
+  OrderResponse placeOrder(OrderRequest orderRequest) throws Exception;
 
   Page<OrderResponse> findOrdersByMultipleCriteriaWithPagination(SearchFilterOrderDto searchFilterDTO) throws Exception;
 

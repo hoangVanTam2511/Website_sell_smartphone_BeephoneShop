@@ -155,7 +155,7 @@ const Header = memo((props) => {
                   <img
                     src={avatars1}
                     alt="User-Profile"
-                    className="theme-color-default-img img-fluid avatar avatar-45 avatar-rounded"
+                    className="theme-color-default-img img-fluid avatar avatar-50 avatar-rounded"
                   />
                   <div className="caption ms-3 d-none d-md-block ">
                     <h6 className="mb-0 caption-title">Administrators</h6>

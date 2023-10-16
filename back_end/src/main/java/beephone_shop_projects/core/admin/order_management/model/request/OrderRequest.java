@@ -1,7 +1,5 @@
 package beephone_shop_projects.core.admin.order_management.model.request;
 
-import beephone_shop_projects.core.admin.order_management.model.response.PaymentMethodResponse;
-import beephone_shop_projects.core.admin.order_management.model.response.VoucherResponse;
 import beephone_shop_projects.infrastructure.constant.OrderStatus;
 import beephone_shop_projects.infrastructure.constant.OrderType;
 import lombok.AllArgsConstructor;
@@ -11,7 +9,6 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -66,6 +63,10 @@ public class OrderRequest {
   private OrderHistoryRequest orderHistory;
 
   private Boolean isPayment;
+
+  private Boolean isUpdateInfo;
+
+  private Boolean isUpdateVoucher;
 
 
 }

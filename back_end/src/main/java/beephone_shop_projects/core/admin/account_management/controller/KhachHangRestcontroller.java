@@ -36,7 +36,7 @@ public class KhachHangRestcontroller {
     private DiaChiServiceImpl diaChiService;
 
     @GetMapping("hien-thi")
-    public ResponseEntity hienThi(@RequestParam(name = "page", defaultValue = "0") Integer pageNo) {
+    public ResponseEntity hienThi(@RequestParam(name = "page", defaultValue = "1") Integer pageNo) {
         return new ResponseEntity(accService.getAllKH(pageNo), HttpStatus.OK);
     }
 
