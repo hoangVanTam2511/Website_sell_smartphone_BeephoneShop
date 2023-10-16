@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class CreateChip {
 
-    private String maChip;
+    private String idChip;
 
-    private String tenChip;
+    private String nameChip;
 }

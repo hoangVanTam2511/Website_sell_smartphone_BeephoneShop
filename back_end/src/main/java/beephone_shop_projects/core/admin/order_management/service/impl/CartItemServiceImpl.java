@@ -7,7 +7,7 @@ import beephone_shop_projects.core.admin.order_management.repository.CartItemRep
 import beephone_shop_projects.core.admin.order_management.repository.impl.CartItemRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.repository.impl.CartRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.service.CartItemService;
-import beephone_shop_projects.core.admin.product_management.repository.SanPhamChiTietRepository;
+import beephone_shop_projects.core.admin.product_management.repository.ProductDetailRepository;
 import beephone_shop_projects.entity.GioHang;
 import beephone_shop_projects.entity.GioHangChiTiet;
 import beephone_shop_projects.entity.SanPhamChiTiet;
@@ -24,7 +24,7 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
   private CartItemRepositoryImpl cartItemRepository;
 
   @Autowired
-  private SanPhamChiTietRepository sanPhamChiTietRepository;
+  private ProductDetailRepository sanPhamChiTietRepository;
 
   @Autowired
   private CartRepositoryImpl cartRepository;

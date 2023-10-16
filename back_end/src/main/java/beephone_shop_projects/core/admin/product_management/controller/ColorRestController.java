@@ -1,12 +1,15 @@
 package beephone_shop_projects.core.admin.product_management.controller;
 
-import beephone_shop_projects.core.admin.product_management.model.request.CreateMauSac;
+import beephone_shop_projects.core.admin.product_management.model.request.CreateColor;
+import beephone_shop_projects.core.admin.product_management.model.responce.ColorResponce;
 import beephone_shop_projects.core.admin.product_management.service.impl.ColorServiceImpl;
 import beephone_shop_projects.entity.MauSac;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/mau-sac")
@@ -29,8 +33,8 @@ public class ColorRestController {
     private ColorServiceImpl mauSacService;
 
     @GetMapping("/view-all")
-    public Page<MauSac> viewAll(@RequestParam(value = "page",defaultValue = "0") Integer page) {
-        Pageable pageable = PageRequest.of(page,2);
+    public Page<MauSac> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {
+        Pageable pageable = PageRequest.of(page-1,2);
         return mauSacService.getAll(pageable);
     }
 
@@ -39,21 +43,15 @@ public class ColorRestController {
         return this.mauSacService.getDanhSachMauSac();
     }
 
-    @DeleteMapping("/delete")
-    public void delete(@RequestParam("id")String id) {
+    @DeleteMapping("/delete/{id}")
+    public void delete(@PathVariable("id")String id) {
       mauSacService.delete(id);
     }
 
     @PostMapping("/save")
-    public void save(@RequestBody MauSac mauSac) {
+    public void save(@RequestBody CreateColor mauSac) {
      mauSacService.insert(mauSac);
     }
-
-    @PostMapping("/save-second")
-    public void saveSecond(@RequestBody CreateMauSac mauSac) {
-        mauSacService.insert(mauSac);
-    }
-
 
     @PutMapping("/update/{id}")
     public void update(@RequestBody MauSac mauSac,@PathVariable("id")String id) {
@@ -69,5 +67,12 @@ public class ColorRestController {
     @GetMapping("/new-code")
     public  String getNewCode(){
         return this.mauSacService.generateNewCode();
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> search(@RequestParam("text") String text,
+                                 @RequestParam(value = "page", defaultValue = "1")Integer page) {
+        Pageable pageable = PageRequest.of(page - 1, 5);
+        return new ResponseEntity<>(mauSacService.searchColor(text, pageable), HttpStatus.ACCEPTED);
     }
 }

@@ -38,14 +38,17 @@ const TabItem = ({
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
   const [selectedProvince, setSelectedProvince] = useState('');
-  const [selectedWard, setSelectedWard] = useState('');
-  const [selectedDistrict, setSelectedDistrict] = useState('');
+  const [selectedWard, setSelectedWard] = useState("");
+  const [selectedDistrict, setSelectedDistrict] = useState("");
   const [receiveDate, setReceiveDate] = useState();
   const [customer, setCustomer] = useState({});
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerAddress, setCustomerAddress] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
+  const [customerProvince, setCustomerProvince] = useState("");
+  const [customerDistrict, setCustomerDistrict] = useState("");
+  const [customerWard, setCustomerWard] = useState("");
 
   useEffect(() => {
     if (idCustomer === "") {
@@ -53,6 +56,13 @@ const TabItem = ({
       setCustomerName("");
       setCustomerPhone("");
       setCustomerAddress("");
+
+      getAllProvinceGhn();
+      setSelectedWard("");
+      setSelectedProvince("");
+      setSelectedDistrict("");
+      setDistricts([]);
+      setWards([]);
     }
     else {
       getCustomerById();
@@ -80,18 +90,38 @@ const TabItem = ({
   }
 
   const getCustomerById = async () => {
-    await axios.get(`http://localhost:8080/khach-hang/hien-thi-theo/${idCustomer}`)
-      .then((response) => {
-        setCustomer(response.data);
-        setCustomerName(response.data.hoVaTen);
-        setCustomerPhone(response.data.soDienThoai);
-        setCustomerAddress(response.data.diaChi);
-        setCustomerEmail(response.data.email);
-      }).
-      catch(error => {
-        console.error(error);
+    setIsLoading(true);
+    await axios
+      .get(`http://localhost:8080/khach-hang/hien-thi-theo/${idCustomer}`)
+      .then(async (response) => {
+        const data = response.data;
+        setCustomer(data);
+        setCustomerName(data.hoVaTen);
+        setCustomerPhone(data.soDienThoai);
+        setCustomerAddress(data.diaChi);
+        setCustomerEmail(data.email);
+
+        const listAddress = data && data.diaChiList;
+        const address = listAddress.find((a) => a.trangThai === 1);
+
+        const province = provinces.find((item) => item.ProvinceName === address.tinhThanhPho);
+        setSelectedProvince(province.ProvinceID);
+
+        const district = districts.find((item) => item.DistrictName === address.quanHuyen);
+        setSelectedDistrict(district.DistrictID);
+
+        await getAllWardGhnByIdDistrict(district.DistrictID, true, address.xaPhuong);
+        setIsLoading(false);
       })
-  }
+      .catch((error) => {
+        console.error(error);
+        setIsLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    getAllDistrictGhnByIdProvince(selectedProvince);
+  }, [selectedProvince])
 
   const openDialogProductItems = () => {
     openDialogProductDetails();
@@ -150,8 +180,8 @@ const TabItem = ({
     )
   }
 
-  const getAllWardGhnByIdDistrict = (districtId) => {
-    axios.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward`, {
+  const getAllWardGhnByIdDistrict = async (districtId, selectWard, district) => {
+    await axios.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward`, {
       params: {
         district_id: districtId,
       },
@@ -162,12 +192,17 @@ const TabItem = ({
     }).then(
       (response) => {
         setWards(response.data.data);
+        if (selectWard) {
+          const ward = response.data.data.find((item) => item.WardName === district);
+          setSelectedWard(ward.WardCode);
+          console.log(ward);
+        }
       }
     )
   }
 
-  const getAllDistrictGhnByIdProvince = (provinceId) => {
-    axios.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district`, {
+  const getAllDistrictGhnByIdProvince = async (provinceId) => {
+    await axios.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district`, {
       params: {
         province_id: provinceId,
       },
@@ -234,19 +269,16 @@ const TabItem = ({
     return formattedDate;
   }
 
-  useEffect(() => {
-
-  }, [])
 
   useEffect(() => {
-    if (selectedProvince != "" && selectedDistrict != "" && selectedWard != "") {
+    if (selectedProvince != "" && selectedDistrict != "" && selectedWard != "" && delivery === true) {
       getReceiveDate();
       getShipFeeGhn();
     }
     else {
       getShipFee(0);
     }
-  }, [selectedWard, selectedDistrict, selectedProvince])
+  }, [selectedWard, selectedDistrict, selectedProvince, delivery])
 
   useEffect(() => {
     getAllProvinceGhn();
@@ -264,6 +296,7 @@ const TabItem = ({
   const handleChangeWard = (event) => {
     const value = event.target.value;
     setSelectedWard(value);
+    alert(value);
   };
 
   const handleChangeDistrict = (event) => {

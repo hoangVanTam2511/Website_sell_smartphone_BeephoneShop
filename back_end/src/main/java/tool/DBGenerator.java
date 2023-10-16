@@ -1,24 +1,7 @@
 package tool;
 
-import beephone_shop_projects.entity.Account;
-import beephone_shop_projects.entity.Anh;
-import beephone_shop_projects.entity.Camera;
-import beephone_shop_projects.entity.CauHinh;
-import beephone_shop_projects.entity.Chip;
-import beephone_shop_projects.entity.DiaChi;
-import beephone_shop_projects.entity.DongSanPham;
-import beephone_shop_projects.entity.Imei;
-import beephone_shop_projects.entity.KhuyenMai;
-import beephone_shop_projects.entity.ManHinh;
-import beephone_shop_projects.entity.MauSac;
-import beephone_shop_projects.entity.NhaSanXuat;
-import beephone_shop_projects.entity.Pin;
-import beephone_shop_projects.entity.Ram;
-import beephone_shop_projects.entity.Role;
-import beephone_shop_projects.entity.Rom;
-import beephone_shop_projects.entity.SanPham;
-import beephone_shop_projects.entity.SanPhamChiTiet;
-import beephone_shop_projects.entity.Voucher;
+import beephone_shop_projects.entity.*;
+import beephone_shop_projects.entity.Hang;
 import beephone_shop_projects.infrastructure.constant.StatusAccountCus;
 import beephone_shop_projects.infrastructure.constant.StatusDiscount;
 import beephone_shop_projects.infrastructure.constant.TypeDiscount;
@@ -30,7 +13,6 @@ import beephone_shop_projects.repository.IDiaChiRepository;
 import beephone_shop_projects.repository.IDongSanPhamRepository;
 import beephone_shop_projects.repository.IImeiRepository;
 import beephone_shop_projects.repository.IKhachHangRepository;
-import beephone_shop_projects.repository.IKhuyenMaiChiTietRepository;
 import beephone_shop_projects.repository.IKhuyenMaiRepository;
 import beephone_shop_projects.repository.IManHinhRepository;
 import beephone_shop_projects.repository.IMauSacRepository;
@@ -279,20 +261,20 @@ public class DBGenerator implements CommandLineRunner {
         mauSac3.setId(mauSacRepository.save(mauSac3).getId());
 
         //Bảng Nhà sản xuất
-        NhaSanXuat nhaSanXuat = new NhaSanXuat();
-        nhaSanXuat.setMa("NhaSanXuat1");
-        nhaSanXuat.setTenNhaSanXuat("CÔNG TY TNHH SAMSUNG ELECTRONICS VIỆT NAM");
-        nhaSanXuat.setId(nhaSanXuatRepository.save(nhaSanXuat).getId());
+        Hang hang = new Hang();
+        hang.setMa("NhaSanXuat1");
+        hang.setTenHang("CÔNG TY TNHH SAMSUNG ELECTRONICS VIỆT NAM");
+        hang.setId(nhaSanXuatRepository.save(hang).getId());
 
-        NhaSanXuat nhaSanXuat1 = new NhaSanXuat();
-        nhaSanXuat1.setMa("NhaSanXuat12");
-        nhaSanXuat1.setTenNhaSanXuat("CÔNG TY TNHH APPLE ELECTRONICS VIỆT NAM");
-        nhaSanXuat1.setId(nhaSanXuatRepository.save(nhaSanXuat1).getId());
+        Hang hang1 = new Hang();
+        hang1.setMa("NhaSanXuat12");
+        hang1.setTenHang("CÔNG TY TNHH APPLE ELECTRONICS VIỆT NAM");
+        hang1.setId(nhaSanXuatRepository.save(hang1).getId());
 
-        NhaSanXuat nhaSanXuat2 = new NhaSanXuat();
-        nhaSanXuat2.setMa("NhaSanXuat13");
-        nhaSanXuat2.setTenNhaSanXuat("CÔNG TY TNHH XIAOMI ELECTRONICS VIỆT NAM");
-        nhaSanXuat2.setId(nhaSanXuatRepository.save(nhaSanXuat2).getId());
+        Hang hang2 = new Hang();
+        hang2.setMa("NhaSanXuat13");
+        hang2.setTenHang("CÔNG TY TNHH XIAOMI ELECTRONICS VIỆT NAM");
+        hang2.setId(nhaSanXuatRepository.save(hang2).getId());
 
         //Bảng Pin
         Pin pin = new Pin();
@@ -365,7 +347,7 @@ public class DBGenerator implements CommandLineRunner {
                 """);
         sanPham.setChip(chip);
         sanPham.setDongSanPham(dongSanPham);
-        sanPham.setNhaSanXuat(nhaSanXuat);
+        sanPham.setHang(hang);
         sanPham.setManHinh(manHinh);
         sanPham.setPin(pin);
         sanPham.setId(sanPhamRepository.save(sanPham).getId());
@@ -382,7 +364,7 @@ public class DBGenerator implements CommandLineRunner {
                 """);
         sanPham1.setChip(chip2);
         sanPham1.setDongSanPham(dongSanPham2);
-        sanPham1.setNhaSanXuat(nhaSanXuat2);
+        sanPham1.setHang(hang2);
         sanPham1.setManHinh(manHinh2);
         sanPham1.setPin(pin2);
         sanPham1.setId(sanPhamRepository.save(sanPham1).getId());
@@ -399,7 +381,7 @@ public class DBGenerator implements CommandLineRunner {
                 """);
         sanPham2.setChip(chip3);
         sanPham2.setDongSanPham(dongSanPham3);
-        sanPham2.setNhaSanXuat(nhaSanXuat1);
+        sanPham2.setHang(hang1);
         sanPham2.setManHinh(manHinh1);
         sanPham2.setPin(pin1);
         sanPham2.setId(sanPhamRepository.save(sanPham2).getId());

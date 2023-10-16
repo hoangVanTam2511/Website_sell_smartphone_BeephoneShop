@@ -16,7 +16,7 @@ import beephone_shop_projects.core.admin.order_management.repository.impl.HinhTh
 import beephone_shop_projects.core.admin.order_management.repository.impl.LichSuHoaDonRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.repository.impl.OrderRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.service.HoaDonService;
-import beephone_shop_projects.core.admin.product_management.repository.SanPhamChiTietRepository;
+import beephone_shop_projects.core.admin.product_management.repository.ProductDetailRepository;
 import beephone_shop_projects.entity.GioHang;
 import beephone_shop_projects.entity.GioHangChiTiet;
 import beephone_shop_projects.entity.HoaDon;
@@ -76,7 +76,7 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
   private ProductItemConverter productItemConverter;
 
   @Autowired
-  private SanPhamChiTietRepository sanPhamChiTietRepository;
+  private ProductDetailRepository sanPhamChiTietRepository;
 
   @Autowired
   private OrderItemRepository orderItemRepository;

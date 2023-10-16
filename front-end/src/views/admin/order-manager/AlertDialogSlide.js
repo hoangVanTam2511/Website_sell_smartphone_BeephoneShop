@@ -2525,7 +2525,7 @@ export const ProductDetailsDialog = (props) => {
                                     <div className="p-1 text-center">
                                       <div>
                                         <span
-                                          className=""
+                                          className="p-2"
                                           style={{
                                             fontSize: "14px",
                                             fontWeight: "450",

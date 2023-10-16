@@ -96,6 +96,7 @@ const IOSSwitch = styled((props) => (
 const PointOfSales = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [clear, setClear] = useState(false);
   const [loadingChild, setLoadingChild] = useState(false);
   const [delivery, setDelivery] = React.useState(false);
   const [paymentWhenReceive, setPaymentWhenReceive] = useState(false);
@@ -171,6 +172,9 @@ const PointOfSales = () => {
 
   const getCustomer = (customer) => {
     setCustomer(customer);
+  }
+  const getClear = (clear) => {
+    setClear(clear);
   }
 
   let amountProductItem = 1;
@@ -491,8 +495,22 @@ const PointOfSales = () => {
     await axios
       .get(`http://localhost:8080/api/orders/pending/${order.id}`)
       .then((response) => {
-        setOrder(response.data.data);
-        setCartItems(response.data.data.cart.cartItems);
+        const data = response.data.data;
+        setOrder(data);
+        setCartItems(data.cart.cartItems);
+
+        let total = 0 - discountValue;
+        data && data.cart.cartItems.map((item) => {
+          total += item.donGia * item.soLuong;
+        });
+        let result = "";
+        result = String(total)
+          .replace(/[^0-9]+/g, "")
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        setCustomerPaymentFormat(result);
+        setCustomerPayment(total);
+
+
         setChangedCartItems(changedCartItems + 1);
       })
       .catch((error) => {
@@ -852,10 +870,8 @@ const PointOfSales = () => {
     setDelivery(event.target.checked);
     if (event.target.checked == true) {
       setPaymentWhenReceive(true);
-      setShipFee(order.phiShip || 0);
     }
     else {
-      setShipFee(0);
       setPaymentWhenReceive(false);
     }
   };
@@ -1329,7 +1345,7 @@ const PointOfSales = () => {
                       <PaymentIcon style={{ fontSize: "24px" }} className='' />
                     </Sheet>
                     <Sheet
-                      key={"Cả 2"}
+                      key={"Thẻ"}
                       variant="outlined"
                       sx={{
                         borderRadius: 'md',
@@ -1341,8 +1357,8 @@ const PointOfSales = () => {
                         minWidth: "27%",
                       }}
                     >
-                      <Radio value={"Cả 2"} checkedIcon={<CheckCircleOutlineOutlinedIcon />} />
-                      <FormLabel htmlFor={"Cả 2"}>Cả 2</FormLabel>
+                      <Radio value={"Thẻ"} checkedIcon={<CheckCircleOutlineOutlinedIcon />} />
+                      <FormLabel htmlFor={"Thẻ"}>Thẻ</FormLabel>
                       <CreditScoreOutlinedIcon style={{ fontSize: "24px" }} />
 
                     </Sheet>

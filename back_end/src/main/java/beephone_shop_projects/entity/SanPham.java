@@ -42,8 +42,8 @@ public class SanPham extends PrimaryEntity implements IsIdentified {
   private DongSanPham dongSanPham;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "id_nha_san_xuat")
-  private NhaSanXuat nhaSanXuat;
+  @JoinColumn(name = "id_hang")
+  private Hang hang;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_chip")

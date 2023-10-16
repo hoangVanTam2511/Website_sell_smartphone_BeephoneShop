@@ -1,15 +1,11 @@
 import {
   Form,
-  Popconfirm,
   Table,
   Input,
   Button,
   Select,
-  Pagination,
   Space,
-  Switch,
   Slider,
-  Tag,
   Carousel
 } from 'antd'
 import { useParams } from 'react-router-dom'
@@ -21,7 +17,7 @@ import {
   apiURLDongSanPham,
   apiURLManHinh,
   apiURLMauSac,
-  apiURLNhaSanXuat,
+  apiURLHang,
   apiURLPin,
   apiURLram,
   apiURLrom,
@@ -29,14 +25,15 @@ import {
   apiURLAnh
 } from '../../../../service/api'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faList, faFilter, faEye } from '@fortawesome/free-solid-svg-icons'
+import { faList } from '@fortawesome/free-solid-svg-icons'
 import '../../../../assets/scss/HienThiNV.scss'
 import { Link } from 'react-router-dom'
 import { SearchOutlined } from '@ant-design/icons'
 import Highlighter from 'react-highlight-words'
-import ConfigDetail from "../chi-tiet-san-pham/config-detail"; 
+import ConfigDetail from "../chi-tiet-san-pham/config-detail";
+import ExcelExportHelper from "../chi-tiet-san-pham/ExcelExportHelper"; 
 
-const currentDate = new Date().toISOString().split('T')[0]
+
 const contentStyle = {
   height: '159px',
   color: '#fff',
@@ -313,7 +310,7 @@ const HienThiChiTietSanPham = () => {
       modifiedData.unshift(itemAll)
       setListDongSanPham(modifiedData)
     })
-    axios.get(apiURLNhaSanXuat + '/get-list').then(response => {
+    axios.get(apiURLHang + '/get-list').then(response => {
       var itemAll = {
         label: 'Tất cả',
         value: 'nhaSanXuat:'
@@ -500,166 +497,169 @@ const HienThiChiTietSanPham = () => {
         Quản lí chi tiết sản phẩm
       </h2>
       <br />
-      <div className='card ' style={{ padding: 10 }}>
+      <div className="card " style={{ padding: ` 2% 3%` }}>
         <div
-          style={{
-            color: 'black',
-            marginLeft: 10,
-            marginTop: 20,
-            fontWeight: 'bold'
-          }}
+          className="btn-add"
+          style={{ display: "flex", justifyContent: "space-between" }}
         >
-          <FontAwesomeIcon icon={faFilter} />
-          Filter
-        </div>
-        <div className='btn-add'>
           <span>
-            <Form style={{ width: '20em', display: 'inline-block' }}>
+            <Form
+              style={{ width: "20em", display: "inline-block", height: "40px" }}
+            >
               <Input
-                placeholder='Nhập tên hoặc màu sắc hoặc hình thức '
-                name='sanPham'
-                onChange={e => handleText(e)}
+                placeholder="Nhập tên hoặc màu sắc hoặc hình thức "
+                name="sanPham"
+                style={{ height: "40px" }}
+                onChange={(e) => handleText(e)}
               />
             </Form>
           </span>
 
           {/* Search */}
-          <FontAwesomeIcon style={{ marginLeft: '5px' }} />
-          <span className='bl-add'>
-            <Link to='/them-san-pham'>
-              <Button className='btn-them-tk'>+ Thêm chi tiết sản phẩm </Button>
+          <FontAwesomeIcon style={{ marginLeft: "2%" }} />
+          <span className="btn-add">
+            {/* <Button
+              className="btn-them-tu-file"
+              style={{ height: "40px", width: "auto", fontSize: "15px" }}
+            >
+              {/* <ExcelExportHelper data={listMauSac} /> 
+            </Button> */}
+
+            <Link to="/them-san-pham">
+              <Button
+                className="btn-them-tk"
+                style={{ height: "40px", width: "auto", fontSize: "15px" }}
+              >
+                + Thêm sản phẩm{" "}
+              </Button>
             </Link>
           </span>
         </div>
 
         <div
-          className='btn-add'
-          style={{ width: 1020, marginRight: 20, justifyContent: 'center' }}
+          className="btn-add"
+          style={{
+            width: `100%`,
+            marginRight: 20,
+            justifyContent: "center",
+            marginTop: `2%`,
+          }}
         >
-          {/* <Select
-            defaultValue="Chọn sản phẩm"
-            style={{ width: 150,marginRight:15,marginBottom:20 }}
+
+          <Select
+            defaultValue="Chọn dòng sản phẩm"
+            style={{ width: `23%`, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
-                label: 'Chọn một sản phẩm',
-                options: listSanPham
+                label: "Chọn một dòng sản phẩm",
+                options: listDongSanPham,
               },
             ]}
-          /> */}
+          />
 
           <Select
-            defaultValue='Chọn dòng sản phẩm'
-            style={{ width: 150, marginRight: 15, marginBottom: 20 }}
+            listItemHeight={10}
+            listHeight={250}
+            defaultValue="Chọn nhà sản xuất"
+            style={{ width: `23%`, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
-                label: 'Chọn một dòng sản phẩm',
-                options: listDongSanPham
-              }
+                label: "Chọn một nhà sản xuất",
+                options: listNhaSanXuat,
+              },
             ]}
           />
 
           <Select
-            defaultValue='Chọn nhà sản xuất'
-            style={{ width: 150, marginRight: 15, marginBottom: 20 }}
+            defaultValue="Chọn màu sắc"
+            style={{ width: `23%`, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
-                label: 'Chọn một nhà sản xuất',
-                options: listNhaSanXuat
-              }
+                label: "Chọn một màu sắc",
+                options: listColor,
+              },
             ]}
           />
 
           <Select
-            defaultValue='Chọn màu sắc'
-            style={{ width: 150, marginRight: 15, marginBottom: 20 }}
+            defaultValue="Chọn pin"
+            style={{ width: `23%`, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
-                label: 'Chọn một màu sắc',
-                options: listColor
-              }
+                label: "Chọn một dung lượng pin",
+                options: listPin,
+              },
             ]}
           />
 
           <Select
-            defaultValue='Chọn pin'
-            style={{ width: 150, marginRight: 15, marginBottom: 20 }}
+            defaultValue="Chọn ram"
+            style={{ width: `23%`, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
-                label: 'Chọn một dung lượng pin',
-                options: listPin
-              }
+                label: "Chọn một dung lượng ram",
+                options: listRam,
+              },
             ]}
           />
 
           <Select
-            defaultValue='Chọn ram'
-            style={{ width: 150, marginRight: 15, marginBottom: 20 }}
+            defaultValue="Chọn rom"
+            style={{ width: `23%`, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
-                label: 'Chọn một dung lượng ram',
-                options: listRam
-              }
+                label: "Chọn một dung lượng rom",
+                options: listRom,
+              },
             ]}
           />
 
           <Select
-            defaultValue='Chọn rom'
-            style={{ width: 150, marginRight: 15, marginBottom: 20 }}
+            defaultValue="Chọn chip"
+            style={{ width: `23%`, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
-                label: 'Chọn một dung lượng rom',
-                options: listRom
-              }
+                label: "Chọn một chip",
+                options: listChip,
+              },
             ]}
           />
 
           <Select
-            defaultValue='Chọn chip'
-            style={{ width: 150, marginRight: 15, marginBottom: 20 }}
+            defaultValue="Chọn kích cỡ màn hình"
+            style={{ width: `23%`, marginRight: 15, marginBottom: 20 }}
             onChange={handleChange}
             options={[
               {
-                label: 'Chọn một chip',
-                options: listChip
-              }
+                label: "Chọn một kích cỡ màn hình",
+                options: listManHinh,
+              },
             ]}
           />
 
-          <Select
-            defaultValue='Chọn kích cỡ màn hình'
-            style={{ width: 150, marginRight: 15, marginBottom: 20 }}
-            onChange={handleChange}
-            options={[
-              {
-                label: 'Chọn một kích cỡ màn hình',
-                options: listManHinh
-              }
-            ]}
-          />
-
-          <div className='d-flex'>
-            <label style={{ color: 'black' }}>Lựa chọn khoảng giá : </label>
+          <div className="d-flex">
+            <label style={{ color: "black" }}>Lựa chọn khoảng giá : </label>
 
             <Button
               style={{ marginLeft: 40, marginBottom: 20 }}
-              type='primary'
+              type="primary"
               ghost
             >
-              {chiTietSanPham.donGiaMin == ''
-                ? '0'.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' đ'
+              {chiTietSanPham.donGiaMin == ""
+                ? "0".toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " đ"
                 : chiTietSanPham.donGiaMin
                     .toString()
-                    .replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' đ'}
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " đ"}
             </Button>
             <Slider
-              onChange={e => sliderChange(e)}
+              onChange={(e) => sliderChange(e)}
               style={{ width: 250, marginLeft: 5, marginBottom: 20 }}
               min={0}
               max={Number(priceBiggest)}
@@ -669,44 +669,44 @@ const HienThiChiTietSanPham = () => {
             />
             <Button
               style={{ marginLeft: 5, marginBottom: 20 }}
-              type='primary'
+              type="primary"
               ghost
             >
-              {chiTietSanPham.donGiaMax == ''
+              {chiTietSanPham.donGiaMax == ""
                 ? priceBiggest
                     .toString()
-                    .replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' đ'
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " đ"
                 : chiTietSanPham.donGiaMax
                     .toString()
-                    .replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' đ'}
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ".") + " đ"}
             </Button>
           </div>
 
-          <div className='d-flex'>
-            <label style={{ color: 'black' }}>Lựa chọn trạng thái : </label>
+          <div className="d-flex">
+            <label style={{ color: "black" }}>Lựa chọn trạng thái : </label>
 
             <Select
-              defaultValue='Chọn trạng thái'
+              defaultValue="Chọn trạng thái"
               style={{ width: 250, marginLeft: 40, marginBottom: 20 }}
               onChange={handleChange}
               options={[
                 {
-                  label: 'Vui lòng chọn trạng thái',
+                  label: "Vui lòng chọn trạng thái",
                   options: [
                     {
-                      value: 'trangThai: ',
-                      label: 'Tất cả'
+                      value: "trangThai: ",
+                      label: "Tất cả",
                     },
                     {
-                      value: 'trangThai:1',
-                      label: 'Kinh doanh'
+                      value: "trangThai:1",
+                      label: "Kinh doanh",
                     },
                     {
-                      value: 'trangThai:0',
-                      label: 'Ngừng kinh doanh'
-                    }
-                  ]
-                }
+                      value: "trangThai:0",
+                      label: "Ngừng kinh doanh",
+                    },
+                  ],
+                },
               ]}
             />
           </div>
