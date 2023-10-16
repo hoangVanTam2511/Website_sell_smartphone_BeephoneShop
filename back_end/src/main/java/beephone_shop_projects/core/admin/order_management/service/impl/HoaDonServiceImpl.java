@@ -19,6 +19,7 @@ import beephone_shop_projects.core.admin.order_management.service.HoaDonService;
 import beephone_shop_projects.core.admin.product_management.repository.ProductDetailRepository;
 import beephone_shop_projects.entity.GioHang;
 import beephone_shop_projects.entity.GioHangChiTiet;
+import beephone_shop_projects.entity.HinhThucThanhToan;
 import beephone_shop_projects.entity.HoaDon;
 import beephone_shop_projects.entity.HoaDonChiTiet;
 import beephone_shop_projects.entity.LichSuHoaDon;
@@ -198,6 +199,17 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
       orderCurrent.setSoDienThoaiNguoiNhan(req.getSoDienThoaiNguoiNhan());
       orderCurrent.setDiaChiNguoiNhan(req.getDiaChiNguoiNhan());
 
+      HinhThucThanhToan hinhThucThanhToan = new HinhThucThanhToan();
+      hinhThucThanhToan.setMa(hinhThucThanhToanRepository.getMaxEntityCodeByClass());
+      hinhThucThanhToan.setHoaDon(orderConverter.convertResponseToEntity(orderCurrent));
+      hinhThucThanhToan.setSoTienThanhToan(req.getTienKhachTra());
+      hinhThucThanhToan.setLoaiThanhToan(0);
+      hinhThucThanhToan.setHinhThucThanhToan(1);
+      hinhThucThanhToan.setTrangThai(1);
+      hinhThucThanhToan.setCreatedAt(new Date());
+      hinhThucThanhToan.setNguoiXacNhan("Admin");
+      hinhThucThanhToanRepository.save(hinhThucThanhToan);
+
       HoaDon paymentOrder = hoaDonRepository.save(orderConverter.convertResponseToEntity(orderCurrent));
       gioHangService.deleteById(req.getCart().getId());
 
@@ -216,14 +228,6 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
         }
         orderItemRepository.saveAll(orderItems);
       }
-
-//      HinhThucThanhToan hinhThucThanhToan = new HinhThucThanhToan();
-//      hinhThucThanhToan.setHoaDon(orderConverter.convertResponseToEntity(orderCurrent));
-//      hinhThucThanhToan.setSoTienThanhToan(req.getTienKhachTra());
-//      hinhThucThanhToan.setLoaiThanhToan(0);
-//      hinhThucThanhToan.setHinhThucThanhToan(0);
-//      hinhThucThanhToan.setCreatedAt(new Date());
-//      hinhThucThanhToanRepository.save(hinhThucThanhToan);
       if (req.getOrderHistory() != null) {
         orderHistoryServiceImpl.save(req.getOrderHistory());
       }

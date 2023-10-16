@@ -104,6 +104,10 @@ const OrderDetail = (props) => {
     }
   };
 
+  const handlePaymentOrder = () => {
+
+  }
+
   const soTienThanhToan = 15000000;
   const handleAddPayment = () => {
     const newPayment = {
@@ -1668,6 +1672,7 @@ const OrderDetail = (props) => {
         onClose={handleCloseDialogPayment}
         onCloseNoAction={handleCloseNoActionDialogPayment}
         addPayment={handleAddPayment}
+
       />
       <UpdateRecipientOrderDialog
         open={openDialogUpdateRecipientOrder}

@@ -413,7 +413,7 @@ export function UpdateRecipientOrderDialog(props) {
 }
 
 export function PaymentDialog(props) {
-  const { open, onClose, onCloseNoAction } = props;
+  const { open, onClose, onCloseNoAction, payment } = props;
 
   return (
     <div className="rounded-pill">
@@ -468,29 +468,28 @@ export function PaymentDialog(props) {
             <Button
               onClick={onClose}
               danger
-              className="rounded-2 me-3 bg-primary"
-              type="primary"
+              className="rounded-2 me-2 bg-primary"
+              type="warning"
               style={{
-                height: "50px",
+                height: "40px",
                 width: "auto",
                 fontSize: "16px",
                 marginBottom: "20px",
               }}
             >
               <span
-                className="text-white"
-                style={{ fontWeight: "550", marginBottom: "2px" }}
+                className="text-dark"
+                style={{ fontWeight: "500", marginBottom: "2px" }}
               >
                 Tiền mặt
               </span>
             </Button>
             <Button
               onClick={onClose}
-              danger
-              className="rounded-2 me-3 bg-success"
+              className="rounded-2 me-2"
               type="primary"
               style={{
-                height: "50px",
+                height: "40px",
                 width: "auto",
                 fontSize: "16px",
                 marginBottom: "20px",
@@ -498,7 +497,7 @@ export function PaymentDialog(props) {
             >
               <span
                 className="text-white"
-                style={{ fontWeight: "550", marginBottom: "2px" }}
+                style={{ fontWeight: "500", marginBottom: "2px" }}
               >
                 Chuyển khoản
               </span>
@@ -507,18 +506,17 @@ export function PaymentDialog(props) {
               onClick={onCloseNoAction}
               danger
               className="rounded-2 me-3"
-              type="primary"
+              type="danger"
               style={{
-                height: "50px",
+                height: "40px",
                 width: "auto",
                 fontSize: "16px",
                 marginBottom: "20px",
-                backgroundColor: "#dc3333",
               }}
             >
               <span
                 className="text-white"
-                style={{ fontWeight: "550", marginBottom: "2px" }}
+                style={{ fontWeight: "500", marginBottom: "2px" }}
               >
                 Hủy bỏ
               </span>
