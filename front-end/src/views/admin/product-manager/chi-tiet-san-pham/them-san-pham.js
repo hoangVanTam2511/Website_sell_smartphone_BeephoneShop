@@ -953,7 +953,7 @@ const ThemSanPham = () => {
       .get(apiURLManHinh + "/get-list")
       .then((response) => {
         const modifiedData = response.data.map((item, index) => ({
-          label: item.kichThuoc + " inch",
+          label: item.kichThuoc + " inch - "+ item.doPhanGiai,
           value: "manHinh:" + item.kichThuoc,
         }));
         setlistManHinh(modifiedData);
