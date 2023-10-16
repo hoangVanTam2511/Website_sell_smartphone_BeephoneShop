@@ -296,7 +296,6 @@ const TabItem = ({
   const handleChangeWard = (event) => {
     const value = event.target.value;
     setSelectedWard(value);
-    alert(value);
   };
 
   const handleChangeDistrict = (event) => {

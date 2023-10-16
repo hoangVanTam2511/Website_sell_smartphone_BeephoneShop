@@ -10,7 +10,7 @@ import axios from 'axios';
 import CircularProgress from '@mui/material/CircularProgress';
 
 
-const InputSearchCustomer = ({ getCustomer }) => {
+const InputSearchCustomer = ({ getCustomer, handleOpenDialogCustomers }) => {
 
 
   const [customers, setCustomers] = useState([]);
@@ -159,7 +159,7 @@ const InputSearchCustomer = ({ getCustomer }) => {
               </IconButton>
             </Tooltip> :
             <Tooltip onClick={() => {
-              // handleOpenDialogCustomers()
+              handleOpenDialogCustomers();
             }} style={{}} title="Thêm mới khách hàng" className='ms-2 open-click' TransitionComponent={Zoom}>
               <IconButton size='small'>
                 <AddCircleOutlineIcon />
