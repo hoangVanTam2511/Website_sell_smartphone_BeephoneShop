@@ -409,7 +409,7 @@ public class DBGenerator implements CommandLineRunner {
         khuyenMai.setMa("KhuyenMai1");
         khuyenMai.setTenKhuyenMai("FPT Shop giảm ngay 250K khi khách hàng mua laptop hoặc MacBook có giá từ 8 triệu đồng");
         khuyenMai.setGiaTriKhuyenMai(new BigDecimal(250000));
-        khuyenMai.setLoaiKhuyenMai("VNĐ");
+        khuyenMai.setLoaiKhuyenMai(TypeDiscount.VND);
         SimpleDateFormat dateFormat5 = new SimpleDateFormat("dd-MM-yyyy");
 //        Date ngayBatDau5 = null;
         Date ngayKetThuc5 = null;
@@ -421,14 +421,14 @@ public class DBGenerator implements CommandLineRunner {
         }
         khuyenMai.setNgayBatDau(new Date());
         khuyenMai.setNgayKetThuc(ngayKetThuc5);
-        khuyenMai.setTrangThai(3);
+        khuyenMai.setTrangThai(StatusDiscount.CHUA_DIEN_RA);
         khuyenMai.setId(khuyenMaiRepository.save(khuyenMai).getId());
 
         KhuyenMai khuyenMai2 = new KhuyenMai();
         khuyenMai2.setMa("KhuyenMai2");
         khuyenMai2.setTenKhuyenMai("FPT Shop giảm ngay 500k khi khách hàng mua Iphone 15 hoặc MacBook có giá từ 12 triệu đồng");
         khuyenMai2.setGiaTriKhuyenMai(new BigDecimal(250000));
-        khuyenMai2.setLoaiKhuyenMai("VNĐ");
+        khuyenMai2.setLoaiKhuyenMai(TypeDiscount.VND);
         SimpleDateFormat dateFormat6 = new SimpleDateFormat("dd-MM-yyyy");
         Date ngayBatDau6 = null;
         Date ngayKetThuc6 = null;
@@ -440,14 +440,14 @@ public class DBGenerator implements CommandLineRunner {
         }
         khuyenMai2.setNgayBatDau(ngayBatDau6);
         khuyenMai2.setNgayKetThuc(ngayKetThuc6);
-        khuyenMai2.setTrangThai(3);
+        khuyenMai2.setTrangThai(StatusDiscount.CHUA_DIEN_RA);
         khuyenMai2.setId(khuyenMaiRepository.save(khuyenMai2).getId());
 
         KhuyenMai khuyenMai3 = new KhuyenMai();
         khuyenMai3.setMa("KhuyenMai1");
         khuyenMai3.setTenKhuyenMai("FPT Shop giảm ngay 10% khi khách hàng mua laptop hoặc MacBook có giá từ 5 triệu đồng");
         khuyenMai3.setGiaTriKhuyenMai(new BigDecimal(10));
-        khuyenMai3.setLoaiKhuyenMai("%");
+        khuyenMai3.setLoaiKhuyenMai(TypeDiscount.PERCENT);
         SimpleDateFormat dateFormat7 = new SimpleDateFormat("dd-MM-yyyy");
         Date ngayBatDau7 = null;
         Date ngayKetThuc7 = null;
@@ -459,7 +459,7 @@ public class DBGenerator implements CommandLineRunner {
         }
         khuyenMai3.setNgayBatDau(ngayBatDau7);
         khuyenMai3.setNgayKetThuc(ngayKetThuc7);
-        khuyenMai3.setTrangThai(3);
+        khuyenMai3.setTrangThai(StatusDiscount.CHUA_DIEN_RA);
         khuyenMai3.setId(khuyenMaiRepository.save(khuyenMai3).getId());
 
         //Bảng Voucher

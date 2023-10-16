@@ -14,7 +14,7 @@ import java.util.List;
 @Repository
 public interface SanPhamChiTietKhuyenMaiRepository extends ISanPhamChiTietRepository {
     @Query(value = """
-            SELECT ctsp.id, f.duong_dan, a.ten_san_pham, c.ten_mau_sac, d.kich_thuoc as kich_thuoc_ram, e.kich_thuoc as kich_thuoc_rom, ctsp.don_gia, ctsp.delected
+            SELECT ctsp.id, f.duong_dan, a.ten_san_pham, c.ten_mau_sac, d.kich_thuoc as kich_thuoc_ram, e.kich_thuoc as kich_thuoc_rom, ctsp.don_gia, ctsp.delected, ctsp.id_san_pham
             FROM san_pham_chi_tiet ctsp
             JOIN san_pham a ON a.id = ctsp.id_san_pham
             JOIN cau_hinh b ON b.id = ctsp.id_cau_hinh

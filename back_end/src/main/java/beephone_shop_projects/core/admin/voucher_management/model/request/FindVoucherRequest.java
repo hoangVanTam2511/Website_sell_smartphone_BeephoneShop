@@ -33,10 +33,8 @@ public class FindVoucherRequest {
 
     private Integer soLuong;
 
-//    @Enumerated(EnumType.STRING)
     private TypeDiscount loaiVoucher;
 
-//    @Enumerated(EnumType.ORDINAL)
     private StatusDiscount trangThai;
 
     private String keyword;

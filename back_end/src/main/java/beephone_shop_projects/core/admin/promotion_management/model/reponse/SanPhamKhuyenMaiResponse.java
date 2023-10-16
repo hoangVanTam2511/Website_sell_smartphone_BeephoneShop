@@ -14,8 +14,13 @@ public interface SanPhamKhuyenMaiResponse {
     @Value("#{target.ten_san_pham}")
     String getTenSanPham();
 
-
     @Value("#{target.delected}")
     String getDelected();
+
+    @Value("#{target.id_dong_san_pham}")
+    String getIdDongSanPham();
+
+    @Value("#{target.ten_dong_san_pham}")
+    String getTenDongSanPham();
 
 }

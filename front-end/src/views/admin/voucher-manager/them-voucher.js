@@ -25,6 +25,7 @@ import {
 } from "../order-manager/enum";
 import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
 import useCustomSnackbar from "../../../utilities/notistack";
+import LoadingIndicator from "../../../utilities/loading";
 
 const AddVoucher = () => {
   const [ma, setMa] = useState("");
@@ -42,7 +43,7 @@ const AddVoucher = () => {
   const [giaTriToiDa, setGiaTriToiDa] = useState();
   const [valueToiThieu, setValueToiThieu] = React.useState();
   const [valueToiDa, setValueToiDa] = React.useState();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [openConfirm, setOpenConfirm] = useState(false);
   const { handleOpenAlertVariant } = useCustomSnackbar();
 
@@ -57,7 +58,7 @@ const AddVoucher = () => {
   const Header = () => {
     return (
       <>
-        <span className="">Xác nhận thêm voucher</span>
+        <span style={{ fontWeight: "bold" }}>Xác nhận thêm voucher</span>
       </>
     );
   };
@@ -66,26 +67,16 @@ const AddVoucher = () => {
       <>
         <span>
           Bạn có chắc chắc muốn thêm voucher có tên là{" "}
-          <span style={{ color: "red" }}>{ten}</span> và với giá trị{" "}
-          <span style={{ color: "red" }}>{value}</span>
+          <span style={{ color: "red" }}>"{ten}"</span> và giá trị{" "}
+          <span style={{ color: "red" }}>"{value}</span>
           <span style={{ color: "red" }}>
-            {selectDiscount === TypeDiscountString.VND ? "VND" : "%"}
+            {selectDiscount === TypeDiscountString.VND ? "VND" : "%"}"
           </span>{" "}
           không ?
         </span>
       </>
     );
   };
-
-  // const loadDataListVoucher = (page) => {
-  //   axios
-  //     .get(`${apiURLVoucher}/vouchers`)
-  //     .then((response) => {
-  //       setListVoucher(response.data.data);
-  //       console.log(response);
-  //     })
-  //     .catch((error) => {});
-  // };
 
   const handleChange = (event) => {
     if (selectDiscount === TypeDiscountString.VND) {
@@ -115,7 +106,6 @@ const AddVoucher = () => {
   const handleInputNumberVoucher = (e) => {
     // Loại bỏ tất cả các ký tự không phải số sử dụng regex
     const sanitizedValue = e.target.value.replace(/[^0-9]/g, "");
-
     setSoLuong(sanitizedValue);
   };
 
@@ -151,6 +141,7 @@ const AddVoucher = () => {
   };
 
   const addVoucher = () => {
+    setIsLoading(true);
     let obj = {
       ma: ma,
       ten: ten,
@@ -166,10 +157,11 @@ const AddVoucher = () => {
     axios
       .post(apiURLVoucher + "/addVoucher", obj)
       .then((response) => {
-        toast.success("Thêm thành công!");
+        handleOpenAlertVariant("Thêm thành công!!!", Notistack.SUCCESS);
+        setIsLoading(false);
         setTimeout(() => {
           redirectToHienThiVoucher();
-        }, 2000);
+        }, 1000);
       })
       .catch((error) => {
         handleOpenAlertVariant(error.response.data.message, Notistack.ERROR);
@@ -178,6 +170,10 @@ const AddVoucher = () => {
 
   const validationAll = () => {
     const msg = {};
+
+    if (ma.length < 10) {
+      msg.ma = "Mã voucher phải đủ 10 ký tự !!!";
+    }
 
     if (!ten.trim("")) {
       msg.ten = "Tên không được để trống !!!";
@@ -310,7 +306,7 @@ const AddVoucher = () => {
                 onInput={handleInputCodeVoucher}
                 style={{ width: "330px" }}
                 inputProps={{
-                  maxLength: 15, // Giới hạn tối đa 10 ký tự
+                  maxLength: 10, // Giới hạn tối đa 10 ký tự
                 }}
               />
               <span className="validate" style={{ color: "red" }}>
@@ -369,7 +365,7 @@ const AddVoucher = () => {
                 }}
                 style={{ width: "330px" }}
                 inputProps={{
-                  maxLength: 20, // Giới hạn tối đa 10 ký tự
+                  maxLength: 20,
                 }}
               />
               <span className="validate" style={{ color: "red" }}>
@@ -464,7 +460,7 @@ const AddVoucher = () => {
                   width: "267px",
                 }}
                 inputProps={{
-                  maxLength: 20, // Giới hạn tối đa 10 ký tự
+                  maxLength: 20,
                 }}
               />
               <span
@@ -495,7 +491,7 @@ const AddVoucher = () => {
                   width: "267px",
                 }}
                 inputProps={{
-                  maxLength: 20, // Giới hạn tối đa 10 ký tự
+                  maxLength: 20,
                 }}
               />
               <span
@@ -545,7 +541,12 @@ const AddVoucher = () => {
                     onChange={(e) => {
                       setNgayKetThuc(e);
                     }}
-                    sx={{ width: "330px" }}
+                    sx={{
+                      width: "330px",
+                      "& .MuiInputAdornedEnd-root .Mui-disabled": {
+                        backgroundColor: "red", // Thay đổi màu nền của input khi disabled
+                      },
+                    }}
                   />
                 </DemoContainer>
               </LocalizationProvider>
@@ -555,14 +556,13 @@ const AddVoucher = () => {
             </div>
           </div>
         </div>
-        <div className="btn-accept mt-3">
+        <div className="btn-accept-voucher mt-3">
           <Button
             className="rounded-2 button-mui"
             type="primary"
             style={{ height: "35px", width: "120px", fontSize: "15px" }}
             onClick={() => handleSubmit()}
           >
-            <ToastContainer />
             <FontAwesomeIcon icon={faCheck} />
             <span
               className="ms-2 ps-1"
@@ -576,7 +576,10 @@ const AddVoucher = () => {
             type="primary"
             style={{ height: "35px", width: "120px", fontSize: "15px" }}
             onClick={() => {
-              redirectToHienThiVoucher();
+              setTimeout(() => {
+                setIsLoading(false);
+                redirectToHienThiVoucher();
+              }, 200);
             }}
           >
             <FontAwesomeIcon icon={faArrowLeft} />
@@ -596,6 +599,7 @@ const AddVoucher = () => {
         title={<Title />}
         header={<Header />}
       />
+      {!isLoading && <LoadingIndicator />}
     </>
   );
 };
