@@ -6,6 +6,7 @@ import {
   Button,
   Select,
   Space,
+  Switch,
   Slider,
 } from "antd";
 import { Pagination } from "@mui/material";
@@ -27,6 +28,7 @@ import { faEye } from "@fortawesome/free-solid-svg-icons";
 import "../../../../assets/scss/product.css";
 import { Link, useNavigate } from "react-router-dom";
 import ExcelExportHelper from "../chi-tiet-san-pham/ExcelExportHelper";
+import ConfigDetail from "../chi-tiet-san-pham/config-detail";
 
 const currentDate = new Date().toISOString().split("T")[0];
 
@@ -77,12 +79,8 @@ const HienThiKH = () => {
     axios
       .post(apiURLSanPham + "/products?page=" + currentPage, chiTietSanPham)
       .then((response) => {
-        const modifiedData = response.data.content.map((item, index) => ({
-          ...item,
-          tags: [item.tenDongSanPham, item.tenNhaSanXuat, item.tenChip],
-        }));
-        console.log(modifiedData);
-        setlistMauSac(modifiedData);
+        console.log(response.data.content);
+        setlistMauSac(response.data.content);
         setCurrentPage(
           response.data.number == 0 ? 1 : response.data.number + 1
         );
@@ -160,8 +158,8 @@ const HienThiKH = () => {
         value: "nhaSanXuat:",
       };
       const modifiedData = response.data.map((item, index) => ({
-        label: item.tenNhaSanXuat,
-        value: "nhaSanXuat:" + item.tenNhaSanXuat,
+        label: item.tenHang,
+        value: "nhaSanXuat:" + item.tenHang,
       }));
       modifiedData.unshift(itemAll);
       setlistNhaSanXuat(modifiedData);
@@ -249,84 +247,111 @@ const HienThiKH = () => {
 
   const columns = [
     {
-      title: "Full Name",
+      title: "STT",
       width: 100,
-      dataIndex: "name",
-      key: "name",
+      dataIndex: "stt",
+      key: "stt",
       fixed: "left",
     },
     {
-      title: "Age",
-      width: 100,
-      dataIndex: "age",
-      key: "age",
+      title: "Tên sản phẩm",
+      width: 150,
+      dataIndex: "tenSanPham",
+      key: "tenSanPham",
       fixed: "left",
     },
     {
-      title: "Column 1",
-      dataIndex: "address",
+      title: "Tên chip",
+      dataIndex: "tenChip",
       key: "1",
       width: 150,
     },
     {
-      title: "Column 2",
-      dataIndex: "address",
+      title: "Tên dòng sản phẩm",
+      dataIndex: "tenDongSanPham",
       key: "2",
       width: 150,
     },
     {
-      title: "Column 3",
-      dataIndex: "address",
+      title: "Tên hãng",
+      dataIndex: "tenHang",
       key: "3",
       width: 150,
     },
     {
-      title: "Column 4",
-      dataIndex: "address",
-      key: "4",
-      width: 150,
-    },
-    {
-      title: "Column 5",
-      dataIndex: "address",
+      title: "Số sim",
+      dataIndex: "sim",
       key: "5",
       width: 150,
     },
     {
-      title: "Column 6",
-      dataIndex: "address",
+      title: "Hệ điều hành",
+      dataIndex: "heDieuHanh",
       key: "6",
       width: 150,
     },
     {
-      title: "Column 7",
-      dataIndex: "address",
+      title: "Dung lượng pin",
+      dataIndex: "dungLuong",
+      key: "4",
+      width: 150,
+    },
+    {
+      title: "Độ phân giải màn hình",
+      dataIndex: "doPhanGiaiManHinh",
       key: "7",
       width: 150,
     },
     {
-      title: "Column 8",
-      dataIndex: "address",
+      title: "Cổng sạc",
+      dataIndex: "congSac",
       key: "8",
+      width: 150,
     },
     {
-      title: "Action",
+      title: "Trạng thái",
+      key: "8",
+      width: 150,
+      filters: [
+        {
+          text: 'Kinh doanh',
+          value: 'true'
+        },
+        {
+          text: 'Ngừng kinh doanh',
+          value: 'false'
+        }
+      ],
+      // eslint-disable-next-line eqeqeq
+      onFilter: (value, record) => record.delected == value,
+      filterSearch: true,
+      // editable: true,
+      // editable: true,
+      render: (text, record) => (
+        <span>
+          <Space direction='vertical'>
+            <Switch
+              // style={{ borderRadius: '30px', width: 140 }}
+              onChange={e => doChangeTrangThai(e, record)}
+              // checkedChildren='Kinh doanh'
+              // unCheckedChildren='Ngừng kinh doanh'
+              defaultChecked={record.delected}
+            />
+          </Space>
+        </span>
+      )
+    },
+    {
+      title: "Hành động",
       key: "operation",
       fixed: "right",
       width: 100,
-      render: () => <a>action</a>,
+      render: (_, record) => <>
+        <ConfigDetail product = {record} />
+      </>,
     },
   ];
 
-  const data = [];
-  for (let i = 0; i < 100; i++) {
-    data.push({
-      key: i,
-      name: `Edward ${i}`,
-      age: 32,
-      address: `London Park no. ${i}`,
-    });
-  }
 
   
   return (
@@ -366,7 +391,7 @@ const HienThiKH = () => {
                 className="btn-them-tk"
                 style={{ height: "40px", width: "auto", fontSize: "15px" }}
               >
-                + Thêm chi tiết sản phẩm{" "}
+                + Thêm sản phẩm{" "}
               </Button>
             </Link>
           </span>
@@ -381,17 +406,6 @@ const HienThiKH = () => {
             marginTop: `2%`,
           }}
         >
-          {/* <Select
-          defaultValue="Chọn sản phẩm"
-          style={{ width: `23%`,marginRight:15,marginBottom:20 }}
-          onChange={handleChange}
-          options={[
-            {
-              label: 'Chọn một sản phẩm',
-              options: listSanPham
-            },
-          ]}
-        /> */}
 
           <Select
             defaultValue="Chọn dòng sản phẩm"
@@ -565,7 +579,7 @@ const HienThiKH = () => {
 
           <Table
             columns={columns}
-            dataSource={data}
+            dataSource={listMauSac}
             scroll={{
               x: 1500,
               y: 300,

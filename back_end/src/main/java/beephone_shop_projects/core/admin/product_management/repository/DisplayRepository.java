@@ -27,7 +27,7 @@ public interface DisplayRepository extends IManHinhRepository {
 
     List<ManHinh> findAllByDelected(Boolean delected);
 
-    ManHinh findByKichThuoc(BigDecimal kichThuoc);
+    List<ManHinh> findByKichThuoc(BigDecimal kichThuoc);
 
     @Query(value = """
             SELECT ROW_NUMBER() OVER() AS stt, display.id, display.ma, 

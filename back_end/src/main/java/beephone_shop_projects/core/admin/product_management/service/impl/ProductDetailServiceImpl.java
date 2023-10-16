@@ -26,15 +26,15 @@ public class ProductDetailServiceImpl {
     private ProductRepository productRepository;
     public SanPhamChiTiet insert(CreateProductDetailRequest req){
 
-        SanPham sanPham = productRepository.findById(req.getIdProduct()).orElseThrow();
+        SanPham sanPham = productRepository.findById(req.getIdSanPham()).orElseThrow();
         CauHinh cauHinh = cauHinhRepository.findById(req.getId()).orElseThrow();
 
         SanPhamChiTiet sanPhamChiTiet = new SanPhamChiTiet();
         sanPhamChiTiet.setMa(productDetailRepository.getNewCode() == null ? "PRODUCT_DETAIL_0" : "PRODUCT_DETAIL_" + this.productDetailRepository.getNewCode());
         sanPhamChiTiet.setSanPham(sanPham);
         sanPhamChiTiet.setCauHinh(cauHinh);
-        sanPhamChiTiet.setDonGia(req.getPrice());
-        sanPhamChiTiet.setSoLuongTonKho(req.getQuantity());
+        sanPhamChiTiet.setDonGia(req.getDonGia());
+        sanPhamChiTiet.setSoLuongTonKho(req.getSoLuong());
 
         return productDetailRepository.save(sanPhamChiTiet);
     }

@@ -28,7 +28,7 @@ public interface ChipRepository extends IChipRepository {
 
     List<Chip> findAllByDelected(Boolean delected);
 
-    Chip findByTenChip(String tenChip);
+    List<Chip> findByTenChip(String tenChip);
 
 
     @Query(value = """

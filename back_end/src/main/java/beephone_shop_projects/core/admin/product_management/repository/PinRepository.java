@@ -26,7 +26,7 @@ public interface PinRepository extends IPinRepository {
 
     List<Pin> findAllByDelected(Boolean delected);
 
-    Pin findByDungLuong(Integer dungLuong);
+    List<Pin> findByDungLuong(Integer dungLuong);
 
     @Query(value = """
     SELECT SUBSTRING(ma,5) + 1 FROM pin ORDER BY ma DESC LIMIT 0,1

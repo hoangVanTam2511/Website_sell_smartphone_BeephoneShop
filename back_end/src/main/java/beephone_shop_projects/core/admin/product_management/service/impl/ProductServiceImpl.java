@@ -58,29 +58,29 @@ public class ProductServiceImpl {
     }
 
     public SanPham insert(CreateProductRequest req) {
-        Chip chip = chipRepository.findByTenChip(req.getChip());
-        Hang hang = brandRepository.findBytenHang(req.getBrand());
-        DongSanPham dongSanPham = productLineRepository.findByTenDongSanPham(req.getProductLine());
-        ManHinh manHinh = displayRepository.findByKichThuoc(req.getDisplay());
-        Pin pin = pinRepository.findByDungLuong(req.getPin());
+        Chip chip = chipRepository.findByTenChip(req.getChip()).get(0);
+        Hang hang = brandRepository.findBytenHang(req.getNhaSanXuat()).get(0);
+        DongSanPham dongSanPham = productLineRepository.findByTenDongSanPham(req.getDongSanPham()).get(0);
+        ManHinh manHinh = displayRepository.findByKichThuoc(req.getManHinh()).get(0);
+        Pin pin = pinRepository.findByDungLuong(req.getPin()).get(0);
 
         SanPham sanPham = new SanPham();
         sanPham.setMa(productRepository.getNewCode() == null ? "PRODUCT_0" : "PRODUCT_" + productRepository.getNewCode());
-        sanPham.setTenSanPham(req.getNameProduct());
+        sanPham.setTenSanPham(req.getTenSanPham());
         sanPham.setDongSanPham(dongSanPham);
         sanPham.setHang(hang);
         sanPham.setChip(chip);
         sanPham.setPin(pin);
         sanPham.setManHinh(manHinh);
-        sanPham.setMoTa(req.getDescription());
-        sanPham.setHeDieuHanh(req.getOperatingSystem());
+        sanPham.setMoTa(req.getMoTa());
+        sanPham.setHeDieuHanh(req.getHeDieuHanh());
         sanPham.setSim(req.getSim());
-        sanPham.setCongSac(req.getChargingPort());
+        sanPham.setCongSac(req.getCongSac());
         sanPham.setDelected(false);
 
         SanPham product = productRepository.save(sanPham);
 
-        req.getCameraAfter().forEach((item) -> {
+        req.getCameraSau().forEach((item) -> {
             //   find camera by do phan giai
             Integer index  = item.indexOf(" ");
             // cắt chuỗi và lưu vào db
@@ -92,7 +92,7 @@ public class ProductServiceImpl {
             cameraDetailRepository.save(cameraDetail);
         });
 
-        req.getCameraFront().forEach((item) -> {
+        req.getCameraTruoc().forEach((item) -> {
             //   find camera by do phan giai
             Integer index  = item.indexOf(" ");
             Camera camera = cameraRepository.findByDoPhanGiai(item.substring(0,index));
