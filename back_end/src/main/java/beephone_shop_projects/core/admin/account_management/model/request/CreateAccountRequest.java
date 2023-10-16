@@ -1,5 +1,9 @@
 package beephone_shop_projects.core.admin.account_management.model.request;
 
+import beephone_shop_projects.infrastructure.constant.StatusAccountCus;
+import beephone_shop_projects.infrastructure.constant.StatusDiscount;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -29,16 +33,16 @@ public class CreateAccountRequest {
     @Pattern(regexp = "^(?:\\+84|0)[1-9]\\d{8}$", message = "Số điện thoại không hợp lệ")
     private String soDienThoai;
 
-    @NotNull(message = "Xã/Phường trống")
+    @NotBlank(message = "Xã/Phường trống")
     private String xaPhuong;
 
-    @NotNull(message = "Quận/Huyện trống")
+    @NotBlank(message = "Quận/Huyện trống")
     private String quanHuyen;
 
-    @NotNull(message = "Căn cước công dân trống")
+//    @NotNull(message = "Căn cước công dân trống")
     private String canCuocCongDan;
 
-    @NotNull(message = "Tỉnh/Thành phố trống")
+    @NotBlank(message = "Tỉnh/Thành phố trống")
     private String tinhThanhPho;
 
     @NotNull(message = "Ngày sinh trống")
@@ -50,7 +54,8 @@ public class CreateAccountRequest {
 
     private String anhDaiDien;
 
-    private Integer trangThai;
+//    @Enumerated(EnumType.STRING)
+    private StatusAccountCus trangThai;
 
     private String idRole;
 

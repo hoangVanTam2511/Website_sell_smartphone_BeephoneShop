@@ -1,5 +1,8 @@
 package beephone_shop_projects.core.admin.voucher_management.model.request;
 
+import beephone_shop_projects.infrastructure.constant.TypeDiscount;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -25,7 +28,8 @@ public class UpdateVoucherRequest {
     @NotNull(message = "Không để trống Số Lượng !!!")
     private Integer soLuong;
 
-    private String loaiVoucher;
+    @Enumerated(EnumType.STRING)
+    private TypeDiscount loaiVoucher;
 
     @NotNull(message = "Không để trống Điều Kiện Áp Dung")
     @Min(value = 0, message = "Giá Trị Tối Thiểu Là 0 !!!")
