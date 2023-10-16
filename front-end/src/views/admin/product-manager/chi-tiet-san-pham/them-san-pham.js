@@ -43,7 +43,7 @@ import {
   Modal,
   Avatar,
   Segmented,
-  Button,
+  // Button,
   notification,
 } from "antd";
 import { useTheme } from "@mui/material/styles";
@@ -55,7 +55,7 @@ import {
 } from "@ant-design/icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "../../../../assets/scss/addProduct.css";
-// import Button from "@mui/material/Button";
+import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
 import Chip from "@mui/material/Chip";
 import TextField from "@mui/material/TextField";
@@ -91,6 +91,7 @@ const ThemSanPham = () => {
   // modal
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const [openModalConfirm, setOpenModalConfirm] = useState(false)
   //hidden in cofig
   const [sizeOfListSelected, setSizeOfListSelected] = useState(0);
   // image
@@ -188,6 +189,7 @@ const ThemSanPham = () => {
     setOpenFormmauSac(false);
     setOpenFormpin(false);
     setOpenFormram(false);
+    setOpenFormrom(false);
   };
 
   // chip
@@ -208,6 +210,7 @@ const ThemSanPham = () => {
 
   const showModalFormChip = async () => {
     setOpenFormChip(true);
+    setFormSubmitted(false);
   };
 
   const handleOkFormChip = async () => {
@@ -235,10 +238,11 @@ const ThemSanPham = () => {
 
   const showModalFormpin = async () => {
     setOpenFormpin(true);
+    setFormSubmitted(false);
   };
 
   const handleOkFormpin = async () => {
-    await axios.post("http://localhost:8080/pin/save-second", pinForm);
+    await axios.post("http://localhost:8080/pin/save", pinForm);
     setConfirmLoading(true);
     setTimeout(() => {
       setOpenFormpin(false);
@@ -264,10 +268,9 @@ const ThemSanPham = () => {
 
   const showModalFormram = async () => {
     setOpenFormram(true);
-
+    setFormSubmittedConfig(false);
   };
   const handleOkFormram = async () => {
-
     var flag = false;
 
     if (!ramForm.capacityRam) {
@@ -277,11 +280,11 @@ const ThemSanPham = () => {
     }
 
     if (flag == true) {
-      showNotification("error", "Đã có lỗi.Vui lòng kiểm tra và thử lại")
+      showNotification("error", "Đã có lỗi.Vui lòng kiểm tra và thử lại");
       return;
     }
 
-    await axios.post("http://localhost:8080/ram/save-second", ramForm);
+    await axios.post("http://localhost:8080/ram/save", ramForm);
     setConfirmLoading(true);
     setTimeout(() => {
       setOpenFormram(false);
@@ -307,10 +310,10 @@ const ThemSanPham = () => {
 
   const showModalFormrom = async () => {
     setOpenFormrom(true);
+    setFormSubmittedConfig(false);
   };
 
   const handleOkFormrom = async () => {
-
     var flag = false;
 
     if (!romForm.capacityRom) {
@@ -320,11 +323,11 @@ const ThemSanPham = () => {
     }
 
     if (flag == true) {
-      showNotification("error", "Đã có lỗi.Vui lòng kiểm tra và thử lại")
+      showNotification("error", "Đã có lỗi.Vui lòng kiểm tra và thử lại");
       return;
     }
 
-    await axios.post("http://localhost:8080/rom/save-second", romForm);
+    await axios.post("http://localhost:8080/rom/save", romForm);
     setConfirmLoading(true);
     setTimeout(() => {
       setOpenFormrom(false);
@@ -349,11 +352,10 @@ const ThemSanPham = () => {
 
   const showModalFormmauSac = async () => {
     setOpenFormmauSac(true);
-
+    setFormSubmittedConfig(false);
   };
 
   const handleOkFormmauSac = async () => {
-
     var flag = false;
 
     if (!mauSacForm.nameColor) {
@@ -363,12 +365,11 @@ const ThemSanPham = () => {
     }
 
     if (flag == true) {
-      showNotification("error", "Đã có lỗi.Vui lòng kiểm tra và thử lại")
+      showNotification("error", "Đã có lỗi.Vui lòng kiểm tra và thử lại");
       return;
     }
 
-
-    await axios.post("http://localhost:8080/mau-sac/save-second", mauSacForm);
+    await axios.post("http://localhost:8080/mau-sac/save", mauSacForm);
     setConfirmLoading(true);
     setTimeout(() => {
       setOpenFormmauSac(false);
@@ -399,6 +400,7 @@ const ThemSanPham = () => {
 
   const showModalFormCamera = () => {
     setOpenFormCamera(true);
+    setFormSubmitted(false);
   };
   const handleOkFormCamera = () => {
     if (!cameraForm.resolutionCamera) {
@@ -427,9 +429,9 @@ const ThemSanPham = () => {
 
   const showModalFormmanHinh = async () => {
     setOpenFormmanHinh(true);
+    setFormSubmitted(false);
   };
   const handleOkFormmanHinh = async () => {
-
     var flag = false;
 
     if (!manHinhForm.sizeDisplay) {
@@ -445,11 +447,11 @@ const ThemSanPham = () => {
     }
 
     if (flag == true) {
-      showNotification("error", "Đã có lỗi.Vui lòng kiểm tra và thử lại")
+      showNotification("error", "Đã có lỗi.Vui lòng kiểm tra và thử lại");
       return;
     }
 
-    await axios.post("http://localhost:8080/man-hinh/save-second", manHinhForm);
+    await axios.post("http://localhost:8080/man-hinh/save", manHinhForm);
     setConfirmLoading(true);
     setTimeout(() => {
       setOpenFormmanHinh(false);
@@ -475,9 +477,9 @@ const ThemSanPham = () => {
 
   const showModalFormDongSanPham = async () => {
     setOpenFormDongSanPham(true);
+    setFormSubmittedConfig(false);
   };
   const handleOkFormDongSanPham = async () => {
-
     var flag = false;
 
     if (!DongSanPhamForm.nameProductLine) {
@@ -487,7 +489,7 @@ const ThemSanPham = () => {
     }
 
     if (flag == true) {
-      showNotification("error", "Đã có lỗi.Vui lòng kiểm tra và thử lại")
+      showNotification("error", "Đã có lỗi.Vui lòng kiểm tra và thử lại");
       return;
     }
 
@@ -507,6 +509,7 @@ const ThemSanPham = () => {
 
   const showModalFormCauHinh = () => {
     setOpenFormCauHinh(true);
+    setFormSubmittedConfig(false);
   };
   // notification
   const openNotificationError = (placement, title, content) => {
@@ -873,8 +876,8 @@ const ThemSanPham = () => {
       .get(apiURLDongSanPham + "/get-list")
       .then((response) => {
         const modifiedData = response.data.map((item, index) => ({
-          label: item.nameProductLine,
-          value: "dongSanPham:" + item.nameProductLine,
+          label: item.tenDongSanPham,
+          value: "dongSanPham:" + item.tenDongSanPham,
         }));
         console.log(apiURLDongSanPham);
         setListDongSanPham(modifiedData);
@@ -928,8 +931,8 @@ const ThemSanPham = () => {
       .get(apiURLChip + "/get-list")
       .then((response) => {
         const modifiedData = response.data.map((item, index) => ({
-          label: item.nameChip,
-          value: "chip:" + item.nameChip,
+          label: item.tenChip,
+          value: "chip:" + item.tenChip,
         }));
         setlistChip(modifiedData);
       })
@@ -939,8 +942,8 @@ const ThemSanPham = () => {
       .get(apiURLMauSac + "/get-list")
       .then((response) => {
         const modifiedData = response.data.map((item, index) => ({
-          label: item.nameColor,
-          value: "mauSac:" + item.nameColor,
+          label: item.tenMauSac,
+          value: "mauSac:" + item.tenMauSac,
         }));
         setlistMauSac(modifiedData);
       })
@@ -1026,10 +1029,11 @@ const ThemSanPham = () => {
         })
         .catch((res) => console.log(res));
     });
-    openNotificationSuccess("success", "Bạn đã tạo sản phẩm thành công ", "");
+    showNotification("success", "Bạn đã thêm rom thành công")
     setTimeout(() => {
       navigate("/san-pham");
     }, 200);
+    return;
   };
 
   return (
@@ -1334,7 +1338,7 @@ const ThemSanPham = () => {
                         (formSubmitted &&
                           chiTietSanPham.cameraTruoc.length === 0 &&
                           `
-                                                     Camera trước không được để trống
+                           Camera trước không được để trống
                                                   `)}
                     </FormHelperText>
                   </Form.Group>
@@ -2021,11 +2025,14 @@ const ThemSanPham = () => {
               <Button
                 variant="contained"
                 endIcon={<ArrowRightOutlined />}
+                key="submit"
+                type="primary"
                 style={{
                   width: `15%`,
                   fontSize: `89%`,
                   transform: `translateX(280%)`,
                   marginBottom: `2%`,
+                  height: 40,
                 }}
                 onClick={() => handleClickStepTwo()}
               >
@@ -2701,7 +2708,7 @@ const ThemSanPham = () => {
                                       fontSize: `16px`,
                                       marginBottom: `2%`,
                                     }}
-                                    onClick={() => handleClickStepThree()}
+                                    onClick={() => setOpenModalConfirm(true)}
                                   >
                                     Hoàn thành
                                   </Button>
@@ -2757,48 +2764,48 @@ const ThemSanPham = () => {
                                                   </Button>,
                                                 ]}
                                               >
-                                                <p>
-                                                  <h2
-                                                    style={{
-                                                      marginBottom: `2%`,
-                                                      textAlign: `center`,
-                                                      fontSize: `27px`,
-                                                    }}
-                                                  >
-                                                    Thêm rom
-                                                  </h2>
+                                                <h2
+                                                  style={{
+                                                    marginBottom: `2%`,
+                                                    textAlign: `center`,
+                                                    fontSize: `27px`,
+                                                  }}
+                                                >
+                                                  Thêm rom
+                                                </h2>
 
-                                                  <FormLabel
-                                                    style={{
-                                                      marginLeft: `9px`,
-                                                      fontSize: `14px`,
-                                                    }}
-                                                  >
-                                                    {" "}
-                                                    Kích thuớc rom{" "}
-                                                  </FormLabel>
-                                                  <TextField
-                                                    label=""
-                                                    id="fullWidth"
-                                                    name="capacityRom"
-                                                    value={romForm.capacityRom}
-                                                    onChange={(e) =>
-                                                      onInputChangeFormrom
-                                                    }
-                                                    error={
-                                                      (formSubmitted &&
-                                                        !romForm.capacityRom) ||
-                                                      !!capacityRomError
-                                                    }
-                                                    helperText={
-                                                      capacityRomError ||
-                                                      (formSubmitted &&
-                                                        !romForm.capacityRom &&
-                                                        "Kích thước rom không được trống")
-                                                    }
-                                                    style={{ width: "100%" }}
-                                                  />
-                                                </p>
+                                                <FormLabel
+                                                  style={{
+                                                    marginLeft: `9px`,
+                                                    fontSize: `14px`,
+                                                  }}
+                                                >
+                                                  {" "}
+                                                  Kích thuớc rom{" "}
+                                                </FormLabel>
+                                                <TextField
+                                                  label=""
+                                                  id="fullWidth"
+                                                  name="capacityRom"
+                                                  value={romForm.capacityRom}
+                                                  onChange={(e) =>
+                                                    onInputChangeFormrom(
+                                                      e
+                                                    )
+                                                  }
+                                                  error={
+                                                    (formSubmitted &&
+                                                      !romForm.capacityRom) ||
+                                                    !!capacityRomError
+                                                  }
+                                                  helperText={
+                                                    capacityRomError ||
+                                                    (formSubmitted &&
+                                                      !romForm.capacityRom &&
+                                                      "Kích thước rom không được trống")
+                                                  }
+                                                  style={{ width: "100%" }}
+                                                />
                                               </Modal>
 
                                               <FormControl
@@ -2844,8 +2851,8 @@ const ThemSanPham = () => {
                                                     (formSubmitted &&
                                                       !cauHinh.rom &&
                                                       `
-                                                                                                              Bạn phải chọn một rom
-                                                                                                               `)}
+                                                         Bạn phải chọn một rom
+                                                           `)}
                                                 </FormHelperText>
                                               </FormControl>
                                             </Form.Group>
@@ -2861,42 +2868,72 @@ const ThemSanPham = () => {
                                               <Modal
                                                 title="Thêm dung lượng ram"
                                                 open={openFormram}
-                                                onOk={handleOkFormram}
                                                 confirmLoading={confirmLoading}
                                                 onCancel={handleCancel}
+                                                footer={[
+                                                  <Button
+                                                    type="danger"
+                                                    style={{
+                                                      height: 40,
+                                                      marginRight: `3%`,
+                                                    }}
+                                                    onClick={handleCancel}
+                                                  >
+                                                    Huỷ
+                                                  </Button>,
+                                                  <Button
+                                                    type="primary"
+                                                    loading={loading}
+                                                    style={{
+                                                      height: 40,
+                                                      marginRight: `36%`,
+                                                    }}
+                                                    onClick={handleOkFormram}
+                                                  >
+                                                    + Thêm mới
+                                                  </Button>,
+                                                ]}
                                               >
-                                                <p>
-                                                  <Form>
-                                                    <Form.Group className="form-group">
-                                                      <Form.Label htmlFor="email">
-                                                        Mã
-                                                      </Form.Label>
-                                                      <Form.Control
-                                                        type="text"
-                                                        name="idRam"
-                                                        value={idRam}
-                                                        id="idRam"
-                                                      />
-                                                    </Form.Group>
-                                                    <Form.Group className="form-group">
-                                                      <Form.Label htmlFor="pwd">
-                                                        Dung lượng ram
-                                                      </Form.Label>
-                                                      <Form.Control
-                                                        type="text"
-                                                        placeholder="Nhập dung lượng ram"
-                                                        name="nameRam"
-                                                        value={nameRam}
-                                                        onChange={(e) =>
-                                                          onInputChangeFormram(
-                                                            e
-                                                          )
-                                                        }
-                                                        id="ten`"
-                                                      />
-                                                    </Form.Group>
-                                                  </Form>
-                                                </p>
+                                                <h2
+                                                  style={{
+                                                    marginBottom: `2%`,
+                                                    textAlign: `center`,
+                                                    fontSize: `27px`,
+                                                  }}
+                                                >
+                                                  Thêm ram
+                                                </h2>
+
+                                                <FormLabel
+                                                  style={{
+                                                    marginLeft: `9px`,
+                                                    fontSize: `14px`,
+                                                  }}
+                                                >
+                                                  {" "}
+                                                  Độ phân giải ram{" "}
+                                                </FormLabel>
+                                                <TextField
+                                                  label=""
+                                                  id="fullWidth"
+                                                  name="capacityRam"
+                                                  value={ramForm.capacityRam}
+                                                  onChange={(e) =>
+                                                    onInputChangeFormram(e)
+                                                  }
+                                                  error={
+                                                    (formSubmitted &&
+                                                      !ramForm.capacityRam) ||
+                                                    !!capacityRamError
+                                                  }
+                                                  helperText={
+                                                    capacityRamError ||
+                                                    (formSubmitted &&
+                                                      !ramForm.capacityRam &&
+                                                      "Kích thước rom không được trống")
+                                                  }
+                                                  style={{ width: "100%" }}
+                                                />
                                               </Modal>
 
                                               <FormControl
@@ -2959,42 +2996,72 @@ const ThemSanPham = () => {
                                               <Modal
                                                 title="Thêm màu sắc"
                                                 open={openFormmauSac}
-                                                onOk={handleOkFormmauSac}
                                                 confirmLoading={confirmLoading}
                                                 onCancel={handleCancel}
+                                                footer={[
+                                                  <Button
+                                                    type="danger"
+                                                    style={{
+                                                      height: 40,
+                                                      marginRight: `3%`,
+                                                    }}
+                                                    onClick={handleCancel}
+                                                  >
+                                                    Huỷ
+                                                  </Button>,
+                                                  <Button
+                                                    type="primary"
+                                                    loading={loading}
+                                                    style={{
+                                                      height: 40,
+                                                      marginRight: `36%`,
+                                                    }}
+                                                    onClick={handleOkFormmauSac}
+                                                  >
+                                                    + Thêm mới
+                                                  </Button>,
+                                                ]}
                                               >
-                                                <p>
-                                                  <Form>
-                                                    <Form.Group className="form-group">
-                                                      <Form.Label htmlFor="email">
-                                                        Mã
-                                                      </Form.Label>
-                                                      <Form.Control
-                                                        type="text"
-                                                        name="idColor"
-                                                        value={idColor}
-                                                        id="idColor"
-                                                      />
-                                                    </Form.Group>
-                                                    <Form.Group className="form-group">
-                                                      <Form.Label htmlFor="pwd">
-                                                        Tên màu sắc{" "}
-                                                      </Form.Label>
-                                                      <Form.Control
-                                                        type="text"
-                                                        placeholder="Nhập tên màu sắc"
-                                                        name="nameColor"
-                                                        value={nameColor}
-                                                        onChange={(e) =>
-                                                          onInputChangeFormmauSac(
-                                                            e
-                                                          )
-                                                        }
-                                                        id="ten`"
-                                                      />
-                                                    </Form.Group>
-                                                  </Form>
-                                                </p>
+                                                <h2
+                                                  style={{
+                                                    marginBottom: `2%`,
+                                                    textAlign: `center`,
+                                                    fontSize: `27px`,
+                                                  }}
+                                                >
+                                                  Thêm màu
+                                                </h2>
+
+                                                <FormLabel
+                                                  style={{
+                                                    marginLeft: `9px`,
+                                                    fontSize: `14px`,
+                                                  }}
+                                                >
+                                                  {" "}
+                                                  Tên màu{" "}
+                                                </FormLabel>
+                                                <TextField
+                                                  label=""
+                                                  id="fullWidth"
+                                                  name="nameColor"
+                                                  value={mauSacForm.nameColor}
+                                                  onChange={(e) =>
+                                                    onInputChangeFormmauSac(e)
+                                                  }
+                                                  error={
+                                                    (formSubmitted &&
+                                                      !mauSacForm.nameColor) ||
+                                                    !!nameColorError
+                                                  }
+                                                  helperText={
+                                                    nameColorError ||
+                                                    (formSubmitted &&
+                                                      !mauSacForm.nameColor &&
+                                                      "Tên màu không được trống")
+                                                  }
+                                                  style={{ width: "100%" }}
+                                                />
                                               </Modal>
 
                                               <FormControl
@@ -3143,6 +3210,15 @@ const ThemSanPham = () => {
         </>
         <br />
       </Form>
+
+      <Modal
+            title="Xác nhận"
+            open={openModalConfirm}
+            onOk={handleClickStepThree}
+            onCancel={() => setOpenModalConfirm(false)}
+          >
+            Bạn có chắc tạo sản phẩm này ?
+      </Modal>
     </div>
   );
 };
