@@ -41,8 +41,8 @@ public class ProductLineRestController {
         return this.dongSanPhamService.getDanhSachDongSanPham();
     }
 
-    @DeleteMapping("/delete")
-    public void delete(@RequestParam("id")String id) {
+    @DeleteMapping("/delete/{id}")
+    public void delete(@PathVariable("id")String id) {
         dongSanPhamService.delete(id);
     }
     
