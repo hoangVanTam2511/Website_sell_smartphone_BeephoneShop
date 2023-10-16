@@ -43,6 +43,7 @@ import {
   Modal,
   Avatar,
   Segmented,
+  Button,
   notification,
 } from "antd";
 import { useTheme } from "@mui/material/styles";
@@ -54,16 +55,15 @@ import {
 } from "@ant-design/icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "../../../../assets/scss/addProduct.css";
-import Button from "@mui/material/Button";
+// import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
 import Chip from "@mui/material/Chip";
 import TextField from "@mui/material/TextField";
 import FormHelperText from "@mui/material/FormHelperText";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { set } from "lodash";
 
-const { TextArea } = Input;
-let index = 0;
 const Context = React.createContext({
   name: "Default",
 });
@@ -162,14 +162,14 @@ const ThemSanPham = () => {
   const handleOk = async () => {
     var flag = false;
     if (!nhaSanXuatForm.nameBrand) {
-        setFormSubmitted(true);
-        setnameBrandError("Tên hãng không được bỏ trống");
-        flag = true;
-      }
-    
+      setFormSubmitted(true);
+      setnameBrandError("Tên hãng không được bỏ trống");
+      flag = true;
+    }
+
     if (flag == true) {
-        showNotification("error", "Đã có lỗi.Vui lòng kiểm tra và thử lại")
-        return;
+      showNotification("error", "Đã có lỗi.Vui lòng kiểm tra và thử lại");
+      return;
     }
 
     await axios.post("http://localhost:8080/hang/save", nhaSanXuatForm);
@@ -195,24 +195,19 @@ const ThemSanPham = () => {
   const [openFormChip, setOpenFormChip] = useState(false);
 
   const [chipForm, setChipForm] = useState({
-    maChip: "",
-    tenChip: "",
+    idChip: "",
+    nameChip: "",
   });
 
-  const { maChip, tenChip } = chipForm; // tạo contructor
+  const { idChip, nameChip } = chipForm; // tạo contructor
+  const [nameChipError, setnameChipError] = useState("");
 
   const onInputChangeFormChip = (e) => {
-    setChipForm({ ...chipForm, tenChip: e.target.value });
+    setChipForm({ ...chipForm, nameChip: e.target.value });
   };
 
   const showModalFormChip = async () => {
     setOpenFormChip(true);
-    await axios
-      .get("http://localhost:8080/chip/new-code")
-      .then((res) => {
-        setChipForm({ ...chipForm, maChip: res.data });
-      })
-      .catch((res) => console.log(res));
   };
 
   const handleOkFormChip = async () => {
@@ -225,29 +220,21 @@ const ThemSanPham = () => {
   };
 
   // pin
-
   const [openFormpin, setOpenFormpin] = useState(false);
 
   const [pinForm, setpinForm] = useState({
-    mapin: "",
-    tenpin: "",
+    idPin: "",
+    capacityPin: "",
   });
 
-  const { mapin, tenpin } = pinForm; // tạo contructor
-
+  const { idPin, capacityPin } = pinForm; // tạo contructor
+  const [capacityPinError, setcapacityPinError] = useState("");
   const onInputChangeFormpin = (e) => {
     setpinForm({ ...pinForm, [e.target.name]: e.target.value });
   };
 
   const showModalFormpin = async () => {
     setOpenFormpin(true);
-
-    await axios
-      .get("http://localhost:8080/pin/new-code")
-      .then((res) => {
-        setpinForm({ ...pinForm, mapin: res.data });
-      })
-      .catch((res) => console.log(res));
   };
 
   const handleOkFormpin = async () => {
@@ -264,11 +251,12 @@ const ThemSanPham = () => {
   const [openFormram, setOpenFormram] = useState(false);
 
   const [ramForm, setramForm] = useState({
-    maram: "",
-    tenram: "",
+    idRam: "",
+    nameRam: "",
   });
 
-  const { maram, tenram } = ramForm; // tạo contructor
+  const { idRam, nameRam } = ramForm; // tạo contructor
+  const [capacityRamError, setcapacityRamError] = useState("");
 
   const onInputChangeFormram = (e) => {
     setramForm({ ...ramForm, [e.target.name]: e.target.value });
@@ -277,14 +265,22 @@ const ThemSanPham = () => {
   const showModalFormram = async () => {
     setOpenFormram(true);
 
-    await axios
-      .get("http://localhost:8080/ram/new-code")
-      .then((res) => {
-        setramForm({ ...ramForm, maram: res.data });
-      })
-      .catch((res) => console.log(res));
   };
   const handleOkFormram = async () => {
+
+    var flag = false;
+
+    if (!ramForm.capacityRam) {
+      setFormSubmitted(true);
+      setcapacityRamError("Kích thước ram không được bỏ trống");
+      flag = true;
+    }
+
+    if (flag == true) {
+      showNotification("error", "Đã có lỗi.Vui lòng kiểm tra và thử lại")
+      return;
+    }
+
     await axios.post("http://localhost:8080/ram/save-second", ramForm);
     setConfirmLoading(true);
     setTimeout(() => {
@@ -314,6 +310,20 @@ const ThemSanPham = () => {
   };
 
   const handleOkFormrom = async () => {
+
+    var flag = false;
+
+    if (!romForm.capacityRom) {
+      setFormSubmitted(true);
+      setcapacityRomError("Kích thước không được bỏ trống");
+      flag = true;
+    }
+
+    if (flag == true) {
+      showNotification("error", "Đã có lỗi.Vui lòng kiểm tra và thử lại")
+      return;
+    }
+
     await axios.post("http://localhost:8080/rom/save-second", romForm);
     setConfirmLoading(true);
     setTimeout(() => {
@@ -326,11 +336,12 @@ const ThemSanPham = () => {
   const [openFormmauSac, setOpenFormmauSac] = useState(false);
 
   const [mauSacForm, setmauSacForm] = useState({
-    mamauSac: "",
-    tenmauSac: "",
+    idColor: "",
+    nameColor: "",
   });
 
-  const { mamauSac, tenmauSac } = mauSacForm; // tạo contructor
+  const { idColor, nameColor } = mauSacForm; // tạo contructor
+  const [nameColorError, setnameColorError] = useState("");
 
   const onInputChangeFormmauSac = (e) => {
     setmauSacForm({ ...mauSacForm, [e.target.name]: e.target.value });
@@ -339,15 +350,24 @@ const ThemSanPham = () => {
   const showModalFormmauSac = async () => {
     setOpenFormmauSac(true);
 
-    await axios
-      .get("http://localhost:8080/mau-sac/new-code")
-      .then((res) => {
-        setmauSacForm({ ...mauSacForm, mamauSac: res.data });
-      })
-      .catch((res) => console.log(res));
   };
 
   const handleOkFormmauSac = async () => {
+
+    var flag = false;
+
+    if (!mauSacForm.nameColor) {
+      setFormSubmitted(true);
+      setnameColorError("Tên màu không được bỏ trống");
+      flag = true;
+    }
+
+    if (flag == true) {
+      showNotification("error", "Đã có lỗi.Vui lòng kiểm tra và thử lại")
+      return;
+    }
+
+
     await axios.post("http://localhost:8080/mau-sac/save-second", mauSacForm);
     setConfirmLoading(true);
     setTimeout(() => {
@@ -360,13 +380,15 @@ const ThemSanPham = () => {
   const [openFormmanHinh, setOpenFormmanHinh] = useState(false);
 
   const [manHinhForm, setmanHinhForm] = useState({
-    mamanHinh: "",
-    tenmanHinh: "",
+    idDisplay: "",
+    sizeDisplay: "",
+    resolutionDisplay: "",
   });
 
-  const { mamanHinh, tenmanHinh } = manHinhForm; // tạo contructor
+  const { idDisplay, sizeDisplay, resolutionDisplay } = manHinhForm; // tạo contructor
 
   const [cameraForm, setCameraForm] = useState({
+    idCamera: "",
     resolutionCamera: "",
   });
   const [openFormCamera, setOpenFormCamera] = useState(false);
@@ -395,21 +417,38 @@ const ThemSanPham = () => {
   const handleCancelFormCamera = () => {
     setOpenFormCamera(false);
   };
+
+  const [sizeDisplayError, setsizeDisplayError] = useState("");
+  const [resolutionDisplayError, setresolutionDisplayError] = useState("");
+
   const onInputChangeFormmanHinh = (e) => {
     setmanHinhForm({ ...manHinhForm, [e.target.name]: e.target.value });
   };
 
   const showModalFormmanHinh = async () => {
     setOpenFormmanHinh(true);
-
-    await axios
-      .get("http://localhost:8080/man-hinh/new-code")
-      .then((res) => {
-        setmanHinhForm({ ...manHinhForm, mamanHinh: res.data });
-      })
-      .catch((res) => console.log(res));
   };
   const handleOkFormmanHinh = async () => {
+
+    var flag = false;
+
+    if (!manHinhForm.sizeDisplay) {
+      setFormSubmitted(true);
+      setsizeDisplayError("Kích thước không được bỏ trống");
+      flag = true;
+    }
+
+    if (!manHinhForm.resolutionDisplay) {
+      setFormSubmitted(true);
+      setsizeDisplayError("Độ phân giải không được bỏ trống");
+      flag = true;
+    }
+
+    if (flag == true) {
+      showNotification("error", "Đã có lỗi.Vui lòng kiểm tra và thử lại")
+      return;
+    }
+
     await axios.post("http://localhost:8080/man-hinh/save-second", manHinhForm);
     setConfirmLoading(true);
     setTimeout(() => {
@@ -421,13 +460,14 @@ const ThemSanPham = () => {
   // dòng sản phẩm
 
   const [openFormDongSanPham, setOpenFormDongSanPham] = useState(false);
+  const [nameProductLineError, setnameProductLineError] = useState("");
 
   const [DongSanPhamForm, setDongSanPhamForm] = useState({
-    maDongSanPham: "",
-    tenDongSanPham: "",
+    idProductLine: "",
+    nameProductLine: "",
   });
 
-  const { maDongSanPham, tenDongSanPham } = DongSanPhamForm; // tạo contructor
+  const { idProductLine, nameProductLine } = DongSanPhamForm; // tạo contructor
 
   const onInputChangeFormDongSanPham = (e) => {
     setDongSanPhamForm({ ...DongSanPhamForm, [e.target.name]: e.target.value });
@@ -435,15 +475,22 @@ const ThemSanPham = () => {
 
   const showModalFormDongSanPham = async () => {
     setOpenFormDongSanPham(true);
-
-    await axios
-      .get("http://localhost:8080/dong-san-pham/new-code")
-      .then((res) => {
-        setDongSanPhamForm({ ...DongSanPhamForm, maDongSanPham: res.data });
-      })
-      .catch((res) => console.log(res));
   };
   const handleOkFormDongSanPham = async () => {
+
+    var flag = false;
+
+    if (!DongSanPhamForm.nameProductLine) {
+      setFormSubmitted(true);
+      setnameProductLineError("Tên dòng sản phẩm không được bỏ trống");
+      flag = true;
+    }
+
+    if (flag == true) {
+      showNotification("error", "Đã có lỗi.Vui lòng kiểm tra và thử lại")
+      return;
+    }
+
     await axios.post(
       "http://localhost:8080/dong-san-pham/save",
       DongSanPhamForm
@@ -826,8 +873,8 @@ const ThemSanPham = () => {
       .get(apiURLDongSanPham + "/get-list")
       .then((response) => {
         const modifiedData = response.data.map((item, index) => ({
-          label: item.tenDongSanPham,
-          value: "dongSanPham:" + item.tenDongSanPham,
+          label: item.nameProductLine,
+          value: "dongSanPham:" + item.nameProductLine,
         }));
         console.log(apiURLDongSanPham);
         setListDongSanPham(modifiedData);
@@ -881,8 +928,8 @@ const ThemSanPham = () => {
       .get(apiURLChip + "/get-list")
       .then((response) => {
         const modifiedData = response.data.map((item, index) => ({
-          label: item.tenChip,
-          value: "chip:" + item.tenChip,
+          label: item.nameChip,
+          value: "chip:" + item.nameChip,
         }));
         setlistChip(modifiedData);
       })
@@ -892,8 +939,8 @@ const ThemSanPham = () => {
       .get(apiURLMauSac + "/get-list")
       .then((response) => {
         const modifiedData = response.data.map((item, index) => ({
-          label: item.tenMauSac,
-          value: "mauSac:" + item.tenMauSac,
+          label: item.nameColor,
+          value: "mauSac:" + item.nameColor,
         }));
         setlistMauSac(modifiedData);
       })
@@ -950,7 +997,7 @@ const ThemSanPham = () => {
       .post("http://localhost:8080/san-pham/save", chiTietSanPham)
       .then((res) => {
         {
-            console.log(res.data.id)
+          console.log(res.data.id);
           listCauHinhSelected.forEach((item) => {
             item.idSanPham = res.data.id;
           });
@@ -1497,7 +1544,7 @@ const ThemSanPham = () => {
                         className="selection_custom"
                         labelId="demo-simple-select-standard-label"
                         id="demo-simple-select-filled"
-                        // value={tenram}
+                        // value={nameRam}
                         onChange={handleChange}
                       >
                         {listNhaSanXuat.map((item, index) => {
@@ -1528,35 +1575,59 @@ const ThemSanPham = () => {
                     <Modal
                       title="Thêm chip"
                       open={openFormChip}
-                      onOk={handleOkFormChip}
                       confirmLoading={confirmLoading}
-                      onCancel={handleCancel}
+                      footer={[
+                        <Button
+                          type="danger"
+                          style={{ height: 40, marginRight: `3%` }}
+                          onClick={handleCancel}
+                        >
+                          Huỷ
+                        </Button>,
+                        <Button
+                          type="primary"
+                          loading={loading}
+                          style={{ height: 40, marginRight: `36%` }}
+                          onClick={handleOkFormChip}
+                        >
+                          + Thêm mới
+                        </Button>,
+                      ]}
                     >
-                      <p>
-                        <Form>
-                          <Form.Group className="form-group">
-                            <Form.Label htmlFor="email">Mã</Form.Label>
-                            <Form.Control
-                              type="text"
-                              placeholder="Nhập mã sản phẩm"
-                              name="maNhaSanXuat"
-                              value={maChip}
-                              id="maNhaSanXuat"
-                            />
-                          </Form.Group>
-                          <Form.Group className="form-group">
-                            <Form.Label htmlFor="pwd">Tên chip</Form.Label>
-                            <Form.Control
-                              type="text"
-                              placeholder="Nhập chip"
-                              name="tenChip"
-                              value={tenChip}
-                              onChange={(e) => onInputChangeFormChip(e)}
-                              id="tenChip`"
-                            />
-                          </Form.Group>
-                        </Form>
-                      </p>
+                      <h2
+                        style={{
+                          marginBottom: `2%`,
+                          textAlign: `center`,
+                          fontSize: `27px`,
+                        }}
+                      >
+                        Thêm chip
+                      </h2>
+
+                      <FormLabel
+                        style={{ marginLeft: `9px`, fontSize: `14px` }}
+                      >
+                        {" "}
+                        Tên chip{" "}
+                      </FormLabel>
+                      <TextField
+                        label=""
+                        id="fullWidth"
+                        name="nameChip"
+                        value={chipForm.nameChip}
+                        onChange={(e) => onInputChangeFormChip(e)}
+                        error={
+                          (formSubmitted && !chipForm.nameChip) ||
+                          !!nameChipError
+                        }
+                        helperText={
+                          nameChipError ||
+                          (formSubmitted &&
+                            !chipForm.nameChip &&
+                            "Tên chip không được trống")
+                        }
+                        style={{ width: "100%" }}
+                      />
                     </Modal>
 
                     <FormControl
@@ -1576,7 +1647,7 @@ const ThemSanPham = () => {
                         className="selection_custom"
                         labelId="demo-simple-select-standard-label-chip"
                         id="demo-simple-select-filled"
-                        // value={tenram}
+                        // value={nameRam}
                         onChange={handleChange}
                       >
                         {listChip.map((item, index) => {
@@ -1607,38 +1678,59 @@ const ThemSanPham = () => {
                     <Modal
                       title="Thêm dòng sản phẩm"
                       open={openFormDongSanPham}
-                      onOk={handleOkFormDongSanPham}
                       confirmLoading={confirmLoading}
-                      onCancel={handleCancel}
+                      footer={[
+                        <Button
+                          type="danger"
+                          style={{ height: 40, marginRight: `3%` }}
+                          onClick={handleCancel}
+                        >
+                          Huỷ
+                        </Button>,
+                        <Button
+                          type="primary"
+                          loading={loading}
+                          style={{ height: 40, marginRight: `36%` }}
+                          onClick={handleOkFormDongSanPham}
+                        >
+                          + Thêm mới
+                        </Button>,
+                      ]}
                     >
-                      <p>
-                        <Form>
-                          <Form.Group className="form-group">
-                            <Form.Label htmlFor="email">Mã</Form.Label>
-                            <Form.Control
-                              type="text"
-                              placeholder="Nhập mã dòng sản phẩm"
-                              name="maDongSanPham"
-                              value={maDongSanPham}
-                              onChange={(e) => onInputChangeFormDongSanPham(e)}
-                              id="maDongSanPham"
-                            />
-                          </Form.Group>
-                          <Form.Group className="form-group">
-                            <Form.Label htmlFor="pwd">
-                              Tên dòng sản phẩm
-                            </Form.Label>
-                            <Form.Control
-                              type="text"
-                              placeholder="Nhập tên nhà sản xuất)"
-                              name="tenDongSanPham"
-                              value={tenDongSanPham}
-                              onChange={(e) => onInputChangeFormDongSanPham(e)}
-                              id="ten`"
-                            />
-                          </Form.Group>
-                        </Form>
-                      </p>
+                      <h2
+                        style={{
+                          marginBottom: `2%`,
+                          textAlign: `center`,
+                          fontSize: `27px`,
+                        }}
+                      >
+                        Thêm dòng sản phẩm
+                      </h2>
+
+                      <FormLabel
+                        style={{ marginLeft: `9px`, fontSize: `14px` }}
+                      >
+                        {" "}
+                        Tên dòng sản phẩm{" "}
+                      </FormLabel>
+                      <TextField
+                        label=""
+                        id="fullWidth"
+                        name="nameProductLine"
+                        value={DongSanPhamForm.nameProductLine}
+                        onChange={(e) => onInputChangeFormDongSanPham(e)}
+                        error={
+                          (formSubmitted && !DongSanPhamForm.nameProductLine) ||
+                          !!nameProductLineError
+                        }
+                        helperText={
+                          nameProductLineError ||
+                          (formSubmitted &&
+                            !DongSanPhamForm.nameProductLine &&
+                            "Tên dòng sản phẩm không được trống")
+                        }
+                        style={{ width: "100%" }}
+                      />
                     </Modal>
 
                     <FormControl
@@ -1659,7 +1751,7 @@ const ThemSanPham = () => {
                         className="selection_custom"
                         labelId="demo-simple-select-standard-label-chip"
                         id="demo-simple-select-filled"
-                        // value={tenram}
+                        // value={nameRam}
                         onChange={handleChange}
                       >
                         {listDongSanPham.map((item, index) => {
@@ -1692,36 +1784,85 @@ const ThemSanPham = () => {
                     <Modal
                       title="Thêm màn hình"
                       open={openFormmanHinh}
-                      onOk={handleOkFormmanHinh}
                       confirmLoading={confirmLoading}
-                      onCancel={handleCancel}
+                      footer={[
+                        <Button
+                          type="danger"
+                          style={{ height: 40, marginRight: `3%` }}
+                          onClick={handleCancel}
+                        >
+                          Huỷ
+                        </Button>,
+                        <Button
+                          type="primary"
+                          loading={loading}
+                          style={{ height: 40, marginRight: `36%` }}
+                          onClick={handleOkFormmanHinh}
+                        >
+                          + Thêm mới
+                        </Button>,
+                      ]}
                     >
-                      <p>
-                        <Form>
-                          <Form.Group className="form-group">
-                            <Form.Label htmlFor="email">Mã</Form.Label>
-                            <Form.Control
-                              type="text"
-                              name="mamanHinh"
-                              value={mamanHinh}
-                              id="mamanHinh"
-                            />
-                          </Form.Group>
-                          <Form.Group className="form-group">
-                            <Form.Label htmlFor="pwd">
-                              Kích thước màn hình:
-                            </Form.Label>
-                            <Form.Control
-                              type="text"
-                              placeholder="Nhập kích cỡ màn hình"
-                              name="tenmanHinh"
-                              value={tenmanHinh}
-                              onChange={(e) => onInputChangeFormmanHinh(e)}
-                              id="ten`"
-                            />
-                          </Form.Group>
-                        </Form>
-                      </p>
+                      <h2
+                        style={{
+                          marginBottom: `2%`,
+                          textAlign: `center`,
+                          fontSize: `27px`,
+                        }}
+                      >
+                        Thêm màn hình
+                      </h2>
+
+                      <FormLabel
+                        style={{ marginLeft: `9px`, fontSize: `14px` }}
+                      >
+                        {" "}
+                        Kích cỡ màn hình{" "}
+                      </FormLabel>
+                      <TextField
+                        label=""
+                        id="fullWidth"
+                        name="sizeDisplay"
+                        value={manHinhForm.sizeDisplay}
+                        onChange={(e) => onInputChangeFormmanHinh(e)}
+                        error={
+                          (formSubmitted && !manHinhForm.sizeDisplay) ||
+                          !!sizeDisplayError
+                        }
+                        helperText={
+                          sizeDisplayError ||
+                          (formSubmitted &&
+                            !manHinhForm.sizeDisplay &&
+                            "Kích cỡ màn hình không được trống")
+                        }
+                        style={{ width: "100%" }}
+                      />
+
+                      <br />
+                      <FormLabel
+                        style={{ marginLeft: `9px`, fontSize: `14px` }}
+                      >
+                        {" "}
+                        Độ phân giải màn hình{" "}
+                      </FormLabel>
+                      <TextField
+                        label=""
+                        id="fullWidth"
+                        name="resolutionDisplay"
+                        value={manHinhForm.resolutionDisplay}
+                        onChange={(e) => onInputChangeFormmanHinh(e)}
+                        error={
+                          (formSubmitted && !manHinhForm.resolutionDisplay) ||
+                          !!resolutionDisplayError
+                        }
+                        helperText={
+                          resolutionDisplayError ||
+                          (formSubmitted &&
+                            !manHinhForm.resolutionDisplay &&
+                            "Độ phân phải màn hình không được trống")
+                        }
+                        style={{ width: "100%" }}
+                      />
                     </Modal>
 
                     <FormControl
@@ -1748,7 +1889,7 @@ const ThemSanPham = () => {
                         className="selection_custom"
                         labelId="demo-simple-select-standard-label-chip"
                         id="demo-simple-select-filled"
-                        // value={tenram}
+                        // value={nameRam}
                         onChange={handleChange}
                       >
                         {listManHinh.map((item, index) => {
@@ -1778,37 +1919,59 @@ const ThemSanPham = () => {
                     <Modal
                       title="Thêm dung lượng pin"
                       open={openFormpin}
-                      onOk={handleOkFormpin}
                       confirmLoading={confirmLoading}
-                      onCancel={handleCancel}
+                      footer={[
+                        <Button
+                          type="danger"
+                          style={{ height: 40, marginRight: `3%` }}
+                          onClick={handleCancel}
+                        >
+                          Huỷ
+                        </Button>,
+                        <Button
+                          type="primary"
+                          loading={loading}
+                          style={{ height: 40, marginRight: `36%` }}
+                          onClick={handleOkFormpin}
+                        >
+                          + Thêm mới
+                        </Button>,
+                      ]}
                     >
-                      <p>
-                        <Form>
-                          <Form.Group className="form-group">
-                            <Form.Label htmlFor="email">Mã pin</Form.Label>
-                            <Form.Control
-                              type="text"
-                              placeholder="Nhập pin"
-                              name="mapin"
-                              value={mapin}
-                              id="mapin"
-                            />
-                          </Form.Group>
-                          <Form.Group className="form-group">
-                            <Form.Label htmlFor="pwd">
-                              Dung luợng pin
-                            </Form.Label>
-                            <Form.Control
-                              type="text"
-                              placeholder="Nhập dung lượng pin)"
-                              name="tenpin"
-                              value={tenpin}
-                              onChange={(e) => onInputChangeFormpin(e)}
-                              id="ten`"
-                            />
-                          </Form.Group>
-                        </Form>
-                      </p>
+                      <h2
+                        style={{
+                          marginBottom: `2%`,
+                          textAlign: `center`,
+                          fontSize: `27px`,
+                        }}
+                      >
+                        Thêm pin
+                      </h2>
+
+                      <FormLabel
+                        style={{ marginLeft: `9px`, fontSize: `14px` }}
+                      >
+                        {" "}
+                        Dung lượng pin{" "}
+                      </FormLabel>
+                      <TextField
+                        label=""
+                        id="fullWidth"
+                        name="capacityPin"
+                        value={pinForm.capacityPin}
+                        onChange={(e) => onInputChangeFormpin(e)}
+                        error={
+                          (formSubmitted && !pinForm.capacityPin) ||
+                          !!capacityPinError
+                        }
+                        helperText={
+                          capacityPinError ||
+                          (formSubmitted &&
+                            !pinForm.capacityPin &&
+                            "Dung lượng pin không được trống")
+                        }
+                        style={{ width: "100%" }}
+                      />
                     </Modal>
 
                     <FormControl
@@ -1828,7 +1991,7 @@ const ThemSanPham = () => {
                         className="selection_custom"
                         labelId="demo-simple-select-standard-label-pin"
                         id="demo-simple-select-filled"
-                        // value={tenram}
+                        // value={nameRam}
                         onChange={handleChange}
                       >
                         {listPin.map((item, index) => {
@@ -2456,25 +2619,25 @@ const ThemSanPham = () => {
                                                     item.imei.map(
                                                       (value, index) => {
                                                         return (
-                                                            <></>
-                                                        //   <Row>
-                                                        //     <Col span="8">
-                                                        //       <Form.Label htmlFor="stt">
-                                                        //         Imei số {index}
-                                                        //       </Form.Label>
-                                                        //     </Col>
-                                                        //     <Col span="16">
-                                                        //       <Form.Control
-                                                        //         type="text"
-                                                        //         placeholder="Nhập imei "
-                                                        //         name="maNhaSanXuat"
-                                                        //         value={
-                                                        //           maNhaSanXuat
-                                                        //         }
-                                                        //         id="maNhaSanXuat"
-                                                        //       />
-                                                        //     </Col>
-                                                        //   </Row>
+                                                          <></>
+                                                          //   <Row>
+                                                          //     <Col span="8">
+                                                          //       <Form.Label htmlFor="stt">
+                                                          //         Imei số {index}
+                                                          //       </Form.Label>
+                                                          //     </Col>
+                                                          //     <Col span="16">
+                                                          //       <Form.Control
+                                                          //         type="text"
+                                                          //         placeholder="Nhập imei "
+                                                          //         name="maNhaSanXuat"
+                                                          //         value={
+                                                          //           maNhaSanXuat
+                                                          //         }
+                                                          //         id="maNhaSanXuat"
+                                                          //       />
+                                                          //     </Col>
+                                                          //   </Row>
                                                         );
                                                       }
                                                     )}
@@ -2704,9 +2867,9 @@ const ThemSanPham = () => {
                                                       </Form.Label>
                                                       <Form.Control
                                                         type="text"
-                                                        name="maram"
-                                                        value={maram}
-                                                        id="maram"
+                                                        name="idRam"
+                                                        value={idRam}
+                                                        id="idRam"
                                                       />
                                                     </Form.Group>
                                                     <Form.Group className="form-group">
@@ -2716,8 +2879,8 @@ const ThemSanPham = () => {
                                                       <Form.Control
                                                         type="text"
                                                         placeholder="Nhập dung lượng ram"
-                                                        name="tenram"
-                                                        value={tenram}
+                                                        name="nameRam"
+                                                        value={nameRam}
                                                         onChange={(e) =>
                                                           onInputChangeFormram(
                                                             e
@@ -2802,9 +2965,9 @@ const ThemSanPham = () => {
                                                       </Form.Label>
                                                       <Form.Control
                                                         type="text"
-                                                        name="mamauSac"
-                                                        value={mamauSac}
-                                                        id="mamauSac"
+                                                        name="idColor"
+                                                        value={idColor}
+                                                        id="idColor"
                                                       />
                                                     </Form.Group>
                                                     <Form.Group className="form-group">
@@ -2814,8 +2977,8 @@ const ThemSanPham = () => {
                                                       <Form.Control
                                                         type="text"
                                                         placeholder="Nhập tên màu sắc"
-                                                        name="tenmauSac"
-                                                        value={tenmauSac}
+                                                        name="nameColor"
+                                                        value={nameColor}
                                                         onChange={(e) =>
                                                           onInputChangeFormmauSac(
                                                             e

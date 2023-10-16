@@ -190,7 +190,7 @@ const ConfigDetail = (product) => {
                 </Row>
                 <Row>
                   <Col span={12}>
-                    <DescriptionItem title="Số lượng" content={ctsp.soLuong + " chiếc"} />
+                    <DescriptionItem title="Số lượng" content={ctsp.soLuong + " sản phẩm"} />
                   </Col>
                   <Col span={12}>
                     <DescriptionItem title="Đơn giá" content={ctsp.donGia + " đ"} />
@@ -213,15 +213,34 @@ const ConfigDetail = (product) => {
                       { listImage.get(ctsp.id) === undefined  ? "":
                         listImage.get(ctsp.id).map((item) => {
                           return(
-                          <div>
-                            <Image width={100} src={item.duongDan} style={{marginLeft:`2%`}}/>
+                          <div style={{marginLeft: `2%`}}>
+                            <Image width={100} src={item.duongDan} />
                           </div>
                           )
                         })}
                     </div>
                   </Col>
                 </Row>
-               
+                <Row>
+                <Button
+                      key="back"
+                      type="danger"
+                      style={{ height: 40, marginLeft: `29%` }}
+                      // onClick={handleCancelFormCamera}
+                    >
+                     Đổi trạng thái
+                    </Button>,
+                    <Button
+                      key="submit"
+                      type="primary"
+                      // loading={loading}
+                      style={{ height: 40, marginLeft: `2%` }}
+                      // onClick={handleOkFormCamera}
+                    >
+                      Sửa chi tiết sản phẩm
+                    </Button>
+
+                </Row>
              </div>  ;
           </>
           )})}

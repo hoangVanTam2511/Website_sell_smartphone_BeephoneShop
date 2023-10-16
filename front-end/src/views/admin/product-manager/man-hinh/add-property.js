@@ -108,8 +108,6 @@ const AddProperty = (props) => {
   };
 
 
-
-
   return (
     <>
       <ToastContainer />

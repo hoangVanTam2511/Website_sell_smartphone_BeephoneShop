@@ -33,4 +33,6 @@ public class CauHinh extends PrimaryEntity implements Serializable {
   @JoinColumn(name = "id_mau_sac")
   private MauSac mauSac;
 
+  private String idCauHinhCha;
+
 }
