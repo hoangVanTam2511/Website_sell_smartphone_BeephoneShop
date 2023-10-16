@@ -28,6 +28,16 @@ import {
   FormControl,
   MenuItem,
 } from "@mui/material";
+import {
+  Notistack,
+  StatusDiscount,
+  StatusDiscountNumber,
+  TypeDiscountNumber,
+  TypeDiscountString,
+} from "../order-manager/enum";
+import { ConvertStatusVoucherNumberToString } from "../../../utilities/convertEnum";
+import useCustomSnackbar from "../../../utilities/notistack";
+import LoadingIndicator from "../../../utilities/loading";
 
 //show
 const HienThiKhuyenMai = () => {
@@ -40,52 +50,91 @@ const HienThiKhuyenMai = () => {
   const [searchNgayKetThuc, setSearchNgayKetThuc] = useState("");
   const [searchTrangThai, setSearchTrangThai] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
+  const { handleOpenAlertVariant } = useCustomSnackbar();
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleReset = () => {
-    loadDataListKhuyenMai(currentPage);
-    setSearchTatCa("");
-    setSearchNgayBatDau("");
-    setSearchNgayKetThuc("");
-    setSearchTrangThai("");
-    setSearchParams("");
+    setIsLoading(false);
+    setTimeout(() => {
+      loadDataListKhuyenMai(currentPage);
+      setSearchTatCa("");
+      setSearchNgayBatDau("");
+      setSearchNgayKetThuc("");
+      setSearchTrangThai("");
+      setSearchParams("");
+      setIsLoading(true);
+    }, 200);
   };
 
   // cutstom load data
   const loadDataListKhuyenMai = (page) => {
+    setIsLoading(false);
     axios
       .get(`${apiURLKhuyenMai}/hien-thi`, {
         params: {
           keyword: searchTatCa,
           pageNo: page,
-          trangThai: searchTrangThai,
+          trangThai: ConvertStatusVoucherNumberToString(searchTrangThai),
           ngayBatDau: searchNgayBatDau,
           ngayKetThuc: searchNgayKetThuc,
         },
       })
       .then((response) => {
-        const modifiedData = response.data.content.map((item, index) => ({
+        const modifiedData = response.data.data.map((item, index) => ({
           ...item,
           stt: index + 1,
         }));
         setlistKhuyenMai(modifiedData);
         setTotalPages(response.data.totalPages);
+        setIsLoading(true);
+      })
+      .catch((error) => {
+        handleOpenAlertVariant(
+          "Đã xảy ra lỗi, vui lòng liên hệ quản trị viên.",
+          Notistack.ERROR
+        );
+      });
+  };
+
+  const loadDataListKhuyenMai1 = (page) => {
+    axios
+      .get(`${apiURLKhuyenMai}/hien-thi`, {
+        params: {
+          keyword: searchTatCa,
+          pageNo: page,
+          trangThai: ConvertStatusVoucherNumberToString(searchTrangThai),
+          ngayBatDau: searchNgayBatDau,
+          ngayKetThuc: searchNgayKetThuc,
+        },
+      })
+      .then((response) => {
+        const modifiedData = response.data.data.map((item, index) => ({
+          ...item,
+          stt: index + 1,
+        }));
+        setlistKhuyenMai(modifiedData);
+        setTotalPages(response.data.totalPages);
+      })
+      .catch((error) => {
+        handleOpenAlertVariant(
+          "Đã xảy ra lỗi, vui lòng liên hệ quản trị viên.",
+          Notistack.ERROR
+        );
       });
   };
 
   useEffect(() => {
-    loadDataListKhuyenMai(currentPage);
+    loadDataListKhuyenMai1(currentPage);
     const intervalId = setInterval(() => {
-      loadDataListKhuyenMai(currentPage);
+      loadDataListKhuyenMai1(currentPage);
     }, 10000);
     // Xóa interval khi component unmounted
     return () => clearInterval(intervalId);
-  }, [
-    searchTatCa,
-    searchTrangThai,
-    searchNgayBatDau,
-    searchNgayKetThuc,
-    currentPage,
-  ]);
+  }, [currentPage, searchTatCa, totalPages]);
+
+  useEffect(() => {
+    loadDataListKhuyenMai(currentPage);
+  }, [searchTrangThai, searchNgayBatDau, searchNgayKetThuc]);
 
   const isDateFuture = (toDate) => {
     const currentDate = new Date();
@@ -121,7 +170,10 @@ const HienThiKhuyenMai = () => {
         loadDataListKhuyenMai(currentPage);
       })
       .catch((error) => {
-        console.error("Đã xảy ra lỗi khi đổi trạng thái");
+        handleOpenAlertVariant(
+          "Đã xảy ra lỗi, vui lòng liên hệ quản trị viên.",
+          Notistack.ERROR
+        );
       });
   };
 
@@ -155,15 +207,15 @@ const HienThiKhuyenMai = () => {
     },
     {
       title: "Giảm Giá",
-      dataIndex: "loaiGiamGia",
+      dataIndex: "loaiKhuyenMai",
       width: "10%",
       align: "center",
       render: (value, record) => {
         let formattedValue = value;
-        if (record.loaiKhuyenMai === "VNĐ") {
+        if (record.loaiKhuyenMai === TypeDiscountString.VND) {
           formattedValue =
             numeral(record.giaTriKhuyenMai).format("0,0 VND") + " VNĐ";
-        } else if (record.loaiKhuyenMai === "%") {
+        } else if (record.loaiKhuyenMai === TypeDiscountString.PERCENT) {
           formattedValue = `${record.giaTriKhuyenMai} %`;
         }
         return (
@@ -182,18 +234,19 @@ const HienThiKhuyenMai = () => {
         <>
           <div
             className={`rounded-pill mx-auto ${
-              record.trangThai == 1
+              record.trangThai == StatusDiscount.HOAT_DONG
                 ? "badge-primary"
-                : record.trangThai == 2
+                : record.trangThai == StatusDiscount.NGUNG_HOAT_DONG
                 ? "badge-danger"
-                : record.trangThai == 3
+                : record.trangThai == StatusDiscount.CHUA_DIEN_RA
                 ? "badge-light"
-                : record.trangThai == 4 &&
+                : record.trangThai == StatusDiscount.DA_HUY &&
                   isDateFuture(record.ngayKetThuc) == true
                 ? "badge-danger"
-                : record.trangThai == 4 && isDatePast(record.ngayBatDau) == true
+                : record.trangThai == StatusDiscount.DA_HUY &&
+                  isDatePast(record.ngayBatDau) == true
                 ? "badge-light"
-                : record.trangThai == 4 &&
+                : record.trangThai == StatusDiscount.DA_HUY &&
                   isRangeDate(record.ngayBatDau, record.ngayKetThuc) == true
                 ? "badge-primary"
                 : ""
@@ -206,9 +259,9 @@ const HienThiKhuyenMai = () => {
           >
             <span
               className={`p-2 ${
-                record.trangThai == 3
+                record.trangThai == StatusDiscount.CHUA_DIEN_RA
                   ? "text-dark"
-                  : record.trangThai == 4 &&
+                  : record.trangThai == StatusDiscount.DA_HUY &&
                     isDatePast(record.ngayBatDau) == true
                   ? "text-dark"
                   : "text-white"
@@ -231,7 +284,7 @@ const HienThiKhuyenMai = () => {
       filterSearch: true,
       render: (text, record) => (
         <span>
-          {record.trangThai === 1 ? (
+          {record.trangThai === StatusDiscount.HOAT_DONG ? (
             <div
               className="rounded-pill mx-auto badge-primary"
               style={{
@@ -244,7 +297,7 @@ const HienThiKhuyenMai = () => {
                 Hoạt động
               </span>
             </div>
-          ) : record.trangThai === 2 ? (
+          ) : record.trangThai === StatusDiscount.NGUNG_HOAT_DONG ? (
             <div
               className="rounded-pill mx-auto badge-danger"
               style={{
@@ -257,7 +310,7 @@ const HienThiKhuyenMai = () => {
                 Ngừng hoạt động
               </span>
             </div>
-          ) : record.trangThai === 3 ? (
+          ) : record.trangThai === StatusDiscount.CHUA_DIEN_RA ? (
             <div
               className="rounded-pill mx-auto badge-light"
               style={{
@@ -270,7 +323,7 @@ const HienThiKhuyenMai = () => {
                 Chưa diễn ra
               </span>
             </div>
-          ) : record.trangThai == 4 ? (
+          ) : record.trangThai == StatusDiscount.DA_HUY ? (
             <div
               className="rounded-pill mx-auto badge-danger"
               style={{
@@ -308,12 +361,13 @@ const HienThiKhuyenMai = () => {
             <Tooltip
               TransitionComponent={Zoom}
               title={
-                record.trangThai === 1 || record.trangThai === 3
+                record.trangThai === StatusDiscount.HOAT_DONG ||
+                record.trangThai === StatusDiscount.CHUA_DIEN_RA
                   ? "Ngừng kích hoạt"
-                  : record.trangThai === 4 &&
+                  : record.trangThai === StatusDiscount.DA_HUY &&
                     isDatePast(record.ngayBatDau) === true
                   ? "Kích hoạt"
-                  : record.trangThai === 4 &&
+                  : record.trangThai === StatusDiscount.DA_HUY &&
                     isRangeDate(record.ngayBatDau, record.ngayKetThuc) === true
                   ? "Kích hoạt"
                   : ""
@@ -325,8 +379,8 @@ const HienThiKhuyenMai = () => {
                 className="ms-2"
                 style={{ marginTop: "6px" }}
                 disabled={
-                  record.trangThai === 2 ||
-                  (record.trangThai === 4 &&
+                  record.trangThai === StatusDiscount.NGUNG_HOAT_DONG ||
+                  (record.trangThai === StatusDiscount.DA_HUY &&
                     isDateFuture(record.ngayKetThuc) === true)
                     ? true
                     : false
@@ -334,12 +388,13 @@ const HienThiKhuyenMai = () => {
               >
                 <AssignmentOutlinedIcon
                   color={
-                    record.trangThai === 1 || record.trangThai === 3
+                    record.trangThai === StatusDiscount.HOAT_DONG ||
+                    record.trangThai === StatusDiscount.CHUA_DIEN_RA
                       ? "error"
-                      : record.trangThai === 4 &&
+                      : record.trangThai === StatusDiscount.DA_HUY &&
                         isDatePast(record.ngayBatDau) === true
                       ? "success"
-                      : record.trangThai === 4 &&
+                      : record.trangThai === StatusDiscount.DA_HUY &&
                         isRangeDate(record.ngayBatDau, record.ngayKetThuc) ===
                           true
                       ? "success"
@@ -371,21 +426,24 @@ const HienThiKhuyenMai = () => {
   const handleSearchTrangThaiChange = (event) => {
     const selectedValue = event.target.value;
     setSearchTrangThai(selectedValue); // Cập nhật giá trị khi Select thay đổi
-    if (selectedValue === 5) {
-      setSearchTrangThai("");
-    }
     searchParams.set("trangThai", selectedValue);
     setSearchParams(searchParams);
+    if (selectedValue === 5) {
+      setSearchParams("");
+    }
+    setCurrentPage(1);
   };
 
   const handleSearchNgayBatDauChange = (selectedDate) => {
     const value = selectedDate.format("DD/MM/YYYY");
     setSearchNgayBatDau(value);
+    setCurrentPage(1);
   };
 
   const handleSearchNgayKetThucChange = (selectedDate) => {
     const value = selectedDate.format("DD/MM/YYYY");
     setSearchNgayKetThuc(value); // Cập nhật giá trị khi Select thay đổi
+    setCurrentPage(1);
   };
 
   const chuyenTrang = (event, page) => {
@@ -585,10 +643,18 @@ const HienThiKhuyenMai = () => {
                   <MenuItem className="" value={5}>
                     Tất cả
                   </MenuItem>
-                  <MenuItem value={1}>Hoạt động</MenuItem>
-                  <MenuItem value={2}>Ngừng hoạt động</MenuItem>
-                  <MenuItem value={3}>Chưa diễn ra</MenuItem>
-                  <MenuItem value={4}>Đã hủy</MenuItem>
+                  <MenuItem value={StatusDiscountNumber.HOAT_DONG}>
+                    Hoạt động
+                  </MenuItem>
+                  <MenuItem value={StatusDiscountNumber.NGUNG_HOAT_DONG}>
+                    Ngừng hoạt động
+                  </MenuItem>
+                  <MenuItem value={StatusDiscountNumber.CHUA_DIEN_RA}>
+                    Chưa diễn ra
+                  </MenuItem>
+                  <MenuItem value={StatusDiscountNumber.DA_HUY}>
+                    Đã hủy
+                  </MenuItem>
                 </Select>
               </FormControl>
             </div>
@@ -668,144 +734,8 @@ const HienThiKhuyenMai = () => {
           </div>
           <div className="mt-4"></div>
         </Card>
+        {!isLoading && <LoadingIndicator />}
       </div>
-      {/* <div className="search-component-container">
-        <h6 className="boloc-voucher">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            height="1em"
-            viewBox="0 0 512 512"
-          >
-            <path d="M3.9 54.9C10.5 40.9 24.5 32 40 32H472c15.5 0 29.5 8.9 36.1 22.9s4.6 30.5-5.2 42.5L320 320.9V448c0 12.1-6.8 23.2-17.7 28.6s-23.8 4.3-33.5-3l-64-48c-8.1-6-12.8-15.5-12.8-25.6V320.9L9 97.3C-.7 85.4-2.8 68.8 3.9 54.9z" />
-          </svg>
-          &nbsp; Bộ Lọc
-        </h6>
-        <div className="row-search">
-          <span>
-            <Form style={{ width: "20em", display: "inline-block" }}>
-              <Input
-                placeholder="Search"
-                value={searchTatCa}
-                onChange={(e) => setSearchTatCa(e.target.value)}
-              />
-            </Form>
-          </span>
-          &nbsp;
-          <div className="btn-reset">
-            <Button
-              className="btn-search-reset"
-              onClick={() => {
-                handleReset();
-              }}
-            >
-              <FontAwesomeIcon icon={faArrowsRotate} />
-              &nbsp; Làm Mới{" "}
-            </Button>
-          </div>
-        </div>
-        <div className="boloc-trangThai">
-          <div className="search1">
-            <span className="boloc-nho">
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DemoContainer components={["DatePicker"]}>
-                  <DatePicker
-                    label="Ngày Bắt Đầu"
-                    value={
-                      searchNgayBatDau
-                        ? dayjs(searchNgayBatDau, "DD/MM/YYYY")
-                        : null
-                    }
-                    format="DD/MM/YYYY"
-                    onChange={handleSearchNgayBatDauChange}
-                  />
-                </DemoContainer>
-              </LocalizationProvider>
-            </span>
-          </div>
-
-          <div className="search1">
-            <span className="boloc-nho">
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DemoContainer components={["DatePicker"]}>
-                  <DatePicker
-                    label="Ngày Kết Thúc"
-                    value={
-                      searchNgayKetThuc
-                        ? dayjs(searchNgayKetThuc, "DD/MM/YYYY")
-                        : null
-                    }
-                    format="DD/MM/YYYY"
-                    onChange={handleSearchNgayKetThucChange}
-                  />
-                </DemoContainer>
-              </LocalizationProvider>
-            </span>
-          </div>
-          <div className="search1">
-            <span className="boloc-nho"></span>
-            <FormControl sx={{ width: "15em" }}>
-              <InputLabel id="demo-select-small-label">
-                Chọn Trạng Thái
-              </InputLabel>
-              <Select
-                labelId="demo-select-small-label"
-                id="demo-select-small"
-                value={searchTrangThai}
-                label="Chọn Trạng Thái"
-                onChange={handleSearchTrangThaiChange}
-              >
-                <MenuItem value="">
-                  <em>Tất cả</em>
-                </MenuItem>
-                <MenuItem value={1}>Còn Hiệu lực</MenuItem>
-                <MenuItem value={2}>Hết Hiệu lực</MenuItem>
-                <MenuItem value={3}>Chưa Bắt Đầu</MenuItem>
-              </Select>
-            </FormControl>
-          </div>
-        </div>
-      </div>
-      <div className="your-component-container">
-        <h6>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            height="1em"
-            viewBox="0 0 448 512"
-          >
-            <path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z" />
-          </svg>
-          &nbsp; Danh Sách Khuyến Mãi
-        </h6>
-        <div className="btn-add">
-          <FontAwesomeIcon style={{ marginLeft: "5px" }} />
-          <span className="bl-add">
-            <Link to="/them-khuyen-mai">
-              <Button className="btn-add-voucher">
-                <FontAwesomeIcon icon={faPlus} />
-                &nbsp; Thêm Khuyến Mãi{" "}
-              </Button>
-            </Link>
-          </span>
-        </div>
-        <div className="form-tbl">
-          <Table
-            bordered
-            dataSource={listKhuyenMai}
-            columns={mergedColumns}
-            pagination={false}
-            rowKey="id"
-            style={{ marginBottom: "20px" }}
-          />
-
-          <div className="phan-trang">
-            <Pagination
-              count={totalPages}
-              onChange={chuyenTrang}
-              color="primary"
-            />
-          </div>
-        </div>
-      </div> */}
     </>
   );
 };

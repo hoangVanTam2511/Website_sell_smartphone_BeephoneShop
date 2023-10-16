@@ -45,7 +45,7 @@ public interface SanPhamChiTietSauKhuyenMaiResponse {
     BigDecimal getGiaTriKhuyenMai();
 
     @Value("#{target.loai_khuyen_mai}")
-    String getLoaiKhuyenMai();
+    Integer getLoaiKhuyenMai();
 
     @Value("#{target.don_gia}")
     BigDecimal getDonGia();

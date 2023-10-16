@@ -552,14 +552,13 @@ const AddVoucher = () => {
             </div>
           </div>
         </div>
-        <div className="btn-accept mt-3">
+        <div className="btn-accept-voucher mt-3">
           <Button
             className="rounded-2 button-mui"
             type="primary"
             style={{ height: "35px", width: "120px", fontSize: "15px" }}
             onClick={() => handleSubmit()}
           >
-            <ToastContainer />
             <FontAwesomeIcon icon={faCheck} />
             <span
               className="ms-2 ps-1"
