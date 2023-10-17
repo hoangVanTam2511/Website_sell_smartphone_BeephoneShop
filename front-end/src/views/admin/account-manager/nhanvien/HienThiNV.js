@@ -292,7 +292,7 @@ const HienThiNV = () => {
                     cursor: "pointer",
                     // eslint-disable-next-line eqeqeq
                     color:
-                      record.trangThai == StatusAccountCus.LAM_VIEC
+                      record.trangThai === StatusAccountCus.LAM_VIEC
                         ? "#e5383b"
                         : "#2f80ed",
                   }}

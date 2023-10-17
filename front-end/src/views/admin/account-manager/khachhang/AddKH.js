@@ -75,6 +75,9 @@ const AddKH = () => {
       setHoVaTenError("Họ và tên không được chứa ký tự đặc biệt");
     } else if (trimmedValue.length < 5) {
       setHoVaTenError("Họ và tên phải có ít nhất 5 ký tự");
+    }
+    if (/^\s+|\s+$/.test(value)) {
+      setHoVaTenError("Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi");
     } else {
       setHoVaTenError("");
     }
