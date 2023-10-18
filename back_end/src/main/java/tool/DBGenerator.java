@@ -7,6 +7,7 @@ import beephone_shop_projects.infrastructure.constant.StatusDiscount;
 import beephone_shop_projects.infrastructure.constant.TypeDiscount;
 import beephone_shop_projects.repository.IAccountRepository;
 import beephone_shop_projects.repository.IAnhRepository;
+import beephone_shop_projects.repository.ICameraRepository;
 import beephone_shop_projects.repository.ICauHinhRepository;
 import beephone_shop_projects.repository.IChipRepository;
 import beephone_shop_projects.repository.IDiaChiRepository;
@@ -97,6 +98,9 @@ public class DBGenerator implements CommandLineRunner {
     @Autowired
     private ISanPhamChiTietRepository iSanPhamChiTietRepository;
 
+    @Autowired
+    private ICameraRepository cameraRepository;
+
     @Override
     public void run(String... args) throws Exception {
 
@@ -151,10 +155,10 @@ public class DBGenerator implements CommandLineRunner {
 
 
         //Bảng Camera
-//        Camera camera = new Camera();
-//        camera.setMa("camera1");
-//        camera.setDoPhanGiai("120");
-//        camera.setId(cam);
+        Camera camera = new Camera();
+        camera.setMa("camera1");
+        camera.setDoPhanGiai("120");
+        camera.setId(cameraRepository.save(camera).getId());
 
         //Bảng chip
         Chip chip = new Chip();
@@ -263,18 +267,33 @@ public class DBGenerator implements CommandLineRunner {
         //Bảng Nhà sản xuất
         Hang hang = new Hang();
         hang.setMa("NhaSanXuat1");
-        hang.setTenHang("CÔNG TY TNHH SAMSUNG ELECTRONICS VIỆT NAM");
+        hang.setTenHang("Samsung");
         hang.setId(nhaSanXuatRepository.save(hang).getId());
 
         Hang hang1 = new Hang();
         hang1.setMa("NhaSanXuat12");
-        hang1.setTenHang("CÔNG TY TNHH APPLE ELECTRONICS VIỆT NAM");
+        hang1.setTenHang("Xiaomi");
         hang1.setId(nhaSanXuatRepository.save(hang1).getId());
 
         Hang hang2 = new Hang();
         hang2.setMa("NhaSanXuat13");
-        hang2.setTenHang("CÔNG TY TNHH XIAOMI ELECTRONICS VIỆT NAM");
+        hang2.setTenHang("Apple");
         hang2.setId(nhaSanXuatRepository.save(hang2).getId());
+
+        Hang hang3 = new Hang();
+        hang3.setMa("NhaSanXuat17");
+        hang3.setTenHang("Oppo");
+        hang3.setId(nhaSanXuatRepository.save(hang3).getId());
+
+        Hang hang4 = new Hang();
+        hang4.setMa("NhaSanXuat125");
+        hang4.setTenHang("Realme");
+        hang4.setId(nhaSanXuatRepository.save(hang4).getId());
+
+        Hang hang5 = new Hang();
+        hang5.setMa("NhaSanXuat134");
+        hang5.setTenHang("Nokia");
+        hang5.setId(nhaSanXuatRepository.save(hang5).getId());
 
         //Bảng Pin
         Pin pin = new Pin();
@@ -300,20 +319,40 @@ public class DBGenerator implements CommandLineRunner {
 
         Ram ram1 = new Ram();
         ram1.setMa("ram013");
-        ram1.setKichThuoc(6);
+        ram1.setKichThuoc(2);
         ram1.setId(ramRepository.save(ram1).getId());
 
         Ram ram2 = new Ram();
         ram2.setMa("ram012");
-        ram2.setKichThuoc(6);
+        ram2.setKichThuoc(3);
         ram2.setId(ramRepository.save(ram2).getId());
 
         Ram ram3 = new Ram();
         ram3.setMa("ram0123");
-        ram3.setKichThuoc(6);
+        ram3.setKichThuoc(4);
         ram3.setId(ramRepository.save(ram3).getId());
 
+        Ram ram5 = new Ram();
+        ram5.setMa("ram0172");
+        ram5.setKichThuoc(8);
+        ram5.setId(ramRepository.save(ram5).getId());
+
+        Ram ram4 = new Ram();
+        ram4.setMa("ram0163");
+        ram4.setKichThuoc(12);
+        ram4.setId(ramRepository.save(ram4).getId());
+
         //Bảng Rom
+        Rom rom5 = new Rom();
+        rom5.setMa("Rom01");
+        rom5.setKichThuoc(32);
+        rom5.setId(romRepository.save(rom5).getId());
+
+        Rom rom4 = new Rom();
+        rom4.setMa("Rom01");
+        rom4.setKichThuoc(64);
+        rom4.setId(romRepository.save(rom4).getId());
+
         Rom rom = new Rom();
         rom.setMa("Rom01");
         rom.setKichThuoc(128);
@@ -446,7 +485,7 @@ public class DBGenerator implements CommandLineRunner {
 
         //Bảng Voucher
         Voucher voucher = new Voucher();
-        voucher.setMa("Voucher1");
+        voucher.setMa("VOUCHER123");
         voucher.setTen("""
                 Giảm ngay 100k cho đơn hàng của khách hàng đạt 5000k
                 """);
@@ -470,7 +509,7 @@ public class DBGenerator implements CommandLineRunner {
         voucher.setId(voucherRepository.save(voucher).getId());
 
         Voucher voucher2 = new Voucher();
-        voucher2.setMa("Voucher12");
+        voucher2.setMa("VOUCHER456");
         voucher2.setTen("""
                 Giảm ngay 5000k cho đơn hàng của khách hàng đạt 50000k
                 """);
@@ -494,7 +533,7 @@ public class DBGenerator implements CommandLineRunner {
         voucher2.setId(voucherRepository.save(voucher2).getId());
 
         Voucher voucher3 = new Voucher();
-        voucher3.setMa("Voucher13");
+        voucher3.setMa("VOUCHER678");
         voucher3.setTen("""
                 Giảm ngay 30% cho đơn hàng của khách hàng đạt 15000k
                 """);

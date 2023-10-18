@@ -171,10 +171,6 @@ const AddVoucher = () => {
   const validationAll = () => {
     const msg = {};
 
-    if (ma.length < 10) {
-      msg.ma = "Mã voucher phải đủ 10 ký tự !!!";
-    }
-
     if (!ten.trim("")) {
       msg.ten = "Tên không được để trống !!!";
     }
@@ -299,8 +295,7 @@ const AddVoucher = () => {
           >
             <div>
               <TextField
-                label="Mã Voucher"
-                placeholder="Nhập hoặc để mã tự động "
+                label="Nhập mã hoặc để mã tự động"
                 value={ma}
                 id="fullWidth"
                 onInput={handleInputCodeVoucher}
@@ -323,7 +318,7 @@ const AddVoucher = () => {
                 }}
                 style={{ width: "330px" }}
                 inputProps={{
-                  maxLength: 100, // Giới hạn tối đa 10 ký tự
+                  maxLength: 100,
                 }}
               />
               <span className="validate" style={{ color: "red" }}>

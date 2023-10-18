@@ -80,6 +80,36 @@ const HienThiVoucher = () => {
       });
   };
 
+  const sendMail = () => {
+    let obj = {
+      mails: ["dungnpph25823@fpt.edu.vn", "anhltvph25818@fpt.edu.vn"],
+      subject: "BeePhoneShop thông báo đặt hàng thành công.",
+      tenKhachHang: "Lê Thị Vân Anh",
+      maDonHang: "No0199310122",
+      ngayDatHang: "19/08/2003",
+      hinhThucThanhToan: "Chuyển khoản",
+      hinhThucGiaoHang: "Giao hàng nhanh",
+      diaChi:
+        "Ngõ 75 Phú Diễn, Phường Phú Diễn, Quận Nam Từ Liêm, Thành Phố Hà Nội",
+      sdtNhanHang: "0999166666",
+      thanhTien: "37.999.000 VND",
+      phiVanChuyen: "0 VND",
+      giamGia: "3.000.000 VND",
+      tongCong: "34.999.000 VND",
+    };
+    axios
+      .post(`${apiURLVoucher}/sendMail`, obj)
+      .then((response) => {
+        handleOpenAlertVariant("Thành công", Notistack.SUCCESS);
+      })
+      .catch((error) => {
+        handleOpenAlertVariant(
+          "Đã xảy ra lỗi, vui lòng liên hệ quản trị viên.",
+          Notistack.ERROR
+        );
+      });
+  };
+
   const loadDataListVoucher1 = (page) => {
     axios
       .get(`${apiURLVoucher}/vouchers`, {
@@ -578,6 +608,22 @@ const HienThiVoucher = () => {
                   style={{ fontWeight: "500", marginBottom: "2px" }}
                 >
                   Làm Mới
+                </span>
+              </Button>
+
+              <Button
+                onClick={() => {
+                  sendMail();
+                }}
+                className="rounded-2 ms-2"
+                type="warning"
+                style={{ width: "100px", fontSize: "15px" }}
+              >
+                <span
+                  className="text-dark"
+                  style={{ fontWeight: "500", marginBottom: "2px" }}
+                >
+                  Gửi Mail
                 </span>
               </Button>
             </div>

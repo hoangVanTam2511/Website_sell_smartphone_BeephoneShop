@@ -6,6 +6,8 @@ import beephone_shop_projects.core.admin.voucher_management.model.request.Update
 import beephone_shop_projects.core.admin.voucher_management.service.VoucherService;
 import beephone_shop_projects.core.common.base.ResponseObject;
 import beephone_shop_projects.core.common.base.ResponsePage;
+import beephone_shop_projects.utils.mail.EmailUtils;
+import beephone_shop_projects.utils.mail.MailBeePhoneRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +31,28 @@ import java.math.BigDecimal;
 public class VoucherRestController {
   @Autowired
   private VoucherService voucherService;
+
+  @Autowired
+  private EmailUtils emailUtils;
+
+  @PostMapping("/sendMail")
+  private void testMail(@RequestBody MailBeePhoneRequest emails) {
+    emailUtils.sendEmailEvent(emails);
+        /*
+        {
+//    "mails": ["sonptph19600@fpt.edu.vn", "duongdhph29062@fpt.edu.vn"],
+//    "subject": "[PTPM-XLDL-UDPM] Thư mời tham dự Spring Boot Tutorials",
+//    "eventName": "Spring Boot Tutorials",
+//    "lecturer": ["Vũ Nguyên Hướng - HuongVN4", "Nguyễn Thúy Hằng - HangNT169"],
+//    "content": ["Springboot là gì ?", "Các cách trở thành master Springboot ?"],
+//    "time": "19:00 - 21:00",
+//    "date": "21/09/2023",
+//    "typeEvent": "Online",
+//    "linkZoom": "https://www.facebook.com/VuNguyenHuong.Official",
+//    "linkBackground": "https://www.facebook.com/VuNguyenHuong.Official"
+}
+         */
+  }
 
   @GetMapping("/get-by-id/{id}")
   public ResponseObject getOneVoucher(@PathVariable("id") String id) {

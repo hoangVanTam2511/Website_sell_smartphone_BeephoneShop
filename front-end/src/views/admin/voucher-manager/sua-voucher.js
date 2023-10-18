@@ -143,6 +143,19 @@ const UpdateVoucher = () => {
     }
   };
 
+  const handleInputNumberVoucher = (e) => {
+    // Loại bỏ tất cả các ký tự không phải số sử dụng regex
+    const sanitizedValue = e.target.value.replace(/[^0-9]/g, "");
+    setSoLuong(sanitizedValue);
+  };
+
+  const handleInputCodeVoucher = (e) => {
+    // Sử dụng regex để chỉ cho phép chữ cái và số, loại bỏ ký tự đặc biệt
+    let inputValue = e.target.value;
+    let sanitizedValue = inputValue.toUpperCase();
+    setMa(sanitizedValue);
+  };
+
   const handleChange1 = (event) => {
     const inputValue = event.target.value;
     const numericValue = parseFloat(inputValue.replace(/[^0-9.-]+/g, ""));
@@ -155,6 +168,10 @@ const UpdateVoucher = () => {
 
   const handleChangeGiaTriToiDa = (event) => {
     const inputValue = event.target.value;
+    if (selectDiscount === TypeDiscountString.VND) {
+      setGiaTriToiDa(null);
+      setValueToiDa(null);
+    }
     const numericValue = parseFloat(inputValue.replace(/[^0-9.-]+/g, ""));
     const formattedValue = inputValue
       .replace(/[^0-9]+/g, "")
@@ -165,6 +182,7 @@ const UpdateVoucher = () => {
 
   const handleChangeToggleButtonDiscount = (event) => {
     const newAlignment = event.target.value;
+    handleReset();
     if (newAlignment != null) {
       setSelectDiscount(newAlignment);
     }
@@ -330,16 +348,13 @@ const UpdateVoucher = () => {
           >
             <div>
               <TextField
-                label="Mã Voucher"
-                placeholder="Nhập hoặc để mã tự động"
+                label="Nhập mã hoặc để mã tự động"
                 value={ma}
                 id="fullWidth"
-                onChange={(e) => {
-                  setMa(e.target.value);
-                }}
+                onChange={handleInputCodeVoucher}
                 style={{ width: "330px" }}
                 inputProps={{
-                  maxLength: 15, // Giới hạn tối đa 10 ký tự
+                  maxLength: 10, // Giới hạn tối đa 10 ký tự
                 }}
               />
               <span className="validate" style={{ color: "red" }}>
@@ -373,9 +388,7 @@ const UpdateVoucher = () => {
                 label="Số Lượng"
                 value={soLuong}
                 id="fullWidth"
-                onChange={(e) => {
-                  setSoLuong(e.target.value);
-                }}
+                onChange={handleInputNumberVoucher}
                 style={{ width: "330px" }}
                 inputProps={{
                   maxLength: 10, // Giới hạn tối đa 10 ký tự
