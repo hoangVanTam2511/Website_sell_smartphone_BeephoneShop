@@ -32,7 +32,7 @@ public class ProductDetailServiceImpl {
         SanPhamChiTiet sanPhamChiTiet = new SanPhamChiTiet();
         sanPhamChiTiet.setMa(productDetailRepository.getNewCode() == null ? "PRODUCT_DETAIL_0" : "PRODUCT_DETAIL_" + this.productDetailRepository.getNewCode());
         sanPhamChiTiet.setSanPham(sanPham);
-        sanPhamChiTiet.setCauHinh(cauHinh);
+//        sanPhamChiTiet.setCauHinh(cauHinh);
         sanPhamChiTiet.setDonGia(req.getDonGia());
         sanPhamChiTiet.setSoLuongTonKho(req.getSoLuong());
 

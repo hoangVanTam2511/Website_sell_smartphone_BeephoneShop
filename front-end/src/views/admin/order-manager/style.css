@@ -93,6 +93,20 @@ div.rs-picker-menu{
 }
 .rs-auto-complete .rs-input::placeholder {
 }
+.ant-btn-light {
+  background-color: white !important;
+  color: #2f80ed;
+  border: 1px solid #2f80ed !important;
+  height: 40px;
+  font-weight: 500;
+}
+/* .ant-btn-light:hover { */
+/*   background-color: #ffe249 !important; */
+/*   color: black !important; */
+/*   border: 1px solid #ffe249 !important; */
+/*   height: 40px; */
+/*   font-weight: 500; */
+/* } */
 .ant-btn-warning {
   background-color: #ffd500 !important;
   color: black;
@@ -330,6 +344,11 @@ font-family: 'Roboto', sans-serif;
 .MuiOutlinedInput-notchedOutline {
     border-radius: 10px !important;
 }
+
+.custom .MuiOutlinedInput-notchedOutline {
+    border-radius: 5px !important;
+}
+
 
 .ant-input::placeholder {
     color: #999;

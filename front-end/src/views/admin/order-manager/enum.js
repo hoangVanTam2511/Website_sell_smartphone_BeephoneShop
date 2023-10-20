@@ -53,3 +53,8 @@ export const TypeDiscountNumber = {
   VND: 0,
   PERCENT: 1,
 };
+// export const SimTypeString = {
+//   MICRO_SIM : "MICRO_SIM",
+//   NANO_SIM : "MICRO_SIM",
+//   E_SIM : "MICRO_SIM",
+// };
