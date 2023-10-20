@@ -37,8 +37,10 @@ const UpdateVoucher = () => {
   const [ma, setMa] = useState("");
   const [ten, setTen] = useState("");
   const [soLuong, setSoLuong] = useState("");
-  const [ngayBatDau, setNgayBatDau] = useState("");
-  const [ngayKetThuc, setNgayKetThuc] = useState("");
+  const [ngayBatDau, setNgayBatDau] = useState(null);
+  const [ngayKetThuc, setNgayKetThuc] = useState(null);
+  const [checkStartDate, setCheckStartDate] = useState(false);
+  const [checkEndDate, setCheckEndDate] = useState(false);
   // const [giaTriVoucherConvert, setGiaTriVoucherConvert] = useState(0);
   const [value, setValue] = React.useState();
   const [value1, setValue1] = React.useState();
@@ -256,27 +258,28 @@ const UpdateVoucher = () => {
         handleOpenAlertVariant(error.response.data.message, Notistack.ERROR);
       });
   };
+
   const validationAll = () => {
     const msg = {};
     if (!ten.trim("")) {
-      msg.ten = "Tên không được để trống !!!";
+      msg.ten = "Tên không được trống !!!";
     }
 
     if (soLuong == null || soLuong === "") {
-      msg.soLuong = "Số lượng không được để trống !!!";
+      msg.soLuong = "Số lượng không được trống !!!";
     }
 
     if (soLuong <= 0 || soLuong > 10000) {
-      msg.soLuong = "Số lượng cho phép từ 1 đến 10000";
+      msg.soLuong = "Số lượng cho phép từ 1 - 10000";
     }
 
     const numericValue1 = parseFloat(value1?.replace(/[^0-9.-]+/g, ""));
     if (value1 == null || value1 === "") {
-      msg.value1 = "Điều kiện áp dụng không được để trống !!!";
+      msg.value1 = "Điều kiện áp dụng không được trống !!!";
     }
 
     if (numericValue1 <= 0 || numericValue1 > 100000000) {
-      msg.value1 = "Điều kiện áp dụng từ 1đ đến 100.000.000đ";
+      msg.value1 = "Điều kiện áp dụng từ 1đ - 100.000.000đ";
     }
 
     const numericValue2 = parseFloat(value?.replace(/[^0-9.-]+/g, ""));
@@ -288,11 +291,11 @@ const UpdateVoucher = () => {
       (selectDiscount === TypeDiscountString.VND && numericValue2 <= 0) ||
       (selectDiscount === TypeDiscountString.VND && numericValue2 > 100000000)
     ) {
-      msg.value = "Giá trị voucher từ 1đ đến 100.000.000đ";
+      msg.value = "Giá trị voucher từ 1đ - 100.000.000đ";
     }
 
     if (selectDiscount === TypeDiscountString.PERCENT && value <= 0) {
-      msg.value = "Giá trị tối đa chỉ nằm trong khoảng 1% - 100% !!!";
+      msg.value = "Giá trị voucher trong khoảng 1% - 100% !!!";
     }
 
     const numericValue3 = parseFloat(valueToiDa?.replace(/[^0-9.-]+/g, ""));
@@ -300,7 +303,7 @@ const UpdateVoucher = () => {
       (selectDiscount === TypeDiscountString.PERCENT && valueToiDa === null) ||
       (selectDiscount === TypeDiscountString.PERCENT && valueToiDa === "")
     ) {
-      msg.valueToiDa = "Giá trị tối đa không được để trống !!!";
+      msg.valueToiDa = "Giá trị tối đa không được trống !!!";
     }
 
     if (
@@ -308,12 +311,13 @@ const UpdateVoucher = () => {
       (selectDiscount === TypeDiscountString.PERCENT &&
         numericValue3 > 100000000)
     ) {
-      msg.valueToiDa = "Giá trị tối đa từ 1đ đến 100.000.000đ";
+      msg.valueToiDa = "Giá trị tối đa từ 1đ - 100.000.000đ";
     }
-    // if (ngayKetThuc.isBefore(ngayBatDau)) {
-    //   msg.ngayKetThuc = "Ngày kết thúc phải lớn hơn ngày bắt đầu !!!";
-    //   msg.ngayBatDau = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc !!!";
-    // }
+
+    if (!dayjs(ngayBatDau).isBefore(ngayKetThuc)) {
+      msg.ngayBatDau = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc !!!";
+      msg.ngayKetThuc = "Ngày kết thúc phải lớn hơn ngày bắt đầu !!!";
+    }
 
     setValidationMsg(msg);
     if (Object.keys(msg).length > 0) return false;
@@ -348,7 +352,7 @@ const UpdateVoucher = () => {
           >
             <div>
               <TextField
-                label="Nhập mã hoặc để mã tự động"
+                label="Nhập mã hoặc mã tự động"
                 value={ma}
                 id="fullWidth"
                 onChange={handleInputCodeVoucher}
@@ -356,10 +360,9 @@ const UpdateVoucher = () => {
                 inputProps={{
                   maxLength: 10, // Giới hạn tối đa 10 ký tự
                 }}
+                error={validationMsg.ma !== undefined}
+                helperText={validationMsg.ma}
               />
-              <span className="validate" style={{ color: "red" }}>
-                {validationMsg.ma}
-              </span>
             </div>
             <div className="ms-4">
               <TextField
@@ -373,10 +376,9 @@ const UpdateVoucher = () => {
                 inputProps={{
                   maxLength: 100, // Giới hạn tối đa 10 ký tự
                 }}
+                error={validationMsg.ten !== undefined}
+                helperText={validationMsg.ten}
               />
-              <span className="validate" style={{ color: "red" }}>
-                {validationMsg.ten}
-              </span>
             </div>
           </div>
           <div
@@ -393,10 +395,9 @@ const UpdateVoucher = () => {
                 inputProps={{
                   maxLength: 10, // Giới hạn tối đa 10 ký tự
                 }}
+                error={validationMsg.soLuong !== undefined}
+                helperText={validationMsg.soLuong}
               />
-              <span className="validate" style={{ color: "red" }}>
-                {validationMsg.soLuong}
-              </span>
             </div>
             <div className="ms-4">
               {" "}
@@ -415,10 +416,9 @@ const UpdateVoucher = () => {
                 inputProps={{
                   maxLength: 20, // Giới hạn tối đa 10 ký tự
                 }}
+                error={validationMsg.value1 !== undefined}
+                helperText={validationMsg.value1}
               />
-              <span className="validate" style={{ color: "red" }}>
-                {validationMsg.value1}
-              </span>
             </div>
           </div>
 
@@ -512,15 +512,9 @@ const UpdateVoucher = () => {
                 inputProps={{
                   maxLength: 20, // Giới hạn tối đa 10 ký tự
                 }}
+                error={validationMsg.value !== undefined}
+                helperText={validationMsg.value}
               />
-              <span
-                className="validate"
-                style={{
-                  color: "red",
-                }}
-              >
-                {validationMsg.value}
-              </span>
             </div>
             <div className="ms-4">
               <TextField
@@ -543,18 +537,12 @@ const UpdateVoucher = () => {
                 inputProps={{
                   maxLength: 20, // Giới hạn tối đa 10 ký tự
                 }}
+                error={validationMsg.valueToiDa !== undefined}
+                helperText={validationMsg.valueToiDa}
               />
-              <span
-                className="validate"
-                style={{
-                  color: "red",
-                }}
-              >
-                {validationMsg.valueToiDa}
-              </span>
             </div>
           </div>
-          <div className="d-flex" style={{ marginLeft: "40px" }}>
+          <div className="d-flex mt-2" style={{ marginLeft: "40px" }}>
             <div>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DemoContainer components={["DateTimePicker"]}>
@@ -566,14 +554,21 @@ const UpdateVoucher = () => {
                     value={dayjs(ngayBatDau)}
                     onChange={(e) => {
                       setNgayBatDau(e);
+                      setCheckStartDate(true);
                     }}
                     sx={{ width: "330px" }}
+                    slotProps={{
+                      textField: {
+                        error: validationMsg.ngayBatDau !== undefined,
+                        helperText:
+                          !!validationMsg.ngayBatDau !== undefined
+                            ? validationMsg.ngayBatDau
+                            : "",
+                      },
+                    }}
                   />
                 </DemoContainer>
               </LocalizationProvider>
-              <span className="validate-date" style={{ color: "red" }}>
-                {validationMsg.ngayBatDau}
-              </span>
             </div>
             <div className="ms-4" style={{ marginLeft: "15px" }}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -586,14 +581,21 @@ const UpdateVoucher = () => {
                     disablePast={true}
                     onChange={(e) => {
                       setNgayKetThuc(e);
+                      setCheckEndDate(true);
                     }}
                     sx={{ width: "330px" }}
+                    slotProps={{
+                      textField: {
+                        error: validationMsg.ngayKetThuc !== undefined,
+                        helperText:
+                          !!validationMsg.ngayKetThuc !== undefined
+                            ? validationMsg.ngayKetThuc
+                            : "",
+                      },
+                    }}
                   />
                 </DemoContainer>
               </LocalizationProvider>
-              <span className="validate-date" style={{ color: "red" }}>
-                {validationMsg.ngayKetThuc}
-              </span>
             </div>
           </div>
         </div>
