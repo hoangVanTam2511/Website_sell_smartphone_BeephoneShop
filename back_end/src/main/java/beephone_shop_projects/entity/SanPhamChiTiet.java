@@ -42,5 +42,17 @@ public class SanPhamChiTiet extends PrimaryEntity implements Serializable {
   @OneToMany(mappedBy = "sanPhamChiTiet")
   private Set<Anh> images = new HashSet<>();
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_ram")
+  private Ram ram;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_rom")
+  private Rom rom;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_mau_sac")
+  private MauSac mauSac;
+
 
 }

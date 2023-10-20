@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class AbstractServiceImpl<E, D, R, ID extends Serializable> implements GenericService<D, R, ID> {
 
@@ -22,6 +23,12 @@ public class AbstractServiceImpl<E, D, R, ID extends Serializable> implements Ge
   public Page<D> findAll(Pageable pageable) {
     Page<E> entityPage = repo.findAll(pageable);
     return converter.convertToPageResponse(entityPage);
+  }
+
+  @Override
+  public List<D> findAll() {
+    List<E> entityList = repo.findAll();
+    return converter.convertToListResponse(entityList);
   }
 
   @Override
