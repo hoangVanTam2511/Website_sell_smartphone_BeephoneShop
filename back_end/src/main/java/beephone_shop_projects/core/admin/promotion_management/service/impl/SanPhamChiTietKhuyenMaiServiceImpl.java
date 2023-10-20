@@ -105,7 +105,7 @@ public class SanPhamChiTietKhuyenMaiServiceImpl implements SanPhamChiTietKhuyenM
 
     @Override
     public List<SanPhamChiTietKhuyenMaiResponse> removeALL() {
-        listAo.clear();
+        listAo = new ArrayList<>();
         return listAo;
     }
 
@@ -122,6 +122,14 @@ public class SanPhamChiTietKhuyenMaiServiceImpl implements SanPhamChiTietKhuyenM
     @Override
     public List<DetailKhuyenMaiResponse> getDetailKhuyenMai(String id) {
         return sanPhamChiTietKhuyenMaiRepository.getDetailKhuyenMai(id);
+    }
+
+    @Override
+    public Integer getSize(String id){
+        Integer size = 0;
+        List<KhuyenMaiChiTietResponse> kmct = sanPhamChiTietKhuyenMaiRepository.getListKhuyenMai(id);
+        size = kmct.size();
+        return size;
     }
 
 }
