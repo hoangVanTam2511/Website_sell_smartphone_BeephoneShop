@@ -23,19 +23,19 @@ public class CameraServiceImpl {
     }
 
     public void insert(CreateCamera req) {
-        if (!req.getIdCamera().isEmpty()) update(req);
-        else
-            if (cameraRepository.findByDoPhanGiai(req.getResolutionCamera()) == null) {
-            String newCode = cameraRepository.getNewCode() == null ? "CAMERA_0" : "CAMERA_" + cameraRepository.getNewCode();
-            Camera camera = new Camera(newCode, req.getResolutionCamera());
-            cameraRepository.save(camera);
-        }
+//        if (!req.getIdCamera().isEmpty()) update(req);
+//        else
+//            if (cameraRepository.findByDoPhanGiai(req.getResolutionCamera()) == null) {
+//            String newCode = cameraRepository.getNewCode() == null ? "CAMERA_0" : "CAMERA_" + cameraRepository.getNewCode();
+//            Camera camera = new Camera(newCode, req.getResolutionCamera());
+//            cameraRepository.save(camera);
+//        }
     }
 
     public void update(CreateCamera req) {
-        Camera camera = cameraRepository.findById(req.getIdCamera()).get();
-        camera.setDoPhanGiai(req.getResolutionCamera());
-        cameraRepository.save(camera);
+//        Camera camera = cameraRepository.findById(req.getIdCamera()).get();
+//        camera.setDoPhanGiai(req.getResolutionCamera());
+//        cameraRepository.save(camera);
     }
 
     public void delete(String id) {

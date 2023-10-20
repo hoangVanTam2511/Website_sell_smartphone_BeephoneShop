@@ -32,8 +32,8 @@ public class RomServiceImpl {
         if(!req.getIdRom().isEmpty()) update(req);
         else {
             String newCode = this.romRepository.getNewCode() == null ? "ROM_0" : "ROM_" + this.romRepository.getNewCode();
-            Rom rom = new Rom(newCode, req.getCapacityRom());
-            romRepository.save(rom);
+//            Rom rom = new Rom(newCode, req.getCapacityRom());
+//            romRepository.save(rom);
         }
     }
 

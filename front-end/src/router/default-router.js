@@ -56,7 +56,7 @@ import AddRole from "../views/admin/account-manager/role/AddRole";
 
 // sanpham
 import ChiTietSanPham from "../views/admin/product-manager/chi-tiet-san-pham/chi-tiet-san-pham";
-import ThemSanPham from"../views/admin/product-manager/chi-tiet-san-pham/them-san-pham";
+import ThemSanPham from "../views/admin/product-manager/chi-tiet-san-pham/them-san-pham";
 
 import Default from "../layouts/dashboard/default";
 import ManagementOrders from "../views/admin/order-manager/management-orders";
@@ -85,6 +85,21 @@ import UpdateVoucher from "../views/admin/voucher-manager/sua-voucher";
 import OrdersPending from "../views/admin/order-manager/ordes-pending"
 
 import PointOfSales from "../views/admin/order-manager/point-of-sales"
+import ManagementProducts from '../views/admin/order-manager/management-products';
+import ManagementSims from '../views/admin/order-manager/management-sims';
+import CreateSimCard from '../views/admin/order-manager/create-simcard';
+import ManagementPins from '../views/admin/order-manager/management-pins';
+import CreatePin from '../views/admin/order-manager/create-pin';
+import ManagementScreens from '../views/admin/order-manager/management-screens';
+import CreateScreen from '../views/admin/order-manager/create-screen';
+import ManagementCongSacs from '../views/admin/order-manager/management-sacs';
+import CreateSac from '../views/admin/order-manager/create-sac';
+import CreateMauSac from '../views/admin/order-manager/create-mau-sac';
+import ManagementHangs from '../views/admin/order-manager/management-hangs';
+import CreateHang from '../views/admin/order-manager/create-hang';
+import ManagementChips from '../views/admin/order-manager/management-chips';
+import ManagementRams from '../views/admin/order-manager/management-rams';
+import ManagementRoms from '../views/admin/order-manager/management-roms';
 
 
 export const DefaultRouter = [
@@ -92,66 +107,66 @@ export const DefaultRouter = [
     path: "/",
     element: <Default />,
     children: [
-        {
-            path: "",
-            element: <Index />,
-        },
-        {
-            path: "chip",
-            element: <Chip />,
-        },
-        {
-            path: "dong-san-pham",
-            element: <DongSanPham />,
-        },
-        {
-            path: "nha-san-xuat",
-            element: <NhaSanXuat />,
-        },
-        {
-            path: "man-hinh",
-            element: <ManHinh />,
-        },
-        {
-            path: "pin",
-            element: <Pin />,
-        },
-        {
-            path: "ram",
-            element: <Ram />,
-        },
-        {
-            path: "rom",
-            element: <Rom />,
-        },
-        {
-            path: "camera",
-            element: <Camera />,
-        },
-        {
-            path: "san-pham",
-            element: <SanPham />,
-        },
-        {
-            path: "chi-tiet-san-pham/:idSanPham",
-            element:  <ChiTietSanPham />,
-        },
-        {
-            path: "them-san-pham",
-            element: <ThemSanPham />,
-        },
-        {
-            path: "khach-hang",
-            element: <KhachHang />,
-        },
-        {
-            path: "khach-hang",
-            element: <KhachHang />,
-        },
-        {
-            path: "mau-sac",
-            element: <MauSac />,
-        },
+      {
+        path: "",
+        element: <Index />,
+      },
+      {
+        path: "chip",
+        element: <Chip />,
+      },
+      {
+        path: "dong-san-pham",
+        element: <DongSanPham />,
+      },
+      {
+        path: "nha-san-xuat",
+        element: <NhaSanXuat />,
+      },
+      {
+        path: "man-hinh",
+        element: <ManHinh />,
+      },
+      {
+        path: "pin",
+        element: <Pin />,
+      },
+      {
+        path: "ram",
+        element: <Ram />,
+      },
+      {
+        path: "rom",
+        element: <Rom />,
+      },
+      {
+        path: "camera",
+        element: <Camera />,
+      },
+      {
+        path: "san-pham",
+        element: <SanPham />,
+      },
+      {
+        path: "chi-tiet-san-pham/:idSanPham",
+        element: <ChiTietSanPham />,
+      },
+      {
+        path: "them-san-pham",
+        element: <ThemSanPham />,
+      },
+      {
+        path: "khach-hang",
+        element: <KhachHang />,
+      },
+      {
+        path: "khach-hang",
+        element: <KhachHang />,
+      },
+      {
+        path: "mau-sac",
+        element: <MauSac />,
+      },
 
       {
         path: "them-khach-hang",
@@ -242,6 +257,70 @@ export const DefaultRouter = [
         path: 'dashboard/order-detail/:id',
         element: <OrderDetail />,
       },
+      {
+        path: 'dashboard/products',
+        element: <ManagementProducts />,
+      },
+      {
+        path: 'dashboard/sims',
+        element: <ManagementSims />,
+      },
+      {
+        path: 'dashboard/sim/create',
+        element: <CreateSimCard />,
+      },
+      {
+        path: 'dashboard/pins',
+        element: <ManagementPins />,
+      },
+      {
+        path: 'dashboard/pin/create',
+        element: <CreatePin />,
+      },
+      {
+        path: 'dashboard/screens',
+        element: <ManagementScreens />,
+      },
+      {
+        path: 'dashboard/screen/create',
+        element: <CreateScreen />,
+      },
+      {
+        path: 'dashboard/sacs',
+        element: <ManagementCongSacs />,
+      },
+      {
+        path: 'dashboard/sac/create',
+        element: <CreateSac />,
+      },
+      {
+        path: 'dashboard/hangs',
+        element: <ManagementHangs />,
+      },
+      {
+        path: 'dashboard/chips',
+        element: <ManagementChips />,
+      },
+      {
+        path: 'dashboard/rams',
+        element: <ManagementRams />,
+      },
+      {
+        path: 'dashboard/roms',
+        element: <ManagementRoms />,
+      },
+      {
+        path: 'dashboard/hang/create',
+        element: <CreateHang />,
+      },
+      {
+        path: 'dashboard/color/create',
+        element: <CreateMauSac />,
+      },
+      // {
+      //   path: 'dashboard/add-product',
+      //   element: <ManagementProducts />,
+      // },
     ],
   },
 ];
