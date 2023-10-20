@@ -2,14 +2,18 @@ package beephone_shop_projects.entity;
 
 import beephone_shop_projects.entity.base.IsIdentified;
 import beephone_shop_projects.entity.base.PrimaryEntity;
+import beephone_shop_projects.infrastructure.constant.StatusCommon;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.math.BigDecimal;
 
 @Entity
 @Getter
@@ -19,10 +23,20 @@ import java.math.BigDecimal;
 @Table(name = "man_hinh")
 public class ManHinh extends PrimaryEntity implements IsIdentified {
 
-    private String ma;
+  private String ma;
 
-    private BigDecimal kichThuoc;
+  private Double kichThuoc;
 
-    private String doPhanGiai;
-    
+  private String loaiManHinh;
+
+  private Integer tanSoQuet;
+
+  @Enumerated(EnumType.ORDINAL)
+  private StatusCommon status;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_do_phan_giai_man_hinh")
+  private DoPhanGiaiManHinh doPhanGiaiManHinh;
+
+
 }

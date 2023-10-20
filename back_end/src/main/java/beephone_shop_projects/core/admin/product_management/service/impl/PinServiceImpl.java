@@ -33,8 +33,8 @@ public class PinServiceImpl {
         if(!req.getIdPin().isEmpty()) update(req);
         else {
             String newCode = this.pinRepository.getNewCode() == null ? "PIN_0" : "PIN_" + this.pinRepository.getNewCode();
-            Pin pin = new Pin(newCode, req.getCapacityPin());
-            pinRepository.save(pin);
+//            Pin pin = new Pin(newCode, req.getCapacityPin());
+//            pinRepository.save(pin);
         }
     }
 

@@ -73,9 +73,9 @@ public class ProductServiceImpl {
         sanPham.setPin(pin);
         sanPham.setManHinh(manHinh);
         sanPham.setMoTa(req.getMoTa());
-        sanPham.setHeDieuHanh(req.getHeDieuHanh());
-        sanPham.setSim(req.getSim());
-        sanPham.setCongSac(req.getCongSac());
+//        sanPham.setHeDieuHanh(req.getHeDieuHanh());
+//        sanPham.setSim(req.getSim());
+//        sanPham.setCongSac(req.getCongSac());
         sanPham.setDelected(false);
 
         SanPham product = productRepository.save(sanPham);

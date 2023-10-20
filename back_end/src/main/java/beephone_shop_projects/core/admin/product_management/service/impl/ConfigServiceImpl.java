@@ -44,9 +44,9 @@ public class ConfigServiceImpl {
         MauSac mauSac = colorRepository.findByTenMauSac(createCauHinhRequest.getMauSac());
 
         CauHinh cauHinh = new CauHinh();
-        cauHinh.setMauSac(mauSac);
-        cauHinh.setRom(rom);
-        cauHinh.setRam(ram);
+//        cauHinh.setMauSac(mauSac);
+//        cauHinh.setRom(rom);
+//        cauHinh.setRam(ram);
 
         cauHinhRepository.save(cauHinh);
     }
