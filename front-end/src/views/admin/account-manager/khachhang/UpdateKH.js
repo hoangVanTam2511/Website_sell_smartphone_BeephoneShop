@@ -327,7 +327,6 @@ const UpdateKH = () => {
     }
   };
   const handleChangeDate = (date) => {
-    // const value = date.format("DD/MM/YYYY");
     setNgaySinh(date);
   };
   return (
@@ -392,7 +391,6 @@ const UpdateKH = () => {
                           disableFuture
                           label="Ngày Sinh"
                           value={dayjs(ngaySinh)}
-                          format="DD/MM/YYYY"
                           onChange={handleChangeDate}
                           sx={{
                             position: "relative",

@@ -87,7 +87,7 @@ public interface AccountRepository extends IAccountRepository {
 
     Page<AccountResponse> searchAllKH(@Param("tenKH")Optional<String> tenKH, Pageable pageable);
 
-    @Query("SELECT a FROM Account a WHERE  a.trangThai = :trangThai AND a.idRole.ma='role1' ")
-    Page<Account> filterTrangThai(@RequestParam("trangThai") StatusAccountCus trangThai, Pageable pageable);
+    @Query("SELECT a FROM Account a WHERE  a.trangThai= :trangThai AND a.idRole.ma='role1' ")
+    Page<Account> filterTrangThai(@RequestParam("trangThai")StatusAccountCus trangThai, Pageable pageable);
 
 }

@@ -32,7 +32,7 @@ public class NhanVienRestcontroller {
     @Autowired
     private NhanVienService accService;
     @GetMapping("hien-thi")
-    public ResponsePage<AccountResponse> hienThi(@RequestParam(name = "page", defaultValue = "0") Integer pageNo) {
+    public ResponsePage<Account> hienThi(@RequestParam(name = "page", defaultValue = "0") Integer pageNo) {
         return new ResponsePage(accService.getAllNV(pageNo));
     }
 
@@ -53,10 +53,10 @@ public class NhanVienRestcontroller {
     }
 
     @GetMapping("search-all")
-    public Page<Account> searchAll(@RequestParam("tenKH") String hoVaTen,
+    public ResponsePage<Account> searchAll(@RequestParam("tenKH") String hoVaTen,
                                    @RequestParam(name = "page", defaultValue = "0") Integer pageNo) {
         Optional<String> opTen = Optional.ofNullable(hoVaTen);
-        return accService.search(opTen, pageNo);
+        return new ResponsePage(accService.search(opTen, pageNo)) ;
     }
     @GetMapping("/filter")
     public Page<Account> filterStatus(@RequestParam("trangThai") StatusAccountCus trangThai,

@@ -1,13 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import {
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  Grid,
-  TextField,
-} from "@mui/material";
+import { MenuItem, Grid, TextField } from "@mui/material";
 import { message } from "antd";
 
 const host = "https://provinces.open-api.vn/api/";
