@@ -200,9 +200,9 @@ const VerticalNav = memo((props) => {
             <ul className="sub-nav">
               <li className="nav-item">
                 <Link
-                  className={`${location.pathname === "dashboard/products" ? "active" : ""
+                  className={`${location.pathname === "/dashboard/products" ? "active" : ""
                     } nav-link`}
-                  to="dashboard/products"
+                  to="/dashboard/products"
                 >
                   <i className="icon">
                     <svg
@@ -227,9 +227,9 @@ const VerticalNav = memo((props) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`${location.pathname === "/mau-sac" ? "active" : ""
+                  className={`${location.pathname === "/dashboard/colors" ? "active" : ""
                     } nav-link`}
-                  to="/mau-sac"
+                  to="/dashboard/colors"
                 >
                   <i className="icon">
                     <svg
@@ -248,7 +248,7 @@ const VerticalNav = memo((props) => {
                       </g>
                     </svg>
                   </i>
-                  <i className="sidenav-mini-icon"> L </i>
+                  <i className="sidenav-mini-icon"> M </i>
                   <span className="item-name">Màu sắc</span>
                 </Link>
               </li>
@@ -479,9 +479,9 @@ const VerticalNav = memo((props) => {
 
               <li className="nav-item">
                 <Link
-                  className={`${location.pathname === "/camera" ? "active" : ""
+                  className={`${location.pathname === "/dashboard/rear-cameras" ? "active" : ""
                     } nav-link`}
-                  to="/camera"
+                  to="/dashboard/rear-cameras"
                 >
                   <i className="icon">
                     <svg
@@ -501,7 +501,34 @@ const VerticalNav = memo((props) => {
                     </svg>
                   </i>
                   <i className="sidenav-mini-icon"> C </i>
-                  <span className="item-name">Camera</span>
+                  <span className="item-name">Camera Sau</span>
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link
+                  className={`${location.pathname === "/dashboard/front-cameras" ? "active" : ""
+                    } nav-link`}
+                  to="/dashboard/front-cameras"
+                >
+                  <i className="icon">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="10"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <g>
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="8"
+                          fill="currentColor"
+                        ></circle>
+                      </g>
+                    </svg>
+                  </i>
+                  <i className="sidenav-mini-icon"> C </i>
+                  <span className="item-name">Camera Trước</span>
                 </Link>
               </li>
             </ul>

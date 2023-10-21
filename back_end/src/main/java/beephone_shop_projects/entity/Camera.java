@@ -26,12 +26,6 @@ public class Camera extends PrimaryEntity {
 
   private String ma;
 
-  @OneToMany(mappedBy = "camera")
-  private List<CameraTruoc> cameraTruocs;
-
-  @OneToMany(mappedBy = "camera")
-  private List<CameraSau> cameraSaus;
-
   private String doPhanGiai;
 
   @Enumerated(EnumType.ORDINAL)

@@ -100,6 +100,12 @@ import CreateHang from '../views/admin/order-manager/create-hang';
 import ManagementChips from '../views/admin/order-manager/management-chips';
 import ManagementRams from '../views/admin/order-manager/management-rams';
 import ManagementRoms from '../views/admin/order-manager/management-roms';
+import ManagementColors from '../views/admin/order-manager/management-colors';
+import CreateCameraSau from '../views/admin/order-manager/create-camera-sau';
+import ManagementFrontCameras from '../views/admin/order-manager/management-front-cameras';
+import CreateCameraTruoc from '../views/admin/order-manager/create-camera-truoc';
+import ManagementRearCameras from '../views/admin/order-manager/management-rear-cameras';
+import CreateProduct from '../views/admin/order-manager/create-product';
 
 
 export const DefaultRouter = [
@@ -310,12 +316,36 @@ export const DefaultRouter = [
         element: <ManagementRoms />,
       },
       {
+        path: 'dashboard/colors',
+        element: <ManagementColors />,
+      },
+      {
         path: 'dashboard/hang/create',
         element: <CreateHang />,
       },
       {
         path: 'dashboard/color/create',
         element: <CreateMauSac />,
+      },
+      {
+        path: 'dashboard/front-camera/create',
+        element: <CreateCameraTruoc />,
+      },
+      {
+        path: 'dashboard/front-cameras',
+        element: <ManagementFrontCameras />,
+      },
+      {
+        path: 'dashboard/rear-camera/create',
+        element: <CreateCameraSau />,
+      },
+      {
+        path: 'dashboard/rear-cameras',
+        element: <ManagementRearCameras />,
+      },
+      {
+        path: 'dashboard/create-product',
+        element: <CreateProduct />,
       },
       // {
       //   path: 'dashboard/add-product',

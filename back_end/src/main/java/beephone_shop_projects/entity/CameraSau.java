@@ -27,7 +27,7 @@ public class CameraSau extends PrimaryEntity implements IsIdentified {
 
   @JsonIgnore
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "id_camera")
-  private Camera camera;
+  @JoinColumn(name = "id_san_pham")
+  private SanPham sanPham;
 
 }

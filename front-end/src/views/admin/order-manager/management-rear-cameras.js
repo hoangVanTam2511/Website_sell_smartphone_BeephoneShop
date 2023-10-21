@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Empty, Table } from "antd";
-import { Box, IconButton, Pagination, TextField, Tooltip, } from "@mui/material";
+import { Box, Dialog, DialogContent, IconButton, Pagination, Slide, TextField, Tooltip, } from "@mui/material";
 import { PlusOutlined } from "@ant-design/icons";
 import Card from "../../../components/Card";
 import { format } from "date-fns";
@@ -16,28 +16,73 @@ import Zoom from '@mui/material/Zoom';
 import * as dayjs from "dayjs";
 import { OrderStatusString, OrderTypeString } from "./enum";
 import LoadingIndicator from '../../../utilities/loading';
+import CreateSimCard from "./create-simcard";
+import CreateMauSac from "./create-mau-sac";
+import CreateCameraSau from "./create-camera-sau";
+import CreateCameraTruoc from "./create-camera-truoc";
 
-const ManagementProducts = () => {
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
+const ManagementRearCameras = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [products, setProducts] = useState([]);
   const [totalPages, setTotalPages] = useState();
   const [refreshPage, setRefreshPage] = useState(1);
   const [searchParams, setSearchParams] = useSearchParams();
   const [keyword, setKeyword] = useState(searchParams.get('keyword'));
   const [currentPage, setCurrentPage] = useState(searchParams.get('currentPage') || 1);
 
-  const handleRedirectCreateProduct = () => {
-    navigate(`/dashboard/create-product`);
+
+  const findOrdersByMultipleCriteriaWithPagination = (page) => {
+    axios
+      .get(`http://localhost:8080/api/orders`, {
+        params: {
+          currentPage: page,
+          keyword: keyword,
+          isPending: false,
+        }
+      })
+      .then((response) => {
+        setCameras(response.data.data);
+        setTotalPages(response.data.totalPages);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error(error);
+        setIsLoading(false);
+      });
   }
+
+  const handleRedirectCreateSimCard = () => {
+    navigate(`/dashboard/sim/create`);
+  }
+
+  const [cameras, setCameras] = useState([
+    {
+      ma: "091218273",
+      simType: "2 Nano",
+      simStatus: 0
+    }
+  ]);
+
+  const [open, setOpen] = React.useState(false);
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const OrderTable = () => {
     return (
       <>
         <Table className="table-container"
           columns={columns}
-          rowKey="ma"
-          dataSource={products}
+          rowKey="id"
+          dataSource={cameras}
           pagination={false}
           locale={{ emptyText: <Empty description="Không có dữ liệu" /> }}
         />
@@ -52,11 +97,11 @@ const ManagementProducts = () => {
       dataIndex: "stt",
       width: "5%",
       render: (text, record, index) => (
-        <span style={{ fontWeight: "400" }}>{products.indexOf(record) + 1}</span>
+        <span style={{ fontWeight: "400" }}>{cameras.indexOf(record) + 1}</span>
       ),
     },
     {
-      title: "Mã Sản Phẩm",
+      title: "Mã Thẻ SIM",
       align: "center",
       key: "ma",
       width: "15%",
@@ -66,40 +111,20 @@ const ManagementProducts = () => {
       ),
     },
     {
-      title: "Tên Sản Phẩm",
-      align: "center",
-      key: "tenSanPham",
-      width: "15%",
-      dataIndex: "tenSanPham",
-      render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>{record.tenSanPham}</span>
-      ),
-    },
-    {
-      title: "Hãng",
+      title: "Loại Thẻ SIM",
       align: "center",
       width: "15%",
-      dataIndex: "hang",
       render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>{record.hang}</span>
-      ),
-    },
-    {
-      title: "Hệ Điều Hành",
-      align: "center",
-      width: "15%",
-      dataIndex: "hang",
-      render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>{record.heDieuHanh}</span>
+        <span style={{ fontWeight: "400" }}>{record.simType}</span>
       ),
     },
     {
       title: "Trạng Thái",
-      align: "center",
       width: "15%",
-      dataIndex: "trangThai",
+      align: "center",
+      dataIndex: "simStatus",
       render: (type) =>
-        type == OrderTypeString.DELIVERY ? (
+        type == 0 ? (
           <div
             className="rounded-pill mx-auto badge-success"
             style={{
@@ -112,10 +137,10 @@ const ManagementProducts = () => {
               className="text-white"
               style={{ fontSize: "14px" }}
             >
-              Kinh doanh
+              Hoạt động
             </span>
           </div>
-        ) : type == OrderTypeString.AT_COUNTER ? (
+        ) : type == 1 ? (
           <div
             className="rounded-pill badge-primary mx-auto"
             style={{ height: "35px", width: "91px", padding: "4px" }}
@@ -124,7 +149,7 @@ const ManagementProducts = () => {
               className="text-white"
               style={{ fontSize: "14px" }}
             >
-              Ngừng kinh doanh
+              Ngừng hoạt động
             </span>
           </div>
         ) : (
@@ -138,19 +163,14 @@ const ManagementProducts = () => {
       dataIndex: "ma",
       render: (text, record) => (
         <>
-          <div className="button-container">
-            <Tooltip title="Chi tiết" TransitionComponent={Zoom}>
-              <IconButton size="">
-                <BorderColorOutlinedIcon color="warning" />
-              </IconButton>
-            </Tooltip>
-          </div>
-          <div className="button-container">
-            <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
-              <IconButton size="">
-                <BorderColorOutlinedIcon color="primary" />
-              </IconButton>
-            </Tooltip>
+          <div className="d-flex justify-content-center">
+            <div className="button-container">
+              <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
+                <IconButton size="">
+                  <BorderColorOutlinedIcon color="primary" />
+                </IconButton>
+              </Tooltip>
+            </div>
           </div>
         </>
       ),
@@ -163,7 +183,7 @@ const ManagementProducts = () => {
           <Card.Header className="d-flex justify-content-between">
             <div className="header-title mt-2">
               <TextField
-                label="Tìm Sản Phẩm"
+                label="Tìm Thẻ SIM"
                 // onChange={handleGetValueFromInputTextField}
                 // value={keyword}
                 InputLabelProps={{
@@ -175,7 +195,7 @@ const ManagementProducts = () => {
                 inputProps={{
                   style: {
                     height: "23px",
-                    width: "250px",
+                    width: "200px",
                   },
                 }}
                 size="small"
@@ -197,10 +217,10 @@ const ManagementProducts = () => {
             </div>
             <div className="mt-2">
               <Button
-                onClick={handleRedirectCreateProduct}
+                onClick={handleClickOpen}
                 className="rounded-2 button-mui"
                 type="primary"
-                style={{ height: "40px", width: "150px", fontSize: "15px" }}
+                style={{ height: "40px", width: "145px", fontSize: "15px" }}
               >
                 <PlusOutlined className="ms-1"
                   style={{
@@ -213,7 +233,7 @@ const ManagementProducts = () => {
                   className="ms-3 ps-1"
                   style={{ marginBottom: "3px", fontWeight: "500" }}
                 >
-                  Tạo sản phẩm
+                  Tạo Thẻ SIM
                 </span>
               </Button>
             </div>
@@ -230,8 +250,24 @@ const ManagementProducts = () => {
         </Card>
       </div>
       {isLoading && <LoadingIndicator />}
+      <Dialog
+        open={open}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={handleClose}
+        maxWidth="md"
+        maxHeight="md"
+        sx={{
+          marginBottom: "170px",
+        }}
+      >
+        <DialogContent className="">
+          <CreateCameraSau close={handleClose} />
+        </DialogContent>
+        <div className="mt-3"></div>
+      </Dialog>
     </>
   )
 
 }
-export default ManagementProducts;
+export default ManagementRearCameras;

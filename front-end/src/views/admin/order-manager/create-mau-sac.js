@@ -16,18 +16,21 @@ import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 import Zoom from '@mui/material/Zoom';
 import * as dayjs from "dayjs";
 import LoadingIndicator from '../../../utilities/loading';
+// import Sketch from '@uiw/react-color-sketch';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const CreateMauSac = () => {
+const CreateMauSac = ({ close }) => {
+
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
-  const [congSacs, setCongSacs] = React.useState([
-    "USB Type-C",
-    "Micro USB",
-    "Lightning"
+
+  // const [hex, setHex] = useState("#fff");
+  //
+  const [colorName, setColorName] = useState([
+    "White Smoke", "Black"
   ]);
 
 
@@ -39,55 +42,50 @@ const CreateMauSac = () => {
     setOpen(false);
   };
 
-  const [sacs, setSacs] = useState([
+  const [colors, setColors] = useState([
     {
       ma: "091218273",
-      congSuatSac: 120,
-      congSuatSacNhanh: 200,
-      congSuatSacKhongDay: 15,
-      sacStatus: 0
+      tenMauSac: "White Smoke",
+      status: 0
     }
   ]);
 
-  const uniqueCongSuatSac = sacs.map((option) => option.congSuatSac).filter((value, index, self) => {
+  const generateRandomCode = () => {
+    const prefix = '2023';
+    const randomSuffix = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
+    const code = prefix + randomSuffix;
+    return code;
+  };
+
+  const uniqueTenMauSac = colors.map((option) => option.tenMauSac).filter((value, index, self) => {
     return self.indexOf(value) === index;
   });
 
-  const uniqueCongSuatSacNhanh = sacs.map((option) => option.congSuatSacNhanh).filter((value, index, self) => {
-    return self.indexOf(value) === index;
-  });
-  const uniqueCongSuatSacKhongDay = sacs.map((option) => option.congSuatSacKhongDay).filter((value, index, self) => {
-    return self.indexOf(value) === index;
-  });
 
   const [isLoading, setIsLoading] = React.useState(false);
 
-  const [checkedSacNhanh, setCheckedSacNhanh] = React.useState(false);
-  const [checkedSacKhongDay, setCheckedSacKhongDay] = React.useState(false);
-
-  const handleChangeCheckedSacNhanh = (event) => {
-    setCheckedSacNhanh(event.target.checked);
-  };
-  const handleChangeCheckedSacKhongDay = (event) => {
-    setCheckedSacKhongDay(event.target.checked);
-  };
-
   const [status, setStatus] = React.useState('');
-  const [selectedSacs, setSelectedSacs] = React.useState([]);
-
-  const handleChangeSelectedSacs = (event) => {
-    setSelectedSacs(event.target.value);
+  const handleChangeStatus = (event) => {
+    setStatus(event.target.value);
   };
+  // const [selectedSacs, setSelectedSacs] = React.useState([]);
+
+  // const handleChangeSelectedSacs = (event) => {
+  //   setSelectedSacs(event.target.value);
+  // };
 
   return (
     <>
-      <div className="mt-4" style={{ backgroundColor: "#ffffff", boxShadow: "0 0.1rem 0.3rem #00000010", height: checkedSacKhongDay ? "430px" : "360px" }}>
-        <div className="container" style={{ display: "flex", justifyContent: "center", alignItems: "center", height: checkedSacKhongDay ? "54.2vh" : "45vh", flexDirection: "column" }}>
-          <div className="text-center" style={{}}>
-            <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>THÊM SẠC</span>
-          </div>
-          <div style={{ width: "50%" }} className="mx-auto mt-3 pt-2">
-            <div>
+      {/*
+              <div>
+                <Sketch
+                  style={{ marginLeft: 20 }}
+                  color={hex}
+                  onChange={(color) => {
+                    setHex(color.hex);
+                  }}
+                />
+              </div>
               <FormControl fullWidth>
                 <InputLabel id="demo-simple-select-label">Cổng Sạc</InputLabel>
                 <Select className="custom"
@@ -110,7 +108,7 @@ const CreateMauSac = () => {
                     </>
                   }
                 >
-                  {congSacs.map((c) => (
+                  {colorName.map((c) => (
                     <MenuItem key={c} value={c}>
                       <Checkbox checked={selectedSacs.indexOf(c) > -1} />
                       <ListItemText primary={c} />
@@ -118,81 +116,41 @@ const CreateMauSac = () => {
                   ))}
                 </Select>
               </FormControl>
+*/}
+      <div className="mt-4" style={{ width: "700px" }}>
+        <div className="container" style={{}}>
+          <div className="text-center" style={{}}>
+            <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>THÊM MÀU SẮC</span>
+          </div>
+          <div style={{}} className="mx-auto mt-3 pt-2">
+            <div>
+              <Autocomplete fullWidth className="custom"
+                id="free-solo-demo"
+                freeSolo
+                options={uniqueTenMauSac}
+                renderInput={(params) => <TextField
+                  {...params}
+                  label="Tên Màu Sắc" />}
+              />
             </div>
             <div className="mt-3" style={{}}>
-              {!checkedSacNhanh ?
-                <Autocomplete fullWidth className="custom"
-                  id="free-solo-demo"
-                  freeSolo
-                  options={uniqueCongSuatSac}
-                  renderInput={(params) => <TextField
-                    {...params}
-                    InputProps={{
-                      ...params.InputProps,
-                      startAdornment:
-                        (
-                          <>
-                            <InputAdornment style={{ marginLeft: "5px" }} position="start">Watt</InputAdornment>
-                            {params.InputProps.startAdornment}
-                          </>
-                        ),
-                    }}
-                    label="Công Suất Sạc" />}
-                />
-                :
-                <Autocomplete fullWidth className="custom"
-                  id="free-solo-demo"
-                  freeSolo
-                  options={uniqueCongSuatSacNhanh}
-                  renderInput={(params) => <TextField
-                    {...params}
-                    InputProps={{
-                      ...params.InputProps,
-                      startAdornment:
-                        (
-                          <>
-                            <InputAdornment style={{ marginLeft: "5px" }} position="start">Watt</InputAdornment>
-                            {params.InputProps.startAdornment}
-                          </>
-                        ),
-                    }}
-                    label="Công Suất Sạc Nhanh" />}
-                />
-              }
-            </div>
-            <div className="mt-3" style={{}}>
-              {checkedSacKhongDay &&
-                <Autocomplete fullWidth className="custom"
-                  id="free-solo-demo"
-                  freeSolo
-                  options={uniqueCongSuatSac}
-                  renderInput={(params) => <TextField
-                    {...params}
-                    InputProps={{
-                      ...params.InputProps,
-                      startAdornment:
-                        (
-                          <>
-                            <InputAdornment style={{ marginLeft: "5px" }} position="start">Watt</InputAdornment>
-                            {params.InputProps.startAdornment}
-                          </>
-                        ),
-                    }}
-                    label="Công Suất Sạc Không Dây" />}
-                />
-              }
-            </div>
-            <div className="mt-3 d-flex">
-              <div>
-                <FormControlLabel control={<Checkbox onChange={handleChangeCheckedSacNhanh} checked={checkedSacNhanh} />} label="Sạc Nhanh" />
-              </div>
-              <div className="ms-3">
-                <FormControlLabel control={<Checkbox onChange={handleChangeCheckedSacKhongDay} checked={checkedSacKhongDay} />} label="Sạc Không Dây" />
-              </div>
+              <FormControl fullWidth>
+                <InputLabel id="demo-simple-select-label">Trạng Thái</InputLabel>
+                <Select className="custom"
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={status}
+                  label="Trạng Thái"
+                  onChange={handleChangeStatus}
+                >
+                  <MenuItem value={0}>Hoạt Động</MenuItem>
+                  <MenuItem value={1}>Ngừng Hoạt Động</MenuItem>
+                </Select>
+              </FormControl>
             </div>
             <div className="mt-4 pt-1 d-flex justify-content-end">
               <Button
-                // onClick={handleCreateNewOrderPending}
+                onClick={() => close()}
                 className="rounded-2 button-mui"
                 type="primary"
                 style={{ height: "40px", width: "auto", fontSize: "15px" }}
@@ -208,50 +166,6 @@ const CreateMauSac = () => {
           </div>
         </div>
       </div>
-      <Dialog
-        open={open}
-        TransitionComponent={Transition}
-        keepMounted
-        onClose={handleClose}
-        maxWidth="md"
-        maxHeight="md"
-        sx={{
-          marginBottom: "170px",
-        }}
-      >
-        <DialogTitle>{"THÊM CỔNG SẠC"}</DialogTitle>
-        <DialogContent className="" style={{ height: "90px" }}>
-          <div className="mt-2 d-flex">
-            <div>
-              <Autocomplete className="custom"
-                id="free-solo-demo"
-                sx={{ width: "400px" }}
-                freeSolo
-                options={uniqueCongSuatSac}
-                renderInput={(params) => <TextField
-                  {...params}
-                  label="Tên Cổng Sạc" />}
-              />
-            </div>
-          </div>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={handleClose}
-            className="rounded-2 button-mui me-3"
-            type="primary"
-            style={{ height: "40px", width: "auto", fontSize: "15px" }}
-          >
-            <span
-              className=""
-              style={{ marginBottom: "2px", fontWeight: "500" }}
-            >
-              Xác Nhận
-            </span>
-          </Button>
-        </DialogActions>
-        <div className="mt-3"></div>
-      </Dialog>
       {isLoading && <LoadingIndicator />}
     </>
   )
