@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.admin.product_managements.model.request;
 
+import beephone_shop_projects.infrastructure.constant.SimMultiple;
 import beephone_shop_projects.infrastructure.constant.StatusCommon;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,5 +20,7 @@ public class TheSimRequest {
   private String loaiTheSim;
 
   private StatusCommon status;
+
+  private SimMultiple simMultiple;
 
 }

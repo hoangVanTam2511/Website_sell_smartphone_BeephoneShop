@@ -94,7 +94,7 @@ const HienThiKH = () => {
         },
       });
       setListKH(response.data.data);
-      setTotalPages(response.totalPages);
+      setTotalPages(response.data.totalPages);
       setCurrentPage(targetPage);
     } catch (error) {
       console.log("Error searching accounts:", error);
