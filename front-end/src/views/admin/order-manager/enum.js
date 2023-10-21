@@ -53,6 +53,11 @@ export const TypeDiscountNumber = {
   VND: 0,
   PERCENT: 1,
 };
+
+export const StatusCommonProducts = {
+  ACTIVE: "ACTIVE",
+  IN_ACTIVE: "IN_ACTIVE",
+};
 // export const SimTypeString = {
 //   MICRO_SIM : "MICRO_SIM",
 //   NANO_SIM : "MICRO_SIM",

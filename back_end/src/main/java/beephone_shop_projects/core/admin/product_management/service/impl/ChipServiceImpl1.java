@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class ChipServiceImpl {
+public class ChipServiceImpl1 {
 
     @Autowired
     private ChipRepository chipRepository;

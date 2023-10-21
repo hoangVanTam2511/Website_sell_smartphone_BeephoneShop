@@ -34,6 +34,7 @@ import LoadingIndicator from "../../../utilities/loading";
 import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
 
 const UpdateVoucher = () => {
+  const [voucher, setVoucher] = useState({});
   const [ma, setMa] = useState("");
   const [ten, setTen] = useState("");
   const [soLuong, setSoLuong] = useState("");
@@ -136,6 +137,7 @@ const UpdateVoucher = () => {
         response.data.data.giaTriVoucher,
         response.data.data.giaTriToiDa
       );
+      setVoucher(response.data.data);
     } catch (error) {
       // Xử lý lỗi nếu cần
       handleOpenAlertVariant(
@@ -318,6 +320,16 @@ const UpdateVoucher = () => {
       msg.ngayBatDau = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc !!!";
       msg.ngayKetThuc = "Ngày kết thúc phải lớn hơn ngày bắt đầu !!!";
     }
+
+    if (
+      dayjs(ngayBatDau).isBefore(voucher.ngayBatDau) ||
+      dayjs(ngayBatDau).isBefore(dayjs()) ||
+      dayjs(ngayBatDau).isAfter(voucher.ngayKetThuc)
+    ) {
+      msg.ngayBatDau = "Không thể chọn ngày quá khứ !!!";
+    }
+
+    console.log(ngayBatDau);
 
     setValidationMsg(msg);
     if (Object.keys(msg).length > 0) return false;
