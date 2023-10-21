@@ -73,6 +73,12 @@ public class SanPham extends PrimaryEntity implements IsIdentified {
   @JoinColumn(name = "id_pin")
   private Pin pin;
 
+  @OneToMany(mappedBy = "sanPham")
+  private List<CameraTruoc> cameraTruocs;
+
+  @OneToMany(mappedBy = "sanPham")
+  private List<CameraSau> cameraSaus;
+
   @JsonIgnore
   @OneToMany(mappedBy = "sanPham")
   private List<SanPhamChiTiet> productItems = new ArrayList<>();
