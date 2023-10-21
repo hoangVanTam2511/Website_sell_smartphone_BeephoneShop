@@ -27,6 +27,10 @@ const ManagementProducts = () => {
   const [keyword, setKeyword] = useState(searchParams.get('keyword'));
   const [currentPage, setCurrentPage] = useState(searchParams.get('currentPage') || 1);
 
+  const handleRedirectCreateProduct = () => {
+    navigate(`/dashboard/create-product`);
+  }
+
   const OrderTable = () => {
     return (
       <>
@@ -72,27 +76,21 @@ const ManagementProducts = () => {
       ),
     },
     {
-      title: "Hệ Điều Hành",
-      align: "center",
-      dataIndex: "hang",
-      render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>{record.heDieuHanh}</span>
-      ),
-    },
-    {
       title: "Hãng",
       align: "center",
+      width: "15%",
       dataIndex: "hang",
       render: (text, record) => (
         <span style={{ fontWeight: "400" }}>{record.hang}</span>
       ),
     },
     {
-      title: "Số Lượng Tồn",
+      title: "Hệ Điều Hành",
       align: "center",
+      width: "15%",
       dataIndex: "hang",
       render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>{record.soLuongTonKho}</span>
+        <span style={{ fontWeight: "400" }}>{record.heDieuHanh}</span>
       ),
     },
     {
@@ -199,7 +197,7 @@ const ManagementProducts = () => {
             </div>
             <div className="mt-2">
               <Button
-                // onClick={handleCreateNewOrderPending}
+                onClick={handleRedirectCreateProduct}
                 className="rounded-2 button-mui"
                 type="primary"
                 style={{ height: "40px", width: "150px", fontSize: "15px" }}

@@ -1,24 +1,43 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import { Button, Empty, Table } from "antd";
-import { Box, Dialog, DialogContent, IconButton, Pagination, Slide, TextField, Tooltip, } from "@mui/material";
+import {
+  Box,
+  Dialog,
+  DialogContent,
+  IconButton,
+  Pagination,
+  Slide,
+  TextField,
+  Tooltip,
+} from "@mui/material";
 import { PlusOutlined } from "@ant-design/icons";
 import Card from "../../../components/Card";
 import { format } from "date-fns";
 import axios from "axios";
 import { parseInt } from "lodash";
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
-import Zoom from '@mui/material/Zoom';
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
+import Zoom from "@mui/material/Zoom";
 import * as dayjs from "dayjs";
-import { OrderStatusString, OrderTypeString } from "./enum";
-import LoadingIndicator from '../../../utilities/loading';
+import {
+  OrderStatusString,
+  OrderTypeString,
+  StatusCommonProducts,
+} from "./enum";
+import LoadingIndicator from "../../../utilities/loading";
 import CreateSac from "./create-sac";
 import CreateHang from "./create-hang";
 import CreateChip from "./create-chip";
+import generateRandomCode from "../../../utilities/randomCode ";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -26,12 +45,15 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 const ManagementChips = () => {
   const navigate = useNavigate();
+  const [listChip, setListChip] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [totalPages, setTotalPages] = useState();
   const [refreshPage, setRefreshPage] = useState(1);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [keyword, setKeyword] = useState(searchParams.get('keyword'));
-  const [currentPage, setCurrentPage] = useState(searchParams.get('currentPage') || 1);
+  const [keyword, setKeyword] = useState(searchParams.get("keyword"));
+  const [currentPage, setCurrentPage] = useState(
+    searchParams.get("currentPage") || 1
+  );
 
   const findOrdersByMultipleCriteriaWithPagination = (page) => {
     axios
@@ -40,22 +62,36 @@ const ManagementChips = () => {
           currentPage: page,
           keyword: keyword,
           isPending: false,
-        }
+        },
       })
       .then((response) => {
-        setCongSacs(response.data.data);
+        setListChip(response.data.data);
         setTotalPages(response.data.totalPages);
+
         setIsLoading(false);
       })
       .catch((error) => {
         console.error(error);
         setIsLoading(false);
       });
-  }
+  };
 
-  const handleRedirectCreateSac = () => {
-    navigate(`/dashboard/sac/create`);
-  }
+  const getListChip = (page) => {
+    axios
+      .get(`http://localhost:8080/api/chips`)
+      .then((response) => {
+        setListChip(response.data.data);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error(error);
+        setIsLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    getListChip();
+  }, []);
 
   const [open, setOpen] = React.useState(false);
   const handleClickOpen = () => {
@@ -66,21 +102,14 @@ const ManagementChips = () => {
     setOpen(false);
   };
 
-  const [congSacs, setCongSacs] = useState([
-    {
-      ma: "091218273",
-      simType: "2 Nano",
-      simStatus: 0
-    }
-  ]);
-
   const OrderTable = () => {
     return (
       <>
-        <Table className="table-container"
+        <Table
+          className="table-container"
           columns={columns}
           rowKey="id"
-          dataSource={congSacs}
+          dataSource={listChip}
           pagination={false}
           locale={{ emptyText: <Empty description="Không có dữ liệu" /> }}
         />
@@ -95,11 +124,13 @@ const ManagementChips = () => {
       dataIndex: "stt",
       width: "5%",
       render: (text, record, index) => (
-        <span style={{ fontWeight: "400" }}>{congSacs.indexOf(record) + 1}</span>
+        <span style={{ fontWeight: "400" }}>
+          {listChip.indexOf(record) + 1}
+        </span>
       ),
     },
     {
-      title: "Mã Thẻ SIM",
+      title: "Mã Chip",
       align: "center",
       key: "ma",
       width: "15%",
@@ -109,20 +140,20 @@ const ManagementChips = () => {
       ),
     },
     {
-      title: "Loại Thẻ SIM",
+      title: "Tên Chip",
       align: "center",
       width: "15%",
       render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>{record.simType}</span>
+        <span style={{ fontWeight: "400" }}>{record.tenChip}</span>
       ),
     },
     {
       title: "Trạng Thái",
       width: "15%",
       align: "center",
-      dataIndex: "simStatus",
+      dataIndex: "status",
       render: (type) =>
-        type == 0 ? (
+        type === StatusCommonProducts.ACTIVE ? (
           <div
             className="rounded-pill mx-auto badge-success"
             style={{
@@ -131,22 +162,16 @@ const ManagementChips = () => {
               padding: "4px",
             }}
           >
-            <span
-              className="text-white"
-              style={{ fontSize: "14px" }}
-            >
+            <span className="text-white" style={{ fontSize: "14px" }}>
               Hoạt động
             </span>
           </div>
-        ) : type == 1 ? (
+        ) : type === StatusCommonProducts.IN_ACTIVE ? (
           <div
-            className="rounded-pill badge-primary mx-auto"
-            style={{ height: "35px", width: "91px", padding: "4px" }}
+            className="rounded-pill badge-danger mx-auto"
+            style={{ height: "35px", width: "140px", padding: "4px" }}
           >
-            <span
-              className="text-white"
-              style={{ fontSize: "14px" }}
-            >
+            <span className="text-white" style={{ fontSize: "14px" }}>
               Ngừng hoạt động
             </span>
           </div>
@@ -176,12 +201,18 @@ const ManagementChips = () => {
   ];
   return (
     <>
-      <div className="mt-4" style={{ backgroundColor: "#ffffff", boxShadow: "0 0.1rem 0.3rem #00000010" }}>
+      <div
+        className="mt-4"
+        style={{
+          backgroundColor: "#ffffff",
+          boxShadow: "0 0.1rem 0.3rem #00000010",
+        }}
+      >
         <Card className="">
           <Card.Header className="d-flex justify-content-between">
             <div className="header-title mt-2">
               <TextField
-                label="Tìm Sạc"
+                label="Tìm Chip"
                 // onChange={handleGetValueFromInputTextField}
                 // value={keyword}
                 InputLabelProps={{
@@ -220,7 +251,8 @@ const ManagementChips = () => {
                 type="primary"
                 style={{ height: "40px", width: "auto", fontSize: "15px" }}
               >
-                <PlusOutlined className="ms-1"
+                <PlusOutlined
+                  className="ms-1"
                   style={{
                     position: "absolute",
                     bottom: "12.5px",
@@ -231,7 +263,7 @@ const ManagementChips = () => {
                   className="ms-3 ps-1"
                   style={{ marginBottom: "3px", fontWeight: "500" }}
                 >
-                  Tạo Sạc
+                  Tạo Chip
                 </span>
               </Button>
             </div>
@@ -239,9 +271,10 @@ const ManagementChips = () => {
           <Card.Body>
             <OrderTable />
           </Card.Body>
-          <div className='mx-auto'>
-            <Pagination color="primary" /* page={parseInt(currentPage)} key={refreshPage} count={totalPages} */
-            // onChange={handlePageChange} 
+          <div className="mx-auto">
+            <Pagination
+              color="primary" /* page={parseInt(currentPage)} key={refreshPage} count={totalPages} */
+              // onChange={handlePageChange}
             />
           </div>
           <div className="mt-4"></div>
@@ -260,12 +293,15 @@ const ManagementChips = () => {
         }}
       >
         <DialogContent className="">
-          <CreateChip close={handleClose} />
+          <CreateChip
+            close={handleClose}
+            getAll={getListChip}
+            chips={listChip}
+          />
         </DialogContent>
         <div className="mt-3"></div>
       </Dialog>
     </>
-  )
-
-}
+  );
+};
 export default ManagementChips;

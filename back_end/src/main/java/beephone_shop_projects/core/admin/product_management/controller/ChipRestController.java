@@ -1,8 +1,7 @@
 package beephone_shop_projects.core.admin.product_management.controller;
 
 import beephone_shop_projects.core.admin.product_management.model.request.CreateChip;
-import beephone_shop_projects.core.admin.product_management.model.responce.ChipResponce;
-import beephone_shop_projects.core.admin.product_management.service.impl.ChipServiceImpl;
+import beephone_shop_projects.core.admin.product_management.service.impl.ChipServiceImpl1;
 import beephone_shop_projects.entity.Chip;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @RequestMapping("/chip")
@@ -30,7 +28,7 @@ import java.util.List;
 public class ChipRestController {
 
     @Autowired
-    private ChipServiceImpl chipService;
+    private ChipServiceImpl1 chipService;
 
     @GetMapping("/view-all")
     public Page<Chip> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {

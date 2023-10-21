@@ -24,8 +24,6 @@ public class MauSac extends PrimaryEntity implements IsIdentified {
 
   private String tenMauSac;
 
-  private String maMau;
-
   @Enumerated(EnumType.ORDINAL)
   private StatusCommon status;
 
