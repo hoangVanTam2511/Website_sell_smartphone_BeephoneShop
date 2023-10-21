@@ -56,11 +56,7 @@ const SuaKhuyenMai = () => {
   const [idSanPhamChiTiet, setIdSanPhamChiTiet] = useState("");
   //check-box
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [selectedRows, setSelectedRows] = useState([]);
-  const [selectAll, setSelectAll] = useState(false);
   const [selectedRowKeys1, setSelectedRowKeys1] = useState([]);
-  const [selectedRows1, setSelectedRows1] = useState([]);
-  const [selectAll1, setSelectAll1] = useState(false);
   //Lấy id ctsp
   const [selectedProductDetails, setSelectedProductDetails] = useState([]);
   const [sanPhamChiTietKhuyenMai, setSanPhamChiTietKhuyenMai] = useState([]);
@@ -125,6 +121,10 @@ const SuaKhuyenMai = () => {
       .get("http://localhost:8080/san-pham-chi-tiet-1/" + id + "/" + check)
       .then((response) => {
         setlistSanPhamChiTiet(response.data.data);
+        const data = response.data.data;
+        const productDetailsIds = data.map((item) => item.id);
+        setSelectedRowKeys1(productDetailsIds);
+        setSelectedProductDetails(response.data.data.map((item) => item.id));
       })
       .catch((error) => {
         handleOpenAlertVariant(
@@ -218,8 +218,8 @@ const SuaKhuyenMai = () => {
         selectedKeys.forEach((idSanPham) => {
           loadDatalistSanPhamChiTiet(idSanPham, true);
         });
-        setSelectedRowKeys(selectedKeys);
-        setSelectedRowKeys1(selectedKeys1);
+        // setSelectedRowKeys(selectedKeys);
+        // setSelectedRowKeys1(selectedKeys1);
       })
       .catch((error) => {
         handleOpenAlertVariant(
@@ -334,110 +334,56 @@ const SuaKhuyenMai = () => {
     suaKhuyenMai();
   };
 
-  const handleCheckboxChange = (record, e) => {
-    const id = record.id;
-    if (e.target.checked) {
-      setSelectedRowKeys([...selectedRowKeys, id]);
-      setSelectedRows([...selectedRows, record]);
-      loadDatalistSanPhamChiTiet(record.id, true);
+  // Code check box
+  const onSelectChange = (newSelectedRowKeys) => {
+    setSelectedRowKeys(newSelectedRowKeys);
+    if (newSelectedRowKeys.length === 0) {
+      clear();
     } else {
-      loadDatalistSanPhamChiTiet(record.id, false);
-      setSelectedRowKeys(selectedRowKeys.filter((key) => key !== id));
-      setSelectedRows(selectedRows.filter((row) => row.id !== id));
+      clear();
+      newSelectedRowKeys
+        .reduce((prevPromise, id) => {
+          return prevPromise.then(() => loadDatalistSanPhamChiTiet(id, true));
+        }, Promise.resolve())
+        .catch((error) => {
+          console.log("Đã xảy ra lỗi");
+        });
     }
-  };
-
-  const handleRowClick = (record) => {
-    const id = record.id;
-    const checked = !selectedRowKeys.includes(id);
-    handleCheckboxChange(record, { target: { checked } });
   };
 
   const rowSelection = {
-    selectedRowKeys: selectedRowKeys.filter((key) => idSanPham.includes(key)),
-    onChange: (selectedRowKeys, selectedRows) => {
-      setSelectedRowKeys(selectedRowKeys);
-      setSelectedRows(selectedRows);
-    },
+    selectedRowKeys,
+    onChange: onSelectChange,
+    selections: [
+      Table.SELECTION_ALL,
+      Table.SELECTION_INVERT,
+      Table.SELECTION_NONE,
+    ],
   };
 
-  //Xử lý khi checkbox trên tiêu đề cột thay đổi
-  const handleSelectAllChange = (e) => {
-    const checked = e.target.checked;
-    if (checked === true) {
-      setSelectAll(checked);
-      const selectedKeys = checked ? listSanPham.map((item) => item.id) : [];
-      selectedKeys.forEach((id) => {
-        loadDatalistSanPhamChiTiet(id, true);
-      });
-      // console.log(listSanPhamChiTiet);
-      setSelectedRowKeys(selectedKeys);
-    } else {
-      clear();
-      setSelectAll(checked);
-      const selectedKeys = checked ? listSanPham.map((item) => item.id) : [];
-      setSelectedRowKeys(selectedKeys);
-    }
-  };
-
-  // Thực hiện checkbox ListChiTietSanPham
-  const handleCheckboxChange1 = (record, e) => {
-    const id = record.id;
-    if (e.target.checked) {
-      setSelectedRowKeys1([...selectedRowKeys1, id]);
-      setSelectedRows1([...selectedRows1, record]);
-      setSelectedProductDetails([...selectedProductDetails, id]);
-    } else {
-      setSelectedRowKeys1(selectedRowKeys1.filter((key) => key !== id));
-      setSelectedRows1(selectedRows1.filter((row) => row.id !== id));
-      setSelectedProductDetails(
-        selectedProductDetails.filter((productId) => productId !== id)
-      );
-    }
-  };
-
-  const handleRowClick1 = (record) => {
-    const id = record.id;
-    const checked = !selectedRowKeys1.includes(id);
-    handleCheckboxChange1(record, { target: { checked } });
+  const onSelectChange1 = (newSelectedRowKeys1) => {
+    console.log("selectedRowKeys changed: ", newSelectedRowKeys1);
+    setSelectedRowKeys1(newSelectedRowKeys1);
+    setSelectedProductDetails(newSelectedRowKeys1);
   };
 
   const rowSelection1 = {
-    selectedRowKeys1,
-    onChange: (selectedRowKeys1, selectedRows1) => {
-      setSelectedRowKeys1(selectedRowKeys1);
-      setSelectedRows1(selectedRows1);
-    },
-  };
-
-  const handleSelectAllChange1 = (e) => {
-    const checked = e.target.checked;
-    setSelectAll1(checked);
-    const selectedKeys1 = checked
-      ? listSanPhamChiTiet.map((item) => item.id)
-      : [];
-    setSelectedProductDetails(selectedKeys1);
-    setSelectedRowKeys1(selectedKeys1);
+    selectedRowKeys: selectedRowKeys1,
+    onChange: onSelectChange1,
+    selections: [
+      Table.SELECTION_ALL,
+      Table.SELECTION_INVERT,
+      Table.SELECTION_NONE,
+    ],
   };
 
   //Column bảng Sản Phẩm
   const columns = [
     {
-      title: <Checkbox onChange={handleSelectAllChange} checked={selectAll} />,
-      dataIndex: "selection",
-      width: "5%",
-      render: (_, record) => (
-        <Checkbox
-          onChange={(e) => handleCheckboxChange(record, e)}
-          checked={selectedRowKeys.includes(record.id)}
-        />
-      ),
-      align: "center",
-    },
-    {
       title: "STT",
       dataIndex: "stt",
-      width: "5%",
+      key: "stt",
+      width: "10%",
       render: (text, record, index) => (
         <span>{listSanPham.indexOf(record) + 1}</span>
       ),
@@ -446,13 +392,23 @@ const SuaKhuyenMai = () => {
     {
       title: "Mã",
       dataIndex: "maSanPham",
-      width: "10%",
+      key: "maSanPham",
+      width: "30%",
       align: "center",
     },
     {
       title: "Tên sản phẩm ",
       dataIndex: "tenSanPham",
-      width: "15%",
+      key: "tenSanPham",
+      width: "30%",
+      editable: true,
+      align: "center",
+    },
+    {
+      title: "Dòng sản phẩm ",
+      dataIndex: "tenDongSanPham",
+      key: "tenDongSanPham",
+      width: "30%",
       editable: true,
       align: "center",
     },
@@ -461,23 +417,10 @@ const SuaKhuyenMai = () => {
   //Column bảng Sản Phẩm Chi Tiết
   const columns1 = [
     {
-      title: (
-        <Checkbox onChange={handleSelectAllChange1} checked={selectAll1} />
-      ),
-      dataIndex: "selection1",
-      width: "5%",
-      render: (_, record) => (
-        <Checkbox
-          onChange={(e) => handleCheckboxChange1(record, e)}
-          checked={selectedRowKeys1.includes(record.id)}
-        />
-      ),
-      align: "center",
-    },
-    {
       title: "STT",
       dataIndex: "stt",
-      width: "5%",
+      key: "stt",
+      width: "10%",
       render: (text, record, index) => (
         <span>{listSanPhamChiTiet.indexOf(record) + 1}</span>
       ),
@@ -486,6 +429,7 @@ const SuaKhuyenMai = () => {
     {
       title: "Ảnh",
       dataIndex: "duongDan",
+      key: "duongDan",
       width: "10%",
       align: "center",
       render: (text, record) => (
@@ -506,39 +450,23 @@ const SuaKhuyenMai = () => {
     {
       title: "Tên sản phẩm",
       dataIndex: "tenSanPham",
-      width: "10%",
+      key: "tenSanPham",
+      width: "20%",
       align: "center",
+      maxWidth: "20%",
       render: (value, record) => {
         let tenSanPham = value;
-        return <span style={{ whiteSpace: "pre-line" }}> {tenSanPham}</span>;
-      },
-    },
-    {
-      title: "ROM",
-      dataIndex: "kichThuocRom",
-      width: "10%",
-      align: "center",
-      render: (value, record) => {
-        let formattedValue = value;
-        formattedValue = `${record.kichThuocRom} GB`;
-        return <span>{formattedValue}</span>;
-      },
-    },
-    {
-      title: "RAM ",
-      dataIndex: "kichThuocRam",
-      width: "10%",
-      editable: true,
-      align: "center",
-      render: (value, record) => {
-        let formattedValue = value;
-        formattedValue = `${record.kichThuocRam} GB`;
-        return <span>{formattedValue}</span>;
+        return (
+          <span style={{ whiteSpace: "pre-line" }}>
+            {record.tenSanPham} {record.kichThuocRam}GB/{record.kichThuocRom}GB
+          </span>
+        );
       },
     },
     {
       title: "Màu Sắc ",
       dataIndex: "tenMauSac",
+      key: "tenMauSac",
       width: "10%",
       editable: true,
       align: "center",
@@ -546,7 +474,8 @@ const SuaKhuyenMai = () => {
     {
       title: "Đơn giá ",
       dataIndex: "donGia",
-      width: "10%",
+      key: "donGia",
+      width: "20%",
       editable: true,
       align: "center",
       render: (value, record) => {
@@ -559,6 +488,7 @@ const SuaKhuyenMai = () => {
     {
       title: "Giảm giá",
       dataIndex: "giaTriKhuyenMai",
+      key: "giaTriKhuyenMai",
       width: "10%",
       editable: true,
       align: "center",
@@ -576,7 +506,8 @@ const SuaKhuyenMai = () => {
     {
       title: "Đơn giá sau giảm giá",
       dataIndex: "donGiaSauKhuyenMai",
-      width: "10%",
+      key: "donGiaSauKhuyenMai",
+      width: "20%",
       editable: true,
       align: "center",
       whiteSpace: "pre-line",
@@ -604,34 +535,6 @@ const SuaKhuyenMai = () => {
       },
     },
   ];
-
-  const mergedColumns = columns.map((col) => {
-    if (!col.editable) {
-      return col;
-    }
-    return {
-      ...col,
-      onCell: (record) => ({
-        record,
-        dataIndex: col.dataIndex,
-        title: col.title,
-      }),
-    };
-  });
-
-  const mergedColumns1 = columns1.map((col1) => {
-    if (!col1.editable) {
-      return col1;
-    }
-    return {
-      ...col1,
-      onCell: (record) => ({
-        record,
-        dataIndex: col1.dataIndex,
-        title: col1.title,
-      }),
-    };
-  });
 
   const handleChangeToggleButtonDiscount = (event) => {
     const newAlignment = event.target.value;
@@ -871,23 +774,13 @@ const SuaKhuyenMai = () => {
             <div className="mt-3">
               <h4 className="title-product"> Danh sách sản phẩm</h4>
               <Table
+                rowSelection={rowSelection}
+                columns={columns}
                 dataSource={listSanPham}
-                columns={mergedColumns}
-                pagination={{ pageSize: 4, position: ["bottomCenter"] }}
                 rowKey="id"
-                style={{ marginBottom: "20px" }}
-                onRow={(record) => {
-                  return {
-                    onClick: () => {
-                      if (selectedRow === record) {
-                        handleRowClick(record);
-                      } else {
-                        handleRowClick(record);
-                        setSelectedRow(record);
-                      }
-                    },
-                    className: selectedRow === record ? "selected-row" : "",
-                  };
+                pagination={{
+                  pageSize: 4,
+                  position: ["bottomCenter"],
                 }}
               />
             </div>
@@ -896,20 +789,13 @@ const SuaKhuyenMai = () => {
         <div className="row mt-3 ms-1 mb-3 add-promotion-inProduct-detail-container">
           <h4 style={{ marginTop: "20px" }}>Danh sách sản phẩm chi tiết</h4>
           <Table
+            rowSelection={rowSelection1}
+            columns={columns1}
             dataSource={listSanPhamChiTiet}
-            columns={mergedColumns1}
-            pagination={{ pageSize: 5, position: ["bottomCenter"] }}
             rowKey="id"
-            onRow={(record) => {
-              return {
-                onClick: () => {
-                  handleRowClick1(record);
-                  setSelectedRows1([record]);
-                  setIdSanPhamChiTiet(record.id);
-                  detailSanPhamSauKhuyenMai(record.id);
-                },
-                className: selectedRow === record.index ? "selected-row" : "",
-              };
+            pagination={{
+              pageSize: 5,
+              position: ["bottomCenter"],
             }}
           />
         </div>
