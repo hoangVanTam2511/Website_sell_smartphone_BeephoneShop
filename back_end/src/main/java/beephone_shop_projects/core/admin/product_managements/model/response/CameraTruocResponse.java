@@ -1,5 +1,6 @@
-package beephone_shop_projects.core.admin.product_managements.model.request;
+package beephone_shop_projects.core.admin.product_managements.model.response;
 
+import beephone_shop_projects.infrastructure.constant.CameraType;
 import beephone_shop_projects.infrastructure.constant.StatusCommon;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,13 +11,15 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MauSacRequest {
+public class CameraTruocResponse {
 
     private String id;
 
     private String ma;
 
-    private String tenMauSac;
+    private String doPhanGiai;
+
+    private CameraType cameraType;
 
     private StatusCommon status;
 

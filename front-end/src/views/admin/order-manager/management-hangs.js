@@ -99,7 +99,7 @@ const ManagementHangs = () => {
     getListhang();
   }, []);
 
-  const OrderTable = () => {
+  const BrandTable = () => {
     return (
       <>
         <Table
@@ -267,7 +267,7 @@ const ManagementHangs = () => {
             </div>
           </Card.Header>
           <Card.Body>
-            <OrderTable />
+            <BrandTable />
           </Card.Body>
           <div className="mx-auto">
             <Pagination

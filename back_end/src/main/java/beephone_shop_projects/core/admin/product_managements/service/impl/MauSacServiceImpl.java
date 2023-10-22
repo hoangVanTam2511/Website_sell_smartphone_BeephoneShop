@@ -22,4 +22,5 @@ public class MauSacServiceImpl extends AbstractServiceImpl<MauSac, MauSacRespons
         return null;
     }
 
+
 }
