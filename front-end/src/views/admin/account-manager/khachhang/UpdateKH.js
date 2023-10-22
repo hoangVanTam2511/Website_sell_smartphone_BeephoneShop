@@ -391,6 +391,7 @@ const UpdateKH = () => {
                           disableFuture
                           label="Ngày Sinh"
                           value={dayjs(ngaySinh)}
+                          format="DD/MM/YYYY"
                           onChange={handleChangeDate}
                           sx={{
                             position: "relative",

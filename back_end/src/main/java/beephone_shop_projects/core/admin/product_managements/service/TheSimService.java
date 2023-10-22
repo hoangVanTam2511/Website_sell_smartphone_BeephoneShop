@@ -9,5 +9,4 @@ import org.springframework.data.domain.Page;
 public interface TheSimService extends GenericService<TheSimResponse, TheSimRequest, String> {
 
   Page<TheSim> findAllSimCards(Integer pageNo);
-  TheSim add(TheSimRequest theSimRequest);
 }

@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 // import {
 //   useNavigate,
 
 // } from "react-router-dom";
-import { Button } from "antd";
+import { Button, message } from "antd";
 import {
   FormControl,
   Select,
@@ -17,37 +17,22 @@ import {
 import axios from "axios";
 // import LoadingIndicator from "../../../utilities/loading";
 import { apiURLSimCard } from "../../../service/api";
-import { SimStatusNumber } from "./enum";
+import { SimMultiple } from "./enum";
 
-const CreateSimCard = ({ close }) => {
+import LoadingIndicator from "../../../utilities/loading";
+import generateRandomCode from "../../../utilities/genCode";
+
+const CreateSimCard = ({ close, getAll, sims }) => {
   // const navigate = useNavigate();
 
-  const [sims, setSims] = useState([]);
-  const [uniqueLoaiTheSim, setUniqueLoaiTheSim] = useState("");
-  const [loaiTheSim, setLoaiTheSim] = useState("");
-  let [simMultiple, setSimMultiple] = useState("");
-  useEffect(() => {
-    // Load data when the component mounts
-    axios
-      .get(apiURLSimCard + "/all")
-      .then((response) => {
-        setSims(response.data.data);
-      })
-      .catch((error) => {
-        console.error("Error loading data:", error);
-      });
-  }, []);
-  useEffect(() => {
-    // Load data when the component mounts
-    // Tạo danh sách uniqueLoaiTheSim sau khi dữ liệu đã được tải
-    const allLoaiTheSim = sims.map((option) => option.loaiTheSim);
-    const uniqueLoaiTheSim = allLoaiTheSim.filter((value, index, self) => {
+  const [loaiTheSim, setLoaiTheSim] = React.useState("");
+
+  const [isLoading, setIsLoading] = React.useState(false);
+  const uniqueLoaiTheSim = sims
+    .map((option) => option.loaiTheSim)
+    .filter((value, index, self) => {
       return self.indexOf(value) === index;
     });
-    setUniqueLoaiTheSim(uniqueLoaiTheSim);
-  }, [sims]);
-
-  // const [isLoading, setIsLoading] = React.useState(false);
 
   const [checkedDualSim, setCheckedDualSim] = React.useState(false);
   const [checkedSingleSim, setCheckedSingleSim] = React.useState(true);
@@ -59,67 +44,69 @@ const CreateSimCard = ({ close }) => {
     setCheckedDualSim(event.target.checked);
   };
 
-  let [status, setStatus] = useState(0);
+  const [status, setStatus] = React.useState("");
 
   const handleChangeStatus = (event) => {
     setStatus(event.target.value);
-    console.log(event.target.value);
   };
-
+  const handleChangeLoai = (event, value) => {
+    setLoaiTheSim(value);
+  };
   const addTheSim = () => {
-    // setFormSubmitDPG(true);
-    const isLoaiTheSimExist = uniqueLoaiTheSim.some(
-      (item) => item === loaiTheSim
-    );
-
-    if (!isLoaiTheSimExist) {
-      // Nếu loaiTheSim chưa tồn tại trong danh sách uniqueLoaiTheSim, thêm nó vào danh sách
-      const updatedUniqueLoaiTheSim = [...uniqueLoaiTheSim, loaiTheSim];
-      setUniqueLoaiTheSim(updatedUniqueLoaiTheSim);
-    }
-    // let obj = {
-    //   loaiTheSim: loaiTheSim,
-    //   trangThai: status,
-    // };
-    // if (!chieuDai || !chieuRong) {
-    //   // message.error("Vui lòng điền đủ thông tin");
-    //   setOpen(true);
-    //   return;
-    // }
-
-    const simObjects = [];
-
+    let simObjects = [];
     if (checkedSingleSim && checkedDualSim) {
       // Nếu cả hai loại SIM được chọn, tạo hai đối tượng và thêm vào danh sách
       const simObject1 = {
-        loaiTheSim: "Haha",
-        trangThai: 1,
+        ma: "TS" + generateRandomCode(),
+        loaiTheSim: loaiTheSim,
+        status: status,
+        simMultiple: SimMultiple.SINGLE_SIM,
       };
 
       const simObject2 = {
-        loaiTheSim: "loaiTheSim",
-        trangThai: 0,
+        ma: "TS" + generateRandomCode(),
+        loaiTheSim: loaiTheSim,
+        status: status,
+        simMultiple: SimMultiple.DUAL_SIM,
       };
 
       simObjects.push(simObject1, simObject2);
+    } else if (checkedSingleSim) {
+      // Nếu chỉ một trong hai loại SIM được chọn hoặc không có SIM nào được chọn, tạo một đối tượng và thêm vào danh sách
+      const simObject = {
+        ma: "TS" + generateRandomCode(),
+        loaiTheSim: loaiTheSim,
+        status: status,
+        simMultiple: SimMultiple.SINGLE_SIM,
+      };
+      simObjects.push(simObject);
     } else {
       // Nếu chỉ một trong hai loại SIM được chọn hoặc không có SIM nào được chọn, tạo một đối tượng và thêm vào danh sách
       const simObject = {
+        ma: "TS" + generateRandomCode(),
         loaiTheSim: loaiTheSim,
-        trangThai: status,
+        status: status,
+        simMultiple: SimMultiple.SINGLE_SIM,
       };
-
       simObjects.push(simObject);
     }
-
     axios
       .post(apiURLSimCard + "/add", simObjects)
       .then((response) => {
-        setSims([...sims, ...simObjects]);
+        close();
+        getAll();
+        handleReset();
+        message.success("Thêm thành công");
       })
       .catch((error) => {
         alert("Thêm thất bại");
       });
+  };
+  const handleReset = (event) => {
+    setStatus("");
+    setLoaiTheSim("");
+    setCheckedSingleSim(true);
+    setCheckedDualSim(false);
   };
   return (
     <>
@@ -138,7 +125,8 @@ const CreateSimCard = ({ close }) => {
                 id="free-solo-demo"
                 freeSolo
                 options={uniqueLoaiTheSim}
-                // onChange={(event, newValue) => setLoaiTheSim(newValue)}
+                inputValue={loaiTheSim}
+                onInputChange={handleChangeLoai}
                 renderInput={(params) => (
                   <TextField {...params} label="Loại Thẻ SIM" />
                 )}
@@ -188,10 +176,7 @@ const CreateSimCard = ({ close }) => {
             </div>
             <div className="mt-4 pt-1 d-flex justify-content-end">
               <Button
-                onClick={() => {
-                  addTheSim();
-                  close();
-                }}
+                onClick={() => addTheSim()}
                 className="rounded-2 button-mui"
                 type="primary"
                 style={{ height: "40px", width: "auto", fontSize: "15px" }}
@@ -207,7 +192,7 @@ const CreateSimCard = ({ close }) => {
           </div>
         </div>
       </div>
-      {/* {isLoading && <LoadingIndicator />} */}
+      {isLoading && <LoadingIndicator />}
     </>
   );
 };

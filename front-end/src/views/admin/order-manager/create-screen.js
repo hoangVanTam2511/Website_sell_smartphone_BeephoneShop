@@ -30,24 +30,20 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const CreateScreen = ({ close }) => {
+const CreateScreen = ({ close, getAll, screens }) => {
   // const navigate = useNavigate();
   let [doPhanGiai, setDoPhanGiai] = useState("");
-  let [loaiManHinh, setLoaiManHinh] = useState("");
-  let [tanSoQuet, setTanSoQuet] = useState("");
-  let [kichThuoc, setKichThuoc] = useState("");
-  let [trangThai, setTrangThai] = useState("");
+  const [loaiManHinh, setLoaiManHinh] = React.useState("");
+  const [tanSoQuet, setTanSoQuet] = React.useState("");
+  const [kichThuoc, setKichThuoc] = React.useState("");
+  const [trangThai, setTrangThai] = React.useState("");
   const [open, setOpen] = React.useState(false);
-  let [chieuDai, setChieuDai] = useState("");
-  let [chieuRong, setChieuRong] = useState("");
-  let [id, setID] = useState("");
-  const [selectedResolution, setSelectedResolution] = useState("");
-
-  // Hàm xử lý sự kiện khi giá trị của Select thay đổi
+  const [chieuDai, setChieuDai] = React.useState("");
+  const [chieuRong, setChieuRong] = React.useState("");
+  const [listPhanGiai, setListPhanGiai] = useState([]);
   const handleChangeDoPhanGiai = (event) => {
     const selectedValue = event.target.value;
     setDoPhanGiai(selectedValue);
-    console.log(event.target);
   };
   useEffect(() => {
     // Load data when the component mounts
@@ -55,22 +51,13 @@ const CreateScreen = ({ close }) => {
       .get(apiURLDoPhanGiai)
       .then((response) => {
         setListPhanGiai(response.data.data);
+        console.log(response.data.data);
       })
       .catch((error) => {
         console.error("Error loading data:", error);
       });
   }, []);
-  useEffect(() => {
-    // Load data when the component mounts
-    axios
-      .get(apiURLDisplay)
-      .then((response) => {
-        setScreens(response.data.data);
-      })
-      .catch((error) => {
-        console.error("Error loading data:", error);
-      });
-  }, []);
+
   const [formSubmitDPG, setFormSubmitDPG] = useState(false);
   const [formSubmitMH, setFormSubmitMH] = useState(false);
   const handleChieuDai = (e) => {
@@ -81,6 +68,15 @@ const CreateScreen = ({ close }) => {
     const value = e.target.value;
     setChieuRong(value);
   };
+  const handleTanSoQuet = (event, value) => {
+    setTanSoQuet(value);
+  };
+  const handleKichThuoc = (event, value) => {
+    setKichThuoc(value);
+  };
+  const handleLoaiManHinh = (event, value) => {
+    setLoaiManHinh(value);
+  };
   const handleClose = () => {
     addDoPhanGiai();
   };
@@ -88,15 +84,18 @@ const CreateScreen = ({ close }) => {
     setChieuDai("");
     setChieuRong("");
   };
+  const handleReset1 = () => {
+    setLoaiManHinh("");
+    setDoPhanGiai("");
+    setTanSoQuet("");
+    setKichThuoc("");
+  };
 
-  const [screens, setScreens] = useState([]);
-  const [listPhanGiai, setListPhanGiai] = useState([]);
   const addDoPhanGiai = () => {
     setFormSubmitDPG(true);
     let obj = {
       chieuDai: chieuDai,
       chieuRong: chieuRong,
-      id: id,
     };
     if (!chieuDai || !chieuRong) {
       // message.error("Vui lòng điền đủ thông tin");
@@ -110,7 +109,6 @@ const CreateScreen = ({ close }) => {
         let newDoPhanGiai = {
           chieuDai: chieuDai,
           chieuRong: chieuRong,
-          id: id,
         };
         setListPhanGiai([newDoPhanGiai, ...listPhanGiai]);
         message.success("Thêm thành công");
@@ -126,52 +124,25 @@ const CreateScreen = ({ close }) => {
     setFormSubmitMH(true);
     let obj = {
       loaiManHinh: loaiManHinh,
-      doPhanGiai: doPhanGiai,
+      doPhanGiaiManHinh: doPhanGiai,
       tanSoQuet: tanSoQuet,
       kichThuoc: kichThuoc,
-      trangThai: trangThai,
+      status: trangThai,
     };
-    // if (!loaiManHinh || !doPhanGiai) {
-    //   // message.error("Vui lòng điền đủ thông tin");
-    //   setOpen(true);
-    //   return;
-    // }
-
     axios
       .post(apiURLDisplay + "/add", obj)
       .then((response) => {
-        let newDoPhanGiai = {
-          loaiManHinh: loaiManHinh,
-          doPhanGiai: doPhanGiai,
-          tanSoQuet: tanSoQuet,
-          kichThuoc: kichThuoc,
-          trangThai: trangThai,
-        };
-        // const generatedMaKhachHang = response.data.data.id;
-        setScreens([newDoPhanGiai, ...screens]);
+        close();
+        getAll();
+        handleReset1();
         message.success("Thêm thành công");
-        handleReset();
-        setOpen(false);
-        // redirectToHienThiKH(generatedMaKhachHang);
+
+        // setOpen(false);
       })
       .catch((error) => {
         alert("Thêm thất bại");
       });
   };
-
-  // useEffect(() => {
-  //   if (doPhanGiai) {
-  //     const selectedProvince = listPhanGiai.find(
-  //       (dpg) => dpg.id === doPhanGiai
-  //     );
-  //     if (selectedProvince) {
-  //       const selectedProvinceName = `${selectedProvince.chieuDai}x${selectedProvince.chieuRong}`;
-  //       handleChangeDoPhanGiai(selectedProvinceName);
-  //       console.log(selectedProvinceName);
-  //     }
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [doPhanGiai, handleChangeDoPhanGiai]);
 
   const uniqueTanSoQuet = screens
     .map((option) => option.tanSoQuet)
@@ -213,10 +184,9 @@ const CreateScreen = ({ close }) => {
                 className="custom"
                 id="free-solo-demo"
                 freeSolo
+                inputValue={loaiManHinh}
                 options={uniqueLoaiManHinh}
-                onChange={(e) => {
-                  setLoaiManHinh(e.target.value);
-                }}
+                onChange={handleLoaiManHinh}
                 renderInput={(params) => (
                   <TextField {...params} label="Loại Màn Hình" />
                 )}
@@ -256,7 +226,7 @@ const CreateScreen = ({ close }) => {
                     </>
                   }
                 >
-                  {listPhanGiai.map((text, record) => (
+                  {listPhanGiai.map((record) => (
                     <MenuItem key={record.id} value={record.id}>
                       {`${record.chieuDai} x ${record.chieuRong}`}
                     </MenuItem>
@@ -271,9 +241,8 @@ const CreateScreen = ({ close }) => {
                 id="free-solo-demo"
                 freeSolo
                 options={uniqueTanSoQuet}
-                onChange={(e) => {
-                  setTanSoQuet(e.target.value);
-                }}
+                onChange={handleTanSoQuet}
+                inputValue={tanSoQuet}
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -303,9 +272,8 @@ const CreateScreen = ({ close }) => {
                 id="free-solo-demo"
                 freeSolo
                 options={uniqueKichThuoc}
-                onChange={(e) => {
-                  setKichThuoc(e.target.value);
-                }}
+                inputValue={kichThuoc}
+                onChange={handleKichThuoc}
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -349,7 +317,6 @@ const CreateScreen = ({ close }) => {
             <div className="mt-4 pt-1 d-flex justify-content-end">
               <Button
                 onClick={() => {
-                  close();
                   addManHinh();
                 }}
                 className="rounded-2 button-mui"
@@ -381,18 +348,7 @@ const CreateScreen = ({ close }) => {
       >
         <DialogTitle className="text-center">{"THÊM ĐỘ PHÂN GIẢI"}</DialogTitle>
         <DialogContent className="" style={{ height: "180px", width: "350px" }}>
-          <div className="mt-3">
-            <TextField
-              label="Chiều rộng"
-              value={chieuRong}
-              id="fullWidth"
-              onChange={handleChieuRong}
-              // error={formSubmitDPG && !chieuRong}
-              // helperText={formSubmitDPG && !chieuRong && "Chiều rộng trống"}
-              style={{ width: "100%" }}
-              maxLength={30}
-            />
-          </div>
+          <div className="mt-3"></div>
           <div className="mt-3">
             <TextField
               label="Chiều dài"
@@ -401,6 +357,18 @@ const CreateScreen = ({ close }) => {
               onChange={handleChieuDai}
               // error={formSubmitDPG && !chieuDai}
               // helperText={formSubmitDPG && !chieuDai && "Chiều Dài trống"}
+              style={{ width: "100%" }}
+              maxLength={30}
+            />
+          </div>
+          <div className="mt-3">
+            <TextField
+              label="Chiều rộng"
+              value={chieuRong}
+              id="fullWidth"
+              onChange={handleChieuRong}
+              // error={formSubmitDPG && !chieuRong}
+              // helperText={formSubmitDPG && !chieuRong && "Chiều rộng trống"}
               style={{ width: "100%" }}
               maxLength={30}
             />

@@ -32,9 +32,9 @@ public class TheSimController {
 
   @PostMapping("/add")
   public ResponseObject<TheSimResponse> createSimCard(@RequestBody List<TheSimRequest> theSimRequest) throws Exception {
-    List<TheSim> createdSimCards = new ArrayList<>();
+    List<TheSimResponse> createdSimCards = new ArrayList<>();
     for (TheSimRequest request : theSimRequest) {
-      TheSim createdSimCard = theSimService.add(request);
+      TheSimResponse createdSimCard = theSimService.save(request);
       createdSimCards.add(createdSimCard);
     }
     return new ResponseObject(createdSimCards);

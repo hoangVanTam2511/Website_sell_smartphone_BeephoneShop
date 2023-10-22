@@ -32,30 +32,33 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const ManagementScreens = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [totalPages, setTotalPages] = useState();
-  const [refreshPage, setRefreshPage] = useState(1);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [keyword, setKeyword] = useState(searchParams.get("keyword"));
-  const [currentPage, setCurrentPage] = useState(
-    searchParams.get("currentPage") || 1
-  );
-
-  const loadDataList = (currentPage) => {
+  // const [totalPages, setTotalPages] = useState();
+  // const [refreshPage, setRefreshPage] = useState(1);
+  // const [searchParams, setSearchParams] = useSearchParams();
+  // const [keyword, setKeyword] = useState(searchParams.get("keyword"));
+  // const [currentPage, setCurrentPage] = useState(
+  //   searchParams.get("currentPage") || 1
+  // );
+  const [screens, setScreens] = useState([]);
+  const loadDataList = () => {
     axios
-      .get(apiURLDisplay + "/all?page=" + currentPage)
+      .get(apiURLDisplay)
       .then((response) => {
         setScreens(response.data.data);
-        setTotalPages(response.data.totalPages);
+        setIsLoading(false);
       })
-      .catch(() => {});
+      .catch((error) => {
+        console.error(error);
+        setIsLoading(false);
+      });
   };
   useEffect(() => {
-    loadDataList(currentPage);
-  }, [currentPage]);
+    loadDataList();
+  }, []);
 
-  const handleRedirectCreateScreen = () => {
-    navigate(`/dashboard/screen/create`);
-  };
+  // const handleRedirectCreateScreen = () => {
+  //   navigate(`/dashboard/screen/create`);
+  // };
 
   const [open, setOpen] = React.useState(false);
   const handleClickOpen = () => {
@@ -65,16 +68,6 @@ const ManagementScreens = () => {
   const handleClose = () => {
     setOpen(false);
   };
-
-  const [screens, setScreens] = useState([
-    // {
-    //   ma: "091238612",
-    //   pinType: "Li-po",
-    //   dungLuong: 5000,
-    //   pinStatus: 1,
-    // },
-  ]);
-
   const OrderTable = () => {
     return (
       <>
@@ -108,6 +101,16 @@ const ManagementScreens = () => {
       dataIndex: "ma",
       render: (text, record) => (
         <span style={{ fontWeight: "400" }}>{record.ma}</span>
+      ),
+    },
+    {
+      title: "Loại màn hình",
+      align: "center",
+      key: "loaiManHinh",
+      width: "15%",
+      dataIndex: "ma",
+      render: (text, record) => (
+        <span style={{ fontWeight: "400" }}>{record.loaiManHinh}</span>
       ),
     },
     {
@@ -285,7 +288,11 @@ const ManagementScreens = () => {
         }}
       >
         <DialogContent className="">
-          <CreateScreen close={handleClose} />
+          <CreateScreen
+            close={handleClose}
+            getAll={loadDataList}
+            screens={screens}
+          />
         </DialogContent>
         <div className="mt-3"></div>
       </Dialog>

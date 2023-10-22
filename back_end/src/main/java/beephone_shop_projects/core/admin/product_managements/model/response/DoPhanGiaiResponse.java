@@ -11,11 +11,14 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DoPhanGiaiResponse {
+
     private String ma;
 
     private Double chieuDai;
 
     private Double chieuRong;
+
+    private String id;
 
     private ResolutionType resolutionType;
 }

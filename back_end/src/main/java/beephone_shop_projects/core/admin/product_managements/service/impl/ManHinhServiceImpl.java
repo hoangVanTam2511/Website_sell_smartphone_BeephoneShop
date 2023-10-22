@@ -41,7 +41,7 @@ public class ManHinhServiceImpl extends AbstractServiceImpl<ManHinh, ManHinhResp
         int number = random.nextInt(10000);
         String code = String.format("DP%04d", number);
         ManHinh manHinh=new ManHinh().builder()
-//                .doPhanGiaiManHinh(doPhanGiaiRepository.findOneById(manHinhRequest.getDoPhanGiaiManHinh()))
+                .doPhanGiaiManHinh(doPhanGiaiRepository.findOneById(manHinhRequest.getDoPhanGiaiManHinh()))
                 .loaiManHinh(manHinhRequest.getLoaiManHinh())
                 .ma(code)
                 .kichThuoc(manHinhRequest.getKichThuoc())

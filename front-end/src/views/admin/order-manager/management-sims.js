@@ -36,19 +36,17 @@ const ManagementSims = () => {
     searchParams.get("currentPage") || 1
   );
 
-  const findOrdersByMultipleCriteriaWithPagination = (page) => {
+  const handleRedirectCreateSimCard = () => {
+    navigate(`/dashboard/sim/create`);
+  };
+
+  const [sims, setSims] = useState([]);
+  const loadDataList = () => {
     axios
-      .get(`http://localhost:8080/api/orders`, {
-        params: {
-          currentPage: page,
-          keyword: keyword,
-          isPending: false,
-        },
-      })
+      .get(apiURLSimCard + "/all")
       .then((response) => {
         setSims(response.data.data);
-        console.log(response.data.data);
-        setTotalPages(response.data.totalPages);
+        // setTotalPages(response.data.totalPages);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -56,30 +54,9 @@ const ManagementSims = () => {
         setIsLoading(false);
       });
   };
-
-  const handleRedirectCreateSimCard = () => {
-    navigate(`/dashboard/sim/create`);
-  };
-
-  const [sims, setSims] = useState([
-    // {
-    //   ma: "091218273",
-    //   simType: "2 Nano",
-    //   simStatus: 0,
-    // },
-  ]);
-  const loadDataList = (currentPage) => {
-    axios
-      .get(apiURLSimCard + "?page=" + currentPage)
-      .then((response) => {
-        setSims(response.data.data);
-        setTotalPages(response.data.totalPages);
-      })
-      .catch(() => {});
-  };
   useEffect(() => {
-    loadDataList(currentPage);
-  }, [currentPage]);
+    loadDataList();
+  }, []);
   const [open, setOpen] = React.useState(false);
   const handleClickOpen = () => {
     setOpen(true);
@@ -305,7 +282,11 @@ const ManagementSims = () => {
         }}
       >
         <DialogContent className="">
-          <CreateSimCard close={handleClose} />
+          <CreateSimCard
+            close={handleClose}
+            getAll={loadDataList}
+            sims={sims}
+          />
         </DialogContent>
         <div className="mt-3"></div>
       </Dialog>

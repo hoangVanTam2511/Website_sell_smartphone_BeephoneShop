@@ -31,22 +31,22 @@ public class TheSimServiceImpl extends AbstractServiceImpl<TheSim, TheSimRespons
     return theSimRepository.findAll(pageable);
   }
 
-  @Override
-  public TheSim add(TheSimRequest theSimRequest) {
-    Random random = new Random();
-    int number = random.nextInt(10000);
-    String code = String.format("DP%04d", number);
-    TheSim sim=new TheSim().builder()
-            .ma(code)
-            .loaiTheSim(theSimRequest.getLoaiTheSim())
-            .simMultiple(theSimRequest.getSimMultiple())
-            .status(theSimRequest.getStatus())
-            .build();
-    try {
-      return theSimRepository.save(sim);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-  }
+//  @Override
+//  public TheSim add(TheSimRequest theSimRequest) {
+//    Random random = new Random();
+//    int number = random.nextInt(10000);
+//    String code = String.format("DP%04d", number);
+//    TheSim sim=new TheSim().builder()
+//            .ma(code)
+//            .loaiTheSim(theSimRequest.getLoaiTheSim())
+//            .simMultiple(theSimRequest.getSimMultiple())
+//            .status(theSimRequest.getStatus())
+//            .build();
+//    try {
+//      return theSimRepository.save(sim);
+//    } catch (Exception e) {
+//      throw new RuntimeException(e);
+//    }
+//  }
 
 }
