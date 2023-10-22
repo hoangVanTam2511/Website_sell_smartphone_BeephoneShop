@@ -53,6 +53,7 @@ const ManagementOrders = () => {
       })
       .catch((error) => {
         console.error(error);
+        setIsLoading(false);
       });
   }
 

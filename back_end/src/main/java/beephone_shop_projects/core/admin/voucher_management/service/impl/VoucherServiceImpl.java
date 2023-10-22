@@ -9,6 +9,7 @@ import beephone_shop_projects.core.admin.voucher_management.repository.VoucherRe
 import beephone_shop_projects.core.admin.voucher_management.service.VoucherService;
 import beephone_shop_projects.entity.Voucher;
 import beephone_shop_projects.infrastructure.constant.StatusDiscount;
+import beephone_shop_projects.infrastructure.constant.TypeDiscount;
 import beephone_shop_projects.infrastructure.exeption.rest.RestApiException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,6 +84,10 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     public Voucher addVoucher(@Valid CreateVoucherRequest request) {
+        if (voucherRepository.findCodeVoucher(request.getMa()) != null) {
+            // in ra lỗi trùng mã
+            throw new RestApiException("Mã voucher đã tồn tại !!!");
+        }
         StatusDiscount status = StatusDiscount.CHUA_DIEN_RA;
         Date dateTime = new Date();
         if (request.getNgayBatDau().after(dateTime) && request.getNgayKetThuc().before(dateTime)) {
@@ -98,12 +103,10 @@ public class VoucherServiceImpl implements VoucherService {
         String codeVoucher = request.getMa().trim();
         if (request.getMa().isBlank()) {
             codeVoucher = "BEE" + generateRandomCode();
+        } else if (request.getMa().length() < 10 || request.getMa().length() > 10) {
+            throw new RestApiException("Mã voucher phải đủ 10 ký tự !!!");
         }
-        if (voucherRepository.findCodeVoucher(request.getMa()) != null) {
-            // in ra lỗi trùng mã
-            throw new RestApiException("Mã voucher đã tồn tại !!!");
-        }
-            Voucher voucher = Voucher.builder()
+        Voucher voucher = Voucher.builder()
                 .ma(codeVoucher)
                 .ten(request.getTen().trim())
                 .dieuKienApDung(request.getDieuKienApDung())
@@ -116,21 +119,40 @@ public class VoucherServiceImpl implements VoucherService {
                 .trangThai(status)
                 .build();
         return voucherRepository.save(voucher);
+
     }
 
     @Override
     public Voucher updateVoucher(@Valid UpdateVoucherRequest request, String id) {
         Voucher voucher = voucherRepository.findById(id).get();
+        String codeVoucher = request.getMa().trim();
+        if (request.getMa().isBlank()) {
+            codeVoucher = "BEE" + generateRandomCode();
+        } else if (request.getMa().length() < 10 || request.getMa().length() > 10) {
+            throw new RestApiException("Mã voucher phải đủ 10 ký tự !!!");
+        }
+        StatusDiscount status = StatusDiscount.CHUA_DIEN_RA;
+        Date dateTime = new Date();
+        if (request.getNgayBatDau().after(dateTime) && request.getNgayKetThuc().before(dateTime)) {
+            status = StatusDiscount.HOAT_DONG;
+        }
+        if (request.getNgayBatDau().before(dateTime)) {
+            status = StatusDiscount.NGUNG_HOAT_DONG;
+        }
+        if (request.getNgayKetThuc().after(dateTime)) {
+            status = StatusDiscount.CHUA_DIEN_RA;
+        }
         if (voucher != null) {
-            voucher.setMa(request.getMa().trim());
+            voucher.setMa(codeVoucher);
             voucher.setTen(request.getTen().trim());
-            voucher.setGiaTriToiDa(request.getGiaTriToiDa());
+            voucher.setGiaTriToiDa(request.getLoaiVoucher() == TypeDiscount.VND ? null : request.getGiaTriToiDa());
             voucher.setLoaiVoucher(request.getLoaiVoucher());
             voucher.setDieuKienApDung(request.getDieuKienApDung());
             voucher.setSoLuong(request.getSoLuong());
             voucher.setNgayBatDau(request.getNgayBatDau());
             voucher.setNgayKetThuc(request.getNgayKetThuc());
             voucher.setGiaTriVoucher(request.getGiaTriVoucher());
+            voucher.setTrangThai(status);
             return voucherRepository.save(voucher);
         }
         return null;

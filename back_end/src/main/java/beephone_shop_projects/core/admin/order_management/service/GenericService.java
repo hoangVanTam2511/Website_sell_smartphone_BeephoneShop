@@ -4,10 +4,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.io.Serializable;
+import java.util.List;
 
 public interface GenericService<D, R, ID extends Serializable> {
 
   Page<D> findAll(Pageable pageable);
+
+  List<D> findAll();
 
   D findOneById(ID id);
 

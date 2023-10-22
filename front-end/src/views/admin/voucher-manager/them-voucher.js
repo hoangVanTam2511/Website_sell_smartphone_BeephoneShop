@@ -171,49 +171,39 @@ const AddVoucher = () => {
   const validationAll = () => {
     const msg = {};
 
-    if (ma.length < 10) {
-      msg.ma = "Mã voucher phải đủ 10 ký tự !!!";
-    }
-
     if (!ten.trim("")) {
-      msg.ten = "Tên không được để trống !!!";
+      msg.ten = "Tên không được trống !!!";
     }
 
     if (soLuong == null || soLuong === "") {
-      msg.soLuong = "Số lượng không được để trống !!!";
+      msg.soLuong = "Số lượng không được trống !!!";
     }
 
     if (soLuong <= 0 || soLuong > 10000) {
-      msg.soLuong = "Số lượng cho phép từ 1 đến 10000";
+      msg.soLuong = "Số lượng cho phép từ 1 - 10000";
     }
 
     const numericValue1 = parseFloat(value1?.replace(/[^0-9.-]+/g, ""));
     if (value1 == null || value1 === "") {
-      msg.value1 = "Điều kiện áp dụng không được để trống !!!";
+      msg.value1 = "Điều kiện áp dụng không được trống !!!";
     }
 
     if (numericValue1 <= 0 || numericValue1 > 100000000) {
-      msg.value1 = "Điều kiện áp dụng từ 1đ đến 100.000.000đ";
-    }
-
-    if (ngayBatDau.isAfter(ngayKetThuc)) {
-      msg.ngayBatDau = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc !!!";
+      msg.value1 = "Điều kiện áp dụng từ 1đ - 100.000.000đ";
     }
 
     const numericValue2 = parseFloat(value?.replace(/[^0-9.-]+/g, ""));
     if (value == null || value === "") {
-      msg.value = "Giá trị voucher không được để trống !!!";
-    }
-
-    if (selectDiscount === TypeDiscountString.PERCENT && value <= 0) {
-      msg.value = "Giá trị tối đa chỉ nằm trong khoảng 1% - 100% !!!";
+      msg.value = "Giá trị voucher không được trống !!!";
+    } else if (selectDiscount === TypeDiscountString.PERCENT && value <= 0) {
+      msg.value = "Giá trị voucher trong khoảng 1% - 100% !!!";
     }
 
     if (
       (selectDiscount === TypeDiscountString.VND && numericValue2 <= 0) ||
       (selectDiscount === TypeDiscountString.VND && numericValue2 > 100000000)
     ) {
-      msg.value = "Giá trị voucher từ 1đ đến 100.000.000đ";
+      msg.value = "Giá trị voucher từ 1đ - 100.000.000đ";
     }
 
     const numericValue3 = parseFloat(valueToiDa?.replace(/[^0-9.-]+/g, ""));
@@ -221,7 +211,7 @@ const AddVoucher = () => {
       (selectDiscount === TypeDiscountString.PERCENT && valueToiDa === null) ||
       (selectDiscount === TypeDiscountString.PERCENT && valueToiDa === "")
     ) {
-      msg.valueToiDa = "Giá trị tối đa không được để trống !!!";
+      msg.valueToiDa = "Giá trị tối đa không được trống !!!";
     }
 
     if (
@@ -229,8 +219,13 @@ const AddVoucher = () => {
       (selectDiscount === TypeDiscountString.PERCENT &&
         numericValue3 > 100000000)
     ) {
-      msg.valueToiDa = "Giá trị tối đa từ 1đ đến 100.000.000đ";
+      msg.valueToiDa = "Giá trị tối đa từ 1đ - 100.000.000đ";
     }
+
+    if (ngayBatDau === ngayKetThuc) {
+      msg.ngayKetThuc = "Ngày kết thúc không được bằng ngày bắt đầu !!!";
+    }
+
     if (ngayKetThuc.isBefore(ngayBatDau)) {
       msg.ngayKetThuc = "Ngày kết thúc phải lớn hơn ngày bắt đầu !!!";
     }
@@ -239,11 +234,13 @@ const AddVoucher = () => {
       msg.ngayBatDau = "Ngày bắt đầu phải lớn hơn ngày hiện tại !!!";
     }
 
+    if (ngayBatDau.isAfter(ngayKetThuc)) {
+      msg.ngayBatDau = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc !!!";
+    }
+
     if (ngayKetThuc.isBefore(dayjs())) {
       msg.ngayKetThuc = "Ngày kết thúc phải lớn hơn ngày hiện tại !!!";
     }
-
-    console.log(value);
 
     setValidationMsg(msg);
     if (Object.keys(msg).length > 0) return false;
@@ -299,8 +296,7 @@ const AddVoucher = () => {
           >
             <div>
               <TextField
-                label="Mã Voucher"
-                placeholder="Nhập hoặc để mã tự động "
+                label="Nhập mã hoặc mã tự động"
                 value={ma}
                 id="fullWidth"
                 onInput={handleInputCodeVoucher}
@@ -308,10 +304,12 @@ const AddVoucher = () => {
                 inputProps={{
                   maxLength: 10, // Giới hạn tối đa 10 ký tự
                 }}
+                error={validationMsg.ma !== undefined}
+                helperText={validationMsg.ma}
               />
-              <span className="validate" style={{ color: "red" }}>
+              {/* <span className="validate" style={{ color: "red" }}>
                 {validationMsg.ma}
-              </span>
+              </span> */}
             </div>
             <div className="ms-4">
               <TextField
@@ -323,12 +321,11 @@ const AddVoucher = () => {
                 }}
                 style={{ width: "330px" }}
                 inputProps={{
-                  maxLength: 100, // Giới hạn tối đa 10 ký tự
+                  maxLength: 100,
                 }}
+                error={validationMsg.ten !== undefined}
+                helperText={validationMsg.ten}
               />
-              <span className="validate" style={{ color: "red" }}>
-                {validationMsg.ten}
-              </span>
             </div>
           </div>
           <div
@@ -345,10 +342,9 @@ const AddVoucher = () => {
                 inputProps={{
                   maxLength: 10, // Giới hạn tối đa 10 ký tự
                 }}
+                error={validationMsg.soLuong !== undefined}
+                helperText={validationMsg.soLuong}
               />
-              <span className="validate" style={{ color: "red" }}>
-                {validationMsg.soLuong}
-              </span>
             </div>
             <div className="ms-4">
               {" "}
@@ -367,10 +363,9 @@ const AddVoucher = () => {
                 inputProps={{
                   maxLength: 20,
                 }}
+                error={validationMsg.value1 !== undefined}
+                helperText={validationMsg.value1}
               />
-              <span className="validate" style={{ color: "red" }}>
-                {validationMsg.value1}
-              </span>
             </div>
           </div>
 
@@ -462,15 +457,9 @@ const AddVoucher = () => {
                 inputProps={{
                   maxLength: 20,
                 }}
+                error={validationMsg.value !== undefined}
+                helperText={validationMsg.value}
               />
-              <span
-                className="validate"
-                style={{
-                  color: "red",
-                }}
-              >
-                {validationMsg.value}
-              </span>
             </div>
             <div className="ms-4">
               <TextField
@@ -493,15 +482,9 @@ const AddVoucher = () => {
                 inputProps={{
                   maxLength: 20,
                 }}
+                error={validationMsg.valueToiDa !== undefined}
+                helperText={validationMsg.valueToiDa}
               />
-              <span
-                className="validate"
-                style={{
-                  color: "red",
-                }}
-              >
-                {validationMsg.valueToiDa}
-              </span>
             </div>
           </div>
           <div
@@ -522,12 +505,18 @@ const AddVoucher = () => {
                       setNgayKetThuc(e);
                     }}
                     sx={{ width: "330px" }}
+                    slotProps={{
+                      textField: {
+                        error: validationMsg.ngayBatDau !== undefined,
+                        helperText:
+                          !!validationMsg.ngayBatDau !== undefined
+                            ? validationMsg.ngayBatDau
+                            : "",
+                      },
+                    }}
                   />
                 </DemoContainer>
               </LocalizationProvider>
-              <span className="validate-date" style={{ color: "red" }}>
-                {validationMsg.ngayBatDau}
-              </span>
             </div>
             <div className="ms-4" style={{ marginLeft: "15px" }}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -547,12 +536,18 @@ const AddVoucher = () => {
                         backgroundColor: "red", // Thay đổi màu nền của input khi disabled
                       },
                     }}
+                    slotProps={{
+                      textField: {
+                        error: validationMsg.ngayKetThuc !== undefined,
+                        helperText:
+                          !!validationMsg.ngayKetThuc !== undefined
+                            ? validationMsg.ngayKetThuc
+                            : "",
+                      },
+                    }}
                   />
                 </DemoContainer>
               </LocalizationProvider>
-              <span className="validate-date" style={{ color: "red" }}>
-                {validationMsg.ngayKetThuc}
-              </span>
             </div>
           </div>
         </div>

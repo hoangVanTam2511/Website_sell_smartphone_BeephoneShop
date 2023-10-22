@@ -7,6 +7,7 @@ import beephone_shop_projects.infrastructure.constant.StatusDiscount;
 import beephone_shop_projects.infrastructure.constant.TypeDiscount;
 import beephone_shop_projects.repository.IAccountRepository;
 import beephone_shop_projects.repository.IAnhRepository;
+import beephone_shop_projects.repository.ICameraRepository;
 import beephone_shop_projects.repository.ICauHinhRepository;
 import beephone_shop_projects.repository.IChipRepository;
 import beephone_shop_projects.repository.IDiaChiRepository;
@@ -97,6 +98,9 @@ public class DBGenerator implements CommandLineRunner {
     @Autowired
     private ISanPhamChiTietRepository iSanPhamChiTietRepository;
 
+    @Autowired
+    private ICameraRepository cameraRepository;
+
     @Override
     public void run(String... args) throws Exception {
 
@@ -151,10 +155,10 @@ public class DBGenerator implements CommandLineRunner {
 
 
         //Bảng Camera
-//        Camera camera = new Camera();
-//        camera.setMa("camera1");
-//        camera.setDoPhanGiai("120");
-//        camera.setId(cam);
+        Camera camera = new Camera();
+        camera.setMa("camera1");
+        camera.setDoPhanGiai("120");
+        camera.setId(cameraRepository.save(camera).getId());
 
         //Bảng chip
         Chip chip = new Chip();
@@ -223,58 +227,72 @@ public class DBGenerator implements CommandLineRunner {
         //Bảng Màn hình
         ManHinh manHinh = new ManHinh();
         manHinh.setMa("ManHinh01");
-        manHinh.setDoPhanGiai("1080 x 2340 Pixels");
-        manHinh.setKichThuoc(new BigDecimal("6.1"));
+//        manHinh.setDoPhanGiai("1080 x 2340 Pixels");
+        manHinh.setKichThuoc(6.1);
         manHinh.setId(manHinhRepository.save(manHinh).getId());
 
         ManHinh manHinh1 = new ManHinh();
         manHinh1.setMa("ManHinh012");
-        manHinh1.setDoPhanGiai("1080 x 2340 Pixels");
-        manHinh1.setKichThuoc(new BigDecimal("6.5"));
+//        manHinh1.setDoPhanGiai("1080 x 2340 Pixels");
+        manHinh1.setKichThuoc(6.5);
         manHinh1.setId(manHinhRepository.save(manHinh1).getId());
 
         ManHinh manHinh2 = new ManHinh();
         manHinh2.setMa("ManHinh013");
-        manHinh2.setDoPhanGiai("1080 x 2340 Pixels");
-        manHinh2.setKichThuoc(new BigDecimal("6.7"));
+        manHinh2.setKichThuoc(6.7);
         manHinh2.setId(manHinhRepository.save(manHinh2).getId());
 
         //Bảng Màu sắc
-        MauSac mauSac = new MauSac();
-        mauSac.setMa("MauSac1");
-        mauSac.setTenMauSac("YELLOW");
-        mauSac.setId(mauSacRepository.save(mauSac).getId());
-
-        MauSac mauSac1 = new MauSac();
-        mauSac1.setMa("MauSac12");
-        mauSac1.setTenMauSac("SLIVER");
-        mauSac1.setId(mauSacRepository.save(mauSac1).getId());
-
-        MauSac mauSac2 = new MauSac();
-        mauSac2.setMa("MauSac13");
-        mauSac2.setTenMauSac("BLACK");
-        mauSac2.setId(mauSacRepository.save(mauSac2).getId());
-
-        MauSac mauSac3 = new MauSac();
-        mauSac3.setMa("MauSac13");
-        mauSac3.setTenMauSac("BLUE");
-        mauSac3.setId(mauSacRepository.save(mauSac3).getId());
+//        MauSac mauSac = new MauSac();
+//        mauSac.setMa("MauSac1");
+//        mauSac.setTenMauSac("YELLOW");
+//        mauSac.setId(mauSacRepository.save(mauSac).getId());
+//
+//        MauSac mauSac1 = new MauSac();
+//        mauSac1.setMa("MauSac12");
+//        mauSac1.setTenMauSac("SLIVER");
+//        mauSac1.setId(mauSacRepository.save(mauSac1).getId());
+//
+//        MauSac mauSac2 = new MauSac();
+//        mauSac2.setMa("MauSac13");
+//        mauSac2.setTenMauSac("BLACK");
+//        mauSac2.setId(mauSacRepository.save(mauSac2).getId());
+//
+//        MauSac mauSac3 = new MauSac();
+//        mauSac3.setMa("MauSac13");
+//        mauSac3.setTenMauSac("BLUE");
+//        mauSac3.setId(mauSacRepository.save(mauSac3).getId());
 
         //Bảng Nhà sản xuất
         Hang hang = new Hang();
         hang.setMa("NhaSanXuat1");
-        hang.setTenHang("CÔNG TY TNHH SAMSUNG ELECTRONICS VIỆT NAM");
+        hang.setTenHang("Samsung");
         hang.setId(nhaSanXuatRepository.save(hang).getId());
 
         Hang hang1 = new Hang();
         hang1.setMa("NhaSanXuat12");
-        hang1.setTenHang("CÔNG TY TNHH APPLE ELECTRONICS VIỆT NAM");
+        hang1.setTenHang("Xiaomi");
         hang1.setId(nhaSanXuatRepository.save(hang1).getId());
 
         Hang hang2 = new Hang();
         hang2.setMa("NhaSanXuat13");
-        hang2.setTenHang("CÔNG TY TNHH XIAOMI ELECTRONICS VIỆT NAM");
+        hang2.setTenHang("Apple");
         hang2.setId(nhaSanXuatRepository.save(hang2).getId());
+
+        Hang hang3 = new Hang();
+        hang3.setMa("NhaSanXuat17");
+        hang3.setTenHang("Oppo");
+        hang3.setId(nhaSanXuatRepository.save(hang3).getId());
+
+        Hang hang4 = new Hang();
+        hang4.setMa("NhaSanXuat125");
+        hang4.setTenHang("Realme");
+        hang4.setId(nhaSanXuatRepository.save(hang4).getId());
+
+        Hang hang5 = new Hang();
+        hang5.setMa("NhaSanXuat134");
+        hang5.setTenHang("Nokia");
+        hang5.setId(nhaSanXuatRepository.save(hang5).getId());
 
         //Bảng Pin
         Pin pin = new Pin();
@@ -300,20 +318,40 @@ public class DBGenerator implements CommandLineRunner {
 
         Ram ram1 = new Ram();
         ram1.setMa("ram013");
-        ram1.setKichThuoc(6);
+        ram1.setKichThuoc(2);
         ram1.setId(ramRepository.save(ram1).getId());
 
         Ram ram2 = new Ram();
         ram2.setMa("ram012");
-        ram2.setKichThuoc(6);
+        ram2.setKichThuoc(3);
         ram2.setId(ramRepository.save(ram2).getId());
 
         Ram ram3 = new Ram();
         ram3.setMa("ram0123");
-        ram3.setKichThuoc(6);
+        ram3.setKichThuoc(4);
         ram3.setId(ramRepository.save(ram3).getId());
 
+        Ram ram5 = new Ram();
+        ram5.setMa("ram0172");
+        ram5.setKichThuoc(8);
+        ram5.setId(ramRepository.save(ram5).getId());
+
+        Ram ram4 = new Ram();
+        ram4.setMa("ram0163");
+        ram4.setKichThuoc(12);
+        ram4.setId(ramRepository.save(ram4).getId());
+
         //Bảng Rom
+        Rom rom5 = new Rom();
+        rom5.setMa("Rom01");
+        rom5.setKichThuoc(32);
+        rom5.setId(romRepository.save(rom5).getId());
+
+        Rom rom4 = new Rom();
+        rom4.setMa("Rom01");
+        rom4.setKichThuoc(64);
+        rom4.setId(romRepository.save(rom4).getId());
+
         Rom rom = new Rom();
         rom.setMa("Rom01");
         rom.setKichThuoc(128);
@@ -338,9 +376,9 @@ public class DBGenerator implements CommandLineRunner {
         SanPham sanPham = new SanPham();
         sanPham.setMa("SanPham01");
         sanPham.setTenSanPham("Iphone 14 Pro");
-        sanPham.setSim(2);
-        sanPham.setCongSac("Type C");
-        sanPham.setHeDieuHanh("IOS");
+//        sanPham.setSim(2);
+//        sanPham.setCongSac("Type C");
+//        sanPham.setHeDieuHanh("IOS");
         sanPham.setMoTa("""
                 Samsung Galaxy S22 là bước nhảy vọt trong công nghệ video trên thế hệ di động. 
                 Đồng thời, điện thoại cũng mở ra loạt cải tiến đột phá hàng đầu hiện nay từ màn hình vát phẳng “nịnh” mắt đến bộ xử lý 4nm tiên tiến đầu tiên trên thế hệ smartphone Samsung. 
@@ -355,9 +393,9 @@ public class DBGenerator implements CommandLineRunner {
         SanPham sanPham1 = new SanPham();
         sanPham1.setMa("SanPham014");
         sanPham1.setTenSanPham("Xiaomi Mi 11");
-        sanPham1.setSim(2);
-        sanPham1.setCongSac("Type C");
-        sanPham1.setHeDieuHanh("Android");
+//        sanPham1.setSim(2);
+//        sanPham1.setCongSac("Type C");
+//        sanPham1.setHeDieuHanh("Android");
         sanPham1.setMoTa("""
                 Xiaomi Mi 11 là bước nhảy vọt trong công nghệ video trên thế hệ di động. 
                 Đồng thời, điện thoại cũng mở ra loạt cải tiến đột phá hàng đầu hiện nay từ màn hình vát phẳng “nịnh” mắt đến bộ xử lý 4nm tiên tiến đầu tiên trên thế hệ smartphone Samsung. 
@@ -372,9 +410,9 @@ public class DBGenerator implements CommandLineRunner {
         SanPham sanPham2 = new SanPham();
         sanPham2.setMa("SanPham012");
         sanPham2.setTenSanPham("Iphone 15 Pro Max");
-        sanPham2.setSim(2);
-        sanPham2.setCongSac("Type C");
-        sanPham2.setHeDieuHanh("IOS");
+//        sanPham2.setSim(2);
+//        sanPham2.setCongSac("Type C");
+//        sanPham2.setHeDieuHanh("IOS");
         sanPham2.setMoTa("""
                 Iphone 15 là bước nhảy vọt trong công nghệ video trên thế hệ di động. 
                 Đồng thời, điện thoại cũng mở ra loạt cải tiến đột phá hàng đầu hiện nay từ màn hình vát phẳng “nịnh” mắt đến bộ xử lý 4nm tiên tiến đầu tiên trên thế hệ smartphone Samsung. 
@@ -446,7 +484,7 @@ public class DBGenerator implements CommandLineRunner {
 
         //Bảng Voucher
         Voucher voucher = new Voucher();
-        voucher.setMa("Voucher1");
+        voucher.setMa("VOUCHER123");
         voucher.setTen("""
                 Giảm ngay 100k cho đơn hàng của khách hàng đạt 5000k
                 """);
@@ -470,7 +508,7 @@ public class DBGenerator implements CommandLineRunner {
         voucher.setId(voucherRepository.save(voucher).getId());
 
         Voucher voucher2 = new Voucher();
-        voucher2.setMa("Voucher12");
+        voucher2.setMa("VOUCHER456");
         voucher2.setTen("""
                 Giảm ngay 5000k cho đơn hàng của khách hàng đạt 50000k
                 """);
@@ -494,7 +532,7 @@ public class DBGenerator implements CommandLineRunner {
         voucher2.setId(voucherRepository.save(voucher2).getId());
 
         Voucher voucher3 = new Voucher();
-        voucher3.setMa("Voucher13");
+        voucher3.setMa("VOUCHER678");
         voucher3.setTen("""
                 Giảm ngay 30% cho đơn hàng của khách hàng đạt 15000k
                 """);
@@ -518,237 +556,237 @@ public class DBGenerator implements CommandLineRunner {
         voucher3.setId(voucherRepository.save(voucher3).getId());
 
 
-        //Bảng Cấu hình
-        CauHinh cauHinh = new CauHinh();
-        cauHinh.setRam(ram);
-        cauHinh.setRom(rom);
-        cauHinh.setMauSac(mauSac);
-        cauHinh.setId(cauHinhRepository.save(cauHinh).getId());
-
-        CauHinh cauHinh1 = new CauHinh();
-        cauHinh1.setRam(ram);
-        cauHinh1.setRom(rom);
-        cauHinh1.setMauSac(mauSac1);
-        cauHinh1.setId(cauHinhRepository.save(cauHinh1).getId());
-
-        CauHinh cauHinh2 = new CauHinh();
-        cauHinh2.setRam(ram);
-        cauHinh2.setRom(rom);
-        cauHinh2.setMauSac(mauSac2);
-        cauHinh2.setId(cauHinhRepository.save(cauHinh2).getId());
-
-        CauHinh cauHinh3 = new CauHinh();
-        cauHinh3.setRam(ram);
-        cauHinh3.setRom(rom);
-        cauHinh3.setMauSac(mauSac3);
-        cauHinh3.setId(cauHinhRepository.save(cauHinh3).getId());
-
-        //Bảng Cấu hình 1
-        CauHinh cauHinh4 = new CauHinh();
-        cauHinh4.setRam(ram);
-        cauHinh4.setRom(rom1);
-        cauHinh4.setMauSac(mauSac);
-        cauHinh4.setId(cauHinhRepository.save(cauHinh4).getId());
-
-        CauHinh cauHinh5 = new CauHinh();
-        cauHinh5.setRam(ram);
-        cauHinh5.setRom(rom1);
-        cauHinh5.setMauSac(mauSac1);
-        cauHinh5.setId(cauHinhRepository.save(cauHinh5).getId());
-
-        CauHinh cauHinh6 = new CauHinh();
-        cauHinh6.setRam(ram);
-        cauHinh6.setRom(rom1);
-        cauHinh6.setMauSac(mauSac2);
-        cauHinh6.setId(cauHinhRepository.save(cauHinh6).getId());
-
-        CauHinh cauHinh7 = new CauHinh();
-        cauHinh7.setRam(ram);
-        cauHinh7.setRom(rom1);
-        cauHinh7.setMauSac(mauSac3);
-        cauHinh7.setId(cauHinhRepository.save(cauHinh7).getId());
-
-        //Bảng Cấu hình 2
-        CauHinh cauHinh8 = new CauHinh();
-        cauHinh8.setRam(ram);
-        cauHinh8.setRom(rom2);
-        cauHinh8.setMauSac(mauSac);
-        cauHinh8.setId(cauHinhRepository.save(cauHinh8).getId());
-
-        CauHinh cauHinh9 = new CauHinh();
-        cauHinh9.setRam(ram);
-        cauHinh9.setRom(rom2);
-        cauHinh9.setMauSac(mauSac1);
-        cauHinh9.setId(cauHinhRepository.save(cauHinh9).getId());
-
-        CauHinh cauHinh10 = new CauHinh();
-        cauHinh10.setRam(ram);
-        cauHinh10.setRom(rom2);
-        cauHinh10.setMauSac(mauSac2);
-        cauHinh10.setId(cauHinhRepository.save(cauHinh10).getId());
-
-        CauHinh cauHinh11 = new CauHinh();
-        cauHinh11.setRam(ram);
-        cauHinh11.setRom(rom2);
-        cauHinh11.setMauSac(mauSac3);
-        cauHinh11.setId(cauHinhRepository.save(cauHinh11).getId());
-
-        //Bảng Cấu hình 3
-        CauHinh cauHinh12 = new CauHinh();
-        cauHinh12.setRam(ram);
-        cauHinh12.setRom(rom3);
-        cauHinh12.setMauSac(mauSac);
-        cauHinh12.setId(cauHinhRepository.save(cauHinh12).getId());
-
-        CauHinh cauHinh13 = new CauHinh();
-        cauHinh13.setRam(ram);
-        cauHinh13.setRom(rom3);
-        cauHinh13.setMauSac(mauSac1);
-        cauHinh13.setId(cauHinhRepository.save(cauHinh13).getId());
-
-        CauHinh cauHinh14 = new CauHinh();
-        cauHinh14.setRam(ram);
-        cauHinh14.setRom(rom3);
-        cauHinh14.setMauSac(mauSac2);
-        cauHinh14.setId(cauHinhRepository.save(cauHinh14).getId());
-
-        CauHinh cauHinh15 = new CauHinh();
-        cauHinh15.setRam(ram);
-        cauHinh15.setRom(rom3);
-        cauHinh15.setMauSac(mauSac3);
-        cauHinh15.setId(cauHinhRepository.save(cauHinh15).getId());
-
-        //Bảng Chi tiết sản phẩm
-        SanPhamChiTiet sanPhamChiTiet = new SanPhamChiTiet();
-        sanPhamChiTiet.setMa("CTSP1");
-        sanPhamChiTiet.setDonGia(new BigDecimal(26390000));
-        sanPhamChiTiet.setSoLuongTonKho(10);
-        sanPhamChiTiet.setSanPham(sanPham);
-        sanPhamChiTiet.setCauHinh(cauHinh);
-        sanPhamChiTiet.setId(iSanPhamChiTietRepository.save(sanPhamChiTiet).getId());
-
-        SanPhamChiTiet sanPhamChiTiet1 = new SanPhamChiTiet();
-        sanPhamChiTiet1.setMa("CTSP1");
-        sanPhamChiTiet1.setDonGia(new BigDecimal(26390000));
-        sanPhamChiTiet1.setSoLuongTonKho(10);
-        sanPhamChiTiet1.setSanPham(sanPham);
-        sanPhamChiTiet1.setCauHinh(cauHinh1);
-        sanPhamChiTiet1.setId(iSanPhamChiTietRepository.save(sanPhamChiTiet1).getId());
-
-        SanPhamChiTiet sanPhamChiTiet2 = new SanPhamChiTiet();
-        sanPhamChiTiet2.setMa("CTSP1");
-        sanPhamChiTiet2.setDonGia(new BigDecimal(26390000));
-        sanPhamChiTiet2.setSoLuongTonKho(10);
-        sanPhamChiTiet2.setSanPham(sanPham);
-        sanPhamChiTiet2.setCauHinh(cauHinh2);
-        sanPhamChiTiet2.setId(iSanPhamChiTietRepository.save(sanPhamChiTiet2).getId());
-
-        SanPhamChiTiet sanPhamChiTiet3 = new SanPhamChiTiet();
-        sanPhamChiTiet3.setMa("CTSP1");
-        sanPhamChiTiet3.setDonGia(new BigDecimal(26390000));
-        sanPhamChiTiet3.setSoLuongTonKho(10);
-        sanPhamChiTiet3.setSanPham(sanPham);
-        sanPhamChiTiet3.setCauHinh(cauHinh3);
-        sanPhamChiTiet3.setId(iSanPhamChiTietRepository.save(sanPhamChiTiet3).getId());
-
-        // sanPhamChiTiet Lan 2
-        SanPhamChiTiet sanPhamChiTiet4 = new SanPhamChiTiet();
-        sanPhamChiTiet4.setMa("CTSP2");
-        sanPhamChiTiet4.setDonGia(new BigDecimal(35190000));
-        sanPhamChiTiet4.setSoLuongTonKho(20);
-        sanPhamChiTiet4.setSanPham(sanPham);
-        sanPhamChiTiet4.setCauHinh(cauHinh4);
-        sanPhamChiTiet4.setId(iSanPhamChiTietRepository.save(sanPhamChiTiet4).getId());
-
-        SanPhamChiTiet sanPhamChiTiet5 = new SanPhamChiTiet();
-        sanPhamChiTiet5.setMa("CTSP2");
-        sanPhamChiTiet5.setDonGia(new BigDecimal(35190000));
-        sanPhamChiTiet5.setSoLuongTonKho(20);
-        sanPhamChiTiet5.setSanPham(sanPham);
-        sanPhamChiTiet5.setCauHinh(cauHinh5);
-        sanPhamChiTiet5.setId(iSanPhamChiTietRepository.save(sanPhamChiTiet5).getId());
-
-        SanPhamChiTiet sanPhamChiTiet6 = new SanPhamChiTiet();
-        sanPhamChiTiet6.setMa("CTSP2");
-        sanPhamChiTiet6.setDonGia(new BigDecimal(35190000));
-        sanPhamChiTiet6.setSoLuongTonKho(20);
-        sanPhamChiTiet6.setSanPham(sanPham);
-        sanPhamChiTiet6.setCauHinh(cauHinh6);
-        sanPhamChiTiet6.setId(iSanPhamChiTietRepository.save(sanPhamChiTiet6).getId());
-
-        SanPhamChiTiet sanPhamChiTiet7 = new SanPhamChiTiet();
-        sanPhamChiTiet7.setMa("CTSP2");
-        sanPhamChiTiet7.setDonGia(new BigDecimal(35190000));
-        sanPhamChiTiet7.setSoLuongTonKho(20);
-        sanPhamChiTiet7.setSanPham(sanPham);
-        sanPhamChiTiet7.setCauHinh(cauHinh7);
-        sanPhamChiTiet7.setId(iSanPhamChiTietRepository.save(sanPhamChiTiet7).getId());
-
-        // sanPhamChiTiet Lan 3
-        SanPhamChiTiet sanPhamChiTiet8 = new SanPhamChiTiet();
-        sanPhamChiTiet8.setMa("CTSP3");
-        sanPhamChiTiet8.setDonGia(new BigDecimal(41790000));
-        sanPhamChiTiet8.setSoLuongTonKho(50);
-        sanPhamChiTiet8.setSanPham(sanPham);
-        sanPhamChiTiet8.setCauHinh(cauHinh8);
-        sanPhamChiTiet8.setId(iSanPhamChiTietRepository.save(sanPhamChiTiet8).getId());
-
-        SanPhamChiTiet sanPhamChiTiet9 = new SanPhamChiTiet();
-        sanPhamChiTiet9.setMa("CTSP3");
-        sanPhamChiTiet9.setDonGia(new BigDecimal(41790000));
-        sanPhamChiTiet9.setSoLuongTonKho(50);
-        sanPhamChiTiet9.setSanPham(sanPham);
-        sanPhamChiTiet9.setCauHinh(cauHinh9);
-        sanPhamChiTiet9.setId(iSanPhamChiTietRepository.save(sanPhamChiTiet9).getId());
-
-        SanPhamChiTiet sanPhamChiTiet10 = new SanPhamChiTiet();
-        sanPhamChiTiet10.setMa("CTSP3");
-        sanPhamChiTiet10.setDonGia(new BigDecimal(41790000));
-        sanPhamChiTiet10.setSoLuongTonKho(50);
-        sanPhamChiTiet10.setSanPham(sanPham);
-        sanPhamChiTiet10.setCauHinh(cauHinh10);
-        sanPhamChiTiet10.setId(iSanPhamChiTietRepository.save(sanPhamChiTiet10).getId());
-
-        SanPhamChiTiet sanPhamChiTiet11 = new SanPhamChiTiet();
-        sanPhamChiTiet11.setMa("CTSP3");
-        sanPhamChiTiet11.setDonGia(new BigDecimal(41790000));
-        sanPhamChiTiet11.setSoLuongTonKho(50);
-        sanPhamChiTiet11.setSanPham(sanPham);
-        sanPhamChiTiet11.setCauHinh(cauHinh11);
-        sanPhamChiTiet11.setId(iSanPhamChiTietRepository.save(sanPhamChiTiet11).getId());
-
-        // sanPhamChiTiet Lan 4
-        SanPhamChiTiet sanPhamChiTiet12 = new SanPhamChiTiet();
-        sanPhamChiTiet12.setMa("CTSP4");
-        sanPhamChiTiet12.setDonGia(new BigDecimal(50000000));
-        sanPhamChiTiet12.setSoLuongTonKho(70);
-        sanPhamChiTiet12.setSanPham(sanPham);
-        sanPhamChiTiet12.setCauHinh(cauHinh12);
-        sanPhamChiTiet12.setId(iSanPhamChiTietRepository.save(sanPhamChiTiet12).getId());
-
-        SanPhamChiTiet sanPhamChiTiet13 = new SanPhamChiTiet();
-        sanPhamChiTiet13.setMa("CTSP4");
-        sanPhamChiTiet13.setDonGia(new BigDecimal(50000000));
-        sanPhamChiTiet13.setSoLuongTonKho(70);
-        sanPhamChiTiet13.setSanPham(sanPham);
-        sanPhamChiTiet13.setCauHinh(cauHinh13);
-        sanPhamChiTiet13.setId(iSanPhamChiTietRepository.save(sanPhamChiTiet13).getId());
-
-        SanPhamChiTiet sanPhamChiTiet14 = new SanPhamChiTiet();
-        sanPhamChiTiet14.setMa("CTSP4");
-        sanPhamChiTiet14.setDonGia(new BigDecimal(50000000));
-        sanPhamChiTiet14.setSoLuongTonKho(70);
-        sanPhamChiTiet14.setSanPham(sanPham);
-        sanPhamChiTiet14.setCauHinh(cauHinh14);
-        sanPhamChiTiet14.setId(iSanPhamChiTietRepository.save(sanPhamChiTiet14).getId());
-
-        SanPhamChiTiet sanPhamChiTiet15 = new SanPhamChiTiet();
-        sanPhamChiTiet15.setMa("CTSP4");
-        sanPhamChiTiet15.setDonGia(new BigDecimal(50000000));
-        sanPhamChiTiet15.setSoLuongTonKho(70);
-        sanPhamChiTiet15.setSanPham(sanPham);
-        sanPhamChiTiet15.setCauHinh(cauHinh15);
-        sanPhamChiTiet15.setId(iSanPhamChiTietRepository.save(sanPhamChiTiet15).getId());
+//        //Bảng Cấu hình
+//        CauHinh cauHinh = new CauHinh();
+//        cauHinh.setRam(ram);
+//        cauHinh.setRom(rom);
+//        cauHinh.setMauSac(mauSac);
+//        cauHinh.setId(cauHinhRepository.save(cauHinh).getId());
+//
+//        CauHinh cauHinh1 = new CauHinh();
+//        cauHinh1.setRam(ram);
+//        cauHinh1.setRom(rom);
+//        cauHinh1.setMauSac(mauSac1);
+//        cauHinh1.setId(cauHinhRepository.save(cauHinh1).getId());
+//
+//        CauHinh cauHinh2 = new CauHinh();
+//        cauHinh2.setRam(ram);
+//        cauHinh2.setRom(rom);
+//        cauHinh2.setMauSac(mauSac2);
+//        cauHinh2.setId(cauHinhRepository.save(cauHinh2).getId());
+//
+//        CauHinh cauHinh3 = new CauHinh();
+//        cauHinh3.setRam(ram);
+//        cauHinh3.setRom(rom);
+//        cauHinh3.setMauSac(mauSac3);
+//        cauHinh3.setId(cauHinhRepository.save(cauHinh3).getId());
+//
+//        //Bảng Cấu hình 1
+//        CauHinh cauHinh4 = new CauHinh();
+//        cauHinh4.setRam(ram);
+//        cauHinh4.setRom(rom1);
+//        cauHinh4.setMauSac(mauSac);
+//        cauHinh4.setId(cauHinhRepository.save(cauHinh4).getId());
+//
+//        CauHinh cauHinh5 = new CauHinh();
+//        cauHinh5.setRam(ram);
+//        cauHinh5.setRom(rom1);
+//        cauHinh5.setMauSac(mauSac1);
+//        cauHinh5.setId(cauHinhRepository.save(cauHinh5).getId());
+//
+//        CauHinh cauHinh6 = new CauHinh();
+//        cauHinh6.setRam(ram);
+//        cauHinh6.setRom(rom1);
+//        cauHinh6.setMauSac(mauSac2);
+//        cauHinh6.setId(cauHinhRepository.save(cauHinh6).getId());
+//
+//        CauHinh cauHinh7 = new CauHinh();
+//        cauHinh7.setRam(ram);
+//        cauHinh7.setRom(rom1);
+//        cauHinh7.setMauSac(mauSac3);
+//        cauHinh7.setId(cauHinhRepository.save(cauHinh7).getId());
+//
+//        //Bảng Cấu hình 2
+//        CauHinh cauHinh8 = new CauHinh();
+//        cauHinh8.setRam(ram);
+//        cauHinh8.setRom(rom2);
+//        cauHinh8.setMauSac(mauSac);
+//        cauHinh8.setId(cauHinhRepository.save(cauHinh8).getId());
+//
+//        CauHinh cauHinh9 = new CauHinh();
+//        cauHinh9.setRam(ram);
+//        cauHinh9.setRom(rom2);
+//        cauHinh9.setMauSac(mauSac1);
+//        cauHinh9.setId(cauHinhRepository.save(cauHinh9).getId());
+//
+//        CauHinh cauHinh10 = new CauHinh();
+//        cauHinh10.setRam(ram);
+//        cauHinh10.setRom(rom2);
+//        cauHinh10.setMauSac(mauSac2);
+//        cauHinh10.setId(cauHinhRepository.save(cauHinh10).getId());
+//
+//        CauHinh cauHinh11 = new CauHinh();
+//        cauHinh11.setRam(ram);
+//        cauHinh11.setRom(rom2);
+//        cauHinh11.setMauSac(mauSac3);
+//        cauHinh11.setId(cauHinhRepository.save(cauHinh11).getId());
+//
+//        //Bảng Cấu hình 3
+//        CauHinh cauHinh12 = new CauHinh();
+//        cauHinh12.setRam(ram);
+//        cauHinh12.setRom(rom3);
+//        cauHinh12.setMauSac(mauSac);
+//        cauHinh12.setId(cauHinhRepository.save(cauHinh12).getId());
+//
+//        CauHinh cauHinh13 = new CauHinh();
+//        cauHinh13.setRam(ram);
+//        cauHinh13.setRom(rom3);
+//        cauHinh13.setMauSac(mauSac1);
+//        cauHinh13.setId(cauHinhRepository.save(cauHinh13).getId());
+//
+//        CauHinh cauHinh14 = new CauHinh();
+//        cauHinh14.setRam(ram);
+//        cauHinh14.setRom(rom3);
+//        cauHinh14.setMauSac(mauSac2);
+//        cauHinh14.setId(cauHinhRepository.save(cauHinh14).getId());
+//
+//        CauHinh cauHinh15 = new CauHinh();
+//        cauHinh15.setRam(ram);
+//        cauHinh15.setRom(rom3);
+//        cauHinh15.setMauSac(mauSac3);
+//        cauHinh15.setId(cauHinhRepository.save(cauHinh15).getId());
+//
+//        //Bảng Chi tiết sản phẩm
+//        SanPhamChiTiet sanPhamChiTiet = new SanPhamChiTiet();
+//        sanPhamChiTiet.setMa("CTSP1");
+//        sanPhamChiTiet.setDonGia(new BigDecimal(26390000));
+//        sanPhamChiTiet.setSoLuongTonKho(10);
+//        sanPhamChiTiet.setSanPham(sanPham);
+//        sanPhamChiTiet.setCauHinh(cauHinh);
+//        sanPhamChiTiet.setId(iSanPhamChiTietRepository.save(sanPhamChiTiet).getId());
+//
+//        SanPhamChiTiet sanPhamChiTiet1 = new SanPhamChiTiet();
+//        sanPhamChiTiet1.setMa("CTSP1");
+//        sanPhamChiTiet1.setDonGia(new BigDecimal(26390000));
+//        sanPhamChiTiet1.setSoLuongTonKho(10);
+//        sanPhamChiTiet1.setSanPham(sanPham);
+//        sanPhamChiTiet1.setCauHinh(cauHinh1);
+//        sanPhamChiTiet1.setId(iSanPhamChiTietRepository.save(sanPhamChiTiet1).getId());
+//
+//        SanPhamChiTiet sanPhamChiTiet2 = new SanPhamChiTiet();
+//        sanPhamChiTiet2.setMa("CTSP1");
+//        sanPhamChiTiet2.setDonGia(new BigDecimal(26390000));
+//        sanPhamChiTiet2.setSoLuongTonKho(10);
+//        sanPhamChiTiet2.setSanPham(sanPham);
+//        sanPhamChiTiet2.setCauHinh(cauHinh2);
+//        sanPhamChiTiet2.setId(iSanPhamChiTietRepository.save(sanPhamChiTiet2).getId());
+//
+//        SanPhamChiTiet sanPhamChiTiet3 = new SanPhamChiTiet();
+//        sanPhamChiTiet3.setMa("CTSP1");
+//        sanPhamChiTiet3.setDonGia(new BigDecimal(26390000));
+//        sanPhamChiTiet3.setSoLuongTonKho(10);
+//        sanPhamChiTiet3.setSanPham(sanPham);
+//        sanPhamChiTiet3.setCauHinh(cauHinh3);
+//        sanPhamChiTiet3.setId(iSanPhamChiTietRepository.save(sanPhamChiTiet3).getId());
+//
+//        // sanPhamChiTiet Lan 2
+//        SanPhamChiTiet sanPhamChiTiet4 = new SanPhamChiTiet();
+//        sanPhamChiTiet4.setMa("CTSP2");
+//        sanPhamChiTiet4.setDonGia(new BigDecimal(35190000));
+//        sanPhamChiTiet4.setSoLuongTonKho(20);
+//        sanPhamChiTiet4.setSanPham(sanPham);
+//        sanPhamChiTiet4.setCauHinh(cauHinh4);
+//        sanPhamChiTiet4.setId(iSanPhamChiTietRepository.save(sanPhamChiTiet4).getId());
+//
+//        SanPhamChiTiet sanPhamChiTiet5 = new SanPhamChiTiet();
+//        sanPhamChiTiet5.setMa("CTSP2");
+//        sanPhamChiTiet5.setDonGia(new BigDecimal(35190000));
+//        sanPhamChiTiet5.setSoLuongTonKho(20);
+//        sanPhamChiTiet5.setSanPham(sanPham);
+//        sanPhamChiTiet5.setCauHinh(cauHinh5);
+//        sanPhamChiTiet5.setId(iSanPhamChiTietRepository.save(sanPhamChiTiet5).getId());
+//
+//        SanPhamChiTiet sanPhamChiTiet6 = new SanPhamChiTiet();
+//        sanPhamChiTiet6.setMa("CTSP2");
+//        sanPhamChiTiet6.setDonGia(new BigDecimal(35190000));
+//        sanPhamChiTiet6.setSoLuongTonKho(20);
+//        sanPhamChiTiet6.setSanPham(sanPham);
+//        sanPhamChiTiet6.setCauHinh(cauHinh6);
+//        sanPhamChiTiet6.setId(iSanPhamChiTietRepository.save(sanPhamChiTiet6).getId());
+//
+//        SanPhamChiTiet sanPhamChiTiet7 = new SanPhamChiTiet();
+//        sanPhamChiTiet7.setMa("CTSP2");
+//        sanPhamChiTiet7.setDonGia(new BigDecimal(35190000));
+//        sanPhamChiTiet7.setSoLuongTonKho(20);
+//        sanPhamChiTiet7.setSanPham(sanPham);
+//        sanPhamChiTiet7.setCauHinh(cauHinh7);
+//        sanPhamChiTiet7.setId(iSanPhamChiTietRepository.save(sanPhamChiTiet7).getId());
+//
+//        // sanPhamChiTiet Lan 3
+//        SanPhamChiTiet sanPhamChiTiet8 = new SanPhamChiTiet();
+//        sanPhamChiTiet8.setMa("CTSP3");
+//        sanPhamChiTiet8.setDonGia(new BigDecimal(41790000));
+//        sanPhamChiTiet8.setSoLuongTonKho(50);
+//        sanPhamChiTiet8.setSanPham(sanPham);
+//        sanPhamChiTiet8.setCauHinh(cauHinh8);
+//        sanPhamChiTiet8.setId(iSanPhamChiTietRepository.save(sanPhamChiTiet8).getId());
+//
+//        SanPhamChiTiet sanPhamChiTiet9 = new SanPhamChiTiet();
+//        sanPhamChiTiet9.setMa("CTSP3");
+//        sanPhamChiTiet9.setDonGia(new BigDecimal(41790000));
+//        sanPhamChiTiet9.setSoLuongTonKho(50);
+//        sanPhamChiTiet9.setSanPham(sanPham);
+//        sanPhamChiTiet9.setCauHinh(cauHinh9);
+//        sanPhamChiTiet9.setId(iSanPhamChiTietRepository.save(sanPhamChiTiet9).getId());
+//
+//        SanPhamChiTiet sanPhamChiTiet10 = new SanPhamChiTiet();
+//        sanPhamChiTiet10.setMa("CTSP3");
+//        sanPhamChiTiet10.setDonGia(new BigDecimal(41790000));
+//        sanPhamChiTiet10.setSoLuongTonKho(50);
+//        sanPhamChiTiet10.setSanPham(sanPham);
+//        sanPhamChiTiet10.setCauHinh(cauHinh10);
+//        sanPhamChiTiet10.setId(iSanPhamChiTietRepository.save(sanPhamChiTiet10).getId());
+//
+//        SanPhamChiTiet sanPhamChiTiet11 = new SanPhamChiTiet();
+//        sanPhamChiTiet11.setMa("CTSP3");
+//        sanPhamChiTiet11.setDonGia(new BigDecimal(41790000));
+//        sanPhamChiTiet11.setSoLuongTonKho(50);
+//        sanPhamChiTiet11.setSanPham(sanPham);
+//        sanPhamChiTiet11.setCauHinh(cauHinh11);
+//        sanPhamChiTiet11.setId(iSanPhamChiTietRepository.save(sanPhamChiTiet11).getId());
+//
+//        // sanPhamChiTiet Lan 4
+//        SanPhamChiTiet sanPhamChiTiet12 = new SanPhamChiTiet();
+//        sanPhamChiTiet12.setMa("CTSP4");
+//        sanPhamChiTiet12.setDonGia(new BigDecimal(50000000));
+//        sanPhamChiTiet12.setSoLuongTonKho(70);
+//        sanPhamChiTiet12.setSanPham(sanPham);
+//        sanPhamChiTiet12.setCauHinh(cauHinh12);
+//        sanPhamChiTiet12.setId(iSanPhamChiTietRepository.save(sanPhamChiTiet12).getId());
+//
+//        SanPhamChiTiet sanPhamChiTiet13 = new SanPhamChiTiet();
+//        sanPhamChiTiet13.setMa("CTSP4");
+//        sanPhamChiTiet13.setDonGia(new BigDecimal(50000000));
+//        sanPhamChiTiet13.setSoLuongTonKho(70);
+//        sanPhamChiTiet13.setSanPham(sanPham);
+//        sanPhamChiTiet13.setCauHinh(cauHinh13);
+//        sanPhamChiTiet13.setId(iSanPhamChiTietRepository.save(sanPhamChiTiet13).getId());
+//
+//        SanPhamChiTiet sanPhamChiTiet14 = new SanPhamChiTiet();
+//        sanPhamChiTiet14.setMa("CTSP4");
+//        sanPhamChiTiet14.setDonGia(new BigDecimal(50000000));
+//        sanPhamChiTiet14.setSoLuongTonKho(70);
+//        sanPhamChiTiet14.setSanPham(sanPham);
+//        sanPhamChiTiet14.setCauHinh(cauHinh14);
+//        sanPhamChiTiet14.setId(iSanPhamChiTietRepository.save(sanPhamChiTiet14).getId());
+//
+//        SanPhamChiTiet sanPhamChiTiet15 = new SanPhamChiTiet();
+//        sanPhamChiTiet15.setMa("CTSP4");
+//        sanPhamChiTiet15.setDonGia(new BigDecimal(50000000));
+//        sanPhamChiTiet15.setSoLuongTonKho(70);
+//        sanPhamChiTiet15.setSanPham(sanPham);
+//        sanPhamChiTiet15.setCauHinh(cauHinh15);
+//        sanPhamChiTiet15.setId(iSanPhamChiTietRepository.save(sanPhamChiTiet15).getId());
 
 //        SanPhamChiTiet sanPhamChiTiet1 = new SanPhamChiTiet();
 //        sanPhamChiTiet1.setMa("CTSP13");
@@ -766,156 +804,156 @@ public class DBGenerator implements CommandLineRunner {
 //        sanPhamChiTiet2.setCauHinh(cauHinh2);
 //        sanPhamChiTiet2.setId(iSanPhamChiTietRepository.save(sanPhamChiTiet2).getId());
 
-        //Bảng Ảnh
-        Anh anh = new Anh();
-        anh.setMa("ảnh1");
-        anh.setTenAnh("Ảnh Iphone");
-        anh.setSanPhamChiTiet(sanPhamChiTiet);
-        anh.setDuongDan("https://cdn2.cellphones.com.vn/358x/media/catalog/product/v/_/v_ng_18_1.png");
-        anh.setTrangThai(true);
-        anh.setId(anhRepository.save(anh).getId());
-
-        Anh anh1 = new Anh();
-        anh1.setMa("ảnh2");
-        anh1.setTenAnh("Ảnh Iphone");
-        anh1.setSanPhamChiTiet(sanPhamChiTiet1);
-        anh1.setDuongDan("https://cdn2.cellphones.com.vn/358x/media/catalog/product/b/_/b_c_1_10.png");
-        anh1.setTrangThai(true);
-        anh1.setId(anhRepository.save(anh1).getId());
-
-        Anh anh2 = new Anh();
-        anh2.setMa("ảnh3");
-        anh2.setTenAnh("Ảnh Iphone");
-        anh2.setSanPhamChiTiet(sanPhamChiTiet2);
-        anh2.setDuongDan("https://cdn2.cellphones.com.vn/358x/media/catalog/product/x/_/x_m_25.png");
-        anh2.setTrangThai(true);
-        anh2.setId(anhRepository.save(anh2).getId());
-
-        Anh anh3 = new Anh();
-        anh3.setMa("ảnh4");
-        anh3.setTenAnh("Ảnh Iphone");
-        anh3.setSanPhamChiTiet(sanPhamChiTiet3);
-        anh3.setDuongDan("https://cdn2.cellphones.com.vn/358x/media/catalog/product/x/_/x_m_25.png");
-        anh3.setTrangThai(true);
-        anh3.setId(anhRepository.save(anh3).getId());
-
-        //Bảng Ảnh 1
-        Anh anh4 = new Anh();
-        anh4.setMa("ảnh1");
-        anh4.setTenAnh("Ảnh Iphone");
-        anh4.setSanPhamChiTiet(sanPhamChiTiet4);
-        anh4.setDuongDan("https://cdn2.cellphones.com.vn/358x/media/catalog/product/v/_/v_ng_18_1.png");
-        anh4.setTrangThai(true);
-        anh4.setId(anhRepository.save(anh4).getId());
-
-        Anh anh5 = new Anh();
-        anh5.setMa("ảnh2");
-        anh5.setTenAnh("Ảnh Iphone");
-        anh5.setSanPhamChiTiet(sanPhamChiTiet5);
-        anh5.setDuongDan("https://cdn2.cellphones.com.vn/358x/media/catalog/product/b/_/b_c_1_10.png");
-        anh5.setTrangThai(true);
-        anh5.setId(anhRepository.save(anh5).getId());
-
-        Anh anh6 = new Anh();
-        anh6.setMa("ảnh3");
-        anh6.setTenAnh("Ảnh Iphone");
-        anh6.setSanPhamChiTiet(sanPhamChiTiet6);
-        anh6.setDuongDan("https://cdn2.cellphones.com.vn/358x/media/catalog/product/x/_/x_m_25.png");
-        anh6.setTrangThai(true);
-        anh6.setId(anhRepository.save(anh6).getId());
-
-        Anh anh7 = new Anh();
-        anh7.setMa("ảnh4");
-        anh7.setTenAnh("Ảnh Iphone");
-        anh7.setSanPhamChiTiet(sanPhamChiTiet7);
-        anh7.setDuongDan("https://cdn2.cellphones.com.vn/358x/media/catalog/product/x/_/x_m_25.png");
-        anh7.setTrangThai(true);
-        anh7.setId(anhRepository.save(anh7).getId());
-
-        //Bảng Ảnh 2
-        Anh anh8 = new Anh();
-        anh8.setMa("ảnh1");
-        anh8.setTenAnh("Ảnh Iphone");
-        anh8.setSanPhamChiTiet(sanPhamChiTiet8);
-        anh8.setDuongDan("https://cdn2.cellphones.com.vn/358x/media/catalog/product/v/_/v_ng_18_1.png");
-        anh8.setTrangThai(true);
-        anh8.setId(anhRepository.save(anh8).getId());
-
-        Anh anh9 = new Anh();
-        anh9.setMa("ảnh2");
-        anh9.setTenAnh("Ảnh Iphone");
-        anh9.setSanPhamChiTiet(sanPhamChiTiet9);
-        anh9.setDuongDan("https://cdn2.cellphones.com.vn/358x/media/catalog/product/b/_/b_c_1_10.png");
-        anh9.setTrangThai(true);
-        anh9.setId(anhRepository.save(anh9).getId());
-
-        Anh anh10 = new Anh();
-        anh10.setMa("ảnh3");
-        anh10.setTenAnh("Ảnh Iphone");
-        anh10.setSanPhamChiTiet(sanPhamChiTiet10);
-        anh10.setDuongDan("https://cdn2.cellphones.com.vn/358x/media/catalog/product/x/_/x_m_25.png");
-        anh10.setTrangThai(true);
-        anh10.setId(anhRepository.save(anh10).getId());
-
-        Anh anh11 = new Anh();
-        anh11.setMa("ảnh4");
-        anh11.setTenAnh("Ảnh Iphone");
-        anh11.setSanPhamChiTiet(sanPhamChiTiet11);
-        anh11.setDuongDan("https://cdn2.cellphones.com.vn/358x/media/catalog/product/x/_/x_m_25.png");
-        anh11.setTrangThai(true);
-        anh11.setId(anhRepository.save(anh11).getId());
-
-        //Bảng Ảnh 3
-        Anh anh12 = new Anh();
-        anh12.setMa("ảnh1");
-        anh12.setTenAnh("Ảnh Iphone");
-        anh12.setSanPhamChiTiet(sanPhamChiTiet12);
-        anh12.setDuongDan("https://cdn2.cellphones.com.vn/358x/media/catalog/product/v/_/v_ng_18_1.png");
-        anh12.setTrangThai(true);
-        anh12.setId(anhRepository.save(anh12).getId());
-
-        Anh anh13 = new Anh();
-        anh13.setMa("ảnh2");
-        anh13.setTenAnh("Ảnh Iphone");
-        anh13.setSanPhamChiTiet(sanPhamChiTiet13);
-        anh13.setDuongDan("https://cdn2.cellphones.com.vn/358x/media/catalog/product/b/_/b_c_1_10.png");
-        anh13.setTrangThai(true);
-        anh13.setId(anhRepository.save(anh13).getId());
-
-        Anh anh14 = new Anh();
-        anh14.setMa("ảnh3");
-        anh14.setTenAnh("Ảnh Iphone");
-        anh14.setSanPhamChiTiet(sanPhamChiTiet14);
-        anh14.setDuongDan("https://cdn2.cellphones.com.vn/358x/media/catalog/product/x/_/x_m_25.png");
-        anh14.setTrangThai(true);
-        anh14.setId(anhRepository.save(anh14).getId());
-
-        Anh anh15 = new Anh();
-        anh15.setMa("ảnh4");
-        anh15.setTenAnh("Ảnh Iphone");
-        anh15.setSanPhamChiTiet(sanPhamChiTiet15);
-        anh15.setDuongDan("https://cdn2.cellphones.com.vn/358x/media/catalog/product/x/_/x_m_25.png");
-        anh15.setTrangThai(true);
-        anh15.setId(anhRepository.save(anh15).getId());
-
-        //Bảng Imei
-        Imei imei = new Imei();
-        imei.setSoImei("167291376811223");
-        imei.setTrangThai(1);
-        imei.setIdSanPhamChiTiet(sanPhamChiTiet);
-        imei.setId(imeiRepository.save(imei).getId());
-
-        Imei imei1 = new Imei();
-        imei1.setSoImei("112511376811223");
-        imei1.setTrangThai(1);
-        imei1.setIdSanPhamChiTiet(sanPhamChiTiet1);
-        imei1.setId(imeiRepository.save(imei1).getId());
-
-        Imei imei2 = new Imei();
-        imei2.setSoImei("197291376811223");
-        imei2.setTrangThai(1);
-        imei2.setIdSanPhamChiTiet(sanPhamChiTiet2);
-        imei2.setId(imeiRepository.save(imei2).getId());
+//        //Bảng Ảnh
+//        Anh anh = new Anh();
+//        anh.setMa("ảnh1");
+//        anh.setTenAnh("Ảnh Iphone");
+//        anh.setSanPhamChiTiet(sanPhamChiTiet);
+//        anh.setDuongDan("https://cdn2.cellphones.com.vn/358x/media/catalog/product/v/_/v_ng_18_1.png");
+//        anh.setTrangThai(true);
+//        anh.setId(anhRepository.save(anh).getId());
+//
+//        Anh anh1 = new Anh();
+//        anh1.setMa("ảnh2");
+//        anh1.setTenAnh("Ảnh Iphone");
+//        anh1.setSanPhamChiTiet(sanPhamChiTiet1);
+//        anh1.setDuongDan("https://cdn2.cellphones.com.vn/358x/media/catalog/product/b/_/b_c_1_10.png");
+//        anh1.setTrangThai(true);
+//        anh1.setId(anhRepository.save(anh1).getId());
+//
+//        Anh anh2 = new Anh();
+//        anh2.setMa("ảnh3");
+//        anh2.setTenAnh("Ảnh Iphone");
+//        anh2.setSanPhamChiTiet(sanPhamChiTiet2);
+//        anh2.setDuongDan("https://cdn2.cellphones.com.vn/358x/media/catalog/product/x/_/x_m_25.png");
+//        anh2.setTrangThai(true);
+//        anh2.setId(anhRepository.save(anh2).getId());
+//
+//        Anh anh3 = new Anh();
+//        anh3.setMa("ảnh4");
+//        anh3.setTenAnh("Ảnh Iphone");
+//        anh3.setSanPhamChiTiet(sanPhamChiTiet3);
+//        anh3.setDuongDan("https://cdn2.cellphones.com.vn/358x/media/catalog/product/x/_/x_m_25.png");
+//        anh3.setTrangThai(true);
+//        anh3.setId(anhRepository.save(anh3).getId());
+//
+//        //Bảng Ảnh 1
+//        Anh anh4 = new Anh();
+//        anh4.setMa("ảnh1");
+//        anh4.setTenAnh("Ảnh Iphone");
+//        anh4.setSanPhamChiTiet(sanPhamChiTiet4);
+//        anh4.setDuongDan("https://cdn2.cellphones.com.vn/358x/media/catalog/product/v/_/v_ng_18_1.png");
+//        anh4.setTrangThai(true);
+//        anh4.setId(anhRepository.save(anh4).getId());
+//
+//        Anh anh5 = new Anh();
+//        anh5.setMa("ảnh2");
+//        anh5.setTenAnh("Ảnh Iphone");
+//        anh5.setSanPhamChiTiet(sanPhamChiTiet5);
+//        anh5.setDuongDan("https://cdn2.cellphones.com.vn/358x/media/catalog/product/b/_/b_c_1_10.png");
+//        anh5.setTrangThai(true);
+//        anh5.setId(anhRepository.save(anh5).getId());
+//
+//        Anh anh6 = new Anh();
+//        anh6.setMa("ảnh3");
+//        anh6.setTenAnh("Ảnh Iphone");
+//        anh6.setSanPhamChiTiet(sanPhamChiTiet6);
+//        anh6.setDuongDan("https://cdn2.cellphones.com.vn/358x/media/catalog/product/x/_/x_m_25.png");
+//        anh6.setTrangThai(true);
+//        anh6.setId(anhRepository.save(anh6).getId());
+//
+//        Anh anh7 = new Anh();
+//        anh7.setMa("ảnh4");
+//        anh7.setTenAnh("Ảnh Iphone");
+//        anh7.setSanPhamChiTiet(sanPhamChiTiet7);
+//        anh7.setDuongDan("https://cdn2.cellphones.com.vn/358x/media/catalog/product/x/_/x_m_25.png");
+//        anh7.setTrangThai(true);
+//        anh7.setId(anhRepository.save(anh7).getId());
+//
+//        //Bảng Ảnh 2
+//        Anh anh8 = new Anh();
+//        anh8.setMa("ảnh1");
+//        anh8.setTenAnh("Ảnh Iphone");
+//        anh8.setSanPhamChiTiet(sanPhamChiTiet8);
+//        anh8.setDuongDan("https://cdn2.cellphones.com.vn/358x/media/catalog/product/v/_/v_ng_18_1.png");
+//        anh8.setTrangThai(true);
+//        anh8.setId(anhRepository.save(anh8).getId());
+//
+//        Anh anh9 = new Anh();
+//        anh9.setMa("ảnh2");
+//        anh9.setTenAnh("Ảnh Iphone");
+//        anh9.setSanPhamChiTiet(sanPhamChiTiet9);
+//        anh9.setDuongDan("https://cdn2.cellphones.com.vn/358x/media/catalog/product/b/_/b_c_1_10.png");
+//        anh9.setTrangThai(true);
+//        anh9.setId(anhRepository.save(anh9).getId());
+//
+//        Anh anh10 = new Anh();
+//        anh10.setMa("ảnh3");
+//        anh10.setTenAnh("Ảnh Iphone");
+//        anh10.setSanPhamChiTiet(sanPhamChiTiet10);
+//        anh10.setDuongDan("https://cdn2.cellphones.com.vn/358x/media/catalog/product/x/_/x_m_25.png");
+//        anh10.setTrangThai(true);
+//        anh10.setId(anhRepository.save(anh10).getId());
+//
+//        Anh anh11 = new Anh();
+//        anh11.setMa("ảnh4");
+//        anh11.setTenAnh("Ảnh Iphone");
+//        anh11.setSanPhamChiTiet(sanPhamChiTiet11);
+//        anh11.setDuongDan("https://cdn2.cellphones.com.vn/358x/media/catalog/product/x/_/x_m_25.png");
+//        anh11.setTrangThai(true);
+//        anh11.setId(anhRepository.save(anh11).getId());
+//
+//        //Bảng Ảnh 3
+//        Anh anh12 = new Anh();
+//        anh12.setMa("ảnh1");
+//        anh12.setTenAnh("Ảnh Iphone");
+//        anh12.setSanPhamChiTiet(sanPhamChiTiet12);
+//        anh12.setDuongDan("https://cdn2.cellphones.com.vn/358x/media/catalog/product/v/_/v_ng_18_1.png");
+//        anh12.setTrangThai(true);
+//        anh12.setId(anhRepository.save(anh12).getId());
+//
+//        Anh anh13 = new Anh();
+//        anh13.setMa("ảnh2");
+//        anh13.setTenAnh("Ảnh Iphone");
+//        anh13.setSanPhamChiTiet(sanPhamChiTiet13);
+//        anh13.setDuongDan("https://cdn2.cellphones.com.vn/358x/media/catalog/product/b/_/b_c_1_10.png");
+//        anh13.setTrangThai(true);
+//        anh13.setId(anhRepository.save(anh13).getId());
+//
+//        Anh anh14 = new Anh();
+//        anh14.setMa("ảnh3");
+//        anh14.setTenAnh("Ảnh Iphone");
+//        anh14.setSanPhamChiTiet(sanPhamChiTiet14);
+//        anh14.setDuongDan("https://cdn2.cellphones.com.vn/358x/media/catalog/product/x/_/x_m_25.png");
+//        anh14.setTrangThai(true);
+//        anh14.setId(anhRepository.save(anh14).getId());
+//
+//        Anh anh15 = new Anh();
+//        anh15.setMa("ảnh4");
+//        anh15.setTenAnh("Ảnh Iphone");
+//        anh15.setSanPhamChiTiet(sanPhamChiTiet15);
+//        anh15.setDuongDan("https://cdn2.cellphones.com.vn/358x/media/catalog/product/x/_/x_m_25.png");
+//        anh15.setTrangThai(true);
+//        anh15.setId(anhRepository.save(anh15).getId());
+//
+//        //Bảng Imei
+//        Imei imei = new Imei();
+//        imei.setSoImei("167291376811223");
+//        imei.setTrangThai(1);
+//        imei.setIdSanPhamChiTiet(sanPhamChiTiet);
+//        imei.setId(imeiRepository.save(imei).getId());
+//
+//        Imei imei1 = new Imei();
+//        imei1.setSoImei("112511376811223");
+//        imei1.setTrangThai(1);
+//        imei1.setIdSanPhamChiTiet(sanPhamChiTiet1);
+//        imei1.setId(imeiRepository.save(imei1).getId());
+//
+//        Imei imei2 = new Imei();
+//        imei2.setSoImei("197291376811223");
+//        imei2.setTrangThai(1);
+//        imei2.setIdSanPhamChiTiet(sanPhamChiTiet2);
+//        imei2.setId(imeiRepository.save(imei2).getId());
     }
 
 

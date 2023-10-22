@@ -27,6 +27,7 @@
     "@mui/material": "^5.13.7",
     "@mui/x-date-pickers": "^6.12.1",
     "@reduxjs/toolkit": "^1.8.1",
+    "@uiw/react-color-sketch": "^1.4.3",
     "@unicef/material-ui-currency-textfield": "^0.8.6",
     "antd": "^5.6.4",
     "aos": "^2.3.4",

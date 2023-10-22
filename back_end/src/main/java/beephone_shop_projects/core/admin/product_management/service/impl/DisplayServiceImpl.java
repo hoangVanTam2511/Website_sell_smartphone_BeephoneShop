@@ -10,7 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class DisplayServiceImpl {
@@ -31,16 +30,16 @@ public class DisplayServiceImpl {
         if(!req.getIdDisplay().isEmpty()) update(req);
         else {
             String newCode = this.displayRepository.getNewCode() == null ? "DISPLAY_0" : "DISPLAY_" + this.displayRepository.getNewCode();
-            ManHinh manHinh = new ManHinh(newCode, req.getSizeDisplay(), req.getResolutionDisplay());
-            displayRepository.save(manHinh);
+//            ManHinh manHinh = new ManHinh(newCode, req.getSizeDisplay(), req.getResolutionDisplay());
+//            displayRepository.save(manHinh);
         }
     }
 
     public void update(CreateDisplay req) {
-        ManHinh display = this.displayRepository.findById(req.getIdDisplay()).get();
-        display.setDoPhanGiai(req.getResolutionDisplay());
-        display.setKichThuoc(req.getSizeDisplay());
-        displayRepository.save(display);
+//        ManHinh display = this.displayRepository.findById(req.getIdDisplay()).get();
+//        display.setDoPhanGiaiManHinh(req.getResolutionDisplay());
+//        display.setKichThuoc(req.getSizeDisplay());
+//        displayRepository.save(display);
     }
 
     public void delete(String id) {

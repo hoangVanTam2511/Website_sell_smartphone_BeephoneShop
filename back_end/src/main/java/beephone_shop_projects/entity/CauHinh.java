@@ -32,5 +32,4 @@ public class CauHinh extends PrimaryEntity implements Serializable {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_mau_sac")
   private MauSac mauSac;
-
 }

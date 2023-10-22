@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class RamServiceImpl {
+public class RamServiceImpl1 {
 
     @Autowired
     private RamRepository ramRepository;
@@ -32,8 +32,8 @@ public class RamServiceImpl {
         if(!req.getIdRam().isEmpty()) update(req);
         else {
             String newCode = this.ramRepository.getNewCode() == null ? "RAM_0" : "RAM_" + this.ramRepository.getNewCode();
-            Ram ram = new Ram(newCode, req.getCapacityRam());
-            ramRepository.save(ram);
+//            Ram ram = new Ram(newCode, req.getCapacityRam());
+//            ramRepository.save(ram);
         }
     }
 
