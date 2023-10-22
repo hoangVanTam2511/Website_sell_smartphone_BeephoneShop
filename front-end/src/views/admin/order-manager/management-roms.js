@@ -83,7 +83,7 @@ const ManagementRoms = () => {
     setOpen(false);
   };
 
-  const OrderTable = () => {
+  const RomTable = () => {
     return (
       <>
         <Table
@@ -250,7 +250,7 @@ const ManagementRoms = () => {
             </div>
           </Card.Header>
           <Card.Body>
-            <OrderTable />
+            <RomTable />
           </Card.Body>
           <div className="mx-auto">
             <Pagination

@@ -82,7 +82,7 @@ const ManagementRams = () => {
     setOpen(false);
   };
 
-  const OrderTable = () => {
+  const RamTable = () => {
     return (
       <>
         <Table
@@ -249,7 +249,7 @@ const ManagementRams = () => {
             </div>
           </Card.Header>
           <Card.Body>
-            <OrderTable />
+            <RamTable />
           </Card.Body>
           <div className="mx-auto">
             <Pagination

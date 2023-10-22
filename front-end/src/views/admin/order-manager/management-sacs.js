@@ -79,7 +79,7 @@ const ManagementCongSacs = () => {
     setOpen(false);
   };
 
-  const OrderTable = () => {
+  const ChargerTable = () => {
     return (
       <>
         <Table
@@ -247,7 +247,7 @@ const ManagementCongSacs = () => {
             </div>
           </Card.Header>
           <Card.Body>
-            <OrderTable />
+            <ChargerTable />
           </Card.Body>
           <div className="mx-auto">
             <Pagination

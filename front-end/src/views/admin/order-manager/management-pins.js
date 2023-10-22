@@ -79,7 +79,7 @@ const ManagementPins = () => {
     setOpen(false);
   };
 
-  const OrderTable = () => {
+  const PinTable = () => {
     return (
       <>
         <Table
@@ -255,7 +255,7 @@ const ManagementPins = () => {
             </div>
           </Card.Header>
           <Card.Body>
-            <OrderTable />
+            <PinTable />
           </Card.Body>
           <div className="mx-auto">
             <Pagination
