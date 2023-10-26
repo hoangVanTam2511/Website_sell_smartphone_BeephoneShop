@@ -16,6 +16,7 @@ public class ApiConstants {
     public static final String API_CAMERA_URI = "/api/cameras";
     public static final String API_CAMERA_FRONT_URI = "/api/camera-fronts";
     public static final String API_CAMERA_REAR_URI = "/api/camera-rears";
+    public static final String API_THE_NHO_URI = "/api/the-nhos";
 
     public static final String API_SCREEN_URI = "/api/screens";
     public static final String API_CHARGER_URI = "/api/chargers";
