@@ -46,7 +46,8 @@ import LoadingIndicator from "../../../utilities/loading";
 import CloseIcon from "@mui/icons-material/Close";
 import { ClearIcon } from "@mui/x-date-pickers";
 import generateRandomCode from "../../../utilities/randomCode ";
-import { TypeCameraNumber } from "./enum";
+import { Notistack, TypeCameraNumber } from "./enum";
+import useCustomSnackbar from "../../../utilities/notistack";
 
 const CreateCameraTruoc = ({ close, getAll, cameraFront }) => {
   const navigate = useNavigate();
@@ -54,6 +55,7 @@ const CreateCameraTruoc = ({ close, getAll, cameraFront }) => {
   const [cameraType, setCameraType] = React.useState("");
   const [doPhanGiai, setDoPhanGiai] = React.useState("");
   const [status, setStatus] = React.useState("");
+  const { handleOpenAlertVariant } = useCustomSnackbar();
 
   const handleChangeStatus = (event) => {
     setStatus(event.target.value);
@@ -80,10 +82,10 @@ const CreateCameraTruoc = ({ close, getAll, cameraFront }) => {
         close();
         getAll();
         handleReset();
-        alert("add thành công");
+        handleOpenAlertVariant("Thêm thành công!!!", Notistack.SUCCESS);
       })
       .catch((error) => {
-        alert("add thất bại");
+        handleOpenAlertVariant(error.response.data.message, Notistack.ERROR);
       });
   };
 

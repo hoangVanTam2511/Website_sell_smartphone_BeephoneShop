@@ -5,7 +5,7 @@ import {
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
-import { Button, Empty, Table } from "antd";
+import { Empty, Table } from "antd";
 import {
   Box,
   FormControl,
@@ -43,6 +43,9 @@ import Zoom from "@mui/material/Zoom";
 import * as dayjs from "dayjs";
 import LoadingIndicator from "../../../utilities/loading";
 import generateRandomCode from "../../../utilities/randomCode ";
+import { Button } from "@mui/joy";
+import useCustomSnackbar from "../../../utilities/notistack";
+import { Notistack } from "./enum";
 // import Sketch from '@uiw/react-color-sketch';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -54,6 +57,7 @@ const CreateMauSac = ({ close, getAll, colors }) => {
   const [isLoading, setIsLoading] = React.useState(false);
   const [status, setStatus] = React.useState("");
   const [colorName, setColorName] = useState();
+  const { handleOpenAlertVariant } = useCustomSnackbar();
 
   const addColor = () => {
     let obj = {
@@ -67,10 +71,10 @@ const CreateMauSac = ({ close, getAll, colors }) => {
         close();
         getAll();
         handleReset();
-        alert("add thành công");
+        handleOpenAlertVariant("Thêm thành công!!!", Notistack.SUCCESS);
       })
       .catch((error) => {
-        alert("add thất bại");
+        handleOpenAlertVariant(error.response.data.message, Notistack.ERROR);
       });
   };
 
@@ -103,7 +107,7 @@ const CreateMauSac = ({ close, getAll, colors }) => {
             </span>
           </div>
           <div style={{}} className="mx-auto mt-3 pt-2">
-            <div>
+            <div style={{ display: "flex" }}>
               <Autocomplete
                 fullWidth
                 className="custom"
@@ -117,6 +121,7 @@ const CreateMauSac = ({ close, getAll, colors }) => {
                 )}
               />
             </div>
+
             <div className="mt-3" style={{}}>
               <FormControl fullWidth>
                 <InputLabel id="demo-simple-select-label">

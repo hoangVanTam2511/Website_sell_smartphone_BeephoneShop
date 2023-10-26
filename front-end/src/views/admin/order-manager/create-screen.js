@@ -1,21 +1,46 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import { Button, Empty, Table } from "antd";
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import { Box, FormControl, IconButton, Select, InputLabel, MenuItem, Pagination, TextField, Tooltip, Checkbox, FormControlLabel, Autocomplete, InputAdornment, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Slide, } from "@mui/material";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import {
+  Box,
+  FormControl,
+  IconButton,
+  Select,
+  InputLabel,
+  MenuItem,
+  Pagination,
+  TextField,
+  Tooltip,
+  Checkbox,
+  FormControlLabel,
+  Autocomplete,
+  InputAdornment,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Slide,
+} from "@mui/material";
 import { PlusOutlined } from "@ant-design/icons";
 import Card from "../../../components/Card";
 import { format } from "date-fns";
 import axios from "axios";
 import { parseInt } from "lodash";
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
-import Zoom from '@mui/material/Zoom';
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
+import Zoom from "@mui/material/Zoom";
 import * as dayjs from "dayjs";
-import LoadingIndicator from '../../../utilities/loading';
+import LoadingIndicator from "../../../utilities/loading";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -23,7 +48,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 const CreateScreen = ({ close }) => {
   const navigate = useNavigate();
-  const [doPhanGiai, setDoPhanGiai] = useState('');
+  const [doPhanGiai, setDoPhanGiai] = useState("");
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -50,24 +75,30 @@ const CreateScreen = ({ close }) => {
       doPhanGiai: "1080 x 1900",
       kichThuoc: 6.5,
       screenStatus: 1,
-    }
+    },
   ]);
 
-  const uniqueTanSoQuet = screens.map((option) => option.tanSoQuet).filter((value, index, self) => {
-    return self.indexOf(value) === index;
-  });
+  const uniqueTanSoQuet = screens
+    .map((option) => option.tanSoQuet)
+    .filter((value, index, self) => {
+      return self.indexOf(value) === index;
+    });
 
-  const uniqueKichThuoc = screens.map((option) => option.kichThuoc).filter((value, index, self) => {
-    return self.indexOf(value) === index;
-  });
+  const uniqueKichThuoc = screens
+    .map((option) => option.kichThuoc)
+    .filter((value, index, self) => {
+      return self.indexOf(value) === index;
+    });
 
-  const uniqueLoaiManHinh = screens.map((option) => option.loaiManHinh).filter((value, index, self) => {
-    return self.indexOf(value) === index;
-  });
+  const uniqueLoaiManHinh = screens
+    .map((option) => option.loaiManHinh)
+    .filter((value, index, self) => {
+      return self.indexOf(value) === index;
+    });
 
   const [isLoading, setIsLoading] = React.useState(false);
 
-  const [status, setStatus] = React.useState('');
+  const [status, setStatus] = React.useState("");
 
   const handleChangeStatus = (event) => {
     setStatus(event.target.value);
@@ -79,26 +110,33 @@ const CreateScreen = ({ close }) => {
 
   return (
     <>
-      <div className="mt-4" style={{width: "700px" }}>
+      <div className="mt-4" style={{ width: "700px" }}>
         <div className="container" style={{}}>
           <div className="text-center" style={{}}>
-            <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>THÊM MÀN HÌNH</span>
+            <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>
+              THÊM MÀN HÌNH
+            </span>
           </div>
           <div className="mx-auto mt-3 pt-2">
             <div>
-              <Autocomplete fullWidth className="custom"
+              <Autocomplete
+                fullWidth
+                className="custom"
                 id="free-solo-demo"
                 freeSolo
                 options={uniqueLoaiManHinh}
-                renderInput={(params) => <TextField
-                  {...params}
-                  label="Loại Màn Hình" />}
+                renderInput={(params) => (
+                  <TextField {...params} label="Loại Màn Hình" />
+                )}
               />
             </div>
             <div className="mt-3">
               <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Độ Phân Giải</InputLabel>
-                <Select className="custom"
+                <InputLabel id="demo-simple-select-label">
+                  Độ Phân Giải
+                </InputLabel>
+                <Select
+                  className="custom"
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
                   value={doPhanGiai}
@@ -106,13 +144,22 @@ const CreateScreen = ({ close }) => {
                   onChange={handleChangeDoPhanGiai}
                   endAdornment={
                     <>
-                      <InputAdornment style={{ marginRight: "20px" }} position="end">
-                        <Tooltip title="Thêm độ phân giải" TransitionComponent={Zoom}>
-                          <IconButton onClick={() => setOpen(true)} aria-label="delete" size="small">
-                            <AddCircleOutlineIcon className='text-dark' />
+                      <InputAdornment
+                        style={{ marginRight: "20px" }}
+                        position="end"
+                      >
+                        <Tooltip
+                          title="Thêm độ phân giải"
+                          TransitionComponent={Zoom}
+                        >
+                          <IconButton
+                            onClick={() => setOpen(true)}
+                            aria-label="delete"
+                            size="small"
+                          >
+                            <AddCircleOutlineIcon className="text-dark" />
                           </IconButton>
                         </Tooltip>
-
                       </InputAdornment>
                     </>
                   }
@@ -122,49 +169,70 @@ const CreateScreen = ({ close }) => {
               </FormControl>
             </div>
             <div className="mt-3">
-              <Autocomplete fullWidth className="custom"
+              <Autocomplete
+                fullWidth
+                className="custom"
                 id="free-solo-demo"
                 freeSolo
                 options={uniqueTanSoQuet}
-                renderInput={(params) => <TextField
-                  {...params}
-                  InputProps={{
-                    ...params.InputProps,
-                    startAdornment:
-                      (
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    InputProps={{
+                      ...params.InputProps,
+                      startAdornment: (
                         <>
-                          <InputAdornment style={{ marginLeft: "5px" }} position="start">Hz</InputAdornment>
+                          <InputAdornment
+                            style={{ marginLeft: "5px" }}
+                            position="start"
+                          >
+                            Hz
+                          </InputAdornment>
                           {params.InputProps.startAdornment}
                         </>
                       ),
-                  }}
-                  label="Tần Số Quét" />}
+                    }}
+                    label="Tần Số Quét"
+                  />
+                )}
               />
             </div>
             <div className="mt-3">
-              <Autocomplete fullWidth className="custom"
+              <Autocomplete
+                fullWidth
+                className="custom"
                 id="free-solo-demo"
                 freeSolo
                 options={uniqueKichThuoc}
-                renderInput={(params) => <TextField
-                  {...params}
-                  InputProps={{
-                    ...params.InputProps,
-                    startAdornment:
-                      (
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    InputProps={{
+                      ...params.InputProps,
+                      startAdornment: (
                         <>
-                          <InputAdornment style={{ marginLeft: "5px" }} position="start">inches</InputAdornment>
+                          <InputAdornment
+                            style={{ marginLeft: "5px" }}
+                            position="start"
+                          >
+                            inches
+                          </InputAdornment>
                           {params.InputProps.startAdornment}
                         </>
                       ),
-                  }}
-                  label="Màn Hình Rộng" />}
+                    }}
+                    label="Màn Hình Rộng"
+                  />
+                )}
               />
             </div>
             <div className="mt-3" style={{}}>
               <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Trạng Thái</InputLabel>
-                <Select className="custom"
+                <InputLabel id="demo-simple-select-label">
+                  Trạng Thái
+                </InputLabel>
+                <Select
+                  className="custom"
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
                   value={status}
@@ -209,32 +277,37 @@ const CreateScreen = ({ close }) => {
         <DialogContent className="" style={{ height: "160px" }}>
           <div className="mt-2 d-flex">
             <div>
-              <Autocomplete className="custom"
+              <Autocomplete
+                className="custom"
                 sx={{ width: "200px" }}
                 id="free-solo-demo"
                 freeSolo
                 options={uniqueTanSoQuet}
-                renderInput={(params) => <TextField
-                  {...params}
-                  label="Chiều Rộng" />}
+                renderInput={(params) => (
+                  <TextField {...params} label="Chiều Rộng" />
+                )}
               />
             </div>
             <div className="ms-4">
-              <Autocomplete className="custom"
+              <Autocomplete
+                className="custom"
                 id="free-solo-demo"
                 sx={{ width: "200px" }}
                 freeSolo
                 options={uniqueTanSoQuet}
-                renderInput={(params) => <TextField
-                  {...params}
-                  label="Chiều Dài" />}
+                renderInput={(params) => (
+                  <TextField {...params} label="Chiều Dài" />
+                )}
               />
             </div>
           </div>
           <div className="mt-3">
             <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label">Độ Phân Giải</InputLabel>
-              <Select className="custom"
+              <InputLabel id="demo-simple-select-label">
+                Độ Phân Giải
+              </InputLabel>
+              <Select
+                className="custom"
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
                 value={status}
@@ -265,7 +338,6 @@ const CreateScreen = ({ close }) => {
       </Dialog>
       {isLoading && <LoadingIndicator />}
     </>
-  )
-
-}
+  );
+};
 export default CreateScreen;

@@ -36,6 +36,8 @@ import Zoom from "@mui/material/Zoom";
 import * as dayjs from "dayjs";
 import LoadingIndicator from "../../../utilities/loading";
 import generateRandomCode from "../../../utilities/randomCode ";
+import useCustomSnackbar from "../../../utilities/notistack";
+import { Notistack } from "./enum";
 
 const CreatePin = ({ close, getAll, pins }) => {
   const navigate = useNavigate();
@@ -43,6 +45,7 @@ const CreatePin = ({ close, getAll, pins }) => {
   const [loaiPin, setLoaiPin] = React.useState("");
   const [isLoading, setIsLoading] = React.useState(false);
   const [status, setStatus] = React.useState("");
+  const { handleOpenAlertVariant } = useCustomSnackbar();
 
   const handleChangeDungLuong = (event, value) => {
     setDungLuong(value);
@@ -87,10 +90,10 @@ const CreatePin = ({ close, getAll, pins }) => {
         close();
         getAll();
         handleReset();
-        alert("add thành công");
+        handleOpenAlertVariant("Thêm thành công!!!", Notistack.SUCCESS);
       })
       .catch((error) => {
-        alert("add thất bại");
+        handleOpenAlertVariant(error.response.data.message, Notistack.ERROR);
       });
   };
 

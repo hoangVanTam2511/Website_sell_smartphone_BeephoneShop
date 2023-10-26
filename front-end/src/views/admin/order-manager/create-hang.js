@@ -43,12 +43,15 @@ import Zoom from "@mui/material/Zoom";
 import * as dayjs from "dayjs";
 import LoadingIndicator from "../../../utilities/loading";
 import generateRandomCode from "../../../utilities/randomCode ";
+import useCustomSnackbar from "../../../utilities/notistack";
+import { Notistack } from "./enum";
 
 const CreateHang = ({ close, getAll, hangs }) => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = React.useState(false);
   const [tenHang, setTenHang] = React.useState("");
   const [status, setStatus] = React.useState("");
+  const { handleOpenAlertVariant } = useCustomSnackbar();
 
   const addHang = () => {
     let obj = {
@@ -62,10 +65,10 @@ const CreateHang = ({ close, getAll, hangs }) => {
         close();
         getAll();
         handleReset();
-        alert("add thành công");
+        handleOpenAlertVariant("Thêm thành công!!!", Notistack.SUCCESS);
       })
       .catch((error) => {
-        alert("add thất bại");
+        handleOpenAlertVariant(error.response.data.message, Notistack.ERROR);
       });
   };
 
