@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Upload, message, Image, Tooltip } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 

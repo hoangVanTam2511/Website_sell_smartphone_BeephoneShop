@@ -2,6 +2,7 @@ package beephone_shop_projects.entity;
 
 import beephone_shop_projects.entity.base.PrimaryEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
@@ -27,12 +28,12 @@ public class GioHangChiTiet extends PrimaryEntity implements Serializable {
 
   private BigDecimal donGia;
 
-  @JsonIgnore
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_gio_hang")
+  @JsonIgnore
   private GioHang gioHang;
 
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_chi_tiet_san_pham")
   private SanPhamChiTiet sanPhamChiTiet;
 

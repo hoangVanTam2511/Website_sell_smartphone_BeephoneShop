@@ -1,10 +1,6 @@
-import { Button, Modal, Card, Checkbox, message } from "antd";
-// import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-// import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import React, { useEffect } from "react";
+import { Button, Modal, Card, message } from "antd";
+import React from "react";
 import { useState } from "react";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { apiURLKH } from "../../../../service/api";
 import TextField from "@mui/material/TextField";
@@ -23,6 +19,10 @@ import AddressForm from "./DiaChi";
 import ImageUploadComponent from "./Anh";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import * as dayjs from "dayjs";
 const AddKH = () => {
   let [listKH, setListKH] = useState([]);
   let [hoVaTen, setTen] = useState("");
@@ -75,6 +75,9 @@ const AddKH = () => {
       setHoVaTenError("Họ và tên không được chứa ký tự đặc biệt");
     } else if (trimmedValue.length < 5) {
       setHoVaTenError("Họ và tên phải có ít nhất 5 ký tự");
+    }
+    if (/^\s+|\s+$/.test(value)) {
+      setHoVaTenError("Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi");
     } else {
       setHoVaTenError("");
     }
@@ -159,9 +162,11 @@ const AddKH = () => {
   const handleWardChange = (value) => {
     setXaPhuong(value);
   };
+
   const handleAnhDaiDienChange = (imageURL) => {
     setAnhDaiDien(imageURL);
   };
+
   const AddKH = async () => {
     setSubmitted(true);
     setFormSubmitted(true);
@@ -195,7 +200,7 @@ const AddKH = () => {
       );
 
       // Lấy mã khách hàng từ response
-      const generatedMaKhachHang = khachHangResponse.data.id;
+      const generatedMaKhachHang = khachHangResponse.data.data.id;
       addDiaChiList(generatedMaKhachHang);
       redirectToHienThiKH(generatedMaKhachHang);
 
@@ -255,12 +260,16 @@ const AddKH = () => {
       });
   };
 
+  const handleChangeDate = (date) => {
+    const value = date.format("DD/MM/YYYY");
+    setNgaySinh(value);
+  };
   return (
     <>
       <Card bordered="false" style={{ width: "100%" }}>
         <Grid container justifyContent="space-between">
           {/* Left column */}
-          <Grid item xs={5.3}>
+          <Grid item xs={5.4}>
             <Card
               title={
                 <span style={{ color: "gray" }}>Thông tin Khách Hàng</span>
@@ -268,13 +277,13 @@ const AddKH = () => {
               bordered="false"
               headStyle={{ borderLeft: "4px solid #e2e2e2", borderRadius: 0 }}
             >
-              <div style={{ width: "90%", margin: "0 auto" }}>
+              <div style={{ width: "95%", margin: "0 auto" }}>
                 <div
                   style={{
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
-                    marginBottom: "20px",
+                    marginBottom: "-8px",
                     width: "100%",
                   }}
                 >
@@ -288,7 +297,7 @@ const AddKH = () => {
                   style={{
                     textAlign: "center",
                     marginBottom: "20px",
-                    marginTop: "20px",
+                    // marginTop: "20px",
                   }}
                 >
                   <TextField
@@ -309,44 +318,44 @@ const AddKH = () => {
                   <div
                     className="text-f"
                     style={{
-                      marginBottom: "15px",
+                      marginBottom: "30px",
                       textAlign: "left",
                       width: "47%",
                     }}
                   >
-                    <Box
-                      component="form"
-                      sx={{
-                        "& .MuiTextField-root": {
-                          mt: 2,
-                          width: "100%",
-                          mb: 2,
-                        },
-                      }}
-                      noValidate
-                      autoComplete="off"
-                    >
-                      <TextField
-                        label="Ngày sinh"
-                        type="date"
-                        value={ngaySinh}
-                        InputLabelProps={{
-                          shrink: true,
-                        }}
-                        onChange={(e) => {
-                          setNgaySinh(e.target.value); // Cập nhật giá trị ngaySinh sau khi thay đổi
-                        }}
-                        error={formSubmitted && !ngaySinh} // Show error if form submitted and hoVaTen is empty
-                        helperText={
-                          formSubmitted && !ngaySinh && "Chưa chọn ngày sinh"
-                        }
-                      />
-                    </Box>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DemoContainer components={["DatePicker"]}>
+                        <DatePicker
+                          label="Ngày Sinh"
+                          disableFuture
+                          value={
+                            ngaySinh ? dayjs(ngaySinh, "DD/MM/YYYY") : null
+                          }
+                          onChange={handleChangeDate}
+                          sx={{
+                            position: "relative",
+
+                            "& .MuiInputBase-root": {
+                              width: "100%",
+                            },
+                          }}
+                          slotProps={{
+                            textField: {
+                              error: formSubmitted && !ngaySinh,
+                              helperText:
+                                formSubmitted && !ngaySinh
+                                  ? "Chưa chọn ngày sinh"
+                                  : "",
+                            },
+                          }}
+                        />
+                      </DemoContainer>
+                    </LocalizationProvider>
                   </div>
                   <div
                     className="text-f"
                     style={{
-                      marginBottom: "15px",
+                      marginBottom: "20px",
                       marginLeft: "50px",
                       marginTop: "20px",
                     }}
@@ -425,7 +434,7 @@ const AddKH = () => {
             <Card
               title={
                 <span style={{ color: "gray" }}>
-                  Thông tin Địa chỉ mặc định
+                  Thông tin địa chỉ mặc định
                 </span>
               }
               bordered="false"
@@ -433,7 +442,12 @@ const AddKH = () => {
                 borderLeft: "4px solid #e2e2e2",
                 borderRadius: 0,
               }}
-              style={{ borderRadius: 0 }}
+              style={{
+                borderRadius: 0,
+                height: "100%", // Set Card height to 100% of its parent container
+                overflowY: "auto", // Add a vertical scrollbar when content overflows
+                maxHeight: "calc(111vh - 100px)",
+              }}
             >
               {/* <h4 style={{ color: "gray" }}>Địa chỉ mặc định</h4> */}
 
@@ -502,7 +516,7 @@ const AddKH = () => {
             </Card>
           </Grid>{" "}
         </Grid>
-        <div style={{ marginRight: "20px", float: "right" }}>
+        <div style={{ float: "right", marginTop: "10px" }}>
           <Button type="primary" onClick={showConfirm} size={"large"}>
             <FontAwesomeIcon
               icon={faFloppyDisk}

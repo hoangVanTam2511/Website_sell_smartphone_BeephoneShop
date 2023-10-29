@@ -11,10 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.Normalizer;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class DiaChiServiceImpl implements DiaChiService {
@@ -74,7 +71,6 @@ public class DiaChiServiceImpl implements DiaChiService {
     public void doiTrangThai(String id, String account) {
         Account account1 = accountRepository.findById(account)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy tài khoản"));
-
         for (DiaChi existingDiaChi : account1.getDiaChiList()) {
             if (existingDiaChi.getId().equals(id)) {
                 existingDiaChi.setTrangThai(1);
@@ -82,9 +78,7 @@ public class DiaChiServiceImpl implements DiaChiService {
                 existingDiaChi.setTrangThai(0);
             }
         }
-
         diaChiRepository.updateTrangThai(id, account);
-
     }
 
 

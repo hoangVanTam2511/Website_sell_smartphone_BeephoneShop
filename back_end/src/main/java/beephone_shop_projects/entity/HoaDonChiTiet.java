@@ -1,6 +1,7 @@
 package beephone_shop_projects.entity;
 
 import beephone_shop_projects.entity.base.PrimaryEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
@@ -36,6 +37,7 @@ public class HoaDonChiTiet extends PrimaryEntity implements Serializable {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_hoa_don")
+  @JsonIgnore
   private HoaDon hoaDon;
 
 }

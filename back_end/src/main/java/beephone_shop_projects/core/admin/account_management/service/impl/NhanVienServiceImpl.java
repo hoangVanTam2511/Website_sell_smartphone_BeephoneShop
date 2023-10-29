@@ -5,6 +5,7 @@ import beephone_shop_projects.core.admin.account_management.repository.AccountRe
 import beephone_shop_projects.core.admin.account_management.repository.RoleRepository;
 import beephone_shop_projects.core.admin.account_management.service.NhanVienService;
 import beephone_shop_projects.entity.Account;
+import beephone_shop_projects.infrastructure.constant.StatusAccountCus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,7 +26,7 @@ public class NhanVienServiceImpl implements NhanVienService {
 
     @Override
     public Page<Account> getAllNV(Integer pageNo) {
-        Pageable pageable = PageRequest.of(pageNo, 20);
+        Pageable pageable = PageRequest.of(pageNo - 1, 5);
         return accountRepository.getAllNV(pageable);
     }
 
@@ -41,7 +42,7 @@ public class NhanVienServiceImpl implements NhanVienService {
         String code = String.format("NV%04d", number);
         Date date = null;
         try {
-            date = new SimpleDateFormat("yyyy-MM-dd").parse(request.getNgaySinh());
+            date = new SimpleDateFormat("dd/MM/yyyy").parse(request.getNgaySinh());
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
@@ -65,7 +66,7 @@ public class NhanVienServiceImpl implements NhanVienService {
                 .xaPhuong(request.getXaPhuong())
                 .canCuocCongDan(request.getCanCuocCongDan())
                 .tinhThanhPho(request.getTinhThanhPho())
-                .trangThai(1)
+                .trangThai(StatusAccountCus.LAM_VIEC)
                 .ma(code)
                 .matKhau(matKhau)
                 .soDienThoai(request.getSoDienThoai())
@@ -76,19 +77,15 @@ public class NhanVienServiceImpl implements NhanVienService {
 
     @Override
     public void doiTrangThai(String id) {
-        accountRepository.doiTrangThai(id);
+        accountRepository.doiTrangThaiNV(id);
     }
 
     @Override
     public Account updateNV(CreateAccountRequest request, String id) {
-        return null;
-    }
-
-    public Account updateNV(Account request, String id) {
         Optional<Account> optional = accountRepository.findById(id);
         Date date = null;
         try {
-            date = new SimpleDateFormat("yyyy-MM-dd").parse(String.valueOf(request.getNgaySinh()));
+            date = new SimpleDateFormat("dd/MM/yyyy").parse(String.valueOf(request.getNgaySinh()));
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
@@ -111,20 +108,25 @@ public class NhanVienServiceImpl implements NhanVienService {
             optional.get().setHoVaTen(request.getHoVaTen());
             optional.get().setSoDienThoai(request.getSoDienThoai());
             accountRepository.save(optional.get());
-            return accountRepository.save(optional.get());
         }
-        return optional.get();
+        return accountRepository.save(optional.get());
     }
 
     @Override
     public Page<Account> search(Optional<String> tenSearch, Integer pageNo) {
-        Pageable pageable = PageRequest.of(pageNo, 10);
+        Pageable pageable = PageRequest.of(pageNo - 1, 5);
         return accountRepository.searchAllNV(tenSearch, pageable);
     }
 
     @Override
     public Account getOne(UUID id) {
         return accountRepository.findById(String.valueOf(id)).get();
+    }
+
+    @Override
+    public Page<Account> filterTrangThai(StatusAccountCus trangThai, Integer pageableNo) {
+        Pageable pageable = PageRequest.of(pageableNo - 1, 5);
+        return accountRepository.filterTrangThai(trangThai, pageable);
     }
 
     public static String removeDiacritics(String str) {

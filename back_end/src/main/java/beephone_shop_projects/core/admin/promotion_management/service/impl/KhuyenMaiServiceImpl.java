@@ -7,13 +7,13 @@ import beephone_shop_projects.core.admin.promotion_management.model.request.Upda
 import beephone_shop_projects.core.admin.promotion_management.repository.KhuyenMaiRepository;
 import beephone_shop_projects.core.admin.promotion_management.service.KhuyenMaiService;
 import beephone_shop_projects.entity.KhuyenMai;
+import beephone_shop_projects.infrastructure.constant.StatusDiscount;
+import beephone_shop_projects.infrastructure.exeption.rest.RestApiException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -24,37 +24,36 @@ import java.util.List;
 
 @Service
 @Validated
-@Component
 public class KhuyenMaiServiceImpl implements KhuyenMaiService {
 
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private static final int CODE_LENGTH = 10;
     @Autowired
     private KhuyenMaiRepository khuyenMaiRepository;
-
-
-    @Scheduled(fixedRate = 60000)
+    //    @Scheduled(fixedRate = 5000, initialDelay = 30000)
     public List<KhuyenMai> updateStatusKhuyenMai() {
         Date dateTime = new Date();
         List<KhuyenMai> listToUpdate = new ArrayList<>();
 
-        List<KhuyenMai> list = khuyenMaiRepository.checkToStartAfterAndStatus(dateTime, 3);
-        List<KhuyenMai> list1 = khuyenMaiRepository.checkEndDateAndStatus(dateTime, 2);
-        List<KhuyenMai> list3 = khuyenMaiRepository.checkToStartBeforDateNowAndStatus(dateTime, 1);
+        List<KhuyenMai> list = khuyenMaiRepository.checkToStartAfterAndStatus(dateTime, StatusDiscount.CHUA_DIEN_RA);
+        List<KhuyenMai> list1 = khuyenMaiRepository.checkEndDateAndStatus(dateTime, StatusDiscount.NGUNG_HOAT_DONG);
+        List<KhuyenMai> list3 = khuyenMaiRepository.checkToStartBeforDateNowAndStatus(dateTime, StatusDiscount.HOAT_DONG);
+        List<KhuyenMai> list4 = khuyenMaiRepository.checkToStartBeforDateNowAndStatus(dateTime, StatusDiscount.DA_HUY);
 
         listToUpdate.addAll(list);
         listToUpdate.addAll(list1);
         listToUpdate.addAll(list3);
+        listToUpdate.addAll(list4);
 
         for (KhuyenMai v : listToUpdate) {
-            if (list.contains(v)) {
-                v.setTrangThai(3);
+            if (list.contains(v) && list4.contains(v)) {
+                v.setTrangThai(StatusDiscount.CHUA_DIEN_RA);
             }
             if (list1.contains(v)) {
-                v.setTrangThai(2);
+                v.setTrangThai(StatusDiscount.NGUNG_HOAT_DONG);
             }
-            if (list3.contains(v)) {
-                v.setTrangThai(1);
+            if (list3.contains(v) && list4.contains(v)) {
+                v.setTrangThai(StatusDiscount.HOAT_DONG);
             }
         }
         return khuyenMaiRepository.saveAll(listToUpdate);
@@ -62,17 +61,18 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
 
     @Override
     public Page<KhuyenMai> getAll(FindKhuyenMaiRequest request) {
-        if (request.getPageNo() == null){
+        if (request.getPageNo() == null) {
             request.setPageNo(1);
         }
-        if (request.getPageSize() == null){
+        if (request.getPageSize() == null) {
             request.setPageSize(5);
         }
-        if (request.getKeyword() == null){
+        if (request.getKeyword() == null) {
             request.setKeyword("");
         }
-        Pageable pageable = PageRequest.of(request.getPageNo()-1, request.getPageSize());
+        Pageable pageable = PageRequest.of(request.getPageNo() - 1, request.getPageSize());
         Page<KhuyenMai> page = khuyenMaiRepository.findAllKhuyenMai(pageable, request);
+        updateStatusKhuyenMai();
         return page;
     }
 
@@ -91,8 +91,25 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
         }
         return code.toString();
     }
+
     @Override
     public KhuyenMai addKhuyenMai(@Valid CreateKhuyenMaiRequest request) {
+        List<KhuyenMai> khuyenMaiList = khuyenMaiRepository.findNamePromotion(request.getTenKhuyenMai());
+
+        if(!khuyenMaiList.isEmpty()){
+            throw new RestApiException("Tên Khuyến Mãi đã tồn tại");
+        }
+        StatusDiscount status = StatusDiscount.CHUA_DIEN_RA;
+        Date dateTime = new Date();
+        if (request.getNgayBatDau().after(dateTime) && request.getNgayKetThuc().before(dateTime)) {
+            status = StatusDiscount.HOAT_DONG;
+        }
+        if (request.getNgayBatDau().before(dateTime)) {
+            status = StatusDiscount.NGUNG_HOAT_DONG;
+        }
+        if (request.getNgayKetThuc().after(dateTime)) {
+            status = StatusDiscount.CHUA_DIEN_RA;
+        }
         KhuyenMai khuyenMai = KhuyenMai.builder()
                 .ma(generateRandomCode())
                 .tenKhuyenMai(request.getTenKhuyenMai())
@@ -100,7 +117,7 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
                 .loaiKhuyenMai(request.getLoaiKhuyenMai())
                 .ngayBatDau(request.getNgayBatDau())
                 .ngayKetThuc(request.getNgayKetThuc())
-                .trangThai(1)
+                .trangThai(status)
                 .build();
         return khuyenMaiRepository.save(khuyenMai);
     }
@@ -132,13 +149,17 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
     }
 
     @Override
-    public Boolean doiTrangThai(String id) {
+    public KhuyenMai doiTrangThai(String id) {
         KhuyenMai findKhuyenMai = khuyenMaiRepository.findById(id).get();
-        if (findKhuyenMai != null) {
-            khuyenMaiRepository.doiTrangThai(id);
-            return true;
-        } else {
-            return false;
+        if (findKhuyenMai.getTrangThai() == StatusDiscount.HOAT_DONG || findKhuyenMai.getTrangThai() == StatusDiscount.CHUA_DIEN_RA) {
+            findKhuyenMai.setTrangThai(StatusDiscount.DA_HUY);
+        } else if (findKhuyenMai.getTrangThai() == StatusDiscount.DA_HUY) {
+            if (findKhuyenMai.getNgayBatDau().after(new Date())) {
+                findKhuyenMai.setTrangThai(StatusDiscount.CHUA_DIEN_RA);
+            } else if (findKhuyenMai.getNgayKetThuc().after(new Date())) {
+                findKhuyenMai.setTrangThai(StatusDiscount.HOAT_DONG);
+            }
         }
+        return khuyenMaiRepository.save(findKhuyenMai);
     }
 }

@@ -25,7 +25,7 @@ public interface ChiTietSanPhamResponce {
     String getTenSanPham();
 
     @Value("#{target.ten_nha_san_xuat}")
-    String getTenNhaSanXuat();
+    String gettenHang();
 
     @Value("#{target.ten_mau_sac}")
     String getTenMauSac();

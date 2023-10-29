@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,6 +14,8 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -20,23 +23,36 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "san_pham_chi_tiet")
-public class SanPhamChiTiet extends PrimaryEntity implements Serializable{
+public class SanPhamChiTiet extends PrimaryEntity implements Serializable {
 
-    private String ma;     
+  private String ma;
 
-    private BigDecimal donGia;
+  private BigDecimal donGia;
 
-    private Integer soLuongTonKho;
+  private Integer soLuongTonKho;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_san_pham")
-    private SanPham idSanPham;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_san_pham")
+  private SanPham sanPham;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_cau_hinh")
-    private CauHinh idCauHinh;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_cau_hinh")
+  private CauHinh cauHinh;
 
+  @OneToMany(mappedBy = "sanPhamChiTiet")
+  private Set<Anh> images = new HashSet<>();
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_ram")
+  private Ram ram;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_rom")
+  private Rom rom;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_mau_sac")
+  private MauSac mauSac;
 
 
 }

@@ -1,20 +1,14 @@
 import { Button, Card, Modal, message } from "antd";
 import React from "react";
 import { useState } from "react";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { faCheck } from "@fortawesome/free-solid-svg-icons";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import axios from "axios";
 import { apiURLNV } from "../../../../service/api";
 import TextField from "@mui/material/TextField";
 import "../../../../assets/scss/HienThiNV.scss";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import {
-  Box,
   FormControl,
   FormControlLabel,
   Grid,
@@ -24,16 +18,21 @@ import {
 import AddressForm from "./DiaChi";
 import ImageUploadComponent from "./Anh";
 import IDScan from "./QuetCanCuoc";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faExclamationCircle,
   faFloppyDisk,
 } from "@fortawesome/free-solid-svg-icons";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import * as dayjs from "dayjs";
 const AddNV = () => {
-  let [listKH, setListKH] = useState([]);
+  let [listNV, setListNV] = useState([]);
   let [hoVaTen, setTen] = useState("");
   // let [id, setID] = useState("");
-  let [ngaySinh, setNgaySinh] = useState(null);
+  let [ngaySinh, setNgaySinh] = useState("");
   let [soDienThoai, setSdt] = useState("");
   let [email, setEmail] = useState("");
   let [xaPhuong, setXaPhuong] = useState("");
@@ -57,16 +56,16 @@ const AddNV = () => {
     if (data) {
       setTen(data.hoVaTen);
       setNgaySinh(data.ngaySinh);
-      setDiaChi(data.diaChi);
-      setTinhThanhPho(data.tinhThanhPho);
-      setXaPhuong(data.xaPhuong);
+      // setDiaChi(data.diaChi);
+      // setTinhThanhPho(data.tinhThanhPho);
+      // setXaPhuong(data.xaPhuong);
       setCCCD(data.cccd);
       setGioiTinh(data.gioiTinh);
     }
   };
   const handleHoVaTenChange = (e) => {
     const value = e.target.value;
-    const specialCharPattern = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+    const specialCharPattern = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+/;
     const trimmedValue = value.replace(/\s/g, "");
     setTen(value);
     if (!value.trim()) {
@@ -162,7 +161,6 @@ const AddNV = () => {
     setFormSubmitted(true);
     let obj = {
       hoVaTen: hoVaTen,
-      // id: id,
       ngaySinh: ngaySinh,
       soDienThoai: soDienThoai,
       xaPhuong: xaPhuong,
@@ -176,11 +174,13 @@ const AddNV = () => {
     };
     if (
       !hoVaTen ||
-      ngaySinh == null ||
+      !ngaySinh ||
       !email ||
       !soDienThoai ||
       !diaChi ||
-      !xaPhuong
+      !xaPhuong ||
+      !quanHuyen ||
+      !tinhThanhPho
     ) {
       message.error("Vui lòng điền đủ thông tin");
       setIsConfirmVisible(false);
@@ -193,7 +193,6 @@ const AddNV = () => {
         let newKhachHangResponse = {
           hoVaTen: hoVaTen,
           ngaySinh: ngaySinh,
-          // id: id,
           soDienThoai: soDienThoai,
           xaPhuong: xaPhuong,
           quanHuyen: quanHuyen,
@@ -204,14 +203,18 @@ const AddNV = () => {
           anhDaiDien: anhDaiDien,
           canCuocCongDan: cccd,
         };
-        const generatedMaKhachHang = response.data.id;
-        setListKH([newKhachHangResponse, ...listKH]);
+        const generatedMaKhachHang = response.data.data.id;
+        setListNV([newKhachHangResponse, ...listNV]);
         message.success("Thêm nhân viên thành công");
         redirectToHienThiKH(generatedMaKhachHang);
       })
       .catch((error) => {
         alert("Thêm thất bại");
       });
+  };
+  const handleChangeDate = (date) => {
+    const value = date.format("DD/MM/YYYY");
+    setNgaySinh(value);
   };
   return (
     <>
@@ -273,45 +276,42 @@ const AddNV = () => {
                 <div
                   className="text-f"
                   style={{
-                    marginBottom: "20px",
-                    width: "65%",
+                    marginBottom: "30px",
+                    width: "45%",
                   }}
                 >
                   {/* Ngày sinh */}
-                  <Box
-                    component="form"
-                    sx={{
-                      "& .MuiTextField-root": {
-                        mt: 2,
-                        width: "100%",
-                        mb: 2,
-                      },
-                    }}
-                    noValidate
-                    autoComplete="off"
-                  >
-                    <TextField
-                      label="Ngày sinh"
-                      type="date"
-                      value={ngaySinh}
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                      onChange={(e) => {
-                        setNgaySinh(e.target.value); // Cập nhật giá trị ngaySinh sau khi thay đổi
-                      }}
-                      error={formSubmitted && !ngaySinh} // Show error if form submitted and hoVaTen is empty
-                      helperText={
-                        formSubmitted && !ngaySinh && "Chưa chọn ngày sinh"
-                      }
-                    />
-                  </Box>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DemoContainer components={["DatePicker"]}>
+                      <DatePicker
+                        label="Ngày Sinh"
+                        value={ngaySinh ? dayjs(ngaySinh, "DD/MM/YYYY") : null}
+                        format="DD/MM/YYYY"
+                        onChange={handleChangeDate}
+                        sx={{
+                          position: "relative",
+
+                          "& .MuiInputBase-root": {
+                            width: "100%",
+                          },
+                        }}
+                        slotProps={{
+                          textField: {
+                            error: formSubmitted && !ngaySinh,
+                            helperText:
+                              formSubmitted && !ngaySinh
+                                ? "Chưa chọn ngày sinh"
+                                : "",
+                          },
+                        }}
+                      />
+                    </DemoContainer>
+                  </LocalizationProvider>
                 </div>
                 <div
                   className="text-f"
                   style={{
-                    marginBottom: "15px",
-                    marginLeft: "50px",
+                    marginBottom: "30px",
                   }}
                 >
                   {/* Giới tính */}

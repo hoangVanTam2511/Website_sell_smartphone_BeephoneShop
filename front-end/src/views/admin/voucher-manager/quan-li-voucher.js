@@ -1,128 +1,212 @@
-import { Form, Table, Input, Button, Tooltip, Space } from "antd";
+import { Form, Table, Button, Modal, Popconfirm } from "antd";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
-import {
-  faPencilAlt,
-  faArrowsRotate,
-  faPlus,
-  faRotateRight,
-} from "@fortawesome/free-solid-svg-icons";
-
 import { Link, useSearchParams } from "react-router-dom";
 import { apiURLVoucher } from "../../../service/api";
-import "../../../assets/scss/quanLyVoucher.scss";
-import { useNavigate } from "react-router-dom";
+import "../voucher-manager/style.css";
 import dayjs from "dayjs"; // Import thư viện Day.js
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import numeral from "numeral"; // Import thư viện numeral
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { Box, Pagination } from "@mui/material";
+import {
+  Select,
+  IconButton,
+  Tooltip,
+  Pagination,
+  TextField,
+  Zoom,
+} from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
-import AddIcon from "@mui/icons-material/Add";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
+import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
+import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
+import { PlusOutlined } from "@ant-design/icons";
+import Card from "../../../components/Card";
+import style from "./style.css";
+import { parseInt } from "lodash";
+import LoadingIndicator from "../../../utilities/loading";
+import {
+  Notistack,
+  StatusDiscount,
+  StatusDiscountNumber,
+  TypeDiscountString,
+} from "../order-manager/enum";
+import { ConvertStatusVoucherNumberToString } from "../../../utilities/convertEnum";
+import useCustomSnackbar from "../../../utilities/notistack";
 
 //show
 const HienThiVoucher = () => {
   const [form] = Form.useForm();
-  let [listVoucher, setListVoucher] = useState([]);
+  const [listVoucher, setListVoucher] = useState([]);
+  const [voucher, setVoucher] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [searchNgayBatDau, setSearchNgayBatDau] = useState("");
   const [searchNgayKetThuc, setSearchNgayKetThuc] = useState("");
   const [searchTrangThai, setSearchTrangThai] = useState("");
-  let [searchTatCa, setSearchTatCa] = useState("");
+  const [searchTatCa, setSearchTatCa] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
-  const [statusVoucher, setStatusVoucher] = useState([]);
-  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
+  const [id, setId] = useState("");
+  const { handleOpenAlertVariant } = useCustomSnackbar();
+  const [open, setOpen] = useState(false);
 
-  // cutstom load data
   const loadDataListVoucher = (page) => {
+    setIsLoading(false);
     axios
       .get(`${apiURLVoucher}/vouchers`, {
         params: {
           keyword: searchTatCa,
           pageNo: page,
-          trangThai: searchTrangThai,
+          trangThai: ConvertStatusVoucherNumberToString(searchTrangThai),
           ngayBatDau: searchNgayBatDau,
           ngayKetThuc: searchNgayKetThuc,
         },
       })
       .then((response) => {
-        setListVoucher(response.data.content);
+        setListVoucher(response.data.data);
         setTotalPages(response.data.totalPages);
+        setIsLoading(true);
+      })
+      .catch((error) => {
+        handleOpenAlertVariant(
+          "Đã xảy ra lỗi, vui lòng liên hệ quản trị viên.",
+          Notistack.ERROR
+        );
+      });
+  };
+
+  const sendMail = () => {
+    let obj = {
+      mails: ["dungnpph25823@fpt.edu.vn", "anhltvph25818@fpt.edu.vn"],
+      subject: "BeePhoneShop thông báo đặt hàng thành công.",
+      tenKhachHang: "Lê Thị Vân Anh",
+      maDonHang: "No0199310122",
+      ngayDatHang: "19/08/2003",
+      hinhThucThanhToan: "Chuyển khoản",
+      hinhThucGiaoHang: "Giao hàng nhanh",
+      diaChi:
+        "Ngõ 75 Phú Diễn, Phường Phú Diễn, Quận Nam Từ Liêm, Thành Phố Hà Nội",
+      sdtNhanHang: "0999166666",
+      thanhTien: "37.999.000 VND",
+      phiVanChuyen: "0 VND",
+      giamGia: "3.000.000 VND",
+      tongCong: "34.999.000 VND",
+    };
+    axios
+      .post(`${apiURLVoucher}/sendMail`, obj)
+      .then((response) => {
+        handleOpenAlertVariant("Thành công", Notistack.SUCCESS);
+      })
+      .catch((error) => {
+        handleOpenAlertVariant(
+          "Đã xảy ra lỗi, vui lòng liên hệ quản trị viên.",
+          Notistack.ERROR
+        );
+      });
+  };
+
+  const loadDataListVoucher1 = (page) => {
+    axios
+      .get(`${apiURLVoucher}/vouchers`, {
+        params: {
+          keyword: searchTatCa,
+          pageNo: page,
+          trangThai: ConvertStatusVoucherNumberToString(searchTrangThai),
+          ngayBatDau: searchNgayBatDau,
+          ngayKetThuc: searchNgayKetThuc,
+        },
+      })
+      .then((response) => {
+        setListVoucher(response.data.data);
+        setTotalPages(response.data.totalPages);
+      })
+      .catch((error) => {
+        handleOpenAlertVariant(
+          "Đã xảy ra lỗi, vui lòng liên hệ quản trị viên.",
+          Notistack.ERROR
+        );
       });
   };
 
   useEffect(() => {
-    loadDataListVoucher(currentPage);
+    loadDataListVoucher1(currentPage);
     const intervalId = setInterval(() => {
-      loadDataListVoucher(currentPage);
+      loadDataListVoucher1(currentPage);
     }, 10000);
     // Xóa interval khi component unmounted
     return () => clearInterval(intervalId);
-  }, [
-    searchTatCa,
-    searchTrangThai,
-    searchNgayBatDau,
-    searchNgayKetThuc,
-    currentPage,
-    totalPages,
-  ]);
+  }, [searchTatCa, currentPage, totalPages]);
+
+  useEffect(() => {
+    loadDataListVoucher(currentPage);
+  }, [searchTrangThai, searchNgayBatDau, searchNgayKetThuc]);
 
   const handleReset = () => {
-    setSearchTatCa("");
-    setSearchNgayBatDau(null);
-    setSearchNgayKetThuc(null);
-    setSearchTrangThai("");
-    setCurrentPage(1);
+    setIsLoading(false);
+    setTimeout(() => {
+      setSearchTatCa("");
+      setSearchNgayBatDau(null);
+      setSearchNgayKetThuc(null);
+      setSearchTrangThai("");
+      setCurrentPage(1);
+      setIsLoading(true);
+      setSearchParams("");
+    }, 200);
   };
 
   const doiTrangThaiVoucher = (id) => {
+    setIsLoading(false);
     axios
-      .put(apiURLVoucher + "/deleteTrangThaiVoucher/" + id)
+      .put(`${apiURLVoucher}/deleteTrangThaiVoucher/${id}`)
       .then((response) => {
         loadDataListVoucher(currentPage);
-        showToast("success", "Đổi trạng thái thành công");
+        handleOpenAlertVariant("Đổi trạng thái thành công!", Notistack.SUCCESS);
+        setIsLoading(true);
       })
       .catch((error) => {
         console.error("Đã xảy ra lỗi khi đổi trạng thái");
-        showToast("error", "Đã xảy ra lỗi khi đổi trạng thái");
+        handleOpenAlertVariant(
+          "Đã xảy ra lỗi khi đổi trạng thái!",
+          Notistack.ERROR
+        );
+        setIsLoading(true);
       });
-  };
-
-  const showToast = (type, message) => {
-    // Replace with your actual toast notification implementation
-    // Here's an example using the 'toast' library
-    if (type === "success") {
-      toast.success(message);
-    } else if (type === "error") {
-      toast.error(message);
-    }
   };
 
   const handleSearchTrangThaiChange = (event) => {
     const selectedValue = event.target.value;
     setSearchTrangThai(parseInt(selectedValue)); // Cập nhật giá trị khi Select thay đổi
-    searchParams.set("trangThai", parseInt(searchTrangThai));
+    searchParams.set("trangThai", parseInt(selectedValue));
     setSearchParams(searchParams);
+    if (selectedValue === 5) {
+      setSearchParams("");
+    }
+    setCurrentPage(1);
+  };
+
+  const handleSearchTatCaChange = (event) => {
+    const searchTatCaInput = event.target.value;
+    setSearchTatCa(searchTatCaInput);
+    setCurrentPage(1);
   };
 
   const handleSearchNgayBatDauChange = (selectedDate) => {
-    const value = selectedDate.format("DD/MM/YYYY");
-    setSearchNgayBatDau(value);
+    const formattedDate = selectedDate
+      ? dayjs(selectedDate).format("DD/MM/YYYY")
+      : ""; // Kiểm tra nếu date không null
+    setSearchNgayBatDau(formattedDate);
+    setCurrentPage(1);
   };
 
   const handleSearchNgayKetThucChange = (selectedDate) => {
     const value = selectedDate.format("DD/MM/YYYY");
     setSearchNgayKetThuc(value); // Cập nhật giá trị khi Select thay đổi
+    setCurrentPage(1);
   };
 
   //Ten column
@@ -130,138 +214,215 @@ const HienThiVoucher = () => {
     {
       title: "STT",
       dataIndex: "stt",
-      width: "1%",
+      width: "5%",
       align: "center",
       render: (text, record) => <span>{listVoucher.indexOf(record) + 1}</span>,
-      sorter: (a, b) => a.stt - b.stt,
     },
     {
       title: "Mã",
       dataIndex: "ma",
-      width: "1%",
-      align: "center",
-    },
-    {
-      title: "Tên",
-      dataIndex: "ten",
-      width: "15%",
       align: "center",
       render: (text, record) => (
-        <span
-          style={{
-            maxWidth: "25%",
-            whiteSpace: "pre-line",
-            overflow: "hidden",
-          }}
-        >
-          {record.ten}
-        </span>
+        <span style={{ fontWeight: "400" }}>{record.ma}</span>
       ),
     },
-    {
-      title: "Số Lượng",
-      dataIndex: "soLuong",
-      width: "1%",
-      align: "center",
-    },
-
     {
       title: "Giá Trị",
       dataIndex: "giaTriVoucher",
       width: "10%",
       align: "center",
       render: (value, record) => {
-        let formattedValue = value; // Mặc định là giữ nguyên giá trị
-
-        if (record.loaiVoucher === 1) {
-          formattedValue = numeral(value).format("0,0 VND") + " VNĐ";
-        } else if (record.loaiVoucher === 2) {
-          formattedValue = `${value} %`;
+        let formattedValue = value;
+        if (record.loaiVoucher === TypeDiscountString.VND) {
+          formattedValue = record.giaTriVoucher.toLocaleString("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          });
+        } else if (record.loaiVoucher === TypeDiscountString.PERCENT) {
+          formattedValue = `${record.giaTriVoucher} %`;
         }
-
-        return <span>{formattedValue}</span>;
+        return (
+          <span className="txt-danger" style={{ fontWeight: "400" }}>
+            {formattedValue}
+          </span>
+        );
       },
     },
     {
-      title: "Thời Gian Bắt Đầu - Kết Thúc",
+      title: "Giá Trị Tối Đa",
+      dataIndex: "giaTriToiDa",
+      width: "10%",
+      align: "center",
+      render: (value, record) => {
+        let formattedValue = value;
+        if (record.loaiVoucher === TypeDiscountString.VND) {
+          formattedValue = "...";
+        } else if (record.loaiVoucher === TypeDiscountString.PERCENT) {
+          formattedValue = record.giaTriToiDa.toLocaleString("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          });
+        }
+        return (
+          <span className="txt-danger" style={{ fontWeight: "400" }}>
+            {formattedValue}
+          </span>
+        );
+      },
+    },
+    {
+      title: "Điều kiện",
+      dataIndex: "dieuKienApDung",
+      width: "25%",
+      align: "center",
+      render: (text, record) => (
+        <>
+          <span
+            className=""
+            style={{
+              fontWeight: "400",
+              whiteSpace: "pre-line",
+              fontSize: "15px",
+            }}
+          >
+            Đơn tối thiểu{" "}
+            {record &&
+              record.dieuKienApDung &&
+              record.dieuKienApDung.toLocaleString("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              })}
+          </span>
+        </>
+      ),
+    },
+    {
+      title: "Số Lượng",
+      dataIndex: "soLuong",
+      width: "5%",
+      align: "center",
+    },
+
+    {
+      title: "Thời Gian",
       dataIndex: "thoiGian",
       width: "10%",
       align: "center",
       render: (text, record) => (
         <>
-          {dayjs(record.ngayBatDau).format("DD/MM/YYYY")} -{" "}
-          {dayjs(record.ngayKetThuc).format("DD/MM/YYYY")}
+          <div
+            className={`rounded-pill mx-auto ${
+              record.trangThai === StatusDiscount.HOAT_DONG &&
+              isDatePast(record.ngayBatDau) === true
+                ? "badge-light"
+                : record.trangThai === StatusDiscount.HOAT_DONG &&
+                  isDateFuture(record.ngayKetThuc) === false
+                ? "badge-primary"
+                : record.trangThai === StatusDiscount.NGUNG_HOAT_DONG
+                ? "badge-danger"
+                : record.trangThai === StatusDiscount.CHUA_DIEN_RA
+                ? "badge-light"
+                : record.trangThai === StatusDiscount.DA_HUY &&
+                  isDateFuture(record.ngayKetThuc) === true
+                ? "badge-danger"
+                : record.trangThai === StatusDiscount.DA_HUY &&
+                  isDatePast(record.ngayBatDau) === true
+                ? "badge-light"
+                : record.trangThai === StatusDiscount.DA_HUY &&
+                  isRangeDate(record.ngayBatDau, record.ngayKetThuc) === true
+                ? "badge-primary"
+                : ""
+            }`}
+            style={{
+              height: "35px",
+              width: "auto",
+              padding: "4px",
+            }}
+          >
+            <span
+              className={`p-2 ${
+                record.trangThai === StatusDiscount.CHUA_DIEN_RA
+                  ? "text-dark"
+                  : record.trangThai === StatusDiscount.DA_HUY &&
+                    isDatePast(record.ngayBatDau) === true
+                  ? "text-dark"
+                  : record.trangThai === StatusDiscount.HOAT_DONG &&
+                    isDatePast(record.ngayBatDau) === true
+                  ? "text-dark"
+                  : "text-white"
+              }`}
+              style={{ fontSize: "14px" }}
+            >
+              {dayjs(record.ngayBatDau).format("DD/MM/YYYY")} -{" "}
+              {dayjs(record.ngayKetThuc).format("DD/MM/YYYY")}
+            </span>
+          </div>
         </>
       ),
     },
     {
       title: "Trạng Thái",
       dataIndex: "trangThai",
-      width: "1%",
+      width: "10%",
       align: "center",
-      onFilter: (value, record) => record.trangThai == value,
+      onFilter: (value, record) => record.trangThai === value,
       filterSearch: true,
       render: (text, record) => (
         <span>
-          {record.trangThai === 1 ? (
-            <Button
-              type="primary"
+          {record.trangThai === StatusDiscount.HOAT_DONG ? (
+            <div
+              className="rounded-pill mx-auto badge-primary"
               style={{
-                borderRadius: "30px",
-                pointerEvents: "none",
-                cursor: "default",
+                height: "35px",
+                width: "110px",
+                padding: "4px",
               }}
             >
-              Còn Hiệu Lực
-            </Button>
-          ) : record.trangThai === 2 ? (
-            <Button
-              type="primary"
-              danger
+              <span className="text-white p-2" style={{ fontSize: "14px" }}>
+                Hoạt động
+              </span>
+            </div>
+          ) : record.trangThai === StatusDiscount.NGUNG_HOAT_DONG ? (
+            <div
+              className="rounded-pill mx-auto badge-danger"
               style={{
-                borderRadius: "30px",
-                pointerEvents: "none",
-                cursor: "default",
+                height: "35px",
+                width: "auto",
+                padding: "4px",
               }}
             >
-              Hết Hiệu Lực
-            </Button>
-          ) : record.trangThai === 3 ? (
-            <Button
-              type="primary"
+              <span className="text-white p-2" style={{ fontSize: "14px" }}>
+                Ngừng hoạt động
+              </span>
+            </div>
+          ) : record.trangThai === StatusDiscount.CHUA_DIEN_RA ? (
+            <div
+              className="rounded-pill mx-auto badge-light"
               style={{
-                borderRadius: "30px",
-                pointerEvents: "none",
-                cursor: "default",
-                background: "teal",
+                height: "35px",
+                width: "120px",
+                padding: "4px",
               }}
             >
-              Chưa Bắt Đầu
-            </Button>
-          ) : record.trangThai === 4 ? (
-            <Button
-              type="primary"
+              <span className="text-dark p-2" style={{ fontSize: "14px" }}>
+                Chưa diễn ra
+              </span>
+            </div>
+          ) : record.trangThai === StatusDiscount.DA_HUY ? (
+            <div
+              className="rounded-pill mx-auto badge-danger"
               style={{
-                borderRadius: "30px",
-                pointerEvents: "none",
-                cursor: "default",
-                background: "olive",
+                height: "35px",
+                width: "90px",
+                padding: "4px",
               }}
             >
-              Hết Lượt Dùng
-            </Button>
+              <span className="text-white p-2" style={{ fontSize: "14px" }}>
+                Đã hủy
+              </span>
+            </div>
           ) : (
-            <Button
-              type="primary"
-              style={{
-                borderRadius: "30px",
-                pointerEvents: "none",
-                cursor: "default",
-                background: "black",
-              }}
-            >
-              Không Xác Định
-            </Button>
+            ""
           )}
         </span>
       ),
@@ -269,40 +430,74 @@ const HienThiVoucher = () => {
     {
       title: "Thao Tác",
       dataIndex: "operation",
-      width: "1%",
       align: "center",
+      width: "20%",
       render: (_, record) => {
         return (
           <>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                textAlign: "center",
-                paddingLeft: "10px",
-              }}
+            <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
+              <Link to={`/dashboard/update-voucher/${record.id}`}>
+                <IconButton size="">
+                  <BorderColorOutlinedIcon color="primary" />
+                </IconButton>
+              </Link>
+            </Tooltip>
+
+            <Popconfirm
+              description="Bạn có chắc chắn muốn đổi trạng thái không?"
+              onConfirm={handleOkConfirm}
+              onCancel={handleCancelConfirm}
+              onClick={() => setId(record.id)}
+              placement="topLeft"
             >
-              <div>
-                <Tooltip title="Change">
-                  <Button
-                    onClick={() => {}}
-                    style={{ border: "none", background: "none", padding: "0" }}
-                  >
-                    {/* <FontAwesomeIcon icon={faRotateRight} /> */}
-                    <RemoveRedEyeIcon fontSize="small" />
-                  </Button>
-                  <ToastContainer />
-                </Tooltip>
-              </div>
-              &nbsp;&nbsp;&nbsp;&nbsp;
-              <div>
-                <Tooltip title="Edit">
-                  <Link to={`/sua-voucher/${record.id}`}>
-                    <FontAwesomeIcon icon={faPencilAlt} />
-                  </Link>
-                </Tooltip>
-              </div>
-            </div>
+              <Tooltip
+                TransitionComponent={Zoom}
+                title={
+                  record.trangThai === StatusDiscount.HOAT_DONG ||
+                  record.trangThai === StatusDiscount.CHUA_DIEN_RA
+                    ? "Ngừng kích hoạt"
+                    : record.trangThai === StatusDiscount.DA_HUY &&
+                      isDatePast(record.ngayBatDau) === true
+                    ? "Kích hoạt"
+                    : record.trangThai === StatusDiscount.DA_HUY &&
+                      isRangeDate(record.ngayBatDau, record.ngayKetThuc) ===
+                        true
+                    ? "Kích hoạt"
+                    : record.trangThai === StatusDiscount.NGUNG_HOAT_DONG
+                    ? "Không thể đổi"
+                    : ""
+                }
+              >
+                <IconButton
+                  disabled={
+                    record.trangThai === StatusDiscount.NGUNG_HOAT_DONG ||
+                    (record.trangThai === StatusDiscount.DA_HUY &&
+                      isDateFuture(record.ngayKetThuc) === true)
+                      ? true
+                      : false
+                  }
+                  size=""
+                  className="ms-2"
+                  style={{ marginTop: "6px" }}
+                >
+                  <AssignmentOutlinedIcon
+                    color={
+                      record.trangThai === StatusDiscount.HOAT_DONG ||
+                      record.trangThai === StatusDiscount.CHUA_DIEN_RA
+                        ? "error"
+                        : record.trangThai === StatusDiscount.DA_HUY &&
+                          isDatePast(record.ngayBatDau) === true
+                        ? "success"
+                        : record.trangThai === StatusDiscount.DA_HUY &&
+                          isRangeDate(record.ngayBatDau, record.ngayKetThuc) ===
+                            true
+                        ? "success"
+                        : "disabled"
+                    }
+                  />
+                </IconButton>
+              </Tooltip>
+            </Popconfirm>
           </>
         );
       },
@@ -314,48 +509,125 @@ const HienThiVoucher = () => {
     loadDataListVoucher(page);
   };
 
+  const isDateFuture = (toDate) => {
+    const currentDate = new Date();
+    const getToDate = new Date(toDate);
+    if (currentDate > getToDate) {
+      return true;
+    }
+    return false;
+  };
+  const isDatePast = (fromDate) => {
+    const currentDate = new Date();
+    const getFromDate = new Date(fromDate);
+    if (currentDate < getFromDate) {
+      return true;
+    }
+    return false;
+  };
+
+  const isRangeDate = (fromDate, toDate) => {
+    const currentDate = new Date();
+    const getFromDate = new Date(fromDate);
+    const getToDate = new Date(toDate);
+    if (currentDate >= getFromDate && currentDate <= getToDate) {
+      return true;
+    }
+    return false;
+  };
+
+  const [openSelect1, setOpenSelect1] = useState(false);
+
+  const handleCloseSelect1 = () => {
+    setOpenSelect1(false);
+  };
+
+  const handleOpenSelect1 = () => {
+    setOpenSelect1(true);
+  };
+
+  const [openSelect, setOpenSelect] = useState(false);
+
+  const handleCloseSelect = () => {
+    setOpenSelect(false);
+  };
+
+  const handleOpenSelect = () => {
+    setOpenSelect(true);
+  };
+
+  const handleOkConfirm = () => {
+    doiTrangThaiVoucher(id);
+  };
+  const handleCancelConfirm = () => {
+    console.log("Clicked cancel button");
+    setOpen(false);
+  };
+
   return (
     <>
-      <div className="search-component-container">
-        <h6 className="boloc-voucher" style={{ color: "black" }}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            height="1em"
-            viewBox="0 0 512 512"
-          >
-            <path d="M3.9 54.9C10.5 40.9 24.5 32 40 32H472c15.5 0 29.5 8.9 36.1 22.9s4.6 30.5-5.2 42.5L320 320.9V448c0 12.1-6.8 23.2-17.7 28.6s-23.8 4.3-33.5-3l-64-48c-8.1-6-12.8-15.5-12.8-25.6V320.9L9 97.3C-.7 85.4-2.8 68.8 3.9 54.9z" />
-          </svg>
-          &nbsp; Bộ Lọc
-        </h6>
-        <div className="row-search">
-          <span>
-            <Form style={{ width: "20em", display: "inline-block" }}>
-              <Input
-                placeholder="Search"
+      <div
+        className="mt-4"
+        style={{
+          backgroundColor: "#ffffff",
+          boxShadow: "0 0.1rem 0.3rem #00000010",
+        }}
+      >
+        <Card className="">
+          <Card.Header className="">
+            <div className="header-title mt-2">
+              <TextField
+                label="Tìm voucher"
                 value={searchTatCa}
-                onChange={(e) => setSearchTatCa(e.target.value)}
+                onChange={handleSearchTatCaChange}
+                InputLabelProps={{
+                  sx: {
+                    marginTop: "",
+                    textTransform: "capitalize",
+                  },
+                }}
+                inputProps={{
+                  style: {
+                    height: "23px",
+                    width: "190px",
+                  },
+                }}
+                size="small"
+                className=""
               />
-            </Form>
-          </span>
-          <div className="btn-search"></div>
-          {/* Search */}
-          &nbsp;&nbsp;&nbsp;
-          <div className="btn-reset">
-            <Button
-              className="btn-search-reset"
-              onClick={() => {
-                handleReset();
-              }}
-            >
-              <FontAwesomeIcon icon={faArrowsRotate} />
-              &nbsp; Làm Mới{" "}
-            </Button>
-          </div>
-        </div>
-        {/*Bộ Lọc trạng thái*/}
-        <div className="boloc-trangThai">
-          <div className="search1">
-            <span className="boloc-nho">
+              <Button
+                onClick={() => {
+                  handleReset();
+                }}
+                className="rounded-2 ms-2"
+                type="warning"
+                style={{ width: "100px", fontSize: "15px" }}
+              >
+                <span
+                  className="text-dark"
+                  style={{ fontWeight: "500", marginBottom: "2px" }}
+                >
+                  Làm Mới
+                </span>
+              </Button>
+
+              <Button
+                onClick={() => {
+                  sendMail();
+                }}
+                className="rounded-2 ms-2"
+                type="warning"
+                style={{ width: "100px", fontSize: "15px" }}
+              >
+                <span
+                  className="text-dark"
+                  style={{ fontWeight: "500", marginBottom: "2px" }}
+                >
+                  Gửi Mail
+                </span>
+              </Button>
+            </div>
+            <div className="d-flex">
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DemoContainer components={["DatePicker"]}>
                   <DatePicker
@@ -367,14 +639,17 @@ const HienThiVoucher = () => {
                     }
                     format="DD/MM/YYYY"
                     onChange={handleSearchNgayBatDauChange}
+                    slotProps={{ textField: { size: "small" } }}
+                    sx={{
+                      position: "relative",
+                      width: "50px",
+                      "& .MuiInputBase-root": {
+                        width: "85%",
+                      },
+                    }}
                   />
                 </DemoContainer>
               </LocalizationProvider>
-            </span>
-          </div>
-
-          <div className="search1">
-            <span className="boloc-nho">
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DemoContainer components={["DatePicker"]}>
                   <DatePicker
@@ -386,77 +661,189 @@ const HienThiVoucher = () => {
                     }
                     format="DD/MM/YYYY"
                     onChange={handleSearchNgayKetThucChange}
+                    slotProps={{ textField: { size: "small" } }}
+                    sx={{
+                      position: "relative",
+                      width: "50px",
+                      "& .MuiInputBase-root": {
+                        width: "85%",
+                      },
+                    }}
                   />
                 </DemoContainer>
               </LocalizationProvider>
-            </span>
-          </div>
-          <div className="search1">
-            <span className="boloc-nho">
-              <FormControl sx={{ width: "15em", marginTop: "7px" }}>
-                <InputLabel id="demo-select-small-label">
-                  Chọn Trạng Thái
-                </InputLabel>
+            </div>
+            <div className="mt-2">
+              <Link to="/dashboard/add-voucher">
+                <Button
+                  className="rounded-2 button-mui"
+                  type="primary"
+                  style={{ height: "40px", width: "140px", fontSize: "15px" }}
+                >
+                  <PlusOutlined
+                    className="ms-1"
+                    style={{
+                      position: "absolute",
+                      bottom: "12.5px",
+                      left: "12px",
+                    }}
+                  />
+                  <span
+                    className="ms-3 ps-1"
+                    style={{ marginBottom: "3px", fontWeight: "500" }}
+                  >
+                    Tạo voucher
+                  </span>
+                </Button>
+              </Link>
+            </div>
+          </Card.Header>
+          <div className="mt-3 pt-1 ms-auto me-2 pe-1 d-flex">
+            <div
+              className="d-flex me-3"
+              style={{
+                height: "40px",
+                position: "relative",
+                cursor: "pointer",
+              }}
+            >
+              <div
+                onClick={handleOpenSelect}
+                className=""
+                style={{ marginTop: "7px" }}
+              >
+                <span
+                  className="ms-2 ps-1"
+                  style={{ fontSize: "15px", fontWeight: "450" }}
+                >
+                  Trạng Thái:{" "}
+                </span>
+              </div>
+              <FormControl
+                sx={{
+                  minWidth: 50,
+                }}
+                size="small"
+              >
                 <Select
-                  labelId="demo-select-small-label"
-                  id="demo-select-small"
-                  value={searchTrangThai}
-                  label="Chọn Trạng Thái"
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        borderRadius: "7px",
+                      },
+                    },
+                  }}
+                  IconComponent={KeyboardArrowDownOutlinedIcon}
+                  sx={{
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none !important",
+                    },
+                    "& .MuiSelect-select": {
+                      color: "#2f80ed",
+                      fontWeight: "500",
+                    },
+                  }}
+                  open={openSelect}
+                  onClose={handleCloseSelect}
+                  onOpen={handleOpenSelect}
+                  defaultValue={5}
                   onChange={handleSearchTrangThaiChange}
                 >
-                  <MenuItem value={parseInt(1)}>Còn Hiệu lực</MenuItem>
-                  <MenuItem value={parseInt(2)}>Hết Hiệu lực</MenuItem>
-                  <MenuItem value={parseInt(3)}>Chưa Bắt Đầu</MenuItem>
+                  <MenuItem className="" value={5}>
+                    Tất cả
+                  </MenuItem>
+                  <MenuItem value={StatusDiscountNumber.HOAT_DONG}>
+                    Hoạt động
+                  </MenuItem>
+                  <MenuItem value={StatusDiscountNumber.NGUNG_HOAT_DONG}>
+                    Ngừng hoạt động
+                  </MenuItem>
+                  <MenuItem value={StatusDiscountNumber.CHUA_DIEN_RA}>
+                    Chưa diễn ra
+                  </MenuItem>
+                  <MenuItem value={StatusDiscountNumber.DA_HUY}>
+                    Đã hủy
+                  </MenuItem>
                 </Select>
               </FormControl>
-            </span>
+            </div>
+            <div
+              className="d-flex"
+              style={{
+                height: "40px",
+                position: "relative",
+                cursor: "pointer",
+              }}
+            >
+              <div
+                onClick={handleOpenSelect1}
+                className=""
+                style={{ marginTop: "7px" }}
+              >
+                <span
+                  className="ms-2 ps-1"
+                  style={{ fontSize: "15px", fontWeight: "450" }}
+                >
+                  Dành Cho:{" "}
+                </span>
+              </div>
+              <FormControl
+                sx={{
+                  minWidth: 50,
+                }}
+                size="small"
+              >
+                <Select
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        borderRadius: "7px",
+                      },
+                    },
+                  }}
+                  IconComponent={KeyboardArrowDownOutlinedIcon}
+                  sx={{
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none !important",
+                    },
+                    "& .MuiSelect-select": {
+                      color: "#2f80ed",
+                      fontWeight: "500",
+                    },
+                  }}
+                  open={openSelect1}
+                  onClose={handleCloseSelect1}
+                  onOpen={handleOpenSelect1}
+                  defaultValue={14}
+                >
+                  <MenuItem className="" value={14}>
+                    Tất cả
+                  </MenuItem>
+                  <MenuItem value={15}>Khách hàng mới</MenuItem>
+                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
           </div>
-        </div>
-      </div>
-      <div className="your-component-container">
-        <h6>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            height="1em"
-            viewBox="0 0 448 512"
-          >
-            <path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z" />
-          </svg>
-          &nbsp; Danh Sách Voucher
-        </h6>
-        <div className="btn-add">
-          {/* Search */}
-          <FontAwesomeIcon style={{ marginLeft: "5px" }} />
-          <span className="bl-add">
-            <Link to="/them-voucher">
-              <Button className="btn-add-voucher">
-                {/* <FontAwesomeIcon icon={faPlus} /> */}
-                <AddIcon fontSize="small" />
-                &nbsp; Thêm voucher{" "}
-              </Button>
-            </Link>
-          </span>
-        </div>
-        <div className="form-tbl">
-          <Form form={form}>
+          <Card.Body>
             <Table
-              bordered
               dataSource={listVoucher}
               columns={columns}
-              rowClassName="editable-row"
               pagination={false}
               rowKey="id"
-              style={{ marginBottom: "20px" }}
             />
-            <div className="phan-trang">
-              <Pagination
-                count={totalPages}
-                onChange={chuyenTrang}
-                color="primary"
-              />
-            </div>
-          </Form>
-        </div>
+          </Card.Body>
+          <div className="mx-auto">
+            <Pagination
+              page={parseInt(currentPage)}
+              count={totalPages}
+              onChange={chuyenTrang}
+              color="primary"
+            />
+          </div>
+          <div className="mt-4"></div>
+        </Card>
+        {!isLoading && <LoadingIndicator />}
       </div>
     </>
   );

@@ -30,6 +30,10 @@ public class CustomKhuyenMaiRepositoryImpl implements CustomKhuyenMaiRepository{
             Root<KhuyenMai> root = criteriaQuery.from(KhuyenMai.class);
             criteriaQuery.select(root);
 
+            Path<Object> sortByField = root.get("createdAt");
+            Order orderByAscending = criteriaBuilder.desc(sortByField);
+            criteriaQuery.orderBy(orderByAscending);
+
             CriteriaQuery<Long> coutQuery = criteriaBuilder.createQuery(Long.class);
             Root<KhuyenMai> countRoot = coutQuery.from(KhuyenMai.class);
 

@@ -13,8 +13,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -31,6 +34,6 @@ public class GioHang extends PrimaryEntity implements IsIdentified {
   private Account account;
 
   @OneToMany(mappedBy = "gioHang", cascade = CascadeType.REMOVE)
-  private List<GioHangChiTiet> cartDetails;
+  private Set<GioHangChiTiet> cartItems;
 
 }

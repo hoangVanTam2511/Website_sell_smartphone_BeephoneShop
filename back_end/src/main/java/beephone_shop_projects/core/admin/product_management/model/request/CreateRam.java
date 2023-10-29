@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 public class CreateRam {
 
-    private String maram;
+    private String idRam;
 
-    private Integer tenram;
+    private Integer capacityRam;
 }

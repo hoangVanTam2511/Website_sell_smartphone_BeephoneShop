@@ -2,7 +2,11 @@ package beephone_shop_projects.entity;
 
 import beephone_shop_projects.entity.base.IsIdentified;
 import beephone_shop_projects.entity.base.PrimaryEntity;
+import beephone_shop_projects.infrastructure.constant.StatusDiscount;
+import beephone_shop_projects.infrastructure.constant.TypeDiscount;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,11 +32,13 @@ public class KhuyenMai extends PrimaryEntity implements IsIdentified {
 
     private BigDecimal giaTriKhuyenMai;
 
-    private Integer loaiKhuyenMai;
+    @Enumerated(EnumType.ORDINAL)
+    private TypeDiscount loaiKhuyenMai;
 
     private Date ngayBatDau;
 
     private Date ngayKetThuc;
 
-    private Integer trangThai;
+    @Enumerated(EnumType.ORDINAL)
+    private StatusDiscount trangThai;
 }

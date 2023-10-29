@@ -14,25 +14,30 @@ import java.util.UUID;
 public interface AccountResponse {
     @Value("#{target.ma}")
     String getMa();
+
     @Value("#{target.id}")
     String getID();
+
     @Value("#{target.mat_khau}")
     String getMatKhau();
+
     @Value("#{target.email}")
     String getEmail();
 
     @Value("#{target.ho_va_ten}")
     String getHoVaTen();
 
-   @Value("#{target.id_role}") // Truy cập thuộc tính id của đối tượng Role
-   String getIdRole();
+    @Value("#{target.id_role}")
+    String getIdRole();
+
     @Value("#{target.trang_thai}")
-    String getTrangThai();
+    Integer getTrangThai();
 
 
     @Value("#{target.so_dien_thoai}")
     String getSoDienThoai();
-//    @Temporal(TemporalType.DATE)
+
+    //    @Temporal(TemporalType.DATE)
     @Value("#{target.ngay_sinh}")
     LocalDate getNgaySinh();
 

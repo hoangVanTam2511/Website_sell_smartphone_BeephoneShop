@@ -2,6 +2,7 @@ package beephone_shop_projects.core.admin.account_management.repository;
 
 import beephone_shop_projects.core.admin.account_management.model.response.AccountResponse;
 import beephone_shop_projects.entity.Account;
+import beephone_shop_projects.infrastructure.constant.StatusAccountCus;
 import beephone_shop_projects.repository.IAccountRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -28,8 +29,8 @@ public interface AccountRepository extends IAccountRepository {
     List<Account> getAllNVienNoPage();
 
     @Query(value = """
-        SELECT  a.ma AS ma,a.id,a.email,a.ho_va_ten, a.trang_thai,a.mat_khau , a.so_dien_thoai , a.ngay_sinh ,a.id_role
-        FROM account a
+        SELECT  a.ma ,a.id,a.email,a.ho_va_ten, a.trang_thai,a.mat_khau , a.so_dien_thoai , a.ngay_sinh ,a.id_role
+                FROM account a join role b on a.id_role=b.id where b.ma="role2"
     """,nativeQuery = true)
     Page<AccountResponse> getAllKH(Pageable pageable);
     @Transactional
@@ -37,14 +38,27 @@ public interface AccountRepository extends IAccountRepository {
     @Query(value = """
             UPDATE Account e
             SET e.trangThai = CASE
-                WHEN e.trangThai = 1 THEN 2
-                WHEN e.trangThai = 2 THEN 1
+                WHEN e.trangThai = 0 THEN 1
+                WHEN e.trangThai = 1 THEN 0
                 ELSE e.trangThai
             END
             WHERE e.id = :idBanGhi
 
             """)
     void doiTrangThai(@Param("idBanGhi") String id);
+    @Transactional
+    @Modifying
+    @Query(value = """
+            UPDATE Account e
+            SET e.trangThai = CASE
+                WHEN e.trangThai = 2 THEN 3
+                WHEN e.trangThai = 3 THEN 2
+                ELSE e.trangThai
+            END
+            WHERE e.id = :idBanGhi
+
+            """)
+    void doiTrangThaiNV(@Param("idBanGhi") String id);
 
     @Query(value = """
                 SELECT  ac FROM Account ac
@@ -68,19 +82,12 @@ public interface AccountRepository extends IAccountRepository {
             "OR a.email LIKE CONCAT('%', :tenKH, '%')\n" +
             "OR a.so_dien_thoai LIKE CONCAT('%', :tenKH, '%')\n" +
             "OR CAST(a.ngay_sinh AS CHAR) LIKE CONCAT('%', :tenKH, '%'))\n" +
-            "AND r. = '5516153a-8c5a-4868-bdfd-de9ad4d8a500';\n",//thay
+            "AND r.ma='role2';\n",
             nativeQuery = true)
 
     Page<AccountResponse> searchAllKH(@Param("tenKH")Optional<String> tenKH, Pageable pageable);
-    //    @Query(value = """
-//        SELECT a.ma AS ma, a.ho_va_ten, a.dia_chi , a.so_dien_thoai , a.ngay_sinh
-//        FROM account a
-//        INNER JOIN role r ON r.id = a.id_role
-//    """,nativeQuery = true)
-//    Page<AccountResponse> searchAllKHang(Pageable pageable);
-//    @Query(value = "SELECT kh FROM Account kh WHERE kh.idRole.ma = 'role2' AND kh.id = :id")
-//    Account findKHById(@Param("id") UUID id);
-//    @Query(value = "SELECT nv FROM Account nv WHERE nv.idRole.ma = 'role1' AND nv.id = :id")
-    Account findByMa(String ma);
+
+    @Query("SELECT a FROM Account a WHERE  a.trangThai= :trangThai AND a.idRole.ma='role1' ")
+    Page<Account> filterTrangThai(@RequestParam("trangThai")StatusAccountCus trangThai, Pageable pageable);
 
 }

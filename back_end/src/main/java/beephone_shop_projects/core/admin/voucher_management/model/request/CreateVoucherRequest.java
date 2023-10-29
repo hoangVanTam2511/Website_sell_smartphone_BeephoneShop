@@ -1,75 +1,61 @@
 package beephone_shop_projects.core.admin.voucher_management.model.request;
 
+import beephone_shop_projects.infrastructure.constant.StatusDiscount;
+import beephone_shop_projects.infrastructure.constant.TypeDiscount;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.PastOrPresent;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.Date;
 
 @Getter
 @Setter
 public class CreateVoucherRequest {
 
+    @Length(max = 10)
     private String ma;
 
-    private Integer trangThai;
+    private StatusDiscount trangThai;
 
-
-    @NotBlank(message = "Không để trống Tên !!!")
+    @NotBlank
+    @Length(max = 255)
     private String ten;
 
     private BigDecimal giaTriToiDa;
 
-    @NotNull(message = "Không để trống Số Lượng !!!")
+    @NotNull
     private Integer soLuong;
 
-    @NotNull(message = "Không để trống Điều Kiện Áp Dung")
-    @Min(value = 0, message = "Giá Trị Tối Thiểu Là 0 !!!")
+    @NotNull
+    @Min(value = 0)
+    @Max(value = 100000000)
     private BigDecimal dieuKienApDung;
 
-    @NotNull(message = "Không để trống Loại Voucher !!!")
-    private Integer loaiVoucher;
+    @Enumerated(EnumType.STRING)
+    private TypeDiscount loaiVoucher;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @FutureOrPresent(message = "Không chọn ngày quá khứ !!!")
-    @NotNull(message = "Không để trống Ngày Bắt Đầu !!!")
+    @FutureOrPresent
+    @NotNull
     private Date ngayBatDau;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @FutureOrPresent(message = "Không chọn ngày quá khứ !!!")
-    @NotNull(message = "Không để trống Ngày Kết Thúc !!!")
+    @FutureOrPresent
+    @NotNull
     private Date ngayKetThuc;
 
-    @NotNull(message = "Không để trống giá trị Voucher !!!")
-    @Min(value = 0, message = "Giá Trị Tối Thiểu Là 0 VNĐ !!!")
-    @Max(value = 1000000, message = "Giá Trị Tối Đa là 1.000.000 VNĐ !!!")
+    @NotNull
+    @Min(value = 0)
+    @Max(value = 100000000)
     private BigDecimal giaTriVoucher;
 
-
-    public String getMa() {
-        return ma;
-    }
-
-    public void setMa(String ma) {
-        this.ma = ma;
-    }
-
-    public Integer getTrangThai() {
-        return trangThai;
-    }
-
-    public void setTrangThai(Integer trangThai) {
-        this.trangThai = trangThai;
-    }
 }

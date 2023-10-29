@@ -14,7 +14,7 @@ public interface DiaChiRepository extends IDiaChiRepository {
     @Modifying
     @Query("UPDATE DiaChi d SET d.trangThai = CASE WHEN d.id = :newId THEN :newTrangThai ELSE 0 END WHERE d.account.id = :accountId")
     void updateTrangThaiAndAddDiaChi(@Param("newId") String newId, @Param("newTrangThai") int newTrangThai, @Param("accountId") String accountId);
- @Modifying
+    @Modifying
     @Query("UPDATE DiaChi d \n" +
             "SET d.trangThai = CASE WHEN d.id = :newId THEN 1 ELSE 0 END\n" +
             "WHERE d.account.id = :accountId\n")

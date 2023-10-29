@@ -5,6 +5,8 @@ import beephone_shop_projects.core.admin.promotion_management.model.request.Crea
 import beephone_shop_projects.core.admin.promotion_management.model.request.FindKhuyenMaiRequest;
 import beephone_shop_projects.core.admin.promotion_management.model.request.UpdateKhuyenMaiRequest;
 import beephone_shop_projects.core.admin.promotion_management.service.KhuyenMaiService;
+import beephone_shop_projects.core.common.base.ResponseObject;
+import beephone_shop_projects.core.common.base.ResponsePage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,34 +24,34 @@ public class KhuyenMaiController {
     private KhuyenMaiService khuyenMaiService;
 
     @GetMapping("hien-thi")
-    public ResponseEntity hienThiKhuyenMai(@ModelAttribute FindKhuyenMaiRequest request) {
-        return new ResponseEntity( khuyenMaiService.getAll(request), HttpStatus.OK);
+    public ResponsePage hienThiKhuyenMai(@ModelAttribute FindKhuyenMaiRequest request) {
+        return new ResponsePage( khuyenMaiService.getAll(request));
     }
 
     @PostMapping("add-khuyen-mai")
-    public ResponseEntity addKhuyenMai(@RequestBody CreateKhuyenMaiRequest request) {
-        return new ResponseEntity(khuyenMaiService.addKhuyenMai(request), HttpStatus.CREATED);
+    public ResponseObject addKhuyenMai(@RequestBody CreateKhuyenMaiRequest request) {
+        return new ResponseObject(khuyenMaiService.addKhuyenMai(request));
     }
 
     @PutMapping("update-khuyen-mai/{id}")
-    public ResponseEntity updateKhuyenMai(@RequestBody UpdateKhuyenMaiRequest request,
+    public ResponseObject updateKhuyenMai(@RequestBody UpdateKhuyenMaiRequest request,
                                           @PathVariable("id") String id) {
-        return new ResponseEntity(khuyenMaiService.updateKhuyenMai(request, id), HttpStatus.OK);
+        return new ResponseObject(khuyenMaiService.updateKhuyenMai(request, id));
     }
 
     @DeleteMapping("delete-khuyen-mai/{id}")
-    public ResponseEntity deleteKhuyenMai(@PathVariable("id") String id) {
-        return new ResponseEntity(khuyenMaiService.deleteKhuyenMai(id), HttpStatus.OK);
+    public ResponseObject deleteKhuyenMai(@PathVariable("id") String id) {
+        return new ResponseObject(khuyenMaiService.deleteKhuyenMai(id));
     }
 
     @GetMapping("get-by-id/{id}")
-    public ResponseEntity getOneKhuyenMai(@PathVariable("id") String id) {
-        return new ResponseEntity(khuyenMaiService.getOne(id), HttpStatus.OK);
+    public ResponseObject getOneKhuyenMai(@PathVariable("id") String id) {
+        return new ResponseObject(khuyenMaiService.getOne(id));
     }
 
     @PutMapping("doi-trang-thai/{id}")
-    public ResponseEntity doiTrangThai(@PathVariable("id") String id){
-        return new ResponseEntity(khuyenMaiService.doiTrangThai(id),HttpStatus.OK);
+    public ResponseObject doiTrangThai(@PathVariable("id") String id){
+        return new ResponseObject(khuyenMaiService.doiTrangThai(id));
     }
 
 }

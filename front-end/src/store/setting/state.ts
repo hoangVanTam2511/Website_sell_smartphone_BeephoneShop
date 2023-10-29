@@ -21,7 +21,7 @@ export const initialState: SettingState = {
     },
     "theme_color": {
       "colors": {
-        "--{{prefix}}primary": "#3a57e8",
+        "--{{prefix}}primary": "#2F80ED",
         "--{{prefix}}info": "#08B1BA"
       },
       "value": "theme-color-default"
@@ -45,7 +45,7 @@ export const initialState: SettingState = {
       "value": "default"
     },
     "sidebar_color": {
-      "value": "sidebar-white"
+      "value": "sidebar-dark"
     },
     "sidebar_type": {
       "value": []
@@ -117,7 +117,7 @@ export const defaultState: SettingDefaultState = {
       ],
       type: "default",
       colors: {
-        "--{{prefix}}primary": "#3a57e8",
+        "--{{prefix}}primary": "#2F80ED",
         "--{{prefix}}info": "#08B1BA",
       },
       value: "theme-color-default",
@@ -176,7 +176,7 @@ export const defaultState: SettingDefaultState = {
         "sidebar-glass",
       ],
       type: "layout_design",
-      value: "sidebar-white",
+      value: "sidebar-dark",
     },
     sidebar_type: {
       target: '[data-toggle="main-sidebar"]',

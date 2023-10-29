@@ -1,16 +1,14 @@
 import { Button, Card, Modal, message } from "antd";
 import React, { useEffect } from "react"; // , { useEffect }
 import { useState } from "react";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { apiURLNV } from "../../../../service/api";
 import TextField from "@mui/material/TextField";
 import "../../../../assets/scss/HienThiNV.scss";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import * as dayjs from "dayjs";
 import {
-  Box,
   FormControl,
   FormControlLabel,
   // FormLabel,
@@ -18,12 +16,14 @@ import {
   Radio,
   RadioGroup,
 } from "@mui/material";
-import AddressForm from "./DiaChi";
 import ImageUploadComponent from "./AnhUpdate";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
 import { useParams } from "react-router-dom";
 import AddressFormUpdate from "./DiaChiUpdate";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 const UpdateNV = () => {
   const { id } = useParams();
   let [hoVaTen, setTen] = useState("");
@@ -40,7 +40,10 @@ const UpdateNV = () => {
   let [matKhau, setMatKhau] = useState("");
   let [trangThai, setTrangThai] = useState(1);
   let [anhDaiDien, setAnhDaiDien] = useState("");
-  let [editing, setEditing] = useState(false);
+  let [
+    editing,
+    // setEditing
+  ] = useState(false);
   const [isConfirmVisible, setIsConfirmVisible] = useState(false);
   const showConfirm = () => {
     setIsConfirmVisible(true); // Mở hộp thoại xác nhận
@@ -102,9 +105,13 @@ const UpdateNV = () => {
   const handleAnhDaiDienChange = (imageURL) => {
     setAnhDaiDien(imageURL);
   };
+  const handleChangeDate = (date) => {
+    const value = date.format("DD/MM/YYYY");
+    setNgaySinh(value);
+  };
   const handleHoVaTenChange = (e) => {
     const value = e.target.value;
-    const specialCharPattern = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+    const specialCharPattern = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+/;
     const trimmedValue = value.replace(/\s/g, "");
     setTen(value);
     if (!value.trim()) {
@@ -170,11 +177,13 @@ const UpdateNV = () => {
     setFormSubmitted(true);
     if (
       !hoVaTen ||
-      ngaySinh == null ||
+      !ngaySinh ||
       !email ||
       !soDienThoai ||
       !diaChi ||
-      !xaPhuong
+      !tinhThanhPho ||
+      !xaPhuong ||
+      !quanHuyen
     ) {
       message.error("Vui lòng điền đủ thông tin trước khi lưu.");
       setIsConfirmVisible(false);
@@ -202,6 +211,11 @@ const UpdateNV = () => {
         .put(`${apiURLNV}/update/${id}`, updatedItem)
         .then((response) => {
           if (response.status === 200) {
+            if (!tinhThanhPho || !xaPhuong || !quanHuyen) {
+              message.error("Vui lòng điền đủ thông tin trước khi lưu.");
+              setIsConfirmVisible(false);
+              return;
+            }
             setIsConfirmVisible(false);
             message.success("Sửa thành công");
           } else {
@@ -215,6 +229,8 @@ const UpdateNV = () => {
       console.error("Validate Failed:", errInfo);
     }
   };
+  const today = new Date().toISOString().split("T")[0]; // Get the current date in "yyyy-mm-dd" format
+
   return (
     <>
       <Card bordered={false} style={{ width: "100%" }}>
@@ -272,39 +288,37 @@ const UpdateNV = () => {
                 <div
                   className="text-f"
                   style={{
-                    marginBottom: "20px",
-                    width: "65%",
+                    marginBottom: "30px",
+                    width: "70%",
                   }}
                 >
                   {/* Ngày sinh */}
-                  <Box
-                    component="form"
-                    sx={{
-                      "& .MuiTextField-root": {
-                        mt: 2,
-                        width: "100%",
-                        mb: 2,
-                      },
-                    }}
-                    noValidate
-                    autoComplete="off"
-                  >
-                    <TextField
-                      label="Ngày sinh"
-                      type="date"
-                      value={ngaySinh}
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                      onChange={(e) => {
-                        setNgaySinh(e.target.value); // Cập nhật giá trị ngaySinh sau khi thay đổi
-                      }}
-                      error={formSubmitted && !ngaySinh} // Show error if form submitted and hoVaTen is empty
-                      helperText={
-                        formSubmitted && !ngaySinh && "Chưa chọn ngày sinh"
-                      }
-                    />
-                  </Box>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DemoContainer components={["DatePicker"]}>
+                      <DatePicker
+                        label="Ngày Sinh"
+                        value={dayjs(ngaySinh)}
+                        format="DD/MM/YYYY"
+                        onChange={handleChangeDate}
+                        sx={{
+                          position: "relative",
+
+                          "& .MuiInputBase-root": {
+                            width: "100%",
+                          },
+                        }}
+                        slotProps={{
+                          textField: {
+                            error: formSubmitted && !ngaySinh,
+                            helperText:
+                              formSubmitted && !ngaySinh
+                                ? "Chưa chọn ngày sinh"
+                                : "",
+                          },
+                        }}
+                      />
+                    </DemoContainer>
+                  </LocalizationProvider>
                 </div>
                 <div
                   className="text-f"
@@ -421,6 +435,7 @@ const UpdateNV = () => {
                   selectedQuanHuyen={quanHuyen}
                   selectedXaPhuong={xaPhuong}
                   editing={editing}
+                  formSubmitted={formSubmitted}
                 />
                 <div style={{ textAlign: "center", marginTop: "20px" }}>
                   <Button type="primary" onClick={showConfirm} size={"large"}>

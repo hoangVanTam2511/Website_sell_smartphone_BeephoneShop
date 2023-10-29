@@ -1,10 +1,11 @@
 package beephone_shop_projects.core.admin.order_management.repository.impl;
 
-import beephone_shop_projects.core.admin.order_management.config.PersistenceConfiguration;
 import beephone_shop_projects.core.admin.order_management.repository.GenericRepository;
-import beephone_shop_projects.core.admin.order_management.utils.ConstantCodeEntityMapper;
+import beephone_shop_projects.core.common.base.JpaPersistence;
+import beephone_shop_projects.utils.EntityCodeMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.PersistenceException;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -12,7 +13,6 @@ import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
-import org.hibernate.HibernateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -62,14 +62,14 @@ public class AbstractRepositoryImpl<T, ID extends Serializable> implements Gener
       Root<T> root = criteriaQuery.from(this.getPersistenceClass());
       Root<T> countRoot = countQuery.from(this.getPersistenceClass());
 
-      PersistenceConfiguration<T> configuration = new PersistenceConfiguration<T>(criteriaBuilder, criteriaQuery, countQuery, root, countRoot);
+      JpaPersistence<T> configuration = new JpaPersistence<T>(criteriaBuilder, criteriaQuery, countQuery, root, countRoot);
       this.buildSortByPageable(configuration, pageable.getSort());
       this.buildSelectAllAndCountEntity(configuration);
 
       entityList = this.buildQueryWithPaginationByPageableAndCriteriaQuery(pageable, configuration);
       totalElements = entityManager.createQuery(countQuery).getSingleResult();
 
-    } catch (HibernateException e) {
+    } catch (PersistenceException e) {
       logger.error(e.getMessage(), e);
       throw e;
     }
@@ -90,7 +90,7 @@ public class AbstractRepositoryImpl<T, ID extends Serializable> implements Gener
 
       entityList = entityManager.createQuery(criteriaQuery).getResultList();
 
-    } catch (HibernateException e) {
+    } catch (PersistenceException e) {
       logger.error(e.getMessage(), e);
       throw e;
     }
@@ -103,7 +103,7 @@ public class AbstractRepositoryImpl<T, ID extends Serializable> implements Gener
     T entity = null;
     try (EntityManager entityManager = this.getEntityManager()) {
       entity = entityManager.find(this.getPersistenceClass(), id);
-    } catch (HibernateException e) {
+    } catch (PersistenceException e) {
       logger.error(e.getMessage(), e);
       throw e;
     }
@@ -116,7 +116,7 @@ public class AbstractRepositoryImpl<T, ID extends Serializable> implements Gener
     try (EntityManager entityManager = this.getEntityManager()) {
       T createdEntity = entityManager.merge(entity);
       return createdEntity;
-    } catch (HibernateException e) {
+    } catch (PersistenceException e) {
       logger.error(e.getMessage(), e);
       throw e;
     }
@@ -128,7 +128,7 @@ public class AbstractRepositoryImpl<T, ID extends Serializable> implements Gener
     try (EntityManager entityManager = this.getEntityManager()) {
       T mergedEntity = entityManager.merge(entity);
       return mergedEntity;
-    } catch (HibernateException e) {
+    } catch (PersistenceException e) {
       logger.error(e.getMessage(), e);
       throw e;
     }
@@ -139,7 +139,7 @@ public class AbstractRepositoryImpl<T, ID extends Serializable> implements Gener
   public void delete(T entity) throws Exception {
     try (EntityManager entityManager = this.getEntityManager()) {
       entityManager.remove(entity);
-    } catch (HibernateException e) {
+    } catch (PersistenceException e) {
       logger.error(e.getMessage(), e);
       throw e;
     }
@@ -147,22 +147,23 @@ public class AbstractRepositoryImpl<T, ID extends Serializable> implements Gener
 
   @Override
   @Transactional
-  public void deleteById(ID id) throws Exception {
+  public boolean deleteById(ID id) throws Exception {
     try (EntityManager entityManager = this.getEntityManager()) {
       T entity = this.findOneById(id);
       if (entity != null) {
         entityManager.remove(entity);
+        return true;
       }
-    } catch (HibernateException e) {
+    } catch (PersistenceException e) {
       logger.error(e.getMessage(), e);
       throw e;
     }
+    return false;
   }
 
-  @Override
   @Transactional
   public String getMaxEntityCodeByClass() {
-    ConstantCodeEntityMapper mapper = new ConstantCodeEntityMapper();
+    EntityCodeMapper mapper = new EntityCodeMapper();
 
     Integer countMax;
     String entityCodeFirst = mapper.getConstantEntityCodeByClazz(this.getPersistenceClass());
@@ -182,7 +183,7 @@ public class AbstractRepositoryImpl<T, ID extends Serializable> implements Gener
       }
 
       entityCodeFinal = entityCodeFirst + countMax;
-    } catch (HibernateException e) {
+    } catch (PersistenceException e) {
       logger.error(e.getMessage(), e);
       throw e;
     }
@@ -190,7 +191,7 @@ public class AbstractRepositoryImpl<T, ID extends Serializable> implements Gener
     return entityCodeFinal;
   }
 
-  protected Predicate getPredicateContains(Root<T> root, Class<?> entityDTO, String keyword, PersistenceConfiguration<T> configuration) {
+  protected Predicate getPredicateContains(Root<T> root, Class<?> entityDTO, String keyword, JpaPersistence<T> configuration) {
     Field[] fields = entityDTO.getDeclaredFields();
     List<Predicate> predicates = new ArrayList<>();
     for (Field field : fields) {
@@ -199,7 +200,7 @@ public class AbstractRepositoryImpl<T, ID extends Serializable> implements Gener
     return configuration.getCriteriaBuilder().or(predicates.toArray(new Predicate[0]));
   }
 
-  protected List<Order> getOrders(PersistenceConfiguration<T> configuration, Sort sortOrder) {
+  protected List<Order> getOrders(JpaPersistence<T> configuration, Sort sortOrder) {
     List<Order> orders = new ArrayList<>();
     for (Sort.Order sort : sortOrder) {
       String propertyName = sort.getProperty();
@@ -212,24 +213,24 @@ public class AbstractRepositoryImpl<T, ID extends Serializable> implements Gener
     return orders;
   }
 
-  protected void buildSortByPageable(PersistenceConfiguration<T> configuration, Sort sort) {
+  protected void buildSortByPageable(JpaPersistence<T> configuration, Sort sort) {
     if (sort != null && sort.isSorted()) {
-      List<Order> order = this.getOrders(configuration, sort);
-      configuration.getCriteriaQuery().orderBy(order);
+      List<Order> orders = this.getOrders(configuration, sort);
+      configuration.getCriteriaQuery().orderBy(orders);
     }
   }
 
-  protected void buildSelectAllAndCountEntity(PersistenceConfiguration<T> configuration) {
+  protected void buildSelectAllAndCountEntity(JpaPersistence<T> configuration) {
     configuration.getCriteriaQuery().select(configuration.getRoot());
     configuration.getCountQuery().select(configuration.getCriteriaBuilder().count(configuration.getCountRoot()));
   }
 
-  protected void buildWhereConditionByPredicates(PersistenceConfiguration<T> configuration, Map<String, List<Predicate>> mapPredicates) {
+  protected void buildWhereConditionByPredicates(JpaPersistence<T> configuration, Map<String, List<Predicate>> mapPredicates) {
     configuration.getCriteriaQuery().where(mapPredicates.get("predicates").toArray(new Predicate[0]));
     configuration.getCountQuery().where(mapPredicates.get("countPredicates").toArray(new Predicate[0]));
   }
 
-  protected List<T> buildQueryWithPaginationByPageableAndCriteriaQuery(Pageable pageable, PersistenceConfiguration<T> configuration) {
+  protected List<T> buildQueryWithPaginationByPageableAndCriteriaQuery(Pageable pageable, JpaPersistence<T> configuration) {
     TypedQuery<T> typedQuery = this.getEntityManager().createQuery(configuration.getCriteriaQuery())
             .setFirstResult(pageable.getPageNumber() * pageable.getPageSize())
             .setMaxResults(pageable.getPageSize());

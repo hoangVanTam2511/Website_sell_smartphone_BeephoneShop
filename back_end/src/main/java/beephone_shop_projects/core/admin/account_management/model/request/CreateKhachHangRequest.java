@@ -1,6 +1,10 @@
 package beephone_shop_projects.core.admin.account_management.model.request;
 
 
+import beephone_shop_projects.infrastructure.constant.StatusAccountCus;
+import beephone_shop_projects.infrastructure.constant.StatusDiscount;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -16,9 +20,16 @@ import java.util.UUID;
 
 public class CreateKhachHangRequest {
 
+    private static int sttCounter = 1;
+
+    private int stt; // Số thứ tự
+
     private String ma;
 
     private UUID id;
+    public CreateKhachHangRequest() {
+        this.stt = sttCounter++;
+    }
 
     @NotBlank(message = "Họ tên trống")
     @Pattern(regexp = "^[a-zA-Z0-9 ]*$", message = "Họ và tên không được chứa ký tự đặc biệt")
@@ -35,8 +46,8 @@ public class CreateKhachHangRequest {
     private String matKhau;
     @NotBlank(message = "Số điện thoại trống")
     @Pattern(regexp = "^(?:\\+84|0)[1-9]\\d{8}$", message = "Số điện thoại không hợp lệ")
-
     private String soDienThoai;
+
     @NotNull(message = "Căn cước công dân trống")
     private String canCuocCongDan;
 
@@ -44,7 +55,8 @@ public class CreateKhachHangRequest {
 
     private String anhDaiDien;
 
-    private Integer trangThai;
+//    @Enumerated(EnumType.STRING)
+    private StatusAccountCus trangThai;
 
     private String idRole;
 

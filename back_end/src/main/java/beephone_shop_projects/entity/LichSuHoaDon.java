@@ -21,14 +21,15 @@ import lombok.Setter;
 @Table(name = "lich_su_hoa_don")
 public class LichSuHoaDon extends PrimaryEntity implements IsIdentified {
 
-    private String thaoTac;
+  private String thaoTac;
 
-    private Integer loaiThaoTac;
+  private Integer loaiThaoTac;
 
-    private String moTa;
+  private String moTa;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "hoa_don_id")
-    private HoaDon hoaDon;
+  @JsonIgnore
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "hoa_don_id")
+  private HoaDon hoaDon;
 
 }
