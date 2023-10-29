@@ -162,7 +162,7 @@ const AddKH = () => {
   const handleWardChange = (value) => {
     setXaPhuong(value);
   };
-  
+
   const handleAnhDaiDienChange = (imageURL) => {
     setAnhDaiDien(imageURL);
   };
@@ -327,10 +327,10 @@ const AddKH = () => {
                       <DemoContainer components={["DatePicker"]}>
                         <DatePicker
                           label="Ngày Sinh"
+                          disableFuture
                           value={
                             ngaySinh ? dayjs(ngaySinh, "DD/MM/YYYY") : null
                           }
-                          format="DD/MM/YYYY"
                           onChange={handleChangeDate}
                           sx={{
                             position: "relative",

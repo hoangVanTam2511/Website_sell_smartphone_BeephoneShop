@@ -106,6 +106,7 @@ import ManagementRearCameras from "../views/admin/order-manager/management-rear-
 import CreateProduct from "../views/admin/order-manager/create-product";
 import ManagementTheNhos from "../views/admin/order-manager/management-the-nho";
 import CreateTheNho from "../views/admin/order-manager/create-the-nho";
+import UpdateMauSac from "../views/admin/order-manager/update-mau-sac";
 
 export const DefaultRouter = [
   {
@@ -325,6 +326,10 @@ export const DefaultRouter = [
       {
         path: "dashboard/color/create",
         element: <CreateMauSac />,
+      },
+      {
+        path: "dashboard/color/update",
+        element: <UpdateMauSac />,
       },
       {
         path: "dashboard/front-camera/create",

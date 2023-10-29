@@ -425,7 +425,6 @@ const UpdateNV = () => {
                 }}
               >
                 <AddressFormUpdate
-                  // onDiaChiChange={handleDiaChiChange}
                   onDiaChiChange={handleDiaChiChange}
                   required={true}
                   submitted={submitted}

@@ -46,6 +46,7 @@ import generateRandomCode from "../../../utilities/randomCode ";
 import { Button } from "@mui/joy";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { Notistack } from "./enum";
+import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
 // import Sketch from '@uiw/react-color-sketch';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -55,9 +56,36 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const CreateMauSac = ({ close, getAll, colors }) => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = React.useState(false);
-  const [status, setStatus] = React.useState("");
-  const [colorName, setColorName] = useState();
+  const [status, setStatus] = React.useState(0);
+  const [colorName, setColorName] = useState("");
+  const [openConfirm, setOpenConfirm] = useState(false);
   const { handleOpenAlertVariant } = useCustomSnackbar();
+
+  const handleOpenDialogConfirmAdd = () => {
+    setOpenConfirm(true);
+  };
+
+  const handleCloseDialogConfirmAdd = () => {
+    setOpenConfirm(false);
+  };
+
+  const Header = () => {
+    return (
+      <>
+        <span style={{ fontWeight: "bold" }}>Xác nhận thêm màu sắc</span>
+      </>
+    );
+  };
+  const Title = () => {
+    return (
+      <>
+        <span>
+          Bạn có chắc chắc muốn thêm màu{" "}
+          <span style={{ color: "red" }}>"{colorName}"</span> không ?
+        </span>
+      </>
+    );
+  };
 
   const addColor = () => {
     let obj = {
@@ -78,7 +106,7 @@ const CreateMauSac = ({ close, getAll, colors }) => {
       });
   };
 
-  const handleReset = (event) => {
+  const handleReset = () => {
     setStatus("");
     setColorName("");
   };
@@ -100,13 +128,13 @@ const CreateMauSac = ({ close, getAll, colors }) => {
   return (
     <>
       <div className="mt-4" style={{ width: "700px" }}>
-        <div className="container" style={{}}>
-          <div className="text-center" style={{}}>
+        <div className="container">
+          <div className="text-center">
             <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>
               THÊM MÀU SẮC
             </span>
           </div>
-          <div style={{}} className="mx-auto mt-3 pt-2">
+          <div className="mx-auto mt-3 pt-2">
             <div style={{ display: "flex" }}>
               <Autocomplete
                 fullWidth
@@ -122,7 +150,7 @@ const CreateMauSac = ({ close, getAll, colors }) => {
               />
             </div>
 
-            <div className="mt-3" style={{}}>
+            <div className="mt-3">
               <FormControl fullWidth>
                 <InputLabel id="demo-simple-select-label">
                   Trạng Thái
@@ -142,7 +170,7 @@ const CreateMauSac = ({ close, getAll, colors }) => {
             </div>
             <div className="mt-4 pt-1 d-flex justify-content-end">
               <Button
-                onClick={() => addColor()}
+                onClick={() => handleOpenDialogConfirmAdd()}
                 className="rounded-2 button-mui"
                 type="primary"
                 style={{ height: "40px", width: "auto", fontSize: "15px" }}
@@ -158,6 +186,13 @@ const CreateMauSac = ({ close, getAll, colors }) => {
           </div>
         </div>
       </div>
+      <ConfirmDialog
+        open={openConfirm}
+        onClose={handleCloseDialogConfirmAdd}
+        add={addColor}
+        title={<Title />}
+        header={<Header />}
+      />
       {isLoading && <LoadingIndicator />}
     </>
   );

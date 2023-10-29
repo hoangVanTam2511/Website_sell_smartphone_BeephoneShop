@@ -5,17 +5,23 @@ import {
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
-import { Button, Empty, Table } from "antd";
+import { Button, Empty, Popconfirm, Table } from "antd";
 import {
+  Autocomplete,
   Box,
   Dialog,
   DialogContent,
+  FormControl,
   IconButton,
+  InputLabel,
+  MenuItem,
   Pagination,
+  Select,
   Slide,
   TextField,
   Tooltip,
 } from "@mui/material";
+import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import { PlusOutlined } from "@ant-design/icons";
 import Card from "../../../components/Card";
 import { format } from "date-fns";
@@ -29,6 +35,7 @@ import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import Zoom from "@mui/material/Zoom";
 import * as dayjs from "dayjs";
 import {
+  Notistack,
   OrderStatusString,
   OrderTypeString,
   StatusCommonProducts,
@@ -36,6 +43,9 @@ import {
 import LoadingIndicator from "../../../utilities/loading";
 import CreateSimCard from "./create-simcard";
 import CreateMauSac from "./create-mau-sac";
+import UpdateMauSac from "./update-mau-sac";
+import useCustomSnackbar from "../../../utilities/notistack";
+import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -50,13 +60,20 @@ const ManagementColors = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [keyword, setKeyword] = useState(searchParams.get("keyword"));
   const [open, setOpen] = React.useState(false);
+  const [open1, setOpen1] = React.useState(false);
+  const [colorCode, setColorCode] = useState("");
+  const [status, setStatus] = React.useState("");
+  const [colorName, setColorName] = useState("");
+  const [idColor, setIdColor] = useState("");
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const { handleOpenAlertVariant } = useCustomSnackbar();
   const [currentPage, setCurrentPage] = useState(
     searchParams.get("currentPage") || 1
   );
 
-  const getListColor = () => {
-    axios
-      .get(`http://localhost:8080/api/colors`, {})
+  const getListColor = async () => {
+    await axios
+      .get(`http://localhost:8080/api/colors`)
       .then((response) => {
         setColors(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -68,11 +85,59 @@ const ManagementColors = () => {
       });
   };
 
+  const detailColor = async (id) => {
+    await axios
+      .get(`http://localhost:8080/api/colors/${id}`)
+      .then((response) => {
+        setColorCode(response.data.data.ma);
+        setStatus(response.data.data.status);
+        setColorName(response.data.data.tenMauSac);
+      })
+      .catch((error) => {});
+  };
+
+  const handleClickOpen1 = (id) => {
+    detailColor(id);
+    setOpen1(true);
+    console.log(colorName);
+  };
+
+  useEffect(() => {
+    getListColor();
+  }, []);
+
   const handleClickOpen = () => {
     setOpen(true);
   };
 
   const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleClose1 = () => {
+    setOpen1(false);
+  };
+
+  const doiTrangThaiColor = (idColor) => {
+    axios
+      .put(`http://localhost:8080/api/colors/doi-trang-thai/${idColor}`)
+      .then((response) => {
+        getListColor();
+        handleOpenAlertVariant(
+          "Đổi trạng thái thành công!!!",
+          Notistack.SUCCESS
+        );
+      })
+      .catch((error) => {
+        handleOpenAlertVariant(error.response.data.message, Notistack.ERROR);
+      });
+  };
+
+  const handleOkConfirm = () => {
+    doiTrangThaiColor(idColor);
+  };
+  const handleCancelConfirm = () => {
+    console.log("Clicked cancel button");
     setOpen(false);
   };
 
@@ -157,20 +222,116 @@ const ManagementColors = () => {
       width: "15%",
       dataIndex: "ma",
       render: (text, record) => (
-        <>
-          <div className="d-flex justify-content-center">
-            <div className="button-container">
-              <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
-                <IconButton size="">
-                  <BorderColorOutlinedIcon color="primary" />
+        <div className="d-flex justify-content-center">
+          <div className="button-container">
+            <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
+              <IconButton
+                size=""
+                onClick={() => {
+                  handleClickOpen1(record.id);
+                  setIdColor(record.id);
+                }}
+              >
+                <BorderColorOutlinedIcon color="primary" />
+              </IconButton>
+            </Tooltip>
+
+            {/* Hàm đổi trạng thái */}
+            <Popconfirm
+              description="Bạn có chắc chắn muốn đổi trạng thái không?"
+              onConfirm={handleOkConfirm}
+              onCancel={handleCancelConfirm}
+              placement="topLeft"
+            >
+              <Tooltip
+                TransitionComponent={Zoom}
+                title={
+                  record.status === StatusCommonProducts.ACTIVE
+                    ? "Ngừng kích hoạt"
+                    : record.status === StatusCommonProducts.IN_ACTIVE
+                    ? "Kích hoạt"
+                    : ""
+                }
+              >
+                <IconButton
+                  className="ms-2"
+                  style={{ marginTop: "6px" }}
+                  onClick={() => setIdColor(record.id)}
+                >
+                  <AssignmentOutlinedIcon
+                    color={
+                      record.status === StatusCommonProducts.IN_ACTIVE
+                        ? "error"
+                        : record.status === StatusCommonProducts.ACTIVE
+                        ? "success"
+                        : "disabled"
+                    }
+                  />
                 </IconButton>
               </Tooltip>
-            </div>
+            </Popconfirm>
           </div>
-        </>
+        </div>
       ),
     },
   ];
+
+  const handleOpenDialogConfirmAdd = () => {
+    setOpenConfirm(true);
+  };
+
+  const handleCloseDialogConfirmAdd = () => {
+    setOpenConfirm(false);
+  };
+
+  const Header = () => {
+    return (
+      <>
+        <span style={{ fontWeight: "bold" }}>Xác nhận sửa màu sắc</span>
+      </>
+    );
+  };
+  const Title = () => {
+    return (
+      <>
+        <span>
+          Bạn có chắc chắc muốn sửa thành màu{" "}
+          <span style={{ color: "red" }}>"{colorName}"</span> không ?
+        </span>
+      </>
+    );
+  };
+
+  const updateColor = () => {
+    let obj = {
+      ma: colorCode,
+      tenMauSac: colorName,
+      status: status,
+    };
+    axios
+      .put(`http://localhost:8080/api/colors/${idColor}`, obj)
+      .then((response) => {
+        getListColor();
+        handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
+      })
+      .catch((error) => {
+        handleOpenAlertVariant(error.response.data.message, Notistack.ERROR);
+      });
+  };
+
+  const uniqueTenMauSac = colors
+    .map((option) => option.tenMauSac)
+    .filter((value, index, self) => {
+      return self.indexOf(value) === index;
+    });
+
+  const handleChangeColor = (event, value) => {
+    setColorName(value);
+  };
+
+  const handleChangeStatus = (event) => {
+    setStatus(event.target.value);
+  };
   return (
     <>
       <div
@@ -270,6 +431,96 @@ const ManagementColors = () => {
             getAll={getListColor}
             colors={colors}
           />
+        </DialogContent>
+        <div className="mt-3"></div>
+      </Dialog>
+
+      <Dialog
+        open={open1}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={handleClose1}
+        maxWidth="md"
+        maxHeight="md"
+        sx={{
+          marginBottom: "170px",
+        }}
+      >
+        <DialogContent>
+          <div className="mt-4" style={{ width: "700px" }}>
+            <div className="container">
+              <div className="text-center">
+                <span
+                  className=""
+                  style={{ fontWeight: "550", fontSize: "29px" }}
+                >
+                  SỬA MÀU SẮC
+                </span>
+              </div>
+              <div className="mx-auto mt-3 pt-2">
+                <div style={{ display: "flex" }}>
+                  <Autocomplete
+                    fullWidth
+                    className="custom"
+                    id="free-solo-demo"
+                    freeSolo
+                    inputValue={colorName}
+                    onInputChange={handleChangeColor}
+                    options={uniqueTenMauSac}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Tên Màu Sắc" />
+                    )}
+                  />
+                </div>
+
+                <div className="mt-3">
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">
+                      Trạng Thái
+                    </InputLabel>
+                    <Select
+                      className="custom"
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={status}
+                      label="Trạng Thái"
+                      onChange={handleChangeStatus}
+                    >
+                      <MenuItem value={StatusCommonProducts.ACTIVE}>
+                        Hoạt Động
+                      </MenuItem>
+                      <MenuItem value={StatusCommonProducts.IN_ACTIVE}>
+                        Ngừng Hoạt Động
+                      </MenuItem>
+                    </Select>
+                  </FormControl>
+                </div>
+                <div className="mt-4 pt-1 d-flex justify-content-end">
+                  <Button
+                    onClick={() => handleOpenDialogConfirmAdd()}
+                    className="rounded-2 button-mui"
+                    type="primary"
+                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                  >
+                    <span
+                      className=""
+                      style={{ marginBottom: "2px", fontWeight: "500" }}
+                    >
+                      Xác Nhận
+                    </span>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <ConfirmDialog
+            open={openConfirm}
+            onClose={handleCloseDialogConfirmAdd}
+            add={updateColor}
+            title={<Title />}
+            header={<Header />}
+          />
+          {isLoading && <LoadingIndicator />}
         </DialogContent>
         <div className="mt-3"></div>
       </Dialog>

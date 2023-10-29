@@ -18,3 +18,6 @@ export const apiURLKhuyenMai = "http://localhost:8080/khuyen-mai";
 export const apiURLCauHinh = "http://localhost:8080/cau-hinh";
 export const apiURLSanPham = "http://localhost:8080/san-pham";
 export const apiURLAnh = "http://localhost:8080/anh";
+export const apiURLDoPhanGiai = "http://localhost:8080/api/resolution";
+export const apiURLDisplay = "http://localhost:8080/api/display";
+export const apiURLSimCard = "http://localhost:8080/api/sim-cards";

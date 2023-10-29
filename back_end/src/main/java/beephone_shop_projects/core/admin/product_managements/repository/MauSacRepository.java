@@ -8,4 +8,6 @@ public interface MauSacRepository extends GenericRepository<MauSac, String> {
 
     Page<MauSac> findAllMauSac();
 
+
+
 }

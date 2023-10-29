@@ -26,7 +26,7 @@ public class NhanVienServiceImpl implements NhanVienService {
 
     @Override
     public Page<Account> getAllNV(Integer pageNo) {
-        Pageable pageable = PageRequest.of(pageNo - 1, 20);
+        Pageable pageable = PageRequest.of(pageNo - 1, 5);
         return accountRepository.getAllNV(pageable);
     }
 
@@ -114,7 +114,7 @@ public class NhanVienServiceImpl implements NhanVienService {
 
     @Override
     public Page<Account> search(Optional<String> tenSearch, Integer pageNo) {
-        Pageable pageable = PageRequest.of(pageNo - 1, 20);
+        Pageable pageable = PageRequest.of(pageNo - 1, 5);
         return accountRepository.searchAllNV(tenSearch, pageable);
     }
 
@@ -125,7 +125,7 @@ public class NhanVienServiceImpl implements NhanVienService {
 
     @Override
     public Page<Account> filterTrangThai(StatusAccountCus trangThai, Integer pageableNo) {
-        Pageable pageable = PageRequest.of(pageableNo - 1, 100);
+        Pageable pageable = PageRequest.of(pageableNo - 1, 5);
         return accountRepository.filterTrangThai(trangThai, pageable);
     }
 

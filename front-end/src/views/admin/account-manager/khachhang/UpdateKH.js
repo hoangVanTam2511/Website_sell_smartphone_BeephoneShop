@@ -327,7 +327,6 @@ const UpdateKH = () => {
     }
   };
   const handleChangeDate = (date) => {
-    // const value = date.format("DD/MM/YYYY");
     setNgaySinh(date);
   };
   return (

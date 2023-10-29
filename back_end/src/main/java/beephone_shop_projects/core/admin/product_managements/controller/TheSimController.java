@@ -4,15 +4,13 @@ import beephone_shop_projects.core.admin.product_managements.model.request.TheSi
 import beephone_shop_projects.core.admin.product_managements.model.response.TheSimResponse;
 import beephone_shop_projects.core.admin.product_managements.service.impl.TheSimServiceImpl;
 import beephone_shop_projects.core.common.base.ResponseObject;
+import beephone_shop_projects.core.common.base.ResponsePage;
+import beephone_shop_projects.entity.TheSim;
 import beephone_shop_projects.infrastructure.constant.ApiConstants;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -22,17 +20,27 @@ public class TheSimController {
 
   @Autowired
   private TheSimServiceImpl theSimService;
-
-  @GetMapping
+  @GetMapping("/all")
   public ResponseObject<List<TheSimResponse>> getSimCards() {
     List<TheSimResponse> simCards = theSimService.findAll();
     return new ResponseObject<>(simCards);
   }
-
-  @PostMapping
-  public ResponseObject<TheSimResponse> createSimCard(@RequestBody TheSimRequest theSimRequest) throws Exception {
-    TheSimResponse createdSimCard = theSimService.save(theSimRequest);
-    return new ResponseObject<>(createdSimCard);
+  @GetMapping
+  public ResponsePage<TheSimResponse> getSimCards(@RequestParam(name = "page", defaultValue = "1") Integer pageNo) {
+    return new ResponsePage(theSimService.findAllSimCards(pageNo));
   }
 
+  @PostMapping("/add")
+  public ResponseObject<TheSimResponse> createSimCard(@RequestBody List<TheSimRequest> theSimRequest) throws Exception {
+    List<TheSimResponse> createdSimCards = new ArrayList<>();
+    for (TheSimRequest request : theSimRequest) {
+      TheSimResponse createdSimCard = theSimService.save(request);
+      createdSimCards.add(createdSimCard);
+    }
+    return new ResponseObject(createdSimCards);
+  }
+//  @PostMapping("/add")
+//  public ResponseObject<TheSimResponse> createSimCard(@RequestBody TheSimRequest theSimRequest) {
+//    return new ResponseObject(theSimService.add(theSimRequest));
+//  }
 }

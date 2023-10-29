@@ -6,7 +6,15 @@ import beephone_shop_projects.core.admin.product_managements.model.response.MauS
 import beephone_shop_projects.entity.MauSac;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 public interface MauSacService extends GenericService<MauSacResponse, MauSacRequest, String> {
 
     Page<MauSac> findAllMauSac();
+
+    MauSac updateMauSac(MauSacRequest mauSacRequest, String id) throws Exception;
+
+    MauSac doiTrangThai(String id) throws Exception;
+
+    List<MauSacResponse> searchMauSac(MauSacRequest mauSacRequest);
 }

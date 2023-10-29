@@ -1,58 +1,64 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import { Button, Empty, Table } from "antd";
-import { Box, Dialog, DialogContent, IconButton, Pagination, Slide, TextField, Tooltip, } from "@mui/material";
+import {
+  Box,
+  Dialog,
+  DialogContent,
+  IconButton,
+  Pagination,
+  Slide,
+  TextField,
+  Tooltip,
+} from "@mui/material";
 import { PlusOutlined } from "@ant-design/icons";
 import Card from "../../../components/Card";
-import { format } from "date-fns";
 import axios from "axios";
-import { parseInt } from "lodash";
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
-import Zoom from '@mui/material/Zoom';
-import * as dayjs from "dayjs";
-import { OrderStatusString, OrderTypeString } from "./enum";
-import LoadingIndicator from '../../../utilities/loading';
+import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
+import Zoom from "@mui/material/Zoom";
+import { SimStatus } from "./enum";
+import LoadingIndicator from "../../../utilities/loading";
 import CreateScreen from "./create-screen";
-
+import { apiURLDisplay } from "../../../service/api";
+import "./style.css";
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 const ManagementScreens = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [totalPages, setTotalPages] = useState();
-  const [refreshPage, setRefreshPage] = useState(1);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [keyword, setKeyword] = useState(searchParams.get('keyword'));
-  const [currentPage, setCurrentPage] = useState(searchParams.get('currentPage') || 1);
-
-  const findOrdersByMultipleCriteriaWithPagination = (page) => {
+  // const [totalPages, setTotalPages] = useState();
+  // const [refreshPage, setRefreshPage] = useState(1);
+  // const [searchParams, setSearchParams] = useSearchParams();
+  // const [keyword, setKeyword] = useState(searchParams.get("keyword"));
+  // const [currentPage, setCurrentPage] = useState(
+  //   searchParams.get("currentPage") || 1
+  // );
+  const [screens, setScreens] = useState([]);
+  const loadDataList = () => {
     axios
-      .get(`http://localhost:8080/api/orders`, {
-        params: {
-          currentPage: page,
-          keyword: keyword,
-          isPending: false,
-        }
-      })
+      .get(apiURLDisplay)
       .then((response) => {
         setScreens(response.data.data);
-        setTotalPages(response.data.totalPages);
         setIsLoading(false);
       })
       .catch((error) => {
         console.error(error);
         setIsLoading(false);
       });
-  }
+  };
+  useEffect(() => {
+    loadDataList();
+  }, []);
 
-  const handleRedirectCreateScreen = () => {
-    navigate(`/dashboard/screen/create`);
-  }
+  // const handleRedirectCreateScreen = () => {
+  //   navigate(`/dashboard/screen/create`);
+  // };
 
   const [open, setOpen] = React.useState(false);
   const handleClickOpen = () => {
@@ -62,20 +68,11 @@ const ManagementScreens = () => {
   const handleClose = () => {
     setOpen(false);
   };
-
-  const [screens, setScreens] = useState([
-    {
-      ma: "091238612",
-      pinType: "Li-po",
-      dungLuong: 5000,
-      pinStatus: 1,
-    }
-  ]);
-
   const OrderTable = () => {
     return (
       <>
-        <Table className="table-container"
+        <Table
+          className="table-container"
           columns={columns}
           rowKey="id"
           dataSource={screens}
@@ -97,7 +94,7 @@ const ManagementScreens = () => {
       ),
     },
     {
-      title: "Mã Pin",
+      title: "Mã màn hình",
       align: "center",
       key: "ma",
       width: "15%",
@@ -107,19 +104,42 @@ const ManagementScreens = () => {
       ),
     },
     {
-      title: "Loại Pin",
+      title: "Loại màn hình",
       align: "center",
+      key: "loaiManHinh",
       width: "15%",
+      dataIndex: "ma",
       render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>{record.pinType}</span>
+        <span style={{ fontWeight: "400" }}>{record.loaiManHinh}</span>
       ),
     },
     {
-      title: "Dung lượng",
+      title: "Độ phân giải",
       align: "center",
       width: "15%",
       render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>{record.dungLuong + " mAh"}</span>
+        <span style={{ fontWeight: "400" }}>
+          {record.doPhanGiaiManHinh.chieuDai} x{" "}
+          {record.doPhanGiaiManHinh.chieuRong}
+        </span>
+      ),
+    },
+    {
+      title: "Tần số quét",
+      align: "center",
+      width: "15%",
+      render: (text, record) => (
+        <span style={{ fontWeight: "400" }}>{record.tanSoQuet + " hz"}</span>
+      ),
+    },
+    {
+      title: "Kích thước",
+      align: "center",
+      width: "15%",
+      render: (text, record) => (
+        <span style={{ fontWeight: "400" }}>
+          {record.kichThuoc + " inches"}
+        </span>
       ),
     },
     {
@@ -127,8 +147,8 @@ const ManagementScreens = () => {
       width: "15%",
       align: "center",
       dataIndex: "pinStatus",
-      render: (type) =>
-        type == 0 ? (
+      render: (text, type) =>
+        type.status === SimStatus.ACTIVE ? (
           <div
             className="rounded-pill mx-auto badge-success"
             style={{
@@ -137,22 +157,16 @@ const ManagementScreens = () => {
               padding: "4px",
             }}
           >
-            <span
-              className="text-white"
-              style={{ fontSize: "14px" }}
-            >
+            <span className="text-white" style={{ fontSize: "14px" }}>
               Hoạt động
             </span>
           </div>
-        ) : type == 1 ? (
+        ) : type.status === SimStatus.IN_ACTIVE ? (
           <div
             className="rounded-pill badge-danger mx-auto"
             style={{ height: "35px", width: "140px", padding: "4px" }}
           >
-            <span
-              className="text-white"
-              style={{ fontSize: "14px" }}
-            >
+            <span className="text-white" style={{ fontSize: "14px" }}>
               Ngừng hoạt động
             </span>
           </div>
@@ -182,7 +196,13 @@ const ManagementScreens = () => {
   ];
   return (
     <>
-      <div className="mt-4" style={{ backgroundColor: "#ffffff", boxShadow: "0 0.1rem 0.3rem #00000010" }}>
+      <div
+        className="mt-4"
+        style={{
+          backgroundColor: "#ffffff",
+          boxShadow: "0 0.1rem 0.3rem #00000010",
+        }}
+      >
         <Card className="">
           <Card.Header className="d-flex justify-content-between">
             <div className="header-title mt-2">
@@ -226,7 +246,8 @@ const ManagementScreens = () => {
                 type="primary"
                 style={{ height: "40px", width: "155px", fontSize: "15px" }}
               >
-                <PlusOutlined className="ms-1"
+                <PlusOutlined
+                  className="ms-1"
                   style={{
                     position: "absolute",
                     bottom: "12.5px",
@@ -245,9 +266,10 @@ const ManagementScreens = () => {
           <Card.Body>
             <OrderTable />
           </Card.Body>
-          <div className='mx-auto'>
-            <Pagination color="primary" /* page={parseInt(currentPage)} key={refreshPage} count={totalPages} */
-            // onChange={handlePageChange} 
+          <div className="mx-auto">
+            <Pagination
+              color="primary" /* page={parseInt(currentPage)} key={refreshPage} count={totalPages} */
+              // onChange={handlePageChange}
             />
           </div>
           <div className="mt-4"></div>
@@ -266,12 +288,15 @@ const ManagementScreens = () => {
         }}
       >
         <DialogContent className="">
-          <CreateScreen close={handleClose} />
+          <CreateScreen
+            close={handleClose}
+            getAll={loadDataList}
+            screens={screens}
+          />
         </DialogContent>
         <div className="mt-3"></div>
       </Dialog>
     </>
-  )
-
-}
+  );
+};
 export default ManagementScreens;
