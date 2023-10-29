@@ -757,9 +757,9 @@ const PointOfSales = () => {
   }
 
   useEffect(() => {
-    setIsLoading(true);
-    getAllOrdersPending();
-    getAllCustomers();
+    // setIsLoading(true);
+    // getAllOrdersPending();
+    // getAllCustomers();
     // getAllProducts();
   }, []);
 

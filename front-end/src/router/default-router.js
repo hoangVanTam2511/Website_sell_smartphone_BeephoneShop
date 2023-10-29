@@ -106,6 +106,7 @@ import ManagementFrontCameras from '../views/admin/order-manager/management-fron
 import CreateCameraTruoc from '../views/admin/order-manager/create-camera-truoc';
 import ManagementRearCameras from '../views/admin/order-manager/management-rear-cameras';
 import CreateProduct from '../views/admin/order-manager/create-product';
+import UpdateProduct from '../views/admin/order-manager/update-product';
 
 
 export const DefaultRouter = [
@@ -346,6 +347,10 @@ export const DefaultRouter = [
       {
         path: 'dashboard/create-product',
         element: <CreateProduct />,
+      },
+      {
+        path: 'dashboard/update-product',
+        element: <UpdateProduct />,
       },
       // {
       //   path: 'dashboard/add-product',

@@ -45,8 +45,26 @@ const MenuProps = {
   },
 };
 
-const CreateProduct = ({ }) => {
-  const [orientation, setOrientation] = React.useState('vertical');
+const UpdateProduct = ({ }) => {
+
+  const handleGetBrand = async () => {
+    await axios
+      .get(`http://localhost:8080/api/brand`)
+      .then(async (response) => {
+        const data = response.data.ten;
+        setBrand(data);
+        setChip(data);
+        setSelectKey((prevKey) => prevKey + 1);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  useEffect(() => {
+    handleGetBrand();
+    window.scrollTo(0, 800);
+  }, []);
   const [cauHinhs, setCauHinhs] = useState([
     {
       id: 1,
@@ -212,7 +230,6 @@ const CreateProduct = ({ }) => {
   const [ratingsCameraTruoc, setRatingsCameraTruoc] = useState([]);
   const [ratingsCameraSau, setRatingsCameraSau] = useState([]);
   const [idCamera, setIdCamera] = useState('');
-  const [counts, setCounts] = useState([]);
 
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
@@ -459,15 +476,15 @@ const CreateProduct = ({ }) => {
   const [isLoading, setIsLoading] = React.useState(false);
 
   const [status, setStatus] = React.useState();
-  const [brand, setBrand] = React.useState('');
-  const [opera, setOpera] = React.useState('');
-  const [chip, setChip] = React.useState('');
-  const [screen, setScreen] = React.useState('');
-  const [pin, setPin] = React.useState('');
-  const [congSac, setCongSac] = React.useState('');
-  const [theSim, setTheSim] = React.useState('');
-  const [network, setNetwork] = React.useState('');
-  const [theNho, setTheNho] = React.useState('');
+  const [brand, setBrand] = React.useState();
+  const [opera, setOpera] = React.useState();
+  const [chip, setChip] = React.useState();
+  const [screen, setScreen] = React.useState();
+  const [pin, setPin] = React.useState();
+  const [congSac, setCongSac] = React.useState();
+  const [theSim, setTheSim] = React.useState();
+  const [network, setNetwork] = React.useState();
+  const [theNho, setTheNho] = React.useState();
   const handleChangeNetword = (event) => {
     setNetwork(event.target.value);
   };
@@ -502,6 +519,8 @@ const CreateProduct = ({ }) => {
   //   setSelectedSacs(event.target.value);
   // };
 
+  const [selectKey, setSelectKey] = useState(0);
+
   return (
     <>
       {/*
@@ -519,7 +538,7 @@ const CreateProduct = ({ }) => {
         <div className="container" style={{}}>
           <div className="mx-auto" style={{ maxWidth: "70%" }}>
             <div className="text-center pt-4" style={{}}>
-              <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>THÊM SẢN PHẨM</span>
+              <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>CẬP NHẬT SẢN PHẨM</span>
             </div>
             <div className="mt-3">
               <Autocomplete fullWidth className="custom"
@@ -577,6 +596,8 @@ const CreateProduct = ({ }) => {
                   <Select className="custom"
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
+                    key={selectKey}
+
                     value={brand}
                     label="Hãng"
                     onChange={handleChangeBrand}
@@ -607,6 +628,7 @@ const CreateProduct = ({ }) => {
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
                     value={chip}
+                    key={selectKey}
                     label="Chip"
                     onChange={handleChangeChip}
                     endAdornment={
@@ -692,7 +714,6 @@ const CreateProduct = ({ }) => {
                     value={network}
                     label="Thẻ Nhớ"
                     onChange={handleChangeNetword}
-                    defaultValue={0}
                     endAdornment={
                       <>
                         <InputAdornment style={{ marginRight: "15px" }} position="end">
@@ -999,10 +1020,95 @@ const CreateProduct = ({ }) => {
           </div>
         </div>
       </div>
-      <div style={{ height: "25px" }}></div>
+      <div className="mt-4" style={{ backgroundColor: "#ffffff", boxShadow: "0 0.1rem 0.3rem #00000010", height: "auto" }}>
+        <div className="container" style={{}}>
+          <div className="mx-auto" style={{ maxWidth: "70%" }}>
+            <div className="text-center pt-4" style={{}}>
+              <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>CẤU HÌNH</span>
+            </div>
+          </div>
+          {cauHinhs.length > 0 && cauHinhs.map((item) => {
+            return (
+              <div className={"mt-3 mx-auto"} style={{ width: "95%" }}>
+                <>
+                  <CardJoy
+                    orientation={'vertical'}
+                    variant="outlined"
+                    sx={{ width: '100%', maxWidth: '100%', gap: 1.5 }}
+                  >
+                    <div className="d-flex justify-content-between">
+                      <span className="mt-1" style={{ fontWeight: "550", fontSize: "22px" }}>CẤU HÌNH {' ' + item.ram.dungLuong + "/" + item.rom.dungLuong + "GB"}</span>
+                      <Button
+                        onClick={handleClickOpen}
+                        className="rounded-2 button-mui"
+                        type="primary"
+                        style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                      >
+                        <span
+                          className=""
+                          style={{ marginBottom: "2px", fontWeight: "500" }}
+                        >
+                          Cập Nhật
+                        </span>
+                      </Button>
+                    </div>
+                    <Divider sx={{ backgroundColor: 'gray', height: "1.5px" }} />
+                    <BoxJoy sx={{ display: 'contents' }}>
+                      <CauHinhTable id={item.id} />
+                    </BoxJoy>
+                  </CardJoy>
+                </>
+              </div>
+            )
+          })}
+          <div className={cauHinhs.length > 0 ? 'mt-4 text-center' : 'mt-3 text-center'}>
+            <Button
+              onClick={handleClickOpen}
+              className="rounded-2 button-mui"
+              type="primary"
+              style={{ height: "40px", width: "auto", fontSize: "15px" }}
+            >
+              <span
+                className=""
+                style={{ marginBottom: "2px", fontWeight: "500" }}
+              >
+                CHỌN CẤU HÌNH
+              </span>
+            </Button>
+          </div>
+        </div>
+        <div style={{ height: "25px" }}></div>
+      </div>
+      <div className="mt-4" style={{ backgroundColor: "#ffffff", boxShadow: "0 0.1rem 0.3rem #00000010", height: "auto" }}>
+        <div className="container" style={{}}>
+          <div className="mx-auto" style={{ maxWidth: "70%" }}>
+            <div className="text-center pt-4" style={{}}>
+              <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>ẢNH</span>
+            </div>
+          </div>
+          <div className="mt-3 text-center">
+            <Button
+              onClick={handleClickOpen}
+              className="rounded-2 button-mui"
+              type="primary"
+              style={{ height: "40px", width: "auto", fontSize: "15px" }}
+            >
+              <span
+                className=""
+                style={{ marginBottom: "2px", fontWeight: "500" }}
+              >
+                UPLOAD ẢNH
+              </span>
+            </Button>
+          </div>
+        </div>
+        <div style={{ height: "25px" }}></div>
+      </div>
+      <div className="mt-4"></div>
       {isLoading && <LoadingIndicator />}
+      <ModalCauHinh open={open} close={handleClose} />
     </>
   )
 
 }
-export default CreateProduct;
+export default UpdateProduct;
