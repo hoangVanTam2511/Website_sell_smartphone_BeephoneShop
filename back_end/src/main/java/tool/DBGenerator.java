@@ -2,29 +2,8 @@ package tool;
 
 import beephone_shop_projects.entity.*;
 import beephone_shop_projects.entity.Hang;
-import beephone_shop_projects.infrastructure.constant.StatusAccountCus;
-import beephone_shop_projects.infrastructure.constant.StatusDiscount;
-import beephone_shop_projects.infrastructure.constant.TypeDiscount;
-import beephone_shop_projects.repository.IAccountRepository;
-import beephone_shop_projects.repository.IAnhRepository;
-import beephone_shop_projects.repository.ICameraRepository;
-import beephone_shop_projects.repository.ICauHinhRepository;
-import beephone_shop_projects.repository.IChipRepository;
-import beephone_shop_projects.repository.IDiaChiRepository;
-import beephone_shop_projects.repository.IDongSanPhamRepository;
-import beephone_shop_projects.repository.IImeiRepository;
-import beephone_shop_projects.repository.IKhachHangRepository;
-import beephone_shop_projects.repository.IKhuyenMaiRepository;
-import beephone_shop_projects.repository.IManHinhRepository;
-import beephone_shop_projects.repository.IMauSacRepository;
-import beephone_shop_projects.repository.INhaSanXuatRepository;
-import beephone_shop_projects.repository.IPinRepository;
-import beephone_shop_projects.repository.IRamRepository;
-import beephone_shop_projects.repository.IRoleRepository;
-import beephone_shop_projects.repository.IRomRepository;
-import beephone_shop_projects.repository.ISanPhamChiTietRepository;
-import beephone_shop_projects.repository.ISanPhamRepository;
-import beephone_shop_projects.repository.IVoucherRepository;
+import beephone_shop_projects.infrastructure.constant.*;
+import beephone_shop_projects.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -58,6 +37,8 @@ public class DBGenerator implements CommandLineRunner {
 
     @Autowired
     private IDongSanPhamRepository dongSanPhamRepository;
+    @Autowired
+    private ITheSimRepository theSimRepository;
 
     @Autowired
     private IImeiRepository imeiRepository;
@@ -73,6 +54,8 @@ public class DBGenerator implements CommandLineRunner {
 
     @Autowired
     private IMauSacRepository mauSacRepository;
+    @Autowired
+    private IDoPhanGiaiRepository doPhanGiaiRepository;
 
     @Autowired
     private INhaSanXuatRepository nhaSanXuatRepository;
@@ -224,22 +207,54 @@ public class DBGenerator implements CommandLineRunner {
         dongSanPham3.setTenDongSanPham("Xiaomi Mi");
         dongSanPham3.setId(dongSanPhamRepository.save(dongSanPham3).getId());
 
+
         //Bảng Màn hình
+        //Bảng Độ phân giải
+        DoPhanGiaiManHinh dpg=new DoPhanGiaiManHinh();
+        dpg.setMa("DPG123");
+        dpg.setChieuDai(123.4);
+        dpg.setChieuRong(234.9);
+        dpg.setId(doPhanGiaiRepository.save(dpg).getId());
+        //Bảng Thẻ sim
+        TheSim theSim=new TheSim();
+        theSim.setMa("TS1");
+        theSim.setStatus(StatusCommon.ACTIVE);
+        theSim.setSimMultiple(SimMultiple.SINGLE_SIM);
+        theSim.setLoaiTheSim("Sim dep");
+        theSim.setId(theSimRepository.save(theSim).getId());
+
+        TheSim theSim1=new TheSim();
+        theSim1.setMa("TS2");
+        theSim1.setStatus(StatusCommon.IN_ACTIVE);
+        theSim1.setSimMultiple(SimMultiple.DUAL_SIM);
+        theSim1.setLoaiTheSim("Sim dep");
+        theSim1.setId(theSimRepository.save(theSim1).getId());
+
         ManHinh manHinh = new ManHinh();
         manHinh.setMa("ManHinh01");
-//        manHinh.setDoPhanGiai("1080 x 2340 Pixels");
+        manHinh.setLoaiManHinh("hoho");
+        manHinh.setDoPhanGiaiManHinh(doPhanGiaiRepository.findByMa("DPG123"));
         manHinh.setKichThuoc(6.1);
+        manHinh.setTanSoQuet(25);
+        manHinh.setStatus(StatusCommon.ACTIVE);
         manHinh.setId(manHinhRepository.save(manHinh).getId());
 
         ManHinh manHinh1 = new ManHinh();
         manHinh1.setMa("ManHinh012");
-//        manHinh1.setDoPhanGiai("1080 x 2340 Pixels");
+        manHinh1.setLoaiManHinh("hoho+1");
+        manHinh1.setDoPhanGiaiManHinh(doPhanGiaiRepository.findByMa("DPG123"));
         manHinh1.setKichThuoc(6.5);
+        manHinh1.setTanSoQuet(23);
+        manHinh1.setStatus(StatusCommon.ACTIVE);
         manHinh1.setId(manHinhRepository.save(manHinh1).getId());
 
         ManHinh manHinh2 = new ManHinh();
         manHinh2.setMa("ManHinh013");
+        manHinh2.setLoaiManHinh("hoho+2");
+        manHinh2.setDoPhanGiaiManHinh(doPhanGiaiRepository.findByMa("DPG123"));
         manHinh2.setKichThuoc(6.7);
+        manHinh2.setTanSoQuet(21);
+        manHinh2.setStatus(StatusCommon.IN_ACTIVE);
         manHinh2.setId(manHinhRepository.save(manHinh2).getId());
 
         //Bảng Màu sắc

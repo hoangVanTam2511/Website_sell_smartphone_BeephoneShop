@@ -9,6 +9,8 @@ public class ApiConstants {
     public static final String API_ROM_URI = "/api/roms";
     public static final String API_RAM_URI = "/api/rams";
     public static final String API_SIM_CARD_URI = "/api/sim-cards";
+    public static final String API_RESOLUTION_URI = "/api/resolution";
+    public static final String API_DISPLAY_URI = "/api/display";
     public static final String API_BRAND_URI = "/api/brands";
     public static final String API_CHIP_URI = "/api/chips";
     public static final String API_PIN_URI = "/api/pins";

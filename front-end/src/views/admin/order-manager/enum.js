@@ -53,6 +53,54 @@ export const TypeDiscountNumber = {
   VND: 0,
   PERCENT: 1,
 };
+
+export const SimStatus = {
+  ACTIVE: "ACTIVE",
+  IN_ACTIVE: "IN_ACTIVE",
+};
+export const SimStatusNumber = {
+  ACTIVE: 0,
+  IN_ACTIVE: 1,
+};
+export const SimMultiple = {
+  SINGLE_SIM: "SINGLE_SIM",
+  DUAL_SIM: "DUAL_SIM",
+  TRIPLE_SIM: "TRIPLE_SIM",
+  QUAD_SIM: "QUAD_SIM",
+};
+export const SimMultipleNumber = {
+  SINGLE_SIM: 0,
+  DUAL_SIM: 1,
+  TRIPLE_SIM: 2,
+  QUAD_SIM: 3,
+};
+export const ResolutionType = {
+  HD: "HD",
+  HD_PLUS: "HD_PLUS",
+  FULL_HD: "FULL_HD",
+  FULL_HD_PLUS: "FULL_HD_",
+  FOUR_K: "FOUR_K",
+  QUAD_HD: "QUAD_HD",
+  QUAD_HD_PLUS: "QUAD_HD_PLUS",
+  TWO_K: "TWO_K",
+  ULTRA_HD: "ULTRA_HD",
+};
+export const ResolutionTypeNumber = {
+  HD: 0,
+  HD_PLUS: 1,
+  FULL_HD: 2,
+  FULL_HD_PLUS: 3,
+  FOUR_K: 4,
+  QUAD_HD: 5,
+  QUAD_HD_PLUS: 6,
+  TWO_K: 7,
+  ULTRA_HD: 8,
+};
+
+export const StatusCommonProducts = {
+  ACTIVE: "ACTIVE",
+  IN_ACTIVE: "IN_ACTIVE",
+};
 // export const SimTypeString = {
 //   MICRO_SIM : "MICRO_SIM",
 //   NANO_SIM : "MICRO_SIM",

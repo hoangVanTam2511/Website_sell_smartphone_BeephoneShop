@@ -48,7 +48,7 @@ const HienThiNV = () => {
           page: currentPage,
         },
       });
-      setListNV(response.data.content);
+      setListNV(response.data.data);
       setTotalPages(response.data.totalPages);
       setCurrentPage(targetPage);
     } catch (error) {
@@ -71,12 +71,10 @@ const HienThiNV = () => {
     setFilterStatus(status);
     // setCurrentPage(1); // Set the current page to 1 when the filter changes
   };
-  // const filteredDataSource = listNV.filter((item) => {
-  //   return filterStatus === 0 || item.trangThai === filterStatus;
-  // });
   useEffect(() => {
-    if (filterStatus == 0) {
-      handleReset();
+    if (filterStatus === 0) {
+      loadDataListRole(currentPage);
+      setSearchText("");
     }
     fetchEmployeeList(currentPage);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -91,7 +89,7 @@ const HienThiNV = () => {
       });
       setListNV(response.data.content);
       setTotalPages(response.data.totalPages);
-      // setCurrentPage(currentPage);
+      setCurrentPage(targetPage);
     } catch (error) {
       console.error("Error fetching employee data:", error);
     }
@@ -105,13 +103,14 @@ const HienThiNV = () => {
       .get(apiURLNV + "/hien-thi?page=" + currentPage)
       .then((response) => {
         setListNV(response.data.data);
-        setTotalPages(response.totalPages);
+        setTotalPages(response.data.totalPages);
       })
       .catch(() => {});
   };
   const handleReset = () => {
     loadDataListRole(currentPage);
     setSearchText("");
+    // handleFilter(0);
     // setCurrentPage(1);
   };
   const navigate = useNavigate();
@@ -222,7 +221,6 @@ const HienThiNV = () => {
       title: "Trạng thái",
       dataIndex: "trangThai",
       width: "10%",
-      // eslint-disable-next-line eqeqeq
       onFilter: (value, record) => record.trangThai == value,
       filterSearch: true,
       render: (text, record) => (

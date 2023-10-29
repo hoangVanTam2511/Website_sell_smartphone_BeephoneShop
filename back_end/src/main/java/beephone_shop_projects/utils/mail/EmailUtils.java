@@ -1,6 +1,6 @@
 package beephone_shop_projects.utils.mail;
 
-import beephone_shop_projects.infrastructure.constant.MailConstanttest;
+import beephone_shop_projects.infrastructure.constant.MailConstant;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,19 +24,19 @@ public class EmailUtils {
 
     @Async
     public void sendEmailEvent(MailBeePhoneRequest request) {
-        String htmlBody = MailConstanttest.HEADER.replace("{title}", "");
+        String htmlBody = MailConstant.HEADER.replace("{title}", "");
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, StandardCharsets.UTF_8.toString());
-            ClassPathResource resource = new ClassPathResource(MailConstanttest.LOGO_PATH1);
-            ClassPathResource resource1 = new ClassPathResource(MailConstanttest.CAM_ON);
-            ClassPathResource resource2 = new ClassPathResource(MailConstanttest.CAM_KET);
-            ClassPathResource resource3 = new ClassPathResource(MailConstanttest.LIEN_HE);
-            ClassPathResource resource4 = new ClassPathResource(MailConstanttest.THEO_DOI);
+            ClassPathResource resource = new ClassPathResource(MailConstant.LOGO_PATH1);
+            ClassPathResource resource1 = new ClassPathResource(MailConstant.CAM_ON);
+            ClassPathResource resource2 = new ClassPathResource(MailConstant.CAM_KET);
+            ClassPathResource resource3 = new ClassPathResource(MailConstant.LIEN_HE);
+            ClassPathResource resource4 = new ClassPathResource(MailConstant.THEO_DOI);
             mimeMessageHelper.setFrom(sender);
             mimeMessageHelper.setBcc(request.getMails());
             mimeMessageHelper.setSubject(request.getSubject());
-            mimeMessageHelper.setText(htmlBody + MailConstanttest.CONTENT_EVENT_MAIL
+            mimeMessageHelper.setText(htmlBody + MailConstant.CONTENT_EVENT_MAIL
                     .replace("{tenKhachHang}", request.getTenKhachHang())
                     .replace("{maDonHang}", request.getMaDonHang())
                     .replace("{ngayDatHang}", request.getNgayDatHang())
@@ -48,7 +48,7 @@ public class EmailUtils {
                     .replace("{phiVanChuyen}", request.getPhiVanChuyen())
                     .replace("{giamGia}", request.getGiamGia())
                     .replace("{tongCong}", request.getTongCong())
-                    + MailConstanttest.FOOTER, true);
+                    + MailConstant.FOOTER, true);
             mimeMessageHelper.addInline("logoImage", resource);
             mimeMessageHelper.addInline("camOnImage", resource1);
             mimeMessageHelper.addInline("camKetImage", resource2);

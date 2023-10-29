@@ -1,36 +1,36 @@
 .ant-select-selection-overflow {
-    height: 38px;
+  height: 38px;
 }
 
 .ant-select-selector {
-    height: 38px ;
-    border: 1px solid #a3c0c9;
+  height: 38px;
+  border: 1px solid #a3c0c9;
 }
 
 .ant-modal-content {
-    width: 680px;
-    transform: translateY(-30px)translateX(-47px);
+  width: 680px;
+  transform: translateY(-30px) translateX(-47px);
 }
 
 .ant-input-affix-wrapper {
-    width: 300px;
-    height: 38px;
+  width: 300px;
+  height: 38px;
 }
 
 #addConfig {
-    font-size: 15px;
-    font-weight: 600;
-    height: 38px;
-    margin-top:6px;
+  font-size: 15px;
+  font-weight: 600;
+  height: 38px;
+  margin-top: 6px;
 }
 
 .font_awesome_icon_selection_custom {
-    border-bottom: 1px solid;
-    width: 16px;
-    height: 26px;
-    transform: translateX(187px) translateY(19px);
-    color: #8f8a8a;
-    padding: 8px;
+  border-bottom: 1px solid;
+  width: 16px;
+  height: 26px;
+  transform: translateX(187px) translateY(19px);
+  color: #8f8a8a;
+  padding: 8px;
 }
 
 .selection_custom {

@@ -35,6 +35,15 @@ const ModalAddDiaChiKhachHang = ({
   }, []);
 
   const callAPI = (api) => {
+    if (!selectedProvince) {
+      setProvinceError(true);
+    }
+    if (!selectedDistrict) {
+      setDistrictError(true);
+    }
+    if (!selectedWard) {
+      setWardError(true);
+    }
     return axios
       .get(api, {
         headers: {

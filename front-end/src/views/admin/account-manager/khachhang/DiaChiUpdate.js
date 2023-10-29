@@ -5,7 +5,6 @@ import { MenuItem, Grid, TextField } from "@mui/material";
 const host = "https://online-gateway.ghn.vn/shiip/public-api/master-data/";
 
 const AddressFormUpdate = ({
-  required,
   submitted,
   onProvinceChange,
   onDistrictChange,
@@ -39,7 +38,7 @@ const AddressFormUpdate = ({
       fetchDistricts(selectedProvinceCode);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedTinhThanhPho, provinces]);
+  }, [selectedTinhThanhPho]);
 
   useEffect(() => {
     if (selectedQuanHuyen) {
@@ -53,8 +52,7 @@ const AddressFormUpdate = ({
         fetchWards(selectedDistrictCode);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedQuanHuyen, districts]);
+  }, [selectedQuanHuyen]);
 
   useEffect(() => {
     if (selectedXaPhuong) {
@@ -63,7 +61,7 @@ const AddressFormUpdate = ({
       )?.WardCode;
       setSelectedWard(selectedWardCode);
     }
-  }, [selectedXaPhuong, wards]);
+  }, [selectedXaPhuong]);
 
   const callAPI = async (api) => {
     if (!selectedProvince) {
@@ -118,39 +116,29 @@ const AddressFormUpdate = ({
       });
   };
 
-  const handleProvinceChange = (event) => {
-    setProvinceError(false);
-    if (submitted) {
-      // Nếu đã ấn nút "Lưu" thì kiểm tra trạng thái select
-      if (!event.target.value) {
-        setProvinceError(true);
-        setSelectedProvince("");
-      }
-    }
-    const selectedValue = event.target.value;
-    setSelectedProvince(selectedValue);
-    setSelectedDistrict("");
-    setSelectedWard("");
-    setDistricts([]);
-    setWards([]);
-    if (selectedValue === "") {
-      onProvinceChange("");
-    } else {
-      fetchDistricts(selectedValue);
-      onProvinceChange(selectedValue);
-    }
-  };
-
-  const handleDistrictChange = (value) => {
-    setSelectedDistrict(value.target.value);
-    setSelectedWard(""); // Reset selectedWard khi chọn lại quận/huyện mới
-    fetchWards(value.target.value);
-    setWards([]);
-    onDistrictChange(value.target.value);
-    setDistrictError(false);
+  const handleProvinceChange = (value) => {
     if (submitted) {
       // Nếu đã ấn nút "Lưu" thì kiểm tra trạng thái select
       if (!value.target.value) {
+        setSelectedProvince("");
+      }
+    }
+
+    setSelectedProvince(value.target.value);
+    setSelectedDistrict("");
+    setSelectedWard("");
+    fetchDistricts(value.target.value);
+  };
+  const handleDistrictChange = (value) => {
+    const selectedDistrictCode = value.target.value || ""; // Tránh giá trị undefined
+    setSelectedDistrict(selectedDistrictCode);
+    // Fetch wards based on selected district
+    fetchWards(selectedDistrictCode);
+    setWards([]);
+    onDistrictChange(selectedDistrictCode);
+    setDistrictError(false);
+    if (formSubmitted) {
+      if (!selectedDistrictCode) {
         setDistrictError(true);
       }
     }
@@ -160,29 +148,41 @@ const AddressFormUpdate = ({
     setSelectedWard(value.target.value);
     onWardChange(value.target.value);
     setWardError(false);
-    if (submitted) {
+    if (formSubmitted) {
       // Nếu đã ấn nút "Lưu" thì kiểm tra trạng thái select
       if (!value.target.value) {
         setWardError(true);
+        setSelectedWard("");
       }
     }
   };
+
   useEffect(() => {
-    if (selectedDistrict && selectedProvince && selectedWard) {
+    if (selectedProvince && selectedDistrict && selectedWard) {
       const selectedProvinceName = provinces.find(
         (province) => province.ProvinceID === selectedProvince
-      ).ProvinceName;
+      )?.ProvinceName;
+
       const selectedDistrictName = districts.find(
         (district) => district.DistrictID === selectedDistrict
-      ).DistrictName;
+      )?.DistrictName;
+
       const selectedWardName = wards.find(
         (ward) => ward.WardCode === selectedWard
-      ).WardName;
-      onProvinceChange(selectedProvinceName);
-      onDistrictChange(selectedDistrictName);
-      onWardChange(selectedWardName);
+      )?.WardName;
+
+      onProvinceChange(selectedProvinceName || "");
+      onDistrictChange(selectedDistrictName || "");
+      onWardChange(selectedWardName || "");
     }
-  }, [selectedProvince, selectedDistrict, selectedWard]);
+  }, [
+    selectedProvince,
+    selectedDistrict,
+    selectedWard,
+    onProvinceChange,
+    onDistrictChange,
+    onWardChange,
+  ]);
 
   return (
     <div>

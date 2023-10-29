@@ -37,7 +37,7 @@ public class KhachHangServiceImpl implements KhachHangService {
 
     @Override
     public Page<AccountResponse> getAllKH(Integer pageNo) {
-        Pageable pageable = PageRequest.of(pageNo - 1, 10);
+        Pageable pageable = PageRequest.of(pageNo - 1, 1);
         return accountRepository.getAllKH(pageable);
     }
 
@@ -108,7 +108,7 @@ public class KhachHangServiceImpl implements KhachHangService {
 
     @Override
     public Page<AccountResponse> search(Optional<String> tenSearch, Integer pageNo) {
-        Pageable pageable = PageRequest.of(pageNo-1, 10);
+        Pageable pageable = PageRequest.of(pageNo-1, 1);
         return accountRepository.searchAllKH(tenSearch, pageable);
     }
 
