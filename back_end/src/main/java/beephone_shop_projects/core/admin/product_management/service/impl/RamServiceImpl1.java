@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class RamServiceImpl {
+public class RamServiceImpl1 {
 
     @Autowired
     private RamRepository ramRepository;

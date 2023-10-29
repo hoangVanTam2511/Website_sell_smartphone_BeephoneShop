@@ -38,20 +38,6 @@ public class VoucherRestController {
   @PostMapping("/sendMail")
   private void testMail(@RequestBody MailBeePhoneRequest emails) {
     emailUtils.sendEmailEvent(emails);
-        /*
-        {
-//    "mails": ["sonptph19600@fpt.edu.vn", "duongdhph29062@fpt.edu.vn"],
-//    "subject": "[PTPM-XLDL-UDPM] Thư mời tham dự Spring Boot Tutorials",
-//    "eventName": "Spring Boot Tutorials",
-//    "lecturer": ["Vũ Nguyên Hướng - HuongVN4", "Nguyễn Thúy Hằng - HangNT169"],
-//    "content": ["Springboot là gì ?", "Các cách trở thành master Springboot ?"],
-//    "time": "19:00 - 21:00",
-//    "date": "21/09/2023",
-//    "typeEvent": "Online",
-//    "linkZoom": "https://www.facebook.com/VuNguyenHuong.Official",
-//    "linkBackground": "https://www.facebook.com/VuNguyenHuong.Official"
-}
-         */
   }
 
   @GetMapping("/get-by-id/{id}")

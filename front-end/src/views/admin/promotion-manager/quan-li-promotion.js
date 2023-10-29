@@ -1,4 +1,4 @@
-import { Form, Table, Input, Button } from "antd";
+import { Form, Table, Input, Button, Popconfirm } from "antd";
 import Swal from "sweetalert2";
 import { useState, useEffect } from "react";
 import axios from "axios";
@@ -50,8 +50,11 @@ const HienThiKhuyenMai = () => {
   const [searchNgayKetThuc, setSearchNgayKetThuc] = useState("");
   const [searchTrangThai, setSearchTrangThai] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
+  const [id, setId] = useState("");
   const { handleOpenAlertVariant } = useCustomSnackbar();
   const [isLoading, setIsLoading] = useState(true);
+  const [open, setOpen] = useState(false);
+  const [keySelect, setKeySelect] = useState(0);
 
   const handleReset = () => {
     setIsLoading(false);
@@ -61,6 +64,7 @@ const HienThiKhuyenMai = () => {
       setSearchNgayBatDau("");
       setSearchNgayKetThuc("");
       setSearchTrangThai("");
+      setKeySelect(keySelect + 1);
       setSearchParams("");
       setIsLoading(true);
     }, 200);
@@ -163,17 +167,29 @@ const HienThiKhuyenMai = () => {
     return false;
   };
 
+  const handleOkConfirm = () => {
+    doiTrangThaiKhuyenMai(id);
+  };
+  const handleCancelConfirm = () => {
+    console.log("Clicked cancel button");
+    setOpen(false);
+  };
+
   const doiTrangThaiKhuyenMai = (id) => {
+    setIsLoading(false);
     axios
       .put(apiURLKhuyenMai + `/doi-trang-thai/${id}`)
       .then((response) => {
         loadDataListKhuyenMai(currentPage);
+        handleOpenAlertVariant("Đổi trạng thái thành công!", Notistack.SUCCESS);
+        setIsLoading(true);
       })
       .catch((error) => {
         handleOpenAlertVariant(
           "Đã xảy ra lỗi, vui lòng liên hệ quản trị viên.",
           Notistack.ERROR
         );
+        setIsLoading(true);
       });
   };
 
@@ -213,8 +229,10 @@ const HienThiKhuyenMai = () => {
       render: (value, record) => {
         let formattedValue = value;
         if (record.loaiKhuyenMai === TypeDiscountString.VND) {
-          formattedValue =
-            numeral(record.giaTriKhuyenMai).format("0,0 VND") + " VNĐ";
+          formattedValue = record.giaTriKhuyenMai.toLocaleString("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          });
         } else if (record.loaiKhuyenMai === TypeDiscountString.PERCENT) {
           formattedValue = `${record.giaTriKhuyenMai} %`;
         }
@@ -357,52 +375,64 @@ const HienThiKhuyenMai = () => {
                 </IconButton>
               </Link>
             </Tooltip>
-
-            <Tooltip
-              TransitionComponent={Zoom}
-              title={
-                record.trangThai === StatusDiscount.HOAT_DONG ||
-                record.trangThai === StatusDiscount.CHUA_DIEN_RA
-                  ? "Ngừng kích hoạt"
-                  : record.trangThai === StatusDiscount.DA_HUY &&
-                    isDatePast(record.ngayBatDau) === true
-                  ? "Kích hoạt"
-                  : record.trangThai === StatusDiscount.DA_HUY &&
-                    isRangeDate(record.ngayBatDau, record.ngayKetThuc) === true
-                  ? "Kích hoạt"
-                  : ""
-              }
+            <Popconfirm
+              okText="Đồng ý"
+              cancelText="Hủy"
+              description="Bạn có chắc chắn muốn đổi trạng thái giảm giá không?"
+              onConfirm={handleOkConfirm}
+              onCancel={handleCancelConfirm}
+              onClick={() => setId(record.id)}
+              placement="topLeft"
             >
-              <IconButton
-                size=""
-                onClick={() => doiTrangThaiKhuyenMai(record.id)}
-                className="ms-2"
-                style={{ marginTop: "6px" }}
-                disabled={
-                  record.trangThai === StatusDiscount.NGUNG_HOAT_DONG ||
-                  (record.trangThai === StatusDiscount.DA_HUY &&
-                    isDateFuture(record.ngayKetThuc) === true)
-                    ? true
-                    : false
+              <Tooltip
+                TransitionComponent={Zoom}
+                title={
+                  record.trangThai === StatusDiscount.HOAT_DONG ||
+                  record.trangThai === StatusDiscount.CHUA_DIEN_RA
+                    ? "Ngừng kích hoạt"
+                    : record.trangThai === StatusDiscount.DA_HUY &&
+                      isDatePast(record.ngayBatDau) === true
+                    ? "Kích hoạt"
+                    : record.trangThai === StatusDiscount.DA_HUY &&
+                      isRangeDate(record.ngayBatDau, record.ngayKetThuc) ===
+                        true
+                    ? "Kích hoạt"
+                    : record.trangThai === StatusDiscount.NGUNG_HOAT_DONG
+                    ? "Không thể đổi"
+                    : ""
                 }
               >
-                <AssignmentOutlinedIcon
-                  color={
-                    record.trangThai === StatusDiscount.HOAT_DONG ||
-                    record.trangThai === StatusDiscount.CHUA_DIEN_RA
-                      ? "error"
-                      : record.trangThai === StatusDiscount.DA_HUY &&
-                        isDatePast(record.ngayBatDau) === true
-                      ? "success"
-                      : record.trangThai === StatusDiscount.DA_HUY &&
-                        isRangeDate(record.ngayBatDau, record.ngayKetThuc) ===
-                          true
-                      ? "success"
-                      : "disabled"
+                <IconButton
+                  size=""
+                  // onClick={() => doiTrangThaiKhuyenMai(record.id)}
+                  className="ms-2"
+                  style={{ marginTop: "6px" }}
+                  disabled={
+                    record.trangThai === StatusDiscount.NGUNG_HOAT_DONG ||
+                    (record.trangThai === StatusDiscount.DA_HUY &&
+                      isDateFuture(record.ngayKetThuc) === true)
+                      ? true
+                      : false
                   }
-                />
-              </IconButton>
-            </Tooltip>
+                >
+                  <AssignmentOutlinedIcon
+                    color={
+                      record.trangThai === StatusDiscount.HOAT_DONG ||
+                      record.trangThai === StatusDiscount.CHUA_DIEN_RA
+                        ? "error"
+                        : record.trangThai === StatusDiscount.DA_HUY &&
+                          isDatePast(record.ngayBatDau) === true
+                        ? "success"
+                        : record.trangThai === StatusDiscount.DA_HUY &&
+                          isRangeDate(record.ngayBatDau, record.ngayKetThuc) ===
+                            true
+                        ? "success"
+                        : "disabled"
+                    }
+                  />
+                </IconButton>
+              </Tooltip>
+            </Popconfirm>
           </>
         );
       },
@@ -422,6 +452,12 @@ const HienThiKhuyenMai = () => {
       }),
     };
   });
+
+  const handleSearchTatCaChange = (event) => {
+    const searchTatCaInput = event.target.value;
+    setSearchTatCa(searchTatCaInput);
+    setCurrentPage(1);
+  };
 
   const handleSearchTrangThaiChange = (event) => {
     const selectedValue = event.target.value;
@@ -484,9 +520,9 @@ const HienThiKhuyenMai = () => {
           <Card.Header className="">
             <div className="header-title mt-2">
               <TextField
-                label="Tìm khuyến mãi"
+                label="Tìm giảm giá"
                 value={searchTatCa}
-                onChange={(e) => setSearchTatCa(e.target.value)}
+                onChange={handleSearchTatCaChange}
                 InputLabelProps={{
                   sx: {
                     marginTop: "",
@@ -583,7 +619,7 @@ const HienThiKhuyenMai = () => {
                     className="ms-3 ps-1"
                     style={{ marginBottom: "3px", fontWeight: "500" }}
                   >
-                    Tạo khuyến mãi
+                    Tạo giảm giá
                   </span>
                 </Button>
               </Link>
@@ -638,6 +674,7 @@ const HienThiKhuyenMai = () => {
                   onClose={handleCloseSelect}
                   onOpen={handleOpenSelect}
                   defaultValue={5}
+                  key={keySelect}
                   onChange={handleSearchTrangThaiChange}
                 >
                   <MenuItem className="" value={5}>

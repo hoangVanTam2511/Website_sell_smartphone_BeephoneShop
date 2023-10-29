@@ -447,7 +447,6 @@ const HienThiVoucher = () => {
               description="Bạn có chắc chắn muốn đổi trạng thái không?"
               onConfirm={handleOkConfirm}
               onCancel={handleCancelConfirm}
-              onClick={() => setId(record.id)}
               placement="topLeft"
             >
               <Tooltip
@@ -479,6 +478,7 @@ const HienThiVoucher = () => {
                   size=""
                   className="ms-2"
                   style={{ marginTop: "6px" }}
+                  onClick={() => setId(record.id)}
                 >
                   <AssignmentOutlinedIcon
                     color={

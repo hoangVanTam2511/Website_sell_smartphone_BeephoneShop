@@ -1,5 +1,5 @@
-import React from 'react'
-import Index from '../views/index'
+import React from "react";
+import Index from "../views/index";
 import { ToastContainer } from "react-toastify";
 // san pham
 
@@ -82,7 +82,7 @@ import SuaKhuyenMai from "../views/admin/promotion-manager/sua-promotion";
 //khuyenMai
 import UpdateVoucher from "../views/admin/voucher-manager/sua-voucher";
 
-import OrdersPending from "../views/admin/order-manager/ordes-pending"
+import OrdersPending from "../views/admin/order-manager/ordes-pending";
 
 import PointOfSales from "../views/admin/order-manager/point-of-sales"
 import ManagementProducts from '../views/admin/order-manager/management-products';
@@ -106,7 +106,6 @@ import ManagementFrontCameras from '../views/admin/order-manager/management-fron
 import CreateCameraTruoc from '../views/admin/order-manager/create-camera-truoc';
 import ManagementRearCameras from '../views/admin/order-manager/management-rear-cameras';
 import CreateProduct from '../views/admin/order-manager/create-product';
-import UpdateProduct from '../views/admin/order-manager/update-product';
 
 
 export const DefaultRouter = [
@@ -249,103 +248,115 @@ export const DefaultRouter = [
         element: <SuaKhuyenMai />,
       },
       {
-        path: 'dashboard/management-orders',
+        path: "dashboard/management-orders",
         element: <ManagementOrders />,
       },
       {
-        path: 'dashboard/orders-pending',
+        path: "dashboard/orders-pending",
         element: <OrdersPending />,
       },
       {
-        path: 'dashboard/point-of-sales',
+        path: "dashboard/point-of-sales",
         element: <PointOfSales />,
       },
       {
-        path: 'dashboard/order-detail/:id',
+        path: "dashboard/order-detail/:id",
         element: <OrderDetail />,
       },
       {
-        path: 'dashboard/products',
+        path: "dashboard/products",
         element: <ManagementProducts />,
       },
       {
-        path: 'dashboard/sims',
+        path: "dashboard/sims",
         element: <ManagementSims />,
       },
       {
-        path: 'dashboard/sim/create',
+        path: "dashboard/sim/create",
         element: <CreateSimCard />,
       },
       {
-        path: 'dashboard/pins',
+        path: "dashboard/pins",
         element: <ManagementPins />,
       },
       {
-        path: 'dashboard/pin/create',
+        path: "dashboard/pin/create",
         element: <CreatePin />,
       },
       {
-        path: 'dashboard/screens',
+        path: "dashboard/screens",
         element: <ManagementScreens />,
       },
       {
-        path: 'dashboard/screen/create',
+        path: "dashboard/screen/create",
         element: <CreateScreen />,
       },
       {
-        path: 'dashboard/sacs',
+        path: "dashboard/sacs",
         element: <ManagementCongSacs />,
       },
       {
-        path: 'dashboard/sac/create',
+        path: "dashboard/sac/create",
         element: <CreateSac />,
       },
       {
-        path: 'dashboard/hangs',
+        path: "dashboard/hangs",
         element: <ManagementHangs />,
       },
       {
-        path: 'dashboard/chips',
+        path: "dashboard/chips",
         element: <ManagementChips />,
       },
       {
-        path: 'dashboard/rams',
+        path: "dashboard/rams",
         element: <ManagementRams />,
       },
       {
-        path: 'dashboard/roms',
+        path: "dashboard/roms",
         element: <ManagementRoms />,
       },
       {
-        path: 'dashboard/colors',
+        path: "dashboard/colors",
         element: <ManagementColors />,
       },
       {
-        path: 'dashboard/hang/create',
+        path: "dashboard/hang/create",
         element: <CreateHang />,
       },
       {
-        path: 'dashboard/color/create',
+        path: "dashboard/color/create",
         element: <CreateMauSac />,
       },
       {
-        path: 'dashboard/front-camera/create',
+        path: "dashboard/color/update",
+        element: <UpdateMauSac />,
+      },
+      {
+        path: "dashboard/front-camera/create",
         element: <CreateCameraTruoc />,
       },
       {
-        path: 'dashboard/front-cameras',
+        path: "dashboard/front-cameras",
         element: <ManagementFrontCameras />,
       },
       {
-        path: 'dashboard/rear-camera/create',
+        path: "dashboard/rear-camera/create",
         element: <CreateCameraSau />,
       },
       {
-        path: 'dashboard/rear-cameras',
+        path: "dashboard/rear-cameras",
         element: <ManagementRearCameras />,
       },
       {
-        path: 'dashboard/create-product',
+        path: "dashboard/the-nhos",
+        element: <ManagementTheNhos />,
+      },
+      {
+        path: "dashboard/the-nhos/create",
+        element: <CreateTheNho />,
+      },
+      {
+        path: "dashboard/create-product",
         element: <CreateProduct />,
       },
       {

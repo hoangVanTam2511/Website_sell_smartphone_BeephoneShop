@@ -1,25 +1,42 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import { Button, Empty, Table } from "antd";
-import { Box, Dialog, DialogContent, IconButton, Pagination, Slide, TextField, Tooltip, } from "@mui/material";
+import {
+  Box,
+  Dialog,
+  DialogContent,
+  IconButton,
+  Pagination,
+  Slide,
+  TextField,
+  Tooltip,
+} from "@mui/material";
 import { PlusOutlined } from "@ant-design/icons";
 import Card from "../../../components/Card";
 import { format } from "date-fns";
 import axios from "axios";
 import { parseInt } from "lodash";
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
-import Zoom from '@mui/material/Zoom';
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
+import Zoom from "@mui/material/Zoom";
 import * as dayjs from "dayjs";
-import { OrderStatusString, OrderTypeString } from "./enum";
-import LoadingIndicator from '../../../utilities/loading';
+import {
+  OrderStatusString,
+  OrderTypeString,
+  StatusCommonProducts,
+} from "./enum";
+import LoadingIndicator from "../../../utilities/loading";
 import CreateSimCard from "./create-simcard";
 import CreateMauSac from "./create-mau-sac";
 import CreateCameraSau from "./create-camera-sau";
-import CreateCameraTruoc from "./create-camera-truoc";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -27,25 +44,21 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 const ManagementRearCameras = () => {
   const navigate = useNavigate();
+  const [cameraRears, setCameraRears] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [totalPages, setTotalPages] = useState();
-  const [refreshPage, setRefreshPage] = useState(1);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [keyword, setKeyword] = useState(searchParams.get('keyword'));
-  const [currentPage, setCurrentPage] = useState(searchParams.get('currentPage') || 1);
+  const [open, setOpen] = React.useState(false);
+  const [keyword, setKeyword] = useState(searchParams.get("keyword"));
+  const [currentPage, setCurrentPage] = useState(
+    searchParams.get("currentPage") || 1
+  );
 
-
-  const findOrdersByMultipleCriteriaWithPagination = (page) => {
+  const getListCameraRear = () => {
     axios
-      .get(`http://localhost:8080/api/orders`, {
-        params: {
-          currentPage: page,
-          keyword: keyword,
-          isPending: false,
-        }
-      })
+      .get(`http://localhost:8080/api/camera-rears`)
       .then((response) => {
-        setCameras(response.data.data);
+        setCameraRears(response.data.data);
         setTotalPages(response.data.totalPages);
         setIsLoading(false);
       })
@@ -53,21 +66,11 @@ const ManagementRearCameras = () => {
         console.error(error);
         setIsLoading(false);
       });
-  }
+  };
+  useEffect(() => {
+    getListCameraRear();
+  }, []);
 
-  const handleRedirectCreateSimCard = () => {
-    navigate(`/dashboard/sim/create`);
-  }
-
-  const [cameras, setCameras] = useState([
-    {
-      ma: "091218273",
-      simType: "2 Nano",
-      simStatus: 0
-    }
-  ]);
-
-  const [open, setOpen] = React.useState(false);
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -76,13 +79,14 @@ const ManagementRearCameras = () => {
     setOpen(false);
   };
 
-  const OrderTable = () => {
+  const CameraRearTable = () => {
     return (
       <>
-        <Table className="table-container"
+        <Table
+          className="table-container"
           columns={columns}
           rowKey="id"
-          dataSource={cameras}
+          dataSource={cameraRears}
           pagination={false}
           locale={{ emptyText: <Empty description="Không có dữ liệu" /> }}
         />
@@ -97,11 +101,13 @@ const ManagementRearCameras = () => {
       dataIndex: "stt",
       width: "5%",
       render: (text, record, index) => (
-        <span style={{ fontWeight: "400" }}>{cameras.indexOf(record) + 1}</span>
+        <span style={{ fontWeight: "400" }}>
+          {cameraRears.indexOf(record) + 1}
+        </span>
       ),
     },
     {
-      title: "Mã Thẻ SIM",
+      title: "Mã Camera",
       align: "center",
       key: "ma",
       width: "15%",
@@ -111,20 +117,31 @@ const ManagementRearCameras = () => {
       ),
     },
     {
-      title: "Loại Thẻ SIM",
+      title: "Độ Phân Giải",
       align: "center",
       width: "15%",
       render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>{record.simType}</span>
+        <span style={{ fontWeight: "400" }}>{record.doPhanGiai}</span>
       ),
     },
+
+    {
+      title: "Tính Năng",
+      align: "center",
+      width: "15%",
+      dataIndex: "cameraType",
+      render: (text, record) => (
+        <span style={{ fontWeight: "400" }}>{record.cameraType}</span>
+      ),
+    },
+
     {
       title: "Trạng Thái",
       width: "15%",
       align: "center",
-      dataIndex: "simStatus",
+      dataIndex: "status",
       render: (type) =>
-        type == 0 ? (
+        type === StatusCommonProducts.ACTIVE ? (
           <div
             className="rounded-pill mx-auto badge-success"
             style={{
@@ -133,22 +150,16 @@ const ManagementRearCameras = () => {
               padding: "4px",
             }}
           >
-            <span
-              className="text-white"
-              style={{ fontSize: "14px" }}
-            >
+            <span className="text-white" style={{ fontSize: "14px" }}>
               Hoạt động
             </span>
           </div>
-        ) : type == 1 ? (
+        ) : type === StatusCommonProducts.IN_ACTIVE ? (
           <div
-            className="rounded-pill badge-primary mx-auto"
-            style={{ height: "35px", width: "91px", padding: "4px" }}
+            className="rounded-pill badge-danger mx-auto"
+            style={{ height: "35px", width: "140px", padding: "4px" }}
           >
-            <span
-              className="text-white"
-              style={{ fontSize: "14px" }}
-            >
+            <span className="text-white" style={{ fontSize: "14px" }}>
               Ngừng hoạt động
             </span>
           </div>
@@ -178,12 +189,18 @@ const ManagementRearCameras = () => {
   ];
   return (
     <>
-      <div className="mt-4" style={{ backgroundColor: "#ffffff", boxShadow: "0 0.1rem 0.3rem #00000010" }}>
+      <div
+        className="mt-4"
+        style={{
+          backgroundColor: "#ffffff",
+          boxShadow: "0 0.1rem 0.3rem #00000010",
+        }}
+      >
         <Card className="">
           <Card.Header className="d-flex justify-content-between">
             <div className="header-title mt-2">
               <TextField
-                label="Tìm Thẻ SIM"
+                label="Tìm Camera Sau"
                 // onChange={handleGetValueFromInputTextField}
                 // value={keyword}
                 InputLabelProps={{
@@ -220,9 +237,10 @@ const ManagementRearCameras = () => {
                 onClick={handleClickOpen}
                 className="rounded-2 button-mui"
                 type="primary"
-                style={{ height: "40px", width: "145px", fontSize: "15px" }}
+                style={{ height: "40px", width: "185px", fontSize: "15px" }}
               >
-                <PlusOutlined className="ms-1"
+                <PlusOutlined
+                  className="ms-1"
                   style={{
                     position: "absolute",
                     bottom: "12.5px",
@@ -233,17 +251,18 @@ const ManagementRearCameras = () => {
                   className="ms-3 ps-1"
                   style={{ marginBottom: "3px", fontWeight: "500" }}
                 >
-                  Tạo Thẻ SIM
+                  Tạo Camera Sau
                 </span>
               </Button>
             </div>
           </Card.Header>
           <Card.Body>
-            <OrderTable />
+            <CameraRearTable />
           </Card.Body>
-          <div className='mx-auto'>
-            <Pagination color="primary" /* page={parseInt(currentPage)} key={refreshPage} count={totalPages} */
-            // onChange={handlePageChange} 
+          <div className="mx-auto">
+            <Pagination
+              color="primary" /* page={parseInt(currentPage)} key={refreshPage} count={totalPages} */
+              // onChange={handlePageChange}
             />
           </div>
           <div className="mt-4"></div>
@@ -262,12 +281,15 @@ const ManagementRearCameras = () => {
         }}
       >
         <DialogContent className="">
-          <CreateCameraSau close={handleClose} />
+          <CreateCameraSau
+            close={handleClose}
+            getAll={getListCameraRear}
+            cameraRear={cameraRears}
+          />
         </DialogContent>
         <div className="mt-3"></div>
       </Dialog>
     </>
-  )
-
-}
+  );
+};
 export default ManagementRearCameras;

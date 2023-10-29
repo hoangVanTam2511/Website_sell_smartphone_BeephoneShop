@@ -16,7 +16,7 @@ public class MauSacRequest {
 
     private String ma;
 
-    private String tenHang;
+    private String tenMauSac;
 
     private StatusCommon status;
 

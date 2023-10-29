@@ -19,6 +19,7 @@ public class CreateKhuyenMaiRequest {
 
     @NotBlank(message = "Tên khuyến mãi không được để trống !!!")
     @Length(max = 255)
+    @Length(min = 5)
     private String tenKhuyenMai;
 
     @NotNull(message = "Giá trị khuyến mãi không được để trống !!!")

@@ -1,58 +1,100 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import { Button, Empty, Table } from "antd";
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import { Box, FormControl, IconButton, Select, InputLabel, MenuItem, Pagination, TextField, Tooltip, Checkbox, FormControlLabel, Autocomplete, InputAdornment, } from "@mui/material";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import {
+  Box,
+  FormControl,
+  IconButton,
+  Select,
+  InputLabel,
+  MenuItem,
+  Pagination,
+  TextField,
+  Tooltip,
+  Checkbox,
+  FormControlLabel,
+  Autocomplete,
+  InputAdornment,
+} from "@mui/material";
 import { PlusOutlined } from "@ant-design/icons";
 import Card from "../../../components/Card";
 import { format } from "date-fns";
 import axios from "axios";
 import { parseInt } from "lodash";
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
-import Zoom from '@mui/material/Zoom';
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
+import Zoom from "@mui/material/Zoom";
 import * as dayjs from "dayjs";
-import LoadingIndicator from '../../../utilities/loading';
+import LoadingIndicator from "../../../utilities/loading";
+import generateRandomCode from "../../../utilities/randomCode ";
+import useCustomSnackbar from "../../../utilities/notistack";
+import { Notistack } from "./enum";
 
-const CreatePin = ({ close }) => {
+const CreatePin = ({ close, getAll, pins }) => {
   const navigate = useNavigate();
-  const [dungLuong, setDungLuong] = useState('')
+  const [dungLuong, setDungLuong] = useState("");
+  const [loaiPin, setLoaiPin] = React.useState("");
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [status, setStatus] = React.useState("");
+  const { handleOpenAlertVariant } = useCustomSnackbar();
+
   const handleChangeDungLuong = (event, value) => {
     setDungLuong(value);
   };
 
-  const [pins, setPins] = useState([
-    {
-      ma: "091238612",
-      loaiPin: "Lipo",
-      dungLuong: 5000,
-      pinStatus: 1,
-    },
-    {
-      ma: "091238612",
-      loaiPin: "Lipo",
-      dungLuong: 5000,
-      pinStatus: 1,
-    }
-  ]);
+  const handleChangePin = (event, value) => {
+    setLoaiPin(value);
+  };
 
-  const uniqueDungLuong = pins.map((option) => option.dungLuong).filter((value, index, self) => {
-    return self.indexOf(value) === index;
-  });
+  const uniqueDungLuong = pins
+    .map((option) => option.dungLuong)
+    .filter((value, index, self) => {
+      return self.indexOf(value) === index;
+    });
 
-  const uniqueLoaiPin = pins.map((option) => option.loaiPin).filter((value, index, self) => {
-    return self.indexOf(value) === index;
-  });
-
-  const [isLoading, setIsLoading] = React.useState(false);
-
-  const [status, setStatus] = React.useState('');
+  const uniqueLoaiPin = pins
+    .map((option) => option.loaiPin)
+    .filter((value, index, self) => {
+      return self.indexOf(value) === index;
+    });
 
   const handleChangeStatus = (event) => {
     setStatus(event.target.value);
+  };
+
+  const handleReset = (event) => {
+    setStatus("");
+    setLoaiPin("");
+    setDungLuong("");
+  };
+
+  const addPins = () => {
+    let obj = {
+      ma: generateRandomCode(),
+      loaiPin: loaiPin,
+      dungLuong: dungLuong,
+      status: status,
+    };
+    axios
+      .post(`http://localhost:8080/api/pins`, obj)
+      .then((response) => {
+        close();
+        getAll();
+        handleReset();
+        handleOpenAlertVariant("Thêm thành công!!!", Notistack.SUCCESS);
+      })
+      .catch((error) => {
+        handleOpenAlertVariant(error.response.data.message, Notistack.ERROR);
+      });
   };
 
   return (
@@ -60,45 +102,63 @@ const CreatePin = ({ close }) => {
       <div className="mt-4" style={{ width: "700px" }}>
         <div className="container" style={{}}>
           <div className="text-center" style={{}}>
-            <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>THÊM PIN</span>
+            <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>
+              THÊM PIN
+            </span>
           </div>
           <div className="mx-auto mt-3 pt-2">
             <div>
-              <Autocomplete fullWidth className="custom"
+              <Autocomplete
+                fullWidth
+                className="custom"
                 id="free-solo-demo"
                 freeSolo
-                // onInputChange={handleChangeDungLuong}
+                inputValue={loaiPin}
+                onInputChange={handleChangePin}
                 options={uniqueLoaiPin}
-                renderInput={(params) => <TextField
-                  {...params}
-                  label="Loại PIN" />}
+                renderInput={(params) => (
+                  <TextField {...params} label="Loại PIN" />
+                )}
               />
             </div>
             <div className="mt-3">
-              <Autocomplete fullWidth className="custom"
+              <Autocomplete
+                fullWidth
+                className="custom"
                 id="free-solo-demo"
                 freeSolo
+                inputValue={dungLuong}
                 onInputChange={handleChangeDungLuong}
                 options={uniqueDungLuong}
-                renderInput={(params) => <TextField
-                  {...params}
-                  InputProps={{
-                    ...params.InputProps,
-                    startAdornment:
-                      (
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    InputProps={{
+                      ...params.InputProps,
+                      startAdornment: (
                         <>
-                          <InputAdornment style={{ marginLeft: "5px" }} position="start">mAh</InputAdornment>
+                          <InputAdornment
+                            style={{ marginLeft: "5px" }}
+                            position="start"
+                          >
+                            mAh
+                          </InputAdornment>
                           {params.InputProps.startAdornment}
                         </>
                       ),
-                  }}
-                  label="Dung Lượng PIN" />}
+                    }}
+                    label="Dung Lượng PIN"
+                  />
+                )}
               />
             </div>
             <div className="mt-3" style={{}}>
               <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Trạng Thái</InputLabel>
-                <Select className="custom"
+                <InputLabel id="demo-simple-select-label">
+                  Trạng Thái
+                </InputLabel>
+                <Select
+                  className="custom"
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
                   value={status}
@@ -112,7 +172,7 @@ const CreatePin = ({ close }) => {
             </div>
             <div className="mt-4 pt-1 d-flex justify-content-end">
               <Button
-                onClick={() => close()}
+                onClick={() => addPins()}
                 className="rounded-2 button-mui"
                 type="primary"
                 style={{ height: "40px", width: "auto", fontSize: "15px" }}
@@ -130,7 +190,6 @@ const CreatePin = ({ close }) => {
       </div>
       {isLoading && <LoadingIndicator />}
     </>
-  )
-
-}
+  );
+};
 export default CreatePin;
