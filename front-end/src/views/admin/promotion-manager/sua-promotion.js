@@ -66,6 +66,8 @@ const SuaKhuyenMai = () => {
   const [open, setOpen] = React.useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
+  let successfulCount = 0;
+  let successfulCount1 = 0;
 
   const redirectToHienThiKhuyenMai = () => {
     window.location.href = "/khuyen-mai";
@@ -121,10 +123,6 @@ const SuaKhuyenMai = () => {
       .get("http://localhost:8080/san-pham-chi-tiet-1/" + id + "/" + check)
       .then((response) => {
         setlistSanPhamChiTiet(response.data.data);
-        const data = response.data.data;
-        const productDetailsIds = data.map((item) => item.id);
-        setSelectedRowKeys1(productDetailsIds);
-        setSelectedProductDetails(response.data.data.map((item) => item.id));
       })
       .catch((error) => {
         handleOpenAlertVariant(
@@ -212,14 +210,15 @@ const SuaKhuyenMai = () => {
       .get("http://localhost:8080/detail/khuyen-mai/" + id)
       .then((response) => {
         const data1 = response.data.data;
-        const selectedKeys = data1.map((item) => item.idSanPham);
-        const selectedKeys1 = data1.map((item) => item.idSanPhamChiTiet);
-        setIdSanPham(selectedKeys);
-        selectedKeys.forEach((idSanPham) => {
+        const listIdSanPham = data1.map((item) => item.idSanPham);
+        const listIdSanPhamChiTiet = data1.map((item) => item.idSanPhamChiTiet);
+        // setSelectedProductDetails(listIdSanPhamChiTiet);
+        setIdSanPham(listIdSanPham);
+        listIdSanPham.forEach((idSanPham) => {
           loadDatalistSanPhamChiTiet(idSanPham, true);
         });
-        // setSelectedRowKeys(selectedKeys);
-        // setSelectedRowKeys1(selectedKeys1);
+        setSelectedRowKeys(listIdSanPham);
+        setSelectedRowKeys1(listIdSanPhamChiTiet);
       })
       .catch((error) => {
         handleOpenAlertVariant(
@@ -264,14 +263,62 @@ const SuaKhuyenMai = () => {
     axios
       .put(apiURLKhuyenMai + "/update-khuyen-mai/" + id, obj)
       .then((response) => {
+        if (selectedProductDetails.length > 0) {
+          deleteKhuyenMaiChiTiet(id);
+        }
+
+        selectedProductDetails.forEach((idSanPhamChiTiet) => {
+          console.log("idSPCT: ", idSanPhamChiTiet);
+          successfulCount++;
+          addKhuyenMaiChiTiet(id, idSanPhamChiTiet);
+        });
         handleOpenAlertVariant("Cập nhật thành công.", Notistack.SUCCESS);
         setTimeout(() => {
           redirectToHienThiKhuyenMai();
-        }, 1000);
+        }, 2000);
       })
       .catch((error) => {
         handleOpenAlertVariant(
           "Đã xảy ra lỗi khi sửa giảm giá.",
+          Notistack.ERROR
+        );
+      });
+  };
+
+  const deleteKhuyenMaiChiTiet = (khuyenMaiID) => {
+    axios
+      .delete("http://localhost:8080/khuyen-mai-chi-tiet/update/" + khuyenMaiID)
+      .then((response) => {
+        console.log("Xóa thành công");
+      })
+      .catch((error) => {
+        console.log("Xóa thất bại");
+      });
+  };
+
+  const addKhuyenMaiChiTiet = (khuyenMaiID, idSanPhamChiTiet) => {
+    let objKhuyenMaiChiTiet = {
+      idKhuyenMai: khuyenMaiID,
+      idSanPhamChiTiet: idSanPhamChiTiet,
+    };
+    axios
+      .post(
+        "http://localhost:8080/khuyen-mai-chi-tiet/add",
+        objKhuyenMaiChiTiet
+      )
+      .then((response) => {
+        successfulCount1++;
+        if (successfulCount === successfulCount1) {
+          handleOpenAlertVariant(
+            "Áp dụng giảm giá thành công",
+            Notistack.SUCCESS
+          );
+          console.log("Áp dụng thành công");
+        }
+      })
+      .catch((error) => {
+        handleOpenAlertVariant(
+          "Đã xảy ra lỗi khi áp dụng giảm giá.",
           Notistack.ERROR
         );
       });

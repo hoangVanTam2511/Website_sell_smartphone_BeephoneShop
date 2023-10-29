@@ -64,13 +64,13 @@ public interface SanPhamChiTietKhuyenMaiRepository extends ISanPhamChiTietReposi
             SELECT k.don_gia, k.don_gia_sau_khuyen_mai, km.gia_tri_khuyen_mai, km.loai_khuyen_mai FROM khuyen_mai_chi_tiet k 
             JOIN san_pham_chi_tiet ctsp ON k.id_chi_tiet_san_pham = ctsp.id
             JOIN khuyen_mai km ON km.id = k.id_khuyen_mai
-            WHERE ctsp.id = ?1 
+            WHERE ctsp.id = ?1 AND k.delected = 1
             """, nativeQuery = true)
     List<KhuyenMaiChiTietResponse> getListKhuyenMai(@Param("id") String id);
 
     @Query(value = """
             SELECT ctsp.id as id_san_pham_chi_tiet, ctsp.id_san_pham FROM san_pham_chi_tiet ctsp 
-            JOIN khuyen_mai_chi_tiet k ON k.id_chi_tiet_san_pham = ctsp.id WHERE k.id_khuyen_mai = ?1 
+            JOIN khuyen_mai_chi_tiet k ON k.id_chi_tiet_san_pham = ctsp.id WHERE k.id_khuyen_mai = ?1 AND k.delected = 1
             """, nativeQuery = true)
     List<DetailKhuyenMaiResponse> getDetailKhuyenMai(@Param("id") String id);
 }
