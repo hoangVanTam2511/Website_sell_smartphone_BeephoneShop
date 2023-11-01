@@ -264,7 +264,6 @@ const AddVoucher = () => {
     if (newAlignment == null) {
       setSeclectDiscount(oldAligment);
     }
-    console.log(oldAligment);
     handleReset();
   };
 
@@ -307,9 +306,6 @@ const AddVoucher = () => {
                 error={validationMsg.ma !== undefined}
                 helperText={validationMsg.ma}
               />
-              {/* <span className="validate" style={{ color: "red" }}>
-                {validationMsg.ma}
-              </span> */}
             </div>
             <div className="ms-4">
               <TextField
@@ -349,14 +345,14 @@ const AddVoucher = () => {
             <div className="ms-4">
               {" "}
               <TextField
-                label="Điều kiện áp dụng khi đơn hàng đạt"
+                label="Điều kiện áp dụng khi đơn hàng đạt ?"
                 value={value1}
                 onChange={handleChange1}
-                id="outlined-start-adornment"
+                id="outlined-end-adornment"
                 InputProps={{
                   inputMode: "numeric",
-                  startAdornment: (
-                    <InputAdornment position="start">VND</InputAdornment>
+                  endAdornment: (
+                    <InputAdornment position="end">VND</InputAdornment>
                   ),
                 }}
                 style={{ width: "330px" }}
@@ -435,14 +431,14 @@ const AddVoucher = () => {
             </div>
             <div className="ms-4">
               <TextField
-                label="Nhập Giá Trị Voucher"
+                label="Giá Trị Voucher"
                 value={value}
                 onChange={handleChange}
-                id="outlined-start-adornment"
+                id="outlined-end-adornment"
                 InputProps={{
                   inputMode: "numeric",
-                  startAdornment: (
-                    <InputAdornment position="start">
+                  endAdornment: (
+                    <InputAdornment position="end">
                       {selectDiscount === TypeDiscountString.VND
                         ? TypeDiscountString.VND
                         : TypeDiscountString.PERCENT
@@ -465,12 +461,12 @@ const AddVoucher = () => {
               <TextField
                 label="Giá Trị Tối Đa"
                 value={valueToiDa}
-                id="outlined-start-adornment"
+                id="outlined-end-adornment"
                 onChange={handleChangeGiaTriToiDa}
                 InputProps={{
                   inputMode: "numeric",
-                  startAdornment: (
-                    <InputAdornment position="start">VND</InputAdornment>
+                  endAdornment: (
+                    <InputAdornment position="end">VND</InputAdornment>
                   ),
                 }}
                 disabled={

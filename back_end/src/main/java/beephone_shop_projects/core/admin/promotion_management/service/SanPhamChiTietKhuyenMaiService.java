@@ -19,4 +19,6 @@ public interface SanPhamChiTietKhuyenMaiService {
 
     List<DetailKhuyenMaiResponse> getDetailKhuyenMai(@Param("id") String id);
 
+    Integer getSize(String id);
+
 }

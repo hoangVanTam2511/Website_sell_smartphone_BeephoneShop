@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class PinServiceImpl {
+public class PinServiceImpl1 {
 
     @Autowired
     private PinRepository pinRepository;

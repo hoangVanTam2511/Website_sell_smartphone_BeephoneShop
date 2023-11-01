@@ -11,7 +11,7 @@ import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import dayjs from "dayjs"; // Import thư viện Day.js
+import dayjs from "dayjs";
 import { Table } from "antd";
 import numeral from "numeral";
 import style from "./style.css";
@@ -38,19 +38,13 @@ const AddKhuyenMai = () => {
   //san-pham
   const [listSanPham, setListSanPham] = useState([]);
   const [listSanPhamChiTiet, setlistSanPhamChiTiet] = useState([]);
-  const [dataSanPhamChiTiet, setDataSanPhamChiTiet] = useState([]);
-  const [selectedRow, setSelectedRow] = useState("");
 
   //khuyenmaichitiet
-  const [idSanPhamChiTiet, setIdSanPhamChiTiet] = useState("");
   const [validationMsg, setValidationMsg] = useState({});
   //check-box
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [selectedRows, setSelectedRows] = useState([]);
-  const [selectAll, setSelectAll] = useState(false);
   const [selectedRowKeys1, setSelectedRowKeys1] = useState([]);
-  const [selectedRows1, setSelectedRows1] = useState([]);
-  const [selectAll1, setSelectAll1] = useState(false);
+
   //Lấy id ctsp
   const [selectedProductDetails, setSelectedProductDetails] = useState([]);
   const [sanPhamChiTietKhuyenMai, setSanPhamChiTietKhuyenMai] = useState([]);
@@ -60,6 +54,8 @@ const AddKhuyenMai = () => {
   const [open, setOpen] = React.useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [openConfirm, setOpenConfirm] = useState(false);
+  let successfulCount = 0;
+  let successfulCount1 = 0;
 
   const redirectToHienThiKhuyenMai = () => {
     window.location.href = "/khuyen-mai";
@@ -112,9 +108,13 @@ const AddKhuyenMai = () => {
 
   const loadDatalistSanPhamChiTiet = (id, check) => {
     axios
-      .get("http://localhost:8080/san-pham-chi-tiet-1/" + id + "/" + check)
+      .get(`http://localhost:8080/san-pham-chi-tiet-1/${id}/${check}`)
       .then((response) => {
         setlistSanPhamChiTiet(response.data.data);
+        const data = response.data.data;
+        const productDetailsIds = data.map((item) => item.id);
+        setSelectedRowKeys1(productDetailsIds);
+        setSelectedProductDetails(response.data.data.map((item) => item.id));
       })
       .catch((error) => {
         handleOpenAlertVariant(
@@ -140,8 +140,7 @@ const AddKhuyenMai = () => {
 
   useEffect(() => {
     loadDatalistSanPham();
-    clear();
-  }, [dataSanPhamChiTiet]);
+  }, []);
 
   const handleChange = (event) => {
     if (selectDiscount === TypeDiscountString.VND) {
@@ -193,7 +192,6 @@ const AddKhuyenMai = () => {
       .get("http://localhost:8080/san-pham-chi-tiet-khuyen-mai/detail/" + id)
       .then((response) => {
         setSanPhamChiTietKhuyenMai(response.data.data);
-        // console.log(sanPhamChiTietKhuyenMai);
       })
       .catch((error) => {
         handleOpenAlertVariant(
@@ -217,17 +215,14 @@ const AddKhuyenMai = () => {
       .post(apiURLKhuyenMai + "/add-khuyen-mai", obj)
       .then((response) => {
         const khuyenMaiID = response.data.data.id;
-        handleOpenAlertVariant(
-          "Thêm khuyến mãi thành công.",
-          Notistack.SUCCESS
-        );
         selectedProductDetails.forEach((idSanPhamChiTiet) => {
+          successfulCount++;
           addKhuyenMaiChiTiet(khuyenMaiID, idSanPhamChiTiet);
         });
-        setTenKhuyenMai("");
-        setValue("");
-        setNgayBatDau(dayjs());
-        setNgayKetThuc(dayjs());
+        handleOpenAlertVariant("Thêm giảm giá thành công.", Notistack.SUCCESS);
+        setTimeout(() => {
+          redirectToHienThiKhuyenMai();
+        }, 2000);
       })
       .catch((error) => {
         handleOpenAlertVariant(error.response.data.message, Notistack.ERROR);
@@ -246,18 +241,17 @@ const AddKhuyenMai = () => {
         objKhuyenMaiChiTiet
       )
       .then((response) => {
-        handleOpenAlertVariant(
-          "Áp dụng khuyến mãi thành công",
-          Notistack.SUCCESS
-        );
-        setTenKhuyenMai("");
-        setValue("");
-        setNgayBatDau(dayjs());
-        setNgayKetThuc(dayjs());
+        successfulCount1++;
+        if (successfulCount === successfulCount1) {
+          handleOpenAlertVariant(
+            "Áp dụng giảm giá thành công",
+            Notistack.SUCCESS
+          );
+        }
       })
       .catch((error) => {
         handleOpenAlertVariant(
-          "Đã xảy ra lỗi khi áp dụng khuyến mãi.",
+          "Đã xảy ra lỗi khi áp dụng giảm giá.",
           Notistack.ERROR
         );
       });
@@ -268,43 +262,41 @@ const AddKhuyenMai = () => {
     const msg = {};
 
     if (!tenKhuyenMai.trim("")) {
-      msg.tenKhuyenMai = "Tên không được để trống !!!";
-    }
-
-    if (/^\s+|\s+$/.test(tenKhuyenMai)) {
+      msg.tenKhuyenMai = "Tên không được để trống!";
+    } else if (/^\s+|\s+$/.test(tenKhuyenMai)) {
       msg.tenKhuyenMai =
-        "Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi";
+        "Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi!";
+    } else if (tenKhuyenMai.length < 5) {
+      msg.tenKhuyenMai = "Tên phải có ít nhất 5 ký tự!";
     }
-    if (ngayBatDau.isAfter(ngayKetThuc)) {
-      msg.ngayBatDau = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc !!!";
-    }
-
     const numericValue2 = parseFloat(value?.replace(/[^0-9.-]+/g, ""));
     if (value == null || value === "") {
-      msg.giaTriKhuyenMai = "Giá trị giảm giá không được để trống !!!";
+      msg.giaTriKhuyenMai = "Giá trị giảm giá không được để trống!";
     }
 
     if (
       (selectDiscount === TypeDiscountString.VND && numericValue2 <= 0) ||
       (selectDiscount === TypeDiscountString.VND && numericValue2 > 100000000)
     ) {
-      msg.giaTriKhuyenMai = "Giá trị giảm giá từ 1đ đến 100.000.000đ";
+      msg.giaTriKhuyenMai = "Giá trị giảm giá từ 1đ đến 100.000.000đ!";
     }
 
     if (selectDiscount === TypeDiscountString.PERCENT && numericValue2 <= 0) {
-      msg.giaTriKhuyenMai = "Giá trị tối đa chỉ nằm trong khoảng 1% - 100% !!!";
+      msg.giaTriKhuyenMai = "Giá trị tối đa chỉ nằm trong khoảng 1% - 100%!";
     }
 
-    if (ngayKetThuc.isBefore(ngayBatDau)) {
-      msg.ngayKetThuc = "Ngày kết thúc phải lớn hơn ngày bắt đầu !!!";
+    if (ngayKetThuc.isBefore(ngayBatDau) | (ngayKetThuc === ngayBatDau)) {
+      msg.ngayKetThuc = "Ngày kết thúc phải lớn hơn ngày bắt đầu!";
+    } else if (ngayBatDau.isAfter(ngayKetThuc)) {
+      msg.ngayBatDau = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc!";
     }
 
     if (ngayBatDau.isBefore(dayjs())) {
-      msg.ngayBatDau = "Ngày bắt đầu phải lớn hơn ngày hiện tại !!!";
+      msg.ngayBatDau = "Ngày bắt đầu phải lớn hơn ngày hiện tại!";
     }
 
     if (ngayKetThuc.isBefore(dayjs())) {
-      msg.ngayKetThuc = "Ngày kết thúc phải lớn hơn ngày hiện tại !!!";
+      msg.ngayKetThuc = "Ngày kết thúc phải lớn hơn ngày hiện tại!";
     }
 
     setValidationMsg(msg);
@@ -318,112 +310,56 @@ const AddKhuyenMai = () => {
     handleOpenDialogConfirmAdd();
   };
 
-  const handleCheckboxChange = (record, e) => {
-    const id = record.id;
-    if (e.target.checked) {
-      setSelectedRowKeys([...selectedRowKeys, id]);
-      setSelectedRows([...selectedRows, record]);
-      loadDatalistSanPhamChiTiet(record.id, true);
+  //Code check box
+  const onSelectChange = (newSelectedRowKeys) => {
+    setSelectedRowKeys(newSelectedRowKeys);
+    if (newSelectedRowKeys.length === 0) {
+      clear();
     } else {
-      loadDatalistSanPhamChiTiet(record.id, false);
-      setSelectedRowKeys(selectedRowKeys.filter((key) => key !== id));
-      setSelectedRows(selectedRows.filter((row) => row.id !== id));
+      clear();
+      newSelectedRowKeys
+        .reduce((prevPromise, id) => {
+          return prevPromise.then(() => loadDatalistSanPhamChiTiet(id, true));
+        }, Promise.resolve())
+        .catch((error) => {
+          console.log("Đã xảy ra lỗi");
+        });
     }
-  };
-
-  const handleRowClick = (record) => {
-    const id = record.id;
-    const checked = !selectedRowKeys.includes(id);
-    handleCheckboxChange(record, { target: { checked } });
   };
 
   const rowSelection = {
     selectedRowKeys,
-    onChange: (selectedRowKeys, selectedRows) => {
-      setSelectedRowKeys(selectedRowKeys);
-      setSelectedRows(selectedRows);
-    },
+    onChange: onSelectChange,
+    selections: [
+      Table.SELECTION_ALL,
+      Table.SELECTION_INVERT,
+      Table.SELECTION_NONE,
+    ],
   };
 
-  //Xử lý khi checkbox trên tiêu đề cột thay đổi
-  const handleSelectAllChange = (e) => {
-    const checked = e.target.checked;
-    if (checked === true) {
-      setSelectAll(checked);
-      const selectedKeys = checked ? listSanPham.map((item) => item.id) : [];
-      selectedKeys.forEach((id) => {
-        loadDatalistSanPhamChiTiet(id, true);
-      });
-      console.log(listSanPhamChiTiet);
-      setSelectedRowKeys(selectedKeys);
-    } else {
-      clear();
-      setSelectAll(checked);
-      const selectedKeys = checked ? listSanPham.map((item) => item.id) : [];
-      setSelectedRowKeys(selectedKeys);
-    }
-  };
-
-  // Thực hiện checkbox ListChiTietSanPham
-  const handleCheckboxChange1 = (record, e) => {
-    const id = record.id;
-    if (e.target.checked) {
-      setSelectedRowKeys1([...selectedRowKeys1, id]);
-      setSelectedRows1([...selectedRows1, record]);
-      setSelectedProductDetails([...selectedProductDetails, id]);
-    } else {
-      setSelectedRowKeys1(selectedRowKeys1.filter((key) => key !== id));
-      setSelectedRows1(selectedRows1.filter((row) => row.id !== id));
-      setSelectedProductDetails(
-        selectedProductDetails.filter((productId) => productId !== id)
-      );
-    }
-  };
-
-  const handleRowClick1 = (record) => {
-    const id = record.id;
-    const checked = !selectedRowKeys1.includes(id);
-    handleCheckboxChange1(record, { target: { checked } });
+  const onSelectChange1 = (newSelectedRowKeys1) => {
+    console.log("selectedRowKeys changed: ", newSelectedRowKeys1);
+    setSelectedRowKeys1(newSelectedRowKeys1);
+    setSelectedProductDetails(newSelectedRowKeys1);
   };
 
   const rowSelection1 = {
-    selectedRowKeys1,
-    onChange: (selectedRowKeys1, selectedRows1) => {
-      setSelectedRowKeys1(selectedRowKeys1);
-      setSelectedRows1(selectedRows1);
-    },
-  };
-
-  const handleSelectAllChange1 = (e) => {
-    const checked = e.target.checked;
-    setSelectAll1(checked);
-    const selectedKeys1 = checked
-      ? listSanPhamChiTiet.map((item) => item.id)
-      : [];
-    setSelectedProductDetails(selectedKeys1);
-    setSelectedRowKeys1(selectedKeys1);
+    selectedRowKeys: selectedRowKeys1,
+    onChange: onSelectChange1,
+    selections: [
+      Table.SELECTION_ALL,
+      Table.SELECTION_INVERT,
+      Table.SELECTION_NONE,
+    ],
   };
 
   //Column bảng Sản Phẩm
   const columns = [
     {
-      title: <Checkbox onChange={handleSelectAllChange} checked={selectAll} />,
-      dataIndex: "selection",
-      width: "5%",
-      render: (_, record) => (
-        <Checkbox
-          onChange={(e) => {
-            handleCheckboxChange(record, e);
-          }}
-          checked={selectedRowKeys.includes(record.id)}
-        />
-      ),
-      align: "center",
-    },
-    {
       title: "STT",
       dataIndex: "stt",
-      width: "5%",
+      key: "stt",
+      width: "10%",
       render: (text, record, index) => (
         <span>{listSanPham.indexOf(record) + 1}</span>
       ),
@@ -432,20 +368,23 @@ const AddKhuyenMai = () => {
     {
       title: "Mã",
       dataIndex: "maSanPham",
-      width: "10%",
+      key: "maSanPham",
+      width: "30%",
       align: "center",
     },
     {
       title: "Tên sản phẩm ",
       dataIndex: "tenSanPham",
-      width: "15%",
+      key: "tenSanPham",
+      width: "30%",
       editable: true,
       align: "center",
     },
     {
       title: "Dòng sản phẩm ",
       dataIndex: "tenDongSanPham",
-      width: "15%",
+      key: "tenDongSanPham",
+      width: "30%",
       editable: true,
       align: "center",
     },
@@ -454,23 +393,10 @@ const AddKhuyenMai = () => {
   //Column bảng Sản Phẩm Chi Tiết
   const columns1 = [
     {
-      title: (
-        <Checkbox onChange={handleSelectAllChange1} checked={selectAll1} />
-      ),
-      dataIndex: "selection1",
-      width: "5%",
-      render: (_, record) => (
-        <Checkbox
-          onChange={(e) => handleCheckboxChange1(record, e)}
-          checked={selectedRowKeys1.includes(record.id)}
-        />
-      ),
-      align: "center",
-    },
-    {
       title: "STT",
       dataIndex: "stt",
-      width: "5%",
+      key: "stt",
+      width: "10%",
       render: (text, record, index) => (
         <span>{listSanPhamChiTiet.indexOf(record) + 1}</span>
       ),
@@ -479,6 +405,7 @@ const AddKhuyenMai = () => {
     {
       title: "Ảnh",
       dataIndex: "duongDan",
+      key: "duongDan",
       width: "10%",
       align: "center",
       render: (text, record) => (
@@ -499,6 +426,7 @@ const AddKhuyenMai = () => {
     {
       title: "Tên sản phẩm",
       dataIndex: "tenSanPham",
+      key: "tenSanPham",
       width: "20%",
       align: "center",
       maxWidth: "20%",
@@ -514,6 +442,7 @@ const AddKhuyenMai = () => {
     {
       title: "Màu Sắc ",
       dataIndex: "tenMauSac",
+      key: "tenMauSac",
       width: "10%",
       editable: true,
       align: "center",
@@ -521,12 +450,13 @@ const AddKhuyenMai = () => {
     {
       title: "Đơn giá ",
       dataIndex: "donGia",
-      width: "10%",
+      key: "donGia",
+      width: "20%",
       editable: true,
       align: "center",
       render: (value, record) => {
         let formattedValue = value;
-        formattedValue = numeral(record.donGia).format("0,0 VND") + " VNĐ";
+        formattedValue = numeral(record.donGia).format("0,0 VND") + " ₫";
         return <span>{formattedValue}</span>;
       },
     },
@@ -534,13 +464,14 @@ const AddKhuyenMai = () => {
     {
       title: "Giảm giá",
       dataIndex: "giaTriKhuyenMai",
+      key: "giaTriKhuyenMai",
       width: "10%",
       editable: true,
       align: "center",
       render: (_, record) => {
         let formattedValue = value;
         if (selectDiscount === TypeDiscountString.VND) {
-          formattedValue = numeral(value).format("0,0 VND") + " VNĐ";
+          formattedValue = numeral(value).format("0,0 VND") + " ₫";
         } else if (selectDiscount === TypeDiscountString.PERCENT) {
           formattedValue = value + " %";
         }
@@ -549,9 +480,10 @@ const AddKhuyenMai = () => {
     },
 
     {
-      title: "Đơn giá khuyến mãi",
+      title: "Đơn giá sau giảm giá",
       dataIndex: "donGiaSauKhuyenMai",
-      width: "10%",
+      key: "donGiaSauKhuyenMai",
+      width: "20%",
       editable: true,
       align: "center",
       whiteSpace: "pre-line",
@@ -562,216 +494,34 @@ const AddKhuyenMai = () => {
           if (selectDiscount === TypeDiscountString.VND) {
             giaTriKhuyenMai = record.donGia - numericValue2;
             return (
-              <span>{numeral(giaTriKhuyenMai).format("0,0 VND") + " VNĐ"}</span>
+              <span>{numeral(giaTriKhuyenMai).format("0,0 VND") + " ₫"}</span>
             );
           } else if (selectDiscount === TypeDiscountString.PERCENT) {
             giaTriKhuyenMai =
               record.donGia - (record.donGia * numericValue2) / 100;
             return (
-              <span>{numeral(giaTriKhuyenMai).format("0,0 VND") + " VNĐ"}</span>
+              <span>{numeral(giaTriKhuyenMai).format("0,0 VND") + " ₫"}</span>
             );
           }
         } else {
           let formattedValue = record.donGia;
-          formattedValue = numeral(record.donGia).format("0,0 VND") + " VNĐ";
+          formattedValue = numeral(record.donGia).format("0,0 VND") + " ₫";
           return <span>{formattedValue}</span>;
         }
       },
     },
-    // {
-    //   title: "Tình trạng",
-    //   dataIndex: "tinhTrang",
-    //   width: "10%",
-    //   align: "center",
-    //   render: (_, record) => {
-    //     return (
-    //       <>
-    //         <div style={{ textAlign: "center" }}>
-    //           <Tooltip title="Change">
-    //             <Button
-    //               onClick={(e) => {
-    //                 e.stopPropagation();
-    //                 setOpen(true);
-    //                 detailSanPhamSauKhuyenMai(record.id);
-    //               }}
-    //               style={{ border: "none", background: "none" }}
-    //             >
-    //               <FontAwesomeIcon icon={faEye} />
-    //             </Button>{" "}
-    //           </Tooltip>
-    //         </div>
-    //       </>
-    //     );
-    //   },
-    // },
   ];
-
-  // const columns2 = [
-  //   {
-  //     title: "Ảnh",
-  //     dataIndex: "duongDan",
-  //     width: "10%",
-  //     render: (text, record) => (
-  //       <img
-  //         src={record.duongDan}
-  //         style={{ width: "100px", height: "100px" }}
-  //       />
-  //     ),
-  //     align: "center",
-  //   },
-  //   {
-  //     title: "Tên sản phẩm",
-  //     dataIndex: "tenSanPham",
-  //     width: "10%",
-  //     align: "center",
-  //   },
-  //   {
-  //     title: "ROM",
-  //     dataIndex: "kichThuocRom",
-  //     width: "10%",
-  //     align: "center",
-  //     render: (value, record) => {
-  //       let formattedValue = value;
-  //       formattedValue = `${record.kichThuocRom} GB`;
-  //       return <span>{formattedValue}</span>;
-  //     },
-  //   },
-  //   {
-  //     title: "RAM ",
-  //     dataIndex: "kichThuocRam",
-  //     width: "10%",
-  //     editable: true,
-  //     align: "center",
-  //     render: (value, record) => {
-  //       let formattedValue = value;
-  //       formattedValue = `${record.kichThuocRam} GB`;
-  //       return <span>{formattedValue}</span>;
-  //     },
-  //   },
-  //   {
-  //     title: "Màu Sắc ",
-  //     dataIndex: "tenMauSac",
-  //     width: "10%",
-  //     editable: true,
-  //     align: "center",
-  //   },
-  //   {
-  //     title: "Tên Khuyến Mãi",
-  //     dataIndex: "tenKhuyenMaiSPCT",
-  //     width: "15%",
-  //     align: "center",
-  //     render: (text, record) => (
-  //       <span
-  //         style={{
-  //           maxWidth: "15%",
-  //           whiteSpace: "pre-line",
-  //           overflow: "hidden",
-  //         }}
-  //       >
-  //         {record.tenKhuyenMaiSPCT}
-  //       </span>
-  //     ),
-  //   },
-  //   {
-  //     title: "Giảm Giá",
-  //     dataIndex: "loaiKhuyenMai",
-  //     width: "10%",
-  //     align: "center",
-  //     render: (value, record) => {
-  //       let formattedValue = value;
-  //       if (record.loaiKhuyenMai === TypeDiscountNumber.VND) {
-  //         formattedValue =
-  //           numeral(record.giaTriKhuyenMai).format("0,0 VND") + " VNĐ";
-  //       } else if (record.loaiKhuyenMai === TypeDiscountNumber.PERCENT) {
-  //         formattedValue = `${record.giaTriKhuyenMai} %`;
-  //       }
-  //       return (
-  //         <span className="txt-danger" style={{ fontWeight: "400" }}>
-  //           {formattedValue}
-  //         </span>
-  //       );
-  //     },
-  //   },
-  //   {
-  //     title: "Đơn giá ",
-  //     dataIndex: "donGia",
-  //     width: "10%",
-  //     editable: true,
-  //     align: "center",
-  //     render: (value, record) => {
-  //       let formattedValue = value;
-  //       formattedValue = numeral(record.donGia).format("0,0 VND") + " VNĐ";
-  //       return <span>{formattedValue}</span>;
-  //     },
-  //   },
-
-  //   {
-  //     title: "Đơn giá sau khuyến mãi",
-  //     dataIndex: "donGiaSauKhuyenMai",
-  //     width: "10%",
-  //     editable: true,
-  //     align: "center",
-  //     render: (value, record) => {
-  //       let formattedValue = value;
-  //       formattedValue =
-  //         numeral(record.donGiaSauKhuyenMai).format("0,0 VND") + " VNĐ";
-  //       return <span>{formattedValue}</span>;
-  //     },
-  //   },
-  // ];
-
-  const mergedColumns = columns.map((col) => {
-    if (!col.editable) {
-      return col;
-    }
-    return {
-      ...col,
-      onCell: (record) => ({
-        record,
-        dataIndex: col.dataIndex,
-        title: col.title,
-      }),
-    };
-  });
-
-  const mergedColumns1 = columns1.map((col1) => {
-    if (!col1.editable) {
-      return col1;
-    }
-    return {
-      ...col1,
-      onCell: (record) => ({
-        record,
-        dataIndex: col1.dataIndex,
-        title: col1.title,
-      }),
-    };
-  });
-
-  // const mergedColumns2 = columns2.map((col2) => {
-  //   if (!col2.editable) {
-  //     return col2;
-  //   }
-  //   return {
-  //     ...col2,
-  //     onCell: (record) => ({
-  //       record,
-  //       dataIndex: col2.dataIndex,
-  //       title: col2.title,
-  //     }),
-  //   };
-  // });
 
   return (
     <>
       <div className="row">
         <div className="col-5">
           <div className="mt-3 add-promotion-container">
-            <h4 className="title-promotion ms-4">Thêm Khuyến Mãi</h4>
+            <h4 className="title-promotion ms-4">Thêm Giảm Giá</h4>
             <div className="ms-3 mb-3">
               <div className="input-container">
                 <TextField
-                  label="Tên Khuyến Mãi:"
+                  label="Tên Giảm Giá:"
                   value={tenKhuyenMai}
                   id="fullWidth"
                   onChange={(e) => {
@@ -779,13 +529,12 @@ const AddKhuyenMai = () => {
                   }}
                   style={{ width: "430px", marginTop: "10px" }}
                   inputProps={{
-                    maxLength: 100, // Giới hạn tối đa 10 ký tự
+                    maxLength: 255, // Giới hạn tối đa 10 ký tự
                   }}
+                  error={validationMsg.tenKhuyenMai !== undefined}
+                  helperText={validationMsg.tenKhuyenMai}
                 />
               </div>
-              <span className="validate" style={{ color: "red" }}>
-                {validationMsg.tenKhuyenMai}
-              </span>
             </div>
 
             <div className="d-flex ms-3" style={{ marginBottom: "5px" }}>
@@ -851,7 +600,7 @@ const AddKhuyenMai = () => {
               </div>
               <div>
                 <TextField
-                  label="Nhập Giá Trị Khuyến Mãi"
+                  label="Nhập Giá Trị Giảm Giá"
                   value={value}
                   onChange={handleChange}
                   id="outlined-start-adornment"
@@ -874,14 +623,9 @@ const AddKhuyenMai = () => {
                   inputProps={{
                     maxLength: 20, // Giới hạn tối đa 10 ký tự
                   }}
+                  error={validationMsg.giaTriKhuyenMai !== undefined}
+                  helperText={validationMsg.giaTriKhuyenMai}
                 />
-
-                <span
-                  className="validate"
-                  style={{ color: "red", paddingLeft: "15px" }}
-                >
-                  {validationMsg.giaTriKhuyenMai}
-                </span>
               </div>
             </div>
             <div className="row-input-date ms-3 mt-3">
@@ -899,14 +643,18 @@ const AddKhuyenMai = () => {
                         setNgayKetThuc(e);
                       }}
                       sx={{ width: "430px" }}
+                      slotProps={{
+                        textField: {
+                          error: validationMsg.ngayBatDau !== undefined,
+                          helperText:
+                            !!validationMsg.ngayBatDau !== undefined
+                              ? validationMsg.ngayBatDau
+                              : "",
+                        },
+                      }}
                     />
                   </DemoContainer>
                 </LocalizationProvider>
-              </div>
-              <div className="row-input">
-                <span className="validate" style={{ color: "red" }}>
-                  {validationMsg.ngayBatDau}
-                </span>
               </div>
             </div>
             <div className="row-input-date ms-3 mt-3">
@@ -923,14 +671,18 @@ const AddKhuyenMai = () => {
                         setNgayKetThuc(e);
                       }}
                       sx={{ width: "430px", marginTop: "20px" }}
+                      slotProps={{
+                        textField: {
+                          error: validationMsg.ngayKetThuc !== undefined,
+                          helperText:
+                            !!validationMsg.ngayKetThuc !== undefined
+                              ? validationMsg.ngayKetThuc
+                              : "",
+                        },
+                      }}
                     />
                   </DemoContainer>
                 </LocalizationProvider>
-              </div>
-              <div className="row-input">
-                <span className="validate" style={{ color: "red" }}>
-                  {validationMsg.ngayKetThuc}
-                </span>
               </div>
             </div>
             <div className="btn-accept mt-3">
@@ -975,25 +727,15 @@ const AddKhuyenMai = () => {
         <div className="col-7">
           <div className="add-promotion-inProduct-container">
             <div className="mt-3">
-              <h4 className="title-product">Danh sách sản Phẩm</h4>
+              <h4 className="title-product">Danh sách sản phẩm</h4>
               <Table
+                rowSelection={rowSelection}
+                columns={columns}
                 dataSource={listSanPham}
-                columns={mergedColumns}
-                pagination={{ pageSize: 3 }}
                 rowKey="id"
-                style={{ marginBottom: "20px" }}
-                onRow={(record) => {
-                  return {
-                    onClick: () => {
-                      if (selectedRow === record) {
-                        handleRowClick(record);
-                      } else {
-                        handleRowClick(record);
-                        setSelectedRow(record);
-                      }
-                    },
-                    className: selectedRow === record ? "selected-row" : "",
-                  };
+                pagination={{
+                  pageSize: 4,
+                  position: ["bottomCenter"],
                 }}
               />
             </div>
@@ -1002,76 +744,18 @@ const AddKhuyenMai = () => {
       </div>
 
       <div className="row mt-3 ms-1 mb-3 add-promotion-inProduct-detail-container">
-        <h4 style={{ marginTop: "20px" }}>Danh sách chi tiết sản phẩm</h4>
+        <h4 style={{ marginTop: "20px" }}>Danh sách sản phẩm chi tiết</h4>
         <Table
+          rowSelection={rowSelection1}
+          columns={columns1}
           dataSource={listSanPhamChiTiet}
-          columns={mergedColumns1}
-          pagination={{ pageSize: 5 }}
           rowKey="id"
-          onRow={(record) => {
-            return {
-              onClick: () => {
-                handleRowClick1(record);
-                setSelectedRows1([record]);
-                setIdSanPhamChiTiet(record.id);
-                detailSanPhamSauKhuyenMai(record.id);
-              },
-              className: selectedRow === record.index ? "selected-row" : "",
-            };
+          pagination={{
+            pageSize: 5,
+            position: ["bottomCenter"],
           }}
         />
       </div>
-      {/* <React.Fragment>
-        <Modal
-          aria-labelledby="modal-title"
-          aria-describedby="modal-desc"
-          open={open}
-          onClose={() => setOpen(false)}
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <div className="modal-container">
-            <Sheet
-              variant="outlined"
-              sx={{
-                maxWidth: 1300,
-                borderRadius: "md",
-                p: 3,
-                boxShadow: "lg",
-              }}
-            >
-              <ModalClose variant="plain" sx={{ m: 1 }} />
-              <Typography
-                component="h2"
-                id="modal-title"
-                level="h4"
-                textColor="inherit"
-                fontWeight="lg"
-                mb={1}
-                textAlign="center"
-              >
-                Sản phẩm đang được áp dụng khuyến mãi
-              </Typography>
-              <Typography id="modal-desc" textColor="text.tertiary">
-                {sanPhamChiTietKhuyenMai.length === 0 ? (
-                  <p>Sản phẩm chưa được áp dụng khuyến mãi !!!</p>
-                ) : (
-                  <Table
-                    dataSource={sanPhamChiTietKhuyenMai}
-                    columns={mergedColumns2}
-                    pagination={false}
-                    rowKey="id"
-                    style={{ marginBottom: "20px" }}
-                  />
-                )}
-              </Typography>
-            </Sheet>
-          </div>
-        </Modal>
-      </React.Fragment> */}
       <ConfirmDialog
         open={openConfirm}
         onClose={handleCloseDialogConfirmAdd}

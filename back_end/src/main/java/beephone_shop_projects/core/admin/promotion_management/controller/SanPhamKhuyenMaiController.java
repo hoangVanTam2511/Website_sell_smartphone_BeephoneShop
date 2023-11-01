@@ -50,4 +50,9 @@ public class SanPhamKhuyenMaiController {
         return new ResponseObject(sanPhamChiTietKhuyenMaiService.getDetailKhuyenMai(id));
     }
 
+    @GetMapping("/size/khuyen-mai-chi-tiet/{id}")
+    public Integer size(@PathVariable("id") String id){
+        return sanPhamChiTietKhuyenMaiService.getSize(id);
+    }
+
 }

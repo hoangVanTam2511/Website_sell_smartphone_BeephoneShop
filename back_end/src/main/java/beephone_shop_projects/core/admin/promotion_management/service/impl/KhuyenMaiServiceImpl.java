@@ -97,7 +97,7 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
         List<KhuyenMai> khuyenMaiList = khuyenMaiRepository.findNamePromotion(request.getTenKhuyenMai());
 
         if(!khuyenMaiList.isEmpty()){
-            throw new RestApiException("Tên Khuyến Mãi đã tồn tại");
+            throw new RestApiException("Tên giảm giá đã tồn tại!");
         }
         StatusDiscount status = StatusDiscount.CHUA_DIEN_RA;
         Date dateTime = new Date();
@@ -125,12 +125,29 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
     @Override
     public KhuyenMai updateKhuyenMai(@Valid UpdateKhuyenMaiRequest request, String ma) {
         KhuyenMai khuyenMai = khuyenMaiRepository.findById(ma).get();
+        List<KhuyenMai> khuyenMaiList = khuyenMaiRepository.findNamePromotion(request.getTenKhuyenMai());
+
+        if(!khuyenMaiList.isEmpty()){
+            throw new RestApiException("Tên giảm giá đã tồn tại!");
+        }
+        StatusDiscount status = StatusDiscount.CHUA_DIEN_RA;
+        Date dateTime = new Date();
+        if (request.getNgayBatDau().after(dateTime) && request.getNgayKetThuc().before(dateTime)) {
+            status = StatusDiscount.HOAT_DONG;
+        }
+        if (request.getNgayBatDau().before(dateTime)) {
+            status = StatusDiscount.NGUNG_HOAT_DONG;
+        }
+        if (request.getNgayKetThuc().after(dateTime)) {
+            status = StatusDiscount.CHUA_DIEN_RA;
+        }
         if (khuyenMai != null) {
             khuyenMai.setTenKhuyenMai(request.getTenKhuyenMai());
             khuyenMai.setNgayBatDau(request.getNgayBatDau());
             khuyenMai.setNgayKetThuc(request.getNgayKetThuc());
             khuyenMai.setGiaTriKhuyenMai(request.getGiaTriKhuyenMai());
             khuyenMai.setLoaiKhuyenMai(request.getLoaiKhuyenMai());
+            khuyenMai.setTrangThai(status);
             return khuyenMaiRepository.save(khuyenMai);
         } else {
             return null;

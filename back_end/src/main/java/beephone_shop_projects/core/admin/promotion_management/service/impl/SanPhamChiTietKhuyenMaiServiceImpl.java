@@ -1,10 +1,6 @@
 package beephone_shop_projects.core.admin.promotion_management.service.impl;
 
-import beephone_shop_projects.core.admin.promotion_management.model.reponse.DetailKhuyenMaiResponse;
-import beephone_shop_projects.core.admin.promotion_management.model.reponse.KhuyenMaiChiTietResponse;
-import beephone_shop_projects.core.admin.promotion_management.model.reponse.SanPhamChiTietKhuyenMaiResponse;
-import beephone_shop_projects.core.admin.promotion_management.model.reponse.SanPhamChiTietKhuyenMaiResponseCustom;
-import beephone_shop_projects.core.admin.promotion_management.model.reponse.SanPhamChiTietSauKhuyenMaiResponse;
+import beephone_shop_projects.core.admin.promotion_management.model.reponse.*;
 import beephone_shop_projects.core.admin.promotion_management.repository.SanPhamChiTietKhuyenMaiRepository;
 import beephone_shop_projects.core.admin.promotion_management.service.SanPhamChiTietKhuyenMaiService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +8,13 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
 public class SanPhamChiTietKhuyenMaiServiceImpl implements SanPhamChiTietKhuyenMaiService {
 
-    List<SanPhamChiTietKhuyenMaiResponse> listAo = new ArrayList<>();
+    private CopyOnWriteArrayList<SanPhamChiTietKhuyenMaiResponse> listAo = new CopyOnWriteArrayList<>();
 
 
     @Autowired
@@ -27,18 +23,16 @@ public class SanPhamChiTietKhuyenMaiServiceImpl implements SanPhamChiTietKhuyenM
     @Override
     public List<SanPhamChiTietKhuyenMaiResponseCustom> getAllSanPhamChiTietKhuyenMai(String id, Boolean check) {
         List<SanPhamChiTietKhuyenMaiResponseCustom> listResult = new ArrayList<>();
+        List<SanPhamChiTietKhuyenMaiResponse> listPhanTu = new ArrayList<>();
         List<SanPhamChiTietKhuyenMaiResponse> result = sanPhamChiTietKhuyenMaiRepository.findAllChiTietSanPham(id);
         BigDecimal tong = BigDecimal.ZERO;
         if (check == true) {
+            // Thêm tất cả phần tử từ result vào listAo
             listAo.addAll(result);
-            for (int i = 0; i < listAo.size(); i++) {
-                for (int j = i + 1; j < listAo.size(); j++) {
-                    if (listAo.get(i).getId().equals(listAo.get(j).getId())) {
-                        listAo.remove(j);
-                        j--;
-                    }
-                }
-            }
+
+            // Duyệt qua listAo và xóa các phần tử trùng lặp
+            Set<String> uniqueIds = new HashSet<>();
+            listAo.removeIf(sp -> !uniqueIds.add(sp.getId()));
             for (SanPhamChiTietKhuyenMaiResponse sp : listAo) {
                 SanPhamChiTietKhuyenMaiResponseCustom responseCustom = new SanPhamChiTietKhuyenMaiResponseCustom();
                 responseCustom.setId(sp.getId());
@@ -74,6 +68,7 @@ public class SanPhamChiTietKhuyenMaiServiceImpl implements SanPhamChiTietKhuyenM
         }
         if (check == false) {
             List<SanPhamChiTietKhuyenMaiResponse> itemsToRemove = new ArrayList<>();
+
             for (SanPhamChiTietKhuyenMaiResponse item : result) {
                 for (SanPhamChiTietKhuyenMaiResponse uniqueItem : listAo) {
                     if (uniqueItem.getIdSanPham().equals(item.getIdSanPham())) {
@@ -122,6 +117,14 @@ public class SanPhamChiTietKhuyenMaiServiceImpl implements SanPhamChiTietKhuyenM
     @Override
     public List<DetailKhuyenMaiResponse> getDetailKhuyenMai(String id) {
         return sanPhamChiTietKhuyenMaiRepository.getDetailKhuyenMai(id);
+    }
+
+    @Override
+    public Integer getSize(String id) {
+        Integer size = 0;
+        List<KhuyenMaiChiTietResponse> kmct = sanPhamChiTietKhuyenMaiRepository.getListKhuyenMai(id);
+        size = kmct.size();
+        return size;
     }
 
 }

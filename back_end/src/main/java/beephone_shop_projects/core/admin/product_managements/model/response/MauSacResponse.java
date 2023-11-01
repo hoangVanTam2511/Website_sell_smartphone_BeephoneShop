@@ -16,8 +16,6 @@ public class MauSacResponse {
 
     private String ma;
 
-    private String maMau;
-
     private String tenMauSac;
 
     private StatusCommon status;

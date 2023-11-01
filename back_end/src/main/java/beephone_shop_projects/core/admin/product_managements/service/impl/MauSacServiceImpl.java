@@ -7,6 +7,9 @@ import beephone_shop_projects.core.admin.product_managements.model.response.MauS
 import beephone_shop_projects.core.admin.product_managements.repository.MauSacRepository;
 import beephone_shop_projects.core.admin.product_managements.service.MauSacService;
 import beephone_shop_projects.entity.MauSac;
+import beephone_shop_projects.infrastructure.constant.StatusCommon;
+import beephone_shop_projects.repository.IMauSacRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -17,9 +20,35 @@ public class MauSacServiceImpl extends AbstractServiceImpl<MauSac, MauSacRespons
         super(repo, converter);
     }
 
+    @Autowired
+    private MauSacRepository mauSacRepository;
+
     @Override
     public Page<MauSac> findAllMauSac() {
         return null;
     }
+
+    @Override
+    public MauSac updateMauSac(MauSacRequest mauSacRequest, String id) throws Exception {
+        MauSac mauSac = mauSacRepository.findOneById(id);
+        if (mauSac != null) {
+            mauSac.setTenMauSac(mauSacRequest.getTenMauSac());
+            mauSac.setStatus(mauSacRequest.getStatus());
+            return mauSacRepository.save(mauSac);
+        }
+        return null;
+    }
+
+    @Override
+    public MauSac doiTrangThai(String id) throws Exception {
+        MauSac mauSac = mauSacRepository.findOneById(id);
+        if (mauSac.getStatus() == StatusCommon.ACTIVE){
+            mauSac.setStatus(StatusCommon.IN_ACTIVE);
+        }else {
+            mauSac.setStatus(StatusCommon.ACTIVE);
+        }
+        return mauSacRepository.save(mauSac);
+    }
+
 
 }

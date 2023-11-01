@@ -15,7 +15,7 @@ import java.util.List;
 
 
 @Service
-public class RomServiceImpl {
+public class RomServiceImpl1 {
 
     @Autowired
     private RomRepository romRepository;
