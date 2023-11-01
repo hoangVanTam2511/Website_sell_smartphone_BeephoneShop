@@ -186,7 +186,7 @@ const CreateScreen = ({ close, getAll, screens }) => {
                 freeSolo
                 inputValue={loaiManHinh}
                 options={uniqueLoaiManHinh}
-                onChange={handleLoaiManHinh}
+                onInputChange={handleLoaiManHinh}
                 renderInput={(params) => (
                   <TextField {...params} label="Loại Màn Hình" />
                 )}
@@ -203,7 +203,7 @@ const CreateScreen = ({ close, getAll, screens }) => {
                   id="demo-simple-select"
                   value={doPhanGiai}
                   label="Độ Phân Giải"
-                  onChange={handleChangeDoPhanGiai}
+                  onInputChange={handleChangeDoPhanGiai}
                   endAdornment={
                     <>
                       <InputAdornment
@@ -241,7 +241,7 @@ const CreateScreen = ({ close, getAll, screens }) => {
                 id="free-solo-demo"
                 freeSolo
                 options={uniqueTanSoQuet}
-                onChange={handleTanSoQuet}
+                onInputChange={handleTanSoQuet}
                 inputValue={tanSoQuet}
                 renderInput={(params) => (
                   <TextField
@@ -273,7 +273,7 @@ const CreateScreen = ({ close, getAll, screens }) => {
                 freeSolo
                 options={uniqueKichThuoc}
                 inputValue={kichThuoc}
-                onChange={handleKichThuoc}
+                onInputChange={handleKichThuoc}
                 renderInput={(params) => (
                   <TextField
                     {...params}
