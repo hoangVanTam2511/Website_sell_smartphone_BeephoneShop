@@ -1,6 +1,7 @@
 package beephone_shop_projects.entity;
 
 import beephone_shop_projects.entity.base.PrimaryEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
@@ -54,5 +55,8 @@ public class SanPhamChiTiet extends PrimaryEntity implements Serializable {
   @JoinColumn(name = "id_mau_sac")
   private MauSac mauSac;
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_image")
+  private Image image;
 
 }

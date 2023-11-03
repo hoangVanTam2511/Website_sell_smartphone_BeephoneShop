@@ -42,7 +42,7 @@ import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import Zoom from "@mui/material/Zoom";
 import * as dayjs from "dayjs";
 import LoadingIndicator from "../../../utilities/loading";
-import generateRandomCode from "../../../utilities/randomCode ";
+import generateRandomCode from "../../../utilities/randomCode";
 
 const CreateRam = ({ close, getAll, rams }) => {
   const navigate = useNavigate();

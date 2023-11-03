@@ -1,7 +1,7 @@
 package beephone_shop_projects.core.admin.product_management.controller;
 
 import beephone_shop_projects.core.admin.product_management.model.request.CreateImageRequest;
-import beephone_shop_projects.core.admin.product_management.service.impl.ImageServiceImpl;
+import beephone_shop_projects.core.admin.product_management.service.impl.ImageServiceImpl1;
 import beephone_shop_projects.entity.Anh;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AnhRestController {
 
     @Autowired
-    private ImageServiceImpl anhService;
+    private ImageServiceImpl1 anhService;
 
     @PostMapping("/save")
     public Anh save(@RequestBody CreateImageRequest req) {

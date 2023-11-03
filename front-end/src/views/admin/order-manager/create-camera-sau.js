@@ -45,7 +45,7 @@ import * as dayjs from "dayjs";
 import LoadingIndicator from "../../../utilities/loading";
 import CloseIcon from "@mui/icons-material/Close";
 import { ClearIcon } from "@mui/x-date-pickers";
-import generateRandomCode from "../../../utilities/randomCode ";
+import generateRandomCode from "../../../utilities/randomCode";
 import {
   Notistack,
   StatusCommonProductsNumber,

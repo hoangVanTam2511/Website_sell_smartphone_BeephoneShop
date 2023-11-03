@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 
 @Service
-public class ImageServiceImpl {
+public class ImageServiceImpl1 {
 
     @Autowired
     private ImageRepository imageRepository;

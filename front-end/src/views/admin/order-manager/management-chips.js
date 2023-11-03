@@ -37,7 +37,7 @@ import LoadingIndicator from "../../../utilities/loading";
 import CreateSac from "./create-sac";
 import CreateHang from "./create-hang";
 import CreateChip from "./create-chip";
-import generateRandomCode from "../../../utilities/randomCode ";
+import generateRandomCode from "../../../utilities/randomCode";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
