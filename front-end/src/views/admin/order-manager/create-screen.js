@@ -21,7 +21,6 @@ import {
   Slide,
 } from "@mui/material";
 import Zoom from "@mui/material/Zoom";
-
 import LoadingIndicator from "../../../utilities/loading";
 import axios from "axios";
 import { apiURLDisplay, apiURLDoPhanGiai } from "../../../service/api";
@@ -29,15 +28,14 @@ import { apiURLDisplay, apiURLDoPhanGiai } from "../../../service/api";
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
-
-const CreateScreen = ({ close, getAll, screens }) => {
+const CreateScreen = ({ open, close, getAll, screens }) => {
   // const navigate = useNavigate();
   let [doPhanGiai, setDoPhanGiai] = useState("");
   const [loaiManHinh, setLoaiManHinh] = React.useState("");
   const [tanSoQuet, setTanSoQuet] = React.useState("");
   const [kichThuoc, setKichThuoc] = React.useState("");
   const [trangThai, setTrangThai] = React.useState("");
-  const [open, setOpen] = React.useState(false);
+  const [openDoPhanGiai, setOpenDoPhanGiai] = React.useState(false);
   const [chieuDai, setChieuDai] = React.useState("");
   const [chieuRong, setChieuRong] = React.useState("");
   const [listPhanGiai, setListPhanGiai] = useState([]);
@@ -99,7 +97,7 @@ const CreateScreen = ({ close, getAll, screens }) => {
     };
     if (!chieuDai || !chieuRong) {
       // message.error("Vui lòng điền đủ thông tin");
-      setOpen(true);
+      setOpenDoPhanGiai(true);
       return;
     }
 
@@ -113,7 +111,7 @@ const CreateScreen = ({ close, getAll, screens }) => {
         setListPhanGiai([newDoPhanGiai, ...listPhanGiai]);
         message.success("Thêm thành công");
         handleReset();
-        setOpen(false);
+        setOpenDoPhanGiai(false);
         // redirectToHienThiKH(generatedMaKhachHang);
       })
       .catch((error) => {
@@ -140,7 +138,7 @@ const CreateScreen = ({ close, getAll, screens }) => {
         // setOpen(false);
       })
       .catch((error) => {
-        alert("Thêm thất bại");
+        console.log("add thất bại");
       });
   };
 
@@ -170,172 +168,187 @@ const CreateScreen = ({ close, getAll, screens }) => {
 
   return (
     <>
-      <div className="mt-4" style={{ width: "700px" }}>
-        <div className="container" style={{}}>
-          <div className="text-center" style={{}}>
-            <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>
-              THÊM MÀN HÌNH
-            </span>
-          </div>
-          <div className="mx-auto mt-3 pt-2">
-            <div>
-              <Autocomplete
-                fullWidth
-                className="custom"
-                id="free-solo-demo"
-                freeSolo
-                inputValue={loaiManHinh}
-                options={uniqueLoaiManHinh}
-                onChange={handleLoaiManHinh}
-                renderInput={(params) => (
-                  <TextField {...params} label="Loại Màn Hình" />
-                )}
-              />
-            </div>
-            <div className="mt-3">
-              <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">
-                  Độ Phân Giải
-                </InputLabel>
-                <Select
-                  className="custom"
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={doPhanGiai}
-                  label="Độ Phân Giải"
-                  onChange={handleChangeDoPhanGiai}
-                  endAdornment={
-                    <>
-                      <InputAdornment
-                        style={{ marginRight: "20px" }}
-                        position="end"
-                      >
-                        <Tooltip
-                          title="Thêm độ phân giải"
-                          TransitionComponent={Zoom}
-                        >
-                          <IconButton
-                            onClick={() => setOpen(true)}
-                            aria-label="delete"
-                            size="small"
-                          >
-                            <AddCircleOutlineIcon className="text-dark" />
-                          </IconButton>
-                        </Tooltip>
-                      </InputAdornment>
-                    </>
-                  }
-                >
-                  {listPhanGiai.map((record) => (
-                    <MenuItem key={record.id} value={record.id}>
-                      {`${record.chieuDai} x ${record.chieuRong}`}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </div>
-            <div className="mt-3">
-              <Autocomplete
-                fullWidth
-                className="custom"
-                id="free-solo-demo"
-                freeSolo
-                options={uniqueTanSoQuet}
-                onChange={handleTanSoQuet}
-                inputValue={tanSoQuet}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    InputProps={{
-                      ...params.InputProps,
-                      startAdornment: (
-                        <>
-                          <InputAdornment
-                            style={{ marginLeft: "5px" }}
-                            position="start"
-                          >
-                            Hz
-                          </InputAdornment>
-                          {params.InputProps.startAdornment}
-                        </>
-                      ),
-                    }}
-                    label="Tần Số Quét"
-                  />
-                )}
-              />
-            </div>
-            <div className="mt-3">
-              <Autocomplete
-                fullWidth
-                className="custom"
-                id="free-solo-demo"
-                freeSolo
-                options={uniqueKichThuoc}
-                inputValue={kichThuoc}
-                onChange={handleKichThuoc}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    InputProps={{
-                      ...params.InputProps,
-                      startAdornment: (
-                        <>
-                          <InputAdornment
-                            style={{ marginLeft: "5px" }}
-                            position="start"
-                          >
-                            inches
-                          </InputAdornment>
-                          {params.InputProps.startAdornment}
-                        </>
-                      ),
-                    }}
-                    label="Màn Hình Rộng"
-                  />
-                )}
-              />
-            </div>
-            <div className="mt-3" style={{}}>
-              <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">
-                  Trạng Thái
-                </InputLabel>
-                <Select
-                  className="custom"
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={trangThai}
-                  label="Trạng Thái"
-                  onChange={handleChangeStatus}
-                >
-                  <MenuItem value={0}>Hoạt Động</MenuItem>
-                  <MenuItem value={1}>Ngừng Hoạt Động</MenuItem>
-                </Select>
-              </FormControl>
-            </div>
-            <div className="mt-4 pt-1 d-flex justify-content-end">
-              <Button
-                onClick={() => {
-                  addManHinh();
-                }}
-                className="rounded-2 button-mui"
-                type="primary"
-                style={{ height: "40px", width: "auto", fontSize: "15px" }}
-              >
-                <span
-                  className=""
-                  style={{ marginBottom: "2px", fontWeight: "500" }}
-                >
-                  Xác Nhận
-                </span>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
       <Dialog
         open={open}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={close}
+        maxWidth="md"
+        maxHeight="md"
+        sx={{
+          marginBottom: "40px",
+        }}
+      >
+        <DialogContent className="">
+          <div className="mt-4" style={{ width: "700px" }}>
+            <div className="container" style={{}}>
+              <div className="text-center" style={{}}>
+                <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>
+                  THÊM MÀN HÌNH
+                </span>
+              </div>
+              <div className="mx-auto mt-3 pt-2">
+                <div>
+                  <Autocomplete
+                    fullWidth
+                    className="custom"
+                    id="free-solo-demo"
+                    freeSolo
+                    inputValue={loaiManHinh}
+                    options={uniqueLoaiManHinh}
+                    onInputChange={handleLoaiManHinh}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Loại Màn Hình" />
+                    )}
+                  />
+                </div>
+                <div className="mt-3">
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">
+                      Độ Phân Giải
+                    </InputLabel>
+                    <Select
+                      className="custom"
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={doPhanGiai}
+                      label="Độ Phân Giải"
+                      onChange={handleChangeDoPhanGiai}
+                      endAdornment={
+                        <>
+                          <InputAdornment
+                            style={{ marginRight: "20px" }}
+                            position="end"
+                          >
+                            <Tooltip
+                              title="Thêm độ phân giải"
+                              TransitionComponent={Zoom}
+                            >
+                              <IconButton
+                                onClick={() => setOpenDoPhanGiai(true)}
+                                aria-label="delete"
+                                size="small"
+                              >
+                                <AddCircleOutlineIcon className="text-dark" />
+                              </IconButton>
+                            </Tooltip>
+                          </InputAdornment>
+                        </>
+                      }
+                    >
+                      {listPhanGiai.map((record) => (
+                        <MenuItem key={record.id} value={record.id}>
+                          {`${record.chieuDai} x ${record.chieuRong}`}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </div>
+                <div className="mt-3">
+                  <Autocomplete
+                    fullWidth
+                    className="custom"
+                    id="free-solo-demo"
+                    freeSolo
+                    options={uniqueTanSoQuet}
+                    onInputChange={handleTanSoQuet}
+                    inputValue={tanSoQuet}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        InputProps={{
+                          ...params.InputProps,
+                          startAdornment: (
+                            <>
+                              <InputAdornment
+                                style={{ marginLeft: "5px" }}
+                                position="start"
+                              >
+                                Hz
+                              </InputAdornment>
+                              {params.InputProps.startAdornment}
+                            </>
+                          ),
+                        }}
+                        label="Tần Số Quét"
+                      />
+                    )}
+                  />
+                </div>
+                <div className="mt-3">
+                  <Autocomplete
+                    fullWidth
+                    className="custom"
+                    id="free-solo-demo"
+                    freeSolo
+                    options={uniqueKichThuoc}
+                    inputValue={kichThuoc}
+                    onInputChange={handleKichThuoc}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        InputProps={{
+                          ...params.InputProps,
+                          startAdornment: (
+                            <>
+                              <InputAdornment
+                                style={{ marginLeft: "5px" }}
+                                position="start"
+                              >
+                                inches
+                              </InputAdornment>
+                              {params.InputProps.startAdornment}
+                            </>
+                          ),
+                        }}
+                        label="Màn Hình Rộng"
+                      />
+                    )}
+                  />
+                </div>
+                <div className="mt-3" style={{}}>
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">
+                      Trạng Thái
+                    </InputLabel>
+                    <Select
+                      className="custom"
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={trangThai}
+                      label="Trạng Thái"
+                      onChange={handleChangeStatus}
+                    >
+                      <MenuItem value={0}>Hoạt Động</MenuItem>
+                      <MenuItem value={1}>Ngừng Hoạt Động</MenuItem>
+                    </Select>
+                  </FormControl>
+                </div>
+                <div className="mt-4 pt-1 d-flex justify-content-end">
+                  <Button
+                    onClick={() => {
+                      addManHinh();
+                    }}
+                    className="rounded-2 button-mui"
+                    type="primary"
+                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                  >
+                    <span
+                      className=""
+                      style={{ marginBottom: "2px", fontWeight: "500" }}
+                    >
+                      Xác Nhận
+                    </span>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+        <div className="mt-3"></div>
+      </Dialog>
+      <Dialog
+        open={openDoPhanGiai}
         TransitionComponent={Transition}
         keepMounted
         onClose={handleClose}
@@ -378,7 +391,7 @@ const CreateScreen = ({ close, getAll, screens }) => {
           <Button
             key="cancel"
             onClick={() => {
-              setOpen(false);
+              setOpenDoPhanGiai(false);
               handleReset();
             }}
             size="large"

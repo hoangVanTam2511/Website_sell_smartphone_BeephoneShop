@@ -37,10 +37,6 @@ import LoadingIndicator from "../../../utilities/loading";
 import CreateSac from "./create-sac";
 import CreateHang from "./create-hang";
 
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
-
 const ManagementHangs = () => {
   const navigate = useNavigate();
   const [listHang, setListHang] = useState([]);
@@ -272,33 +268,19 @@ const ManagementHangs = () => {
           <div className="mx-auto">
             <Pagination
               color="primary" /* page={parseInt(currentPage)} key={refreshPage} count={totalPages} */
-              // onChange={handlePageChange}
+            // onChange={handlePageChange}
             />
           </div>
           <div className="mt-4"></div>
         </Card>
       </div>
       {isLoading && <LoadingIndicator />}
-      <Dialog
+      <CreateHang
         open={open}
-        TransitionComponent={Transition}
-        keepMounted
-        onClose={handleClose}
-        maxWidth="md"
-        maxHeight="md"
-        sx={{
-          marginBottom: "170px",
-        }}
-      >
-        <DialogContent className="">
-          <CreateHang
-            close={handleClose}
-            getAll={getListhang}
-            hangs={listHang}
-          />
-        </DialogContent>
-        <div className="mt-3"></div>
-      </Dialog>
+        close={handleClose}
+        getAll={getListhang}
+        hangs={listHang}
+      />
     </>
   );
 };

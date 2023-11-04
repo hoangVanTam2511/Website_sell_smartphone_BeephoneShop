@@ -27,10 +27,13 @@ import { Button as ButtonJoy } from '@mui/joy';
 import { Card as CardJoy } from '@mui/joy';
 import { Checkbox as CheckboxJoy } from '@mui/joy';
 import Divider from '@mui/joy/Divider';
-import Typography from '@mui/joy/Typography';
-import ArrowForward from '@mui/icons-material/ArrowForward';
 import { FaUpload } from "react-icons/fa6";
-import { FaTrashAlt } from "react-icons/fa";
+import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
+import TextFieldSearchColors from "./text-field-search-colors";
+import List from '@mui/joy/List';
+import ListItem from '@mui/joy/ListItem';
+import Done from '@mui/icons-material/Done';
+import CreateCauHinh from "./create-cau-hinh";
 // import Sketch from '@uiw/react-color-sketch';
 
 const ITEM_HEIGHT = 130;
@@ -65,151 +68,7 @@ const UpdateProduct = ({ }) => {
     handleGetBrand();
     window.scrollTo(0, 800);
   }, []);
-  const [cauHinhs, setCauHinhs] = useState([
-    {
-      id: 1,
-      soLuongTonKho: 0,
-      ram: {
-        id: 1,
-        dungLuong: 3
-      },
-      rom: {
-        id: 1,
-        dungLuong: 64
-      },
-      color: [
-        { id: 1, tenMauSac: "YELLOW" },
-        { id: 2, tenMauSac: "RED" },
-      ]
 
-    },
-    {
-      id: 2,
-      soLuongTonKho: 0,
-      ram: {
-        id: 2,
-        dungLuong: 4
-      },
-      rom: {
-        id: 2,
-        dungLuong: 128
-      },
-      color: [
-        { id: 1, tenMauSac: "GREEN" },
-        { id: 2, tenMauSac: "BLUE" },
-        { id: 3, tenMauSac: "GRAY" },
-        { id: 4, tenMauSac: "FK" },
-      ]
-
-    },
-  ]);
-
-
-
-  const columns = [
-    {
-      title: "STT",
-      align: "center",
-      dataIndex: "stt",
-      width: "5%",
-      render: (text, record, index) => (
-        <span style={{ fontWeight: "400" }}>{cauHinhs.indexOf(record) + 1}</span>
-      ),
-    },
-    {
-      title: "Tên Sản Phẩm",
-      align: "center",
-      width: "30%",
-      render: (text, record) => {
-        return (
-          <span style={{ fontWeight: "400", whiteSpace: "pre-line" }}>{'Iphone 14 Pro Max ' + record.ram.dungLuong + "/" + record.rom.dungLuong + "GB"}</span>
-        )
-      }
-    },
-    {
-      title: "Màu Sắc",
-      align: "center",
-      width: "15%",
-      render: (text, record) => (
-        <span style={{ fontWeight: "400", whiteSpace: "pre-line" }}>{record.color.tenMauSac}</span>
-      ),
-    },
-    {
-      title: "Số Lượng Tồn Kho",
-      align: "center",
-      width: "15%",
-      render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>
-          {record.soLuongTonKho}
-        </span>
-      ),
-    },
-    {
-      title: "Đơn Giá",
-      align: "center",
-      width: "20%",
-      render: (text, record) => (
-        <TextField
-          label="Đơn giá"
-          id="outlined-size-small"
-          size="small"
-        />
-      ),
-    },
-    {
-      title: "Thao Tác",
-      align: "center",
-      width: "15%",
-      dataIndex: "ma",
-      render: (text, record) => (
-        <div className="d-flex justify-content-center">
-          <div className="button-container">
-            <Tooltip title="Import imei" TransitionComponent={Zoom}>
-              <IconButton
-                onClick={() => {
-                }}
-                className="me-2">
-                <FaUpload color="#2f80ed" />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Xóa" TransitionComponent={Zoom}>
-              <IconButton
-                onClick={() => {
-                }}
-                className="">
-                <FaTrashAlt color="#e5383b" />
-              </IconButton>
-            </Tooltip>
-          </div>
-        </div>
-      ),
-    },
-  ];
-  const CauHinhTable = ({ id }) => {
-    const filterCauHinhs = cauHinhs.filter((item) => item.id === id);
-    const objectsTachRa = filterCauHinhs.flatMap((cauHinh) => {
-      return cauHinh.color.map((color) => {
-        return {
-          ...cauHinh,
-          color: color,
-        };
-      });
-    });
-
-    return (
-      <>
-        <Table
-          className="table-container mt-2"
-          columns={columns}
-          rowKey="id"
-          key={"id"}
-          dataSource={objectsTachRa}
-          pagination={false}
-          locale={{ emptyText: <Empty description="Không có dữ liệu" /> }}
-        />
-      </>
-    );
-  };
   const generateRandomId = () => {
     const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let id = '';
@@ -456,13 +315,13 @@ const UpdateProduct = ({ }) => {
       tenSanPham: "Xiaomi K40 Pro",
     },
   ]);
-  const [colors, setColors] = useState([
-    {
-      ma: "091218273",
-      tenMauSac: "White Smoke",
-      status: 0
-    }
-  ]);
+  // const [colors, setColors] = useState([
+  //   {
+  //     ma: "091218273",
+  //     tenMauSac: "White Smoke",
+  //     status: 0
+  //   }
+  // ]);
 
 
   const uniqueTenSanPham = products.map((option) => option.tenSanPham).filter((value, index, self) => {
@@ -1020,93 +879,8 @@ const UpdateProduct = ({ }) => {
           </div>
         </div>
       </div>
-      <div className="mt-4" style={{ backgroundColor: "#ffffff", boxShadow: "0 0.1rem 0.3rem #00000010", height: "auto" }}>
-        <div className="container" style={{}}>
-          <div className="mx-auto" style={{ maxWidth: "70%" }}>
-            <div className="text-center pt-4" style={{}}>
-              <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>CẤU HÌNH</span>
-            </div>
-          </div>
-          {cauHinhs.length > 0 && cauHinhs.map((item) => {
-            return (
-              <div className={"mt-3 mx-auto"} style={{ width: "95%" }}>
-                <>
-                  <CardJoy
-                    orientation={'vertical'}
-                    variant="outlined"
-                    sx={{ width: '100%', maxWidth: '100%', gap: 1.5 }}
-                  >
-                    <div className="d-flex justify-content-between">
-                      <span className="mt-1" style={{ fontWeight: "550", fontSize: "22px" }}>CẤU HÌNH {' ' + item.ram.dungLuong + "/" + item.rom.dungLuong + "GB"}</span>
-                      <Button
-                        onClick={handleClickOpen}
-                        className="rounded-2 button-mui"
-                        type="primary"
-                        style={{ height: "40px", width: "auto", fontSize: "15px" }}
-                      >
-                        <span
-                          className=""
-                          style={{ marginBottom: "2px", fontWeight: "500" }}
-                        >
-                          Cập Nhật
-                        </span>
-                      </Button>
-                    </div>
-                    <Divider sx={{ backgroundColor: 'gray', height: "1.5px" }} />
-                    <BoxJoy sx={{ display: 'contents' }}>
-                      <CauHinhTable id={item.id} />
-                    </BoxJoy>
-                  </CardJoy>
-                </>
-              </div>
-            )
-          })}
-          <div className={cauHinhs.length > 0 ? 'mt-4 text-center' : 'mt-3 text-center'}>
-            <Button
-              onClick={handleClickOpen}
-              className="rounded-2 button-mui"
-              type="primary"
-              style={{ height: "40px", width: "auto", fontSize: "15px" }}
-            >
-              <span
-                className=""
-                style={{ marginBottom: "2px", fontWeight: "500" }}
-              >
-                CHỌN CẤU HÌNH
-              </span>
-            </Button>
-          </div>
-        </div>
-        <div style={{ height: "25px" }}></div>
-      </div>
-      <div className="mt-4" style={{ backgroundColor: "#ffffff", boxShadow: "0 0.1rem 0.3rem #00000010", height: "auto" }}>
-        <div className="container" style={{}}>
-          <div className="mx-auto" style={{ maxWidth: "70%" }}>
-            <div className="text-center pt-4" style={{}}>
-              <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>ẢNH</span>
-            </div>
-          </div>
-          <div className="mt-3 text-center">
-            <Button
-              onClick={handleClickOpen}
-              className="rounded-2 button-mui"
-              type="primary"
-              style={{ height: "40px", width: "auto", fontSize: "15px" }}
-            >
-              <span
-                className=""
-                style={{ marginBottom: "2px", fontWeight: "500" }}
-              >
-                UPLOAD ẢNH
-              </span>
-            </Button>
-          </div>
-        </div>
-        <div style={{ height: "25px" }}></div>
-      </div>
-      <div className="mt-4"></div>
+      <CreateCauHinh />
       {isLoading && <LoadingIndicator />}
-      <ModalCauHinh open={open} close={handleClose} />
     </>
   )
 

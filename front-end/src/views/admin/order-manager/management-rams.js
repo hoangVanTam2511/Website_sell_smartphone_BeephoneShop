@@ -39,10 +39,6 @@ import CreateHang from "./create-hang";
 import CreateChip from "./create-chip";
 import CreateRam from "./create-ram";
 
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
-
 const ManagementRams = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -124,7 +120,7 @@ const ManagementRams = () => {
       width: "15%",
       dataIndex: "kichThuoc",
       render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>{record.kichThuoc + "GB"}</span>
+        <span style={{ fontWeight: "400" }}>{record.dungLuong + "GB"}</span>
       ),
     },
     {
@@ -254,29 +250,14 @@ const ManagementRams = () => {
           <div className="mx-auto">
             <Pagination
               color="primary" /* page={parseInt(currentPage)} key={refreshPage} count={totalPages} */
-              // onChange={handlePageChange}
+            // onChange={handlePageChange}
             />
           </div>
           <div className="mt-4"></div>
         </Card>
       </div>
       {isLoading && <LoadingIndicator />}
-      <Dialog
-        open={open}
-        TransitionComponent={Transition}
-        keepMounted
-        onClose={handleClose}
-        maxWidth="md"
-        maxHeight="md"
-        sx={{
-          marginBottom: "170px",
-        }}
-      >
-        <DialogContent className="">
-          <CreateRam close={handleClose} getAll={loadDataRam} rams={listRam} />
-        </DialogContent>
-        <div className="mt-3"></div>
-      </Dialog>
+      <CreateRam open={open} close={handleClose} getAll={loadDataRam} rams={listRam} />
     </>
   );
 };

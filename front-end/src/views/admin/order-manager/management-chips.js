@@ -39,9 +39,6 @@ import CreateHang from "./create-hang";
 import CreateChip from "./create-chip";
 import generateRandomCode from "../../../utilities/randomCode ";
 
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
 
 const ManagementChips = () => {
   const navigate = useNavigate();
@@ -274,33 +271,19 @@ const ManagementChips = () => {
           <div className="mx-auto">
             <Pagination
               color="primary" /* page={parseInt(currentPage)} key={refreshPage} count={totalPages} */
-              // onChange={handlePageChange}
+            // onChange={handlePageChange}
             />
           </div>
           <div className="mt-4"></div>
         </Card>
       </div>
-      {isLoading && <LoadingIndicator />}
-      <Dialog
+      <CreateChip
         open={open}
-        TransitionComponent={Transition}
-        keepMounted
-        onClose={handleClose}
-        maxWidth="md"
-        maxHeight="md"
-        sx={{
-          marginBottom: "170px",
-        }}
-      >
-        <DialogContent className="">
-          <CreateChip
-            close={handleClose}
-            getAll={getListChip}
-            chips={listChip}
-          />
-        </DialogContent>
-        <div className="mt-3"></div>
-      </Dialog>
+        close={handleClose}
+        getAll={getListChip}
+        chips={listChip}
+      />
+      {isLoading && <LoadingIndicator />}
     </>
   );
 };

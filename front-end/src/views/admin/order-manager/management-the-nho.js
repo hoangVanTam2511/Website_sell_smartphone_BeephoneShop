@@ -36,10 +36,6 @@ import {
 import LoadingIndicator from "../../../utilities/loading";
 import CreateTheNho from "./create-the-nho";
 
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
-
 const ManagementTheNhos = () => {
   const navigate = useNavigate();
   const [listTheNho, setListTheNho] = useState([]);
@@ -282,33 +278,19 @@ const ManagementTheNhos = () => {
           <div className="mx-auto">
             <Pagination
               color="primary" /* page={parseInt(currentPage)} key={refreshPage} count={totalPages} */
-              // onChange={handlePageChange}
+            // onChange={handlePageChange}
             />
           </div>
           <div className="mt-4"></div>
         </Card>
       </div>
       {isLoading && <LoadingIndicator />}
-      <Dialog
+      <CreateTheNho
         open={open}
-        TransitionComponent={Transition}
-        keepMounted
-        onClose={handleClose}
-        maxWidth="md"
-        maxHeight="md"
-        sx={{
-          marginBottom: "170px",
-        }}
-      >
-        <DialogContent className="">
-          <CreateTheNho
-            close={handleClose}
-            getAll={getListTheNho}
-            theNhos={listTheNho}
-          />
-        </DialogContent>
-        <div className="mt-3"></div>
-      </Dialog>
+        close={handleClose}
+        getAll={getListTheNho}
+        theNhos={listTheNho}
+      />
     </>
   );
 };

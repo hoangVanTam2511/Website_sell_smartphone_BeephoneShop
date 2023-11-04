@@ -19,9 +19,8 @@ import * as dayjs from "dayjs";
 import { AiOutlinePlus } from "react-icons/ai";
 import LoadingIndicator from '../../../utilities/loading';
 import useCustomSnackbar from '../../../utilities/notistack';
-import { Notistack } from "./enum";
+import { Notistack, SimMultiple } from "./enum";
 import { MdOutlineAddToPhotos } from "react-icons/md";
-import ModalCauHinh from "./modal-chon-cau-hinh";
 import { Box as BoxJoy } from '@mui/joy';
 import { Button as ButtonJoy } from '@mui/joy';
 import { Card as CardJoy } from '@mui/joy';
@@ -31,6 +30,17 @@ import Typography from '@mui/joy/Typography';
 import ArrowForward from '@mui/icons-material/ArrowForward';
 import { FaUpload } from "react-icons/fa6";
 import { FaTrashAlt } from "react-icons/fa";
+import CreateHang from "./create-hang";
+import CreateChip from "./create-chip";
+import CreatePin from "./create-pin";
+import CreateSac from "./create-sac";
+import CreateTheNho from "./create-the-nho";
+import CreateScreen from "./create-screen";
+import CreateSimCard from "./create-simcard";
+import CreateCauHinh from "./create-cau-hinh";
+import generateRandomCode from "../../../utilities/genCode";
+import { connectStorageEmulator } from "firebase/storage";
+import useFormItemStatus from "antd/es/form/hooks/useFormItemStatus";
 // import Sketch from '@uiw/react-color-sketch';
 
 const ITEM_HEIGHT = 130;
@@ -46,7 +56,131 @@ const MenuProps = {
 };
 
 const CreateProduct = ({ }) => {
-  const [orientation, setOrientation] = React.useState('vertical');
+  const [openHang, setOpenHang] = useState(false);
+  const [listHang, setListHang] = useState([]);
+  const handleCloseOpenHang = () => {
+    setOpenHang(false);
+  }
+  const getListHang = () => {
+    axios
+      .get(`http://localhost:8080/api/brands`)
+      .then((response) => {
+        setListHang(response.data.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const [openChip, setOpenChip] = useState(false);
+  const [listChip, setListChip] = useState([]);
+  const handleCloseOpenChip = () => {
+    setOpenChip(false);
+  }
+  const getListChip = () => {
+    axios
+      .get(`http://localhost:8080/api/chips`)
+      .then((response) => {
+        setListChip(response.data.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const [openPin, setOpenPin] = useState(false);
+  const [listPin, setListPin] = useState([]);
+  const handleCloseOpenPin = () => {
+    setOpenPin(false);
+  }
+  const getListPin = () => {
+    axios
+      .get(`http://localhost:8080/api/pins`)
+      .then((response) => {
+        setListPin(response.data.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const [openSac, setOpenSac] = useState(false);
+  const [listSac, setListSac] = useState([]);
+  const handleCloseOpenSac = () => {
+    setOpenSac(false);
+  }
+  const getListSac = () => {
+    axios
+      .get(`http://localhost:8080/api/chargers`)
+      .then((response) => {
+        setListSac(response.data.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const [openTheNho, setOpenTheNho] = useState(false);
+  const [listTheNho, setListTheNho] = useState([]);
+  const handleCloseOpenTheNho = () => {
+    setOpenTheNho(false);
+  }
+  const getListTheNho = () => {
+    axios
+      .get(`http://localhost:8080/api/the-nhos`)
+      .then((response) => {
+        setListTheNho(response.data.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const [openManHinh, setOpenManHinh] = useState(false);
+  const [listManHinh, setListManHinh] = useState([]);
+  const handleCloseOpenManHinh = () => {
+    setOpenManHinh(false);
+  }
+  const getListManHinh = () => {
+    axios
+      .get(`http://localhost:8080/api/display`)
+      .then((response) => {
+        setListManHinh(response.data.data);
+        console.log(response.data.data)
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const [openTheSim, setOpenTheSim] = useState(false);
+  const [listTheSim, setListTheSim] = useState([]);
+  const handleCloseOpenTheSim = () => {
+    setOpenTheSim(false);
+  }
+  const getListTheSim = () => {
+    axios
+      .get(`http://localhost:8080/api/sim-cards/all`)
+      .then((response) => {
+        setListTheSim(response.data.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+
+  useEffect(() => {
+    getListTheSim();
+    getListManHinh();
+    getListTheNho();
+    getListSac();
+    getListPin();
+    getListHang();
+    getListChip();
+  }, [])
+
+  const [selectKey, setSelectKey] = useState(0);
   const [cauHinhs, setCauHinhs] = useState([
     {
       id: 1,
@@ -343,11 +477,11 @@ const CreateProduct = ({ }) => {
       handleOpenAlertVariant("Chỉ được chọn tối đa 2 SIM", "warning");
       return;
     }
-    if (selectedSimLength === 2 && sims.find(sim => sim.id === value[1]).multipleSim === 2) {
+    if (selectedSimLength === 2 && listTheSim.find(sim => sim.id === value[1]).simMultiple === SimMultiple.DUAL_SIM) {
       handleOpenAlertVariant("Chỉ được chọn tối đa 2 SIM", "warning");
       return;
     }
-    if (selectedSimLength === 2 && sims.find(sim => sim.id === value[0]).multipleSim === 2) {
+    if (selectedSimLength === 2 && listTheSim.find(sim => sim.id === value[0]).simMultiple === SimMultiple.DUAL_SIM) {
       handleOpenAlertVariant("Chỉ được chọn tối đa 2 SIM", "warning");
       return;
     }
@@ -447,6 +581,10 @@ const CreateProduct = ({ }) => {
     }
   ]);
 
+  const [productName, setProductName] = useState('');
+  const handleOnInputChangeProductName = (event, value) => {
+    setProductName(value);
+  };
 
   const uniqueTenSanPham = products.map((option) => option.tenSanPham).filter((value, index, self) => {
     return self.indexOf(value) === index;
@@ -457,25 +595,26 @@ const CreateProduct = ({ }) => {
 
 
   const [isLoading, setIsLoading] = React.useState(false);
+  const [isNonNull, setIsNonNull] = React.useState(false);
 
   const [status, setStatus] = React.useState();
   const [brand, setBrand] = React.useState('');
+  const [brandName, setBrandName] = React.useState('');
   const [opera, setOpera] = React.useState('');
   const [chip, setChip] = React.useState('');
   const [screen, setScreen] = React.useState('');
   const [pin, setPin] = React.useState('');
   const [congSac, setCongSac] = React.useState('');
   const [theSim, setTheSim] = React.useState('');
-  const [network, setNetwork] = React.useState('');
   const [theNho, setTheNho] = React.useState('');
-  const handleChangeNetword = (event) => {
-    setNetwork(event.target.value);
+  const handleChangeTheSim = (event) => {
+    setTheSim(event.target.value);
   };
   const handleChangeCongSac = (event) => {
     setCongSac(event.target.value);
   };
-  const handleChangeTheSim = (event) => {
-    setTheSim(event.target.value);
+  const handleChangeTheNho = (event) => {
+    setTheNho(event.target.value);
   };
   const handleChangePin = (event) => {
     setPin(event.target.value);
@@ -489,18 +628,65 @@ const CreateProduct = ({ }) => {
   const handleChangeStatus = (event) => {
     setStatus(event.target.value);
   };
-
+  const getTenHangById = (id) => {
+    const hang = listHang.find((item) => item.id === id);
+    return hang ? hang.tenHang : "";
+  };
   const handleChangeBrand = (event) => {
-    setBrand(event.target.value);
+    const { value } = event.target;
+    setBrand(value);
+    // setBrandName(getTenHangById(value));
+    // if (getTenHangById(value) === "Apple"){
+    //   setTheNho('');
+    // }
   };
   const handleChangeOpera = (event) => {
     setOpera(event.target.value);
+  };
+
+  const convertTheSims = selectedSim.map((item) => {
+    return { id: item };
+  });
+  const theNhoObject = {
+    theNho: theNho === "None" ? null : { id: theNho },
   };
   // const [selectedSacs, setSelectedSacs] = React.useState([]);
 
   // const handleChangeSelectedSacs = (event) => {
   //   setSelectedSacs(event.target.value);
   // };
+  // const [product, setProduct] = useState({});
+  const getProduct = () => {
+    const request = {
+      ma: generateRandomCode(),
+      tenSanPham: productName,
+      operatingType: opera,
+      theSimDienThoais: convertTheSims,
+      congSac: {
+        id: congSac,
+      },
+      moTa: "",
+      hang: {
+        id: brand,
+      },
+      chip: {
+        id: chip,
+      },
+      manHinh: {
+        id: screen,
+      },
+      theNho: {
+        id: theNho === "None" ? null : theNho,
+      },
+      pin: { id: pin },
+      trangThai: (status === "" || status === null || status === undefined) ? 0 : 1,
+    }
+    return request;
+  }
+
+  const product = getProduct();
+
+
 
   return (
     <>
@@ -526,7 +712,11 @@ const CreateProduct = ({ }) => {
                 id="free-solo-demo"
                 freeSolo
                 options={uniqueTenSanPham}
+                inputValue={productName}
+                onInputChange={handleOnInputChangeProductName}
                 renderInput={(params) => <TextField
+                  //           helperText={productName.trim() === "" ? "Bạn chưa nhập tên sản phẩm" : ""}
+                  // error={productName === null || productName.trim() === ""}
                   {...params}
                   label="Tên Sản Phẩm" />}
               />
@@ -548,7 +738,7 @@ const CreateProduct = ({ }) => {
                     endAdornment={
                       <>
                         <InputAdornment style={{ marginRight: "15px" }} position="end">
-                          <Tooltip title="Thêm hệ điều hành" TransitionComponent={Zoom}>
+                          <Tooltip title="Thêm danh mục" TransitionComponent={Zoom}>
                             <IconButton /* onClick={() => setOpen(true)} */ size="small">
                               <AiOutlinePlus className='text-dark' />
                             </IconButton>
@@ -583,20 +773,20 @@ const CreateProduct = ({ }) => {
                     endAdornment={
                       <>
                         <InputAdornment style={{ marginRight: "15px" }} position="end">
-                          <Tooltip title="Thêm hệ điều hành" TransitionComponent={Zoom}>
-                            <IconButton /* onClick={() => setOpen(true)} */ size="small">
+                          <Tooltip title="Thêm hãng" TransitionComponent={Zoom}>
+                            <IconButton onClick={() => setOpenHang(true)} size="small">
                               <AiOutlinePlus className='text-dark' />
                             </IconButton>
                           </Tooltip>
-
                         </InputAdornment>
                       </>
                     }
                   >
-                    <MenuItem value={0}>Apple</MenuItem>
-                    <MenuItem value={1}>Xiaomi</MenuItem>
-                    <MenuItem value={2}>Samsung</MenuItem>
-                    <MenuItem value={3}>Oppo</MenuItem>
+                    {listHang.map((item) => {
+                      return (
+                        <MenuItem key={item.id} value={item.id}>{item.tenHang}</MenuItem>
+                      )
+                    })}
                   </Select>
                 </FormControl>
               </div>
@@ -612,8 +802,8 @@ const CreateProduct = ({ }) => {
                     endAdornment={
                       <>
                         <InputAdornment style={{ marginRight: "15px" }} position="end">
-                          <Tooltip title="Thêm hệ điều hành" TransitionComponent={Zoom}>
-                            <IconButton /* onClick={() => setOpen(true)} */ size="small">
+                          <Tooltip title="Thêm chip" TransitionComponent={Zoom}>
+                            <IconButton onClick={() => setOpenChip(true)} size="small">
                               <AiOutlinePlus className='text-dark' />
                             </IconButton>
                           </Tooltip>
@@ -622,8 +812,11 @@ const CreateProduct = ({ }) => {
                       </>
                     }
                   >
-                    <MenuItem value={0}>Snapdragon 625</MenuItem>
-                    <MenuItem value={1}>Apple A16</MenuItem>
+                    {listChip.map((item) => {
+                      return (
+                        <MenuItem key={item.id} value={item.id}>{item.tenChip}</MenuItem>
+                      )
+                    })}
                   </Select>
                 </FormControl>
               </div>
@@ -642,7 +835,7 @@ const CreateProduct = ({ }) => {
                       <>
                         <InputAdornment style={{ marginRight: "15px" }} position="end">
                           <Tooltip title="Thêm pin" TransitionComponent={Zoom}>
-                            <IconButton /* onClick={() => setOpen(true)} */ size="small">
+                            <IconButton onClick={() => setOpenPin(true)} size="small">
                               <AiOutlinePlus className='text-dark' />
                             </IconButton>
                           </Tooltip>
@@ -651,9 +844,11 @@ const CreateProduct = ({ }) => {
                       </>
                     }
                   >
-                    <MenuItem value={0}>Li-po 5000 mAh</MenuItem>
-                    <MenuItem value={1}>Li-ion 5500 mAh</MenuItem>
-                    <MenuItem value={2}>Polymer 4000 mAh</MenuItem>
+                    {listPin.map((item) => {
+                      return (
+                        <MenuItem key={item.id} value={item.id}>{item.loaiPin + " " + item.dungLuong + " mAh"}</MenuItem>
+                      )
+                    })}
                   </Select>
                 </FormControl>
               </div>
@@ -669,8 +864,8 @@ const CreateProduct = ({ }) => {
                     endAdornment={
                       <>
                         <InputAdornment style={{ marginRight: "15px" }} position="end">
-                          <Tooltip title="Thêm pin" TransitionComponent={Zoom}>
-                            <IconButton /* onClick={() => setOpen(true)} */ size="small">
+                          <Tooltip title="Thêm cổng sạc" TransitionComponent={Zoom}>
+                            <IconButton onClick={() => setOpenSac(true)} size="small">
                               <AiOutlinePlus className='text-dark' />
                             </IconButton>
                           </Tooltip>
@@ -679,7 +874,11 @@ const CreateProduct = ({ }) => {
                       </>
                     }
                   >
-                    <MenuItem value={0}>USB Type-C</MenuItem>
+                    {listSac.map((item) => {
+                      return (
+                        <MenuItem key={item.id} value={item.id}>{item.loaiCongSac}</MenuItem>
+                      )
+                    })}
                   </Select>
                 </FormControl>
               </div>
@@ -689,15 +888,15 @@ const CreateProduct = ({ }) => {
                   <Select className="custom"
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
-                    value={network}
+                    value={theNho}
                     label="Thẻ Nhớ"
-                    onChange={handleChangeNetword}
+                    onChange={handleChangeTheNho}
                     defaultValue={0}
                     endAdornment={
                       <>
                         <InputAdornment style={{ marginRight: "15px" }} position="end">
-                          <Tooltip title="Thêm pin" TransitionComponent={Zoom}>
-                            <IconButton /* onClick={() => setOpen(true)} */ size="small">
+                          <Tooltip title="Thêm thẻ nhớ" TransitionComponent={Zoom}>
+                            <IconButton onClick={() => setOpenTheNho(true)} size="small">
                               <AiOutlinePlus className='text-dark' />
                             </IconButton>
                           </Tooltip>
@@ -706,7 +905,12 @@ const CreateProduct = ({ }) => {
                       </>
                     }
                   >
-                    <MenuItem value={0}>MicroSD</MenuItem>
+                    <MenuItem value={"None"}>Không</MenuItem>
+                    {listTheNho.map((item) => {
+                      return (
+                        <MenuItem key={item.id} value={item.id}>{item.loaiTheNho}</MenuItem>
+                      )
+                    })}
                   </Select>
                 </FormControl>
               </div>
@@ -897,7 +1101,7 @@ const CreateProduct = ({ }) => {
                       <>
                         <InputAdornment style={{ marginRight: "15px" }} position="end">
                           <Tooltip title="Thêm màn hình" TransitionComponent={Zoom}>
-                            <IconButton /* onClick={() => setOpen(true)} */ size="small">
+                            <IconButton onClick={() => setOpenManHinh(true)} size="small">
                               <AiOutlinePlus className='text-dark' />
                             </IconButton>
                           </Tooltip>
@@ -906,8 +1110,11 @@ const CreateProduct = ({ }) => {
                       </>
                     }
                   >
-                    <MenuItem value={0}>Super Amoled (1920 x 1080 pixels) 6.5"</MenuItem>
-                    <MenuItem value={1}>Amoled (728 x 1420 pixels) 7"</MenuItem>
+                    {listManHinh.map((item) => {
+                      return (
+                        <MenuItem key={item.id} value={item.id}>{item.loaiManHinh + " " + `(${item.doPhanGiaiManHinh.chieuRong + " x " + item.doPhanGiaiManHinh.chieuDai} pixels) ` + item.kichThuoc + `"`}</MenuItem>
+                      )
+                    })}
                   </Select>
                 </FormControl>
               </div>
@@ -925,7 +1132,7 @@ const CreateProduct = ({ }) => {
                       <>
                         <InputAdornment style={{ marginRight: "15px" }} position="end">
                           <Tooltip title="Thêm thẻ SIM" TransitionComponent={Zoom}>
-                            <IconButton /* onClick={() => setOpen(true)} */ size="small">
+                            <IconButton onClick={() => setOpenTheSim(true)} size="small">
                               <AiOutlinePlus className='text-dark' />
                             </IconButton>
                           </Tooltip>
@@ -934,14 +1141,14 @@ const CreateProduct = ({ }) => {
                       </>
                     }
                     renderValue={(selected) => selected.map(id => {
-                      const sim = sims.find(c => c.id === id);
-                      return sim ? sim.loaiTheSim : '';
+                      const sim = listTheSim.find(c => c.id === id);
+                      return sim ? sim.simMultiple === SimMultiple.SINGLE_SIM ? `${'1 ' + sim.loaiTheSim}` : `${'2 ' + sim.loaiTheSim}` : '';
                     }).join(' & ')}
                   >
-                    {sims.map((c) => (
+                    {listTheSim.map((c) => (
                       <MenuItem key={c.id} value={c.id}>
                         <Checkbox checked={selectedSim.indexOf(c.id) > -1} />
-                        <ListItemText primary={c.loaiTheSim} />
+                        <ListItemText primary={c.simMultiple === SimMultiple.SINGLE_SIM ? `${'1 ' + c.loaiTheSim}` : `${'2 ' + c.loaiTheSim}`} />
                       </MenuItem>
                     ))}
                   </Select>
@@ -981,25 +1188,48 @@ const CreateProduct = ({ }) => {
                 </FormControl>
               </div>
             </div>
-            <div className="mt-4 d-flex justify-content-end">
-              <Button
-                onClick={handleRedirectUpdateProduct}
-                className="rounded-2 button-mui"
-                type="primary"
-                style={{ height: "40px", width: "auto", fontSize: "15px" }}
-              >
-                <span
-                  className=""
-                  style={{ marginBottom: "2px", fontWeight: "500" }}
-                >
-                  Xác Nhận
-                </span>
-              </Button>
-            </div>
           </div>
         </div>
       </div>
       <div style={{ height: "25px" }}></div>
+      <CreateHang
+        open={openHang}
+        close={handleCloseOpenHang}
+        getAll={getListHang}
+        hangs={listHang}
+      />
+      <CreateChip
+        open={openChip}
+        close={handleCloseOpenChip}
+        getAll={getListChip}
+        chips={listChip}
+      />
+      <CreateSac
+        open={openSac}
+        close={handleCloseOpenSac}
+        getAll={getListSac}
+        sacs={listSac}
+      />
+      <CreateTheNho
+        open={openTheNho}
+        close={handleCloseOpenTheNho}
+        getAll={getListTheNho}
+        theNhos={listTheNho}
+      />
+      <CreateScreen
+        open={openManHinh}
+        close={handleCloseOpenManHinh}
+        getAll={getListManHinh}
+        screens={listManHinh}
+      />
+      <CreateSimCard
+        open={openTheSim}
+        close={handleCloseOpenTheSim}
+        getAll={getListTheSim}
+        sims={listTheSim}
+      />
+      <CreatePin open={openPin} close={handleCloseOpenPin} getAll={getListPin} pins={listPin} />
+      <CreateCauHinh productName={productName} getProduct={product} />
       {isLoading && <LoadingIndicator />}
     </>
   )

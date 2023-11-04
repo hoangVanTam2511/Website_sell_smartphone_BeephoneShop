@@ -38,10 +38,6 @@ import CreateSimCard from "./create-simcard";
 import CreateMauSac from "./create-mau-sac";
 import CreateCameraSau from "./create-camera-sau";
 
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
-
 const ManagementRearCameras = () => {
   const navigate = useNavigate();
   const [cameraRears, setCameraRears] = useState([]);
@@ -262,33 +258,19 @@ const ManagementRearCameras = () => {
           <div className="mx-auto">
             <Pagination
               color="primary" /* page={parseInt(currentPage)} key={refreshPage} count={totalPages} */
-              // onChange={handlePageChange}
+            // onChange={handlePageChange}
             />
           </div>
           <div className="mt-4"></div>
         </Card>
       </div>
       {isLoading && <LoadingIndicator />}
-      <Dialog
+      <CreateCameraSau
         open={open}
-        TransitionComponent={Transition}
-        keepMounted
-        onClose={handleClose}
-        maxWidth="md"
-        maxHeight="md"
-        sx={{
-          marginBottom: "170px",
-        }}
-      >
-        <DialogContent className="">
-          <CreateCameraSau
-            close={handleClose}
-            getAll={getListCameraRear}
-            cameraRear={cameraRears}
-          />
-        </DialogContent>
-        <div className="mt-3"></div>
-      </Dialog>
+        close={handleClose}
+        getAll={getListCameraRear}
+        cameraRear={cameraRears}
+      />
     </>
   );
 };

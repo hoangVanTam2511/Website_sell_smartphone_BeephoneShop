@@ -757,10 +757,9 @@ const PointOfSales = () => {
   }
 
   useEffect(() => {
-    // setIsLoading(true);
-    // getAllOrdersPending();
-    // getAllCustomers();
-    // getAllProducts();
+    setIsLoading(true);
+    getAllOrdersPending();
+    getAllCustomers();
   }, []);
 
   const [openProducts, setOpenProducts] = useState(false);

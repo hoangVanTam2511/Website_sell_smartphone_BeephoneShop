@@ -1,3 +1,8 @@
+.underline-blue {
+        text-decoration: underline;
+        text-decoration-color: blue;
+        color: blue;
+    }
 .table-cart .ant-table-tbody > tr.ant-table-row:hover > td {
     background: white !important;
 }

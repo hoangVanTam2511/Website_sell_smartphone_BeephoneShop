@@ -13,12 +13,10 @@ import Checkbox from '@mui/joy/Checkbox';
 import List from '@mui/joy/List';
 import ListItem from '@mui/joy/ListItem';
 import Done from '@mui/icons-material/Done';
-import { ModalUpdateCauHinh } from "./modal-update-cau-hinh";
 import { Select as SelectJoy } from '@mui/joy';
 import { Option as OptionJoy } from '@mui/joy';
 import TextFieldSearchColors from "./text-field-search-colors";
 import DeleteIcon from '@mui/icons-material/Delete';
-import { FaTrashAlt } from "react-icons/fa";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -303,19 +301,19 @@ const ModalCauHinh = ({ open, close, add }) => {
                   setValueColorFinalSelected(record.colors);
                   setSelectedId(record.id)
                 }}
-                className="me-2" >
+                className="me-2" style={{ height: "40px" }}>
                 <BorderColorOutlinedIcon color="primary" />
               </IconButton>
             </Tooltip>
             <Tooltip title="Xóa" TransitionComponent={Zoom}>
-              <IconButton className=''
+              <IconButton className='' style={{ height: "40px" }}
                 onClick={() => {
                   const newCauHinhs = cauHinhs.filter((cauHinh) => cauHinh.id !== record.id);
                   setCauHinhs(newCauHinhs);
                   handleOpenAlertVariant("Xóa cấu hình thành công!", Notistack.SUCCESS)
                 }}
               >
-                <FaTrashAlt color="#e5383b" />
+                <DeleteIcon sx={{ color: "#e5383b" }} />
               </IconButton>
             </Tooltip>
           </div>

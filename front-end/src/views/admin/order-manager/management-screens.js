@@ -26,9 +26,6 @@ import LoadingIndicator from "../../../utilities/loading";
 import CreateScreen from "./create-screen";
 import { apiURLDisplay } from "../../../service/api";
 import "./style.css";
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
 const ManagementScreens = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -269,33 +266,19 @@ const ManagementScreens = () => {
           <div className="mx-auto">
             <Pagination
               color="primary" /* page={parseInt(currentPage)} key={refreshPage} count={totalPages} */
-              // onChange={handlePageChange}
+            // onChange={handlePageChange}
             />
           </div>
           <div className="mt-4"></div>
         </Card>
       </div>
       {isLoading && <LoadingIndicator />}
-      <Dialog
+      <CreateScreen
         open={open}
-        TransitionComponent={Transition}
-        keepMounted
-        onClose={handleClose}
-        maxWidth="md"
-        maxHeight="md"
-        sx={{
-          marginBottom: "40px",
-        }}
-      >
-        <DialogContent className="">
-          <CreateScreen
-            close={handleClose}
-            getAll={loadDataList}
-            screens={screens}
-          />
-        </DialogContent>
-        <div className="mt-3"></div>
-      </Dialog>
+        close={handleClose}
+        getAll={loadDataList}
+        screens={screens}
+      />
     </>
   );
 };

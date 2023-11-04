@@ -106,6 +106,10 @@ import ManagementFrontCameras from '../views/admin/order-manager/management-fron
 import CreateCameraTruoc from '../views/admin/order-manager/create-camera-truoc';
 import ManagementRearCameras from '../views/admin/order-manager/management-rear-cameras';
 import CreateProduct from '../views/admin/order-manager/create-product';
+import UpdateMauSac from "../views/admin/order-manager/update-mau-sac";
+import ManagementTheNhos from "../views/admin/order-manager/management-the-nho";
+import CreateTheNho from "../views/admin/order-manager/create-the-nho";
+import UpdateProduct from "../views/admin/order-manager/update-product";
 
 
 export const DefaultRouter = [
