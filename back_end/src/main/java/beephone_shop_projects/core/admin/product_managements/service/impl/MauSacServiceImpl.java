@@ -14,7 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 @Service
-public class MauSacServiceImpl extends AbstractServiceImpl<MauSac, MauSacResponse, MauSacRequest, String> implements MauSacService {
+public class MauSacServiceImpl extends AbstractServiceImpl<MauSac, MauSacResponse, MauSacRequest, String> {
 
     public MauSacServiceImpl(MauSacRepository repo, MauSacConverter converter) {
         super(repo, converter);
@@ -23,12 +23,10 @@ public class MauSacServiceImpl extends AbstractServiceImpl<MauSac, MauSacRespons
     @Autowired
     private MauSacRepository mauSacRepository;
 
-    @Override
     public Page<MauSac> findAllMauSac() {
         return null;
     }
 
-    @Override
     public MauSac updateMauSac(MauSacRequest mauSacRequest, String id) throws Exception {
         MauSac mauSac = mauSacRepository.findOneById(id);
         if (mauSac != null) {
@@ -39,7 +37,6 @@ public class MauSacServiceImpl extends AbstractServiceImpl<MauSac, MauSacRespons
         return null;
     }
 
-    @Override
     public MauSac doiTrangThai(String id) throws Exception {
         MauSac mauSac = mauSacRepository.findOneById(id);
         if (mauSac.getStatus() == StatusCommon.ACTIVE){
