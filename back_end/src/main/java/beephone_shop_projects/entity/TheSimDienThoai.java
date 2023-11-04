@@ -1,6 +1,5 @@
 package beephone_shop_projects.entity;
 
-import beephone_shop_projects.entity.base.IsIdentified;
 import beephone_shop_projects.entity.base.PrimaryEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
@@ -13,20 +12,24 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
+import java.math.BigDecimal;
+
 @Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "imei")
-public class Imei extends PrimaryEntity implements IsIdentified {
+@Table(name = "the_sim_dien_thoai")
+public class TheSimDienThoai extends PrimaryEntity implements Serializable {
 
-    private String soImei;
+  @JsonIgnore
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_san_pham")
+  private SanPham sanPham;
 
-    private Integer trangThai;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_the_sim")
+  private TheSim theSim;
 
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_chi_tiet_san_pham")
-    private SanPhamChiTiet sanPhamChiTiet;
 }

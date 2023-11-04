@@ -22,7 +22,7 @@ public class Rom extends PrimaryEntity implements IsIdentified {
 
   private String ma;
 
-  private Integer kichThuoc;
+  private Integer dungLuong;
 
   @Enumerated(EnumType.ORDINAL)
   private StatusCommon status;

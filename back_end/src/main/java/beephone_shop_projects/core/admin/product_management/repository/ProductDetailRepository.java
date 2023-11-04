@@ -18,20 +18,30 @@ public interface ProductDetailRepository extends ISanPhamChiTietRepository {
   List<SanPhamChiTiet> getAll();
 
   @Query("""
-                select P, I, C, CH from SanPhamChiTiet P join fetch P.images I
-                join fetch P.sanPham C
-                join fetch C.pin join fetch C.hang join fetch C.dongSanPham
-                join fetch C.manHinh join fetch C.chip join P.cauHinh CH
-                join fetch CH.mauSac join fetch CH.ram join fetch CH.rom
+                select P from SanPhamChiTiet P
+                left join fetch P.sanPham S 
+                left join fetch S.theNho
+                left join fetch S.theSims
+                left join fetch S.pin
+                left join fetch S.manHinh
+                left join fetch S.congSac
+                left join fetch S.chip
+                left join fetch S.hang
+                left join fetch S.chip
           """)
   List<SanPhamChiTiet> getProducts();
 
   @Query("""
-                select P, I, C, CH from SanPhamChiTiet P join fetch P.images I
-                join fetch P.sanPham C
-                join fetch C.pin join fetch C.hang join fetch C.dongSanPham
-                join fetch C.manHinh join fetch C.chip join P.cauHinh CH
-                join fetch CH.mauSac join fetch CH.ram join fetch CH.rom
+                select P from SanPhamChiTiet P
+                left join fetch P.sanPham S
+                left join fetch S.theNho
+                left join fetch S.theSims
+                left join fetch S.pin
+                left join fetch S.manHinh
+                left join fetch S.congSac
+                left join fetch S.chip
+                left join fetch S.hang
+                left join fetch S.chip
                 where P.id = ?1
           """)
   Optional<SanPhamChiTiet> findProductById(String id);

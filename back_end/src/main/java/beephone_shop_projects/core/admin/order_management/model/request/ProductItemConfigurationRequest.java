@@ -1,4 +1,4 @@
-package beephone_shop_projects.core.admin.order_management.model.response;
+package beephone_shop_projects.core.admin.order_management.model.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,11 +12,9 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductItemResponse {
+public class ProductItemConfigurationRequest {
 
   private String id;
-
-  private String maCauHinh;
 
   private String ma;
 
@@ -24,15 +22,12 @@ public class ProductItemResponse {
 
   private BigDecimal donGia;
 
-  private ColorResponse mauSac;
+  private ColorRequest color;
 
-  private RamResponse ram;
+  private RamRequest ram;
 
-  private RomResponse rom;
+  private RomRequest rom;
 
-  private List<ProductItemImeiResponse> imeis;
-
-  private ProductResponse sanPham;
-
+  private List<ProductItemImeiRequest> imeis;
 
 }

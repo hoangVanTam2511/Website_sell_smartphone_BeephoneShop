@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductItemResponse {
+public class ProductItemConfigurationResponse {
 
   private String id;
 
@@ -33,6 +33,5 @@ public class ProductItemResponse {
   private List<ProductItemImeiResponse> imeis;
 
   private ProductResponse sanPham;
-
 
 }

@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class MauSacServiceImpl extends AbstractServiceImpl<MauSac, MauSacResponse, MauSacRequest, String> implements MauSacService {
 
@@ -48,6 +50,11 @@ public class MauSacServiceImpl extends AbstractServiceImpl<MauSac, MauSacRespons
             mauSac.setStatus(StatusCommon.ACTIVE);
         }
         return mauSacRepository.save(mauSac);
+    }
+
+    @Override
+    public List<MauSacResponse> searchMauSac(MauSacRequest mauSacRequest) {
+        return null;
     }
 
 

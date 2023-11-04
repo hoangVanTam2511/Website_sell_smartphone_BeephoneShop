@@ -29,45 +29,46 @@ public class MauSacRepositoryImpl extends AbstractRepositoryImpl<MauSac, String>
 
     @Override
     public Page<MauSac> findAllMauSac() {
-        List<MauSac> mauSacs = null;
-        Long totalElements = 0L;
-        try (EntityManager entityManager = this.entityManager) {
-            CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-            CriteriaQuery<Voucher> criteriaQuery = criteriaBuilder.createQuery(Voucher.class);
-
-            Root<Voucher> root = criteriaQuery.from(Voucher.class);
-            criteriaQuery.select(root);
-
-            Path<Object> sortByField = root.get("createdAt");
-            Order orderByAscending = criteriaBuilder.desc(sortByField);
-            criteriaQuery.orderBy(orderByAscending);
-
-            CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(long.class);
-            Root<Voucher> countRoot = countQuery.from(Voucher.class);
-
-            countQuery.select(criteriaBuilder.count(countRoot));
-            List<Predicate> predicates = new ArrayList<>();
-
-            List<Predicate> countPredicates = new ArrayList<>();
-            Predicate predicate = getPredicate(root, Voucher.class, criteriaBuilder, request.getKeyword());
-            Predicate countPredicate = getPredicate(countRoot, Voucher.class, criteriaBuilder, request.getKeyword());
-
-            predicates.add(predicate);
-            countPredicates.add(countPredicate);
-
-
-            criteriaQuery.where(predicates.toArray(new Predicate[0]));
-            countQuery.where(countPredicates.toArray(new Predicate[0]));
-
-            TypedQuery<Voucher> typedQuery =
-                    entityManager.createQuery(criteriaQuery).setFirstResult(pageable.getPageNumber() * pageable.getPageSize()).setMaxResults(pageable.getPageSize());
-            vouchers = typedQuery.getResultList();
-            totalElements = entityManager.createQuery(countQuery).getSingleResult();
-
-        } catch (Exception e) {
-            throw e;
-        }
-        return new PageImpl<>(vouchers, pageable, totalElements);
+//        List<MauSac> mauSacs = null;
+//        Long totalElements = 0L;
+//        try (EntityManager entityManager = this.entityManager) {
+//            CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+//            CriteriaQuery<Voucher> criteriaQuery = criteriaBuilder.createQuery(Voucher.class);
+//
+//            Root<Voucher> root = criteriaQuery.from(Voucher.class);
+//            criteriaQuery.select(root);
+//
+//            Path<Object> sortByField = root.get("createdAt");
+//            Order orderByAscending = criteriaBuilder.desc(sortByField);
+//            criteriaQuery.orderBy(orderByAscending);
+//
+//            CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(long.class);
+//            Root<Voucher> countRoot = countQuery.from(Voucher.class);
+//
+//            countQuery.select(criteriaBuilder.count(countRoot));
+//            List<Predicate> predicates = new ArrayList<>();
+//
+//            List<Predicate> countPredicates = new ArrayList<>();
+//            Predicate predicate = getPredicate(root, Voucher.class, criteriaBuilder, request.getKeyword());
+//            Predicate countPredicate = getPredicate(countRoot, Voucher.class, criteriaBuilder, request.getKeyword());
+//
+//            predicates.add(predicate);
+//            countPredicates.add(countPredicate);
+//
+//
+//            criteriaQuery.where(predicates.toArray(new Predicate[0]));
+//            countQuery.where(countPredicates.toArray(new Predicate[0]));
+//
+//            TypedQuery<Voucher> typedQuery =
+//                    entityManager.createQuery(criteriaQuery).setFirstResult(pageable.getPageNumber() * pageable.getPageSize()).setMaxResults(pageable.getPageSize());
+//            vouchers = typedQuery.getResultList();
+//            totalElements = entityManager.createQuery(countQuery).getSingleResult();
+//
+//        } catch (Exception e) {
+//            throw e;
+//        }
+//        return new PageImpl<>(vouchers, pageable, totalElements);
+        return null;
     }
 
     protected Predicate getPredicate(Root<Voucher> root, Class<?> entity, CriteriaBuilder criteriaBuilder, String keyword) {
