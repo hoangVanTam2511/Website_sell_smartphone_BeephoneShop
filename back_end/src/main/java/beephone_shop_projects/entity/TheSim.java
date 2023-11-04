@@ -30,11 +30,6 @@ public class TheSim extends PrimaryEntity implements IsIdentified {
   @Enumerated(EnumType.ORDINAL)
   private SimMultiple simMultiple;
 
-  @JsonIgnore
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "id_san_pham")
-  private SanPham sanPham;
-
   @Enumerated(EnumType.ORDINAL)
   private StatusCommon status;
 

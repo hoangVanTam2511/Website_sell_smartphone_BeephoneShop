@@ -1,7 +1,6 @@
 package beephone_shop_projects.core.admin.product_management.repository;
 
 import beephone_shop_projects.core.admin.product_management.model.responce.RamResponce;
-import beephone_shop_projects.core.admin.product_management.model.responce.RomResponce;
 import beephone_shop_projects.entity.Ram;
 import beephone_shop_projects.repository.IRamRepository;
 import jakarta.transaction.Transactional;
@@ -26,7 +25,7 @@ public interface RamRepository extends IRamRepository {
 
     List<Ram> findAllByDelected(Boolean delected);
 
-    Ram findByKichThuoc(Integer kichThuoc);
+    Ram findByDungLuong(Integer kichThuoc);
 
     @Query(value = """
     SELECT SUBSTRING(ma,5) + 1  FROM ram ORDER BY ma DESC LIMIT 0,1

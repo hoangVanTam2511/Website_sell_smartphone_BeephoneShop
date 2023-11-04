@@ -46,7 +46,10 @@ import generateRandomCode from "../../../utilities/randomCode";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { Notistack } from "./enum";
 
-const CreateChip = ({ close, getAll, chips }) => {
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+const CreateChip = ({ open, close, getAll, chips }) => {
   const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = React.useState(false);
@@ -93,64 +96,79 @@ const CreateChip = ({ close, getAll, chips }) => {
 
   return (
     <>
-      <div className="mt-4" style={{ width: "700px" }}>
-        <div className="container" style={{}}>
-          <div className="text-center" style={{}}>
-            <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>
-              THÊM CHIP
-            </span>
-          </div>
-          <div className="mx-auto mt-3 pt-2">
-            <div>
-              <Autocomplete
-                fullWidth
-                className="custom"
-                id="free-solo-demo"
-                freeSolo
-                inputValue={tenChip}
-                onInputChange={handleChangeChip}
-                options={uniqueChip}
-                renderInput={(params) => (
-                  <TextField {...params} label="Tên Chip" />
-                )}
-              />
-            </div>
-            <div className="mt-3" style={{}}>
-              <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">
-                  Trạng Thái
-                </InputLabel>
-                <Select
-                  className="custom"
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={status}
-                  label="Trạng Thái"
-                  onChange={handleChangeStatus}
-                >
-                  <MenuItem value={0}>Hoạt Động</MenuItem>
-                  <MenuItem value={1}>Ngừng Hoạt Động</MenuItem>
-                </Select>
-              </FormControl>
-            </div>
-            <div className="mt-4 pt-1 d-flex justify-content-end">
-              <Button
-                onClick={() => addChip()}
-                className="rounded-2 button-mui"
-                type="primary"
-                style={{ height: "40px", width: "auto", fontSize: "15px" }}
-              >
-                <span
-                  className=""
-                  style={{ marginBottom: "2px", fontWeight: "500" }}
-                >
-                  Xác Nhận
+      <Dialog
+        open={open}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={close}
+        maxWidth="md"
+        maxHeight="md"
+        sx={{
+          marginBottom: "170px",
+        }}
+      >
+        <DialogContent className="">
+          <div className="mt-4" style={{ width: "700px" }}>
+            <div className="container" style={{}}>
+              <div className="text-center" style={{}}>
+                <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>
+                  THÊM CHIP
                 </span>
-              </Button>
+              </div>
+              <div className="mx-auto mt-3 pt-2">
+                <div>
+                  <Autocomplete
+                    fullWidth
+                    className="custom"
+                    id="free-solo-demo"
+                    freeSolo
+                    inputValue={tenChip}
+                    onInputChange={handleChangeChip}
+                    options={uniqueChip}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Tên Chip" />
+                    )}
+                  />
+                </div>
+                <div className="mt-3" style={{}}>
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">
+                      Trạng Thái
+                    </InputLabel>
+                    <Select
+                      className="custom"
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={status}
+                      label="Trạng Thái"
+                      onChange={handleChangeStatus}
+                    >
+                      <MenuItem value={0}>Hoạt Động</MenuItem>
+                      <MenuItem value={1}>Ngừng Hoạt Động</MenuItem>
+                    </Select>
+                  </FormControl>
+                </div>
+                <div className="mt-4 pt-1 d-flex justify-content-end">
+                  <Button
+                    onClick={() => addChip()}
+                    className="rounded-2 button-mui"
+                    type="primary"
+                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                  >
+                    <span
+                      className=""
+                      style={{ marginBottom: "2px", fontWeight: "500" }}
+                    >
+                      Xác Nhận
+                    </span>
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+        </DialogContent>
+        <div className="mt-3"></div>
+      </Dialog>
       {isLoading && <LoadingIndicator />}
     </>
   );

@@ -1,5 +1,12 @@
 package beephone_shop_projects.core.admin.order_management.model.response;
 
+import beephone_shop_projects.entity.Chip;
+import beephone_shop_projects.entity.CongSac;
+import beephone_shop_projects.entity.Hang;
+import beephone_shop_projects.entity.ManHinh;
+import beephone_shop_projects.entity.Pin;
+import beephone_shop_projects.entity.TheSim;
+import beephone_shop_projects.infrastructure.constant.OperatingType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,20 +22,22 @@ public class ProductResponse {
 
   private String tenSanPham;
 
-//  private List<ProductItemResponse> productItems;
+  private OperatingType operatingType;
 
-//  private String heDieuHanh;
-//
-//  private String sim;
-//
-//  private String congSac;
-//
-//  private String dongSanPham;
-//
-//  private String chip;
-//
-//  private String manHinh;
-//
-//  private String pin;
+  private List<TheSim> theSims;
+
+  private CongSac congSac;
+
+  private String moTa;
+
+  private Hang hang;
+
+  private Chip chip;
+
+  private ManHinh manHinh;
+
+  private Pin pin;
+
+  private Integer trangThai;
 
 }

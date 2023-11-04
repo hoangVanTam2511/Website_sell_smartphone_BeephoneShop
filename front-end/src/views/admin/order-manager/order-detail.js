@@ -1272,7 +1272,7 @@ const OrderDetail = (props) => {
                           sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                         >
                           <TableCell align='center'>
-                            <img src={item && item.sanPhamChiTiet.images[0].duongDan} class='' alt="" style={{ width: "155px", height: "155px" }} />
+                            <img /* src={item && item.sanPhamChiTiet.images[0].duongDan} */ class='' alt="" style={{ width: "155px", height: "155px" }} />
                           </TableCell>
                           <TableCell align="center" style={{ width: "350px" }}>
                             <div>
@@ -1312,7 +1312,7 @@ const OrderDetail = (props) => {
                                     label={
                                       <>
                                         <div>
-                                          <span className="p-2" style={{ fontSize: "15px", fontWeight: "500" }}>{item.sanPhamChiTiet.cauHinh.ram.kichThuoc + "/" + item.sanPhamChiTiet.cauHinh.rom.kichThuoc + "GB"}</span>
+                                          <span className="p-2" style={{ fontSize: "15px", fontWeight: "500" }}>{item.sanPhamChiTiet.ram.dungLuong + "/" + item.sanPhamChiTiet.rom.dungLuong + "GB"}</span>
                                         </div>
                                       </>
                                     }
@@ -1356,7 +1356,7 @@ const OrderDetail = (props) => {
                                     label={
                                       <>
                                         <div className="">
-                                          <span className="p-2" style={{ fontSize: "15px", fontWeight: "500" }}>{item.sanPhamChiTiet.cauHinh.mauSac.tenMauSac}</span>
+                                          <span className="p-2" style={{ fontSize: "15px", fontWeight: "500" }}>{item.sanPhamChiTiet.mauSac.tenMauSac}</span>
                                         </div>
                                       </>
                                     }
