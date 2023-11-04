@@ -1,7 +1,10 @@
 package beephone_shop_projects.core.admin.account_management.service;
 
 import beephone_shop_projects.core.admin.account_management.model.request.CreateAccountRequest;
+import beephone_shop_projects.core.admin.account_management.model.request.SearchAccountRequest;
+import beephone_shop_projects.core.admin.voucher_management.model.request.FindVoucherRequest;
 import beephone_shop_projects.entity.Account;
+import beephone_shop_projects.entity.Voucher;
 import beephone_shop_projects.infrastructure.constant.StatusAccountCus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +16,7 @@ import java.util.UUID;
 
 public interface NhanVienService {
     Page<Account> getAllNV(Integer pageNo);
+    Page<Account> getAll(SearchAccountRequest request);
 
     List<Account> getAllNVienNoPage();
 

@@ -1,22 +1,28 @@
 import React, { useState, useEffect } from "react";
-import { styled } from '@mui/material/styles';
+import { styled } from "@mui/material/styles";
 import { Row, Col } from "react-bootstrap";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Button, Table } from "antd";
 import axios from "axios";
-import { FaTruck, FaRegCalendarCheck, FaRegFileAlt, FaRegCalendarTimes, FaBusinessTime } from "react-icons/fa";
-import { Table as TableMui, Tooltip, Zoom } from '@mui/material';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import LoadingIndicator from '../../../utilities/loading';
-import EditIcon from '@mui/icons-material/Edit';
-import Radio from '@mui/joy/Radio';
-import RadioGroup from '@mui/joy/RadioGroup';
-import Sheet from '@mui/joy/Sheet';
+import {
+  FaTruck,
+  FaRegCalendarCheck,
+  FaRegFileAlt,
+  FaRegCalendarTimes,
+  FaBusinessTime,
+} from "react-icons/fa";
+import { Table as TableMui, Tooltip, Zoom } from "@mui/material";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
+import LoadingIndicator from "../../../utilities/loading";
+import EditIcon from "@mui/icons-material/Edit";
+import Radio from "@mui/joy/Radio";
+import RadioGroup from "@mui/joy/RadioGroup";
+import Sheet from "@mui/joy/Sheet";
 import Card from "../../../components/Card";
 import styleCss from "./style.css";
 import { format } from "date-fns";
@@ -27,8 +33,8 @@ import {
   OrderHistoryDialog,
   ConfirmDialog,
 } from "./AlertDialogSlide.js";
-import { OrderStatusString, OrderTypeString, Notistack } from './enum';
-import useCustomSnackbar from '../../../utilities/notistack';
+import { OrderStatusString, OrderTypeString, Notistack } from "./enum";
+import useCustomSnackbar from "../../../utilities/notistack";
 
 const OrderDetail = (props) => {
   const navigate = useNavigate();
@@ -51,13 +57,13 @@ const OrderDetail = (props) => {
       .then((response) => {
         setOrder(response.data.data);
         setOrderHistories(response.data.data.orderHistories);
-        setPaymentHistorys(response.data.data.paymentMethods)
+        setPaymentHistorys(response.data.data.paymentMethods);
         setIsLoading(false);
       })
       .catch((error) => {
         console.error(error);
       });
-  }
+  };
 
   useEffect(() => {
     getOrderItemsById();
@@ -65,48 +71,59 @@ const OrderDetail = (props) => {
 
   const totalItem = (amount, price) => {
     return amount * price;
-  }
+  };
 
   const totalOrder = (total, discount, feeShip) => {
     return total - discount + feeShip;
-  }
+  };
 
   const IconTrash = () => {
     return (
       <>
-        <svg fill="none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-          <path fill-rule="evenodd" clip-rule="evenodd" d="M20.2871 5.24297C20.6761 5.24297 21 5.56596 21 5.97696V6.35696C21 6.75795 20.6761 7.09095 20.2871 7.09095H3.71385C3.32386 7.09095 3 6.75795 3 6.35696V5.97696C3 5.56596 3.32386 5.24297 3.71385 5.24297H6.62957C7.22185 5.24297 7.7373 4.82197 7.87054 4.22798L8.02323 3.54598C8.26054 2.61699 9.0415 2 9.93527 2H14.0647C14.9488 2 15.7385 2.61699 15.967 3.49699L16.1304 4.22698C16.2627 4.82197 16.7781 5.24297 17.3714 5.24297H20.2871ZM18.8058 19.134C19.1102 16.2971 19.6432 9.55712 19.6432 9.48913C19.6626 9.28313 19.5955 9.08813 19.4623 8.93113C19.3193 8.78413 19.1384 8.69713 18.9391 8.69713H5.06852C4.86818 8.69713 4.67756 8.78413 4.54529 8.93113C4.41108 9.08813 4.34494 9.28313 4.35467 9.48913C4.35646 9.50162 4.37558 9.73903 4.40755 10.1359C4.54958 11.8992 4.94517 16.8102 5.20079 19.134C5.38168 20.846 6.50498 21.922 8.13206 21.961C9.38763 21.99 10.6811 22 12.0038 22C13.2496 22 14.5149 21.99 15.8094 21.961C17.4929 21.932 18.6152 20.875 18.8058 19.134Z" fill="currentColor" />
+        <svg
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+        >
+          <path
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M20.2871 5.24297C20.6761 5.24297 21 5.56596 21 5.97696V6.35696C21 6.75795 20.6761 7.09095 20.2871 7.09095H3.71385C3.32386 7.09095 3 6.75795 3 6.35696V5.97696C3 5.56596 3.32386 5.24297 3.71385 5.24297H6.62957C7.22185 5.24297 7.7373 4.82197 7.87054 4.22798L8.02323 3.54598C8.26054 2.61699 9.0415 2 9.93527 2H14.0647C14.9488 2 15.7385 2.61699 15.967 3.49699L16.1304 4.22698C16.2627 4.82197 16.7781 5.24297 17.3714 5.24297H20.2871ZM18.8058 19.134C19.1102 16.2971 19.6432 9.55712 19.6432 9.48913C19.6626 9.28313 19.5955 9.08813 19.4623 8.93113C19.3193 8.78413 19.1384 8.69713 18.9391 8.69713H5.06852C4.86818 8.69713 4.67756 8.78413 4.54529 8.93113C4.41108 9.08813 4.34494 9.28313 4.35467 9.48913C4.35646 9.50162 4.37558 9.73903 4.40755 10.1359C4.54958 11.8992 4.94517 16.8102 5.20079 19.134C5.38168 20.846 6.50498 21.922 8.13206 21.961C9.38763 21.99 10.6811 22 12.0038 22C13.2496 22 14.5149 21.99 15.8094 21.961C17.4929 21.932 18.6152 20.875 18.8058 19.134Z"
+            fill="currentColor"
+          />
         </svg>
       </>
-    )
-  }
+    );
+  };
 
   const updateStatusOrderDelivery = async (orderRequest) => {
     setIsLoading(true);
     try {
-      await axios.put(`http://localhost:8080/api/orders/${id}`, orderRequest, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        params: {
-          isUpdateStatusOrderDelivery: true,
-        }
-      }).then((response) => {
-        getOrderItemsById();
-        setIsLoading(false);
-        handleOpenAlertVariant("Xác nhận thành công", "success");
-      })
+      await axios
+        .put(`http://localhost:8080/api/orders/${id}`, orderRequest, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          params: {
+            isUpdateStatusOrderDelivery: true,
+          },
+        })
+        .then((response) => {
+          getOrderItemsById();
+          setIsLoading(false);
+          handleOpenAlertVariant("Xác nhận thành công", "success");
+        });
     } catch (error) {
       const message = error.response.data.message;
       setIsLoading(false);
       handleOpenAlertVariant(message, Notistack.ERROR);
-      console.log(error.response.data)
+      console.log(error.response.data);
     }
   };
 
-  const handlePaymentOrder = () => {
-
-  }
+  const handlePaymentOrder = () => {};
 
   const soTienThanhToan = 15000000;
   const handleAddPayment = () => {
@@ -129,51 +146,74 @@ const OrderDetail = (props) => {
       dataIndex: "loaiThaoTac",
       render: (text, item) => (
         <div className="ms-5">
-          <span className="text-center" style={{ fontWeight: "" }}>{
-            item.loaiThaoTac == 0
-              ?
+          <span className="text-center" style={{ fontWeight: "" }}>
+            {item.loaiThaoTac == 0 ? (
               <>
-                <FaRegFileAlt color="#09a129" size={"40px"} style={{ marginBottom: "5px" }} />
+                <FaRegFileAlt
+                  color="#09a129"
+                  size={"40px"}
+                  style={{ marginBottom: "5px" }}
+                />
                 <span className="ms-4">{item.thaoTac}</span>
               </>
-              : item.loaiThaoTac == 1
-                ?
-                <>
-                  <FaRegFileAlt color="#09a129" size={"40px"} style={{ marginBottom: "5px" }} />
-                  <span className="ms-4">{item.thaoTac}</span>
-                </>
-                : item.loaiThaoTac == 2
-                  ?
-                  <>
-                    <FaBusinessTime color="#ffd500" size={"40px"} style={{ marginBottom: "5px" }} />
-                    <span className="ms-4">{item.thaoTac}</span>
-                  </>
-                  : item.loaiThaoTac == 3
-                    ?
-                    <>
-                      <FaTruck color="#09a129" size={"40px"} style={{ marginBottom: "5px" }} />
-                      <span className="ms-4">{item.thaoTac}</span>
-                    </>
-                    : item.loaiThaoTac == 4
-                      ?
-                      <>
-                        <FaRegCalendarCheck color="#09a129" size={"40px"} style={{ marginBottom: "5px" }} />
-                        <span className="ms-4">{item.thaoTac}</span>
-                      </>
-                      : item.loaiThaoTac == 5
-                        ?
-                        <>
-                          <FaRegCalendarTimes color="#e5383b" size={"40px"} style={{ marginBottom: "5px" }} />
-                          <span className="ms-4">{item.thaoTac}</span>
-                        </>
-                        : item.loaiThaoTac == 6
-                          ?
-                          <>
-                            <FaRegCalendarCheck color="#09a129" size={"40px"} style={{ marginBottom: "5px" }} />
-                            <span className="ms-4">{item.thaoTac}</span>
-                          </>
-                          : ""
-          }</span>
+            ) : item.loaiThaoTac == 1 ? (
+              <>
+                <FaRegFileAlt
+                  color="#09a129"
+                  size={"40px"}
+                  style={{ marginBottom: "5px" }}
+                />
+                <span className="ms-4">{item.thaoTac}</span>
+              </>
+            ) : item.loaiThaoTac == 2 ? (
+              <>
+                <FaBusinessTime
+                  color="#ffd500"
+                  size={"40px"}
+                  style={{ marginBottom: "5px" }}
+                />
+                <span className="ms-4">{item.thaoTac}</span>
+              </>
+            ) : item.loaiThaoTac == 3 ? (
+              <>
+                <FaTruck
+                  color="#09a129"
+                  size={"40px"}
+                  style={{ marginBottom: "5px" }}
+                />
+                <span className="ms-4">{item.thaoTac}</span>
+              </>
+            ) : item.loaiThaoTac == 4 ? (
+              <>
+                <FaRegCalendarCheck
+                  color="#09a129"
+                  size={"40px"}
+                  style={{ marginBottom: "5px" }}
+                />
+                <span className="ms-4">{item.thaoTac}</span>
+              </>
+            ) : item.loaiThaoTac == 5 ? (
+              <>
+                <FaRegCalendarTimes
+                  color="#e5383b"
+                  size={"40px"}
+                  style={{ marginBottom: "5px" }}
+                />
+                <span className="ms-4">{item.thaoTac}</span>
+              </>
+            ) : item.loaiThaoTac == 6 ? (
+              <>
+                <FaRegCalendarCheck
+                  color="#09a129"
+                  size={"40px"}
+                  style={{ marginBottom: "5px" }}
+                />
+                <span className="ms-4">{item.thaoTac}</span>
+              </>
+            ) : (
+              ""
+            )}
+          </span>
         </div>
       ),
     },
@@ -333,10 +373,7 @@ const OrderDetail = (props) => {
       dataIndex: "soTienThanhToan",
       width: "10%",
       render: (text, record) => (
-        <span
-          className="txt-danger"
-          style={{ fontSize: "17px" }}
-        >
+        <span className="txt-danger" style={{ fontSize: "17px" }}>
           {record &&
             record.soTienThanhToan &&
             record.soTienThanhToan.toLocaleString("vi-VN", {
@@ -365,10 +402,12 @@ const OrderDetail = (props) => {
     );
   };
 
-  const [openDialogUpdateRecipientOrder, setOpenDialogUpdateRecipientOrder] = useState(false);
+  const [openDialogUpdateRecipientOrder, setOpenDialogUpdateRecipientOrder] =
+    useState(false);
   const [openCommon, setOpenCommon] = useState(false);
   const [openDialogPayment, setOpenDialogPayment] = useState(false);
-  const [openDialogDetailOrderHistories, setOpenDialogDetailOrderHistories] = useState(false);
+  const [openDialogDetailOrderHistories, setOpenDialogDetailOrderHistories] =
+    useState(false);
 
   const handleCloseNoActionCommon = () => {
     setOpenCommon(false);
@@ -402,10 +441,10 @@ const OrderDetail = (props) => {
         loaiThaoTac: 5,
         moTa: description || "",
         hoaDon: {
-          id: order.id
-        }
-      }
-    }
+          id: order.id,
+        },
+      },
+    };
     updateStatusOrderDelivery(data);
     setOpenCommon(false);
   };
@@ -419,10 +458,10 @@ const OrderDetail = (props) => {
         loaiThaoTac: 4,
         moTa: description || "",
         hoaDon: {
-          id: order.id
-        }
-      }
-    }
+          id: order.id,
+        },
+      },
+    };
     updateStatusOrderDelivery(data);
     setOpenCommon(false);
   };
@@ -436,10 +475,10 @@ const OrderDetail = (props) => {
         loaiThaoTac: 3,
         moTa: description,
         hoaDon: {
-          id: order.id
-        }
-      }
-    }
+          id: order.id,
+        },
+      },
+    };
     updateStatusOrderDelivery(data);
     setOpenCommon(false);
   };
@@ -453,10 +492,10 @@ const OrderDetail = (props) => {
         loaiThaoTac: 2,
         moTa: description,
         hoaDon: {
-          id: order.id
-        }
-      }
-    }
+          id: order.id,
+        },
+      },
+    };
     updateStatusOrderDelivery(data);
     setOpenCommon(false);
   };
@@ -471,10 +510,10 @@ const OrderDetail = (props) => {
         loaiThaoTac: 1,
         moTa: description,
         hoaDon: {
-          id: order.id
-        }
+          id: order.id,
+        },
       },
-    }
+    };
     updateStatusOrderDelivery(data);
     setOpenCommon(false);
   };
@@ -482,8 +521,7 @@ const OrderDetail = (props) => {
     if (isCancel) {
       setStatus(OrderStatusString.CANCELLED);
       setOpenCommon(true);
-    }
-    else {
+    } else {
       setStatus(status);
       setOpenCommon(true);
     }
@@ -503,97 +541,98 @@ const OrderDetail = (props) => {
   };
 
   const StyledTableContainer = styled(TableContainer)({
-    boxShadow: 'none',
+    boxShadow: "none",
   });
 
   const StyledTableHead = styled(TableHead)`
-  & tr:hover th{
-    background-color: white !important;
-  }
-`;
+    & tr:hover th {
+      background-color: white !important;
+    }
+  `;
 
   const StyledTableBody = styled(TableBody)`
-  & tr:hover td{
-    background-color: white !important;
-  }
-`;
+    & tr:hover td {
+      background-color: white !important;
+    }
+  `;
 
-
-  const useStyles = () => ({
-  });
+  const useStyles = () => ({});
 
   const classes = useStyles();
 
   const TimeLine = () => {
     return (
       <div className="time-line">
-        <Timeline minEvents={orderHistories && 5 + orderHistories.length} placeholder>
-          {orderHistories && orderHistories.map((item, index) => (
-            <TimelineEvent
-              icon={
-                item.loaiThaoTac == 0
-                  ? FaRegFileAlt
-                  : item.loaiThaoTac == 1
+        <Timeline
+          minEvents={orderHistories && 5 + orderHistories.length}
+          placeholder
+        >
+          {orderHistories &&
+            orderHistories.map((item, index) => (
+              <TimelineEvent
+                icon={
+                  item.loaiThaoTac == 0
+                    ? FaRegFileAlt
+                    : item.loaiThaoTac == 1
                     ? FaRegFileAlt
                     : item.loaiThaoTac == 2
-                      ?
-                      FaBusinessTime
-                      : item.loaiThaoTac == 3
-                        ? FaTruck
-                        : item.loaiThaoTac == 4
-                          ? FaRegCalendarCheck
-                          : item.loaiThaoTac == 5
-                            ? FaRegCalendarTimes
-                            : item.loaiThaoTac == 6
-                              ? FaRegCalendarCheck
-                              : ""
-              }
-              title={
-                <div className="mt-1">
-                  <span
-                    style={{ whiteSpace: "pre-line", fontSize: "19px" }}
-                  >
-                    {item.thaoTac}
-                  </span>
-                </div>
-              }
-              subtitle={format(
-                new Date(item.createdAt),
-                "HH:mm:ss - dd/MM/yyyy"
-              )}
-              color={
-                item.loaiThaoTac == 0
-                  ? "#09a129"
-                  : item.loaiThaoTac == 1
+                    ? FaBusinessTime
+                    : item.loaiThaoTac == 3
+                    ? FaTruck
+                    : item.loaiThaoTac == 4
+                    ? FaRegCalendarCheck
+                    : item.loaiThaoTac == 5
+                    ? FaRegCalendarTimes
+                    : item.loaiThaoTac == 6
+                    ? FaRegCalendarCheck
+                    : ""
+                }
+                title={
+                  <div className="mt-1">
+                    <span style={{ whiteSpace: "pre-line", fontSize: "19px" }}>
+                      {item.thaoTac}
+                    </span>
+                  </div>
+                }
+                subtitle={format(
+                  new Date(item.createdAt),
+                  "HH:mm:ss - dd/MM/yyyy"
+                )}
+                color={
+                  item.loaiThaoTac == 0
+                    ? "#09a129"
+                    : item.loaiThaoTac == 1
                     ? "#09a129"
                     : item.loaiThaoTac == 2
-                      ? "#ffd500"
-                      : item.loaiThaoTac == 3
-                        ? "#09a129"
-                        : item.loaiThaoTac == 4
-                          ? "#09a129"
-                          : item.loaiThaoTac == 5
-                            ? "#e5383b"
-                            : item.loaiThaoTac == 6
-                              ? "#09a129"
-                              : ""
-              }
-            />
-          ))}
+                    ? "#ffd500"
+                    : item.loaiThaoTac == 3
+                    ? "#09a129"
+                    : item.loaiThaoTac == 4
+                    ? "#09a129"
+                    : item.loaiThaoTac == 5
+                    ? "#e5383b"
+                    : item.loaiThaoTac == 6
+                    ? "#09a129"
+                    : ""
+                }
+              />
+            ))}
         </Timeline>
       </div>
-
-    )
-  }
+    );
+  };
 
   const ProcessOrder = () => {
     return (
       <div className="d-flex justify-content-between mt-2 p-3">
         <div className="d-flex order-info">
-          {order.trangThai == OrderStatusString.PENDING_CONFIRM && order.loaiHoaDon == OrderTypeString.DELIVERY ? (
+          {order.trangThai == OrderStatusString.PENDING_CONFIRM &&
+          order.loaiHoaDon == OrderTypeString.DELIVERY ? (
             <div>
               <Button
-                onClick={() => handleOpenDialogConfirmOrder(order.trangThai, false)}
+                onClick={() =>
+                  handleOpenDialogConfirmOrder(order.trangThai, false)
+                }
                 className="rounded-2 ms-2"
                 type="primary"
                 style={{
@@ -610,73 +649,82 @@ const OrderDetail = (props) => {
                 </span>
               </Button>
             </div>
-          )
-            : order.trangThai == OrderStatusString.CONFIRMED && order.loaiHoaDon == OrderTypeString.DELIVERY ? (
-              <div>
-                <Button
-                  onClick={() => handleOpenDialogConfirmOrder(order.trangThai, false)}
-                  className="rounded-2 ms-2"
-                  type="warning"
-                  style={{
-                    height: "40px",
-                    width: "auto",
-                    fontSize: "16px",
-                  }}
+          ) : order.trangThai == OrderStatusString.CONFIRMED &&
+            order.loaiHoaDon == OrderTypeString.DELIVERY ? (
+            <div>
+              <Button
+                onClick={() =>
+                  handleOpenDialogConfirmOrder(order.trangThai, false)
+                }
+                className="rounded-2 ms-2"
+                type="warning"
+                style={{
+                  height: "40px",
+                  width: "auto",
+                  fontSize: "16px",
+                }}
+              >
+                <span
+                  className=""
+                  style={{ fontWeight: "500", marginBottom: "2px" }}
                 >
-                  <span
-                    className=""
-                    style={{ fontWeight: "500", marginBottom: "2px" }}
-                  >
-                    ĐANG CHUẨN BỊ
-                  </span>
-                </Button>
-              </div>
-            )
-              : order.trangThai == OrderStatusString.PREPARING && order.loaiHoaDon == OrderTypeString.DELIVERY ? (
-                <div>
-                  <Button
-                    onClick={() => handleOpenDialogConfirmOrder(order.trangThai, false)}
-                    className="rounded-2 ms-2"
-                    type="primary"
-                    style={{
-                      height: "40px",
-                      width: "auto",
-                      fontSize: "16px",
-                    }}
-                  >
-                    <span
-                      className=""
-                      style={{ fontWeight: "500", marginBottom: "2px" }}
-                    >
-                      GIAO HÀNG
-                    </span>
-                  </Button>
-                </div>
-              )
-                : isDone == true && order.trangThai == OrderStatusString.DELIVERING && order.loaiHoaDon == OrderTypeString.DELIVERY ? (
-                  <div>
-                    <Button
-                      onClick={() => handleOpenDialogConfirmOrder(order.trangThai, false)}
-                      className="rounded-2 ms-2"
-                      type="primary"
-                      style={{
-                        height: "40px",
-                        width: "auto",
-                        fontSize: "16px",
-                      }}
-                    >
-                      <span
-                        className=""
-                        style={{ fontWeight: "500", marginBottom: "2px" }}
-                      >
-                        ĐÃ GIAO HÀNG
-                      </span>
-                    </Button>
-                  </div>
-                ) : (
-                  ""
-                )}
-          {order.trangThai != OrderStatusString.CANCELLED && order.trangThai != OrderStatusString.SUCCESS_DELIVERY && order.loaiHoaDon == OrderTypeString.DELIVERY ? (
+                  ĐANG CHUẨN BỊ
+                </span>
+              </Button>
+            </div>
+          ) : order.trangThai == OrderStatusString.PREPARING &&
+            order.loaiHoaDon == OrderTypeString.DELIVERY ? (
+            <div>
+              <Button
+                onClick={() =>
+                  handleOpenDialogConfirmOrder(order.trangThai, false)
+                }
+                className="rounded-2 ms-2"
+                type="primary"
+                style={{
+                  height: "40px",
+                  width: "auto",
+                  fontSize: "16px",
+                }}
+              >
+                <span
+                  className=""
+                  style={{ fontWeight: "500", marginBottom: "2px" }}
+                >
+                  GIAO HÀNG
+                </span>
+              </Button>
+            </div>
+          ) : isDone == true &&
+            order.trangThai == OrderStatusString.DELIVERING &&
+            order.loaiHoaDon == OrderTypeString.DELIVERY ? (
+            <div>
+              <Button
+                onClick={() =>
+                  handleOpenDialogConfirmOrder(order.trangThai, false)
+                }
+                className="rounded-2 ms-2"
+                type="primary"
+                style={{
+                  height: "40px",
+                  width: "auto",
+                  fontSize: "16px",
+                }}
+              >
+                <span
+                  className=""
+                  style={{ fontWeight: "500", marginBottom: "2px" }}
+                >
+                  ĐÃ GIAO HÀNG
+                </span>
+              </Button>
+            </div>
+          ) : (
+            ""
+          )}
+          {order.trangThai != OrderStatusString.CANCELLED &&
+          order.trangThai != OrderStatusString.SUCCESS_DELIVERY &&
+          order.loaiHoaDon == OrderTypeString.DELIVERY ? (
             <div className="ms-1">
               <Button
                 onClick={() => handleOpenDialogConfirmOrder(null, true)}
@@ -721,18 +769,24 @@ const OrderDetail = (props) => {
           </Button>
         </div>
       </div>
-
-    )
-  }
+    );
+  };
 
   const OrderInfo = () => {
     return (
-
-      <div className="wrap-order-detail mt-4" style={{ height: order.loaiHoaDon === OrderTypeString.AT_COUNTER ? "340px" : "480px" }}>
+      <div
+        className="wrap-order-detail mt-4"
+        style={{
+          height:
+            order.loaiHoaDon === OrderTypeString.AT_COUNTER ? "340px" : "480px",
+        }}
+      >
         <div className="p-3">
           <div className="d-flex justify-content-between">
             <div className="ms-2" style={{ marginTop: "3px" }}>
-              <span className='' style={{ fontSize: "25px" }}>THÔNG TIN ĐƠN HÀNG</span>
+              <span className="" style={{ fontSize: "25px" }}>
+                THÔNG TIN ĐƠN HÀNG
+              </span>
             </div>
             <div className="">
               <Button
@@ -754,14 +808,23 @@ const OrderDetail = (props) => {
               </Button>
             </div>
           </div>
-          <div className='ms-2 mt-2' style={{ borderBottom: "2px solid #C7C7C7", width: "99.2%", borderWidth: "2px" }}></div>
+          <div
+            className="ms-2 mt-2"
+            style={{
+              borderBottom: "2px solid #C7C7C7",
+              width: "99.2%",
+              borderWidth: "2px",
+            }}
+          ></div>
         </div>
 
         <Row>
           <Col sm="5">
             <div className="ms-4 mt-3 d-flex" style={{ height: "30px" }}>
               <div className="ms-2 mt-1" style={{ width: "140px" }}>
-                <span className="" style={{ fontSize: "17px" }}>Mã Đơn Hàng</span>
+                <span className="" style={{ fontSize: "17px" }}>
+                  Mã Đơn Hàng
+                </span>
               </div>
               <div className="ms-5 ps-5">
                 <div
@@ -840,116 +903,114 @@ const OrderDetail = (props) => {
                       Đang chờ xác nhận
                     </span>
                   </div>
-                )
-
-                  : order.trangThai == OrderStatusString.CONFIRMED ? (
-                    <div
-                      className="rounded-pill badge-success"
-                      style={{
-                        height: "35px",
-                        width: "auto",
-                        padding: "5px",
-                      }}
+                ) : order.trangThai == OrderStatusString.CONFIRMED ? (
+                  <div
+                    className="rounded-pill badge-success"
+                    style={{
+                      height: "35px",
+                      width: "auto",
+                      padding: "5px",
+                    }}
+                  >
+                    <span
+                      className="text-white p-2"
+                      style={{ fontSize: "14px" }}
                     >
-                      <span
-                        className="text-white p-2"
-                        style={{ fontSize: "14px" }}
-                      >
-                        Đã xác nhận
-                      </span>
-                    </div>
-                  )
-
-                    : order.trangThai == OrderStatusString.PREPARING ? (
-                      <div
-                        className="rounded-pill mx-auto badge-warning"
-                        style={{
-                          height: "35px",
-                          width: "auto",
-                          padding: "5px",
-                        }}
-                      >
-                        <span
-                          className="text-dark p-2"
-                          style={{ fontSize: "14px" }}
-                        >
-                          Đang chuẩn bị hàng
-                        </span>
-                      </div>
-                    )
-                      : order.trangThai == OrderStatusString.DELIVERING ? (
-                        <div
-                          className="rounded-pill badge-primary"
-                          style={{
-                            height: "35px",
-                            width: "auto",
-                            padding: "5px",
-                          }}
-                        >
-                          <span
-                            className="text-white p-2"
-                            style={{ fontSize: "14px" }}
-                          >
-                            Đang giao hàng
-                          </span>
-                        </div>
-                      ) : order.trangThai == OrderStatusString.SUCCESS_DELIVERY ? (
-                        <div
-                          className="rounded-pill bg-primary"
-                          style={{
-                            height: "35px",
-                            width: "auto",
-                            padding: "5px",
-                          }}
-                        >
-                          <span
-                            className="text-white p-2"
-                            style={{ fontSize: "14px" }}
-                          >
-                            Đã giao hàng
-                          </span>
-                        </div>
-                      ) : order.trangThai == OrderStatusString.CANCELLED ? (
-                        <div
-                          className="rounded-pill badge-danger"
-                          style={{
-                            height: "35px",
-                            width: "auto",
-                            padding: "5px",
-                          }}
-                        >
-                          <span
-                            className="text-white p-2"
-                            style={{ fontSize: "14px" }}
-                          >
-                            Đã hủy
-                          </span>
-                        </div>
-                      )
-                        : order.trangThai == OrderStatusString.HAD_PAID ?
-                          <div
-                            className="rounded-pill bg-primary"
-                            style={{
-                              height: "35px",
-                              width: "auto",
-                              padding: "5px",
-                            }}
-                          >
-                            <span
-                              className="text-white p-2"
-                              style={{ fontSize: "14px" }}
-                            >
-                              Đã thanh toán
-                            </span>
-                          </div> : ""
-
-                }
+                      Đã xác nhận
+                    </span>
+                  </div>
+                ) : order.trangThai == OrderStatusString.PREPARING ? (
+                  <div
+                    className="rounded-pill mx-auto badge-warning"
+                    style={{
+                      height: "35px",
+                      width: "auto",
+                      padding: "5px",
+                    }}
+                  >
+                    <span
+                      className="text-dark p-2"
+                      style={{ fontSize: "14px" }}
+                    >
+                      Đang chuẩn bị hàng
+                    </span>
+                  </div>
+                ) : order.trangThai == OrderStatusString.DELIVERING ? (
+                  <div
+                    className="rounded-pill badge-primary"
+                    style={{
+                      height: "35px",
+                      width: "auto",
+                      padding: "5px",
+                    }}
+                  >
+                    <span
+                      className="text-white p-2"
+                      style={{ fontSize: "14px" }}
+                    >
+                      Đang giao hàng
+                    </span>
+                  </div>
+                ) : order.trangThai == OrderStatusString.SUCCESS_DELIVERY ? (
+                  <div
+                    className="rounded-pill bg-primary"
+                    style={{
+                      height: "35px",
+                      width: "auto",
+                      padding: "5px",
+                    }}
+                  >
+                    <span
+                      className="text-white p-2"
+                      style={{ fontSize: "14px" }}
+                    >
+                      Đã giao hàng
+                    </span>
+                  </div>
+                ) : order.trangThai == OrderStatusString.CANCELLED ? (
+                  <div
+                    className="rounded-pill badge-danger"
+                    style={{
+                      height: "35px",
+                      width: "auto",
+                      padding: "5px",
+                    }}
+                  >
+                    <span
+                      className="text-white p-2"
+                      style={{ fontSize: "14px" }}
+                    >
+                      Đã hủy
+                    </span>
+                  </div>
+                ) : order.trangThai == OrderStatusString.HAD_PAID ? (
+                  <div
+                    className="rounded-pill bg-primary"
+                    style={{
+                      height: "35px",
+                      width: "auto",
+                      padding: "5px",
+                    }}
+                  >
+                    <span
+                      className="text-white p-2"
+                      style={{ fontSize: "14px" }}
+                    >
+                      Đã thanh toán
+                    </span>
+                  </div>
+                ) : (
+                  ""
+                )}
               </div>
             </div>
             <div className="ms-4 mt-4 d-flex" style={{ height: "30px" }}>
               <div className="ms-2 mt-1" style={{ width: "140px" }}>
                 <span style={{ fontSize: "17px" }}>
-                  {order.loaiHoaDon === OrderTypeString.AT_COUNTER ? "Ngày Tạo" : "Ngày Đặt Hàng"}</span>
+                  {order.loaiHoaDon === OrderTypeString.AT_COUNTER
+                    ? "Ngày Tạo"
+                    : "Ngày Đặt Hàng"}
+                </span>
               </div>
               <div className="ms-5 ps-5">
                 <div
@@ -972,11 +1033,10 @@ const OrderDetail = (props) => {
                 </div>
               </div>
             </div>
-            {order.loaiHoaDon === OrderTypeString.DELIVERY ?
+            {order.loaiHoaDon === OrderTypeString.DELIVERY ? (
               <div className="ms-4 mt-4 d-flex" style={{ height: "30px" }}>
                 <div className="ms-2 mt-1" style={{ width: "140px" }}>
-                  <span style={{ fontSize: "17px" }}>
-                    Ngày Thanh Toán</span>
+                  <span style={{ fontSize: "17px" }}>Ngày Thanh Toán</span>
                 </div>
                 <div className="ms-5 ps-5">
                   <div
@@ -988,7 +1048,10 @@ const OrderDetail = (props) => {
                       backgroundColor: "#e1e1e1",
                     }}
                   >
-                    <span className="text-dark p-2" style={{ fontSize: "14px" }}>
+                    <span
+                      className="text-dark p-2"
+                      style={{ fontSize: "14px" }}
+                    >
                       {order &&
                         order.createdAt &&
                         format(
@@ -999,12 +1062,15 @@ const OrderDetail = (props) => {
                   </div>
                 </div>
               </div>
-              : ""}
-            {order.loaiHoaDon === OrderTypeString.DELIVERY ?
+            ) : (
+              ""
+            )}
+            {order.loaiHoaDon === OrderTypeString.DELIVERY ? (
               <div className="ms-4 mt-4 d-flex" style={{ height: "30px" }}>
                 <div className="ms-2 mt-1" style={{ width: "140px" }}>
                   <span style={{ fontSize: "17px" }}>
-                    Ngày giao hàng cho bên vận chuyển</span>
+                    Ngày giao hàng cho bên vận chuyển
+                  </span>
                 </div>
                 <div className="ms-5 ps-5">
                   <div
@@ -1016,7 +1082,10 @@ const OrderDetail = (props) => {
                       backgroundColor: "#e1e1e1",
                     }}
                   >
-                    <span className="text-dark p-2" style={{ fontSize: "14px" }}>
+                    <span
+                      className="text-dark p-2"
+                      style={{ fontSize: "14px" }}
+                    >
                       {order &&
                         order.createdAt &&
                         format(
@@ -1027,7 +1096,9 @@ const OrderDetail = (props) => {
                   </div>
                 </div>
               </div>
-              : ""}
+            ) : (
+              ""
+            )}
           </Col>
           <Col sm="6" className="ms-5">
             <div className="ms-4 mt-3 d-flex" style={{ height: "30px" }}>
@@ -1035,7 +1106,7 @@ const OrderDetail = (props) => {
                 <span style={{ fontSize: "17px" }}>Tên Khách Hàng</span>
               </div>
               <div className="ms-5 ps-5">
-                {order.tenNguoiNhan == null ?
+                {order.tenNguoiNhan == null ? (
                   <div
                     className="rounded-pill"
                     style={{
@@ -1045,12 +1116,16 @@ const OrderDetail = (props) => {
                       backgroundColor: "#e1e1e1",
                     }}
                   >
-                    <span className="text-dark p-2" style={{ fontSize: "14px" }}>
+                    <span
+                      className="text-dark p-2"
+                      style={{ fontSize: "14px" }}
+                    >
                       Khách hàng lẻ
                     </span>
                   </div>
-                  : order.tenNguoiNhan
-                }
+                ) : (
+                  order.tenNguoiNhan
+                )}
               </div>
             </div>
             <div className="ms-4 mt-4 mt-1 d-flex" style={{ height: "30px" }}>
@@ -1059,7 +1134,9 @@ const OrderDetail = (props) => {
               </div>
               <div className="ms-5 ps-5 mt-1">
                 <span className="text-dark ms-1" style={{ fontSize: "17px" }}>
-                  {order.soDienThoaiNguoiNhan == null ? "..." : order.soDienThoaiNguoiNhan}
+                  {order.soDienThoaiNguoiNhan == null
+                    ? "..."
+                    : order.soDienThoaiNguoiNhan}
                 </span>
               </div>
             </div>
@@ -1069,7 +1146,9 @@ const OrderDetail = (props) => {
               </div>
               <div className="ms-5 ps-5 mt-1">
                 <span className="text-dark ms-1" style={{ fontSize: "17px" }}>
-                  {order.account === null ? "..." : order && order.account && order.account.email}
+                  {order.account === null
+                    ? "..."
+                    : order && order.account && order.account.email}
                 </span>
               </div>
             </div>
@@ -1082,11 +1161,13 @@ const OrderDetail = (props) => {
                 style={{ whiteSpace: "pre-line", flex: "1" }}
               >
                 <span className="text-dark ms-1" style={{ fontSize: "17px" }}>
-                  {order.diaChiNguoiNhan == null ? "..." : order.diaChiNguoiNhan}
+                  {order.diaChiNguoiNhan == null
+                    ? "..."
+                    : order.diaChiNguoiNhan}
                 </span>
               </div>
             </div>
-            {order.loaiHoaDon === OrderTypeString.DELIVERY ?
+            {order.loaiHoaDon === OrderTypeString.DELIVERY ? (
               <div className="ms-4 mt-4 mt-1 d-flex" style={{ height: "30px" }}>
                 <div className="ms-2 mt-1" style={{ width: "140px" }}>
                   <span style={{ fontSize: "17px" }}>Ghi Chú Shipper</span>
@@ -1096,16 +1177,19 @@ const OrderDetail = (props) => {
                   style={{ whiteSpace: "pre-line", flex: "1" }}
                 >
                   <span className="text-dark ms-1" style={{ fontSize: "17px" }}>
-                    {order.diaChiNguoiNhan == null ? "..." : order.diaChiNguoiNhan}
+                    {order.diaChiNguoiNhan == null
+                      ? "..."
+                      : order.diaChiNguoiNhan}
                   </span>
                 </div>
               </div>
-              : ""}
-            {order.loaiHoaDon === OrderTypeString.DELIVERY ?
+            ) : (
+              ""
+            )}
+            {order.loaiHoaDon === OrderTypeString.DELIVERY ? (
               <div className="ms-4 mt-4 d-flex" style={{ height: "30px" }}>
                 <div className="ms-2 mt-1" style={{ width: "140px" }}>
-                  <span style={{ fontSize: "17px" }}>
-                    Ngày hoàn thành đơn</span>
+                  <span style={{ fontSize: "17px" }}>Ngày hoàn thành đơn</span>
                 </div>
                 <div className="ms-5 ps-5">
                   <div
@@ -1117,7 +1201,10 @@ const OrderDetail = (props) => {
                       backgroundColor: "#e1e1e1",
                     }}
                   >
-                    <span className="text-dark p-2" style={{ fontSize: "14px" }}>
+                    <span
+                      className="text-dark p-2"
+                      style={{ fontSize: "14px" }}
+                    >
                       {order &&
                         order.createdAt &&
                         format(
@@ -1128,22 +1215,24 @@ const OrderDetail = (props) => {
                   </div>
                 </div>
               </div>
-              : ""}
+            ) : (
+              ""
+            )}
           </Col>
         </Row>
       </div>
-
-    )
-  }
+    );
+  };
 
   const PaymentHistories = () => {
     return (
-
       <div className="wrap-payment mt-4 p-3">
         <div className="">
           <div className="d-flex justify-content-between">
             <div className="ms-2" style={{ marginTop: "3px" }}>
-              <span className='' style={{ fontSize: "25px" }}>LỊCH SỬ THANH TOÁN</span>
+              <span className="" style={{ fontSize: "25px" }}>
+                LỊCH SỬ THANH TOÁN
+              </span>
             </div>
             <div className="">
               <Button
@@ -1165,8 +1254,14 @@ const OrderDetail = (props) => {
               </Button>
             </div>
           </div>
-          <div className='ms-2 mt-2' style={{ borderBottom: "2px solid #C7C7C7", width: "99.2%", borderWidth: "2px" }}></div>
-
+          <div
+            className="ms-2 mt-2"
+            style={{
+              borderBottom: "2px solid #C7C7C7",
+              width: "99.2%",
+              borderWidth: "2px",
+            }}
+          ></div>
         </div>
         <div className="mt-3">
           {paymentHistorys.length <= 0 ? (
@@ -1220,8 +1315,8 @@ const OrderDetail = (props) => {
           )}
         </div>
       </div>
-    )
-  }
+    );
+  };
 
   const OrderSummary = () => {
     return (
@@ -1229,7 +1324,9 @@ const OrderDetail = (props) => {
         <div className="">
           <div className="d-flex justify-content-between">
             <div className="ms-2" style={{ marginTop: "3px" }}>
-              <span className='' style={{ fontSize: "25px" }}>DANH SÁCH SẢN PHẨM</span>
+              <span className="" style={{ fontSize: "25px" }}>
+                DANH SÁCH SẢN PHẨM
+              </span>
             </div>
             <div className="">
               <Button
@@ -1247,15 +1344,26 @@ const OrderDetail = (props) => {
               </Button>
             </div>
           </div>
-          <div className='ms-2 mt-2' style={{ borderBottom: "2px solid #C7C7C7", width: "99.2%", borderWidth: "2px" }}></div>
+          <div
+            className="ms-2 mt-2"
+            style={{
+              borderBottom: "2px solid #C7C7C7",
+              width: "99.2%",
+              borderWidth: "2px",
+            }}
+          ></div>
         </div>
 
         <div className="wrap-cart-order" style={{ height: "auto" }}>
           <Row className="">
             <div className="">
-              <div className='' style={{ height: "auto" }}>
+              <div className="" style={{ height: "auto" }}>
                 <StyledTableContainer component={Paper}>
-                  <TableMui sx={{ minWidth: 650, boxShadow: "none" }} aria-label="simple table" className={classes.tableContainer}>
+                  <TableMui
+                    sx={{ minWidth: 650, boxShadow: "none" }}
+                    aria-label="simple table"
+                    className={classes.tableContainer}
+                  >
                     <StyledTableHead>
                       <TableRow>
                         <TableCell align="center">Ảnh</TableCell>
@@ -1266,223 +1374,304 @@ const OrderDetail = (props) => {
                       </TableRow>
                     </StyledTableHead>
                     <StyledTableBody>
-                      {order && order.orderItems && order.orderItems.map((item, index) => (
-                        <TableRow
-                          key={index}
-                          sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                        >
-                          <TableCell align='center'>
-                            <img src={item && item.sanPhamChiTiet.images[0].duongDan} class='' alt="" style={{ width: "155px", height: "155px" }} />
-                          </TableCell>
-                          <TableCell align="center" style={{ width: "350px" }}>
-                            <div>
-                              <span className='' style={{ whiteSpace: "pre-line", fontSize: "18px" }}>{item.sanPhamChiTiet.sanPham.tenSanPham}</span>
-                            </div>
-                            <div className='mt-2'>
-                              <span style={{ color: "#dc1111", fontSize: "17px" }}>
-                                {item && item.donGia ? item.donGia.toLocaleString("vi-VN", {
-                                  style: "currency",
-                                  currency: "VND",
-                                }) : ""}
+                      {order &&
+                        order.orderItems &&
+                        order.orderItems.map((item, index) => (
+                          <TableRow
+                            key={index}
+                            sx={{
+                              "&:last-child td, &:last-child th": { border: 0 },
+                            }}
+                          >
+                            <TableCell align="center">
+                              <img
+                                src={
+                                  item && item.sanPhamChiTiet.images[0].duongDan
+                                }
+                                class=""
+                                alt=""
+                                style={{ width: "155px", height: "155px" }}
+                              />
+                            </TableCell>
+                            <TableCell
+                              align="center"
+                              style={{ width: "350px" }}
+                            >
+                              <div>
+                                <span
+                                  className=""
+                                  style={{
+                                    whiteSpace: "pre-line",
+                                    fontSize: "18px",
+                                  }}
+                                >
+                                  {item.sanPhamChiTiet.sanPham.tenSanPham}
+                                </span>
+                              </div>
+                              <div className="mt-2">
+                                <span
+                                  style={{ color: "#dc1111", fontSize: "17px" }}
+                                >
+                                  {item && item.donGia
+                                    ? item.donGia.toLocaleString("vi-VN", {
+                                        style: "currency",
+                                        currency: "VND",
+                                      })
+                                    : ""}
+                                </span>
+                              </div>
+                              <div className="mt-2 pt-1 d-flex justify-content-around mx-auto">
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <RadioGroup
+                                  orientation="horizontal"
+                                  aria-labelledby="storage-label"
+                                  size="lg"
+                                  sx={{ gap: 1.7 }}
+                                >
+                                  <Sheet
+                                    sx={{
+                                      borderRadius: "md",
+                                      boxShadow: "sm",
+                                    }}
+                                  >
+                                    <Radio
+                                      disabled
+                                      label={
+                                        <>
+                                          <div>
+                                            <span
+                                              className="p-2"
+                                              style={{
+                                                fontSize: "15px",
+                                                fontWeight: "500",
+                                              }}
+                                            >
+                                              {item.sanPhamChiTiet.cauHinh.ram
+                                                .kichThuoc +
+                                                "/" +
+                                                item.sanPhamChiTiet.cauHinh.rom
+                                                  .kichThuoc +
+                                                "GB"}
+                                            </span>
+                                          </div>
+                                        </>
+                                      }
+                                      overlay
+                                      disableIcon
+                                      slotProps={{
+                                        label: ({ checked }) => ({
+                                          sx: {
+                                            fontWeight: "lg",
+                                            fontSize: "md",
+                                            color: checked
+                                              ? "text.primary"
+                                              : "text.secondary",
+                                          },
+                                        }),
+                                        action: ({ checked }) => ({
+                                          sx: (theme) => ({
+                                            ...(checked && {
+                                              "--variant-borderWidth": "2px",
+                                              "&&": {
+                                                // && to increase the specificity to win the base :hover styles
+                                                borderColor: "#2f80ed",
+                                              },
+                                            }),
+                                          }),
+                                        }),
+                                      }}
+                                    />
+                                  </Sheet>
+                                </RadioGroup>
+                                <RadioGroup
+                                  orientation="horizontal"
+                                  className="ms-2"
+                                  aria-labelledby="storage-label"
+                                  size="lg"
+                                  sx={{ gap: 1.7 }}
+                                >
+                                  <Sheet
+                                    sx={{
+                                      borderRadius: "md",
+                                      boxShadow: "sm",
+                                    }}
+                                  >
+                                    <Radio
+                                      disabled
+                                      label={
+                                        <>
+                                          <div className="">
+                                            <span
+                                              className="p-2"
+                                              style={{
+                                                fontSize: "15px",
+                                                fontWeight: "500",
+                                              }}
+                                            >
+                                              {
+                                                item.sanPhamChiTiet.cauHinh
+                                                  .mauSac.tenMauSac
+                                              }
+                                            </span>
+                                          </div>
+                                        </>
+                                      }
+                                      overlay
+                                      disableIcon
+                                      slotProps={{
+                                        label: ({ checked }) => ({
+                                          sx: {
+                                            fontWeight: "lg",
+                                            fontSize: "md",
+                                            color: checked
+                                              ? "text.primary"
+                                              : "text.secondary",
+                                          },
+                                        }),
+                                        action: ({ checked }) => ({
+                                          sx: (theme) => ({
+                                            ...(checked && {
+                                              "--variant-borderWidth": "2px",
+                                              "&&": {
+                                                // && to increase the specificity to win the base :hover styles
+                                                borderColor: "#2f80ed",
+                                              },
+                                            }),
+                                          }),
+                                        }),
+                                      }}
+                                    />
+                                  </Sheet>
+                                </RadioGroup>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                              </div>
+                            </TableCell>
+                            <TableCell
+                              align="center"
+                              style={{ fontSize: "15px" }}
+                            >
+                              <div className="ms-5">
+                                <RadioGroup
+                                  orientation="horizontal"
+                                  aria-labelledby="storage-label"
+                                  size="lg"
+                                  sx={{ gap: 1.7 }}
+                                >
+                                  <Sheet
+                                    sx={{
+                                      borderRadius: "md",
+                                      boxShadow: "sm",
+                                    }}
+                                  >
+                                    <Radio
+                                      disabled
+                                      label={
+                                        <>
+                                          <div>
+                                            <span
+                                              className="p-2"
+                                              style={{
+                                                fontSize: "15px",
+                                                fontWeight: "500",
+                                              }}
+                                            >
+                                              {"x" + item.soLuong}
+                                            </span>
+                                          </div>
+                                        </>
+                                      }
+                                      overlay
+                                      disableIcon
+                                      slotProps={{
+                                        label: ({ checked }) => ({
+                                          sx: {
+                                            fontWeight: "lg",
+                                            fontSize: "md",
+                                            color: checked
+                                              ? "text.primary"
+                                              : "text.secondary",
+                                          },
+                                        }),
+                                        action: ({ checked }) => ({
+                                          sx: (theme) => ({
+                                            ...(checked && {
+                                              "--variant-borderWidth": "2px",
+                                              "&&": {
+                                                // && to increase the specificity to win the base :hover styles
+                                                borderColor: "#2f80ed",
+                                              },
+                                            }),
+                                          }),
+                                        }),
+                                      }}
+                                    />
+                                  </Sheet>
+                                </RadioGroup>
+                              </div>
+                            </TableCell>
+                            <TableCell
+                              align="center"
+                              style={{ color: "#dc1111", fontSize: "15px" }}
+                            >
+                              <span
+                                style={{ color: "#dc1111", fontSize: "17.5px" }}
+                              >
+                                {item &&
+                                  totalItem(
+                                    item.soLuong,
+                                    item.donGia
+                                  ).toLocaleString("vi-VN", {
+                                    style: "currency",
+                                    currency: "VND",
+                                  })}
                               </span>
-                            </div>
-                            <div className='mt-2 pt-1 d-flex justify-content-around mx-auto'>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <RadioGroup orientation='horizontal'
-                                aria-labelledby="storage-label"
-                                size="lg"
-                                sx={{ gap: 1.7 }}
+                            </TableCell>
+                            <TableCell align="center" className="">
+                              <Tooltip
+                                TransitionComponent={Zoom}
+                                title="Cập nhật"
                               >
-                                <Sheet
-                                  sx={{
-                                    borderRadius: 'md',
-                                    boxShadow: 'sm',
-                                  }}
-                                >
-                                  <Radio disabled
-                                    label={
-                                      <>
-                                        <div>
-                                          <span className="p-2" style={{ fontSize: "15px", fontWeight: "500" }}>{item.sanPhamChiTiet.cauHinh.ram.kichThuoc + "/" + item.sanPhamChiTiet.cauHinh.rom.kichThuoc + "GB"}</span>
-                                        </div>
-                                      </>
-                                    }
-                                    overlay
-                                    disableIcon
-                                    slotProps={{
-                                      label: ({ checked }) => ({
-                                        sx: {
-                                          fontWeight: 'lg',
-                                          fontSize: 'md',
-                                          color: checked ? 'text.primary' : 'text.secondary',
-                                        },
-                                      }),
-                                      action: ({ checked }) => ({
-                                        sx: (theme) => ({
-                                          ...(checked && {
-                                            '--variant-borderWidth': '2px',
-                                            '&&': {
-                                              // && to increase the specificity to win the base :hover styles
-                                              borderColor: "#2f80ed",
-                                            },
-                                          }),
-                                        }),
-                                      }),
-                                    }}
-                                  />
-                                </Sheet>
-                              </RadioGroup>
-                              <RadioGroup orientation='horizontal' className="ms-2"
-                                aria-labelledby="storage-label"
-                                size="lg"
-                                sx={{ gap: 1.7 }}
+                                <Button
+                                  className=""
+                                  icon={<EditIcon />}
+                                  // onClick={() => openDialogProductDetails()}
+                                  type="primary"
+                                  style={{ fontSize: "13px", height: "32.5px" }}
+                                ></Button>
+                              </Tooltip>
+                              <Tooltip
+                                TransitionComponent={Zoom}
+                                title="Xóa khỏi giỏ hàng"
                               >
-                                <Sheet
-                                  sx={{
-                                    borderRadius: 'md',
-                                    boxShadow: 'sm',
-                                  }}
-                                >
-                                  <Radio disabled
-                                    label={
-                                      <>
-                                        <div className="">
-                                          <span className="p-2" style={{ fontSize: "15px", fontWeight: "500" }}>{item.sanPhamChiTiet.cauHinh.mauSac.tenMauSac}</span>
-                                        </div>
-                                      </>
-                                    }
-                                    overlay
-                                    disableIcon
-                                    slotProps={{
-                                      label: ({ checked }) => ({
-                                        sx: {
-                                          fontWeight: 'lg',
-                                          fontSize: 'md',
-                                          color: checked ? 'text.primary' : 'text.secondary',
-                                        },
-                                      }),
-                                      action: ({ checked }) => ({
-                                        sx: (theme) => ({
-                                          ...(checked && {
-                                            '--variant-borderWidth': '2px',
-                                            '&&': {
-                                              // && to increase the specificity to win the base :hover styles
-                                              borderColor: "#2f80ed",
-                                            },
-                                          }),
-                                        }),
-                                      }),
-                                    }}
-                                  />
-                                </Sheet>
-                              </RadioGroup>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                            </div>
-                          </TableCell>
-                          <TableCell align="center" style={{ fontSize: "15px" }}>
-                            <div className="ms-5">
-                              <RadioGroup orientation='horizontal'
-                                aria-labelledby="storage-label"
-                                size="lg"
-                                sx={{ gap: 1.7 }}
-                              >
-                                <Sheet
-                                  sx={{
-                                    borderRadius: 'md',
-                                    boxShadow: 'sm',
-                                  }}
-                                >
-                                  <Radio disabled
-                                    label={
-                                      <>
-                                        <div>
-                                          <span className="p-2" style={{ fontSize: "15px", fontWeight: "500" }}>{"x" + item.soLuong}</span>
-                                        </div>
-                                      </>
-                                    }
-                                    overlay
-                                    disableIcon
-                                    slotProps={{
-                                      label: ({ checked }) => ({
-                                        sx: {
-                                          fontWeight: 'lg',
-                                          fontSize: 'md',
-                                          color: checked ? 'text.primary' : 'text.secondary',
-                                        },
-                                      }),
-                                      action: ({ checked }) => ({
-                                        sx: (theme) => ({
-                                          ...(checked && {
-                                            '--variant-borderWidth': '2px',
-                                            '&&': {
-                                              // && to increase the specificity to win the base :hover styles
-                                              borderColor: "#2f80ed",
-                                            },
-                                          }),
-                                        }),
-                                      }),
-                                    }}
-                                  />
-                                </Sheet>
-                              </RadioGroup>
-                            </div>
-                          </TableCell>
-                          <TableCell align="center" style={{ color: "#dc1111", fontSize: "15px" }}>
-                            <span style={{ color: "#dc1111", fontSize: "17.5px" }}>
-                              {item && totalItem(item.soLuong, item.donGia).toLocaleString("vi-VN", {
-                                style: "currency",
-                                currency: "VND",
-                              })}
-                            </span>
-                          </TableCell>
-                          <TableCell align="center" className=''>
-                            <Tooltip TransitionComponent={Zoom} title="Cập nhật">
-                              <Button className=''
-                                icon={
-                                  <EditIcon />
-                                }
-                                // onClick={() => openDialogProductDetails()}
-                                type="primary"
-                                style={{ fontSize: "13px", height: "32.5px" }}
-                              >
-                              </Button>
-
-                            </Tooltip>
-                            <Tooltip TransitionComponent={Zoom} title="Xóa khỏi giỏ hàng">
-                              <Button className='ms-2'
-                                // onClick={() => removeProductInCart(item.id)}
-                                icon={
-                                  <IconTrash />
-                                }
-                                type="danger"
-                                style={{ fontSize: "13px", height: "32.5px" }}
-                              >
-                              </Button>
-
-
-                            </Tooltip>
-
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                                <Button
+                                  className="ms-2"
+                                  // onClick={() => removeProductInCart(item.id)}
+                                  icon={<IconTrash />}
+                                  type="danger"
+                                  style={{ fontSize: "13px", height: "32.5px" }}
+                                ></Button>
+                              </Tooltip>
+                            </TableCell>
+                          </TableRow>
+                        ))}
                     </StyledTableBody>
                   </TableMui>
                 </StyledTableContainer>
@@ -1491,7 +1680,14 @@ const OrderDetail = (props) => {
           </Row>
         </div>
 
-        <div className='ms-2 mt-2' style={{ borderBottom: "2px solid #C7C7C7", width: "99.2%", borderWidth: "2px" }}></div>
+        <div
+          className="ms-2 mt-2"
+          style={{
+            borderBottom: "2px solid #C7C7C7",
+            width: "99.2%",
+            borderWidth: "2px",
+          }}
+        ></div>
         <div className="d-flex mt-3">
           <div
             style={{
@@ -1506,74 +1702,78 @@ const OrderDetail = (props) => {
                 <span className="" style={{ fontSize: "16px", color: "" }}>
                   Tổng tiền hàng
                 </span>
-                <span
-                  className="text-dark"
-                  style={{ fontSize: "17px" }}
-                >
-                  {order && order.tongTien && order.tongTien.toLocaleString("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  })}
+                <span className="text-dark" style={{ fontSize: "17px" }}>
+                  {order &&
+                    order.tongTien &&
+                    order.tongTien.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })}
                 </span>
               </div>
               <div className="d-flex justify-content-between mt-3">
                 <span className="" style={{ fontSize: "16px", color: "" }}>
                   Giảm giá
                 </span>
-                <span
-                  className="text-dark"
-                  style={{ fontSize: "17px" }}
-                >
-                  {order && order.voucher && order.voucher.giaTriVoucher && order.voucher.giaTriVoucher.toLocaleString("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  }) || "Không"}
+                <span className="text-dark" style={{ fontSize: "17px" }}>
+                  {(order &&
+                    order.voucher &&
+                    order.voucher.giaTriVoucher &&
+                    order.voucher.giaTriVoucher.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })) ||
+                    "Không"}
                 </span>
               </div>
-              {order.loaiHoaDon === OrderTypeString.AT_COUNTER ?
+              {order.loaiHoaDon === OrderTypeString.AT_COUNTER ? (
                 <>
                   <div className="d-flex justify-content-between mt-3">
                     <span className="" style={{ fontSize: "16px", color: "" }}>
                       Khách cần trả
                     </span>
-                    <span
-                      className="text-dark"
-                      style={{ fontSize: "17px" }}
-                    >
-                      {order && order.tongTienSauKhiGiam && order.tongTienSauKhiGiam.toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })}
+                    <span className="text-dark" style={{ fontSize: "17px" }}>
+                      {order &&
+                        order.tongTienSauKhiGiam &&
+                        order.tongTienSauKhiGiam.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
                     </span>
                   </div>
                   <div className="d-flex justify-content-between mt-3">
-                    <span className="" style={{ fontSize: "16px", fontWeight: "500" }}>
+                    <span
+                      className=""
+                      style={{ fontSize: "16px", fontWeight: "500" }}
+                    >
                       Khách thanh toán
                     </span>
                     <span
                       className="fw-bold"
                       style={{ fontSize: "17px", color: "#dc1111" }}
                     >
-                      {order && order.tienKhachTra && order.tienKhachTra.toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })}
+                      {order &&
+                        order.tienKhachTra &&
+                        order.tienKhachTra.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
                     </span>
                   </div>
-                </> :
+                </>
+              ) : (
                 <>
                   <div className="d-flex justify-content-between mt-3">
                     <span className="" style={{ fontSize: "16px", color: "" }}>
                       Phí vận chuyển
                     </span>
-                    <span
-                      className="text-dark"
-                      style={{ fontSize: "17px" }}
-                    >
-                      {order && order.phiShip && order.phiShip.toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })}
+                    <span className="text-dark" style={{ fontSize: "17px" }}>
+                      {order &&
+                        order.phiShip &&
+                        order.phiShip.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
                     </span>
                   </div>
                   <div className="d-flex justify-content-between mt-3">
@@ -1588,7 +1788,11 @@ const OrderDetail = (props) => {
                       style={{ fontSize: "17px", color: "#dc1111" }}
                     >
                       {order &&
-                        totalOrder(order.tongTien, order.voucher && order.voucher.giaTriVoucher, order.phiShip).toLocaleString("vi-VN", {
+                        totalOrder(
+                          order.tongTien,
+                          order.voucher && order.voucher.giaTriVoucher,
+                          order.phiShip
+                        ).toLocaleString("vi-VN", {
                           style: "currency",
                           currency: "VND",
                         })}
@@ -1600,38 +1804,45 @@ const OrderDetail = (props) => {
                     </span>
                     <span
                       className="fw-bold"
-                      style={{ fontSize: "17px", color: order.tienKhachTra && "#dc1111" || "#2f80ed" }}
+                      style={{
+                        fontSize: "17px",
+                        color: (order.tienKhachTra && "#dc1111") || "#2f80ed",
+                      }}
                     >
-                      {order && order.tienKhachTra && order.tienKhachTra.toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      }) || "Chưa thanh toán"}
+                      {(order &&
+                        order.tienKhachTra &&
+                        order.tienKhachTra.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })) ||
+                        "Chưa thanh toán"}
                     </span>
                   </div>
                 </>
-              }
-              {order.tienThua !== 0 ?
+              )}
+              {order.tienThua !== 0 ? (
                 <div className="d-flex justify-content-between mt-3">
                   <span className="" style={{ fontSize: "16px", color: "" }}>
                     Tiền thừa trả khách
                   </span>
-                  <span
-                    className="text-dark"
-                    style={{ fontSize: "17px" }}
-                  >
-                    {order && order.tienThua && order.tienThua.toLocaleString("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                    })}
+                  <span className="text-dark" style={{ fontSize: "17px" }}>
+                    {order &&
+                      order.tienThua &&
+                      order.tienThua.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })}
                   </span>
                 </div>
-                : ""}
+              ) : (
+                ""
+              )}
             </div>
           </div>
         </div>
       </div>
-    )
-  }
+    );
+  };
 
   return (
     <>
@@ -1660,7 +1871,6 @@ const OrderDetail = (props) => {
       <PaymentHistories />
       <OrderSummary />
 
-
       <OrderHistoryDialog
         columns={columnsTableOrderHistories}
         open={openDialogDetailOrderHistories}
@@ -1672,7 +1882,6 @@ const OrderDetail = (props) => {
         onClose={handleCloseDialogPayment}
         onCloseNoAction={handleCloseNoActionDialogPayment}
         addPayment={handleAddPayment}
-
       />
       <UpdateRecipientOrderDialog
         open={openDialogUpdateRecipientOrder}

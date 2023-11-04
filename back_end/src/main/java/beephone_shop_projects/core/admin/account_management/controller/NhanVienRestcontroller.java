@@ -1,6 +1,7 @@
 package beephone_shop_projects.core.admin.account_management.controller;
 
 import beephone_shop_projects.core.admin.account_management.model.request.CreateAccountRequest;
+import beephone_shop_projects.core.admin.account_management.model.request.SearchAccountRequest;
 import beephone_shop_projects.core.admin.account_management.model.response.AccountResponse;
 import beephone_shop_projects.core.admin.account_management.service.NhanVienService;
 
@@ -35,7 +36,6 @@ public class NhanVienRestcontroller {
     public ResponsePage<Account> hienThi(@RequestParam(name = "page", defaultValue = "0") Integer pageNo) {
         return new ResponsePage(accService.getAllNV(pageNo));
     }
-
     @PostMapping("add")
     public ResponseObject<Account> add( @RequestBody CreateAccountRequest request) {
         return new ResponseObject(accService.addNV(request));
@@ -58,6 +58,10 @@ public class NhanVienRestcontroller {
         Optional<String> opTen = Optional.ofNullable(hoVaTen);
         return new ResponsePage(accService.search(opTen, pageNo)) ;
     }
+//    @GetMapping("search-all")
+//    public ResponsePage<Account> hienThi(@ModelAttribute SearchAccountRequest request) {
+//        return new ResponsePage(accService.getAll(request));
+//    }
     @GetMapping("/filter")
     public Page<Account> filterStatus(@RequestParam("trangThai") StatusAccountCus trangThai,
                                       @RequestParam(name = "page", defaultValue = "0") Integer pageNo) {
