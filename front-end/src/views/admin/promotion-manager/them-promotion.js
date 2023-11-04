@@ -517,8 +517,13 @@ const AddKhuyenMai = () => {
       <div className="row">
         <div className="col-5">
           <div className="mt-3 add-promotion-container">
-            <h4 className="title-promotion ms-4">Thêm Giảm Giá</h4>
-            <div className="ms-3 mb-3">
+            <h5
+              className="title-promotion ms-3"
+              style={{ paddingBottom: "2px", paddingLeft: "10px" }}
+            >
+              Thêm Giảm Giá
+            </h5>
+            <div className="ms-3 mb-3 mt-2">
               <div className="input-container">
                 <TextField
                   label="Tên Giảm Giá:"
@@ -537,7 +542,7 @@ const AddKhuyenMai = () => {
               </div>
             </div>
 
-            <div className="d-flex ms-3" style={{ marginBottom: "5px" }}>
+            <div className="d-flex ms-3">
               <div>
                 <RadioGroup
                   orientation="horizontal"
@@ -628,7 +633,7 @@ const AddKhuyenMai = () => {
                 />
               </div>
             </div>
-            <div className="row-input-date ms-3 mt-3">
+            <div className="row-input-date ms-3 mt-2">
               <div className="input-container">
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DemoContainer components={["DateTimePicker"]}>
@@ -657,7 +662,7 @@ const AddKhuyenMai = () => {
                 </LocalizationProvider>
               </div>
             </div>
-            <div className="row-input-date ms-3 mt-3">
+            <div className="row-input-date ms-3 mt-2">
               <div className="input-container">
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DemoContainer components={["DateTimePicker"]}>
@@ -725,27 +730,41 @@ const AddKhuyenMai = () => {
           </div>
         </div>
         <div className="col-7">
-          <div className="add-promotion-inProduct-container">
-            <div className="mt-3">
-              <h4 className="title-product">Danh sách sản phẩm</h4>
-              <Table
-                rowSelection={rowSelection}
-                columns={columns}
-                dataSource={listSanPham}
-                rowKey="id"
-                pagination={{
-                  pageSize: 4,
-                  position: ["bottomCenter"],
-                }}
-              />
-            </div>
+          <div className="mt-3 add-promotion-inProduct-container">
+            <h5
+              className="title-product mb-2"
+              style={{ paddingBottom: "10px" }}
+            >
+              Danh sách sản phẩm
+            </h5>
+            <Table
+              className="table-container"
+              style={{
+                margin: "0 18px",
+              }}
+              rowSelection={rowSelection}
+              columns={columns}
+              dataSource={listSanPham}
+              rowKey="id"
+              pagination={{
+                pageSize: 5,
+                position: ["bottomCenter"],
+              }}
+            />
           </div>
         </div>
       </div>
 
       <div className="row mt-3 ms-1 mb-3 add-promotion-inProduct-detail-container">
-        <h4 style={{ marginTop: "20px" }}>Danh sách sản phẩm chi tiết</h4>
+        <h5
+          style={{
+            margin: "15px",
+          }}
+        >
+          Danh sách sản phẩm chi tiết
+        </h5>
         <Table
+          className="table-container"
           rowSelection={rowSelection1}
           columns={columns1}
           dataSource={listSanPhamChiTiet}

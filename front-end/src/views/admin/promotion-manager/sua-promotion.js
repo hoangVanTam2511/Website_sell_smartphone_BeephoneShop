@@ -559,25 +559,19 @@ const SuaKhuyenMai = () => {
       align: "center",
       whiteSpace: "pre-line",
       render: (_, record) => {
-        if (isInputChanged) {
-          const numericValue2 = parseFloat(value?.replace(/[^0-9.-]+/g, ""));
-          let giaTriKhuyenMai = record.donGia;
-          if (selectDiscount === TypeDiscountString.VND) {
-            giaTriKhuyenMai = record.donGia - numericValue2;
-            return (
-              <span>{numeral(giaTriKhuyenMai).format("0,0 VND") + " ₫"}</span>
-            );
-          } else if (selectDiscount === TypeDiscountString.PERCENT) {
-            giaTriKhuyenMai =
-              record.donGia - (record.donGia * numericValue2) / 100;
-            return (
-              <span>{numeral(giaTriKhuyenMai).format("0,0 VND") + " ₫"}</span>
-            );
-          }
-        } else {
-          let formattedValue = record.donGia;
-          formattedValue = numeral(record.donGia).format("0,0 VND") + " ₫";
-          return <span>{formattedValue}</span>;
+        const numericValue2 = parseFloat(value?.replace(/[^0-9.-]+/g, ""));
+        let giaTriKhuyenMai = record.donGia;
+        if (selectDiscount === TypeDiscountString.VND) {
+          giaTriKhuyenMai = record.donGia - numericValue2;
+          return (
+            <span>{numeral(giaTriKhuyenMai).format("0,0 VND") + " ₫"}</span>
+          );
+        } else if (selectDiscount === TypeDiscountString.PERCENT) {
+          giaTriKhuyenMai =
+            record.donGia - (record.donGia * numericValue2) / 100;
+          return (
+            <span>{numeral(giaTriKhuyenMai).format("0,0 VND") + " ₫"}</span>
+          );
         }
       },
     },
@@ -604,7 +598,12 @@ const SuaKhuyenMai = () => {
       <div className="row">
         <div className="col-5">
           <div className="mt-3 add-promotion-container">
-            <h5 className="title-promotion ms-4">Sửa Giảm Giá</h5>
+            <h5
+              className="title-promotion ms-4"
+              style={{ paddingBottom: "5px" }}
+            >
+              Sửa Giảm Giá
+            </h5>
             <div className="ms-3 mb-4">
               <div className="input-container">
                 <TextField
@@ -819,8 +818,14 @@ const SuaKhuyenMai = () => {
         <div className="col-7">
           <div className="add-promotion-inProduct-container">
             <div className="mt-3">
-              <h4 className="title-product"> Danh sách sản phẩm</h4>
+              <h5 className="title-product" style={{ paddingBottom: "15px" }}>
+                Danh sách sản phẩm
+              </h5>
               <Table
+                className="table-container"
+                style={{
+                  margin: "0 18px",
+                }}
                 rowSelection={rowSelection}
                 columns={columns}
                 dataSource={listSanPham}
@@ -834,8 +839,15 @@ const SuaKhuyenMai = () => {
           </div>
         </div>
         <div className="row mt-3 ms-1 mb-3 add-promotion-inProduct-detail-container">
-          <h4 style={{ marginTop: "20px" }}>Danh sách sản phẩm chi tiết</h4>
+          <h5
+            style={{
+              margin: "15px",
+            }}
+          >
+            Danh sách sản phẩm chi tiết
+          </h5>
           <Table
+            className="table-container"
             rowSelection={rowSelection1}
             columns={columns1}
             dataSource={listSanPhamChiTiet}
