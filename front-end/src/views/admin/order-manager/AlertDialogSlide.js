@@ -633,7 +633,7 @@ export function ProductsDialog(props) {
                         style={{ width: "200px" }}
                       >
                         <img
-                          src={item && item.images[0].duongDan}
+                          // src={item && item.images[0].duongDan}
                           alt=""
                           style={{ width: "110px", height: "110px" }}
                         />
@@ -656,28 +656,28 @@ export function ProductsDialog(props) {
                           item.sanPham &&
                           item.sanPham.tenSanPham +
                           " " +
-                          item.cauHinh.ram.kichThuoc +
+                          item.ram.dungLuong +
                           "/" +
-                          item.cauHinh.rom.kichThuoc +
+                          item.rom.dungLuong +
                           "GB"}
                       </TableCell>
                       <TableCell
                         align="center"
                         style={{ fontSize: "16px", width: "120px" }}
                       >
-                        {item.cauHinh.ram.kichThuoc + "GB"}
+                        {item.ram.dungLuong + "GB"}
                       </TableCell>
                       <TableCell
                         align="center"
                         style={{ fontSize: "16px", width: "120px" }}
                       >
-                        {item.cauHinh.rom.kichThuoc + "GB"}
+                        {item.rom.dungLuong + "GB"}
                       </TableCell>
                       <TableCell
                         align="center"
                         style={{ fontSize: "16px", width: "120px" }}
                       >
-                        {item.cauHinh.mauSac.tenMauSac}
+                        {item.mauSac.tenMauSac}
                       </TableCell>
                       <TableCell
                         align="center"
@@ -837,13 +837,14 @@ export function ProductsDialog(props) {
   const handleChangeInfoProductItem = (item, color) => {
     const product = {
       id: item.id,
-      cauHinh: item.cauHinh,
+      ram: item.ram,
+      rom: item.rom,
+      mauSac: item.mauSac,
       donGia: item.donGia,
       sanPham: item.sanPham,
-      // images: item.images,
     };
 
-    const getProductItems1 = data.filter((i) => i.ma == item.ma);
+    const getProductItems1 = data.filter((i) => i.maCauHinh == item.maCauHinh);
     const sortedProductItems1 = getProductItems1.sort(
       (a, b) => a.donGia - b.donGia
     );
@@ -852,8 +853,8 @@ export function ProductsDialog(props) {
 
     const findColor = data.find(
       (i) =>
-        i.cauHinh.mauSac.tenMauSac === color &&
-        i.ma === item.ma &&
+        i.mauSac.tenMauSac === color &&
+        i.maCauHinh === item.maCauHinh &&
         i.soLuongTonKho > 0
     );
     if (findColor) {
@@ -868,9 +869,9 @@ export function ProductsDialog(props) {
   const handleChangeProductImage = (item) => {
     const product = {
       id: item.id,
-      images: item.images,
+      // images: item.images,
       soLuongTonKho: item.soLuongTonKho,
-      cauHinh: item.cauHinh,
+      mauSac: item.mauSac,
       donGia: item.donGia,
     };
     setProductItem2(product);
@@ -892,14 +893,14 @@ export function ProductsDialog(props) {
     const uniqueItems = Object.values(
       data.reduce((acc, item) => {
         if (
-          (!acc[item.ma] ||
-            (acc[item.ma].donGia > item.donGia && !acc[item.ma].isDuplicate)) && item.sanPham.id === getIdByItem) {
-          acc[item.ma] = item;
+          (!acc[item.maCauHinh] ||
+            (acc[item.maCauHinh].donGia > item.donGia && !acc[item.maCauHinh].isDuplicate)) && item.sanPham.id === getIdByItem) {
+          acc[item.maCauHinh] = item;
         } else if (
-          acc[item.ma] && acc[item.ma].isDuplicate &&
-          acc[item.ma].donGia > item.donGia
+          acc[item.maCauHinh] && acc[item.maCauHinh].isDuplicate &&
+          acc[item.maCauHinh].donGia > item.donGia
         ) {
-          acc[item.ma] = {
+          acc[item.maCauHinh] = {
             ...item,
             isDuplicate: false,
           };
@@ -910,7 +911,7 @@ export function ProductsDialog(props) {
     const sortedProductItems = uniqueItems.sort((a, b) => a.donGia - b.donGia);
     setProductItems(sortedProductItems);
 
-    const getProductItems1 = data.filter((i) => i.ma == item.ma);
+    const getProductItems1 = data.filter((i) => i.maCauHinh === item.maCauHinh);
     const sortedProductItems1 = getProductItems1.sort(
       (a, b) => a.donGia - b.donGia
     );
@@ -2417,7 +2418,7 @@ export const ProductDetailsDialog = (props) => {
     if (item) {
       changeProductItem(
         item,
-        productItem2 && productItem2.cauHinh.mauSac.tenMauSac
+        productItem2 && productItem2.mauSac.tenMauSac
       );
     }
   };
@@ -2453,9 +2454,9 @@ export const ProductDetailsDialog = (props) => {
                     {productItem1 &&
                       productItem1.sanPham.tenSanPham +
                       " " +
-                      productItem1.cauHinh.ram.kichThuoc +
+                      productItem1.ram.dungLuong +
                       "/" +
-                      productItem1.cauHinh.rom.kichThuoc +
+                      productItem1.rom.dungLuong +
                       "GB"}
                     <span
                       className="ms-2"
@@ -2483,7 +2484,7 @@ export const ProductDetailsDialog = (props) => {
                     <img
                       className="mt-4 pt-4"
                       style={{ width: "370px", height: "380px" }}
-                      src={productItem2 && productItem2.images[0].duongDan}
+                      // src={productItem2 && productItem2.images[0].duongDan}
                       alt=""
                     />
                   </div>
@@ -2499,9 +2500,9 @@ export const ProductDetailsDialog = (props) => {
                         aria-labelledby="storage-label"
                         defaultValue={
                           productItem &&
-                          productItem.cauHinh.ram.kichThuoc +
+                          productItem.ram.dungLuong +
                           "/" +
-                          productItem.cauHinh.rom.kichThuoc +
+                          productItem.rom.dungLuong +
                           "GB"
                         }
                         size="lg"
@@ -2532,9 +2533,9 @@ export const ProductDetailsDialog = (props) => {
                                           {productItem &&
                                             productItem.sanPham.tenSanPham +
                                             " " +
-                                            item.cauHinh.ram.kichThuoc +
+                                            item.ram.dungLuong +
                                             "/" +
-                                            item.cauHinh.rom.kichThuoc +
+                                            item.rom.dungLuong +
                                             "GB"}
                                         </span>
                                       </div>
@@ -2555,9 +2556,9 @@ export const ProductDetailsDialog = (props) => {
                                 overlay
                                 disableIcon
                                 value={
-                                  item.cauHinh.ram.kichThuoc +
+                                  item.ram.dungLuong +
                                   "/" +
-                                  item.cauHinh.rom.kichThuoc +
+                                  item.rom.dungLuong +
                                   "GB"
                                 }
                                 slotProps={{
@@ -2593,7 +2594,7 @@ export const ProductDetailsDialog = (props) => {
                         key={keyRadio}
                         aria-labelledby="storage-label"
                         defaultValue={
-                          productItem2 && productItem2.cauHinh.mauSac.tenMauSac
+                          productItem2 && productItem2.mauSac.tenMauSac
                         }
                         size="lg"
                         sx={{ gap: 1.7 }}
@@ -2622,9 +2623,9 @@ export const ProductDetailsDialog = (props) => {
                                             height: "40px",
                                             marginTop: "4px",
                                           }}
-                                          src={
-                                            item.images && item.images[0].duongDan
-                                          }
+                                          // src={
+                                          //   item.images && item.images[0].duongDan
+                                          // }
                                           alt=""
                                         />
                                       </div>
@@ -2637,7 +2638,7 @@ export const ProductDetailsDialog = (props) => {
                                             textTransform: "capitalize",
                                           }}
                                         >
-                                          {item.cauHinh.mauSac.tenMauSac}
+                                          {item.mauSac.tenMauSac}
                                         </span>
                                         <div className="" style={{ marginTop: "" }}>
                                           <span
@@ -2659,7 +2660,7 @@ export const ProductDetailsDialog = (props) => {
                                 overlay
                                 disabled={item.soLuongTonKho <= 0 ? true : false}
                                 disableIcon
-                                value={item.cauHinh.mauSac.tenMauSac}
+                                value={item.mauSac.tenMauSac}
                                 slotProps={{
                                   label: ({ checked }) => ({
                                     sx: {

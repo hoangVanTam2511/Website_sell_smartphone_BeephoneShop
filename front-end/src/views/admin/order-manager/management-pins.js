@@ -36,10 +36,6 @@ import {
 import LoadingIndicator from "../../../utilities/loading";
 import CreatePin from "./create-pin";
 
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
-
 const ManagementPins = () => {
   const navigate = useNavigate();
   const [pins, setPins] = useState([]);
@@ -260,29 +256,14 @@ const ManagementPins = () => {
           <div className="mx-auto">
             <Pagination
               color="primary" /* page={parseInt(currentPage)} key={refreshPage} count={totalPages} */
-              // onChange={handlePageChange}
+            // onChange={handlePageChange}
             />
           </div>
           <div className="mt-4"></div>
         </Card>
       </div>
       {isLoading && <LoadingIndicator />}
-      <Dialog
-        open={open}
-        TransitionComponent={Transition}
-        keepMounted
-        onClose={handleClose}
-        maxWidth="md"
-        maxHeight="md"
-        sx={{
-          marginBottom: "100px",
-        }}
-      >
-        <DialogContent className="">
-          <CreatePin close={handleClose} getAll={loadDataPins} pins={pins} />
-        </DialogContent>
-        <div className="mt-3"></div>
-      </Dialog>
+      <CreatePin open={open} close={handleClose} getAll={loadDataPins} pins={pins} />
     </>
   );
 };

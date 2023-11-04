@@ -16,6 +16,8 @@ import org.springframework.data.rest.core.config.Projection;
 @NoArgsConstructor
 public class ManHinhResponse {
 
+    private String id;
+
     private String ma;
 
     private Double kichThuoc;

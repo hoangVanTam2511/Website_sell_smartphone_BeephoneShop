@@ -15,6 +15,7 @@ public class ApiConstants {
     public static final String API_CHIP_URI = "/api/chips";
     public static final String API_PIN_URI = "/api/pins";
     public static final String API_COLOR_URI = "/api/colors";
+    public static final String API_IMAGE_URI = "/api/image";
     public static final String API_CAMERA_URI = "/api/cameras";
     public static final String API_CAMERA_FRONT_URI = "/api/camera-fronts";
     public static final String API_CAMERA_REAR_URI = "/api/camera-rears";

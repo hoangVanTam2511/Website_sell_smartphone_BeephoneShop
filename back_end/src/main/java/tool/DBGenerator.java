@@ -41,6 +41,11 @@ public class DBGenerator implements CommandLineRunner {
     private ITheSimRepository theSimRepository;
 
     @Autowired
+    private ITheNhoRepository theNhoRepository;
+    @Autowired
+    private ICongSacRepository congSacRepository;
+
+    @Autowired
     private IImeiRepository imeiRepository;
 
     @Autowired
@@ -143,6 +148,17 @@ public class DBGenerator implements CommandLineRunner {
         camera.setDoPhanGiai("120");
         camera.setId(cameraRepository.save(camera).getId());
 
+        TheNho theNho = new TheNho();
+        theNho.setMa("ma1");
+        theNho.setLoaiTheNho("MircoSD");
+        theNho.setDungLuongToiDa(1024);
+        theNho.setId(theNhoRepository.save(theNho).getId());
+
+        CongSac congSac = new CongSac();
+        congSac.setMa("ma1");
+        congSac.setLoaiCongSac("Type-C");
+        congSac.setId(congSacRepository.save(congSac).getId());
+
         //Bảng chip
         Chip chip = new Chip();
         chip.setMa("chip1");
@@ -220,19 +236,19 @@ public class DBGenerator implements CommandLineRunner {
         theSim.setMa("TS1");
         theSim.setStatus(StatusCommon.ACTIVE);
         theSim.setSimMultiple(SimMultiple.SINGLE_SIM);
-        theSim.setLoaiTheSim("Sim dep");
+        theSim.setLoaiTheSim("Nano SIM");
         theSim.setId(theSimRepository.save(theSim).getId());
 
         TheSim theSim1=new TheSim();
         theSim1.setMa("TS2");
         theSim1.setStatus(StatusCommon.IN_ACTIVE);
         theSim1.setSimMultiple(SimMultiple.DUAL_SIM);
-        theSim1.setLoaiTheSim("Sim dep");
+        theSim1.setLoaiTheSim("Nano SIM");
         theSim1.setId(theSimRepository.save(theSim1).getId());
 
         ManHinh manHinh = new ManHinh();
         manHinh.setMa("ManHinh01");
-        manHinh.setLoaiManHinh("hoho");
+        manHinh.setLoaiManHinh("AMOLED");
         manHinh.setDoPhanGiaiManHinh(doPhanGiaiRepository.findByMa("DPG123"));
         manHinh.setKichThuoc(6.1);
         manHinh.setTanSoQuet(25);
@@ -241,7 +257,7 @@ public class DBGenerator implements CommandLineRunner {
 
         ManHinh manHinh1 = new ManHinh();
         manHinh1.setMa("ManHinh012");
-        manHinh1.setLoaiManHinh("hoho+1");
+        manHinh1.setLoaiManHinh("SUPER AMOLED");
         manHinh1.setDoPhanGiaiManHinh(doPhanGiaiRepository.findByMa("DPG123"));
         manHinh1.setKichThuoc(6.5);
         manHinh1.setTanSoQuet(23);
@@ -250,7 +266,7 @@ public class DBGenerator implements CommandLineRunner {
 
         ManHinh manHinh2 = new ManHinh();
         manHinh2.setMa("ManHinh013");
-        manHinh2.setLoaiManHinh("hoho+2");
+        manHinh2.setLoaiManHinh("OLED");
         manHinh2.setDoPhanGiaiManHinh(doPhanGiaiRepository.findByMa("DPG123"));
         manHinh2.setKichThuoc(6.7);
         manHinh2.setTanSoQuet(21);
@@ -258,25 +274,25 @@ public class DBGenerator implements CommandLineRunner {
         manHinh2.setId(manHinhRepository.save(manHinh2).getId());
 
         //Bảng Màu sắc
-//        MauSac mauSac = new MauSac();
-//        mauSac.setMa("MauSac1");
-//        mauSac.setTenMauSac("YELLOW");
-//        mauSac.setId(mauSacRepository.save(mauSac).getId());
-//
-//        MauSac mauSac1 = new MauSac();
-//        mauSac1.setMa("MauSac12");
-//        mauSac1.setTenMauSac("SLIVER");
-//        mauSac1.setId(mauSacRepository.save(mauSac1).getId());
-//
-//        MauSac mauSac2 = new MauSac();
-//        mauSac2.setMa("MauSac13");
-//        mauSac2.setTenMauSac("BLACK");
-//        mauSac2.setId(mauSacRepository.save(mauSac2).getId());
-//
-//        MauSac mauSac3 = new MauSac();
-//        mauSac3.setMa("MauSac13");
-//        mauSac3.setTenMauSac("BLUE");
-//        mauSac3.setId(mauSacRepository.save(mauSac3).getId());
+        MauSac mauSac = new MauSac();
+        mauSac.setMa("MauSac1");
+        mauSac.setTenMauSac("YELLOW");
+        mauSac.setId(mauSacRepository.save(mauSac).getId());
+
+        MauSac mauSac1 = new MauSac();
+        mauSac1.setMa("MauSac12");
+        mauSac1.setTenMauSac("SLIVER");
+        mauSac1.setId(mauSacRepository.save(mauSac1).getId());
+
+        MauSac mauSac2 = new MauSac();
+        mauSac2.setMa("MauSac13");
+        mauSac2.setTenMauSac("BLACK");
+        mauSac2.setId(mauSacRepository.save(mauSac2).getId());
+
+        MauSac mauSac3 = new MauSac();
+        mauSac3.setMa("MauSac13");
+        mauSac3.setTenMauSac("BLUE");
+        mauSac3.setId(mauSacRepository.save(mauSac3).getId());
 
         //Bảng Nhà sản xuất
         Hang hang = new Hang();
@@ -312,132 +328,135 @@ public class DBGenerator implements CommandLineRunner {
         //Bảng Pin
         Pin pin = new Pin();
         pin.setMa("Pin01");
+        pin.setLoaiPin("Polymer");
         pin.setDungLuong(6000);
         pin.setId(pinRepository.save(pin).getId());
 
         Pin pin1 = new Pin();
         pin1.setMa("Pin012");
         pin1.setDungLuong(4800);
+        pin1.setLoaiPin("Polymer");
         pin1.setId(pinRepository.save(pin1).getId());
 
         Pin pin2 = new Pin();
         pin2.setMa("Pin013");
         pin2.setDungLuong(5000);
+        pin2.setLoaiPin("Polymer");
         pin2.setId(pinRepository.save(pin2).getId());
 
         //Bảng Ram
         Ram ram = new Ram();
         ram.setMa("ram01");
-        ram.setKichThuoc(6);
+        ram.setDungLuong(6);
         ram.setId(ramRepository.save(ram).getId());
 
         Ram ram1 = new Ram();
         ram1.setMa("ram013");
-        ram1.setKichThuoc(2);
+        ram1.setDungLuong(2);
         ram1.setId(ramRepository.save(ram1).getId());
 
         Ram ram2 = new Ram();
         ram2.setMa("ram012");
-        ram2.setKichThuoc(3);
+        ram2.setDungLuong(3);
         ram2.setId(ramRepository.save(ram2).getId());
 
         Ram ram3 = new Ram();
         ram3.setMa("ram0123");
-        ram3.setKichThuoc(4);
+        ram3.setDungLuong(4);
         ram3.setId(ramRepository.save(ram3).getId());
 
         Ram ram5 = new Ram();
         ram5.setMa("ram0172");
-        ram5.setKichThuoc(8);
+        ram5.setDungLuong(8);
         ram5.setId(ramRepository.save(ram5).getId());
 
         Ram ram4 = new Ram();
         ram4.setMa("ram0163");
-        ram4.setKichThuoc(12);
+        ram4.setDungLuong(12);
         ram4.setId(ramRepository.save(ram4).getId());
 
         //Bảng Rom
         Rom rom5 = new Rom();
         rom5.setMa("Rom01");
-        rom5.setKichThuoc(32);
+        rom5.setDungLuong(32);
         rom5.setId(romRepository.save(rom5).getId());
 
         Rom rom4 = new Rom();
         rom4.setMa("Rom01");
-        rom4.setKichThuoc(64);
+        rom4.setDungLuong(64);
         rom4.setId(romRepository.save(rom4).getId());
 
         Rom rom = new Rom();
         rom.setMa("Rom01");
-        rom.setKichThuoc(128);
+        rom.setDungLuong(128);
         rom.setId(romRepository.save(rom).getId());
 
         Rom rom1 = new Rom();
         rom1.setMa("Rom014");
-        rom1.setKichThuoc(256);
+        rom1.setDungLuong(256);
         rom1.setId(romRepository.save(rom1).getId());
 
         Rom rom2 = new Rom();
         rom2.setMa("Rom015");
-        rom2.setKichThuoc(512);
+        rom2.setDungLuong(512);
         rom2.setId(romRepository.save(rom2).getId());
 
         Rom rom3 = new Rom();
         rom3.setMa("Rom0153");
-        rom3.setKichThuoc(1024);
+        rom3.setDungLuong(1024);
         rom3.setId(romRepository.save(rom3).getId());
 
         //bảng sản phẩm
-        SanPham sanPham = new SanPham();
-        sanPham.setMa("SanPham01");
-        sanPham.setTenSanPham("Iphone 14 Pro");
+//        SanPham sanPham = new SanPham();
+//        sanPham.setMa("SanPham01");
+//        sanPham.setTenSanPham("Iphone 14 Pro");
 //        sanPham.setSim(2);
 //        sanPham.setCongSac("Type C");
 //        sanPham.setHeDieuHanh("IOS");
-        sanPham.setMoTa("""
-                Samsung Galaxy S22 là bước nhảy vọt trong công nghệ video trên thế hệ di động. 
-                Đồng thời, điện thoại cũng mở ra loạt cải tiến đột phá hàng đầu hiện nay từ màn hình vát phẳng “nịnh” mắt đến bộ xử lý 4nm tiên tiến đầu tiên trên thế hệ smartphone Samsung. 
-                """);
-        sanPham.setChip(chip);
-        sanPham.setDongSanPham(dongSanPham);
-        sanPham.setHang(hang);
-        sanPham.setManHinh(manHinh);
-        sanPham.setPin(pin);
-        sanPham.setId(sanPhamRepository.save(sanPham).getId());
+//        sanPham.setMoTa("""
+//                Samsung Galaxy S22 là bước nhảy vọt trong công nghệ video trên thế hệ di động.
+//                Đồng thời, điện thoại cũng mở ra loạt cải tiến đột phá hàng đầu hiện nay từ màn hình vát phẳng “nịnh” mắt đến bộ xử lý 4nm tiên tiến đầu tiên trên thế hệ smartphone Samsung.
+//                """);
+//        sanPham.setChip(chip);
+//        sanPham.setDongSanPham(dongSanPham);
+//        sanPham.setHang(hang);
+//        sanPham.setManHinh(manHinh);
+//        sanPham.setPin(pin);
+//        sanPham.setId(sanPhamRepository.save(sanPham).getId());
 
-        SanPham sanPham1 = new SanPham();
-        sanPham1.setMa("SanPham014");
-        sanPham1.setTenSanPham("Xiaomi Mi 11");
+//        SanPham sanPham1 = new SanPham();
+//        sanPham1.setMa("SanPham014");
+//        sanPham1.setTenSanPham("Xiaomi Mi 11");
 //        sanPham1.setSim(2);
 //        sanPham1.setCongSac("Type C");
 //        sanPham1.setHeDieuHanh("Android");
-        sanPham1.setMoTa("""
-                Xiaomi Mi 11 là bước nhảy vọt trong công nghệ video trên thế hệ di động. 
-                Đồng thời, điện thoại cũng mở ra loạt cải tiến đột phá hàng đầu hiện nay từ màn hình vát phẳng “nịnh” mắt đến bộ xử lý 4nm tiên tiến đầu tiên trên thế hệ smartphone Samsung. 
-                """);
-        sanPham1.setChip(chip2);
-        sanPham1.setDongSanPham(dongSanPham2);
-        sanPham1.setHang(hang2);
-        sanPham1.setManHinh(manHinh2);
-        sanPham1.setPin(pin2);
-        sanPham1.setId(sanPhamRepository.save(sanPham1).getId());
+//        sanPham1.setMoTa("""
+//                Xiaomi Mi 11 là bước nhảy vọt trong công nghệ video trên thế hệ di động.
+//                Đồng thời, điện thoại cũng mở ra loạt cải tiến đột phá hàng đầu hiện nay từ màn hình vát phẳng “nịnh” mắt đến bộ xử lý 4nm tiên tiến đầu tiên trên thế hệ smartphone Samsung.
+//                """);
+//        sanPham1.setChip(chip2);
+//        sanPham1.setDongSanPham(dongSanPham2);
+//        sanPham1.setHang(hang2);
+//        sanPham1.setManHinh(manHinh2);
+//        sanPham1.setPin(pin2);
+//        sanPham1.setId(sanPhamRepository.save(sanPham1).getId());
 
-        SanPham sanPham2 = new SanPham();
-        sanPham2.setMa("SanPham012");
-        sanPham2.setTenSanPham("Iphone 15 Pro Max");
+//        SanPham sanPham2 = new SanPham();
+//        sanPham2.setMa("SanPham012");
+//        sanPham2.setTenSanPham("Iphone 15 Pro Max");
 //        sanPham2.setSim(2);
 //        sanPham2.setCongSac("Type C");
 //        sanPham2.setHeDieuHanh("IOS");
-        sanPham2.setMoTa("""
-                Iphone 15 là bước nhảy vọt trong công nghệ video trên thế hệ di động. 
-                Đồng thời, điện thoại cũng mở ra loạt cải tiến đột phá hàng đầu hiện nay từ màn hình vát phẳng “nịnh” mắt đến bộ xử lý 4nm tiên tiến đầu tiên trên thế hệ smartphone Samsung. 
-                """);
-        sanPham2.setChip(chip3);
-        sanPham2.setDongSanPham(dongSanPham3);
-        sanPham2.setHang(hang1);
-        sanPham2.setManHinh(manHinh1);
-        sanPham2.setPin(pin1);
-        sanPham2.setId(sanPhamRepository.save(sanPham2).getId());
+//        sanPham2.setMoTa("""
+//                Iphone 15 là bước nhảy vọt trong công nghệ video trên thế hệ di động.
+//                Đồng thời, điện thoại cũng mở ra loạt cải tiến đột phá hàng đầu hiện nay từ màn hình vát phẳng “nịnh” mắt đến bộ xử lý 4nm tiên tiến đầu tiên trên thế hệ smartphone Samsung.
+//                """);
+//        sanPham2.setChip(chip3);
+//        sanPham2.setDongSanPham(dongSanPham3);
+//        sanPham2.setHang(hang1);
+//        sanPham2.setManHinh(manHinh1);
+//        sanPham2.setPin(pin1);
+//        sanPham2.setId(sanPhamRepository.save(sanPham2).getId());
 
         //Bảng khuyến mại
         KhuyenMai khuyenMai = new KhuyenMai();

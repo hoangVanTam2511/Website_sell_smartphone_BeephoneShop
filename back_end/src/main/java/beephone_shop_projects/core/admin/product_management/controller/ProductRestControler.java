@@ -3,7 +3,7 @@ package beephone_shop_projects.core.admin.product_management.controller;
 import beephone_shop_projects.core.admin.product_management.model.request.CreateProductRequest;
 import beephone_shop_projects.core.admin.product_management.model.request.SearchProductDetailRequest;
 import beephone_shop_projects.core.admin.product_management.model.responce.SanPhamResponce;
-import beephone_shop_projects.core.admin.product_management.service.impl.ProductServiceImpl;
+import beephone_shop_projects.core.admin.product_management.service.impl.ProductServiceImpl1;
 import beephone_shop_projects.entity.SanPham;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProductRestControler {
     
     @Autowired
-    private ProductServiceImpl sanPhamService;
+    private ProductServiceImpl1 sanPhamService;
 
     @GetMapping("/view-all")
     public Page<SanPhamResponce> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {

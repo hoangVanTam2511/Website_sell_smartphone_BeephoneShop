@@ -46,7 +46,6 @@ import CreateMauSac from "./create-mau-sac";
 import UpdateMauSac from "./update-mau-sac";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
-
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -93,7 +92,7 @@ const ManagementColors = () => {
         setStatus(response.data.data.status);
         setColorName(response.data.data.tenMauSac);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
 
   const handleClickOpen1 = (id) => {
@@ -249,8 +248,8 @@ const ManagementColors = () => {
                   record.status === StatusCommonProducts.ACTIVE
                     ? "Ngừng kích hoạt"
                     : record.status === StatusCommonProducts.IN_ACTIVE
-                    ? "Kích hoạt"
-                    : ""
+                      ? "Kích hoạt"
+                      : ""
                 }
               >
                 <IconButton
@@ -263,8 +262,8 @@ const ManagementColors = () => {
                       record.status === StatusCommonProducts.IN_ACTIVE
                         ? "error"
                         : record.status === StatusCommonProducts.ACTIVE
-                        ? "success"
-                        : "disabled"
+                          ? "success"
+                          : "disabled"
                     }
                   />
                 </IconButton>
@@ -407,34 +406,19 @@ const ManagementColors = () => {
           <div className="mx-auto">
             <Pagination
               color="primary" /* page={parseInt(currentPage)} key={refreshPage} count={totalPages} */
-              // onChange={handlePageChange}
+            // onChange={handlePageChange}
             />
           </div>
           <div className="mt-4"></div>
         </Card>
       </div>
       {isLoading && <LoadingIndicator />}
-      <Dialog
+      <CreateMauSac
         open={open}
-        TransitionComponent={Transition}
-        keepMounted
-        onClose={handleClose}
-        maxWidth="md"
-        maxHeight="md"
-        sx={{
-          marginBottom: "170px",
-        }}
-      >
-        <DialogContent className="">
-          <CreateMauSac
-            close={handleClose}
-            getAll={getListColor}
-            colors={colors}
-          />
-        </DialogContent>
-        <div className="mt-3"></div>
-      </Dialog>
-
+        close={handleClose}
+        getAll={getListColor}
+        colors={colors}
+      />
       <Dialog
         open={open1}
         TransitionComponent={Transition}

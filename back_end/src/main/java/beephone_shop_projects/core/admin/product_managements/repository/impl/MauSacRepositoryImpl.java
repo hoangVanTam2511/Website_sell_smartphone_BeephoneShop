@@ -29,11 +29,6 @@ public class MauSacRepositoryImpl extends AbstractRepositoryImpl<MauSac, String>
 
     @Override
     public Page<MauSac> findAllMauSac() {
-        return null;
-    }
-
-//    @Override
-//    public Page<MauSac> findAllMauSac() {
 //        List<MauSac> mauSacs = null;
 //        Long totalElements = 0L;
 //        try (EntityManager entityManager = this.entityManager) {
@@ -73,15 +68,16 @@ public class MauSacRepositoryImpl extends AbstractRepositoryImpl<MauSac, String>
 //            throw e;
 //        }
 //        return new PageImpl<>(vouchers, pageable, totalElements);
-//    }
-//
-//    protected Predicate getPredicate(Root<Voucher> root, Class<?> entity, CriteriaBuilder criteriaBuilder, String keyword) {
-//        Field[] fields = entity.getDeclaredFields();
-//        List<Predicate> predicates = new ArrayList<>();
-//        for (Field field : fields) {
-//            predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get(field.getName()).as(String.class)), "%" + keyword.toLowerCase() + "%"));
-//        }
-//        return criteriaBuilder.or(predicates.toArray(new Predicate[0]));
-//    }
+        return null;
+    }
+
+    protected Predicate getPredicate(Root<Voucher> root, Class<?> entity, CriteriaBuilder criteriaBuilder, String keyword) {
+        Field[] fields = entity.getDeclaredFields();
+        List<Predicate> predicates = new ArrayList<>();
+        for (Field field : fields) {
+            predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get(field.getName()).as(String.class)), "%" + keyword.toLowerCase() + "%"));
+        }
+        return criteriaBuilder.or(predicates.toArray(new Predicate[0]));
+    }
 
 }
