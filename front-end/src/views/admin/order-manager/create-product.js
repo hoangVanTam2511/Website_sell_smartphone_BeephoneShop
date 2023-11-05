@@ -1191,7 +1191,6 @@ const CreateProduct = ({ }) => {
           </div>
         </div>
       </div>
-      <div style={{ height: "25px" }}></div>
       <CreateHang
         open={openHang}
         close={handleCloseOpenHang}

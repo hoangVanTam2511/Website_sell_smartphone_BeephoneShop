@@ -1,0 +1,200 @@
+import React, { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { Button, Empty, Table } from "antd";
+import { Box, Dialog, DialogContent, IconButton, Pagination, Slide, TextField, Tooltip, } from "@mui/material";
+import { PlusOutlined } from "@ant-design/icons";
+import Card from "../../../components/Card";
+import { format } from "date-fns";
+import axios from "axios";
+import { parseInt } from "lodash";
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
+import Zoom from '@mui/material/Zoom';
+import * as dayjs from "dayjs";
+import { OrderStatusString, OrderTypeString } from "./enum";
+import LoadingIndicator from '../../../utilities/loading';
+import { FaPencilAlt } from "react-icons/fa";
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+const ManagementProductItems = ({ open, close, productItems, productName }) => {
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const [products, setProducts] = useState(productItems);
+  const [totalPages, setTotalPages] = useState();
+  const [refreshPage, setRefreshPage] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [keyword, setKeyword] = useState(searchParams.get('keyword'));
+  const [currentPage, setCurrentPage] = useState(searchParams.get('currentPage') || 1);
+
+  useEffect(() => {
+    setProducts(productItems);
+  }, [productItems]);
+
+  const handleRedirectCreateProduct = () => {
+    navigate(`/dashboard/create-product`);
+  }
+
+  const OrderTable = () => {
+    return (
+      <>
+        <Table className="table-container mt-4"
+          columns={columns}
+          rowKey="ma"
+          dataSource={products}
+          pagination={false}
+          locale={{ emptyText: <Empty description="Không có dữ liệu" /> }}
+        />
+      </>
+    );
+  };
+
+  const columns = [
+    {
+      title: "STT",
+      align: "center",
+      dataIndex: "stt",
+      width: "5%",
+      render: (text, record, index) => (
+        <span style={{ fontWeight: "400" }}>{products.indexOf(record) + 1}</span>
+      ),
+    },
+    {
+      title: "Mã Sản Phẩm",
+      align: "center",
+      key: "ma",
+      width: "15%",
+      dataIndex: "ma",
+      render: (text, record) => (
+        <span style={{ fontWeight: "400" }}>{record.ma}</span>
+      ),
+    },
+    {
+      title: "Tên Sản Phẩm",
+      align: "center",
+      key: "tenSanPham",
+      width: "15%",
+      dataIndex: "tenSanPham",
+      render: (text, record) => (
+        <span style={{ fontWeight: "400" }}>{productName + " " + record.ram.dungLuong + "/" +
+          record.rom.dungLuong + "GB"}</span>
+      ),
+    },
+    {
+      title: "Màu Sắc",
+      align: "center",
+      width: "15%",
+      render: (text, record) => (
+        <span style={{ fontWeight: "400" }}>{record.mauSac.tenMauSac}</span>
+      ),
+    },
+    {
+      title: "Đơn Giá",
+      align: "center",
+      width: "15%",
+      render: (text, record) => (
+        <span className="txt-price" style={{ fontWeight: "400" }}>{
+          record.donGia && record.donGia.toLocaleString("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          })}
+        </span>
+      ),
+    },
+    {
+      title: "Số Lượng Tồn",
+      align: "center",
+      width: "15%",
+      render: (text, record) => (
+        <span style={{ fontWeight: "400" }} className="underline-blue">
+          {record.soLuongTonKho}
+        </span>
+      ),
+    },
+    {
+      title: "Thao Tác",
+      align: "center",
+      width: "15%",
+      dataIndex: "ma",
+      render: (text, record) => (
+        <>
+          <div className="button-container">
+            <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
+              <IconButton size="">
+                <FaPencilAlt color="#2f80ed" />
+              </IconButton>
+            </Tooltip>
+          </div>
+        </>
+      ),
+    },
+  ];
+  return (
+    <>
+
+      <Dialog
+        open={open}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={close}
+        maxWidth="xxl"
+        maxHeight="xxl"
+      >
+        <DialogContent className="">
+          <div className="mt-4" style={{ width: "1350px" }}>
+            <div className="container" style={{}}>
+              <div className="text-center" style={{}}>
+                <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>
+                  CHI TIẾT SẢN PHẨM
+                </span>
+              </div>
+              <div className="header-title mt-3">
+                <TextField
+                  label="Tìm Sản Phẩm Chi Tiết"
+                  // onChange={handleGetValueFromInputTextField}
+                  // value={keyword}
+                  InputLabelProps={{
+                    sx: {
+                      marginTop: "",
+                      textTransform: "capitalize",
+                    },
+                  }}
+                  inputProps={{
+                    style: {
+                      height: "23px",
+                      width: "250px",
+                    },
+                  }}
+                  size="small"
+                  className=""
+                />
+                <Button
+                  // onClick={handleRefreshData}
+                  className="rounded-2 ms-2"
+                  type="warning"
+                  style={{ width: "100px", fontSize: "15px" }}
+                >
+                  <span
+                    className="text-dark"
+                    style={{ fontWeight: "500", marginBottom: "2px" }}
+                  >
+                    Làm Mới
+                  </span>
+                </Button>
+              </div>
+              <OrderTable />
+            </div>
+          </div>
+        </DialogContent>
+        <div className="mt-3"></div>
+      </Dialog>
+      {isLoading && <LoadingIndicator />}
+    </>
+  )
+
+}
+export default ManagementProductItems;

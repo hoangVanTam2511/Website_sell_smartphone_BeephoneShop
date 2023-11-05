@@ -26,16 +26,19 @@ import { Select as SelectJoy } from '@mui/joy';
 import { Option as OptionJoy } from '@mui/joy';
 import { Col, Row } from "react-bootstrap";
 import generateRandomCode from "./genCode";
+import useCustomSnackbar from "./notistack";
 
-function PreviewMultipleImages({ uniqueColors }) {
+function PreviewMultipleImages({ uniqueColors, getColorImage }) {
   const inputRef = useRef(null);
   const handleUploadClick = () => {
     inputRef.current.click();
   };
 
+  const { handleOpenAlertVariant } = useCustomSnackbar();
   const [images, setImages] = useState([]);
   const [imageURLs, setImageURLs] = useState([]);
   const [colorImages, setColorImages] = useState([]);
+  const [openDropdown, setOpenDropdown] = useState(true);
 
   const handleMultipleImages = (event) => {
     const selectedFiles = event.target.files;
@@ -49,6 +52,7 @@ function PreviewMultipleImages({ uniqueColors }) {
 
     const selectedURLs = selectedFilesArray.map((file) => ({
       id: generateRandomCode(), url: URL.createObjectURL(file),
+      file: file,
     }));
 
     const updatedURLs = [...imageURLs, ...selectedURLs];
@@ -56,10 +60,17 @@ function PreviewMultipleImages({ uniqueColors }) {
     event.target.value = null;
   };
 
-  const handleColorImageChange = (index, value) => {
+  const handleColorImageChange = (index, value, url, file) => {
+    console.log(file);
+    // if (colorImages.some((image) => image === value && value !== " ")) {
+    //   handleOpenAlertVariant("Màu sắc đã được chọn!", "warning");
+    // }
+    // else {
     const updatedColorImages = [...colorImages];
     updatedColorImages[index] = value;
     setColorImages(updatedColorImages);
+    getColorImage(value, url, file);
+    // }
   };
 
   const handleDeleteImage = (index, id) => {
@@ -127,10 +138,10 @@ function PreviewMultipleImages({ uniqueColors }) {
                                 id="demo-select-small"
                                 value={colorImages[index]}
                                 label="Màu Sắc"
-                                onChange={(e) => handleColorImageChange(index, e.target.value)}
+                                onChange={(e) => handleColorImageChange(index, e.target.value, item.url, item.file)}
                                 defaultValue={" "}
                               >
-                                <MenuItem style={{ display: "none" }} value={" "}>Chọn màu sắc</MenuItem>
+                                <MenuItem value={" "}>Chọn màu sắc</MenuItem>
                                 {uniqueColors.map((c) => {
                                   return (
                                     <MenuItem key={c.id} value={c.color.id}>

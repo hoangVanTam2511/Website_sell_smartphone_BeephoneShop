@@ -29,6 +29,7 @@ import ImageUpload from "../../../utilities/upload";
 import ImportAndExportExcelImei from "../../../utilities/excelUtils";
 import { ImportExcelImei } from "./import-imei-by";
 import CreateRom from "./create-rom";
+import { async } from "@firebase/util";
 
 
 const ITEM_HEIGHT = 130;
@@ -508,10 +509,6 @@ const CreateCauHinh = ({ productName, getProduct }) => {
     );
   };
 
-  const createdProduct = async () => {
-    await addProduct();
-  }
-
   const generateRandomId = () => {
     const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let id = '';
@@ -537,7 +534,8 @@ const CreateCauHinh = ({ productName, getProduct }) => {
         headers: {
           "Content-Type": "application/json",
         }
-      });
+      })
+      await addFiles();
       handleOpenAlertVariant("Thêm sản phẩm thành công!", Notistack.SUCCESS);
       setIsLoading(false);
       redirectProductPage();
@@ -547,6 +545,45 @@ const CreateCauHinh = ({ productName, getProduct }) => {
       setIsLoading(false);
       console.error("Error");
     }
+  }
+  const listFiles = [...cauHinhsFinal]
+  const listDtoFiles = listFiles.map(config => {
+    return {
+      id: config.ma,
+      file: config.file
+    };
+  });
+
+  const formData = new FormData(); // Tạo một FormData mới ở mỗi lần gửi
+  listDtoFiles.forEach((item, index) => {
+    const newFileName = item.id;
+    const blobWithCustomFileName = new Blob([item.file], { type: 'application/octet-stream' });
+    formData.append('files', blobWithCustomFileName, newFileName);
+  });
+
+  const addFiles = async () => {
+    try {
+      await axios.post('http://localhost:8080/api/products/upload-multiple', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+    }
+    catch (error) {
+      setIsLoading(false);
+      console.error("Error");
+    }
+  }
+
+  const addImageToProductItem = (colorId, url, file) => {
+    const updateDatas = cauHinhsFinal.map((item) => {
+      if (item.color.id === colorId) {
+        return { ...item, image: url, file: file };
+      }
+      return item;
+    })
+    setCauHinhsFinal(updateDatas);
+    console.log(updateDatas);
   }
 
   return (
@@ -1132,7 +1169,7 @@ const CreateCauHinh = ({ productName, getProduct }) => {
             <div className="text-center pt-4" style={{}}>
               <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>ẢNH</span>
             </div>
-            <ImageUpload uniqueColors={uniqueCauHinhsFinal} />
+            <ImageUpload uniqueColors={uniqueCauHinhsFinal} getColorImage={addImageToProductItem} />
           </div>
           <div style={{ height: "25px" }}></div>
         </div>

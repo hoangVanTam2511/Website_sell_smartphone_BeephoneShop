@@ -364,9 +364,7 @@ const TabItem = ({
         <div className='d-flex'>
           <Tooltip TransitionComponent={Zoom} title="Chi tiết sản phẩm" style={{ cursor: "pointer" }} placement="top">
             <div className="product-img">
-              {/*
-              <img src={item && item.sanPhamChiTiet && item.sanPhamChiTiet.images && item.sanPhamChiTiet.images[0].duongDan} class='' alt="" style={{ width: "115px", height: "115px" }} />
-            */}
+              <img src={item && item.sanPhamChiTiet && item.sanPhamChiTiet.image && item.sanPhamChiTiet.image.path} class='' alt="" style={{ width: "115px", height: "115px" }} />
             </div>
           </Tooltip>
           <div className='product ms-3 text-start'>
