@@ -755,6 +755,7 @@ const HienThiKhuyenMai = () => {
           </div>
           <Card.Body>
             <Table
+              className="table-container"
               dataSource={listKhuyenMai}
               columns={columns}
               pagination={false}

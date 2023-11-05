@@ -17,10 +17,10 @@ public interface SanPhamKhuyenMaiResponse {
     @Value("#{target.delected}")
     String getDelected();
 
-    @Value("#{target.id_dong_san_pham}")
-    String getIdDongSanPham();
+    @Value("#{target.id_hang}")
+    String getIdHang();
 
-    @Value("#{target.ten_dong_san_pham}")
-    String getTenDongSanPham();
+    @Value("#{target.ten_hang}")
+    String getTenHang();
 
 }

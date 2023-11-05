@@ -66,6 +66,8 @@ const SuaKhuyenMai = () => {
   const [open, setOpen] = React.useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
+  let successfulCount = 0;
+  let successfulCount1 = 0;
 
   const redirectToHienThiKhuyenMai = () => {
     window.location.href = "/khuyen-mai";
@@ -121,10 +123,6 @@ const SuaKhuyenMai = () => {
       .get("http://localhost:8080/san-pham-chi-tiet-1/" + id + "/" + check)
       .then((response) => {
         setlistSanPhamChiTiet(response.data.data);
-        const data = response.data.data;
-        const productDetailsIds = data.map((item) => item.id);
-        setSelectedRowKeys1(productDetailsIds);
-        setSelectedProductDetails(response.data.data.map((item) => item.id));
       })
       .catch((error) => {
         handleOpenAlertVariant(
@@ -212,14 +210,15 @@ const SuaKhuyenMai = () => {
       .get("http://localhost:8080/detail/khuyen-mai/" + id)
       .then((response) => {
         const data1 = response.data.data;
-        const selectedKeys = data1.map((item) => item.idSanPham);
-        const selectedKeys1 = data1.map((item) => item.idSanPhamChiTiet);
-        setIdSanPham(selectedKeys);
-        selectedKeys.forEach((idSanPham) => {
+        const listIdSanPham = data1.map((item) => item.idSanPham);
+        const listIdSanPhamChiTiet = data1.map((item) => item.idSanPhamChiTiet);
+        // setSelectedProductDetails(listIdSanPhamChiTiet);
+        setIdSanPham(listIdSanPham);
+        listIdSanPham.forEach((idSanPham) => {
           loadDatalistSanPhamChiTiet(idSanPham, true);
         });
-        // setSelectedRowKeys(selectedKeys);
-        // setSelectedRowKeys1(selectedKeys1);
+        setSelectedRowKeys(listIdSanPham);
+        setSelectedRowKeys1(listIdSanPhamChiTiet);
       })
       .catch((error) => {
         handleOpenAlertVariant(
@@ -264,6 +263,13 @@ const SuaKhuyenMai = () => {
     axios
       .put(apiURLKhuyenMai + "/update-khuyen-mai/" + id, obj)
       .then((response) => {
+        if (selectedProductDetails.length > 0) {
+          deleteKhuyenMaiChiTiet(id);
+        }
+        selectedProductDetails.forEach((idSanPhamChiTiet) => {
+          successfulCount++;
+          addKhuyenMaiChiTiet(id, idSanPhamChiTiet);
+        });
         handleOpenAlertVariant("Cập nhật thành công.", Notistack.SUCCESS);
         setTimeout(() => {
           redirectToHienThiKhuyenMai();
@@ -272,6 +278,45 @@ const SuaKhuyenMai = () => {
       .catch((error) => {
         handleOpenAlertVariant(
           "Đã xảy ra lỗi khi sửa giảm giá.",
+          Notistack.ERROR
+        );
+      });
+  };
+
+  const deleteKhuyenMaiChiTiet = (khuyenMaiID) => {
+    axios
+      .delete("http://localhost:8080/khuyen-mai-chi-tiet/update/" + khuyenMaiID)
+      .then((response) => {
+        console.log("Xóa thành công");
+      })
+      .catch((error) => {
+        console.log("Xóa thất bại");
+      });
+  };
+
+  const addKhuyenMaiChiTiet = (khuyenMaiID, idSanPhamChiTiet) => {
+    let objKhuyenMaiChiTiet = {
+      idKhuyenMai: khuyenMaiID,
+      idSanPhamChiTiet: idSanPhamChiTiet,
+    };
+    axios
+      .post(
+        "http://localhost:8080/khuyen-mai-chi-tiet/add",
+        objKhuyenMaiChiTiet
+      )
+      .then((response) => {
+        successfulCount1++;
+        if (successfulCount === successfulCount1) {
+          handleOpenAlertVariant(
+            "Áp dụng giảm giá thành công",
+            Notistack.SUCCESS
+          );
+          console.log("Áp dụng thành công");
+        }
+      })
+      .catch((error) => {
+        handleOpenAlertVariant(
+          "Đã xảy ra lỗi khi áp dụng giảm giá.",
           Notistack.ERROR
         );
       });
@@ -365,6 +410,7 @@ const SuaKhuyenMai = () => {
     console.log("selectedRowKeys changed: ", newSelectedRowKeys1);
     setSelectedRowKeys1(newSelectedRowKeys1);
     setSelectedProductDetails(newSelectedRowKeys1);
+    // console.log("lấy id check box: ", selectedProductDetails);
   };
 
   const rowSelection1 = {
@@ -406,8 +452,8 @@ const SuaKhuyenMai = () => {
     },
     {
       title: "Dòng sản phẩm ",
-      dataIndex: "tenDongSanPham",
-      key: "tenDongSanPham",
+      dataIndex: "tenHang",
+      key: "tenHang",
       width: "30%",
       editable: true,
       align: "center",
@@ -512,25 +558,19 @@ const SuaKhuyenMai = () => {
       align: "center",
       whiteSpace: "pre-line",
       render: (_, record) => {
-        if (isInputChanged) {
-          const numericValue2 = parseFloat(value?.replace(/[^0-9.-]+/g, ""));
-          let giaTriKhuyenMai = record.donGia;
-          if (selectDiscount === TypeDiscountString.VND) {
-            giaTriKhuyenMai = record.donGia - numericValue2;
-            return (
-              <span>{numeral(giaTriKhuyenMai).format("0,0 VND") + " ₫"}</span>
-            );
-          } else if (selectDiscount === TypeDiscountString.PERCENT) {
-            giaTriKhuyenMai =
-              record.donGia - (record.donGia * numericValue2) / 100;
-            return (
-              <span>{numeral(giaTriKhuyenMai).format("0,0 VND") + " ₫"}</span>
-            );
-          }
-        } else {
-          let formattedValue = record.donGia;
-          formattedValue = numeral(record.donGia).format("0,0 VND") + " ₫";
-          return <span>{formattedValue}</span>;
+        const numericValue2 = parseFloat(value?.replace(/[^0-9.-]+/g, ""));
+        let giaTriKhuyenMai = record.donGia;
+        if (selectDiscount === TypeDiscountString.VND) {
+          giaTriKhuyenMai = record.donGia - numericValue2;
+          return (
+            <span>{numeral(giaTriKhuyenMai).format("0,0 VND") + " ₫"}</span>
+          );
+        } else if (selectDiscount === TypeDiscountString.PERCENT) {
+          giaTriKhuyenMai =
+            record.donGia - (record.donGia * numericValue2) / 100;
+          return (
+            <span>{numeral(giaTriKhuyenMai).format("0,0 VND") + " ₫"}</span>
+          );
         }
       },
     },
@@ -557,7 +597,12 @@ const SuaKhuyenMai = () => {
       <div className="row">
         <div className="col-5">
           <div className="mt-3 add-promotion-container">
-            <h5 className="title-promotion ms-4">Sửa Giảm Giá</h5>
+            <h5
+              className="title-promotion ms-4"
+              style={{ paddingBottom: "5px" }}
+            >
+              Sửa Giảm Giá
+            </h5>
             <div className="ms-3 mb-4">
               <div className="input-container">
                 <TextField
@@ -772,8 +817,14 @@ const SuaKhuyenMai = () => {
         <div className="col-7">
           <div className="add-promotion-inProduct-container">
             <div className="mt-3">
-              <h4 className="title-product"> Danh sách sản phẩm</h4>
+              <h5 className="title-product" style={{ paddingBottom: "15px" }}>
+                Danh sách sản phẩm
+              </h5>
               <Table
+                className="table-container"
+                style={{
+                  margin: "0 18px",
+                }}
                 rowSelection={rowSelection}
                 columns={columns}
                 dataSource={listSanPham}
@@ -787,8 +838,15 @@ const SuaKhuyenMai = () => {
           </div>
         </div>
         <div className="row mt-3 ms-1 mb-3 add-promotion-inProduct-detail-container">
-          <h4 style={{ marginTop: "20px" }}>Danh sách sản phẩm chi tiết</h4>
+          <h5
+            style={{
+              margin: "15px",
+            }}
+          >
+            Danh sách sản phẩm chi tiết
+          </h5>
           <Table
+            className="table-container"
             rowSelection={rowSelection1}
             columns={columns1}
             dataSource={listSanPhamChiTiet}

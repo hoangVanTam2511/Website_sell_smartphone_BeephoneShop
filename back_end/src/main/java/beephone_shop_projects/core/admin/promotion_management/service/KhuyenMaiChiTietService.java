@@ -6,15 +6,14 @@ import beephone_shop_projects.entity.KhuyenMai;
 import beephone_shop_projects.entity.KhuyenMaiChiTiet;
 import jakarta.validation.Valid;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.util.List;
 
 public interface KhuyenMaiChiTietService {
-
-//    List<KhuyenMaiChiTietResponse> getAll();
 
     KhuyenMaiChiTiet addKhuyenMaiChiTiet(@Valid CreateKhuyenMaiChiTietRequest request);
 
     KhuyenMaiChiTiet updateKhuyenMaiChiTiet(@Valid CreateKhuyenMaiChiTietRequest request, String ma);
 
-    Boolean deleteKhuyenMaiChiTiet(String ma);
+   void updateDelected(String id);
 }
