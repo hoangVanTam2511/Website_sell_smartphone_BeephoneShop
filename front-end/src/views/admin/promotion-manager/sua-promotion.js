@@ -62,6 +62,7 @@ const SuaKhuyenMai = () => {
   const [sanPhamChiTietKhuyenMai, setSanPhamChiTietKhuyenMai] = useState([]);
   const [isInputChanged, setIsInputChanged] = useState(false);
   const { handleOpenAlertVariant } = useCustomSnackbar();
+  const [idCheckboxdelete, setIdCheckboxdelete] = useState([]);
 
   const [open, setOpen] = React.useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -217,6 +218,7 @@ const SuaKhuyenMai = () => {
         listIdSanPham.forEach((idSanPham) => {
           loadDatalistSanPhamChiTiet(idSanPham, true);
         });
+        setIdSanPhamChiTiet(listIdSanPhamChiTiet);
         setSelectedRowKeys(listIdSanPham);
         setSelectedRowKeys1(listIdSanPhamChiTiet);
       })
@@ -263,9 +265,9 @@ const SuaKhuyenMai = () => {
     axios
       .put(apiURLKhuyenMai + "/update-khuyen-mai/" + id, obj)
       .then((response) => {
-        if (selectedProductDetails.length > 0) {
-          deleteKhuyenMaiChiTiet(id);
-        }
+        idCheckboxdelete.forEach((idSP) => {
+          deleteKhuyenMaiChiTiet(id, idSP);
+        });
         selectedProductDetails.forEach((idSanPhamChiTiet) => {
           successfulCount++;
           addKhuyenMaiChiTiet(id, idSanPhamChiTiet);
@@ -283,9 +285,14 @@ const SuaKhuyenMai = () => {
       });
   };
 
-  const deleteKhuyenMaiChiTiet = (khuyenMaiID) => {
+  const deleteKhuyenMaiChiTiet = (khuyenMaiID, idSP) => {
     axios
-      .delete("http://localhost:8080/khuyen-mai-chi-tiet/update/" + khuyenMaiID)
+      .delete(
+        "http://localhost:8080/khuyen-mai-chi-tiet/update/" +
+          khuyenMaiID +
+          "/" +
+          idSP
+      )
       .then((response) => {
         console.log("Xóa thành công");
       })
@@ -406,11 +413,30 @@ const SuaKhuyenMai = () => {
     ],
   };
 
+  // const onSelectChange1 = (newSelectedRowKeys1) => {
+  //   console.log("selectedRowKeys changed: ", newSelectedRowKeys1);
+  //   setSelectedRowKeys1(newSelectedRowKeys1);
+  //   setSelectedProductDetails(newSelectedRowKeys1);
+  //   // console.log("lấy id check box: ", selectedProductDetails);
+  // };
+  const [previouslySelectedRowKeys, setPreviouslySelectedRowKeys] = useState(
+    []
+  );
+
+  // Hàm xử lý sự kiện khi chọn (select) thay đổi
   const onSelectChange1 = (newSelectedRowKeys1) => {
     console.log("selectedRowKeys changed: ", newSelectedRowKeys1);
+    const previouslySelectedKeys = selectedRowKeys1;
+    const deselectedKeys = previouslySelectedKeys.filter(
+      (key) => !newSelectedRowKeys1.includes(key)
+    );
+    setIdCheckboxdelete((prevDeselectedIds) => [
+      ...prevDeselectedIds,
+      ...deselectedKeys,
+    ]);
+    console.log("Danh sách ID bỏ chọn: ", idCheckboxdelete);
     setSelectedRowKeys1(newSelectedRowKeys1);
     setSelectedProductDetails(newSelectedRowKeys1);
-    // console.log("lấy id check box: ", selectedProductDetails);
   };
 
   const rowSelection1 = {
@@ -778,7 +804,7 @@ const SuaKhuyenMai = () => {
               <Button
                 className="rounded-2 button-mui"
                 type="primary"
-                style={{ height: "35px", width: "100px", fontSize: "15px" }}
+                style={{ height: "40px", width: "100px", fontSize: "15px" }}
                 onClick={handleSubmit}
               >
                 <FontAwesomeIcon icon={faCheck} />
@@ -793,7 +819,7 @@ const SuaKhuyenMai = () => {
               <Button
                 className="rounded-2 button-mui"
                 type="primary"
-                style={{ height: "35px", width: "100px", fontSize: "15px" }}
+                style={{ height: "40px", width: "100px", fontSize: "15px" }}
                 onClick={() => {
                   setTimeout(() => {
                     setIsLoading(false);

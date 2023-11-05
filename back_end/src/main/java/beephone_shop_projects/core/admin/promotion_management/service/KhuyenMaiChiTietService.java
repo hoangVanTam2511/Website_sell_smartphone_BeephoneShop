@@ -15,5 +15,5 @@ public interface KhuyenMaiChiTietService {
 
     KhuyenMaiChiTiet updateKhuyenMaiChiTiet(@Valid CreateKhuyenMaiChiTietRequest request, String ma);
 
-   void updateDelected(String id);
+   void updateDelected(String id, String idSP);
 }

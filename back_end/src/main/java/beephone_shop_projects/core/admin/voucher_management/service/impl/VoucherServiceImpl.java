@@ -198,7 +198,7 @@ public class VoucherServiceImpl implements VoucherService {
         if (request.getKeyword() == null) {
             request.setKeyword("");
         }
-        Pageable pageable = PageRequest.of(request.getPageNo() - 1, 2);
+        Pageable pageable = PageRequest.of(request.getPageNo() - 1, request.getPageSize());
         Page<Voucher> vouchers = voucherRepository.findAll(pageable, request);
         updateStatusVoucher();
         return vouchers;

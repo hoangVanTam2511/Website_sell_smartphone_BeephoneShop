@@ -31,16 +31,24 @@ public class KhuyenMaiChiTietServiceImpl implements KhuyenMaiChiTietService {
 
     @Override
     public KhuyenMaiChiTiet addKhuyenMaiChiTiet(@Valid CreateKhuyenMaiChiTietRequest request) {
-        KhuyenMaiChiTietId khuyenMaiChiTietId = KhuyenMaiChiTietId.builder()
-                .idKhuyenMai(khuyenMaiRepository.findById(request.getIdKhuyenMai()).get())
-                .idSanPham(sanPhamChiTietKhuyenMaiRepository.findById(request.getIdSanPhamChiTiet()).get())
-                .build();
-        KhuyenMaiChiTiet khuyenMaiChiTiet = KhuyenMaiChiTiet.builder()
-                .khuyenMaiChiTietId(khuyenMaiChiTietId)
-                .donGia(sanPhamChiTietKhuyenMaiRepository.findById(request.getIdSanPhamChiTiet()).get().getDonGia())
-                .donGiaSauKhuyenMai(donGiaSauKhuyenMai(request))
-                .build();
-        return khuyenMaiChiTietRepository.save(khuyenMaiChiTiet);
+        KhuyenMaiChiTiet khuyenMaiList = khuyenMaiChiTietRepository.findSPKM(request.getIdKhuyenMai(), request.getIdSanPhamChiTiet());
+        if (khuyenMaiList == null) {
+            KhuyenMaiChiTietId khuyenMaiChiTietId = KhuyenMaiChiTietId.builder()
+                    .idKhuyenMai(khuyenMaiRepository.findById(request.getIdKhuyenMai()).get())
+                    .idSanPham(sanPhamChiTietKhuyenMaiRepository.findById(request.getIdSanPhamChiTiet()).get())
+                    .build();
+            KhuyenMaiChiTiet khuyenMaiChiTiet = KhuyenMaiChiTiet.builder()
+                    .khuyenMaiChiTietId(khuyenMaiChiTietId)
+                    .donGia(sanPhamChiTietKhuyenMaiRepository.findById(request.getIdSanPhamChiTiet()).get().getDonGia())
+                    .donGiaSauKhuyenMai(donGiaSauKhuyenMai(request))
+                    .build();
+            return khuyenMaiChiTietRepository.save(khuyenMaiChiTiet);
+        }
+        if (khuyenMaiList != null && khuyenMaiList.getDelected() == false) {
+            khuyenMaiList.setDelected(true);
+           return khuyenMaiChiTietRepository.save(khuyenMaiList);
+        }
+        return null;
     }
 
     @Override
@@ -49,8 +57,8 @@ public class KhuyenMaiChiTietServiceImpl implements KhuyenMaiChiTietService {
     }
 
     @Override
-    public void updateDelected(String id) {
-        khuyenMaiChiTietRepository.updateDelected(id);
+    public void updateDelected(String id, String idSP) {
+        khuyenMaiChiTietRepository.updateDelected(false, id, idSP);
     }
 
     public BigDecimal donGiaSauKhuyenMai(CreateKhuyenMaiChiTietRequest request) {
