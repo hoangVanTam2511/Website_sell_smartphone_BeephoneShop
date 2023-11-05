@@ -18,6 +18,7 @@ import { OrderStatusString, OrderTypeString } from "./enum";
 import LoadingIndicator from '../../../utilities/loading';
 import { FaPencilAlt } from "react-icons/fa";
 import ManagementProductItems from "./management-product-items";
+import { FaDownload, FaUpload } from "react-icons/fa6";
 
 const ManagementProducts = () => {
   const navigate = useNavigate();
@@ -238,6 +239,69 @@ const ManagementProducts = () => {
               </Button>
             </div>
             <div className="mt-2">
+              <Button
+                // onClick={handleUploadClick}
+                className="rounded-2 button-mui me-2"
+                type="primary"
+                style={{ height: "40px", width: "auto", fontSize: "15px" }}
+              >
+                <FaUpload
+                  className="ms-1"
+                  style={{
+                    position: "absolute",
+                    bottom: "13.5px",
+                    left: "10px",
+                  }}
+                />
+                <span
+                  className=""
+                  style={{ marginBottom: "2px", fontWeight: "500", marginLeft: "21px" }}
+                >
+                  Import IMEI
+                </span>
+              </Button>
+              <Button
+                // onClick={handleUploadClick}
+                className="rounded-2 button-mui me-2"
+                type="primary"
+                style={{ height: "40px", width: "auto", fontSize: "15px" }}
+              >
+                <FaDownload
+                  className="ms-1"
+                  style={{
+                    position: "absolute",
+                    bottom: "13.5px",
+                    left: "10px",
+                  }}
+                />
+                <span
+                  className=""
+                  style={{ marginBottom: "2px", fontWeight: "500", marginLeft: "21px" }}
+                >
+                  Export Excel
+                </span>
+              </Button>
+              <Button
+                // onClick={handleUploadClick}
+                className="rounded-2 button-mui me-2"
+                type="primary"
+                style={{ height: "40px", width: "auto", fontSize: "15px" }}
+              >
+                <FaDownload
+                  className="ms-1"
+                  style={{
+                    position: "absolute",
+                    bottom: "13.5px",
+                    left: "10px",
+                  }}
+                />
+                <span
+                  className=""
+                  style={{ marginBottom: "2px", fontWeight: "500", marginLeft: "21px" }}
+                >
+                  Tải Mẫu
+                </span>
+              </Button>
               <Button
                 onClick={handleRedirectCreateProduct}
                 className="rounded-2 button-mui"
