@@ -1,19 +1,11 @@
+/* eslint-disable no-use-before-define */
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import {
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  Grid,
-  TextField,
-} from "@mui/material";
+import { MenuItem, Grid, TextField } from "@mui/material";
 
 const host = "https://provinces.open-api.vn/api/";
 
 const AddressForm = ({
-  required,
-  submitted,
   onProvinceChange,
   onDistrictChange,
   onWardChange,
@@ -25,36 +17,20 @@ const AddressForm = ({
   const [selectedProvince, setSelectedProvince] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedWard, setSelectedWard] = useState("");
-  const [provinceError, setProvinceError] = useState(false);
-  const [districtError, setDistrictError] = useState(false);
-  const [wardError, setWardError] = useState(false);
-
   useEffect(() => {
     fetchProvinces();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const callAPI = (api) => {
-    if (!selectedProvince) {
-      setProvinceError(true);
-    }
-    if (!selectedDistrict) {
-      setDistrictError(true);
-    }
-    if (!selectedWard) {
-      setWardError(true);
-    }
-
-    return axios.get(api).then((response) => {
-      return response.data;
-    });
+  const callAPI = async (api) => {
+    const response = await axios.get(api);
+    return response.data;
   };
 
   const fetchProvinces = () => {
     callAPI(host + "?depth=1")
       .then((data) => {
         setProvinces(data);
-        // console.log(data.provinceCode);
       })
       .catch((error) => {
         console.error("Error fetching provinces:", error);
@@ -84,78 +60,55 @@ const AddressForm = ({
   };
 
   const handleProvinceChange = (value) => {
-    if (submitted) {
-      // Nếu đã ấn nút "Lưu" thì kiểm tra trạng thái select
-      if (!value.target.value) {
-        setProvinceError(true);
-        setSelectedProvince("");
-      }
-    }
     setSelectedProvince(value.target.value);
     setSelectedDistrict("");
     setSelectedWard("");
     fetchDistricts(value.target.value);
     onProvinceChange(value.target.value);
-    setProvinceError(false);
+    setDistricts([]);
+    setWards([]);
+    onDistrictChange("");
+    onWardChange("");
   };
 
   const handleDistrictChange = (value) => {
     setSelectedDistrict(value.target.value);
-    setSelectedWard("");
+    setSelectedWard(""); // Đặt xã thành rỗng
     fetchWards(value.target.value);
     onDistrictChange(value.target.value);
-    setDistrictError(false);
-    if (submitted) {
-      // Nếu đã ấn nút "Lưu" thì kiểm tra trạng thái select
-      if (!value.target.value) {
-        setDistrictError(true);
-        setSelectedDistrict("");
-      }
-    }
+    onWardChange("");
+    setWards([]);
   };
-
   const handleWardChange = (value) => {
     setSelectedWard(value.target.value);
     onWardChange(value.target.value);
-    setWardError(false);
-    if (formSubmitted) {
-      // Nếu đã ấn nút "Lưu" thì kiểm tra trạng thái select
-      if (!value.target.value) {
-        setWardError(true);
-        setSelectedWard("");
-      }
-    }
   };
-
   useEffect(() => {
-    if (selectedProvince) {
+    if (selectedDistrict && selectedProvince && selectedWard) {
       const selectedProvinceName = provinces.find(
         (province) => province.code === selectedProvince
-      )?.name;
-      onProvinceChange(selectedProvinceName);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedProvince, onProvinceChange]);
-
-  useEffect(() => {
-    if (selectedDistrict) {
+      ).name;
       const selectedDistrictName = districts.find(
         (district) => district.code === selectedDistrict
-      )?.name;
-      onDistrictChange(selectedDistrictName);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedDistrict, onDistrictChange]);
-
-  useEffect(() => {
-    if (selectedWard) {
+      ).name;
       const selectedWardName = wards.find(
         (ward) => ward.code === selectedWard
-      )?.name;
+      ).name;
+      onProvinceChange(selectedProvinceName);
+      onDistrictChange(selectedDistrictName);
       onWardChange(selectedWardName);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedWard, onWardChange]);
+  }, [
+    selectedProvince,
+    selectedDistrict,
+    selectedWard,
+    provinces,
+    districts,
+    wards,
+    onProvinceChange,
+    onDistrictChange,
+    onWardChange,
+  ]);
 
   return (
     <>

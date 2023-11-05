@@ -106,8 +106,7 @@ const UpdateNV = () => {
     setAnhDaiDien(imageURL);
   };
   const handleChangeDate = (date) => {
-    const value = date.format("DD/MM/YYYY");
-    setNgaySinh(value);
+    setNgaySinh(date);
   };
   const handleHoVaTenChange = (e) => {
     const value = e.target.value;
@@ -120,13 +119,15 @@ const UpdateNV = () => {
       setHoVaTenError("Họ và tên không được chứa ký tự đặc biệt");
     } else if (trimmedValue.length < 5) {
       setHoVaTenError("Họ và tên phải có ít nhất 5 ký tự");
+    } else if (/^\s+|\s+$/.test(value)) {
+      setHoVaTenError("Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi");
     } else {
       setHoVaTenError("");
     }
   };
   const handleEmailChange = (e) => {
     const value = e.target.value;
-    const parn = /^[a-zA-Z0-9._-]+@gmail\.com$/i;
+    const parn = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     setEmail(value);
     if (!value.trim()) {
       setEmailError("Email không được trống");
@@ -182,10 +183,15 @@ const UpdateNV = () => {
       !soDienThoai ||
       !diaChi ||
       !tinhThanhPho ||
-      !xaPhuong ||
-      !quanHuyen
+      !quanHuyen ||
+      !xaPhuong
     ) {
       message.error("Vui lòng điền đủ thông tin trước khi lưu.");
+      setIsConfirmVisible(false);
+      return;
+    }
+    if (hoVaTenError || sdtError || emailError || cccdError || diaChiError) {
+      message.error("Vui lòng điền đúng thông tin trước khi lưu.");
       setIsConfirmVisible(false);
       return;
     }
@@ -229,7 +235,6 @@ const UpdateNV = () => {
       console.error("Validate Failed:", errInfo);
     }
   };
-  const today = new Date().toISOString().split("T")[0]; // Get the current date in "yyyy-mm-dd" format
 
   return (
     <>
@@ -298,8 +303,9 @@ const UpdateNV = () => {
                       <DatePicker
                         label="Ngày Sinh"
                         value={dayjs(ngaySinh)}
-                        format="DD/MM/YYYY"
                         onChange={handleChangeDate}
+                        disableFuture
+                        // format="DD/MM/YYYY"
                         sx={{
                           position: "relative",
 
@@ -323,8 +329,7 @@ const UpdateNV = () => {
                 <div
                   className="text-f"
                   style={{
-                    marginBottom: "15px",
-                    marginLeft: "50px",
+                    marginBottom: "30px",
                   }}
                 >
                   {/* Giới tính */}

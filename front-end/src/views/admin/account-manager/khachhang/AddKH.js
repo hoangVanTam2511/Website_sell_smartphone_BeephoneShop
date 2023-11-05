@@ -8,7 +8,6 @@ import "../../../../assets/scss/HienThiNV.scss";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
-  Box,
   FormControl,
   FormControlLabel,
   Grid,
@@ -75,8 +74,7 @@ const AddKH = () => {
       setHoVaTenError("Họ và tên không được chứa ký tự đặc biệt");
     } else if (trimmedValue.length < 5) {
       setHoVaTenError("Họ và tên phải có ít nhất 5 ký tự");
-    }
-    if (/^\s+|\s+$/.test(value)) {
+    } else if (/^\s+|\s+$/.test(value)) {
       setHoVaTenError("Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi");
     } else {
       setHoVaTenError("");
@@ -93,18 +91,20 @@ const AddKH = () => {
       setHoTenKHErr("Họ và tên không được chứa ký tự đặc biệt");
     } else if (trimmedValue.length < 5) {
       setHoTenKHErr("Họ và tên phải có ít nhất 5 ký tự");
+    } else if (/^\s+|\s+$/.test(value)) {
+      setHoTenKHErr("Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi");
     } else {
       setHoTenKHErr("");
     }
   };
   const handleEmailChange = (e) => {
     const value = e.target.value.trim();
-    const parn = /^[a-zA-Z0-9._-]+@gmail\.com$/i;
+    const parn = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     setEmail(value);
     if (!value.trim()) {
       setEmailError("Email không được trống");
     } else if (!parn.test(value)) {
-      setEmailError("Email sai định dạng hoặc không phải là Gmail");
+      setEmailError("Email sai định dạng hoặc không phải là email");
     } else {
       setEmailError("");
     }
@@ -183,13 +183,25 @@ const AddKH = () => {
       };
       if (
         !hoVaTen ||
-        ngaySinh == null ||
+        !ngaySinh ||
         !email ||
         !soDienThoai ||
         !diaChi ||
         !xaPhuong
       ) {
         message.error("Vui lòng điền đủ thông tin");
+        setShowConfirmModal(false);
+        return;
+      }
+      if (
+        hoVaTenError ||
+        sdtError ||
+        emailError ||
+        hoTenKHErr ||
+        sdtkhError ||
+        diaChiError
+      ) {
+        message.error("Vui lòng điền đúng thông tin trước khi lưu.");
         setShowConfirmModal(false);
         return;
       }
@@ -276,6 +288,7 @@ const AddKH = () => {
               }
               bordered="false"
               headStyle={{ borderLeft: "4px solid #e2e2e2", borderRadius: 0 }}
+              style={{ borderRadius: 0 }}
             >
               <div style={{ width: "95%", margin: "0 auto" }}>
                 <div
@@ -328,6 +341,7 @@ const AddKH = () => {
                         <DatePicker
                           label="Ngày Sinh"
                           disableFuture
+                          format="DD/MM/YYYY"
                           value={
                             ngaySinh ? dayjs(ngaySinh, "DD/MM/YYYY") : null
                           }
