@@ -1,11 +1,14 @@
 package beephone_shop_projects.core.admin.promotion_management.repository;
 
+import beephone_shop_projects.core.admin.order_management.repository.impl.OrderRepositoryImpl;
 import beephone_shop_projects.core.admin.promotion_management.model.request.FindKhuyenMaiRequest;
 import beephone_shop_projects.entity.KhuyenMai;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +19,7 @@ import java.util.Date;
 import java.util.List;
 
 public class CustomKhuyenMaiRepositoryImpl implements CustomKhuyenMaiRepository{
-
+    private static final Logger logger = LoggerFactory.getLogger(OrderRepositoryImpl.class);
     @PersistenceContext
     private EntityManager entityManager;
     @Override

@@ -1,6 +1,7 @@
 package beephone_shop_projects.core.admin.account_management.service.impl;
 
 import beephone_shop_projects.core.admin.account_management.model.request.CreateAccountRequest;
+import beephone_shop_projects.core.admin.account_management.model.request.SearchAccountRequest;
 import beephone_shop_projects.core.admin.account_management.repository.AccountRepository;
 import beephone_shop_projects.core.admin.account_management.repository.RoleRepository;
 import beephone_shop_projects.core.admin.account_management.service.NhanVienService;
@@ -15,6 +16,9 @@ import org.springframework.stereotype.Service;
 import java.text.Normalizer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 
 @Service
@@ -26,8 +30,24 @@ public class NhanVienServiceImpl implements NhanVienService {
 
     @Override
     public Page<Account> getAllNV(Integer pageNo) {
-        Pageable pageable = PageRequest.of(pageNo - 1, 20);
+        Pageable pageable = PageRequest.of(pageNo - 1, 5);
         return accountRepository.getAllNV(pageable);
+    }
+
+    @Override
+    public Page<Account> getAll(SearchAccountRequest request) {
+        if (request.getPage() == null) {
+            request.setPage(1);
+        }
+        if (request.getPageSize() == null) {
+            request.setPageSize(5);
+        }
+        if (request.getKeyword() == null) {
+            request.setKeyword("");
+        }
+        Pageable pageable = PageRequest.of(request.getPage() - 1, 2);
+        Page<Account> ac = accountRepository.findAllHaha(pageable, request);
+        return ac;
     }
 
     @Override
@@ -85,7 +105,9 @@ public class NhanVienServiceImpl implements NhanVienService {
         Optional<Account> optional = accountRepository.findById(id);
         Date date = null;
         try {
-            date = new SimpleDateFormat("dd/MM/yyyy").parse(String.valueOf(request.getNgaySinh()));
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            dateFormat.setTimeZone(TimeZone.getTimeZone("UTC")); // Set the time zone to UTC
+            date = dateFormat.parse(String.valueOf(request.getNgaySinh()));
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
@@ -107,7 +129,6 @@ public class NhanVienServiceImpl implements NhanVienService {
             optional.get().setGioiTinh(request.getGioiTinh());
             optional.get().setHoVaTen(request.getHoVaTen());
             optional.get().setSoDienThoai(request.getSoDienThoai());
-            accountRepository.save(optional.get());
         }
         return accountRepository.save(optional.get());
     }
@@ -125,7 +146,7 @@ public class NhanVienServiceImpl implements NhanVienService {
 
     @Override
     public Page<Account> filterTrangThai(StatusAccountCus trangThai, Integer pageableNo) {
-        Pageable pageable = PageRequest.of(pageableNo - 1, 100);
+        Pageable pageable = PageRequest.of(pageableNo - 1, 5);
         return accountRepository.filterTrangThai(trangThai, pageable);
     }
 

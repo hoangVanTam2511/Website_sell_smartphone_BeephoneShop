@@ -4,6 +4,7 @@ import { Button } from 'antd'
 import { styled } from '@mui/material/styles';
 import React, { useEffect, useState, memo } from 'react'
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
+import TextFieldSearchColors from './text-field-search-colors';
 
 const PrettoSlider = styled(Slider)({
   color: "#2f80ed",

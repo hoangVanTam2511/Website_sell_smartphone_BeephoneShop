@@ -1,23 +1,16 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import {
-  FormControl,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-} from "@mui/material";
+import { Grid, MenuItem, TextField } from "@mui/material";
 
 const host = "https://online-gateway.ghn.vn/shiip/public-api/master-data/";
 
 const ModalAddDiaChiKhachHang = ({
-  required,
-  submitted,
   onProvinceChange,
   onDistrictChange,
   onWardChange,
   formSubmitted,
+  huy,
+  set,
 }) => {
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
@@ -25,9 +18,6 @@ const ModalAddDiaChiKhachHang = ({
   const [selectedProvince, setSelectedProvince] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedWard, setSelectedWard] = useState("");
-  const [provinceError, setProvinceError] = useState(false);
-  const [districtError, setDistrictError] = useState(false);
-  const [wardError, setWardError] = useState(false);
 
   useEffect(() => {
     fetchProvinces();
@@ -55,12 +45,21 @@ const ModalAddDiaChiKhachHang = ({
         console.error("Error fetching provinces:", error);
       });
   };
-
+  useEffect(() => {
+    if (huy) {
+      // Clear selections in the select boxes
+      setSelectedDistrict("");
+      setSelectedProvince("");
+      setSelectedWard("");
+    }
+    // huyCallBack();
+    set(false);
+  }, [huy]);
   const fetchDistricts = (provinceCode) => {
     callAPI(host + "district?province_id=" + provinceCode)
       .then((data) => {
         setDistricts(data.data);
-        setSelectedDistrict(""); // Reset selected district when fetching new districts
+        setSelectedDistrict("");
       })
       .catch((error) => {
         console.error("Error fetching districts:", error);
@@ -71,7 +70,7 @@ const ModalAddDiaChiKhachHang = ({
     callAPI(host + "ward?district_id=" + districtCode)
       .then((data) => {
         setWards(data.data);
-        setSelectedWard(""); // Reset selected ward when fetching new wards
+        setSelectedWard("");
       })
       .catch((error) => {
         console.error("Error fetching wards:", error);
@@ -79,16 +78,11 @@ const ModalAddDiaChiKhachHang = ({
   };
 
   const handleProvinceChange = (value) => {
-    if (submitted) {
-      // Nếu đã ấn nút "Lưu" thì kiểm tra trạng thái select
-      if (!value.target.value) {
-        setSelectedProvince("");
-      }
-    }
-
     setSelectedProvince(value.target.value);
     setSelectedDistrict("");
     setSelectedWard("");
+    setDistricts([]);
+    setWards([]);
     fetchDistricts(value.target.value);
   };
 
@@ -97,23 +91,13 @@ const ModalAddDiaChiKhachHang = ({
     setSelectedWard("");
     fetchWards(value.target.value);
     onDistrictChange(value.target.value);
-    if (submitted) {
-      // Nếu đã ấn nút "Lưu" thì kiểm tra trạng thái select
-      if (!value.target.value) {
-        setSelectedDistrict("");
-      }
-    }
+    onWardChange("");
+    setWards([]);
   };
 
   const handleWardChange = (value) => {
     setSelectedWard(value.target.value);
     onWardChange(value.target.value);
-    if (submitted) {
-      // Nếu đã ấn nút "Lưu" thì kiểm tra trạng thái select
-      if (!value) {
-        setSelectedWard("");
-      }
-    }
   };
 
   useEffect(() => {
@@ -131,7 +115,17 @@ const ModalAddDiaChiKhachHang = ({
       onDistrictChange(selectedDistrictName);
       onWardChange(selectedWardName);
     }
-  }, [selectedProvince, selectedDistrict, selectedWard]);
+  }, [
+    selectedProvince,
+    selectedDistrict,
+    selectedWard,
+    provinces,
+    districts,
+    wards,
+    onProvinceChange,
+    onDistrictChange,
+    onWardChange,
+  ]);
 
   return (
     <>

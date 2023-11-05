@@ -40,10 +40,6 @@ import CreateChip from "./create-chip";
 import CreateRam from "./create-ram";
 import CreateRom from "./create-rom";
 
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
-
 const ManagementRoms = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -125,7 +121,7 @@ const ManagementRoms = () => {
       width: "15%",
       dataIndex: "kichThuoc",
       render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>{record.kichThuoc + "GB"}</span>
+        <span style={{ fontWeight: "400" }}>{record.dungLuong + "GB"}</span>
       ),
     },
     {
@@ -255,29 +251,14 @@ const ManagementRoms = () => {
           <div className="mx-auto">
             <Pagination
               color="primary" /* page={parseInt(currentPage)} key={refreshPage} count={totalPages} */
-              // onChange={handlePageChange}
+            // onChange={handlePageChange}
             />
           </div>
           <div className="mt-4"></div>
         </Card>
       </div>
       {isLoading && <LoadingIndicator />}
-      <Dialog
-        open={open}
-        TransitionComponent={Transition}
-        keepMounted
-        onClose={handleClose}
-        maxWidth="md"
-        maxHeight="md"
-        sx={{
-          marginBottom: "170px",
-        }}
-      >
-        <DialogContent className="">
-          <CreateRom close={handleClose} getAll={loadDataRoms} roms={listRom} />
-        </DialogContent>
-        <div className="mt-3"></div>
-      </Dialog>
+      <CreateRom open={open} close={handleClose} getAll={loadDataRoms} roms={listRom} />
     </>
   );
 };

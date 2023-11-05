@@ -12,16 +12,14 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Table(name = "sim")
 public class TheSim extends PrimaryEntity implements IsIdentified {
 
@@ -31,11 +29,6 @@ public class TheSim extends PrimaryEntity implements IsIdentified {
 
   @Enumerated(EnumType.ORDINAL)
   private SimMultiple simMultiple;
-
-  @JsonIgnore
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "id_san_pham")
-  private SanPham sanPham;
 
   @Enumerated(EnumType.ORDINAL)
   private StatusCommon status;

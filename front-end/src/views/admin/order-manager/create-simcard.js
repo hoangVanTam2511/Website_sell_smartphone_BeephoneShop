@@ -1,38 +1,45 @@
-import React, { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import { Button, Empty, Table } from "antd";
-import { Box, FormControl, IconButton, Select, InputLabel, MenuItem, Pagination, TextField, Tooltip, Checkbox, FormControlLabel, Autocomplete, InputAdornment, } from "@mui/material";
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import { PlusOutlined } from "@ant-design/icons";
-import Card from "../../../components/Card";
-import { format } from "date-fns";
+import React from "react";
+// import {
+//   useNavigate,
+
+// } from "react-router-dom";
+import { Button, message } from "antd";
+import {
+  FormControl,
+  Select,
+  InputLabel,
+  MenuItem,
+  TextField,
+  Checkbox,
+  FormControlLabel,
+  Autocomplete,
+  Slide,
+  Dialog,
+  DialogContent,
+} from "@mui/material";
 import axios from "axios";
-import { parseInt } from "lodash";
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
-import Zoom from '@mui/material/Zoom';
-import * as dayjs from "dayjs";
-import LoadingIndicator from '../../../utilities/loading';
+// import LoadingIndicator from "../../../utilities/loading";
+import { apiURLSimCard } from "../../../service/api";
+import { SimMultiple } from "./enum";
 
-const CreateSimCard = ({ close }) => {
-  const navigate = useNavigate();
+import LoadingIndicator from "../../../utilities/loading";
+import generateRandomCode from "../../../utilities/genCode";
 
-  const [sims, setSims] = useState([
-    {
-      ma: "091218273",
-      loaiTheSim: "Nano",
-      simStatus: 0
-    }
-  ]);
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
-  const uniqueLoaiTheSim = sims.map((option) => option.loaiTheSim).filter((value, index, self) => {
-    return self.indexOf(value) === index;
-  });
+const CreateSimCard = ({ open, close, getAll, sims }) => {
+  // const navigate = useNavigate();
+
+  const [loaiTheSim, setLoaiTheSim] = React.useState("");
 
   const [isLoading, setIsLoading] = React.useState(false);
+  const uniqueLoaiTheSim = sims
+    .map((option) => option.loaiTheSim)
+    .filter((value, index, self) => {
+      return self.indexOf(value) === index;
+    });
 
   const [checkedDualSim, setCheckedDualSim] = React.useState(false);
   const [checkedSingleSim, setCheckedSingleSim] = React.useState(true);
@@ -44,74 +51,171 @@ const CreateSimCard = ({ close }) => {
     setCheckedDualSim(event.target.checked);
   };
 
-  const [status, setStatus] = React.useState('');
+  const [status, setStatus] = React.useState("");
 
   const handleChangeStatus = (event) => {
     setStatus(event.target.value);
   };
+  const handleChangeLoai = (event, value) => {
+    setLoaiTheSim(value);
+  };
+  const addTheSim = () => {
+    let simObjects = [];
+    if (checkedSingleSim && checkedDualSim) {
+      // Nếu cả hai loại SIM được chọn, tạo hai đối tượng và thêm vào danh sách
+      const simObject1 = {
+        ma: "TS" + generateRandomCode(),
+        loaiTheSim: loaiTheSim,
+        status: status,
+        simMultiple: SimMultiple.SINGLE_SIM,
+      };
 
+      const simObject2 = {
+        ma: "TS" + generateRandomCode(),
+        loaiTheSim: loaiTheSim,
+        status: status,
+        simMultiple: SimMultiple.DUAL_SIM,
+      };
+
+      simObjects.push(simObject1, simObject2);
+    } else if (checkedSingleSim) {
+      // Nếu chỉ một trong hai loại SIM được chọn hoặc không có SIM nào được chọn, tạo một đối tượng và thêm vào danh sách
+      const simObject = {
+        ma: "TS" + generateRandomCode(),
+        loaiTheSim: loaiTheSim,
+        status: status,
+        simMultiple: SimMultiple.SINGLE_SIM,
+      };
+      simObjects.push(simObject);
+    } else {
+      // Nếu chỉ một trong hai loại SIM được chọn hoặc không có SIM nào được chọn, tạo một đối tượng và thêm vào danh sách
+      const simObject = {
+        ma: "TS" + generateRandomCode(),
+        loaiTheSim: loaiTheSim,
+        status: status,
+        simMultiple: SimMultiple.SINGLE_SIM,
+      };
+      simObjects.push(simObject);
+    }
+    axios
+      .post(apiURLSimCard + "/add", simObjects)
+      .then((response) => {
+        close();
+        getAll();
+        handleReset();
+        message.success("Thêm thành công");
+      })
+      .catch((error) => {
+        console.log("add thất bại");
+      });
+  };
+  const handleReset = (event) => {
+    setStatus("");
+    setLoaiTheSim("");
+    setCheckedSingleSim(true);
+    setCheckedDualSim(false);
+  };
   return (
     <>
-      <div className="mt-4" style={{ width: "700px" }}>
-        <div className="container" style={{}}>
-          <div className="text-center" style={{}}>
-            <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>THÊM THẺ SIM</span>
-          </div>
-          <div className="mx-auto mt-3 pt-2">
-            <div>
-              <Autocomplete fullWidth className="custom"
-                id="free-solo-demo"
-                freeSolo
-                options={uniqueLoaiTheSim}
-                renderInput={(params) => <TextField
-                  {...params}
-                  label="Loại Thẻ SIM" />}
-              />
-            </div>
-            <div className="mt-3" style={{}}>
-              <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">Trạng Thái</InputLabel>
-                <Select className="custom"
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
-                  value={status}
-                  label="Trạng Thái"
-                  onChange={handleChangeStatus}
-                >
-                  <MenuItem value={0}>Hoạt Động</MenuItem>
-                  <MenuItem value={1}>Ngừng Hoạt Động</MenuItem>
-                </Select>
-              </FormControl>
-            </div>
-            <div className="mt-3 d-flex">
-              <div>
-                <FormControlLabel control={<Checkbox onChange={handleChangeCheckedSingleSim} checked={checkedSingleSim} />} label="1 SIM" />
-              </div>
-              <div className="ms-3">
-                <FormControlLabel control={<Checkbox onChange={handleChangeCheckedDualSim} checked={checkedDualSim} />} label="2 SIM" />
-              </div>
-            </div>
-            <div className="mt-4 pt-1 d-flex justify-content-end">
-              <Button
-                onClick={() => close()}
-                className="rounded-2 button-mui"
-                type="primary"
-                style={{ height: "40px", width: "auto", fontSize: "15px" }}
-              >
-                <span
-                  className=""
-                  style={{ marginBottom: "2px", fontWeight: "500" }}
-                >
-                  Xác Nhận
+      <Dialog
+        open={open}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={close}
+        maxWidth="md"
+        maxHeight="md"
+        sx={{
+          marginBottom: "170px",
+        }}
+      >
+        <DialogContent className="">
+          <div className="mt-4" style={{ width: "700px" }}>
+            <div className="container" style={{}}>
+              <div className="text-center" style={{}}>
+                <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>
+                  THÊM THẺ SIM
                 </span>
-              </Button>
+              </div>
+              <div className="mx-auto mt-3 pt-2">
+                <div>
+                  <Autocomplete
+                    fullWidth
+                    className="custom"
+                    id="free-solo-demo"
+                    freeSolo
+                    options={uniqueLoaiTheSim}
+                    inputValue={loaiTheSim}
+                    onInputChange={handleChangeLoai}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Loại Thẻ SIM" />
+                    )}
+                  />
+                </div>
+                <div className="mt-3" style={{}}>
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">
+                      Trạng Thái
+                    </InputLabel>
+                    <Select
+                      className="custom"
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={status}
+                      label="Trạng Thái"
+                      onChange={handleChangeStatus}
+                    >
+                      <MenuItem value={0}>Hoạt Động</MenuItem>
+                      <MenuItem value={1}>Ngừng Hoạt Động</MenuItem>
+                    </Select>
+                  </FormControl>
+                </div>
+                <div className="mt-3 d-flex">
+                  <div>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          onChange={handleChangeCheckedSingleSim}
+                          checked={checkedSingleSim}
+                        />
+                      }
+                      label="1 SIM"
+                    />
+                  </div>
+                  <div className="ms-3">
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          onChange={handleChangeCheckedDualSim}
+                          checked={checkedDualSim}
+                        />
+                      }
+                      label="2 SIM"
+                    />
+                  </div>
+                </div>
+                <div className="mt-4 pt-1 d-flex justify-content-end">
+                  <Button
+                    onClick={() => addTheSim()}
+                    className="rounded-2 button-mui"
+                    type="primary"
+                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                  >
+                    <span
+                      className=""
+                      style={{ marginBottom: "2px", fontWeight: "500" }}
+                    >
+                      Xác Nhận
+                    </span>
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+        </DialogContent>
+        <div className="mt-3"></div>
+      </Dialog>
       {isLoading && <LoadingIndicator />}
     </>
-  )
-
-}
+  );
+};
 export default CreateSimCard;

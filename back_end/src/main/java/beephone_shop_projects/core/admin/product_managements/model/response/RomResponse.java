@@ -16,7 +16,7 @@ public class RomResponse {
 
     private String ma;
 
-    private Integer kichThuoc;
+    private Integer dungLuong;
 
     private StatusCommon status;
 

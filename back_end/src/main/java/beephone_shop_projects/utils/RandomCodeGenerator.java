@@ -1,6 +1,8 @@
 package beephone_shop_projects.utils;
 
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 public class RandomCodeGenerator {
         private static final int PREFIX = 2023;
@@ -14,7 +16,18 @@ public class RandomCodeGenerator {
         }
 
         public static void main(String[] args) {
-            String randomCode = generateRandomCode();
-            System.out.println("Random Code: " + randomCode);
+          Set<String> isDuslicate = new HashSet<>();
+          String a = "a";
+          String b = "a";
+          String c = "b";
+          if (isDuslicate.add(a)) {
+            System.out.println(isDuslicate.add(a));
+          }
+          if (isDuslicate.add(b)) {
+            System.out.println(isDuslicate.add(b));
+          }
+          if (isDuslicate.add(c)) {
+            System.out.println(isDuslicate.add(c));
+          }
         }
 }

@@ -16,16 +16,45 @@ import Zoom from '@mui/material/Zoom';
 import * as dayjs from "dayjs";
 import { OrderStatusString, OrderTypeString } from "./enum";
 import LoadingIndicator from '../../../utilities/loading';
+import { FaPencilAlt } from "react-icons/fa";
+import ManagementProductItems from "./management-product-items";
 
 const ManagementProducts = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [products, setProducts] = useState([]);
+  const [productItems, setProductItems] = useState([]);
+  const [productName, setProductName] = useState('');
   const [totalPages, setTotalPages] = useState();
   const [refreshPage, setRefreshPage] = useState(1);
   const [searchParams, setSearchParams] = useSearchParams();
   const [keyword, setKeyword] = useState(searchParams.get('keyword'));
   const [currentPage, setCurrentPage] = useState(searchParams.get('currentPage') || 1);
+
+  const [openProductItems, setOpenProductItems] = useState(false);
+
+  const handleCloseOpenProductItems = () => {
+    setOpenProductItems(false);
+  }
+
+  const getAll = () => {
+    axios
+      .get(`http://localhost:8080/api/products/all`, {
+      })
+      .then((response) => {
+        setProducts(response.data.data);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error(error);
+        setIsLoading(false);
+      });
+  }
+
+  useEffect(() => {
+    setIsLoading(true);
+    getAll();
+  }, []);
 
   const handleRedirectCreateProduct = () => {
     navigate(`/dashboard/create-product`);
@@ -81,7 +110,7 @@ const ManagementProducts = () => {
       width: "15%",
       dataIndex: "hang",
       render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>{record.hang}</span>
+        <span style={{ fontWeight: "400" }}>{record.hang.tenHang}</span>
       ),
     },
     {
@@ -90,7 +119,23 @@ const ManagementProducts = () => {
       width: "15%",
       dataIndex: "hang",
       render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>{record.heDieuHanh}</span>
+        <span style={{ fontWeight: "400" }}>{record.operatingType}</span>
+      ),
+    },
+    {
+      title: "CPU",
+      align: "center",
+      width: "15%",
+      render: (text, record) => (
+        <span style={{ fontWeight: "400" }}>{record.chip.tenChip}</span>
+      ),
+    },
+    {
+      title: "Màn Hình",
+      align: "center",
+      width: "15%",
+      render: (text, record) => (
+        <span style={{ fontWeight: "400" }}>{record.manHinh.kichThuoc + `"`}</span>
       ),
     },
     {
@@ -99,7 +144,7 @@ const ManagementProducts = () => {
       width: "15%",
       dataIndex: "trangThai",
       render: (type) =>
-        type == OrderTypeString.DELIVERY ? (
+        type == 0 ? (
           <div
             className="rounded-pill mx-auto badge-success"
             style={{
@@ -115,10 +160,10 @@ const ManagementProducts = () => {
               Kinh doanh
             </span>
           </div>
-        ) : type == OrderTypeString.AT_COUNTER ? (
+        ) : 1 ? (
           <div
-            className="rounded-pill badge-primary mx-auto"
-            style={{ height: "35px", width: "91px", padding: "4px" }}
+            className="rounded-pill badge-danger mx-auto"
+            style={{ height: "35px", width: "150px", padding: "4px" }}
           >
             <span
               className="text-white"
@@ -139,16 +184,13 @@ const ManagementProducts = () => {
       render: (text, record) => (
         <>
           <div className="button-container">
-            <Tooltip title="Chi tiết" TransitionComponent={Zoom}>
-              <IconButton size="">
-                <BorderColorOutlinedIcon color="warning" />
-              </IconButton>
-            </Tooltip>
-          </div>
-          <div className="button-container">
             <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
-              <IconButton size="">
-                <BorderColorOutlinedIcon color="primary" />
+              <IconButton size="" onClick={() => {
+                setProductItems(record.productItems)
+                setProductName(record.tenSanPham);
+                setOpenProductItems(true);
+              }}>
+                <FaPencilAlt color="#2f80ed" />
               </IconButton>
             </Tooltip>
           </div>
@@ -229,6 +271,7 @@ const ManagementProducts = () => {
           <div className="mt-4"></div>
         </Card>
       </div>
+      <ManagementProductItems open={openProductItems} close={handleCloseOpenProductItems} productItems={productItems} productName={productName} />
       {isLoading && <LoadingIndicator />}
     </>
   )

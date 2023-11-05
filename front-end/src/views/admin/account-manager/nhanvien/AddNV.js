@@ -56,9 +56,6 @@ const AddNV = () => {
     if (data) {
       setTen(data.hoVaTen);
       setNgaySinh(data.ngaySinh);
-      // setDiaChi(data.diaChi);
-      // setTinhThanhPho(data.tinhThanhPho);
-      // setXaPhuong(data.xaPhuong);
       setCCCD(data.cccd);
       setGioiTinh(data.gioiTinh);
     }
@@ -80,7 +77,7 @@ const AddNV = () => {
   };
   const handleEmailChange = (e) => {
     const value = e.target.value.trim();
-    const parn = /^[a-zA-Z0-9._-]+@gmail\.com$/i;
+    const parn = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     setEmail(value);
     if (!value.trim()) {
       setEmailError("Email không được trống");
@@ -186,7 +183,11 @@ const AddNV = () => {
       setIsConfirmVisible(false);
       return;
     }
-
+    if (hoVaTenError || sdtError || emailError || cccdError || diaChiError) {
+      message.error("Vui lòng điền đúng thông tin trước khi lưu.");
+      setIsConfirmVisible(false);
+      return;
+    }
     axios
       .post(apiURLNV + "/add", obj)
       .then((response) => {
@@ -285,6 +286,7 @@ const AddNV = () => {
                     <DemoContainer components={["DatePicker"]}>
                       <DatePicker
                         label="Ngày Sinh"
+                        disableFuture
                         value={ngaySinh ? dayjs(ngaySinh, "DD/MM/YYYY") : null}
                         format="DD/MM/YYYY"
                         onChange={handleChangeDate}
@@ -418,7 +420,6 @@ const AddNV = () => {
                   onProvinceChange={handleProvinceChange}
                   onDistrictChange={handleDistrictChange}
                   onWardChange={handleWardChange}
-                  tinhThanhPho={handleScanData.tinhThanhPho}
                   formSubmitted={formSubmitted}
                 />
               </div>

@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.admin.voucher_management.repository;
 
+import beephone_shop_projects.core.admin.order_management.repository.impl.OrderRepositoryImpl;
 import beephone_shop_projects.core.admin.voucher_management.model.request.FindVoucherRequest;
 import beephone_shop_projects.entity.Voucher;
 import jakarta.persistence.EntityManager;
@@ -12,6 +13,8 @@ import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +25,7 @@ import java.util.Date;
 import java.util.List;
 
 public class CustomVoucherRepositoryImpl implements CustomVoucherRepository {
+    private static final Logger logger = LoggerFactory.getLogger(OrderRepositoryImpl.class);
     @PersistenceContext
     private EntityManager entityManager;
 

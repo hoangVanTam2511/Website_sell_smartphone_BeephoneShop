@@ -46,8 +46,8 @@ public class CreateKhachHangRequest {
     private String matKhau;
     @NotBlank(message = "Số điện thoại trống")
     @Pattern(regexp = "^(?:\\+84|0)[1-9]\\d{8}$", message = "Số điện thoại không hợp lệ")
-
     private String soDienThoai;
+
     @NotNull(message = "Căn cước công dân trống")
     private String canCuocCongDan;
 

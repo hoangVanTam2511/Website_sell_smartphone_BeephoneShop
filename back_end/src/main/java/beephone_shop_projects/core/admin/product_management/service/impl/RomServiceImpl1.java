@@ -3,7 +3,6 @@ package beephone_shop_projects.core.admin.product_management.service.impl;
 import beephone_shop_projects.core.admin.product_management.model.request.CreateRom;
 import beephone_shop_projects.core.admin.product_management.model.responce.RomResponce;
 import beephone_shop_projects.core.admin.product_management.repository.RomRepository;
-import beephone_shop_projects.core.admin.product_management.service.IService;
 import beephone_shop_projects.entity.Rom;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,7 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 @Service
@@ -39,7 +37,7 @@ public class RomServiceImpl1 {
 
     public void update(CreateRom req) {
         Rom rom = this.romRepository.findById(req.getIdRom()).get();
-        rom.setKichThuoc(req.getCapacityRom());
+        rom.setDungLuong(req.getCapacityRom());
         romRepository.save(rom);}
 
     public void delete(String id) {

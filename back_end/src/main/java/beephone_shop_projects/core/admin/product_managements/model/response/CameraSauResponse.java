@@ -17,7 +17,7 @@ public class CameraSauResponse {
 
     private String ma;
 
-    private String doPhanGiai;
+    private Integer doPhanGiai;
 
     private CameraType cameraType;
 

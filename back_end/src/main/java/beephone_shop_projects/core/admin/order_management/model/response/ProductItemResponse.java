@@ -1,7 +1,6 @@
 package beephone_shop_projects.core.admin.order_management.model.response;
 
-import beephone_shop_projects.core.admin.order_management.dto.ConfigurationResponse;
-import beephone_shop_projects.entity.Anh;
+import beephone_shop_projects.entity.Image;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,16 +17,25 @@ public class ProductItemResponse {
 
   private String id;
 
+  private String maCauHinh;
+
   private String ma;
 
   private Integer soLuongTonKho;
 
   private BigDecimal donGia;
 
+  private ColorResponse mauSac;
+
+  private Image image;
+
+  private RamResponse ram;
+
+  private RomResponse rom;
+
+  private List<ProductItemImeiResponse> imeis;
+
   private ProductResponse sanPham;
 
-  private ConfigurationResponse cauHinh;
-
-  private List<ImageResponse> images;
 
 }

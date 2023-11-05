@@ -44,6 +44,7 @@ const UpdateKH = () => {
   let [trangThai, setTrangThai] = useState(1);
   let [trangThaiKH, setTrangThaiKH] = useState(0); // Khởi tạo mặc định là 0
   let [anhDaiDien, setAnhDaiDien] = useState("");
+  let [huy, setHuy] = useState(false);
   const [diaChiList, setDiaChiList] = useState([
     {
       diaChi: "",
@@ -119,6 +120,8 @@ const UpdateKH = () => {
       setHoVaTenError("Họ và tên không được chứa ký tự đặc biệt");
     } else if (trimmedValue.length < 5) {
       setHoVaTenError("Họ và tên phải có ít nhất 5 ký tự");
+    } else if (/^\s+|\s+$/.test(value)) {
+      setHoVaTenError("Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi");
     } else {
       setHoVaTenError("");
     }
@@ -137,7 +140,7 @@ const UpdateKH = () => {
   };
   const handleEmailChange = (e) => {
     const value = e.target.value.trim();
-    const parn = /^[a-zA-Z0-9._-]+@gmail\.com$/i;
+    const parn = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     setEmail(value);
     if (!value.trim()) {
       setEmailError("Email không được trống");
@@ -159,6 +162,10 @@ const UpdateKH = () => {
       sethoTenKHError("Họ và tên không được chứa ký tự đặc biệt");
     } else if (value.length < 5) {
       sethoTenKHError("Họ và tên phải có ít nhất 5 ký tự");
+    } else if (/^\s+|\s+$/.test(value)) {
+      sethoTenKHError("Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi");
+    } else if (huy) {
+      sethoTenKHError("");
     } else {
       sethoTenKHError("");
     }
@@ -205,15 +212,23 @@ const UpdateKH = () => {
   const handleCheckboxChange = (e) => {
     setTrangThaiKH(e.target.checked ? 1 : 0); // Nếu tích checkbox thì trangThaiKH là 1, ngược lại là 0
   };
-  const redirectToHienThiKH = () => {
-    window.location.href = "/update-khach-hang/" + id;
-  };
-  const redirectTable = () => {
-    window.location.href = "/khach-hang/";
-  };
+  // const redirectToHienThiKH = () => {
+  //   window.location.href = "/update-khach-hang/" + id;
+  // };
+  // const redirectTable = () => {
+  //   window.location.href = "/khach-hang/";
+  // };
   const handleCloseModal = () => {
     setIsModalVisibleS(false);
-    redirectToHienThiKH();
+    setFormSubmittedS(false);
+    setDiaChi("");
+    setHoTenKH("");
+    sethoTenKHError("");
+    setSDTKHError("");
+    setDiaChiError("");
+    setTrangThaiKH(0);
+    setSoDienThoaiKhachHang("");
+    setHuy(true);
   };
   //add diaChi
   const addDiaChiList = () => {
@@ -230,17 +245,27 @@ const UpdateKH = () => {
       id: id1,
       trangThai: trangThaiKH,
     };
-    if (!hoTenKH || !soDienThoaiKhachHang || !diaChi) {
+    if (
+      !hoTenKH ||
+      !soDienThoaiKhachHang ||
+      !diaChi ||
+      !xaPhuong ||
+      !quanHuyen ||
+      !tinhThanhPho
+    ) {
       message.error("Chưa điền đủ thông tin");
       setIsModalVisibleS(true);
-      return; // Stop form submission if any required field is empty
+      return;
+    }
+    if (hoTenkhError || sdtkhError || diaChiError) {
+      message.error("Vui lòng điền đúng thông tin trước khi lưu.");
+      setIsModalVisibleS(true);
+      return;
     }
     setIsModalVisibleS(false);
     axios
       .post(`${apiURLKH}/dia-chi/add?id=${id}`, newAddress)
       .then((response) => {
-        // let res = response.data;
-        // redirectToHienThiKH();
         let newKhachHangResponse = {
           diaChi: diaChi,
           xaPhuong: xaPhuong,
@@ -253,12 +278,12 @@ const UpdateKH = () => {
           trangThai: trangThaiKH,
         };
         setDiaChiList([newKhachHangResponse, ...diaChiList]);
-
         setId(response.data.id);
         message.success({
           content: "Thêm địa chỉ thành công",
         });
-        redirectToHienThiKH();
+        // redirectToHienThiKH();
+        handleCloseModal();
         return;
       })
       .catch((error) => {
@@ -277,7 +302,7 @@ const UpdateKH = () => {
   };
 
   const showRetable = () => {
-    redirectTable();
+    // redirectTable();
   };
   const handleCancel = () => {
     setIsConfirmVisible(false); // Đóng hộp thoại xác nhận khi người dùng hủy
@@ -286,8 +311,13 @@ const UpdateKH = () => {
   const save = async (id) => {
     setSubmitted(true);
     setFormSubmitted(true);
-    if (!hoVaTen || ngaySinh == null || !email || !soDienThoai) {
+    if (!hoVaTen || !ngaySinh || !email || !soDienThoai) {
       message.error("Vui lòng điền đủ thông tin trước khi lưu.");
+      setIsConfirmVisible(false);
+      return;
+    }
+    if (hoVaTenError || sdtError || emailError) {
+      message.error("Vui lòng điền đúng thông tin trước khi lưu.");
       setIsConfirmVisible(false);
       return;
     }
@@ -327,7 +357,6 @@ const UpdateKH = () => {
     }
   };
   const handleChangeDate = (date) => {
-    // const value = date.format("DD/MM/YYYY");
     setNgaySinh(date);
   };
   return (
@@ -516,14 +545,16 @@ const UpdateKH = () => {
               <Modal
                 closable={false}
                 open={isModalVisibleS}
-                onCancel={() => {
-                  setIsModalVisibleS(false); // Close the modal when cancel is clicked
-                }}
+                // onCancel={() => {
+                //   setIsModalVisibleS(false); // Close the modal when cancel is clicked
+                // }}
                 maskClosable={false}
                 footer={[
                   <React.Fragment key="modal-footer">
                     <Button
-                      onClick={handleCloseModal}
+                      onClick={() => {
+                        handleCloseModal();
+                      }}
                       size="large"
                       type="text"
                       style={{
@@ -607,13 +638,14 @@ const UpdateKH = () => {
                   </div>
                   <div style={{ marginBottom: "20px" }}>
                     <ModalAddDiaChiKhachHang
-                      // onDiaChiChange={handleAddressChange}
                       required={true}
                       submitted={submittedS}
                       onProvinceChange={handleProvinceChange}
                       onDistrictChange={handleDistrictChange}
                       onWardChange={handleWardChange}
                       formSubmitted={formSubmittedS}
+                      huy={huy}
+                      set={setHuy}
                     />
                   </div>
                   <Checkbox
@@ -622,6 +654,7 @@ const UpdateKH = () => {
                       fontSize: "16px",
                       marginBottom: "20px",
                     }}
+                    checked={trangThaiKH === 1}
                     onChange={handleCheckboxChange}
                   >
                     Địa chỉ mặc định

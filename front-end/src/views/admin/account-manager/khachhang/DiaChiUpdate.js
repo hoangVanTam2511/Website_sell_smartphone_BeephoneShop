@@ -5,7 +5,6 @@ import { MenuItem, Grid, TextField } from "@mui/material";
 const host = "https://online-gateway.ghn.vn/shiip/public-api/master-data/";
 
 const AddressFormUpdate = ({
-  required,
   submitted,
   onProvinceChange,
   onDistrictChange,
@@ -22,9 +21,6 @@ const AddressFormUpdate = ({
   const [selectedProvince, setSelectedProvince] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedWard, setSelectedWard] = useState("");
-  const [provinceError, setProvinceError] = useState(false);
-  const [districtError, setDistrictError] = useState(false);
-  const [wardError, setWardError] = useState(false);
   useEffect(() => {
     fetchProvinces();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -49,7 +45,6 @@ const AddressFormUpdate = ({
 
       if (selectedDistrictCode) {
         setSelectedDistrict(selectedDistrictCode);
-        // Fetch wards based on selected district
         fetchWards(selectedDistrictCode);
       }
     }
@@ -66,15 +61,6 @@ const AddressFormUpdate = ({
   }, [selectedXaPhuong, wards]);
 
   const callAPI = async (api) => {
-    if (!selectedProvince) {
-      setProvinceError(true);
-    }
-    if (!selectedDistrict) {
-      setDistrictError(true);
-    }
-    if (!selectedWard) {
-      setWardError(true);
-    }
     return axios
       .get(api, {
         headers: {
@@ -119,74 +105,90 @@ const AddressFormUpdate = ({
   };
 
   const handleProvinceChange = (event) => {
-    setProvinceError(false);
-    if (submitted) {
-      // Nếu đã ấn nút "Lưu" thì kiểm tra trạng thái select
-      if (!event.target.value) {
-        setProvinceError(true);
-        setSelectedProvince("");
-      }
-    }
-    const selectedValue = event.target.value;
-    setSelectedProvince(selectedValue);
+    setSelectedProvince(event.target.value);
     setSelectedDistrict("");
     setSelectedWard("");
+    if (selectedProvince) {
+      onDistrictChange("");
+      onWardChange("");
+    }
     setDistricts([]);
     setWards([]);
-    if (selectedValue === "") {
-      onProvinceChange("");
-    } else {
-      fetchDistricts(selectedValue);
-      onProvinceChange(selectedValue);
-    }
+    fetchDistricts(event.target.value);
+    onProvinceChange(event.target.value);
   };
-
   const handleDistrictChange = (value) => {
     setSelectedDistrict(value.target.value);
-    setSelectedWard(""); // Reset selectedWard khi chọn lại quận/huyện mới
+    setSelectedWard(""); // Đặt xã thành rỗng
     fetchWards(value.target.value);
-    setWards([]);
     onDistrictChange(value.target.value);
-    setDistrictError(false);
-    if (submitted) {
-      // Nếu đã ấn nút "Lưu" thì kiểm tra trạng thái select
-      if (!value.target.value) {
-        setDistrictError(true);
-      }
-    }
+    onWardChange("");
+    setWards([]);
   };
 
   const handleWardChange = (value) => {
     setSelectedWard(value.target.value);
     onWardChange(value.target.value);
-    setWardError(false);
-    if (submitted) {
-      // Nếu đã ấn nút "Lưu" thì kiểm tra trạng thái select
-      if (!value.target.value) {
-        setWardError(true);
-      }
-    }
   };
+
+  // useEffect(() => {
+  //   if (selectedProvince && selectedDistrict && selectedWard) {
+  //     const selectedProvinceName = provinces.find(
+  //       (province) => province.ProvinceID === selectedProvince
+  //     )?.ProvinceName;
+
+  //     const selectedDistrictName = districts.find(
+  //       (district) => district.DistrictID === selectedDistrict
+  //     )?.DistrictName;
+
+  //     const selectedWardName = wards.find(
+  //       (ward) => ward.WardCode === selectedWard
+  //     )?.WardName;
+
+  //     onProvinceChange(selectedProvinceName);
+  //     onDistrictChange(selectedDistrictName);
+  //     onWardChange(selectedWardName);
+  //   }
+  // }, [
+  //   selectedProvince,
+  //   selectedDistrict,
+  //   selectedWard,
+  //   onProvinceChange,
+  //   onDistrictChange,
+  //   onWardChange,
+  //   provinces,
+  //   districts,
+  //   wards,
+  // ]);
   useEffect(() => {
-    if (selectedDistrict && selectedProvince && selectedWard) {
+    if (selectedProvince) {
       const selectedProvinceName = provinces.find(
         (province) => province.ProvinceID === selectedProvince
-      ).ProvinceName;
+      )?.ProvinceName;
+      onProvinceChange(selectedProvinceName);
+    }
+  }, [selectedProvince, onProvinceChange, provinces]);
+
+  useEffect(() => {
+    if (selectedDistrict) {
       const selectedDistrictName = districts.find(
         (district) => district.DistrictID === selectedDistrict
-      ).DistrictName;
+      )?.DistrictName;
+      onDistrictChange(selectedDistrictName);
+    }
+  }, [selectedDistrict, onDistrictChange, districts]);
+
+  useEffect(() => {
+    if (selectedWard) {
       const selectedWardName = wards.find(
         (ward) => ward.WardCode === selectedWard
-      ).WardName;
-      onProvinceChange(selectedProvinceName);
-      onDistrictChange(selectedDistrictName);
+      )?.WardName;
       onWardChange(selectedWardName);
     }
-  }, [selectedProvince, selectedDistrict, selectedWard]);
-
+  }, [selectedWard, onWardChange, wards]);
   return (
     <div>
-      <Grid container spacing={4}>
+      <Grid container spacing={3.3}>
         <Grid item xs={4}>
           <TextField
             select
