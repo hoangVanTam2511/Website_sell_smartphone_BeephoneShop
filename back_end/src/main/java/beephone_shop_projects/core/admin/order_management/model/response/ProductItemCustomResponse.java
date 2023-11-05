@@ -1,22 +1,23 @@
-package beephone_shop_projects.core.admin.order_management.model.request;
+package beephone_shop_projects.core.admin.order_management.model.response;
 
+import beephone_shop_projects.entity.Image;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
-import java.nio.channels.MulticastChannel;
 import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductItemConfigurationRequest {
+public class ProductItemCustomResponse {
 
   private String id;
+
+  private String maCauHinh;
 
   private String ma;
 
@@ -24,13 +25,16 @@ public class ProductItemConfigurationRequest {
 
   private BigDecimal donGia;
 
-  private ColorRequest color;
+  private ColorResponse mauSac;
 
-  private RamRequest ram;
+  private Image image;
 
-  private RomRequest rom;
+  private RamResponse ram;
 
-  private List<ProductItemImeiRequest> imeis;
+  private RomResponse rom;
+
+  private List<ProductItemImeiResponse> imeis;
+
 
 
 }

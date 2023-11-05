@@ -5,12 +5,15 @@ import beephone_shop_projects.core.admin.order_management.model.request.ImeiRequ
 import beephone_shop_projects.core.admin.order_management.model.request.ImeisRequest;
 import beephone_shop_projects.core.admin.order_management.model.response.CartItemResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.OrderResponse;
+import beephone_shop_projects.core.admin.order_management.model.response.ProductCustomResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.ProductItemConfigurationResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.ProductItemResponse;
+import beephone_shop_projects.core.admin.order_management.model.response.ProductResponse;
 import beephone_shop_projects.core.admin.order_management.repository.CartItemRepository;
 import beephone_shop_projects.core.admin.order_management.repository.impl.CartRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.repository.impl.HinhThucThanhToanRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.repository.impl.OrderRepositoryImpl;
+import beephone_shop_projects.core.admin.order_management.repository.impl.ProductRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.service.impl.CartItemServiceImpl;
 import beephone_shop_projects.core.admin.order_management.service.impl.HoaDonServiceImpl;
 import beephone_shop_projects.core.admin.product_management.repository.ProductDetailRepository;
@@ -19,6 +22,7 @@ import beephone_shop_projects.entity.HinhThucThanhToan;
 import beephone_shop_projects.entity.HoaDon;
 import beephone_shop_projects.infrastructure.constant.HttpStatus;
 import beephone_shop_projects.infrastructure.constant.Message;
+import beephone_shop_projects.utils.CloudinaryUtils;
 import beephone_shop_projects.utils.ReadFileExcelUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -39,7 +43,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -74,6 +80,9 @@ public class TestController {
   @Autowired
   private CartItemServiceImpl cartItemService;
 
+  @Autowired
+  private ProductRepositoryImpl productRepository;
+
   @GetMapping("/test1")
   public ResponseEntity<?> home10() {
     List<HoaDon> hoaDons = hoaDonRepository.getOrdersPending();
@@ -90,6 +99,17 @@ public class TestController {
   public ResponseObject home1() {
     return new ResponseObject(sanPhamChiTietRepository.getProducts().stream().map(s -> modelMapper.map(s, ProductItemConfigurationResponse.class)));
   }
+
+  @GetMapping("/products/all")
+  public ResponseObject home111() {
+    return new ResponseObject(productRepository.findAll().stream().map(s -> modelMapper.map(s, ProductCustomResponse.class)));
+  }
+
+//  @PostMapping("/image1")
+//  public ResponseObject home3(@RequestParam String url) {
+//    String nweUrl = new CloudinaryUtils().uploadImage(url);
+//    return new ResponseObject(nweUrl);
+//  }
 
 //  @GetMapping("/carts/{id}")
 //  public ResponseEntity<?> home3(@PathVariable("id") String id) {
