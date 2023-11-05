@@ -266,16 +266,14 @@ const SuaKhuyenMai = () => {
         if (selectedProductDetails.length > 0) {
           deleteKhuyenMaiChiTiet(id);
         }
-
         selectedProductDetails.forEach((idSanPhamChiTiet) => {
-          console.log("idSPCT: ", idSanPhamChiTiet);
           successfulCount++;
           addKhuyenMaiChiTiet(id, idSanPhamChiTiet);
         });
         handleOpenAlertVariant("Cập nhật thành công.", Notistack.SUCCESS);
         setTimeout(() => {
           redirectToHienThiKhuyenMai();
-        }, 2000);
+        }, 1000);
       })
       .catch((error) => {
         handleOpenAlertVariant(
@@ -412,6 +410,7 @@ const SuaKhuyenMai = () => {
     console.log("selectedRowKeys changed: ", newSelectedRowKeys1);
     setSelectedRowKeys1(newSelectedRowKeys1);
     setSelectedProductDetails(newSelectedRowKeys1);
+    // console.log("lấy id check box: ", selectedProductDetails);
   };
 
   const rowSelection1 = {
@@ -453,8 +452,8 @@ const SuaKhuyenMai = () => {
     },
     {
       title: "Dòng sản phẩm ",
-      dataIndex: "tenDongSanPham",
-      key: "tenDongSanPham",
+      dataIndex: "tenHang",
+      key: "tenHang",
       width: "30%",
       editable: true,
       align: "center",

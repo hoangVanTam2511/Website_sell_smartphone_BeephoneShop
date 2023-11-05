@@ -14,15 +14,14 @@ import java.util.List;
 @Repository
 public interface SanPhamChiTietKhuyenMaiRepository extends ISanPhamChiTietRepository {
     @Query(value = """
-            SELECT ctsp.id, f.duong_dan, a.ten_san_pham, c.ten_mau_sac, d.kich_thuoc as kich_thuoc_ram, e.kich_thuoc as kich_thuoc_rom, ctsp.don_gia, ctsp.delected, ctsp.id_san_pham
+            SELECT ctsp.id, f.path, a.ten_san_pham, c.ten_mau_sac, d.dung_luong as kich_thuoc_ram, e.dung_luong as kich_thuoc_rom, ctsp.don_gia, ctsp.delected, ctsp.id_san_pham
             FROM san_pham_chi_tiet ctsp
-            JOIN san_pham a ON a.id = ctsp.id_san_pham
-            JOIN cau_hinh b ON b.id = ctsp.id_cau_hinh
-            JOIN mau_sac c ON c.id = b.id_mau_sac
-            JOIN ram d ON d.id = b.id_ram
-            JOIN rom e ON e.id = b.id_rom
-            JOIN anh f ON f.id_chi_tiet_san_pham = ctsp.id
-            WHERE ctsp.id_san_pham = ?1 AND f.trang_thai = 1
+            LEFT JOIN san_pham a ON a.id = ctsp.id_san_pham
+            LEFT JOIN mau_sac c ON c.id = ctsp.id_mau_sac
+            LEFT JOIN ram d ON d.id = ctsp.id_ram
+            LEFT JOIN rom e ON e.id = ctsp.id_rom
+            LEFT JOIN image f ON f.id = ctsp.id_image
+            WHERE ctsp.id_san_pham = ?1 AND f.status = 1
             ORDER BY ctsp.created_at DESC 
              """, nativeQuery = true)
     List<SanPhamChiTietKhuyenMaiResponse> findAllChiTietSanPham(@Param("id") String id);

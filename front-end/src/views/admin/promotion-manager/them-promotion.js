@@ -222,7 +222,7 @@ const AddKhuyenMai = () => {
         handleOpenAlertVariant("Thêm giảm giá thành công.", Notistack.SUCCESS);
         setTimeout(() => {
           redirectToHienThiKhuyenMai();
-        }, 2000);
+        }, 1000);
       })
       .catch((error) => {
         handleOpenAlertVariant(error.response.data.message, Notistack.ERROR);
@@ -250,10 +250,13 @@ const AddKhuyenMai = () => {
         }
       })
       .catch((error) => {
-        handleOpenAlertVariant(
-          "Đã xảy ra lỗi khi áp dụng giảm giá.",
-          Notistack.ERROR
-        );
+        successfulCount1++;
+        if (successfulCount === successfulCount1) {
+          handleOpenAlertVariant(
+            "Đã xảy ra lỗi khi áp dụng giảm giá.",
+            Notistack.ERROR
+          );
+        }
       });
   };
 
@@ -381,9 +384,9 @@ const AddKhuyenMai = () => {
       align: "center",
     },
     {
-      title: "Dòng sản phẩm ",
-      dataIndex: "tenDongSanPham",
-      key: "tenDongSanPham",
+      title: "Hãng ",
+      dataIndex: "tenHang",
+      key: "tenHang",
       width: "30%",
       editable: true,
       align: "center",
