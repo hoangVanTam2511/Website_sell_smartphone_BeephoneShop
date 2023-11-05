@@ -64,6 +64,15 @@ const ManagementProductItems = ({ open, close, productItems, productName }) => {
       ),
     },
     {
+      title: "Ảnh",
+      align: "center",
+      key: "ma",
+      width: "15%",
+      render: (text, record) => (
+        <img src={record && record.image && record.image.path} alt="" style={{ width: "150px", height: "150px" }} />
+      ),
+    },
+    {
       title: "Mã Sản Phẩm",
       align: "center",
       key: "ma",
@@ -110,9 +119,13 @@ const ManagementProductItems = ({ open, close, productItems, productName }) => {
       align: "center",
       width: "15%",
       render: (text, record) => (
-        <span style={{ fontWeight: "400" }} className="underline-blue">
-          {record.soLuongTonKho}
-        </span>
+        <Tooltip title="Danh sách IMEI" TransitionComponent={Zoom}>
+          <div style={{ cursor: "pointer" }}>
+            <span style={{ fontWeight: "400" }} className="underline-blue">
+              {record.soLuongTonKho}
+            </span>
+          </div>
+        </Tooltip>
       ),
     },
     {

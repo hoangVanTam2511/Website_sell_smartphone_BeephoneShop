@@ -45,7 +45,7 @@ const VerticalNav = memo((props) => {
             className={`${location.pathname === "/" ? "active" : ""} nav-link `}
             aria-current="page"
             to="/"
-            onClick={() => {}}
+            onClick={() => { }}
           >
             <div className="d-flex" style={{ padding: "2px" }}>
               <i className="icon">
@@ -73,12 +73,11 @@ const VerticalNav = memo((props) => {
 
         <li className="nav-item">
           <Link
-            className={`${
-              location.pathname.includes("/dashboard/point-of-sales") ||
+            className={`${location.pathname.includes("/dashboard/point-of-sales") ||
               location.pathname.includes("/dashboard/order-pending")
-                ? "active"
-                : ""
-            } nav-link`}
+              ? "active"
+              : ""
+              } nav-link`}
             to="/dashboard/point-of-sales"
           >
             <div className="d-flex" style={{ padding: "2px" }}>
@@ -112,12 +111,11 @@ const VerticalNav = memo((props) => {
         </li>
         <li className="nav-item">
           <Link
-            className={`${
-              location.pathname.includes("/dashboard/management-orders") ||
+            className={`${location.pathname.includes("/dashboard/management-orders") ||
               location.pathname.includes("/dashboard/order-detail")
-                ? "active"
-                : ""
-            } nav-link`}
+              ? "active"
+              : ""
+              } nav-link`}
             to="/dashboard/management-orders"
           >
             <div className="d-flex" style={{ padding: "2px" }}>
@@ -202,9 +200,8 @@ const VerticalNav = memo((props) => {
             <ul className="sub-nav">
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/dashboard/products" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/dashboard/products" ? "active" : ""
+                    } nav-link`}
                   to="/dashboard/products"
                 >
                   <i className="icon">
@@ -230,9 +227,8 @@ const VerticalNav = memo((props) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/dashboard/colors" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/dashboard/colors" ? "active" : ""
+                    } nav-link`}
                   to="/dashboard/colors"
                 >
                   <i className="icon">
@@ -258,9 +254,8 @@ const VerticalNav = memo((props) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/dashboard/image" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/dashboard/image" ? "active" : ""
+                    } nav-link`}
                   to="/dashboard/image"
                 >
                   <i className="icon">
@@ -286,9 +281,8 @@ const VerticalNav = memo((props) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/dashboard/chips" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/dashboard/chips" ? "active" : ""
+                    } nav-link`}
                   to="/dashboard/chips"
                 >
                   <i className="icon">
@@ -314,9 +308,8 @@ const VerticalNav = memo((props) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/dashboard/rams" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/dashboard/rams" ? "active" : ""
+                    } nav-link`}
                   to="/dashboard/rams"
                 >
                   <i className="icon">
@@ -343,9 +336,8 @@ const VerticalNav = memo((props) => {
 
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/dashboard/sims" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/dashboard/sims" ? "active" : ""
+                    } nav-link`}
                   to="/dashboard/sims"
                 >
                   <i className="icon">
@@ -372,9 +364,8 @@ const VerticalNav = memo((props) => {
 
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/dashboard/the-nhos" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/dashboard/the-nhos" ? "active" : ""
+                    } nav-link`}
                   to="/dashboard/the-nhos"
                 >
                   <i className="icon">
@@ -401,9 +392,8 @@ const VerticalNav = memo((props) => {
 
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/dashboard/screens" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/dashboard/screens" ? "active" : ""
+                    } nav-link`}
                   to="/dashboard/screens"
                 >
                   <i className="icon">
@@ -430,9 +420,8 @@ const VerticalNav = memo((props) => {
 
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/dashboard/sacs" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/dashboard/sacs" ? "active" : ""
+                    } nav-link`}
                   to="/dashboard/sacs"
                 >
                   <i className="icon">
@@ -459,9 +448,8 @@ const VerticalNav = memo((props) => {
 
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/dashboard/hangs" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/dashboard/hangs" ? "active" : ""
+                    } nav-link`}
                   to="/dashboard/hangs"
                 >
                   <i className="icon">
@@ -488,9 +476,8 @@ const VerticalNav = memo((props) => {
 
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/dashboard/pins" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/dashboard/pins" ? "active" : ""
+                    } nav-link`}
                   to="/dashboard/pins"
                 >
                   <i className="icon">
@@ -517,9 +504,8 @@ const VerticalNav = memo((props) => {
 
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/dashboard/roms" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/dashboard/roms" ? "active" : ""
+                    } nav-link`}
                   to="/dashboard/roms"
                 >
                   <i className="icon">
@@ -545,11 +531,10 @@ const VerticalNav = memo((props) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/dashboard/rear-cameras"
-                      ? "active"
-                      : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/dashboard/rear-cameras"
+                    ? "active"
+                    : ""
+                    } nav-link`}
                   to="/dashboard/rear-cameras"
                 >
                   <i className="icon">
@@ -575,11 +560,10 @@ const VerticalNav = memo((props) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/dashboard/front-cameras"
-                      ? "active"
-                      : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/dashboard/front-cameras"
+                    ? "active"
+                    : ""
+                    } nav-link`}
                   to="/dashboard/front-cameras"
                 >
                   <i className="icon">
@@ -680,9 +664,8 @@ const VerticalNav = memo((props) => {
             <ul className="sub-nav">
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/nhan-vien" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/nhan-vien" ? "active" : ""
+                    } nav-link`}
                   to="/nhan-vien"
                 >
                   <i className="icon">
@@ -708,9 +691,8 @@ const VerticalNav = memo((props) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/khach-hang" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/khach-hang" ? "active" : ""
+                    } nav-link`}
                   to="/khach-hang"
                 >
                   <i className="icon">
@@ -793,8 +775,8 @@ const VerticalNav = memo((props) => {
                   />
                 </svg>
               </i>
-              <span className="item-name" style={{ paddingRight: "57px" }}>
-                Giảm giá
+              <span className="item-name" style={{ paddingRight: "76px" }}>
+                Giảm Giá
               </span>
               <i className="right-icon">
                 <svg
@@ -818,9 +800,8 @@ const VerticalNav = memo((props) => {
             <ul className="sub-nav">
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/dashboard/voucher" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/dashboard/voucher" ? "active" : ""
+                    } nav-link`}
                   to="/dashboard/voucher"
                 >
                   <i className="icon">
@@ -846,9 +827,8 @@ const VerticalNav = memo((props) => {
               </li>
               <li className="nav-item">
                 <Link
-                  className={`${
-                    location.pathname === "/khuyen-mai" ? "active" : ""
-                  } nav-link`}
+                  className={`${location.pathname === "/khuyen-mai" ? "active" : ""
+                    } nav-link`}
                   to="/khuyen-mai"
                 >
                   <i className="icon">
