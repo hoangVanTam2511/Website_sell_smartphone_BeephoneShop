@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface ImageService extends GenericService<ImageResponse, ImageRequest, String> {
 
-    Image uploadImage(MultipartFile file, String id) throws Exception;
+    void uploadImage(MultipartFile[] files) throws Exception;
 //
 //    //Hiển thị ảnh trong hire design
 //    OhdlImageEventResponse getImageById(String id);

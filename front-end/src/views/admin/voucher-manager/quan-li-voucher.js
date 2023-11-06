@@ -825,6 +825,7 @@ const HienThiVoucher = () => {
           </div>
           <Card.Body>
             <Table
+              className="table-container"
               dataSource={listVoucher}
               columns={columns}
               pagination={false}

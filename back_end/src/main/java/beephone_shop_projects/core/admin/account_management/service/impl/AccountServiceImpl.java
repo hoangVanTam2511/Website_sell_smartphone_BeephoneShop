@@ -39,11 +39,11 @@ public class AccountServiceImpl implements AccountService {
         int number = random.nextInt(10000);
         String code = String.format("ACC%04d", number);
         Date date = null;
-        try {
-            date = new SimpleDateFormat("yyyy-mm-dd").parse(request.getNgaySinh());
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            date = new SimpleDateFormat("yyyy-mm-dd").parse(request.getNgaySinh());
+//        } catch (ParseException e) {
+//            throw new RuntimeException(e);
+//        }
         Account kh = new Account().builder()
                 .email(request.getEmail())
                 .ngaySinh(date).idRole(roleRepository.findById(request.getIdRole()).get())
@@ -66,7 +66,7 @@ public class AccountServiceImpl implements AccountService {
         Optional<Account> khachHangOptional = accountRepository.findById(id);
         Date date = null;
         try {
-            date = new SimpleDateFormat("yyyy-mm-dd").parse(request.getNgaySinh());
+            date = new SimpleDateFormat("dd/MM/yyyy").parse(request.getNgaySinh());
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }

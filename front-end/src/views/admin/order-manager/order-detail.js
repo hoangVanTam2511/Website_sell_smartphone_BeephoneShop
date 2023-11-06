@@ -1272,7 +1272,7 @@ const OrderDetail = (props) => {
                           sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                         >
                           <TableCell align='center'>
-                            <img /* src={item && item.sanPhamChiTiet.images[0].duongDan} */ class='' alt="" style={{ width: "155px", height: "155px" }} />
+                            <img src={item && item.sanPhamChiTiet.image.path} class='' alt="" style={{ width: "155px", height: "155px" }} />
                           </TableCell>
                           <TableCell align="center" style={{ width: "350px" }}>
                             <div>

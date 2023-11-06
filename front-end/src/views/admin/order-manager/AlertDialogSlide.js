@@ -633,7 +633,7 @@ export function ProductsDialog(props) {
                         style={{ width: "200px" }}
                       >
                         <img
-                          // src={item && item.images[0].duongDan}
+                          src={item && item.image && item.image.path}
                           alt=""
                           style={{ width: "110px", height: "110px" }}
                         />
@@ -869,7 +869,7 @@ export function ProductsDialog(props) {
   const handleChangeProductImage = (item) => {
     const product = {
       id: item.id,
-      // images: item.images,
+      image: item.image,
       soLuongTonKho: item.soLuongTonKho,
       mauSac: item.mauSac,
       donGia: item.donGia,
@@ -2484,7 +2484,8 @@ export const ProductDetailsDialog = (props) => {
                     <img
                       className="mt-4 pt-4"
                       style={{ width: "370px", height: "380px" }}
-                      // src={productItem2 && productItem2.images[0].duongDan}
+                      src={productItem2 && productItem2.image && productItem2.image.path}
+
                       alt=""
                     />
                   </div>
@@ -2623,9 +2624,9 @@ export const ProductDetailsDialog = (props) => {
                                             height: "40px",
                                             marginTop: "4px",
                                           }}
-                                          // src={
-                                          //   item.images && item.images[0].duongDan
-                                          // }
+                                          src={
+                                            item.image && item.image.path
+                                          }
                                           alt=""
                                         />
                                       </div>

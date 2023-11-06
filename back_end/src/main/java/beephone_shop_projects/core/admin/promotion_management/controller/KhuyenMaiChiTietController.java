@@ -4,6 +4,7 @@ import beephone_shop_projects.core.admin.promotion_management.model.request.Crea
 import beephone_shop_projects.core.admin.promotion_management.model.request.CreateKhuyenMaiRequest;
 import beephone_shop_projects.core.admin.promotion_management.service.KhuyenMaiChiTietService;
 import beephone_shop_projects.core.common.base.ResponseObject;
+import org.aspectj.bridge.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,11 @@ public class KhuyenMaiChiTietController {
     @PostMapping("/khuyen-mai-chi-tiet/add")
     public ResponseObject addKhuyenMaiChiTiet(@RequestBody CreateKhuyenMaiChiTietRequest request) {
         return new ResponseObject(khuyenMaiChiTietService.addKhuyenMaiChiTiet(request));
+    }
+
+    @DeleteMapping ("/khuyen-mai-chi-tiet/update/{id}")
+    public void updateKhuyenMaiChiTiet(@PathVariable("id") String id) {
+        khuyenMaiChiTietService.updateDelected(id);
     }
 
 }

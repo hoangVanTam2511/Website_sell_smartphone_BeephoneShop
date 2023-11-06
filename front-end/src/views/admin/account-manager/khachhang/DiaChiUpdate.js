@@ -21,9 +21,6 @@ const AddressFormUpdate = ({
   const [selectedProvince, setSelectedProvince] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedWard, setSelectedWard] = useState("");
-  const [provinceError, setProvinceError] = useState(false);
-  const [districtError, setDistrictError] = useState(false);
-  const [wardError, setWardError] = useState(false);
   useEffect(() => {
     fetchProvinces();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -38,7 +35,7 @@ const AddressFormUpdate = ({
       fetchDistricts(selectedProvinceCode);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedTinhThanhPho]);
+  }, [selectedTinhThanhPho, provinces]);
 
   useEffect(() => {
     if (selectedQuanHuyen) {
@@ -48,11 +45,11 @@ const AddressFormUpdate = ({
 
       if (selectedDistrictCode) {
         setSelectedDistrict(selectedDistrictCode);
-        // Fetch wards based on selected district
         fetchWards(selectedDistrictCode);
       }
     }
-  }, [selectedQuanHuyen]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedQuanHuyen, districts]);
 
   useEffect(() => {
     if (selectedXaPhuong) {
@@ -61,18 +58,9 @@ const AddressFormUpdate = ({
       )?.WardCode;
       setSelectedWard(selectedWardCode);
     }
-  }, [selectedXaPhuong]);
+  }, [selectedXaPhuong, wards]);
 
   const callAPI = async (api) => {
-    if (!selectedProvince) {
-      setProvinceError(true);
-    }
-    if (!selectedDistrict) {
-      setDistrictError(true);
-    }
-    if (!selectedWard) {
-      setWardError(true);
-    }
     return axios
       .get(api, {
         headers: {
@@ -116,77 +104,91 @@ const AddressFormUpdate = ({
       });
   };
 
-  const handleProvinceChange = (value) => {
-    if (submitted) {
-      // Nếu đã ấn nút "Lưu" thì kiểm tra trạng thái select
-      if (!value.target.value) {
-        setSelectedProvince("");
-      }
-    }
-
-    setSelectedProvince(value.target.value);
+  const handleProvinceChange = (event) => {
+    setSelectedProvince(event.target.value);
     setSelectedDistrict("");
     setSelectedWard("");
-    fetchDistricts(value.target.value);
+    if (selectedProvince) {
+      onDistrictChange("");
+      onWardChange("");
+    }
+    setDistricts([]);
+    setWards([]);
+    fetchDistricts(event.target.value);
+    onProvinceChange(event.target.value);
   };
   const handleDistrictChange = (value) => {
-    const selectedDistrictCode = value.target.value || ""; // Tránh giá trị undefined
-    setSelectedDistrict(selectedDistrictCode);
-    // Fetch wards based on selected district
-    fetchWards(selectedDistrictCode);
+    setSelectedDistrict(value.target.value);
+    setSelectedWard(""); // Đặt xã thành rỗng
+    fetchWards(value.target.value);
+    onDistrictChange(value.target.value);
+    onWardChange("");
     setWards([]);
-    onDistrictChange(selectedDistrictCode);
-    setDistrictError(false);
-    if (formSubmitted) {
-      if (!selectedDistrictCode) {
-        setDistrictError(true);
-      }
-    }
   };
 
   const handleWardChange = (value) => {
     setSelectedWard(value.target.value);
     onWardChange(value.target.value);
-    setWardError(false);
-    if (formSubmitted) {
-      // Nếu đã ấn nút "Lưu" thì kiểm tra trạng thái select
-      if (!value.target.value) {
-        setWardError(true);
-        setSelectedWard("");
-      }
-    }
   };
 
+  // useEffect(() => {
+  //   if (selectedProvince && selectedDistrict && selectedWard) {
+  //     const selectedProvinceName = provinces.find(
+  //       (province) => province.ProvinceID === selectedProvince
+  //     )?.ProvinceName;
+
+  //     const selectedDistrictName = districts.find(
+  //       (district) => district.DistrictID === selectedDistrict
+  //     )?.DistrictName;
+
+  //     const selectedWardName = wards.find(
+  //       (ward) => ward.WardCode === selectedWard
+  //     )?.WardName;
+
+  //     onProvinceChange(selectedProvinceName);
+  //     onDistrictChange(selectedDistrictName);
+  //     onWardChange(selectedWardName);
+  //   }
+  // }, [
+  //   selectedProvince,
+  //   selectedDistrict,
+  //   selectedWard,
+  //   onProvinceChange,
+  //   onDistrictChange,
+  //   onWardChange,
+  //   provinces,
+  //   districts,
+  //   wards,
+  // ]);
   useEffect(() => {
-    if (selectedProvince && selectedDistrict && selectedWard) {
+    if (selectedProvince) {
       const selectedProvinceName = provinces.find(
         (province) => province.ProvinceID === selectedProvince
       )?.ProvinceName;
+      onProvinceChange(selectedProvinceName);
+    }
+  }, [selectedProvince, onProvinceChange, provinces]);
 
+  useEffect(() => {
+    if (selectedDistrict) {
       const selectedDistrictName = districts.find(
         (district) => district.DistrictID === selectedDistrict
       )?.DistrictName;
+      onDistrictChange(selectedDistrictName);
+    }
+  }, [selectedDistrict, onDistrictChange, districts]);
 
+  useEffect(() => {
+    if (selectedWard) {
       const selectedWardName = wards.find(
         (ward) => ward.WardCode === selectedWard
       )?.WardName;
-
-      onProvinceChange(selectedProvinceName || "");
-      onDistrictChange(selectedDistrictName || "");
-      onWardChange(selectedWardName || "");
+      onWardChange(selectedWardName);
     }
-  }, [
-    selectedProvince,
-    selectedDistrict,
-    selectedWard,
-    onProvinceChange,
-    onDistrictChange,
-    onWardChange,
-  ]);
-
+  }, [selectedWard, onWardChange, wards]);
   return (
     <div>
-      <Grid container spacing={4}>
+      <Grid container spacing={3.3}>
         <Grid item xs={4}>
           <TextField
             select

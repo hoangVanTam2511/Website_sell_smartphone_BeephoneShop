@@ -49,8 +49,8 @@ const HienThiNV = () => {
         },
       });
       setListNV(response.data.data);
-      setTotalPages(response.data.totalPages);
       setCurrentPage(targetPage);
+      setTotalPages(response.data.totalPages);
     } catch (error) {
       console.log("Error searching accounts:", error);
     }
@@ -107,11 +107,13 @@ const HienThiNV = () => {
       })
       .catch(() => {});
   };
+  const [keySelect, setKeySelect] = useState(0);
   const handleReset = () => {
     loadDataListRole(currentPage);
     setSearchText("");
-    // handleFilter(0);
-    // setCurrentPage(1);
+    setCurrentPage(1);
+    handleFilter(0);
+    setKeySelect(keySelect + 1);
   };
   const navigate = useNavigate();
   const [editingKey, setEditingKey] = useState("");
@@ -220,23 +222,51 @@ const HienThiNV = () => {
     {
       title: "Trạng thái",
       dataIndex: "trangThai",
+      align: "center",
       width: "10%",
-      onFilter: (value, record) => record.trangThai == value,
+      // onFilter: (value, record) => record.trangThai == value,
       filterSearch: true,
       render: (text, record) => (
         <span>
           {record.trangThai === StatusAccountCus.LAM_VIEC ? (
-            <Button type="primary" style={{ borderRadius: "30px" }}>
-              Làm việc
-            </Button>
+            <div
+              className="rounded-pill mx-auto badge-primary"
+              style={{
+                height: "35px",
+                width: "96px",
+                padding: "4px",
+              }}
+            >
+              <span className="text-white" style={{ fontSize: "14px" }}>
+                Làm việc
+              </span>
+            </div>
           ) : record.trangThai === StatusAccountCus.DA_NGHI ? (
-            <Button type="primary" danger style={{ borderRadius: "30px" }}>
-              Đã nghỉ
-            </Button>
+            <div
+              className="rounded-pill mx-auto badge-danger"
+              style={{
+                height: "35px",
+                width: "96px",
+                padding: "4px",
+              }}
+            >
+              <span className="text-white" style={{ fontSize: "14px" }}>
+                Đã nghỉ
+              </span>
+            </div>
           ) : (
-            <Button type="primary" style={{ borderRadius: "30px" }}>
-              Không xác định
-            </Button>
+            <div
+              className="rounded-pill mx-auto badge-primary"
+              style={{
+                height: "35px",
+                width: "130px",
+                padding: "4px",
+              }}
+            >
+              <span className="text-white" style={{ fontSize: "14px" }}>
+                Không xác định
+              </span>
+            </div>
           )}
         </span>
       ),
@@ -405,6 +435,7 @@ const HienThiNV = () => {
                         onOpen={handleOpenSelect}
                         defaultValue={0}
                         onChange={(e) => handleFilter(e.target.value)}
+                        key={keySelect}
                       >
                         <MenuItem className="" value={0}>
                           Tất cả
@@ -458,6 +489,7 @@ const HienThiNV = () => {
                   dataSource={listNV}
                   columns={columns}
                   pagination={false}
+                  className="table-container"
                   rowKey="id"
                 />
               </Card.Body>

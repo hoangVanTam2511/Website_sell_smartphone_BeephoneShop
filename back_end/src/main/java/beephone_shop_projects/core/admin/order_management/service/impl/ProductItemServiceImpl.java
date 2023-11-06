@@ -10,12 +10,15 @@ import beephone_shop_projects.core.admin.order_management.model.request.ProductI
 import beephone_shop_projects.core.admin.order_management.model.request.ProductItemConfigurationsRequest;
 import beephone_shop_projects.core.admin.order_management.model.request.ProductItemImeiRequest;
 import beephone_shop_projects.core.admin.order_management.model.response.ProductItemConfigurationResponse;
-import beephone_shop_projects.core.admin.order_management.model.response.ProductItemImeiResponse;
 import beephone_shop_projects.core.admin.order_management.repository.impl.ImeiRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.repository.impl.ProductItemRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.service.ProductItemService;
+import beephone_shop_projects.core.admin.product_managements.repository.impl.ImageRepositoryImpl;
+import beephone_shop_projects.entity.Image;
 import beephone_shop_projects.entity.Imei;
 import beephone_shop_projects.entity.SanPhamChiTiet;
+import beephone_shop_projects.utils.CloudinaryUtils;
+import beephone_shop_projects.utils.RandomCodeGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,6 +46,12 @@ public class ProductItemServiceImpl extends AbstractServiceImpl<SanPhamChiTiet, 
   @Autowired
   private ImeiRepositoryImpl imeiRepositoryImpl;
 
+  @Autowired
+  private CloudinaryUtils cloudinaryUtils;
+
+  @Autowired
+  private ImageRepositoryImpl imageRepository;
+
   public ProductItemServiceImpl(ProductItemRepositoryImpl repo, ProductItemConverter converter) {
     super(repo, converter);
   }
@@ -59,6 +68,7 @@ public class ProductItemServiceImpl extends AbstractServiceImpl<SanPhamChiTiet, 
       product.setMauSac(productColorConverter.convertRequestToEntity(req.getColor()));
       product.setRam(productRamConverter.convertRequestToEntity(req.getRam()));
       product.setRom(productRomConverter.convertRequestToEntity(req.getRom()));
+
       SanPhamChiTiet createdProductItem = productItemRepositoryImpl.save(product);
       response.add(productItemConverter.convertEntityToResponse(createdProductItem));
 

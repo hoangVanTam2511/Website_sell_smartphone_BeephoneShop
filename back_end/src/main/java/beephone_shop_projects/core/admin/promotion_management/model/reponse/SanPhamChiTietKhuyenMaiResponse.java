@@ -14,7 +14,7 @@ public interface SanPhamChiTietKhuyenMaiResponse {
     @Value("#{target.id}")
     String getId();
 
-    @Value("#{target.duong_dan}")
+    @Value("#{target.path}")
     String getDuongDan();
 
     @Value("#{target.ten_san_pham}")

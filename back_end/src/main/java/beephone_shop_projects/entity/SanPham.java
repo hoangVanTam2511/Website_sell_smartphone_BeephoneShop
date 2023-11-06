@@ -83,9 +83,9 @@ public class SanPham extends PrimaryEntity implements IsIdentified {
 //  @OneToMany(mappedBy = "sanPham")
 //  private List<CameraSau> cameraSaus;
 
-//  @JsonIgnore
-//  @OneToMany(mappedBy = "sanPham")
-//  private List<SanPhamChiTiet> productItems = new ArrayList<>();
+  @JsonIgnore
+  @OneToMany(mappedBy = "sanPham")
+  private List<SanPhamChiTiet> productItems = new ArrayList<>();
 
   private Integer trangThai;
 

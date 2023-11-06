@@ -5,7 +5,6 @@ import { MenuItem, TextField } from "@mui/material";
 const host = "https://online-gateway.ghn.vn/shiip/public-api/master-data/";
 
 const AddressForm = ({
-  required,
   submitted,
   onProvinceChange,
   onDistrictChange,
@@ -69,16 +68,11 @@ const AddressForm = ({
   };
 
   const handleProvinceChange = (value) => {
-    if (submitted) {
-      // Nếu đã ấn nút "Lưu" thì kiểm tra trạng thái select
-      if (!value.target.value) {
-        setSelectedProvince("");
-      }
-    }
-
     setSelectedProvince(value.target.value);
     setSelectedDistrict("");
     setSelectedWard("");
+    setDistricts([]);
+    setWards([]);
     fetchDistricts(value.target.value);
   };
 
@@ -87,23 +81,13 @@ const AddressForm = ({
     setSelectedWard("");
     fetchWards(value.target.value);
     onDistrictChange(value.target.value);
-    if (submitted) {
-      // Nếu đã ấn nút "Lưu" thì kiểm tra trạng thái select
-      if (!value.target.value) {
-        setSelectedDistrict("");
-      }
-    }
+    onWardChange("");
+    setWards([]);
   };
 
   const handleWardChange = (value) => {
     setSelectedWard(value.target.value);
     onWardChange(value.target.value);
-    if (submitted) {
-      // Nếu đã ấn nút "Lưu" thì kiểm tra trạng thái select
-      if (!value) {
-        setSelectedWard("");
-      }
-    }
   };
 
   useEffect(() => {
@@ -121,7 +105,17 @@ const AddressForm = ({
       onDistrictChange(selectedDistrictName);
       onWardChange(selectedWardName);
     }
-  }, [selectedProvince, selectedDistrict, selectedWard]);
+  }, [
+    selectedProvince,
+    selectedDistrict,
+    selectedWard,
+    provinces,
+    districts,
+    wards,
+    onProvinceChange,
+    onDistrictChange,
+    onWardChange,
+  ]);
   return (
     <>
       <div

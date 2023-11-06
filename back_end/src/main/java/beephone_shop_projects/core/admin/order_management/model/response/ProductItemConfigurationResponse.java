@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.admin.order_management.model.response;
 
+import beephone_shop_projects.entity.Image;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,6 +26,8 @@ public class ProductItemConfigurationResponse {
   private BigDecimal donGia;
 
   private ColorResponse mauSac;
+
+  private Image image;
 
   private RamResponse ram;
 

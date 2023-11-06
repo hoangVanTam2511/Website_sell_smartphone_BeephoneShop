@@ -42,20 +42,21 @@ const HienThiKH = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [searchText, setSearchText] = useState("");
-  const [filterStatus, setFilterStatus] = useState(null);
+  const [filterStatus, setFilterStatus] = useState(0);
   const handleFilter = (status) => {
     setFilterStatus(status);
     // setCurrentPage(0); // Reset current page to 1 when applying filters
   };
-
+  const [keySelect, setKeySelect] = useState(0);
   const handleReset = () => {
     loadDataListRole(currentPage);
     setSearchText("");
-    // setCurrentPage(1);
+    setKeySelect(keySelect + 1);
+    // setCurrentPage(targetPage);
   };
 
   useEffect(() => {
-    if (filterStatus == 0) {
+    if (filterStatus === 0) {
       handleReset();
     }
     fetchEmployeeList(currentPage);
@@ -75,10 +76,7 @@ const HienThiKH = () => {
       console.error("Error fetching employee data:", error);
     }
   };
-  const [
-    targetPage,
-    //  setTargetPage
-  ] = useState(1);
+  const [targetPage, setTargetPage] = useState(1);
   const handleSearch = async () => {
     try {
       if (!searchText) {
@@ -87,15 +85,18 @@ const HienThiKH = () => {
         loadDataListRole(targetPage); // Tải danh sách từ trang targetPage
         return;
       }
-      const response = await axios.get(apiURLKH + "/search-all", {
-        params: {
-          tenKH: searchText,
-          page: currentPage,
-        },
-      });
-      setListKH(response.data.data);
-      setTotalPages(response.data.totalPages);
-      setCurrentPage(targetPage);
+      axios
+        .get(apiURLKH + "/search-all", {
+          params: {
+            tenKH: searchText,
+            page: currentPage,
+          },
+        })
+        .then((response) => {
+          setTotalPages(response.data.totalPages);
+          // setCurrentPage(targetPage);
+          setListKH(response.data.data);
+        });
     } catch (error) {
       console.log("Error searching accounts:", error);
     }
@@ -112,7 +113,7 @@ const HienThiKH = () => {
   }, [searchText, currentPage]);
 
   useEffect(() => {
-    if (filterStatus == 0) {
+    if (filterStatus === 0) {
       handleReset();
     }
     fetchEmployeeList(currentPage);
@@ -128,7 +129,7 @@ const HienThiKH = () => {
       .get(apiURLKH + "/hien-thi?page=" + currentPage)
       .then((response) => {
         setListKH(response.data.data);
-        setTotalPages(response.totalPages);
+        setTotalPages(response.data.totalPages);
       })
       .catch(() => {});
   };
@@ -409,10 +410,11 @@ const HienThiKH = () => {
                       open={openSelect}
                       onClose={handleCloseSelect}
                       onOpen={handleOpenSelect}
-                      defaultValue={0}
+                      defaultValue={5}
+                      key={keySelect}
                       onChange={(e) => handleFilter(e.target.value)}
                     >
-                      <MenuItem className="" value={0}>
+                      <MenuItem className="" value={5}>
                         Tất cả
                       </MenuItem>
                       <MenuItem value={StatusCusNumber.HOAT_DONG}>
@@ -473,6 +475,7 @@ const HienThiKH = () => {
             </Card.Header>
             <Card.Body>
               <Table
+                className="table-container"
                 dataSource={listKH}
                 columns={columns}
                 pagination={false}

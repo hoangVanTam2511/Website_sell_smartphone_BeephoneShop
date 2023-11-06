@@ -30,9 +30,9 @@ public class ImageController {
         return new ResponseObject<>(img);
     }
 
-    @PostMapping
-    public ResponseObject uploadImage(@RequestParam("file") MultipartFile file, String id) throws Exception {
-        return new ResponseObject(imageService.uploadImage(file, id));
-    }
+//    @PostMapping
+//    public ResponseObject uploadImage(@RequestParam("file") MultipartFile file, String id) throws Exception {
+//        return new ResponseObject(imageService.uploadImage(file, id));
+//    }
 
 }
