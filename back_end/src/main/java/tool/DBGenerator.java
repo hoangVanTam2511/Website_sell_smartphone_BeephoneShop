@@ -42,6 +42,7 @@ public class DBGenerator implements CommandLineRunner {
 
     @Autowired
     private ITheNhoRepository theNhoRepository;
+
     @Autowired
     private ICongSacRepository congSacRepository;
 

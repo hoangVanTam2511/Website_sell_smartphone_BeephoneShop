@@ -49,7 +49,6 @@ public class MauSacServiceImpl extends AbstractServiceImpl<MauSac, MauSacRespons
         return mauSacRepository.save(mauSac);
     }
 
-    @Override
     public List<MauSacResponse> searchMauSac(MauSacRequest mauSacRequest) {
         return null;
     }
