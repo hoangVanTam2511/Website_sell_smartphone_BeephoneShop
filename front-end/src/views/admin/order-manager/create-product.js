@@ -662,7 +662,7 @@ const CreateProduct = ({ }) => {
   // const [product, setProduct] = useState({});
   const getProduct = () => {
     const request = {
-      ma: generateRandomCode(),
+      ma: generateRandomId(),
       tenSanPham: productName,
       operatingType: opera,
       theSimDienThoais: convertTheSims,

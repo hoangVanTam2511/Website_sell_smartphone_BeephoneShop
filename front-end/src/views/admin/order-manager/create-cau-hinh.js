@@ -1064,7 +1064,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay }) => {
                 </Button>
               </div>
               {cauHinhs.length > 0 &&
-                <div className="mt-3 text-end">
+                <div className="mt-3 d-flex justify-content-between">
                   <Button
                     onClick={handleDownloadSample}
                     className="rounded-2 button-mui me-2"
@@ -1188,7 +1188,6 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay }) => {
         rams={listRam} roms={listRom} updateData={updateData} listColor={listColor} listFinal={cauHinhsFinal}
       />
       <ImportAndExportExcelImei open={openModalImel} close={handleCloseModalImei} imeis={imeis} productName={productName} />
-      {isLoading && <LoadingIndicator />}
     </>
   )
 }

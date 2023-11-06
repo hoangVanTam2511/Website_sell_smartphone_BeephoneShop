@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Empty, Table } from "antd";
-import { Box, IconButton, Pagination, TextField, Tooltip, } from "@mui/material";
+import { Box, FormControl, IconButton, MenuItem, Pagination, Select, TextField, Tooltip, } from "@mui/material";
 import { PlusOutlined } from "@ant-design/icons";
 import Card from "../../../components/Card";
 import { format } from "date-fns";
@@ -19,6 +19,7 @@ import LoadingIndicator from '../../../utilities/loading';
 import { FaPencilAlt } from "react-icons/fa";
 import ManagementProductItems from "./management-product-items";
 import { FaDownload, FaUpload } from "react-icons/fa6";
+import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 
 const ManagementProducts = () => {
   const navigate = useNavigate();
@@ -324,6 +325,409 @@ const ManagementProducts = () => {
               </Button>
             </div>
           </Card.Header>
+          <div className="d-flex mt-4 pt-1 mx-auto">
+            <div
+              className="d-flex"
+              style={{
+                height: "40px",
+                position: "relative",
+                cursor: "pointer",
+              }}
+            >
+              <div
+                // onClick={handleOpenSelect1}
+                className=""
+                style={{ marginTop: "8px" }}
+              >
+                <span
+                  className="ms-2 ps-1"
+                  style={{ fontSize: "15px", fontWeight: "450" }}
+                >
+                  Trạng Thái:{" "}
+                </span>
+              </div>
+              <FormControl
+                sx={{
+                  minWidth: 50,
+                }}
+                size="small"
+              >
+                <Select
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        borderRadius: "7px",
+                      },
+                    },
+                  }}
+                  IconComponent={KeyboardArrowDownOutlinedIcon}
+                  sx={{
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none !important",
+                    },
+                    "& .MuiSelect-select": {
+                      color: "#2f80ed",
+                      fontWeight: "500",
+                    },
+                  }}
+                  // open={openSelect1}
+                  // onClose={handleCloseSelect1}
+                  // onOpen={handleOpenSelect1}
+                  defaultValue={14}
+                >
+                  <MenuItem className="" value={14}>
+                    Tất cả
+                  </MenuItem>
+                  <MenuItem value={15}>Khách hàng mới</MenuItem>
+                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
+            <div
+              className="d-flex ms-3"
+              style={{
+                height: "40px",
+                position: "relative",
+                cursor: "pointer",
+              }}
+            >
+              <div
+                // onClick={handleOpenSelect1}
+                className=""
+                style={{ marginTop: "8px" }}
+              >
+                <span
+                  className="ms-2 ps-1"
+                  style={{ fontSize: "15px", fontWeight: "450" }}
+                >
+                  Hãng:{" "}
+                </span>
+              </div>
+              <FormControl
+                sx={{
+                  minWidth: 50,
+                }}
+                size="small"
+              >
+                <Select
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        borderRadius: "7px",
+                      },
+                    },
+                  }}
+                  IconComponent={KeyboardArrowDownOutlinedIcon}
+                  sx={{
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none !important",
+                    },
+                    "& .MuiSelect-select": {
+                      color: "#2f80ed",
+                      fontWeight: "500",
+                    },
+                  }}
+                  // open={openSelect1}
+                  // onClose={handleCloseSelect1}
+                  // onOpen={handleOpenSelect1}
+                  defaultValue={14}
+                >
+                  <MenuItem className="" value={14}>
+                    Tất cả
+                  </MenuItem>
+                  <MenuItem value={15}>Khách hàng mới</MenuItem>
+                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
+            <div
+              className="d-flex ms-3"
+              style={{
+                height: "40px",
+                position: "relative",
+                cursor: "pointer",
+              }}
+            >
+              <div
+                // onClick={handleOpenSelect1}
+                className=""
+                style={{ marginTop: "8px" }}
+              >
+                <span
+                  className="ms-2 ps-1"
+                  style={{ fontSize: "15px", fontWeight: "450" }}
+                >
+                  Hệ Điều Hành:{" "}
+                </span>
+              </div>
+              <FormControl
+                sx={{
+                  minWidth: 50,
+                }}
+                size="small"
+              >
+                <Select
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        borderRadius: "7px",
+                      },
+                    },
+                  }}
+                  IconComponent={KeyboardArrowDownOutlinedIcon}
+                  sx={{
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none !important",
+                    },
+                    "& .MuiSelect-select": {
+                      color: "#2f80ed",
+                      fontWeight: "500",
+                    },
+                  }}
+                  // open={openSelect1}
+                  // onClose={handleCloseSelect1}
+                  // onOpen={handleOpenSelect1}
+                  defaultValue={14}
+                >
+                  <MenuItem className="" value={14}>
+                    Tất cả
+                  </MenuItem>
+                  <MenuItem value={15}>Khách hàng mới</MenuItem>
+                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
+            <div
+              className="d-flex ms-3"
+              style={{
+                height: "40px",
+                position: "relative",
+                cursor: "pointer",
+              }}
+            >
+              <div
+                // onClick={handleOpenSelect1}
+                className=""
+                style={{ marginTop: "8px" }}
+              >
+                <span
+                  className="ms-2 ps-1"
+                  style={{ fontSize: "15px", fontWeight: "450" }}
+                >
+                  CPU:{""}
+                </span>
+              </div>
+              <FormControl
+                sx={{
+                  minWidth: 50,
+                }}
+                size="small"
+              >
+                <Select
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        borderRadius: "7px",
+                      },
+                    },
+                  }}
+                  IconComponent={KeyboardArrowDownOutlinedIcon}
+                  sx={{
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none !important",
+                    },
+                    "& .MuiSelect-select": {
+                      color: "#2f80ed",
+                      fontWeight: "500",
+                    },
+                  }}
+                  // open={openSelect1}
+                  // onClose={handleCloseSelect1}
+                  // onOpen={handleOpenSelect1}
+                  defaultValue={14}
+                >
+                  <MenuItem className="" value={14}>
+                    Tất cả
+                  </MenuItem>
+                  <MenuItem value={15}>Khách hàng mới</MenuItem>
+                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
+            <div
+              className="d-flex ms-3"
+              style={{
+                height: "40px",
+                position: "relative",
+                cursor: "pointer",
+              }}
+            >
+              <div
+                // onClick={handleOpenSelect1}
+                className=""
+                style={{ marginTop: "8px" }}
+              >
+                <span
+                  className="ms-2 ps-1"
+                  style={{ fontSize: "15px", fontWeight: "450" }}
+                >
+                  Màn Hình:{""}
+                </span>
+              </div>
+              <FormControl
+                sx={{
+                  minWidth: 50,
+                }}
+                size="small"
+              >
+                <Select
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        borderRadius: "7px",
+                      },
+                    },
+                  }}
+                  IconComponent={KeyboardArrowDownOutlinedIcon}
+                  sx={{
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none !important",
+                    },
+                    "& .MuiSelect-select": {
+                      color: "#2f80ed",
+                      fontWeight: "500",
+                    },
+                  }}
+                  // open={openSelect1}
+                  // onClose={handleCloseSelect1}
+                  // onOpen={handleOpenSelect1}
+                  defaultValue={14}
+                >
+                  <MenuItem className="" value={14}>
+                    Tất cả
+                  </MenuItem>
+                  <MenuItem value={15}>Khách hàng mới</MenuItem>
+                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
+          </div>
+          <div className="d-flex mt-3 mx-auto">
+            <div
+              className="d-flex ms-3"
+              style={{
+                height: "40px",
+                position: "relative",
+                cursor: "pointer",
+              }}
+            >
+              <div
+                // onClick={handleOpenSelect1}
+                className=""
+                style={{ marginTop: "8px" }}
+              >
+                <span
+                  className="ms-2 ps-1"
+                  style={{ fontSize: "15px", fontWeight: "450" }}
+                >
+                  Sắp Xếp:{""}
+                </span>
+              </div>
+              <FormControl
+                sx={{
+                  minWidth: 50,
+                }}
+                size="small"
+              >
+                <Select
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        borderRadius: "7px",
+                      },
+                    },
+                  }}
+                  IconComponent={KeyboardArrowDownOutlinedIcon}
+                  sx={{
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none !important",
+                    },
+                    "& .MuiSelect-select": {
+                      color: "#2f80ed",
+                      fontWeight: "500",
+                    },
+                  }}
+                  // open={openSelect1}
+                  // onClose={handleCloseSelect1}
+                  // onOpen={handleOpenSelect1}
+                  defaultValue={14}
+                >
+                  <MenuItem className="" value={14}>
+                    Tất cả
+                  </MenuItem>
+                  <MenuItem value={15}>Khách hàng mới</MenuItem>
+                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
+            <div
+              className="d-flex ms-3"
+              style={{
+                height: "40px",
+                position: "relative",
+                cursor: "pointer",
+              }}
+            >
+              <div
+                // onClick={handleOpenSelect1}
+                className=""
+                style={{ marginTop: "8px" }}
+              >
+                <span
+                  className="ms-2 ps-1"
+                  style={{ fontSize: "15px", fontWeight: "450" }}
+                >
+                  Hiển Thị:{""}
+                </span>
+              </div>
+              <FormControl
+                sx={{
+                  minWidth: 50,
+                }}
+                size="small"
+              >
+                <Select
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        borderRadius: "7px",
+                      },
+                    },
+                  }}
+                  IconComponent={KeyboardArrowDownOutlinedIcon}
+                  sx={{
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none !important",
+                    },
+                    "& .MuiSelect-select": {
+                      color: "#2f80ed",
+                      fontWeight: "500",
+                    },
+                  }}
+                  // open={openSelect1}
+                  // onClose={handleCloseSelect1}
+                  // onOpen={handleOpenSelect1}
+                  defaultValue={14}
+                >
+                  <MenuItem className="" value={14}>
+                    Tất cả
+                  </MenuItem>
+                  <MenuItem value={15}>Khách hàng mới</MenuItem>
+                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
+          </div>
           <Card.Body>
             <OrderTable />
           </Card.Body>

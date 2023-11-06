@@ -21,12 +21,14 @@ import lombok.Setter;
 @Table(name = "imei")
 public class Imei extends PrimaryEntity implements IsIdentified {
 
-    private String soImei;
+  private String soImei;
 
-    private Integer trangThai;
+  private Integer trangThai;
 
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_chi_tiet_san_pham")
-    private SanPhamChiTiet sanPhamChiTiet;
+  private String barcode;
+
+  @JsonIgnore
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_chi_tiet_san_pham")
+  private SanPhamChiTiet sanPhamChiTiet;
 }

@@ -16,7 +16,6 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -64,5 +63,9 @@ public class SanPhamChiTiet extends PrimaryEntity implements Serializable {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_image")
   private Image image;
+
+//  @JsonIgnore
+//  @OneToMany(mappedBy = "idSanPham")
+//  private Set<KhuyenMaiChiTiet> promotions = new HashSet<>();
 
 }
