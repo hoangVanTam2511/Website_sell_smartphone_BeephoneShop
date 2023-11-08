@@ -147,7 +147,9 @@ const ManagementTheNhos = () => {
       width: "15%",
       key: "dungLuongToiDa",
       render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>{record.dungLuongToiDa}</span>
+        <span style={{ fontWeight: "400" }}>
+          {record.dungLuongToiDa + " GB"}
+        </span>
       ),
     },
 
@@ -278,7 +280,7 @@ const ManagementTheNhos = () => {
           <div className="mx-auto">
             <Pagination
               color="primary" /* page={parseInt(currentPage)} key={refreshPage} count={totalPages} */
-            // onChange={handlePageChange}
+              // onChange={handlePageChange}
             />
           </div>
           <div className="mt-4"></div>

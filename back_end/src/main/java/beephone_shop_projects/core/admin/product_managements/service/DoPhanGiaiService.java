@@ -6,7 +6,12 @@ import beephone_shop_projects.core.admin.product_managements.model.response.DoPh
 import beephone_shop_projects.entity.DoPhanGiaiManHinh;
 import org.springframework.data.domain.Page;
 
-public interface DoPhanGiaiService  extends GenericService<DoPhanGiaiResponse, DoPhanGiaiRequest, String> {
+public interface DoPhanGiaiService extends GenericService<DoPhanGiaiResponse, DoPhanGiaiRequest, String> {
+
     Page<DoPhanGiaiManHinh> findAllDọPhanGiai(Integer pageNo);
+
     DoPhanGiaiManHinh add(DoPhanGiaiRequest doPhanGiaiRequest);
+
+
+
 }

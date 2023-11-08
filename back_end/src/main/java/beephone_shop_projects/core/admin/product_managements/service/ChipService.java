@@ -9,4 +9,9 @@ import org.springframework.data.domain.Page;
 public interface ChipService extends GenericService<ChipResponse, ChipRequest, String> {
 
     Page<Chip> findAllChip();
+
+    Chip updateChip(ChipRequest chipRequest, String id) throws Exception;
+
+    Chip doiTrangThai(String id) throws Exception;
+
 }

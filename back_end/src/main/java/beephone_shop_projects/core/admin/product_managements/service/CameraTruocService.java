@@ -9,4 +9,9 @@ import org.springframework.data.domain.Page;
 public interface CameraTruocService extends GenericService<CameraTruocResponse, CameraTruocRequest, String> {
 
     Page<CameraTruoc> findAllCameraTruoc();
+
+    CameraTruoc updateCameraTruoc(CameraTruocRequest cameraTruocRequest, String id) throws Exception;
+
+    CameraTruoc doiTrangThai(String id) throws Exception;
+
 }

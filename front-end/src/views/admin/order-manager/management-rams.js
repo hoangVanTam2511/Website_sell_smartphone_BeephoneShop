@@ -120,7 +120,7 @@ const ManagementRams = () => {
       width: "15%",
       dataIndex: "kichThuoc",
       render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>{record.dungLuong + "GB"}</span>
+        <span style={{ fontWeight: "400" }}>{record.dungLuong + " GB"}</span>
       ),
     },
     {
@@ -250,14 +250,19 @@ const ManagementRams = () => {
           <div className="mx-auto">
             <Pagination
               color="primary" /* page={parseInt(currentPage)} key={refreshPage} count={totalPages} */
-            // onChange={handlePageChange}
+              // onChange={handlePageChange}
             />
           </div>
           <div className="mt-4"></div>
         </Card>
       </div>
       {isLoading && <LoadingIndicator />}
-      <CreateRam open={open} close={handleClose} getAll={loadDataRam} rams={listRam} />
+      <CreateRam
+        open={open}
+        close={handleClose}
+        getAll={loadDataRam}
+        rams={listRam}
+      />
     </>
   );
 };

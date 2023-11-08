@@ -62,7 +62,7 @@ const CreateCameraSau = ({ open, close, getAll, cameraRear }) => {
   const [isLoading, setIsLoading] = React.useState(false);
   const [cameraType, setCameraType] = React.useState("");
   const [doPhanGiai, setDoPhanGiai] = React.useState("");
-  const [status, setStatus] = React.useState("");
+  const [status, setStatus] = React.useState(StatusCommonProductsNumber.ACTIVE);
   const { handleOpenAlertVariant } = useCustomSnackbar();
 
   const handleChangeStatus = (event) => {
@@ -98,7 +98,7 @@ const CreateCameraSau = ({ open, close, getAll, cameraRear }) => {
   };
 
   const handleReset = (event) => {
-    setStatus("");
+    setStatus(StatusCommonProductsNumber.ACTIVE);
     setDoPhanGiai("");
     setCameraType("");
   };
@@ -126,7 +126,10 @@ const CreateCameraSau = ({ open, close, getAll, cameraRear }) => {
           <div className="mt-4" style={{ width: "700px", height: "auto" }}>
             <div className="container" style={{}}>
               <div className="text-center" style={{}}>
-                <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>
+                <span
+                  className=""
+                  style={{ fontWeight: "550", fontSize: "29px" }}
+                >
                   THÊM CAMERA SAU
                 </span>
               </div>
@@ -165,7 +168,9 @@ const CreateCameraSau = ({ open, close, getAll, cameraRear }) => {
 
                 <div className="mt-3" style={{}}>
                   <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">Tính Năng</InputLabel>
+                    <InputLabel id="demo-simple-select-label">
+                      Tính Năng
+                    </InputLabel>
                     <Select
                       className="custom"
                       labelId="demo-simple-select-label"
@@ -186,7 +191,9 @@ const CreateCameraSau = ({ open, close, getAll, cameraRear }) => {
                       <MenuItem value={TypeCameraNumber.TELEPHOTO_CAMERA}>
                         Telephoto Camera
                       </MenuItem>
-                      <MenuItem value={TypeCameraNumber.PERISCOPE_TELEPHOTO_CAMERA}>
+                      <MenuItem
+                        value={TypeCameraNumber.PERISCOPE_TELEPHOTO_CAMERA}
+                      >
                         Periscope Telephoto Camera
                       </MenuItem>
                       <MenuItem value={TypeCameraNumber.MARCO_CAMERA}>
@@ -199,7 +206,7 @@ const CreateCameraSau = ({ open, close, getAll, cameraRear }) => {
                   </FormControl>
                 </div>
 
-                <div className="mt-3" style={{}}>
+                <div className="mt-3">
                   <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">
                       Trạng Thái
@@ -210,6 +217,7 @@ const CreateCameraSau = ({ open, close, getAll, cameraRear }) => {
                       id="demo-simple-select"
                       value={status}
                       label="Trạng Thái"
+                      defaultValue={StatusCommonProductsNumber.ACTIVE}
                       onChange={handleChangeStatus}
                     >
                       <MenuItem value={StatusCommonProductsNumber.ACTIVE}>

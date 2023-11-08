@@ -128,7 +128,7 @@ const ManagementCongSacs = () => {
       align: "center",
       dataIndex: "status",
       render: (type) =>
-        type == StatusCommonProducts.ACTIVE ? (
+        type === StatusCommonProducts.ACTIVE ? (
           <div
             className="rounded-pill mx-auto badge-success"
             style={{
@@ -141,7 +141,7 @@ const ManagementCongSacs = () => {
               Hoạt động
             </span>
           </div>
-        ) : type == StatusCommonProducts.IN_ACTIVE ? (
+        ) : type === StatusCommonProducts.IN_ACTIVE ? (
           <div
             className="rounded-pill badge-danger mx-auto"
             style={{ height: "35px", width: "140px", padding: "4px" }}
@@ -248,7 +248,7 @@ const ManagementCongSacs = () => {
           <div className="mx-auto">
             <Pagination
               color="primary" /* page={parseInt(currentPage)} key={refreshPage} count={totalPages} */
-            // onChange={handlePageChange}
+              // onChange={handlePageChange}
             />
           </div>
           <div className="mt-4"></div>

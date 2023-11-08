@@ -92,7 +92,7 @@ const ManagementColors = () => {
         setStatus(response.data.data.status);
         setColorName(response.data.data.tenMauSac);
       })
-      .catch((error) => { });
+      .catch((error) => {});
   };
 
   const handleClickOpen1 = (id) => {
@@ -130,14 +130,6 @@ const ManagementColors = () => {
       .catch((error) => {
         handleOpenAlertVariant(error.response.data.message, Notistack.ERROR);
       });
-  };
-
-  const handleOkConfirm = () => {
-    doiTrangThaiColor(idColor);
-  };
-  const handleCancelConfirm = () => {
-    console.log("Clicked cancel button");
-    setOpen(false);
   };
 
   const ColorTable = () => {
@@ -236,39 +228,33 @@ const ManagementColors = () => {
             </Tooltip>
 
             {/* Hàm đổi trạng thái */}
-            <Popconfirm
-              description="Bạn có chắc chắn muốn đổi trạng thái không?"
-              onConfirm={handleOkConfirm}
-              onCancel={handleCancelConfirm}
-              placement="topLeft"
+
+            <Tooltip
+              TransitionComponent={Zoom}
+              title={
+                record.status === StatusCommonProducts.ACTIVE
+                  ? "Ngừng kích hoạt"
+                  : record.status === StatusCommonProducts.IN_ACTIVE
+                  ? "Kích hoạt"
+                  : ""
+              }
             >
-              <Tooltip
-                TransitionComponent={Zoom}
-                title={
-                  record.status === StatusCommonProducts.ACTIVE
-                    ? "Ngừng kích hoạt"
-                    : record.status === StatusCommonProducts.IN_ACTIVE
-                      ? "Kích hoạt"
-                      : ""
-                }
+              <IconButton
+                className="ms-2"
+                style={{ marginTop: "6px" }}
+                onClick={() => doiTrangThaiColor(record.id)}
               >
-                <IconButton
-                  className="ms-2"
-                  style={{ marginTop: "6px" }}
-                  onClick={() => setIdColor(record.id)}
-                >
-                  <AssignmentOutlinedIcon
-                    color={
-                      record.status === StatusCommonProducts.IN_ACTIVE
-                        ? "error"
-                        : record.status === StatusCommonProducts.ACTIVE
-                          ? "success"
-                          : "disabled"
-                    }
-                  />
-                </IconButton>
-              </Tooltip>
-            </Popconfirm>
+                <AssignmentOutlinedIcon
+                  color={
+                    record.status === StatusCommonProducts.IN_ACTIVE
+                      ? "error"
+                      : record.status === StatusCommonProducts.ACTIVE
+                      ? "success"
+                      : "disabled"
+                  }
+                />
+              </IconButton>
+            </Tooltip>
           </div>
         </div>
       ),
@@ -303,12 +289,13 @@ const ManagementColors = () => {
 
   const updateColor = () => {
     let obj = {
+      id: idColor,
       ma: colorCode,
       tenMauSac: colorName,
       status: status,
     };
     axios
-      .put(`http://localhost:8080/api/colors/${idColor}`, obj)
+      .put(`http://localhost:8080/api/colors`, obj)
       .then((response) => {
         getListColor();
         handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
@@ -406,7 +393,7 @@ const ManagementColors = () => {
           <div className="mx-auto">
             <Pagination
               color="primary" /* page={parseInt(currentPage)} key={refreshPage} count={totalPages} */
-            // onChange={handlePageChange}
+              // onChange={handlePageChange}
             />
           </div>
           <div className="mt-4"></div>

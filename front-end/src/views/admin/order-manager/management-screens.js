@@ -117,7 +117,7 @@ const ManagementScreens = () => {
       render: (text, record) => (
         <span style={{ fontWeight: "400" }}>
           {record.doPhanGiaiManHinh.chieuDai} x{" "}
-          {record.doPhanGiaiManHinh.chieuRong}
+          {record.doPhanGiaiManHinh.chieuRong + " Pixels"}
         </span>
       ),
     },
@@ -126,7 +126,7 @@ const ManagementScreens = () => {
       align: "center",
       width: "15%",
       render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>{record.tanSoQuet + " hz"}</span>
+        <span style={{ fontWeight: "400" }}>{record.tanSoQuet + " HZ"}</span>
       ),
     },
     {
@@ -266,7 +266,7 @@ const ManagementScreens = () => {
           <div className="mx-auto">
             <Pagination
               color="primary" /* page={parseInt(currentPage)} key={refreshPage} count={totalPages} */
-            // onChange={handlePageChange}
+              // onChange={handlePageChange}
             />
           </div>
           <div className="mt-4"></div>

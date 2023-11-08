@@ -117,7 +117,7 @@ const ManagementRearCameras = () => {
       align: "center",
       width: "15%",
       render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>{record.doPhanGiai}</span>
+        <span style={{ fontWeight: "400" }}>{record.doPhanGiai + " MP"}</span>
       ),
     },
 
@@ -258,7 +258,7 @@ const ManagementRearCameras = () => {
           <div className="mx-auto">
             <Pagination
               color="primary" /* page={parseInt(currentPage)} key={refreshPage} count={totalPages} */
-            // onChange={handlePageChange}
+              // onChange={handlePageChange}
             />
           </div>
           <div className="mt-4"></div>

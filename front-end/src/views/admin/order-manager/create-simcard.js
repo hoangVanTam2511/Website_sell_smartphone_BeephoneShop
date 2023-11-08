@@ -20,7 +20,7 @@ import {
 import axios from "axios";
 // import LoadingIndicator from "../../../utilities/loading";
 import { apiURLSimCard } from "../../../service/api";
-import { SimMultiple } from "./enum";
+import { SimMultiple, StatusCommonProductsNumber } from "./enum";
 
 import LoadingIndicator from "../../../utilities/loading";
 import generateRandomCode from "../../../utilities/genCode";
@@ -31,18 +31,17 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 const CreateSimCard = ({ open, close, getAll, sims }) => {
   // const navigate = useNavigate();
-
   const [loaiTheSim, setLoaiTheSim] = React.useState("");
-
   const [isLoading, setIsLoading] = React.useState(false);
+  const [checkedDualSim, setCheckedDualSim] = React.useState(false);
+  const [checkedSingleSim, setCheckedSingleSim] = React.useState(true);
+  const [status, setStatus] = React.useState(StatusCommonProductsNumber.ACTIVE);
+
   const uniqueLoaiTheSim = sims
     .map((option) => option.loaiTheSim)
     .filter((value, index, self) => {
       return self.indexOf(value) === index;
     });
-
-  const [checkedDualSim, setCheckedDualSim] = React.useState(false);
-  const [checkedSingleSim, setCheckedSingleSim] = React.useState(true);
 
   const handleChangeCheckedSingleSim = (event) => {
     setCheckedSingleSim(event.target.checked);
@@ -50,8 +49,6 @@ const CreateSimCard = ({ open, close, getAll, sims }) => {
   const handleChangeCheckedDualSim = (event) => {
     setCheckedDualSim(event.target.checked);
   };
-
-  const [status, setStatus] = React.useState("");
 
   const handleChangeStatus = (event) => {
     setStatus(event.target.value);
@@ -110,7 +107,7 @@ const CreateSimCard = ({ open, close, getAll, sims }) => {
       });
   };
   const handleReset = (event) => {
-    setStatus("");
+    setStatus(StatusCommonProductsNumber.ACTIVE);
     setLoaiTheSim("");
     setCheckedSingleSim(true);
     setCheckedDualSim(false);
@@ -132,7 +129,10 @@ const CreateSimCard = ({ open, close, getAll, sims }) => {
           <div className="mt-4" style={{ width: "700px" }}>
             <div className="container" style={{}}>
               <div className="text-center" style={{}}>
-                <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>
+                <span
+                  className=""
+                  style={{ fontWeight: "550", fontSize: "29px" }}
+                >
                   THÊM THẺ SIM
                 </span>
               </div>
@@ -162,10 +162,15 @@ const CreateSimCard = ({ open, close, getAll, sims }) => {
                       id="demo-simple-select"
                       value={status}
                       label="Trạng Thái"
+                      defaultValue={StatusCommonProductsNumber.ACTIVE}
                       onChange={handleChangeStatus}
                     >
-                      <MenuItem value={0}>Hoạt Động</MenuItem>
-                      <MenuItem value={1}>Ngừng Hoạt Động</MenuItem>
+                      <MenuItem value={StatusCommonProductsNumber.ACTIVE}>
+                        Hoạt Động
+                      </MenuItem>
+                      <MenuItem value={StatusCommonProductsNumber.IN_ACTIVE}>
+                        Ngừng Hoạt Động
+                      </MenuItem>
                     </Select>
                   </FormControl>
                 </div>

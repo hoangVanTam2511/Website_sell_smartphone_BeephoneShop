@@ -45,9 +45,9 @@ public class MauSacController {
     }
 
 
-    @PutMapping("/{id}")
-    public ResponseObject<MauSac> updateMauSac(@RequestBody MauSacRequest mauSacRequest, @PathVariable String id) throws Exception {
-        MauSac update = mauSacService.updateMauSac(mauSacRequest, id);
+    @PutMapping
+    public ResponseObject<MauSacResponse> updateMauSac(@RequestBody MauSacRequest mauSacRequest) throws Exception {
+        MauSacResponse update = mauSacService.update(mauSacRequest);
         return new ResponseObject<>(update);
     }
 

@@ -121,7 +121,7 @@ const ManagementRoms = () => {
       width: "15%",
       dataIndex: "kichThuoc",
       render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>{record.dungLuong + "GB"}</span>
+        <span style={{ fontWeight: "400" }}>{record.dungLuong + " GB"}</span>
       ),
     },
     {
@@ -251,14 +251,19 @@ const ManagementRoms = () => {
           <div className="mx-auto">
             <Pagination
               color="primary" /* page={parseInt(currentPage)} key={refreshPage} count={totalPages} */
-            // onChange={handlePageChange}
+              // onChange={handlePageChange}
             />
           </div>
           <div className="mt-4"></div>
         </Card>
       </div>
       {isLoading && <LoadingIndicator />}
-      <CreateRom open={open} close={handleClose} getAll={loadDataRoms} roms={listRom} />
+      <CreateRom
+        open={open}
+        close={handleClose}
+        getAll={loadDataRoms}
+        roms={listRom}
+      />
     </>
   );
 };

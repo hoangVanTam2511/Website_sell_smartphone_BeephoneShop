@@ -24,6 +24,7 @@ import Zoom from "@mui/material/Zoom";
 import LoadingIndicator from "../../../utilities/loading";
 import axios from "axios";
 import { apiURLDisplay, apiURLDoPhanGiai } from "../../../service/api";
+import { StatusCommonProductsNumber } from "./enum";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -34,7 +35,9 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
   const [loaiManHinh, setLoaiManHinh] = React.useState("");
   const [tanSoQuet, setTanSoQuet] = React.useState("");
   const [kichThuoc, setKichThuoc] = React.useState("");
-  const [trangThai, setTrangThai] = React.useState("");
+  const [trangThai, setTrangThai] = React.useState(
+    StatusCommonProductsNumber.ACTIVE
+  );
   const [openDoPhanGiai, setOpenDoPhanGiai] = React.useState(false);
   const [chieuDai, setChieuDai] = React.useState("");
   const [chieuRong, setChieuRong] = React.useState("");
@@ -183,7 +186,10 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
           <div className="mt-4" style={{ width: "700px" }}>
             <div className="container" style={{}}>
               <div className="text-center" style={{}}>
-                <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>
+                <span
+                  className=""
+                  style={{ fontWeight: "550", fontSize: "29px" }}
+                >
                   THÊM MÀN HÌNH
                 </span>
               </div>
@@ -317,10 +323,15 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
                       id="demo-simple-select"
                       value={trangThai}
                       label="Trạng Thái"
+                      defaultValue={StatusCommonProductsNumber.ACTIVE}
                       onChange={handleChangeStatus}
                     >
-                      <MenuItem value={0}>Hoạt Động</MenuItem>
-                      <MenuItem value={1}>Ngừng Hoạt Động</MenuItem>
+                      <MenuItem value={StatusCommonProductsNumber.ACTIVE}>
+                        Hoạt Động
+                      </MenuItem>
+                      <MenuItem value={StatusCommonProductsNumber.IN_ACTIVE}>
+                        Ngừng Hoạt Động
+                      </MenuItem>
                     </Select>
                   </FormControl>
                 </div>

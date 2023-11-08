@@ -9,4 +9,8 @@ import org.springframework.data.domain.Page;
 public interface CameraSauService extends GenericService<CameraSauResponse, CameraSauRequest, String> {
 
     Page<CameraSau> findAllCameraSau();
+
+    CameraSau updateCameraSau(CameraSauRequest mauSacRequest, String id) throws Exception;
+
+    CameraSau doiTrangThai(String id) throws Exception;
 }

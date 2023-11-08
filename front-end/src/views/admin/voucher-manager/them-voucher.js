@@ -172,11 +172,11 @@ const AddVoucher = () => {
     const msg = {};
 
     if (!ten.trim("")) {
-      msg.ten = "Tên không được trống !!!";
+      msg.ten = "Tên không được trống.";
     }
 
     if (soLuong == null || soLuong === "") {
-      msg.soLuong = "Số lượng không được trống !!!";
+      msg.soLuong = "Số lượng không được trống.";
     }
 
     if (soLuong <= 0 || soLuong > 10000) {
@@ -185,7 +185,7 @@ const AddVoucher = () => {
 
     const numericValue1 = parseFloat(value1?.replace(/[^0-9.-]+/g, ""));
     if (value1 == null || value1 === "") {
-      msg.value1 = "Điều kiện áp dụng không được trống !!!";
+      msg.value1 = "Điều kiện áp dụng không được trống.";
     }
 
     if (numericValue1 <= 0 || numericValue1 > 100000000) {
@@ -194,9 +194,9 @@ const AddVoucher = () => {
 
     const numericValue2 = parseFloat(value?.replace(/[^0-9.-]+/g, ""));
     if (value == null || value === "") {
-      msg.value = "Giá trị voucher không được trống !!!";
+      msg.value = "Giá trị voucher không được trống.";
     } else if (selectDiscount === TypeDiscountString.PERCENT && value <= 0) {
-      msg.value = "Giá trị voucher trong khoảng 1% - 100% !!!";
+      msg.value = "Giá trị voucher trong khoảng 1% - 100%.";
     }
 
     if (
@@ -211,7 +211,7 @@ const AddVoucher = () => {
       (selectDiscount === TypeDiscountString.PERCENT && valueToiDa === null) ||
       (selectDiscount === TypeDiscountString.PERCENT && valueToiDa === "")
     ) {
-      msg.valueToiDa = "Giá trị tối đa không được trống !!!";
+      msg.valueToiDa = "Giá trị tối đa không được trống.";
     }
 
     if (
@@ -223,23 +223,23 @@ const AddVoucher = () => {
     }
 
     if (ngayBatDau === ngayKetThuc) {
-      msg.ngayKetThuc = "Ngày kết thúc không được bằng ngày bắt đầu !!!";
+      msg.ngayKetThuc = "Ngày kết thúc không được bằng ngày bắt đầu.";
     }
 
     if (ngayKetThuc.isBefore(ngayBatDau)) {
-      msg.ngayKetThuc = "Ngày kết thúc phải lớn hơn ngày bắt đầu !!!";
+      msg.ngayKetThuc = "Ngày kết thúc phải lớn hơn ngày bắt đầu.";
     }
 
     if (ngayBatDau.isBefore(dayjs())) {
-      msg.ngayBatDau = "Ngày bắt đầu phải lớn hơn ngày hiện tại !!!";
+      msg.ngayBatDau = "Ngày bắt đầu phải lớn hơn ngày hiện tại.";
     }
 
     if (ngayBatDau.isAfter(ngayKetThuc)) {
-      msg.ngayBatDau = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc !!!";
+      msg.ngayBatDau = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc.";
     }
 
     if (ngayKetThuc.isBefore(dayjs())) {
-      msg.ngayKetThuc = "Ngày kết thúc phải lớn hơn ngày hiện tại !!!";
+      msg.ngayKetThuc = "Ngày kết thúc phải lớn hơn ngày hiện tại.";
     }
 
     setValidationMsg(msg);
@@ -276,46 +276,26 @@ const AddVoucher = () => {
   return (
     <>
       <div className="add-voucher-container mt-4">
-        <h4
-          style={{
-            marginBottom: "20px",
-            marginLeft: "40px",
-            marginTop: "15px",
-            display: "flex",
-            justifyContent: "flex-start",
-          }}
-        >
-          Thêm Voucher
-        </h4>
-
-        <div className="text-center">
+        <div className="mx-auto" style={{ maxWidth: "70%" }}>
+          <div className="text-center pt-3 mb-3" style={{}}>
+            <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>
+              THÊM VOUCHER
+            </span>
+          </div>
           <div
             className="d-flex"
-            style={{ marginLeft: "40px", marginBottom: "15px" }}
+            style={{ marginLeft: "7px", marginBottom: "15px" }}
           >
-            <div>
-              <TextField
-                label="Nhập mã hoặc mã tự động"
-                value={ma}
-                id="fullWidth"
-                onInput={handleInputCodeVoucher}
-                style={{ width: "330px" }}
-                inputProps={{
-                  maxLength: 10, // Giới hạn tối đa 10 ký tự
-                }}
-                error={validationMsg.ma !== undefined}
-                helperText={validationMsg.ma}
-              />
-            </div>
             <div className="ms-4">
               <TextField
+                className="custom"
                 label="Tên Voucher"
                 value={ten}
                 id="fullWidth"
                 onChange={(e) => {
                   setTen(e.target.value);
                 }}
-                style={{ width: "330px" }}
+                style={{ width: "780px" }}
                 inputProps={{
                   maxLength: 100,
                 }}
@@ -326,15 +306,36 @@ const AddVoucher = () => {
           </div>
           <div
             className="d-flex"
-            style={{ marginLeft: "40px", marginBottom: "15px" }}
+            style={{
+              marginLeft: "30px",
+              marginBottom: "15px",
+              marginTop: "15px",
+            }}
           >
             <div>
               <TextField
+                fullWidth
+                className="custom"
+                label="Nhập mã hoặc mã tự động"
+                value={ma}
+                id="fullWidth"
+                onInput={handleInputCodeVoucher}
+                style={{ width: "245px" }}
+                inputProps={{
+                  maxLength: 20, // Giới hạn tối đa 10 ký tự
+                }}
+                error={validationMsg.ma !== undefined}
+                helperText={validationMsg.ma}
+              />
+            </div>
+            <div className="ms-4">
+              <TextField
+                className="custom"
                 label="Số Lượng"
                 value={soLuong}
                 id="fullWidth"
                 onChange={handleInputNumberVoucher}
-                style={{ width: "330px" }}
+                style={{ width: "245px" }}
                 inputProps={{
                   maxLength: 10, // Giới hạn tối đa 10 ký tự
                 }}
@@ -345,7 +346,8 @@ const AddVoucher = () => {
             <div className="ms-4">
               {" "}
               <TextField
-                label="Điều kiện áp dụng khi đơn hàng đạt ?"
+                className="custom"
+                label="Điều kiện áp dụng"
                 value={value1}
                 onChange={handleChange1}
                 id="outlined-end-adornment"
@@ -355,7 +357,7 @@ const AddVoucher = () => {
                     <InputAdornment position="end">VND</InputAdornment>
                   ),
                 }}
-                style={{ width: "330px" }}
+                style={{ width: "245px" }}
                 inputProps={{
                   maxLength: 20,
                 }}
@@ -367,10 +369,15 @@ const AddVoucher = () => {
 
           <div
             className="d-flex"
-            style={{ marginLeft: "40px", marginBottom: "5px" }}
+            style={{
+              marginLeft: "30px",
+              marginBottom: "5px",
+              marginTop: "15px",
+            }}
           >
             <div>
               <RadioGroup
+                className="custom"
                 orientation="horizontal"
                 aria-label="Alignment"
                 name="alignment"
@@ -395,12 +402,12 @@ const AddVoucher = () => {
                           borderdivor: "divider",
                         },
                         [`&[data-first-child] .${radioClasses.action}`]: {
-                          borderTopLeftRadius: `calc(${theme.vars.radius.sm} + 5px)`,
-                          borderBottomLeftRadius: `calc(${theme.vars.radius.sm} + 5px)`,
+                          borderTopLeftRadius: `calc(${theme.vars.radius.sm} + 3px)`,
+                          borderBottomLeftRadius: `calc(${theme.vars.radius.sm} + 3px)`,
                         },
                         [`&[data-last-child] .${radioClasses.action}`]: {
-                          borderTopRightRadius: `calc(${theme.vars.radius.sm} + 5px)`,
-                          borderBottomRightRadius: `calc(${theme.vars.radius.sm} + 5px)`,
+                          borderTopRightRadius: `calc(${theme.vars.radius.sm} + 3px)`,
+                          borderBottomRightRadius: `calc(${theme.vars.radius.sm} + 3px)`,
                         },
                       })}
                     >
@@ -431,6 +438,7 @@ const AddVoucher = () => {
             </div>
             <div className="ms-4">
               <TextField
+                className="custom"
                 label="Giá Trị Voucher"
                 value={value}
                 onChange={handleChange}
@@ -448,7 +456,7 @@ const AddVoucher = () => {
                   ),
                 }}
                 style={{
-                  width: "267px",
+                  width: "317px",
                 }}
                 inputProps={{
                   maxLength: 20,
@@ -459,6 +467,7 @@ const AddVoucher = () => {
             </div>
             <div className="ms-4">
               <TextField
+                className="custom"
                 label="Giá Trị Tối Đa"
                 value={valueToiDa}
                 id="outlined-end-adornment"
@@ -473,7 +482,7 @@ const AddVoucher = () => {
                   selectDiscount === TypeDiscountString.VND ? true : false
                 }
                 style={{
-                  width: "267px",
+                  width: "317px",
                 }}
                 inputProps={{
                   maxLength: 20,
@@ -485,12 +494,17 @@ const AddVoucher = () => {
           </div>
           <div
             className="d-flex"
-            style={{ marginLeft: "40px", marginBottom: "10px" }}
+            style={{
+              marginLeft: "30px",
+              marginBottom: "10px",
+              marginTop: "15px",
+            }}
           >
             <div>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DemoContainer components={["DateTimePicker"]}>
                   <DateTimePicker
+                    className="custom"
                     ampm={true}
                     disablePast={true}
                     label="Ngày Bắt Đầu"
@@ -500,7 +514,7 @@ const AddVoucher = () => {
                       setNgayBatDau(e);
                       setNgayKetThuc(e);
                     }}
-                    sx={{ width: "330px" }}
+                    sx={{ width: "380px" }}
                     slotProps={{
                       textField: {
                         error: validationMsg.ngayBatDau !== undefined,
@@ -518,6 +532,7 @@ const AddVoucher = () => {
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DemoContainer components={["DateTimePicker"]}>
                   <DateTimePicker
+                    className="custom"
                     ampm={true}
                     label="Ngày Kết Thúc"
                     value={ngayKetThuc}
@@ -527,10 +542,7 @@ const AddVoucher = () => {
                       setNgayKetThuc(e);
                     }}
                     sx={{
-                      width: "330px",
-                      "& .MuiInputAdornedEnd-root .Mui-disabled": {
-                        backgroundColor: "red", // Thay đổi màu nền của input khi disabled
-                      },
+                      width: "380px",
                     }}
                     slotProps={{
                       textField: {
@@ -549,23 +561,22 @@ const AddVoucher = () => {
         </div>
         <div className="btn-accept-voucher mt-3">
           <Button
+            onClick={() => handleSubmit()}
             className="rounded-2 button-mui"
             type="primary"
-            style={{ height: "35px", width: "120px", fontSize: "15px" }}
-            onClick={() => handleSubmit()}
+            style={{ height: "40px", width: "auto", fontSize: "15px" }}
           >
-            <FontAwesomeIcon icon={faCheck} />
             <span
-              className="ms-2 ps-1"
-              style={{ marginBottom: "3px", fontWeight: "500" }}
+              className=""
+              style={{ marginBottom: "2px", fontWeight: "500" }}
             >
-              Xác nhận
+              Xác Nhận
             </span>
           </Button>
           <Button
             className="rounded-2 button-mui ms-2"
             type="primary"
-            style={{ height: "35px", width: "120px", fontSize: "15px" }}
+            style={{ height: "40px", width: "auto", fontSize: "15px" }}
             onClick={() => {
               setTimeout(() => {
                 setIsLoading(false);
@@ -573,11 +584,7 @@ const AddVoucher = () => {
               }, 200);
             }}
           >
-            <FontAwesomeIcon icon={faArrowLeft} />
-            <span
-              className="ms-2 ps-1"
-              style={{ marginBottom: "3px", fontWeight: "500" }}
-            >
+            <span style={{ marginBottom: "2px", fontWeight: "500" }}>
               Quay về
             </span>
           </Button>
