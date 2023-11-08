@@ -525,7 +525,7 @@ const UpdateKH = () => {
               style={{
                 height: "100%", // Set Card height to 100% of its parent container
                 overflowY: "auto", // Add a vertical scrollbar when content overflows
-                maxHeight: "calc(120vh - 100px)",
+                maxHeight: "calc(102vh - 100px)",
               }}
             >
               <Button
@@ -572,10 +572,9 @@ const UpdateKH = () => {
                       size="large"
                       style={{
                         marginRight: "10px",
-
-                        borderRadius: 0,
                         backgroundColor: "#4b69ff",
                         color: "white",
+                        marginTop: "20px",
                       }}
                       bordered="false"
                     >
@@ -648,7 +647,7 @@ const UpdateKH = () => {
                       set={setHuy}
                     />
                   </div>
-                  <Checkbox
+                  {/* <Checkbox
                     size="large"
                     style={{
                       fontSize: "16px",
@@ -658,7 +657,7 @@ const UpdateKH = () => {
                     onChange={handleCheckboxChange}
                   >
                     Địa chỉ mặc định
-                  </Checkbox>{" "}
+                  </Checkbox>{" "} */}
                 </div>
               </Modal>
               <div style={{ clear: "both" }}>

@@ -32,7 +32,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 const CreateScreen = ({ close, getAll, screens }) => {
   // const navigate = useNavigate();
-  let [doPhanGiai, setDoPhanGiai] = useState("");
+  const [doPhanGiai, setDoPhanGiai] = React.useState("");
   const [loaiManHinh, setLoaiManHinh] = React.useState("");
   const [tanSoQuet, setTanSoQuet] = React.useState("");
   const [kichThuoc, setKichThuoc] = React.useState("");
@@ -44,6 +44,7 @@ const CreateScreen = ({ close, getAll, screens }) => {
   const handleChangeDoPhanGiai = (event) => {
     const selectedValue = event.target.value;
     setDoPhanGiai(selectedValue);
+    console.log(selectedValue);
   };
   useEffect(() => {
     // Load data when the component mounts
@@ -51,7 +52,6 @@ const CreateScreen = ({ close, getAll, screens }) => {
       .get(apiURLDoPhanGiai)
       .then((response) => {
         setListPhanGiai(response.data.data);
-        console.log(response.data.data);
       })
       .catch((error) => {
         console.error("Error loading data:", error);
@@ -112,6 +112,14 @@ const CreateScreen = ({ close, getAll, screens }) => {
         };
         setListPhanGiai([newDoPhanGiai, ...listPhanGiai]);
         message.success("Thêm thành công");
+        axios
+          .get(apiURLDoPhanGiai, newDoPhanGiai)
+          .then((response) => {
+            setListPhanGiai(response.data.data);
+          })
+          .catch((error) => {
+            console.error("Error adding new resolution:", error);
+          });
         handleReset();
         setOpen(false);
         // redirectToHienThiKH(generatedMaKhachHang);
@@ -203,7 +211,7 @@ const CreateScreen = ({ close, getAll, screens }) => {
                   id="demo-simple-select"
                   value={doPhanGiai}
                   label="Độ Phân Giải"
-                  onInputChange={handleChangeDoPhanGiai}
+                  onChange={handleChangeDoPhanGiai}
                   endAdornment={
                     <>
                       <InputAdornment
