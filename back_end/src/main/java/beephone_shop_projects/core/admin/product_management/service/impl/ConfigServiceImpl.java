@@ -39,8 +39,8 @@ public class ConfigServiceImpl {
     private CauHinhRepository cauHinhRepository;
 
     public void addCauHinh(CreateCauHinhRequest createCauHinhRequest){
-        Ram ram = ramRepository.findByKichThuoc(createCauHinhRequest.getRam());
-        Rom rom = romRepository.findByKichThuoc(createCauHinhRequest.getRom());
+        Ram ram = ramRepository.findByDungLuong(createCauHinhRequest.getRam());
+        Rom rom = romRepository.findByDungLuong(createCauHinhRequest.getRom());
         MauSac mauSac = colorRepository.findByTenMauSac(createCauHinhRequest.getMauSac());
 
         CauHinh cauHinh = new CauHinh();

@@ -125,11 +125,6 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
     @Override
     public KhuyenMai updateKhuyenMai(@Valid UpdateKhuyenMaiRequest request, String ma) {
         KhuyenMai khuyenMai = khuyenMaiRepository.findById(ma).get();
-        List<KhuyenMai> khuyenMaiList = khuyenMaiRepository.findNamePromotion(request.getTenKhuyenMai());
-
-        if(!khuyenMaiList.isEmpty()){
-            throw new RestApiException("Tên giảm giá đã tồn tại!");
-        }
         StatusDiscount status = StatusDiscount.CHUA_DIEN_RA;
         Date dateTime = new Date();
         if (request.getNgayBatDau().after(dateTime) && request.getNgayKetThuc().before(dateTime)) {

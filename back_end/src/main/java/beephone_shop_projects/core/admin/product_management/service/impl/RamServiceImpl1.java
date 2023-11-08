@@ -3,7 +3,6 @@ package beephone_shop_projects.core.admin.product_management.service.impl;
 import beephone_shop_projects.core.admin.product_management.model.request.CreateRam;
 import beephone_shop_projects.core.admin.product_management.model.responce.RamResponce;
 import beephone_shop_projects.core.admin.product_management.repository.RamRepository;
-import beephone_shop_projects.core.admin.product_management.service.IService;
 import beephone_shop_projects.entity.Ram;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,7 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class RamServiceImpl1 {
@@ -39,7 +37,7 @@ public class RamServiceImpl1 {
 
     public void update(CreateRam req) {
         Ram ram = this.ramRepository.findById(req.getIdRam()).get();
-        ram.setKichThuoc(req.getCapacityRam());
+        ram.setDungLuong(req.getCapacityRam());
         ramRepository.save(ram);
     }
 

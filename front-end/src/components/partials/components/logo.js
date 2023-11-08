@@ -6,7 +6,7 @@ const Logo = (props) => {
     <img
       src={logo}
       alt="Logo"
-      style={{ width: 150, transform: `translateX(${20}px)`, height: "35px" }}
+      style={{ width: "150px", transform: `translateX(${20}px)`, height: "35px" }}
     />
   );
 };

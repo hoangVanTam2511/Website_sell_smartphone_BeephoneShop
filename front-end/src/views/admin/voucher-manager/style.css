@@ -124,3 +124,7 @@ tr:hover {
   color: red;
   display: block;
 }
+.table-container .ant-table-thead .ant-table-cell {
+  background-color: #2e80ed;
+  color: white;
+}

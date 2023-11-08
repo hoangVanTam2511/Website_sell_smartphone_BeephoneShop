@@ -41,7 +41,7 @@ public class SanPham extends PrimaryEntity implements IsIdentified {
   private OperatingType operatingType;
 
   @OneToMany(mappedBy = "sanPham")
-  private Set<TheSim> theSims;
+  private Set<TheSimDienThoai> theSims;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_sac")
@@ -70,17 +70,23 @@ public class SanPham extends PrimaryEntity implements IsIdentified {
   private ManHinh manHinh;
 
   @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_the_nho")
+  private TheNho theNho;
+
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_pin")
   private Pin pin;
 
-  @OneToMany(mappedBy = "sanPham")
-  private List<CameraTruoc> cameraTruocs;
-
-  @OneToMany(mappedBy = "sanPham")
-  private List<CameraSau> cameraSaus;
+//  @OneToMany(mappedBy = "sanPham")
+//  private List<CameraTruoc> cameraTruocs;
+//
+//  @OneToMany(mappedBy = "sanPham")
+//  private List<CameraSau> cameraSaus;
 
   @JsonIgnore
   @OneToMany(mappedBy = "sanPham")
   private List<SanPhamChiTiet> productItems = new ArrayList<>();
+
+  private Integer trangThai;
 
 }

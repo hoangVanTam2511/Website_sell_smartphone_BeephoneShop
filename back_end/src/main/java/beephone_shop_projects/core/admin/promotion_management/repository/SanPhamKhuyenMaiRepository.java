@@ -14,8 +14,8 @@ import java.util.List;
 public interface SanPhamKhuyenMaiRepository extends ISanPhamRepository {
 
     @Query(value = """
-            SELECT a.id, a.ma, a.ten_san_pham, a.delected, a.id_dong_san_pham, d.ten_dong_san_pham
-            FROM san_pham a JOIN dong_san_pham d ON a.id_dong_san_pham = d.id
+            SELECT a.id, a.ma, a.ten_san_pham, a.delected, a.id_hang, h.ten_hang
+            FROM san_pham a LEFT JOIN hang h ON a.id_hang = h.id
             ORDER BY a.created_at DESC 
             """, nativeQuery = true)
     List<SanPhamKhuyenMaiResponse> findSanPhamKhuyenMai();

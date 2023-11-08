@@ -21,10 +21,6 @@ import CreateSimCard from "./create-simcard";
 import { apiURLSimCard } from "../../../service/api";
 import "./style.css";
 
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
-
 const ManagementSims = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -107,14 +103,14 @@ const ManagementSims = () => {
       width: "15%",
       render: (text, record) => (
         <span style={{ fontWeight: "400" }}>
-          {record.loaiTheSim} -
           {record.simMultiple === SimMultiple.SINGLE_SIM
             ? " 1 Sim"
             : record.simMultiple === SimMultiple.DUAL_SIM
-            ? " 2 Sim"
-            : record.simMultiple === SimMultiple.TRIPLE_SIM
-            ? " 3 Sim"
-            : " 4 Sim"}{" "}
+              ? " 2 Sim"
+              : record.simMultiple === SimMultiple.TRIPLE_SIM
+                ? " 3 Sim"
+                : " 4 Sim"}{" "}
+          {record.loaiTheSim}
         </span>
       ),
     },
@@ -263,33 +259,19 @@ const ManagementSims = () => {
           <div className="mx-auto">
             <Pagination
               color="primary" /* page={parseInt(currentPage)} key={refreshPage} count={totalPages} */
-              // onChange={handlePageChange}
+            // onChange={handlePageChange}
             />
           </div>
           <div className="mt-4"></div>
         </Card>
       </div>
       {isLoading && <LoadingIndicator />}
-      <Dialog
+      <CreateSimCard
         open={open}
-        TransitionComponent={Transition}
-        keepMounted
-        onClose={handleClose}
-        maxWidth="md"
-        maxHeight="md"
-        sx={{
-          marginBottom: "170px",
-        }}
-      >
-        <DialogContent className="">
-          <CreateSimCard
-            close={handleClose}
-            getAll={loadDataList}
-            sims={sims}
-          />
-        </DialogContent>
-        <div className="mt-3"></div>
-      </Dialog>
+        close={handleClose}
+        getAll={loadDataList}
+        sims={sims}
+      />
     </>
   );
 };

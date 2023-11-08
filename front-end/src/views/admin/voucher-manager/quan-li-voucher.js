@@ -311,28 +311,27 @@ const HienThiVoucher = () => {
       render: (text, record) => (
         <>
           <div
-            className={`rounded-pill mx-auto ${
-              record.trangThai === StatusDiscount.HOAT_DONG &&
+            className={`rounded-pill mx-auto ${record.trangThai === StatusDiscount.HOAT_DONG &&
               isDatePast(record.ngayBatDau) === true
-                ? "badge-light"
-                : record.trangThai === StatusDiscount.HOAT_DONG &&
-                  isDateFuture(record.ngayKetThuc) === false
+              ? "badge-light"
+              : record.trangThai === StatusDiscount.HOAT_DONG &&
+                isDateFuture(record.ngayKetThuc) === false
                 ? "badge-primary"
                 : record.trangThai === StatusDiscount.NGUNG_HOAT_DONG
-                ? "badge-danger"
-                : record.trangThai === StatusDiscount.CHUA_DIEN_RA
-                ? "badge-light"
-                : record.trangThai === StatusDiscount.DA_HUY &&
-                  isDateFuture(record.ngayKetThuc) === true
-                ? "badge-danger"
-                : record.trangThai === StatusDiscount.DA_HUY &&
-                  isDatePast(record.ngayBatDau) === true
-                ? "badge-light"
-                : record.trangThai === StatusDiscount.DA_HUY &&
-                  isRangeDate(record.ngayBatDau, record.ngayKetThuc) === true
-                ? "badge-primary"
-                : ""
-            }`}
+                  ? "badge-danger"
+                  : record.trangThai === StatusDiscount.CHUA_DIEN_RA
+                    ? "badge-light"
+                    : record.trangThai === StatusDiscount.DA_HUY &&
+                      isDateFuture(record.ngayKetThuc) === true
+                      ? "badge-danger"
+                      : record.trangThai === StatusDiscount.DA_HUY &&
+                        isDatePast(record.ngayBatDau) === true
+                        ? "badge-light"
+                        : record.trangThai === StatusDiscount.DA_HUY &&
+                          isRangeDate(record.ngayBatDau, record.ngayKetThuc) === true
+                          ? "badge-primary"
+                          : ""
+              }`}
             style={{
               height: "35px",
               width: "auto",
@@ -340,17 +339,16 @@ const HienThiVoucher = () => {
             }}
           >
             <span
-              className={`p-2 ${
-                record.trangThai === StatusDiscount.CHUA_DIEN_RA
-                  ? "text-dark"
-                  : record.trangThai === StatusDiscount.DA_HUY &&
-                    isDatePast(record.ngayBatDau) === true
+              className={`p-2 ${record.trangThai === StatusDiscount.CHUA_DIEN_RA
+                ? "text-dark"
+                : record.trangThai === StatusDiscount.DA_HUY &&
+                  isDatePast(record.ngayBatDau) === true
                   ? "text-dark"
                   : record.trangThai === StatusDiscount.HOAT_DONG &&
                     isDatePast(record.ngayBatDau) === true
-                  ? "text-dark"
-                  : "text-white"
-              }`}
+                    ? "text-dark"
+                    : "text-white"
+                }`}
               style={{ fontSize: "14px" }}
             >
               {dayjs(record.ngayBatDau).format("DD/MM/YYYY")} -{" "}
@@ -454,25 +452,25 @@ const HienThiVoucher = () => {
                 TransitionComponent={Zoom}
                 title={
                   record.trangThai === StatusDiscount.HOAT_DONG ||
-                  record.trangThai === StatusDiscount.CHUA_DIEN_RA
+                    record.trangThai === StatusDiscount.CHUA_DIEN_RA
                     ? "Ngừng kích hoạt"
                     : record.trangThai === StatusDiscount.DA_HUY &&
                       isDatePast(record.ngayBatDau) === true
-                    ? "Kích hoạt"
-                    : record.trangThai === StatusDiscount.DA_HUY &&
-                      isRangeDate(record.ngayBatDau, record.ngayKetThuc) ===
+                      ? "Kích hoạt"
+                      : record.trangThai === StatusDiscount.DA_HUY &&
+                        isRangeDate(record.ngayBatDau, record.ngayKetThuc) ===
                         true
-                    ? "Kích hoạt"
-                    : record.trangThai === StatusDiscount.NGUNG_HOAT_DONG
-                    ? "Không thể đổi"
-                    : ""
+                        ? "Kích hoạt"
+                        : record.trangThai === StatusDiscount.NGUNG_HOAT_DONG
+                          ? "Không thể đổi"
+                          : ""
                 }
               >
                 <IconButton
                   disabled={
                     record.trangThai === StatusDiscount.NGUNG_HOAT_DONG ||
-                    (record.trangThai === StatusDiscount.DA_HUY &&
-                      isDateFuture(record.ngayKetThuc) === true)
+                      (record.trangThai === StatusDiscount.DA_HUY &&
+                        isDateFuture(record.ngayKetThuc) === true)
                       ? true
                       : false
                   }
@@ -483,16 +481,16 @@ const HienThiVoucher = () => {
                   <AssignmentOutlinedIcon
                     color={
                       record.trangThai === StatusDiscount.HOAT_DONG ||
-                      record.trangThai === StatusDiscount.CHUA_DIEN_RA
+                        record.trangThai === StatusDiscount.CHUA_DIEN_RA
                         ? "error"
                         : record.trangThai === StatusDiscount.DA_HUY &&
                           isDatePast(record.ngayBatDau) === true
-                        ? "success"
-                        : record.trangThai === StatusDiscount.DA_HUY &&
-                          isRangeDate(record.ngayBatDau, record.ngayKetThuc) ===
+                          ? "success"
+                          : record.trangThai === StatusDiscount.DA_HUY &&
+                            isRangeDate(record.ngayBatDau, record.ngayKetThuc) ===
                             true
-                        ? "success"
-                        : "disabled"
+                            ? "success"
+                            : "disabled"
                     }
                   />
                 </IconButton>
@@ -827,6 +825,7 @@ const HienThiVoucher = () => {
           </div>
           <Card.Body>
             <Table
+              className="table-container"
               dataSource={listVoucher}
               columns={columns}
               pagination={false}

@@ -56,10 +56,6 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
     setDeleteId(diaChiList.id);
     setShowDeleteModal(true);
   };
-  // const redirectToHienThiKH = () => {
-  //   // Thực hiện điều hướng tới trang "Hiển thị nhân viên"
-  //   window.location.href = "/update-khach-hang/" + account;
-  // };
   const [formSubmittedS, setFormSubmittedS] = useState(false);
   const [diaChiError, setDiaChiError] = useState("");
   const [sdtkhError, setSDTKHError] = useState("");
@@ -77,6 +73,8 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
       sethoTenKHError("Họ và tên không được chứa ký tự đặc biệt");
     } else if (value.length < 5) {
       sethoTenKHError("Họ và tên phải có ít nhất 5 ký tự");
+    } else if (/^\s+|\s+$/.test(value)) {
+      sethoTenKHError("Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi");
     } else {
       sethoTenKHError("");
     }
@@ -144,6 +142,15 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
     setShowEditModal(true);
     // redirectToHienThiKH();
   };
+  const handleCloseModal = () => {
+    setShowEditModal(false);
+    setFormSubmittedS(false);
+    setDiaChiError("");
+    sethoTenKHError("");
+    setSDTKHError("");
+    setTinhThanhPho("");
+    setXaPhuong("");
+  };
   const [showSetDefaultModal, setShowSetDefaultModal] = useState(false);
   const handleSaveChanges = async (id) => {
     // Gọi API để cập nhật thông tin địa chỉ
@@ -159,6 +166,11 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
       !tinhThanhPho
     ) {
       message.error("Vui lòng điền đủ thông tin");
+      setShowEditModal(true);
+      return;
+    }
+    if (hoTenkhError || sdtkhError || diaChiError) {
+      message.error("Vui lòng điền đúng thông tin trước khi lưu.");
       setShowEditModal(true);
       return;
     } else {
@@ -202,6 +214,7 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
     if (isProcessing) {
       return;
     }
+    setOpenPanelKey(id);
     isProcessing = true;
     fetch(apiURLKH + `/dia-chi/thiet-lap-md/${id}?account=${account}`, {
       method: "PUT",
@@ -228,10 +241,6 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
       });
   };
 
-  // const handleHoTenKHChange = (e) => {
-  //   setHoTenKH(e.target.value);
-  // };
-
   const handleProvinceChange = (value) => {
     setTinhThanhPho(value);
   };
@@ -243,13 +252,16 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
   const handleWardChange = (value) => {
     setXaPhuong(value);
   };
-  // let [
-  //   editing,
-  //   // setEditing
-  // ] = useState(false);
+  const [openPanelKey, setOpenPanelKey] = useState(null);
   return (
     <div className="address-container">
-      <Collapse accordion bordered={false}>
+      <Collapse
+        accordion
+        bordered={false}
+        activeKey={openPanelKey}
+        defaultActiveKey={[openPanelKey]}
+        onChange={(key) => setOpenPanelKey(key)}
+      >
         {sortedDiaChiList.map((diaChiList, index) => (
           <Panel
             key={diaChiList.id}
@@ -301,7 +313,7 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
                       footer={[
                         <Button
                           key="cancel"
-                          onClick={() => setShowEditModal(false)}
+                          onClick={handleCloseModal}
                           size="large"
                           type="text"
                           style={{
@@ -443,7 +455,6 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
                   className="mac-dinh-button"
                   // eslint-disable-next-line eqeqeq
                   disabled={diaChiList.trangThai == 1}
-                  // onClick={() => handleDelete(index)}
                   type="primary"
                   style={{
                     backgroundColor:

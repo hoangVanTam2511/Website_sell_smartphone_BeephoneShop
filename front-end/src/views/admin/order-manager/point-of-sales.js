@@ -760,7 +760,6 @@ const PointOfSales = () => {
     setIsLoading(true);
     getAllOrdersPending();
     getAllCustomers();
-    // getAllProducts();
   }, []);
 
   const [openProducts, setOpenProducts] = useState(false);

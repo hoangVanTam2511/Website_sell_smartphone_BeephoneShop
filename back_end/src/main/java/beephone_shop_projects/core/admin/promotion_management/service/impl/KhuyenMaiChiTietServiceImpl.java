@@ -5,10 +5,10 @@ import beephone_shop_projects.core.admin.promotion_management.repository.KhuyenM
 import beephone_shop_projects.core.admin.promotion_management.repository.KhuyenMaiRepository;
 import beephone_shop_projects.core.admin.promotion_management.repository.SanPhamChiTietKhuyenMaiRepository;
 import beephone_shop_projects.core.admin.promotion_management.service.KhuyenMaiChiTietService;
+import beephone_shop_projects.entity.KhuyenMai;
 import beephone_shop_projects.entity.KhuyenMaiChiTiet;
 import beephone_shop_projects.entity.KhuyenMaiChiTietId;
 import beephone_shop_projects.infrastructure.constant.TypeDiscount;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,13 +45,12 @@ public class KhuyenMaiChiTietServiceImpl implements KhuyenMaiChiTietService {
 
     @Override
     public KhuyenMaiChiTiet updateKhuyenMaiChiTiet(CreateKhuyenMaiChiTietRequest request, String ma) {
-
         return null;
     }
 
     @Override
-    public Boolean deleteKhuyenMaiChiTiet(String ma) {
-        return null;
+    public void updateDelected(String id) {
+        khuyenMaiChiTietRepository.updateDelected(id);
     }
 
     public BigDecimal donGiaSauKhuyenMai(CreateKhuyenMaiChiTietRequest request) {

@@ -31,11 +31,6 @@ public class TheNho extends PrimaryEntity implements IsIdentified {
 
   private Integer dungLuongToiDa;
 
-  @JsonIgnore
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "id_san_pham")
-  private SanPham sanPham;
-
   @Enumerated(EnumType.ORDINAL)
   private StatusCommon status;
 
