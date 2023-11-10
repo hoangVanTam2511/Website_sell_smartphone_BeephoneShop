@@ -173,39 +173,38 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
       message.error("Vui lòng điền đúng thông tin trước khi lưu.");
       setShowEditModal(true);
       return;
-    } else {
-      try {
-        let updatedItem = {
-          diaChi: diaChi,
-          xaPhuong: xaPhuong,
-          quanHuyen: quanHuyen,
-          tinhThanhPho: tinhThanhPho,
-          soDienThoaiKhachHang: soDienThoaiKhachHang,
-          hoTenKH: hoTenKH,
-          account: account,
-        };
-        axios
-          .put(
-            `${apiURLKH}/dia-chi/update/${id}`, // Extract id from updatedData
-            updatedItem
-          )
-          .then((response) => {
-            if (response.status === 200) {
-              message.success("Cập nhật địa chỉ thành công");
-              // Cập nhật thông tin trong danh sách diaChiList
-              const updatedDiaChiList = diaChiList.map((address) =>
-                address.id == id ? { ...address, ...updatedItem } : address
-              );
-              updateDiaChiList(updatedDiaChiList);
-              setShowEditModal(false);
-            } else {
-              message.error("Sửa thất bại");
-            }
-          }); // Đóng modal sau khi cập nhật thành công
-      } catch (error) {
-        // Xử lý lỗi
-        message.error("Cập nhật địa chỉ thất bại");
-      }
+    }
+    setShowEditModal(false);
+    try {
+      let updatedItem = {
+        diaChi: diaChi,
+        xaPhuong: xaPhuong,
+        quanHuyen: quanHuyen,
+        tinhThanhPho: tinhThanhPho,
+        soDienThoaiKhachHang: soDienThoaiKhachHang,
+        hoTenKH: hoTenKH,
+        account: account,
+      };
+      axios
+        .put(
+          `${apiURLKH}/dia-chi/update/${id}`, // Extract id from updatedData
+          updatedItem
+        )
+        .then((response) => {
+          if (response.status === 200) {
+            message.success("Cập nhật địa chỉ thành công");
+            // Cập nhật thông tin trong danh sách diaChiList
+            const updatedDiaChiList = diaChiList.map((address) =>
+              address.id == id ? { ...address, ...updatedItem } : address
+            );
+            updateDiaChiList(updatedDiaChiList);
+          } else {
+            message.error("Sửa thất bại");
+          }
+        }); // Đóng modal sau khi cập nhật thành công
+    } catch (error) {
+      // Xử lý lỗi
+      message.error("Cập nhật địa chỉ thất bại");
     }
   };
   let isProcessing = false;

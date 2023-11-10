@@ -5,7 +5,6 @@ import { MenuItem, Grid, TextField } from "@mui/material";
 const host = "https://online-gateway.ghn.vn/shiip/public-api/master-data/";
 
 const AddressFormUpdate = ({
-  submitted,
   onProvinceChange,
   onDistrictChange,
   onWardChange,
@@ -25,7 +24,6 @@ const AddressFormUpdate = ({
     fetchProvinces();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
   useEffect(() => {
     if (selectedTinhThanhPho && !editing) {
       const selectedProvinceCode = provinces.find(
@@ -119,7 +117,7 @@ const AddressFormUpdate = ({
   };
   const handleDistrictChange = (value) => {
     setSelectedDistrict(value.target.value);
-    setSelectedWard(""); // Đặt xã thành rỗng
+    setSelectedWard("");
     fetchWards(value.target.value);
     onDistrictChange(value.target.value);
     onWardChange("");
@@ -131,35 +129,6 @@ const AddressFormUpdate = ({
     onWardChange(value.target.value);
   };
 
-  // useEffect(() => {
-  //   if (selectedProvince && selectedDistrict && selectedWard) {
-  //     const selectedProvinceName = provinces.find(
-  //       (province) => province.ProvinceID === selectedProvince
-  //     )?.ProvinceName;
-
-  //     const selectedDistrictName = districts.find(
-  //       (district) => district.DistrictID === selectedDistrict
-  //     )?.DistrictName;
-
-  //     const selectedWardName = wards.find(
-  //       (ward) => ward.WardCode === selectedWard
-  //     )?.WardName;
-
-  //     onProvinceChange(selectedProvinceName);
-  //     onDistrictChange(selectedDistrictName);
-  //     onWardChange(selectedWardName);
-  //   }
-  // }, [
-  //   selectedProvince,
-  //   selectedDistrict,
-  //   selectedWard,
-  //   onProvinceChange,
-  //   onDistrictChange,
-  //   onWardChange,
-  //   provinces,
-  //   districts,
-  //   wards,
-  // ]);
   useEffect(() => {
     if (selectedProvince) {
       const selectedProvinceName = provinces.find(
