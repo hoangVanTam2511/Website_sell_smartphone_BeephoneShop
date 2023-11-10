@@ -175,7 +175,7 @@ const ModalUpdateCauHinh = ({ open, close, updateData, defaultRam, defaultRom, i
             <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
               <IconButton
                 onClick={() => {
-                  handleOpenModalUpdate();
+                  // handleOpenModalUpdate();
                   // setSelectedRam(record.ram);
                   // setDefaultRam(record.ram);
                   // setDefaultRom(record.rom);

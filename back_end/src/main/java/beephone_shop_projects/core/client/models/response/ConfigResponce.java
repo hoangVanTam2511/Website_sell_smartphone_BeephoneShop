@@ -1,19 +1,19 @@
 package beephone_shop_projects.core.client.models.response;
 
-import beephone_shop_projects.entity.*;
-import org.springframework.data.rest.core.config.Projection;
+import beephone_shop_projects.entity.MauSac;
+import beephone_shop_projects.entity.Ram;
+import beephone_shop_projects.entity.Rom;
+import beephone_shop_projects.entity.SanPhamChiTiet;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.rest.core.config.Projection;
 
 import java.math.BigDecimal;
 
-@Projection(types = {SanPhamChiTiet.class, SanPham.class, KhuyenMaiChiTiet.class})
-public interface ProductDetailResponse {
+@Projection(name = "config", types = {Ram.class, Rom.class, MauSac.class, SanPhamChiTiet.class})
+public interface ConfigResponce {
 
     @Value("#{target.id}")
     String getId();
-
-    @Value("#{target.ten_san_pham}")
-    String getTenSanPham();
 
     @Value("#{target.don_gia_sau_khuyen_mai}")
     BigDecimal getDonGiaSauKhuyenMai();
@@ -27,6 +27,10 @@ public interface ProductDetailResponse {
     @Value("#{target.dung_luong_rom}")
     Integer getDungLuongRom();
 
+    @Value("#{target.ten_mau_sac}")
+    String getTenMauSac();
+
     @Value("#{target.duong_dan}")
     String getDuongDan();
+
 }

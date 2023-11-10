@@ -1142,7 +1142,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay }) => {
                               setCauHinhs(newCauHinhs);
                               const newCauHinhsFinal = cauHinhsFinal.filter((cauHinh) => cauHinh.id !== item.id);
                               setCauHinhsFinal(newCauHinhsFinal);
-                              console.log(objectsTachRa);
+                              // console.log(objectsTachRa);
                               handleOpenAlertVariant("Xóa cấu hình thành công!", Notistack.SUCCESS)
                             }}
                             className="rounded-2"

@@ -52,6 +52,7 @@
     "nouislider-react": "^3.4.1",
     "numeral": "^2.0.6",
     "pagination": "^0.4.6",
+    "popper.js": "^1.16.1",
     "prismjs": "^1.24.1",
     "quagga": "^0.12.1",
     "quill": "^1.3.7",

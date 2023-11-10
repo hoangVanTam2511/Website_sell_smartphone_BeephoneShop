@@ -7,13 +7,11 @@ import beephone_shop_projects.entity.Account;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/client/account")
+@CrossOrigin(origins = "http://localhost:3001")
 public class AccountClientController {
 
     @Autowired
@@ -21,7 +19,11 @@ public class AccountClientController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AccountLoginRequest accountLoginRequest) {
-        return new ResponseEntity<>(accountClientService.checkEmailAndPass(accountLoginRequest), HttpStatus.OK);
+        try {
+            return new ResponseEntity<>(accountClientService.checkEmailAndPass(accountLoginRequest), HttpStatus.OK);
+        }catch (Exception ex){
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
 }
