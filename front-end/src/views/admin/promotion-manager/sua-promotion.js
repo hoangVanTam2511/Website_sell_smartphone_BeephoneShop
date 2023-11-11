@@ -392,7 +392,6 @@ const SuaKhuyenMai = () => {
 
   // Code check box
   const onSelectChange = (newSelectedRowKeys) => {
-    // const uniqueSelectedRowKeys = Array.from(new Set(newSelectedRowKeys));
     setSelectedRowKeys(newSelectedRowKeys);
     console.log("onSelectChange :" + newSelectedRowKeys);
     if (newSelectedRowKeys.length === 0) {
@@ -685,7 +684,7 @@ const SuaKhuyenMai = () => {
             </div>
 
             <div className="d-flex ms-3" style={{ marginBottom: "5px" }}>
-              <div>
+              {/* <div>
                 <RadioGroup
                   orientation="horizontal"
                   aria-label="Alignment"
@@ -748,7 +747,7 @@ const SuaKhuyenMai = () => {
                     )
                   )}
                 </RadioGroup>
-              </div>
+              </div> */}
               <div>
                 <TextField
                   label="Nhập Giá Trị Giảm Giá"
@@ -768,8 +767,7 @@ const SuaKhuyenMai = () => {
                     ),
                   }}
                   style={{
-                    marginLeft: "15px",
-                    width: "320px",
+                    width: "430px",
                   }}
                   inputProps={{
                     maxLength: 20, // Giới hạn tối đa 10 ký tự

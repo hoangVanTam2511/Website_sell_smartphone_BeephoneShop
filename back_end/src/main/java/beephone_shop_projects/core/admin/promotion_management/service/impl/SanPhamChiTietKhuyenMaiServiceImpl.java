@@ -28,7 +28,7 @@ public class SanPhamChiTietKhuyenMaiServiceImpl implements SanPhamChiTietKhuyenM
         List<SanPhamChiTietKhuyenMaiResponseCustom> listResult = new ArrayList<>();
         List<SanPhamChiTietKhuyenMaiResponse> listPhanTu = new ArrayList<>();
         List<SanPhamChiTietKhuyenMaiResponse> result = sanPhamChiTietKhuyenMaiRepository.findAllChiTietSanPham(id);
-        BigDecimal tong = BigDecimal.ZERO;
+
         if (check == true) {
             // Thêm tất cả phần tử từ result vào listAo
             listAo.addAll(result);
@@ -50,7 +50,9 @@ public class SanPhamChiTietKhuyenMaiServiceImpl implements SanPhamChiTietKhuyenM
                 List<KhuyenMaiChiTietResponse> kmct = sanPhamChiTietKhuyenMaiRepository.getListKhuyenMai(sp.getId());
                 responseCustom.setKhuyenMaiChiTietResponse(kmct);
                 responseCustom.setSize(kmct.size());
+                BigDecimal tong = BigDecimal.ZERO;
                 for (KhuyenMaiChiTietResponse km : kmct) {
+
                     String loaiKhuyenMai = km.getLoaiKhuyenMai();
                     BigDecimal giaTriKhuyenMai = km.getGiaTriKhuyenMai();
                     BigDecimal donGiaKhuyenMai = km.getDonGia();
