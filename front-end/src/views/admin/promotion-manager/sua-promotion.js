@@ -2,7 +2,12 @@ import { Button, Checkbox, Tooltip } from "antd";
 import React, { useEffect } from "react";
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faCheck, faEye } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowLeft,
+  faBookmark,
+  faCheck,
+  faEye,
+} from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { apiURLKhuyenMai } from "../../../service/api";
 import TextField from "@mui/material/TextField";
@@ -212,14 +217,13 @@ const SuaKhuyenMai = () => {
       .then((response) => {
         const data1 = response.data.data;
         const listIdSanPham = data1.map((item) => item.idSanPham);
+        const uniqueSelectedRowKeys = Array.from(new Set(listIdSanPham));
         const listIdSanPhamChiTiet = data1.map((item) => item.idSanPhamChiTiet);
-        // setSelectedProductDetails(listIdSanPhamChiTiet);
-        setIdSanPham(listIdSanPham);
-        listIdSanPham.forEach((idSanPham) => {
+        setIdSanPham(uniqueSelectedRowKeys);
+        uniqueSelectedRowKeys.forEach((idSanPham) => {
           loadDatalistSanPhamChiTiet(idSanPham, true);
         });
-        setIdSanPhamChiTiet(listIdSanPhamChiTiet);
-        setSelectedRowKeys(listIdSanPham);
+        setSelectedRowKeys(uniqueSelectedRowKeys);
         setSelectedRowKeys1(listIdSanPhamChiTiet);
       })
       .catch((error) => {
@@ -388,7 +392,9 @@ const SuaKhuyenMai = () => {
 
   // Code check box
   const onSelectChange = (newSelectedRowKeys) => {
+    // const uniqueSelectedRowKeys = Array.from(new Set(newSelectedRowKeys));
     setSelectedRowKeys(newSelectedRowKeys);
+    console.log("onSelectChange :" + newSelectedRowKeys);
     if (newSelectedRowKeys.length === 0) {
       clear();
     } else {
@@ -412,16 +418,6 @@ const SuaKhuyenMai = () => {
       Table.SELECTION_NONE,
     ],
   };
-
-  // const onSelectChange1 = (newSelectedRowKeys1) => {
-  //   console.log("selectedRowKeys changed: ", newSelectedRowKeys1);
-  //   setSelectedRowKeys1(newSelectedRowKeys1);
-  //   setSelectedProductDetails(newSelectedRowKeys1);
-  //   // console.log("lấy id check box: ", selectedProductDetails);
-  // };
-  const [previouslySelectedRowKeys, setPreviouslySelectedRowKeys] = useState(
-    []
-  );
 
   // Hàm xử lý sự kiện khi chọn (select) thay đổi
   const onSelectChange1 = (newSelectedRowKeys1) => {
@@ -511,11 +507,51 @@ const SuaKhuyenMai = () => {
           badgeContent={record.size}
           color="primary"
         >
-          <img
-            src={record.duongDan}
-            alt="Ảnh"
-            style={{ width: "100px", height: "100px" }}
-          />
+          <div className="image-container" style={{ position: "relative" }}>
+            <img
+              src={record.duongDan}
+              alt="Ảnh"
+              style={{ width: "100px", height: "100px" }}
+            />
+            {record.giaTriKhuyenMai !== null && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
+              >
+                <FontAwesomeIcon
+                  icon={faBookmark}
+                  style={{
+                    fontSize: "2.7em",
+                    color: record.giaTriKhuyenMai > 50 ? "red" : "#ffcc00",
+                    zIndex: 1,
+                    position: "relative",
+                  }}
+                />
+                <span
+                  style={{
+                    position: "absolute",
+                    top: "43%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    fontSize: "11px",
+                    color: record.giaTriKhuyenMai > 50 ? "white" : "black",
+                    zIndex: 2,
+                  }}
+                >
+                  <strong>
+                    Giảm
+                    <br /> {record.giaTriKhuyenMai}%
+                  </strong>
+                </span>
+              </div>
+            )}
+          </div>
         </Badge>
       ),
     },
@@ -659,7 +695,7 @@ const SuaKhuyenMai = () => {
                   onChange={handleChangeToggleButtonDiscount}
                   sx={{ borderRadius: "12px" }}
                 >
-                  {[TypeDiscountString.VND, TypeDiscountString.PERCENT].map(
+                  {[TypeDiscountString.PERCENT, TypeDiscountString.VND].map(
                     (item) => (
                       <Box
                         key={item}

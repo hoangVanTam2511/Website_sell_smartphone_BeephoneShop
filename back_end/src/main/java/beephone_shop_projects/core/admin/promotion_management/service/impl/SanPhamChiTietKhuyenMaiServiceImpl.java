@@ -8,7 +8,10 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
@@ -47,22 +50,22 @@ public class SanPhamChiTietKhuyenMaiServiceImpl implements SanPhamChiTietKhuyenM
                 List<KhuyenMaiChiTietResponse> kmct = sanPhamChiTietKhuyenMaiRepository.getListKhuyenMai(sp.getId());
                 responseCustom.setKhuyenMaiChiTietResponse(kmct);
                 responseCustom.setSize(kmct.size());
-                listResult.add(responseCustom);
                 for (KhuyenMaiChiTietResponse km : kmct) {
                     String loaiKhuyenMai = km.getLoaiKhuyenMai();
                     BigDecimal giaTriKhuyenMai = km.getGiaTriKhuyenMai();
                     BigDecimal donGiaKhuyenMai = km.getDonGia();
                     BigDecimal chuyenDoi = BigDecimal.ZERO;
-                    if (loaiKhuyenMai.equals("VNĐ")) {
+                    if (loaiKhuyenMai.equals("0")) {
                         chuyenDoi = giaTriKhuyenMai;
-                    } else if (loaiKhuyenMai.equals("%")) {
-                        chuyenDoi = (donGiaKhuyenMai.multiply(giaTriKhuyenMai)).divide(new BigDecimal(100));
+                    } else if (loaiKhuyenMai.equals("1")) {
+                        chuyenDoi = giaTriKhuyenMai;
                     }
                     tong = tong.add(chuyenDoi);
                 }
                 if (kmct.size() > 0) {
-                    responseCustom.setGiaTriKhuyenMai(tong.divide(new BigDecimal(kmct.size()), 2, RoundingMode.HALF_UP));
+                    responseCustom.setGiaTriKhuyenMai(tong.divide(new BigDecimal(kmct.size()), 0, RoundingMode.HALF_UP));
                 }
+                listResult.add(responseCustom);
             }
             return listResult;
         }

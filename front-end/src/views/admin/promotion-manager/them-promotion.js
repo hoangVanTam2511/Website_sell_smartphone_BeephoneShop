@@ -2,7 +2,12 @@ import { Button, Checkbox } from "antd";
 import React, { useEffect } from "react";
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faCheck, faEye } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowLeft,
+  faBookmark,
+  faCheck,
+  faEye,
+} from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { apiURLKhuyenMai, apiURLSanPham } from "../../../service/api";
 import TextField from "@mui/material/TextField";
@@ -31,7 +36,9 @@ const AddKhuyenMai = () => {
   const [giaTriKhuyenMai, setGiaTriKhuyenMai] = useState(0);
   const [ngayBatDau, setNgayBatDau] = useState(dayjs());
   const [ngayKetThuc, setNgayKetThuc] = useState(dayjs());
-  const [selectDiscount, setSeclectDiscount] = useState(TypeDiscountString.VND);
+  const [selectDiscount, setSeclectDiscount] = useState(
+    TypeDiscountString.PERCENT
+  );
   const [value, setValue] = React.useState();
   const [value2, setValue2] = React.useState();
 
@@ -418,14 +425,55 @@ const AddKhuyenMai = () => {
           badgeContent={record.size}
           color="primary"
         >
-          <img
-            src={record.duongDan}
-            alt="Ảnh"
-            style={{ width: "100px", height: "100px" }}
-          />
+          <div className="image-container" style={{ position: "relative" }}>
+            <img
+              src={record.duongDan}
+              alt="Ảnh"
+              style={{ width: "100px", height: "100px" }}
+            />
+            {record.giaTriKhuyenMai !== null && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
+              >
+                <FontAwesomeIcon
+                  icon={faBookmark}
+                  style={{
+                    fontSize: "2.7em",
+                    color: record.giaTriKhuyenMai > 50 ? "red" : "#ffcc00",
+                    zIndex: 1,
+                    position: "relative",
+                  }}
+                />
+                <span
+                  style={{
+                    position: "absolute",
+                    top: "43%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    fontSize: "11px",
+                    color: record.giaTriKhuyenMai > 50 ? "white" : "black",
+                    zIndex: 2,
+                  }}
+                >
+                  <strong>
+                    Giảm
+                    <br /> {record.giaTriKhuyenMai}%
+                  </strong>
+                </span>
+              </div>
+            )}
+          </div>
         </Badge>
       ),
     },
+
     {
       title: "Tên sản phẩm",
       dataIndex: "tenSanPham",
@@ -556,7 +604,7 @@ const AddKhuyenMai = () => {
                   onChange={handleChangeToggleButtonDiscount}
                   sx={{ borderRadius: "12px" }}
                 >
-                  {[TypeDiscountString.VND, TypeDiscountString.PERCENT].map(
+                  {[TypeDiscountString.PERCENT, TypeDiscountString.VND].map(
                     (item) => (
                       <Box
                         key={item}
