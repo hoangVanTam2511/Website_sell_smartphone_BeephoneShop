@@ -20,13 +20,14 @@ import java.util.Random;
 public class DoPhanGiaiServiceImpl extends AbstractServiceImpl<DoPhanGiaiManHinh, DoPhanGiaiResponse, DoPhanGiaiRequest, String> implements DoPhanGiaiService {
     @Autowired
     private DoPhanGiaiRepository doPhanGiaiRepository;
+
     public DoPhanGiaiServiceImpl(DoPhanGiaiRepository repo, DoPhanGiaiConverter converter) {
         super(repo, converter);
     }
 
     @Override
-    public Page<DoPhanGiaiManHinh> findAllDọPhanGiai(Integer pageNo) {
-        Pageable pageable= PageRequest.of(pageNo-1,5);
+    public Page<DoPhanGiaiManHinh> findAllDoPhanGiai(Integer pageNo) {
+        Pageable pageable = PageRequest.of(pageNo - 1, 5);
         return doPhanGiaiRepository.findAll(pageable);
     }
 
@@ -35,7 +36,7 @@ public class DoPhanGiaiServiceImpl extends AbstractServiceImpl<DoPhanGiaiManHinh
         Random random = new Random();
         int number = random.nextInt(10000);
         String code = String.format("RE%04d", number);
-        DoPhanGiaiManHinh doPhanGiaiManHinh=new DoPhanGiaiManHinh().builder()
+        DoPhanGiaiManHinh doPhanGiaiManHinh = new DoPhanGiaiManHinh().builder()
                 .chieuDai(doPhanGiaiRequest.getChieuDai())
                 .ma(code)
                 .chieuRong(doPhanGiaiRequest.getChieuRong())
@@ -46,6 +47,18 @@ public class DoPhanGiaiServiceImpl extends AbstractServiceImpl<DoPhanGiaiManHinh
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public DoPhanGiaiManHinh doiTrangThai(String id) throws Exception {
+//        DoPhanGiaiManHinh doPhanGiai = doPhanGiaiRepository.findOneById(id);
+//        if (doPhanGiai.get() == StatusCommon.ACTIVE) {
+//            doPhanGiai.setStatus(StatusCommon.IN_ACTIVE);
+//        } else {
+//            doPhanGiai.setStatus(StatusCommon.IN_ACTIVE);
+//        }
+//        return doPhanGiaiRepository.save(doPhanGiai);
+        return null;
     }
 
 }

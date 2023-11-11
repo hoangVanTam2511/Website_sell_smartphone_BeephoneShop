@@ -1,44 +1,38 @@
 import React, { useEffect, useState } from "react";
-import {
-  Link,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Empty, Table } from "antd";
 import {
-  Box,
+  Autocomplete,
   Dialog,
   DialogContent,
+  FormControl,
   IconButton,
+  InputLabel,
+  MenuItem,
   Pagination,
+  Select,
   Slide,
   TextField,
   Tooltip,
 } from "@mui/material";
 import { PlusOutlined } from "@ant-design/icons";
 import Card from "../../../components/Card";
-import { format } from "date-fns";
 import axios from "axios";
-import { parseInt } from "lodash";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import Zoom from "@mui/material/Zoom";
-import * as dayjs from "dayjs";
 import {
-  OrderStatusString,
-  OrderTypeString,
+  Notistack,
   StatusCommonProducts,
+  StatusCommonProductsNumber,
 } from "./enum";
 import LoadingIndicator from "../../../utilities/loading";
-import CreateSac from "./create-sac";
-import CreateHang from "./create-hang";
 import CreateChip from "./create-chip";
-import generateRandomCode from "../../../utilities/randomCode";
-
+import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
+import useCustomSnackbar from "../../../utilities/notistack";
+import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const ManagementChips = () => {
   const navigate = useNavigate();
@@ -48,6 +42,13 @@ const ManagementChips = () => {
   const [refreshPage, setRefreshPage] = useState(1);
   const [searchParams, setSearchParams] = useSearchParams();
   const [keyword, setKeyword] = useState(searchParams.get("keyword"));
+  const [idChip, setIdChip] = React.useState("");
+  const [maChip, setMaChip] = React.useState("");
+  const [status, setStatus] = React.useState("");
+  const [tenChip, setTenChip] = React.useState("");
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [open1, setOpen1] = React.useState(false);
+  const { handleOpenAlertVariant } = useCustomSnackbar();
   const [currentPage, setCurrentPage] = useState(
     searchParams.get("currentPage") || 1
   );
@@ -86,6 +87,41 @@ const ManagementChips = () => {
       });
   };
 
+  const detailChip = async (idChip) => {
+    await axios
+      .get(`http://localhost:8080/api/chips/${idChip}`)
+      .then((response) => {
+        setMaChip(response.data.data.ma);
+        setStatus(response.data.data.status);
+        setTenChip(response.data.data.tenChip);
+      })
+      .catch((error) => {});
+  };
+
+  const doiTrangThaiChip = (idChip) => {
+    axios
+      .put(`http://localhost:8080/api/chips/${idChip}`)
+      .then((response) => {
+        getListChip();
+        handleOpenAlertVariant(
+          "Đổi trạng thái thành công!!!",
+          Notistack.SUCCESS
+        );
+      })
+      .catch((error) => {
+        handleOpenAlertVariant(error.response.data.message, Notistack.ERROR);
+      });
+  };
+
+  const handleClickOpen1 = (id) => {
+    detailChip(id);
+    setOpen1(true);
+  };
+
+  const handleClose1 = () => {
+    setOpen1(false);
+  };
+
   useEffect(() => {
     getListChip();
   }, []);
@@ -97,6 +133,38 @@ const ManagementChips = () => {
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const updateChip = () => {
+    let obj = {
+      id: idChip,
+      ma: maChip,
+      tenChip: tenChip,
+      status: status,
+    };
+    axios
+      .put(`http://localhost:8080/api/chips`, obj)
+      .then((response) => {
+        getListChip();
+        handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
+        setOpen1(false);
+      })
+      .catch((error) => {
+        handleOpenAlertVariant(error.response.data.message, Notistack.ERROR);
+      });
+  };
+
+  const uniqueChip = listChip
+    .map((option) => option.tenChip)
+    .filter((value, index, self) => {
+      return self.indexOf(value) === index;
+    });
+
+  const handleChangeStatus = (event) => {
+    setStatus(event.target.value);
+  };
+  const handleChangeChip = (event, value) => {
+    setTenChip(value);
   };
 
   const OrderTable = () => {
@@ -186,8 +254,42 @@ const ManagementChips = () => {
           <div className="d-flex justify-content-center">
             <div className="button-container">
               <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
-                <IconButton size="">
+                <IconButton
+                  onClick={() => {
+                    handleClickOpen1(record.id);
+                    setIdChip(record.id);
+                  }}
+                >
                   <BorderColorOutlinedIcon color="primary" />
+                </IconButton>
+              </Tooltip>
+
+              {/* Hàm đổi trạng thái */}
+
+              <Tooltip
+                TransitionComponent={Zoom}
+                title={
+                  record.status === StatusCommonProducts.ACTIVE
+                    ? "Ngừng kích hoạt"
+                    : record.status === StatusCommonProducts.IN_ACTIVE
+                    ? "Kích hoạt"
+                    : ""
+                }
+              >
+                <IconButton
+                  className="ms-2"
+                  style={{ marginTop: "6px" }}
+                  onClick={() => doiTrangThaiChip(record.id)}
+                >
+                  <AssignmentOutlinedIcon
+                    color={
+                      record.status === StatusCommonProducts.IN_ACTIVE
+                        ? "error"
+                        : record.status === StatusCommonProducts.ACTIVE
+                        ? "success"
+                        : "disabled"
+                    }
+                  />
                 </IconButton>
               </Tooltip>
             </div>
@@ -196,6 +298,7 @@ const ManagementChips = () => {
       ),
     },
   ];
+
   return (
     <>
       <div
@@ -271,7 +374,7 @@ const ManagementChips = () => {
           <div className="mx-auto">
             <Pagination
               color="primary" /* page={parseInt(currentPage)} key={refreshPage} count={totalPages} */
-            // onChange={handlePageChange}
+              // onChange={handlePageChange}
             />
           </div>
           <div className="mt-4"></div>
@@ -283,7 +386,89 @@ const ManagementChips = () => {
         getAll={getListChip}
         chips={listChip}
       />
-      {isLoading && <LoadingIndicator />}
+
+      <Dialog
+        open={open1}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={handleClose1}
+        maxWidth="md"
+        maxHeight="md"
+        sx={{
+          marginBottom: "170px",
+        }}
+      >
+        <DialogContent>
+          <div className="mt-4" style={{ width: "700px" }}>
+            <div className="container" style={{}}>
+              <div className="text-center" style={{}}>
+                <span
+                  className=""
+                  style={{ fontWeight: "550", fontSize: "29px" }}
+                >
+                  SỬA CHIP
+                </span>
+              </div>
+              <div className="mx-auto mt-3 pt-2">
+                <div>
+                  <Autocomplete
+                    fullWidth
+                    className="custom"
+                    id="free-solo-demo"
+                    freeSolo
+                    inputValue={tenChip}
+                    onInputChange={handleChangeChip}
+                    options={uniqueChip}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Tên Chip" />
+                    )}
+                  />
+                </div>
+                <div className="mt-3" style={{}}>
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">
+                      Trạng Thái
+                    </InputLabel>
+                    <Select
+                      className="custom"
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={status}
+                      label="Trạng Thái"
+                      onChange={handleChangeStatus}
+                      // defaultValue={StatusCommonProductsNumber.ACTIVE}
+                    >
+                      <MenuItem value={StatusCommonProducts.ACTIVE}>
+                        Hoạt Động
+                      </MenuItem>
+                      <MenuItem value={StatusCommonProducts.IN_ACTIVE}>
+                        Ngừng Hoạt Động
+                      </MenuItem>
+                    </Select>
+                  </FormControl>
+                </div>
+                <div className="mt-4 pt-1 d-flex justify-content-end">
+                  <Button
+                    onClick={() => updateChip()}
+                    className="rounded-2 button-mui"
+                    type="primary"
+                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                  >
+                    <span
+                      className=""
+                      style={{ marginBottom: "2px", fontWeight: "500" }}
+                    >
+                      Xác Nhận
+                    </span>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+          {isLoading && <LoadingIndicator />}
+        </DialogContent>
+        <div className="mt-3"></div>
+      </Dialog>
     </>
   );
 };

@@ -1,9 +1,12 @@
 package beephone_shop_projects.core.admin.product_managements.controller;
 
 import beephone_shop_projects.core.admin.product_managements.model.request.PinRequest;
+import beephone_shop_projects.core.admin.product_managements.model.request.PinRequest;
+import beephone_shop_projects.core.admin.product_managements.model.response.PinResponse;
 import beephone_shop_projects.core.admin.product_managements.model.response.PinResponse;
 import beephone_shop_projects.core.admin.product_managements.service.impl.PinServiceImpl;
 import beephone_shop_projects.core.common.base.ResponseObject;
+import beephone_shop_projects.entity.Pin;
 import beephone_shop_projects.infrastructure.constant.ApiConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +21,7 @@ public class PinController {
     @Autowired
     private PinServiceImpl pinService;
 
+
     @GetMapping
     public ResponseObject<List<PinResponse>> getPin() {
         List<PinResponse> pin = pinService.findAll();
@@ -28,6 +32,18 @@ public class PinController {
     public ResponseObject<PinResponse> createPin(@RequestBody PinRequest pinRequest) throws Exception {
         PinResponse createdPin = pinService.save(pinRequest);
         return new ResponseObject<>(createdPin);
+    }
+
+    @PutMapping
+    public ResponseObject<PinResponse> updatePin(@RequestBody PinRequest pinRequest) throws Exception {
+        PinResponse pinResponse = pinService.update(pinRequest);
+        return new ResponseObject<>(pinResponse);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseObject<Pin> doiTrangThai(@PathVariable String id) throws Exception {
+        Pin doiTrangThai = pinService.doiTrangThai(id);
+        return new ResponseObject<>(doiTrangThai);
     }
 
 }

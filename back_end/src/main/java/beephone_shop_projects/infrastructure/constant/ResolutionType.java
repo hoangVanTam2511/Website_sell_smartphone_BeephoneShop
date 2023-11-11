@@ -10,6 +10,4 @@ public enum ResolutionType {
   QUAD_HD_PLUS,
   TWO_K,
   ULTRA_HD,
-
-
 }

@@ -402,12 +402,12 @@ const AddVoucher = () => {
                           borderdivor: "divider",
                         },
                         [`&[data-first-child] .${radioClasses.action}`]: {
-                          borderTopLeftRadius: `calc(${theme.vars.radius.sm} + 3px)`,
-                          borderBottomLeftRadius: `calc(${theme.vars.radius.sm} + 3px)`,
+                          borderTopLeftRadius: `calc(${theme.vars.radius.sm} + 2px)`,
+                          borderBottomLeftRadius: `calc(${theme.vars.radius.sm} + 2px)`,
                         },
                         [`&[data-last-child] .${radioClasses.action}`]: {
-                          borderTopRightRadius: `calc(${theme.vars.radius.sm} + 3px)`,
-                          borderBottomRightRadius: `calc(${theme.vars.radius.sm} + 3px)`,
+                          borderTopRightRadius: `calc(${theme.vars.radius.sm} + 2px)`,
+                          borderBottomRightRadius: `calc(${theme.vars.radius.sm} + 2px)`,
                         },
                       })}
                     >
@@ -566,10 +566,7 @@ const AddVoucher = () => {
             type="primary"
             style={{ height: "40px", width: "auto", fontSize: "15px" }}
           >
-            <span
-              className=""
-              style={{ marginBottom: "2px", fontWeight: "500" }}
-            >
+            <span style={{ marginBottom: "2px", fontWeight: "500" }}>
               Xác Nhận
             </span>
           </Button>

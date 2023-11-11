@@ -1,4 +1,6 @@
 import {
+  StatusCommonProducts,
+  StatusCommonProductsNumber,
   StatusDiscount,
   StatusDiscountNumber,
 } from "../views/admin/order-manager/enum";
@@ -6,6 +8,7 @@ import {
   StatusAccountCus,
   StatusCusNumber,
 } from "../views/admin/account-manager/khachhang/enum";
+
 export const ConvertStatusVoucherNumberToString = (EnumNumber) => {
   let statusNumber;
 
@@ -28,6 +31,24 @@ export const ConvertStatusVoucherNumberToString = (EnumNumber) => {
 
   return statusNumber;
 };
+
+export const ConvertStatusProductsNumberToString = (EnumNumber) => {
+  let statusNumber;
+
+  switch (EnumNumber) {
+    case StatusCommonProductsNumber.ACTIVE:
+      statusNumber = StatusCommonProducts.ACTIVE;
+      break;
+    case StatusCommonProductsNumber.IN_ACTIVE:
+      statusNumber = StatusCommonProducts.IN_ACTIVE;
+      break;
+    default:
+      statusNumber = ""; // Nếu giá trị không khớp với bất kỳ trạng thái nào.
+  }
+
+  return statusNumber;
+};
+
 export const ConvertStatusToString = (EnumNumber) => {
   let statusNumber;
 

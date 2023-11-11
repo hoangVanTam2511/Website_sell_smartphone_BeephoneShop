@@ -32,7 +32,7 @@ import java.util.List;
 public class VoucherServiceImpl implements VoucherService {
 
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    private static final int CODE_LENGTH = 7;
+    private static final int CODE_LENGTH = 17;
 
     @Autowired
     private VoucherRepository voucherRepository;
@@ -103,8 +103,8 @@ public class VoucherServiceImpl implements VoucherService {
         String codeVoucher = request.getMa().trim();
         if (request.getMa().isBlank()) {
             codeVoucher = "BEE" + generateRandomCode();
-        } else if (request.getMa().length() < 10 || request.getMa().length() > 10) {
-            throw new RestApiException("Mã voucher phải đủ 10 ký tự !!!");
+        } else if (request.getMa().length() < 10 || request.getMa().length() > 20) {
+            throw new RestApiException("Mã voucher phải lớn hơn 10 ký tự và nhỏ hơn 20!!!");
         }
         Voucher voucher = Voucher.builder()
                 .ma(codeVoucher)
@@ -198,7 +198,7 @@ public class VoucherServiceImpl implements VoucherService {
         if (request.getKeyword() == null) {
             request.setKeyword("");
         }
-        Pageable pageable = PageRequest.of(request.getPageNo() - 1, 2);
+        Pageable pageable = PageRequest.of(request.getPageNo() - 1, request.getPageSize());
         Page<Voucher> vouchers = voucherRepository.findAll(pageable, request);
         updateStatusVoucher();
         return vouchers;

@@ -101,6 +101,14 @@ tr:hover {
   display: flex;
   justify-content: flex-end;
 }
+
+.btn-accept-update {
+  margin-right: 210px;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
 .validate-value {
   margin-top: 5px;
   font-size: 14px;

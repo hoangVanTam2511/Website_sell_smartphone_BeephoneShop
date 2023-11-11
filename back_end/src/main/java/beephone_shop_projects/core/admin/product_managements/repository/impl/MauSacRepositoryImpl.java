@@ -1,83 +1,76 @@
 package beephone_shop_projects.core.admin.product_managements.repository.impl;
 
 import beephone_shop_projects.core.admin.order_management.repository.impl.AbstractRepositoryImpl;
-import beephone_shop_projects.core.admin.order_management.repository.impl.OrderRepositoryImpl;
+import beephone_shop_projects.core.admin.product_managements.model.request.FindFilterProductsRequest;
+import beephone_shop_projects.core.admin.product_managements.model.request.FindMauSacRequest;
 import beephone_shop_projects.core.admin.product_managements.repository.MauSacRepository;
+import beephone_shop_projects.core.common.base.JpaPersistence;
 import beephone_shop_projects.entity.MauSac;
-import beephone_shop_projects.entity.Voucher;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.PersistenceException;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Order;
-import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
 @Repository
 public class MauSacRepositoryImpl extends AbstractRepositoryImpl<MauSac, String> implements MauSacRepository {
-    private static final Logger logger = LoggerFactory.getLogger(OrderRepositoryImpl.class);
+
+    private static final Logger logger = LoggerFactory.getLogger(MauSacRepositoryImpl.class);
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
-    public Page<MauSac> findAllMauSac() {
-//        List<MauSac> mauSacs = null;
-//        Long totalElements = 0L;
-//        try (EntityManager entityManager = this.entityManager) {
-//            CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-//            CriteriaQuery<Voucher> criteriaQuery = criteriaBuilder.createQuery(Voucher.class);
-//
-//            Root<Voucher> root = criteriaQuery.from(Voucher.class);
-//            criteriaQuery.select(root);
-//
-//            Path<Object> sortByField = root.get("createdAt");
-//            Order orderByAscending = criteriaBuilder.desc(sortByField);
-//            criteriaQuery.orderBy(orderByAscending);
-//
-//            CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(long.class);
-//            Root<Voucher> countRoot = countQuery.from(Voucher.class);
-//
-//            countQuery.select(criteriaBuilder.count(countRoot));
-//            List<Predicate> predicates = new ArrayList<>();
-//
-//            List<Predicate> countPredicates = new ArrayList<>();
-//            Predicate predicate = getPredicate(root, Voucher.class, criteriaBuilder, request.getKeyword());
-//            Predicate countPredicate = getPredicate(countRoot, Voucher.class, criteriaBuilder, request.getKeyword());
-//
-//            predicates.add(predicate);
-//            countPredicates.add(countPredicate);
-//
-//
-//            criteriaQuery.where(predicates.toArray(new Predicate[0]));
-//            countQuery.where(countPredicates.toArray(new Predicate[0]));
-//
-//            TypedQuery<Voucher> typedQuery =
-//                    entityManager.createQuery(criteriaQuery).setFirstResult(pageable.getPageNumber() * pageable.getPageSize()).setMaxResults(pageable.getPageSize());
-//            vouchers = typedQuery.getResultList();
-//            totalElements = entityManager.createQuery(countQuery).getSingleResult();
-//
-//        } catch (Exception e) {
-//            throw e;
-//        }
-//        return new PageImpl<>(vouchers, pageable, totalElements);
-        return null;
-    }
+    public Page<MauSac> findAllMauSac(Pageable pageable, FindFilterProductsRequest findFilterProductsRequest) {
+        Class<FindMauSacRequest> findMauSacRequest = FindMauSacRequest.class;
+        List<MauSac> mauSacs = null;
+        Long totalElements = 0L;
+        try (EntityManager entityManager = this.entityManager) {
+            CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 
-    protected Predicate getPredicate(Root<Voucher> root, Class<?> entity, CriteriaBuilder criteriaBuilder, String keyword) {
-        Field[] fields = entity.getDeclaredFields();
-        List<Predicate> predicates = new ArrayList<>();
-        for (Field field : fields) {
-            predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get(field.getName()).as(String.class)), "%" + keyword.toLowerCase() + "%"));
+            CriteriaQuery<MauSac> criteriaQuery = criteriaBuilder.createQuery(MauSac.class);
+            CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(long.class);
+
+            Root<MauSac> root = criteriaQuery.from(MauSac.class);
+            Root<MauSac> countRoot = countQuery.from(MauSac.class);
+
+            JpaPersistence<MauSac> configuration = new JpaPersistence<MauSac>(criteriaBuilder, criteriaQuery, countQuery, root, countRoot);
+
+            this.buildSelectAllAndCountEntity(configuration);
+            this.buildSortByPageable(configuration, pageable.getSort());
+            List<Predicate> predicates = new ArrayList<>();
+            List<Predicate> countPredicates = new ArrayList<>();
+
+            Predicate searchPredicate = this.getPredicateContains(root, findMauSacRequest, findFilterProductsRequest.getKeyword(), configuration);
+            Predicate countSearchPredicate = this.getPredicateContains(countRoot, findMauSacRequest, findFilterProductsRequest.getKeyword(), configuration);
+
+            predicates.add(searchPredicate);
+            countPredicates.add(countSearchPredicate);
+
+            if (findFilterProductsRequest.getStatus() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("status"), findFilterProductsRequest.getStatus().ordinal()));
+                countPredicates.add(criteriaBuilder.equal(countRoot.get("status"), findFilterProductsRequest.getStatus().ordinal()));
+            }
+            criteriaQuery.where(predicates.toArray(new Predicate[0]));
+            countQuery.where(countPredicates.toArray(new Predicate[0]));
+
+            mauSacs = this.buildQueryWithPaginationByPageableAndCriteriaQuery(pageable, configuration);
+            totalElements = entityManager.createQuery(countQuery).getSingleResult();
+        } catch (PersistenceException e) {
+            logger.error(e.getMessage(), e);
         }
-        return criteriaBuilder.or(predicates.toArray(new Predicate[0]));
+        return new PageImpl<>(mauSacs, pageable, totalElements);
     }
 
 }

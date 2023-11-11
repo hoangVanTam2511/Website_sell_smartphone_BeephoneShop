@@ -7,7 +7,12 @@ import beephone_shop_projects.entity.ManHinh;
 import org.springframework.data.domain.Page;
 
 
-public interface ManHinhService  extends GenericService<ManHinhResponse, ManHinhRequest, String> {
+public interface ManHinhService extends GenericService<ManHinhResponse, ManHinhRequest, String> {
+
     Page<ManHinh> findAllManHinh(Integer pageNo);
+
     ManHinh add(ManHinhRequest manHinhRequest);
+
+    ManHinh doiTrangThai(String id) throws Exception;
+
 }
