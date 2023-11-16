@@ -8,5 +8,8 @@ import org.springframework.data.domain.Page;
 
 public interface TheSimService extends GenericService<TheSimResponse, TheSimRequest, String> {
 
-  Page<TheSim> findAllSimCards(Integer pageNo);
+    Page<TheSim> findAllSimCards(Integer pageNo);
+
+    TheSim doiTrangThai(String id) throws Exception;
+
 }

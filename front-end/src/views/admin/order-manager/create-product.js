@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Empty, Table } from "antd";
-import { Box, FormControl, IconButton, Select, InputLabel, MenuItem, Pagination, TextField, Tooltip, Checkbox, FormControlLabel, Autocomplete, InputAdornment, OutlinedInput, Dialog, DialogContent, DialogTitle, DialogActions, Slide, ListItemText, Rating, } from "@mui/material";
+import { Box, FormControl, IconButton, Select, InputLabel, MenuItem, Pagination, TextField, Tooltip, Checkbox, FormControlLabel, Autocomplete, InputAdornment, OutlinedInput, Dialog, DialogContent, DialogTitle, DialogActions, Slide, ListItemText, Rating, FormHelperText, } from "@mui/material";
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import { PlusOutlined } from "@ant-design/icons";
@@ -56,6 +56,10 @@ const MenuProps = {
 };
 
 const CreateProduct = ({ }) => {
+  let isOverplay = false;
+  const getOverplay = (value) => {
+    isOverplay = value;
+  }
   const [openHang, setOpenHang] = useState(false);
   const [listHang, setListHang] = useState([]);
   const handleCloseOpenHang = () => {
@@ -701,491 +705,493 @@ const CreateProduct = ({ }) => {
                 />
               </div>
 */}
-      <div className="mt-4" style={{ backgroundColor: "#ffffff", boxShadow: "0 0.1rem 0.3rem #00000010", height: "735px" }}>
-        <div className="container" style={{}}>
-          <div className="mx-auto" style={{ maxWidth: "70%" }}>
-            <div className="text-center pt-4" style={{}}>
-              <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>THÊM SẢN PHẨM</span>
-            </div>
-            <div className="mt-3">
-              <Autocomplete fullWidth className="custom"
-                id="free-solo-demo"
-                freeSolo
-                options={uniqueTenSanPham}
-                inputValue={productName}
-                onInputChange={handleOnInputChangeProductName}
-                renderInput={(params) => <TextField
-                  //           helperText={productName.trim() === "" ? "Bạn chưa nhập tên sản phẩm" : ""}
-                  // error={productName === null || productName.trim() === ""}
-                  {...params}
-                  label="Tên Sản Phẩm" />}
-              />
-            </div>
-            <div className="mt-4">
-              <TextField fullWidth multiline maxRows={1} inputProps={{ style: { height: "50px" } }} className="custom" id="outlined-basic" label="Mô Tả" variant="outlined" />
-            </div>
-            <div className="mt-4 d-flex">
-              <div className="" style={{ width: "100%" }}>
-                <FormControl fullWidth sx={{ width: 262 }}>
-                  <InputLabel id="demo-simple-select-label">Danh Mục</InputLabel>
-                  <Select className="custom"
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    multiple
-                    value={selectedCategory}
-                    onChange={handleChangeSelectedCategory}
-                    input={<OutlinedInput label="Danh Mục" />}
-                    endAdornment={
-                      <>
-                        <InputAdornment style={{ marginRight: "15px" }} position="end">
-                          <Tooltip title="Thêm danh mục" TransitionComponent={Zoom}>
-                            <IconButton /* onClick={() => setOpen(true)} */ size="small">
-                              <AiOutlinePlus className='text-dark' />
-                            </IconButton>
-                          </Tooltip>
-
-                        </InputAdornment>
-                      </>
-                    }
-                    renderValue={(selected) => selected.map(id => {
-                      const category = categorys.find(c => c.id === id);
-                      return category ? category.content : '';
-                    }).join(', ')}
-                  >
-                    {categorys.map((c) => (
-                      <MenuItem key={c.id} value={c.id}>
-                        <Checkbox checked={selectedCategory.indexOf(c.id) > -1} />
-                        <ListItemText primary={c.content} />
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+      <div style={{ pointerEvents: isOverplay === true ? "none" : "auto" }}>
+        <div className={"mt-4"} style={{ backgroundColor: "#ffffff", boxShadow: "0 0.1rem 0.3rem #00000010", height: "735px" }}>
+          <div className="container" style={{}}>
+            <div className="mx-auto" style={{ maxWidth: "70%" }}>
+              <div className="text-center pt-4" style={{}}>
+                <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>THÊM SẢN PHẨM</span>
               </div>
-              <div className="ms-3" style={{ width: "100%" }}>
-                <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label">Hãng</InputLabel>
-                  <Select className="custom"
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={brand}
-                    label="Hãng"
-                    onChange={handleChangeBrand}
-                    endAdornment={
-                      <>
-                        <InputAdornment style={{ marginRight: "15px" }} position="end">
-                          <Tooltip title="Thêm hãng" TransitionComponent={Zoom}>
-                            <IconButton onClick={() => setOpenHang(true)} size="small">
-                              <AiOutlinePlus className='text-dark' />
-                            </IconButton>
-                          </Tooltip>
-                        </InputAdornment>
-                      </>
-                    }
-                  >
-                    {listHang.map((item) => {
-                      return (
-                        <MenuItem key={item.id} value={item.id}>{item.tenHang}</MenuItem>
-                      )
-                    })}
-                  </Select>
-                </FormControl>
+              <div className="mt-3">
+                <Autocomplete fullWidth className="custom"
+                  id="free-solo-demo"
+                  freeSolo
+                  options={uniqueTenSanPham}
+                  inputValue={productName}
+                  onInputChange={handleOnInputChangeProductName}
+                  renderInput={(params) => <TextField
+                    //           helperText={productName.trim() === "" ? "Bạn chưa nhập tên sản phẩm" : ""}
+                    // error={productName === null || productName.trim() === ""}
+                    {...params}
+                    label="Tên Sản Phẩm" />}
+                />
               </div>
-              <div className="ms-3" style={{ width: "100%" }}>
-                <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label">Chip</InputLabel>
-                  <Select className="custom"
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={chip}
-                    label="Chip"
-                    onChange={handleChangeChip}
-                    endAdornment={
-                      <>
-                        <InputAdornment style={{ marginRight: "15px" }} position="end">
-                          <Tooltip title="Thêm chip" TransitionComponent={Zoom}>
-                            <IconButton onClick={() => setOpenChip(true)} size="small">
-                              <AiOutlinePlus className='text-dark' />
-                            </IconButton>
-                          </Tooltip>
-
-                        </InputAdornment>
-                      </>
-                    }
-                  >
-                    {listChip.map((item) => {
-                      return (
-                        <MenuItem key={item.id} value={item.id}>{item.tenChip}</MenuItem>
-                      )
-                    })}
-                  </Select>
-                </FormControl>
+              <div className="mt-4">
+                <TextField fullWidth multiline maxRows={1} inputProps={{ style: { height: "50px" } }} className="custom" id="outlined-basic" label="Mô Tả" variant="outlined" />
               </div>
-            </div>
-            <div className="mt-4 d-flex">
-              <div className="" style={{ width: "100%" }}>
-                <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label">Pin</InputLabel>
-                  <Select className="custom"
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={pin}
-                    label="Pin"
-                    onChange={handleChangePin}
-                    endAdornment={
-                      <>
-                        <InputAdornment style={{ marginRight: "15px" }} position="end">
-                          <Tooltip title="Thêm pin" TransitionComponent={Zoom}>
-                            <IconButton onClick={() => setOpenPin(true)} size="small">
-                              <AiOutlinePlus className='text-dark' />
-                            </IconButton>
-                          </Tooltip>
-
-                        </InputAdornment>
-                      </>
-                    }
-                  >
-                    {listPin.map((item) => {
-                      return (
-                        <MenuItem key={item.id} value={item.id}>{item.loaiPin + " " + item.dungLuong + " mAh"}</MenuItem>
-                      )
-                    })}
-                  </Select>
-                </FormControl>
-              </div>
-              <div className="ms-3" style={{ width: "100%" }}>
-                <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label">Cổng Sạc</InputLabel>
-                  <Select className="custom"
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={congSac}
-                    label="Cổng Sạc"
-                    onChange={handleChangeCongSac}
-                    endAdornment={
-                      <>
-                        <InputAdornment style={{ marginRight: "15px" }} position="end">
-                          <Tooltip title="Thêm cổng sạc" TransitionComponent={Zoom}>
-                            <IconButton onClick={() => setOpenSac(true)} size="small">
-                              <AiOutlinePlus className='text-dark' />
-                            </IconButton>
-                          </Tooltip>
-
-                        </InputAdornment>
-                      </>
-                    }
-                  >
-                    {listSac.map((item) => {
-                      return (
-                        <MenuItem key={item.id} value={item.id}>{item.loaiCongSac}</MenuItem>
-                      )
-                    })}
-                  </Select>
-                </FormControl>
-              </div>
-              <div className="ms-3" style={{ width: "100%" }}>
-                <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label">Thẻ Nhớ</InputLabel>
-                  <Select className="custom"
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={theNho}
-                    label="Thẻ Nhớ"
-                    onChange={handleChangeTheNho}
-                    defaultValue={0}
-                    endAdornment={
-                      <>
-                        <InputAdornment style={{ marginRight: "15px" }} position="end">
-                          <Tooltip title="Thêm thẻ nhớ" TransitionComponent={Zoom}>
-                            <IconButton onClick={() => setOpenTheNho(true)} size="small">
-                              <AiOutlinePlus className='text-dark' />
-                            </IconButton>
-                          </Tooltip>
-
-                        </InputAdornment>
-                      </>
-                    }
-                  >
-                    <MenuItem value={"None"}>Không</MenuItem>
-                    {listTheNho.map((item) => {
-                      return (
-                        <MenuItem key={item.id} value={item.id}>{item.loaiTheNho}</MenuItem>
-                      )
-                    })}
-                  </Select>
-                </FormControl>
-              </div>
-            </div>
-            <div className="mt-4 d-flex">
-              <div className="" style={{ width: "100%" }}>
-                <FormControl fullWidth sx={{ width: 402 }}>
-                  <InputLabel id="demo-simple-select-label">Camera Sau</InputLabel>
-                  <Select className="custom"
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    multiple
-                    value={selectedCameraSau}
-                    onChange={handleChangeSelectedCameraSau}
-                    input={<OutlinedInput label="Camera Sau" />}
-                    renderValue={(selected) => {
-                      const selectedCameras = selected.map(id => camerasSau.find(c => c.id === id)).filter(Boolean);
-                      const mainCamera = selectedCameras.find(camera => ratingsCameraSau[camera.id]);
-                      const otherCameras = selectedCameras.filter(camera => !ratingsCameraSau[camera.id]);
-
-                      const renderCameraText = (camera, isMain) => {
-                        const cameraText = camera.doPhanGiai + "MP";
-                        if (isMain) {
-                          return `Chính ${cameraText}`;
-                        } else {
-                          return cameraText;
-                        }
-                      };
-
-                      let renderedCameras = [];
-
-                      if (mainCamera) {
-                        renderedCameras.push(renderCameraText(mainCamera, true));
-                      }
-
-                      if (otherCameras.length > 0) {
-                        const otherCamerasText = otherCameras.map(camera => renderCameraText(camera, false)).join(', ');
-                        if (renderedCameras.length > 0) {
-                          renderedCameras[0] += ` & Phụ ${otherCamerasText}`;
-                        } else {
-                          renderedCameras.push(`Phụ ${otherCamerasText}`);
-                        }
-                      }
-
-                      return renderedCameras.join(', ');
-                    }}
-                    MenuProps={MenuProps}
-                    endAdornment={
-                      <>
-                        <InputAdornment style={{ marginRight: "15px" }} position="end">
-                          <Tooltip title="Thêm camera sau" TransitionComponent={Zoom}>
-                            <IconButton /* onClick={() => setOpen(true)} */ size="small">
-                              <AiOutlinePlus className='text-dark' />
-                            </IconButton>
-                          </Tooltip>
-
-                        </InputAdornment>
-                      </>
-                    }
-                  >
-                    {listSortCameraSau.map((c) => (
-                      <MenuItem key={c.id} value={c.id}>
-                        <Checkbox checked={selectedCameraSau.indexOf(c.id) > -1} />
-                        <ListItemText primary={c.doPhanGiai + "MP"} />
-                        {selectedCameraSau.indexOf(c.id) > -1 ?
-                          <>
-                            <Tooltip
-                              title={ratingsCameraSau[c.id] ? "Bỏ đặt làm camera chính" : "Đặt làm camera chính"}
-                              TransitionComponent={Zoom} placement="right-end">
-                              <IconButton onClick={(e) => {
-                                handleToggleRatingCameraSau(c.id);
-                                e.stopPropagation();
-                              }} size="small" className="me-1" style={{ marginBottom: "3px" }}
-                              >
-                                <Rating
-                                  style={{ fontSize: "23px", color: "" }}
-                                  max={1}
-                                  name="simple-controlled"
-                                  readOnly
-                                  value={ratingsCameraSau[c.id] ? 1 : 0}
-                                />
+              <div className="mt-4 d-flex">
+                <div className="" style={{ width: "100%" }}>
+                  <FormControl fullWidth sx={{ width: 262 }}>
+                    <InputLabel id="demo-simple-select-label">Danh Mục</InputLabel>
+                    <Select className="custom"
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      multiple
+                      value={selectedCategory}
+                      onChange={handleChangeSelectedCategory}
+                      input={<OutlinedInput label="Danh Mục" />}
+                      endAdornment={
+                        <>
+                          <InputAdornment style={{ marginRight: "15px" }} position="end">
+                            <Tooltip title="Thêm danh mục" TransitionComponent={Zoom}>
+                              <IconButton /* onClick={() => setOpen(true)} */ size="small">
+                                <AiOutlinePlus className='text-dark' />
                               </IconButton>
                             </Tooltip>
-                          </>
-                          : ""}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </div>
-              <div className="ms-3" style={{ width: "100%" }}>
-                <FormControl fullWidth sx={{ width: 402 }}>
-                  <InputLabel id="demo-simple-select-label">Camera Trước</InputLabel>
-                  <Select className="custom"
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    multiple
-                    value={selectedCameraTruoc}
-                    onChange={handleChangeSelectedCameraTruoc}
-                    input={<OutlinedInput label="Camera Trước" />}
-                    renderValue={(selected) => {
-                      const selectedCameras = selected.map(id => camerasTruoc.find(c => c.id === id)).filter(Boolean);
-                      const mainCamera = selectedCameras.find(camera => ratingsCameraTruoc[camera.id]);
-                      const otherCameras = selectedCameras.filter(camera => !ratingsCameraTruoc[camera.id]);
 
-                      const renderCameraText = (camera, isMain) => {
-                        const cameraText = camera.doPhanGiai + "MP";
-                        if (isMain) {
-                          return `Chính ${cameraText}`;
-                        } else {
-                          return cameraText;
-                        }
-                      };
-
-                      let renderedCameras = [];
-
-                      if (mainCamera) {
-                        renderedCameras.push(renderCameraText(mainCamera, true));
+                          </InputAdornment>
+                        </>
                       }
-
-                      if (otherCameras.length > 0) {
-                        const otherCamerasText = otherCameras.map(camera => renderCameraText(camera, false)).join(', ');
-                        if (renderedCameras.length > 0) {
-                          renderedCameras[0] += ` & Phụ ${otherCamerasText}`;
-                        } else {
-                          renderedCameras.push(`Phụ ${otherCamerasText}`);
-                        }
-                      }
-
-                      return renderedCameras.join(', ');
-                    }}
-                    MenuProps={MenuProps}
-                    endAdornment={
-                      <>
-                        <InputAdornment style={{ marginRight: "15px" }} position="end">
-                          <Tooltip title="Thêm camera sau" TransitionComponent={Zoom}>
-                            <IconButton /* onClick={() => setOpen(true)} */ size="small">
-                              <AiOutlinePlus className='text-dark' />
-                            </IconButton>
-                          </Tooltip>
-
-                        </InputAdornment>
-                      </>
-                    }
-                  >
-                    {listSortCameraTruoc.map((c) => (
-                      <MenuItem key={c.id} value={c.id}>
-                        <Checkbox checked={selectedCameraTruoc.indexOf(c.id) > -1} />
-                        <ListItemText primary={c.doPhanGiai + "MP"} />
-                        {selectedCameraTruoc.indexOf(c.id) > -1 ?
-                          <>
-                            <Tooltip
-                              title={ratingsCameraTruoc[c.id] ? "Bỏ đặt làm camera chính" : "Đặt làm camera chính"}
-                              TransitionComponent={Zoom} placement="right-end">
-                              <IconButton onClick={(e) => {
-                                handleToggleRatingCameraTruoc(c.id);
-                                e.stopPropagation();
-                              }} size="small" className="me-1" style={{ marginBottom: "3px" }}
-                              >
-                                <Rating
-                                  style={{ fontSize: "23px", color: "" }}
-                                  max={1}
-                                  name="simple-controlled"
-                                  readOnly
-                                  value={ratingsCameraTruoc[c.id] ? 1 : 0}
-                                />
+                      renderValue={(selected) => selected.map(id => {
+                        const category = categorys.find(c => c.id === id);
+                        return category ? category.content : '';
+                      }).join(', ')}
+                    >
+                      {categorys.map((c) => (
+                        <MenuItem key={c.id} value={c.id}>
+                          <Checkbox checked={selectedCategory.indexOf(c.id) > -1} />
+                          <ListItemText primary={c.content} />
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </div>
+                <div className="ms-3" style={{ width: "100%" }}>
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">Hãng</InputLabel>
+                    <Select className="custom"
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={brand}
+                      label="Hãng"
+                      onChange={handleChangeBrand}
+                      endAdornment={
+                        <>
+                          <InputAdornment style={{ marginRight: "15px" }} position="end">
+                            <Tooltip title="Thêm hãng" TransitionComponent={Zoom}>
+                              <IconButton onClick={() => setOpenHang(true)} size="small">
+                                <AiOutlinePlus className='text-dark' />
                               </IconButton>
                             </Tooltip>
-                          </>
-                          : ""}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </div>
-            </div>
-            <div className="mt-4 d-flex">
-              <div className="" style={{ width: "100%" }}>
-                <FormControl fullWidth sx={{ width: 402 }}>
-                  <InputLabel id="demo-simple-select-label">Màn Hình</InputLabel>
-                  <Select className="custom"
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={screen}
-                    label="Màn Hình"
-                    onChange={handleChangeScreen}
-                    endAdornment={
-                      <>
-                        <InputAdornment style={{ marginRight: "15px" }} position="end">
-                          <Tooltip title="Thêm màn hình" TransitionComponent={Zoom}>
-                            <IconButton onClick={() => setOpenManHinh(true)} size="small">
-                              <AiOutlinePlus className='text-dark' />
-                            </IconButton>
-                          </Tooltip>
+                          </InputAdornment>
+                        </>
+                      }
+                    >
+                      {listHang.map((item) => {
+                        return (
+                          <MenuItem key={item.id} value={item.id}>{item.tenHang}</MenuItem>
+                        )
+                      })}
+                    </Select>
+                  </FormControl>
+                </div>
+                <div className="ms-3" style={{ width: "100%" }}>
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">Chip</InputLabel>
+                    <Select className="custom"
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={chip}
+                      label="Chip"
+                      onChange={handleChangeChip}
+                      endAdornment={
+                        <>
+                          <InputAdornment style={{ marginRight: "15px" }} position="end">
+                            <Tooltip title="Thêm chip" TransitionComponent={Zoom}>
+                              <IconButton onClick={() => setOpenChip(true)} size="small">
+                                <AiOutlinePlus className='text-dark' />
+                              </IconButton>
+                            </Tooltip>
 
-                        </InputAdornment>
-                      </>
-                    }
-                  >
-                    {listManHinh.map((item) => {
-                      return (
-                        <MenuItem key={item.id} value={item.id}>{item.loaiManHinh + " " + `(${item.doPhanGiaiManHinh.chieuRong + " x " + item.doPhanGiaiManHinh.chieuDai} pixels) ` + item.kichThuoc + `"`}</MenuItem>
-                      )
-                    })}
-                  </Select>
-                </FormControl>
+                          </InputAdornment>
+                        </>
+                      }
+                    >
+                      {listChip.map((item) => {
+                        return (
+                          <MenuItem key={item.id} value={item.id}>{item.tenChip}</MenuItem>
+                        )
+                      })}
+                    </Select>
+                  </FormControl>
+                </div>
               </div>
-              <div className="ms-3" style={{ width: "100%" }}>
-                <FormControl fullWidth sx={{ width: 402 }}>
-                  <InputLabel id="demo-simple-select-label">Thẻ SIM</InputLabel>
-                  <Select className="custom"
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    multiple
-                    value={selectedSim}
-                    onChange={handleChangeSelectedSim}
-                    input={<OutlinedInput label="Thẻ SIM" />}
-                    endAdornment={
-                      <>
-                        <InputAdornment style={{ marginRight: "15px" }} position="end">
-                          <Tooltip title="Thêm thẻ SIM" TransitionComponent={Zoom}>
-                            <IconButton onClick={() => setOpenTheSim(true)} size="small">
-                              <AiOutlinePlus className='text-dark' />
-                            </IconButton>
-                          </Tooltip>
+              <div className="mt-4 d-flex">
+                <div className="" style={{ width: "100%" }}>
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">Pin</InputLabel>
+                    <Select className="custom"
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={pin}
+                      label="Pin"
+                      onChange={handleChangePin}
+                      endAdornment={
+                        <>
+                          <InputAdornment style={{ marginRight: "15px" }} position="end">
+                            <Tooltip title="Thêm pin" TransitionComponent={Zoom}>
+                              <IconButton onClick={() => setOpenPin(true)} size="small">
+                                <AiOutlinePlus className='text-dark' />
+                              </IconButton>
+                            </Tooltip>
 
-                        </InputAdornment>
-                      </>
-                    }
-                    renderValue={(selected) => selected.map(id => {
-                      const sim = listTheSim.find(c => c.id === id);
-                      return sim ? sim.simMultiple === SimMultiple.SINGLE_SIM ? `${'1 ' + sim.loaiTheSim}` : `${'2 ' + sim.loaiTheSim}` : '';
-                    }).join(' & ')}
-                  >
-                    {listTheSim.map((c) => (
-                      <MenuItem key={c.id} value={c.id}>
-                        <Checkbox checked={selectedSim.indexOf(c.id) > -1} />
-                        <ListItemText primary={c.simMultiple === SimMultiple.SINGLE_SIM ? `${'1 ' + c.loaiTheSim}` : `${'2 ' + c.loaiTheSim}`} />
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                          </InputAdornment>
+                        </>
+                      }
+                    >
+                      {listPin.map((item) => {
+                        return (
+                          <MenuItem key={item.id} value={item.id}>{item.loaiPin + " " + item.dungLuong + " mAh"}</MenuItem>
+                        )
+                      })}
+                    </Select>
+                  </FormControl>
+                </div>
+                <div className="ms-3" style={{ width: "100%" }}>
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">Cổng Sạc</InputLabel>
+                    <Select className="custom"
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={congSac}
+                      label="Cổng Sạc"
+                      onChange={handleChangeCongSac}
+                      endAdornment={
+                        <>
+                          <InputAdornment style={{ marginRight: "15px" }} position="end">
+                            <Tooltip title="Thêm cổng sạc" TransitionComponent={Zoom}>
+                              <IconButton onClick={() => setOpenSac(true)} size="small">
+                                <AiOutlinePlus className='text-dark' />
+                              </IconButton>
+                            </Tooltip>
+
+                          </InputAdornment>
+                        </>
+                      }
+                    >
+                      {listSac.map((item) => {
+                        return (
+                          <MenuItem key={item.id} value={item.id}>{item.loaiCongSac}</MenuItem>
+                        )
+                      })}
+                    </Select>
+                  </FormControl>
+                </div>
+                <div className="ms-3" style={{ width: "100%" }}>
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">Thẻ Nhớ</InputLabel>
+                    <Select className="custom"
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={theNho}
+                      label="Thẻ Nhớ"
+                      onChange={handleChangeTheNho}
+                      defaultValue={0}
+                      endAdornment={
+                        <>
+                          <InputAdornment style={{ marginRight: "15px" }} position="end">
+                            <Tooltip title="Thêm thẻ nhớ" TransitionComponent={Zoom}>
+                              <IconButton onClick={() => setOpenTheNho(true)} size="small">
+                                <AiOutlinePlus className='text-dark' />
+                              </IconButton>
+                            </Tooltip>
+
+                          </InputAdornment>
+                        </>
+                      }
+                    >
+                      <MenuItem value={"None"}>Không</MenuItem>
+                      {listTheNho.map((item) => {
+                        return (
+                          <MenuItem key={item.id} value={item.id}>{item.loaiTheNho}</MenuItem>
+                        )
+                      })}
+                    </Select>
+                  </FormControl>
+                </div>
               </div>
-            </div>
-            <div className="mt-4 d-flex mx-auto" style={{ width: "65%" }}>
-              <div className="" style={{ width: "100%" }}>
-                <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label">Hệ Điều Hành</InputLabel>
-                  <Select className="custom"
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={opera}
-                    label="Hệ Điều Hành"
-                    onChange={handleChangeOpera}
-                  >
-                    <MenuItem value={0}>Android</MenuItem>
-                    <MenuItem value={1}>IOS</MenuItem>
-                  </Select>
-                </FormControl>
+              <div className="mt-4 d-flex">
+                <div className="" style={{ width: "100%" }}>
+                  <FormControl fullWidth sx={{ width: 402 }}>
+                    <InputLabel id="demo-simple-select-label">Camera Sau</InputLabel>
+                    <Select className="custom"
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      multiple
+                      value={selectedCameraSau}
+                      onChange={handleChangeSelectedCameraSau}
+                      input={<OutlinedInput label="Camera Sau" />}
+                      renderValue={(selected) => {
+                        const selectedCameras = selected.map(id => camerasSau.find(c => c.id === id)).filter(Boolean);
+                        const mainCamera = selectedCameras.find(camera => ratingsCameraSau[camera.id]);
+                        const otherCameras = selectedCameras.filter(camera => !ratingsCameraSau[camera.id]);
+
+                        const renderCameraText = (camera, isMain) => {
+                          const cameraText = camera.doPhanGiai + "MP";
+                          if (isMain) {
+                            return `Chính ${cameraText}`;
+                          } else {
+                            return cameraText;
+                          }
+                        };
+
+                        let renderedCameras = [];
+
+                        if (mainCamera) {
+                          renderedCameras.push(renderCameraText(mainCamera, true));
+                        }
+
+                        if (otherCameras.length > 0) {
+                          const otherCamerasText = otherCameras.map(camera => renderCameraText(camera, false)).join(', ');
+                          if (renderedCameras.length > 0) {
+                            renderedCameras[0] += ` & Phụ ${otherCamerasText}`;
+                          } else {
+                            renderedCameras.push(`Phụ ${otherCamerasText}`);
+                          }
+                        }
+
+                        return renderedCameras.join(', ');
+                      }}
+                      MenuProps={MenuProps}
+                      endAdornment={
+                        <>
+                          <InputAdornment style={{ marginRight: "15px" }} position="end">
+                            <Tooltip title="Thêm camera sau" TransitionComponent={Zoom}>
+                              <IconButton /* onClick={() => setOpen(true)} */ size="small">
+                                <AiOutlinePlus className='text-dark' />
+                              </IconButton>
+                            </Tooltip>
+
+                          </InputAdornment>
+                        </>
+                      }
+                    >
+                      {listSortCameraSau.map((c) => (
+                        <MenuItem key={c.id} value={c.id}>
+                          <Checkbox checked={selectedCameraSau.indexOf(c.id) > -1} />
+                          <ListItemText primary={c.doPhanGiai + "MP"} />
+                          {selectedCameraSau.indexOf(c.id) > -1 ?
+                            <>
+                              <Tooltip
+                                title={ratingsCameraSau[c.id] ? "Bỏ đặt làm camera chính" : "Đặt làm camera chính"}
+                                TransitionComponent={Zoom} placement="right-end">
+                                <IconButton onClick={(e) => {
+                                  handleToggleRatingCameraSau(c.id);
+                                  e.stopPropagation();
+                                }} size="small" className="me-1" style={{ marginBottom: "3px" }}
+                                >
+                                  <Rating
+                                    style={{ fontSize: "23px", color: "" }}
+                                    max={1}
+                                    name="simple-controlled"
+                                    readOnly
+                                    value={ratingsCameraSau[c.id] ? 1 : 0}
+                                  />
+                                </IconButton>
+                              </Tooltip>
+                            </>
+                            : ""}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </div>
+                <div className="ms-3" style={{ width: "100%" }}>
+                  <FormControl fullWidth sx={{ width: 402 }}>
+                    <InputLabel id="demo-simple-select-label">Camera Trước</InputLabel>
+                    <Select className="custom"
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      multiple
+                      value={selectedCameraTruoc}
+                      onChange={handleChangeSelectedCameraTruoc}
+                      input={<OutlinedInput label="Camera Trước" />}
+                      renderValue={(selected) => {
+                        const selectedCameras = selected.map(id => camerasTruoc.find(c => c.id === id)).filter(Boolean);
+                        const mainCamera = selectedCameras.find(camera => ratingsCameraTruoc[camera.id]);
+                        const otherCameras = selectedCameras.filter(camera => !ratingsCameraTruoc[camera.id]);
+
+                        const renderCameraText = (camera, isMain) => {
+                          const cameraText = camera.doPhanGiai + "MP";
+                          if (isMain) {
+                            return `Chính ${cameraText}`;
+                          } else {
+                            return cameraText;
+                          }
+                        };
+
+                        let renderedCameras = [];
+
+                        if (mainCamera) {
+                          renderedCameras.push(renderCameraText(mainCamera, true));
+                        }
+
+                        if (otherCameras.length > 0) {
+                          const otherCamerasText = otherCameras.map(camera => renderCameraText(camera, false)).join(', ');
+                          if (renderedCameras.length > 0) {
+                            renderedCameras[0] += ` & Phụ ${otherCamerasText}`;
+                          } else {
+                            renderedCameras.push(`Phụ ${otherCamerasText}`);
+                          }
+                        }
+
+                        return renderedCameras.join(', ');
+                      }}
+                      MenuProps={MenuProps}
+                      endAdornment={
+                        <>
+                          <InputAdornment style={{ marginRight: "15px" }} position="end">
+                            <Tooltip title="Thêm camera sau" TransitionComponent={Zoom}>
+                              <IconButton /* onClick={() => setOpen(true)} */ size="small">
+                                <AiOutlinePlus className='text-dark' />
+                              </IconButton>
+                            </Tooltip>
+
+                          </InputAdornment>
+                        </>
+                      }
+                    >
+                      {listSortCameraTruoc.map((c) => (
+                        <MenuItem key={c.id} value={c.id}>
+                          <Checkbox checked={selectedCameraTruoc.indexOf(c.id) > -1} />
+                          <ListItemText primary={c.doPhanGiai + "MP"} />
+                          {selectedCameraTruoc.indexOf(c.id) > -1 ?
+                            <>
+                              <Tooltip
+                                title={ratingsCameraTruoc[c.id] ? "Bỏ đặt làm camera chính" : "Đặt làm camera chính"}
+                                TransitionComponent={Zoom} placement="right-end">
+                                <IconButton onClick={(e) => {
+                                  handleToggleRatingCameraTruoc(c.id);
+                                  e.stopPropagation();
+                                }} size="small" className="me-1" style={{ marginBottom: "3px" }}
+                                >
+                                  <Rating
+                                    style={{ fontSize: "23px", color: "" }}
+                                    max={1}
+                                    name="simple-controlled"
+                                    readOnly
+                                    value={ratingsCameraTruoc[c.id] ? 1 : 0}
+                                  />
+                                </IconButton>
+                              </Tooltip>
+                            </>
+                            : ""}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </div>
               </div>
-              <div className="ms-3" style={{ width: "100%" }}>
-                <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label">Trạng Thái</InputLabel>
-                  <Select className="custom"
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={status}
-                    label="Trạng Thái"
-                    onChange={handleChangeStatus}
-                    defaultValue={0}
-                  >
-                    <MenuItem value={0}>Kinh Doanh</MenuItem>
-                    <MenuItem value={1}>Ngừng Kinh Doanh</MenuItem>
-                  </Select>
-                </FormControl>
+              <div className="mt-4 d-flex">
+                <div className="" style={{ width: "100%" }}>
+                  <FormControl fullWidth sx={{ width: 402 }}>
+                    <InputLabel id="demo-simple-select-label">Màn Hình</InputLabel>
+                    <Select className="custom"
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={screen}
+                      label="Màn Hình"
+                      onChange={handleChangeScreen}
+                      endAdornment={
+                        <>
+                          <InputAdornment style={{ marginRight: "15px" }} position="end">
+                            <Tooltip title="Thêm màn hình" TransitionComponent={Zoom}>
+                              <IconButton onClick={() => setOpenManHinh(true)} size="small">
+                                <AiOutlinePlus className='text-dark' />
+                              </IconButton>
+                            </Tooltip>
+
+                          </InputAdornment>
+                        </>
+                      }
+                    >
+                      {listManHinh.map((item) => {
+                        return (
+                          <MenuItem key={item.id} value={item.id}>{item.loaiManHinh + " " + `(${item.doPhanGiaiManHinh.chieuRong + " x " + item.doPhanGiaiManHinh.chieuDai} pixels) ` + item.kichThuoc + `"`}</MenuItem>
+                        )
+                      })}
+                    </Select>
+                  </FormControl>
+                </div>
+                <div className="ms-3" style={{ width: "100%" }}>
+                  <FormControl fullWidth sx={{ width: 402 }}>
+                    <InputLabel id="demo-simple-select-label">Thẻ SIM</InputLabel>
+                    <Select className="custom"
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      multiple
+                      value={selectedSim}
+                      onChange={handleChangeSelectedSim}
+                      input={<OutlinedInput label="Thẻ SIM" />}
+                      endAdornment={
+                        <>
+                          <InputAdornment style={{ marginRight: "15px" }} position="end">
+                            <Tooltip title="Thêm thẻ SIM" TransitionComponent={Zoom}>
+                              <IconButton onClick={() => setOpenTheSim(true)} size="small">
+                                <AiOutlinePlus className='text-dark' />
+                              </IconButton>
+                            </Tooltip>
+
+                          </InputAdornment>
+                        </>
+                      }
+                      renderValue={(selected) => selected.map(id => {
+                        const sim = listTheSim.find(c => c.id === id);
+                        return sim ? sim.simMultiple === SimMultiple.SINGLE_SIM ? `${'1 ' + sim.loaiTheSim}` : `${'2 ' + sim.loaiTheSim}` : '';
+                      }).join(' & ')}
+                    >
+                      {listTheSim.map((c) => (
+                        <MenuItem key={c.id} value={c.id}>
+                          <Checkbox checked={selectedSim.indexOf(c.id) > -1} />
+                          <ListItemText primary={c.simMultiple === SimMultiple.SINGLE_SIM ? `${'1 ' + c.loaiTheSim}` : `${'2 ' + c.loaiTheSim}`} />
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </div>
+              </div>
+              <div className="mt-4 d-flex mx-auto" style={{ width: "65%" }}>
+                <div className="" style={{ width: "100%" }}>
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">Hệ Điều Hành</InputLabel>
+                    <Select className="custom"
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={opera}
+                      label="Hệ Điều Hành"
+                      onChange={handleChangeOpera}
+                    >
+                      <MenuItem value={0}>Android</MenuItem>
+                      <MenuItem value={1}>IOS</MenuItem>
+                    </Select>
+                  </FormControl>
+                </div>
+                <div className="ms-3" style={{ width: "100%" }}>
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">Trạng Thái</InputLabel>
+                    <Select className="custom"
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={status}
+                      label="Trạng Thái"
+                      onChange={handleChangeStatus}
+                      defaultValue={0}
+                    >
+                      <MenuItem value={0}>Kinh Doanh</MenuItem>
+                      <MenuItem value={1}>Ngừng Kinh Doanh</MenuItem>
+                    </Select>
+                  </FormControl>
+                </div>
               </div>
             </div>
           </div>
@@ -1228,7 +1234,7 @@ const CreateProduct = ({ }) => {
         sims={listTheSim}
       />
       <CreatePin open={openPin} close={handleCloseOpenPin} getAll={getListPin} pins={listPin} />
-      <CreateCauHinh productName={productName} getProduct={product} />
+      <CreateCauHinh productName={productName} getProduct={product} getOverplay={getOverplay} />
       {isLoading && <LoadingIndicator />}
     </>
   )

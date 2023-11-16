@@ -1,9 +1,12 @@
 package beephone_shop_projects.core.admin.product_managements.controller;
 
 import beephone_shop_projects.core.admin.product_managements.model.request.RomRequest;
+import beephone_shop_projects.core.admin.product_managements.model.request.RomRequest;
+import beephone_shop_projects.core.admin.product_managements.model.response.RomResponse;
 import beephone_shop_projects.core.admin.product_managements.model.response.RomResponse;
 import beephone_shop_projects.core.admin.product_managements.service.impl.RomServiceImpl;
 import beephone_shop_projects.core.common.base.ResponseObject;
+import beephone_shop_projects.entity.Rom;
 import beephone_shop_projects.infrastructure.constant.ApiConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -16,18 +19,30 @@ import java.util.List;
 public class RomController {
 
     @Autowired
-    private RomServiceImpl RomService;
+    private RomServiceImpl romService;
 
     @GetMapping
     public ResponseObject<List<RomResponse>> getRom() {
-        List<RomResponse> Rom = RomService.findAll();
+        List<RomResponse> Rom = romService.findAll();
         return new ResponseObject<>(Rom);
     }
 
     @PostMapping
     public ResponseObject<RomResponse> createRom(@RequestBody RomRequest RomRequest) throws Exception {
-        RomResponse createdRom = RomService.save(RomRequest);
+        RomResponse createdRom = romService.save(RomRequest);
         return new ResponseObject<>(createdRom);
+    }
+
+    @PutMapping
+    public ResponseObject<RomResponse> updateRom(@RequestBody RomRequest romRequest) throws Exception {
+        RomResponse romResponse = romService.update(romRequest);
+        return new ResponseObject<>(romResponse);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseObject<Rom> doiTrangThai(@PathVariable String id) throws Exception {
+        Rom doiTrangThai = romService.doiTrangThai(id);
+        return new ResponseObject<>(doiTrangThai);
     }
 
 }

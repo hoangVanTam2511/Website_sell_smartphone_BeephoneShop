@@ -1,46 +1,38 @@
 import React, { useEffect, useState } from "react";
-import {
-  Link,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Empty, Table } from "antd";
 import {
-  Box,
+  Autocomplete,
   Dialog,
   DialogContent,
+  FormControl,
   IconButton,
+  InputLabel,
+  MenuItem,
   Pagination,
+  Select,
   Slide,
   TextField,
   Tooltip,
 } from "@mui/material";
 import { PlusOutlined } from "@ant-design/icons";
 import Card from "../../../components/Card";
-import { format } from "date-fns";
 import axios from "axios";
-import { parseInt } from "lodash";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import Zoom from "@mui/material/Zoom";
-import * as dayjs from "dayjs";
-import {
-  OrderStatusString,
-  OrderTypeString,
-  StatusCommonProducts,
-} from "./enum";
-import LoadingIndicator from "../../../utilities/loading";
-import CreateSac from "./create-sac";
+import { Notistack, StatusCommonProducts } from "./enum";
 import CreateHang from "./create-hang";
+import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
+import useCustomSnackbar from "../../../utilities/notistack";
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const ManagementHangs = () => {
   const navigate = useNavigate();
   const [listHang, setListHang] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const [totalPages, setTotalPages] = useState();
   const [refreshPage, setRefreshPage] = useState(1);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -61,24 +53,24 @@ const ManagementHangs = () => {
       .then((response) => {
         setListHang(response.data.data);
         setTotalPages(response.data.totalPages);
-        setIsLoading(false);
+        // setIsLoading(false);
       })
       .catch((error) => {
         console.error(error);
-        setIsLoading(false);
+        // setIsLoading(false);
       });
   };
 
-  const getListhang = (page) => {
+  const getListHang = (page) => {
     axios
       .get(`http://localhost:8080/api/brands`)
       .then((response) => {
         setListHang(response.data.data);
-        setIsLoading(false);
+        // setIsLoading(false);
       })
       .catch((error) => {
         console.error(error);
-        setIsLoading(false);
+        // setIsLoading(false);
       });
   };
 
@@ -92,7 +84,7 @@ const ManagementHangs = () => {
   };
 
   useEffect(() => {
-    getListhang();
+    getListHang();
   }, []);
 
   const BrandTable = () => {
@@ -183,8 +175,42 @@ const ManagementHangs = () => {
           <div className="d-flex justify-content-center">
             <div className="button-container">
               <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
-                <IconButton size="">
+                <IconButton
+                  onClick={() => {
+                    handleClickOpen1(record.id);
+                    setIdHang(record.id);
+                  }}
+                >
                   <BorderColorOutlinedIcon color="primary" />
+                </IconButton>
+              </Tooltip>
+
+              {/* Hàm đổi trạng thái */}
+
+              <Tooltip
+                TransitionComponent={Zoom}
+                title={
+                  record.status === StatusCommonProducts.ACTIVE
+                    ? "Ngừng kích hoạt"
+                    : record.status === StatusCommonProducts.IN_ACTIVE
+                    ? "Kích hoạt"
+                    : ""
+                }
+              >
+                <IconButton
+                  className="ms-2"
+                  style={{ marginTop: "6px" }}
+                  onClick={() => doiTrangThaiProducts(record.id)}
+                >
+                  <AssignmentOutlinedIcon
+                    color={
+                      record.status === StatusCommonProducts.IN_ACTIVE
+                        ? "error"
+                        : record.status === StatusCommonProducts.ACTIVE
+                        ? "success"
+                        : "disabled"
+                    }
+                  />
                 </IconButton>
               </Tooltip>
             </div>
@@ -193,6 +219,85 @@ const ManagementHangs = () => {
       ),
     },
   ];
+
+  const [hangCode, setHangCode] = useState("");
+  const [status, setStatus] = useState("");
+  const [tenHang, setTenHang] = useState("");
+  const [idHang, setIdHang] = useState("");
+
+  const detailHangs = async (id) => {
+    await axios
+      .get(`http://localhost:8080/api/brands/${id}`)
+      .then((response) => {
+        setHangCode(response.data.data.ma);
+        setStatus(response.data.data.status);
+        setTenHang(response.data.data.tenHang);
+        console.log(response.data.data);
+      })
+      .catch((error) => {});
+  };
+
+  const [open1, setOpen1] = React.useState(false);
+
+  const handleClickOpen1 = (id) => {
+    detailHangs(id);
+    setOpen1(true);
+  };
+
+  const handleClose1 = () => {
+    setOpen1(false);
+  };
+
+  const uniqueHang = listHang
+    .map((option) => option.tenHang.toString())
+    .filter((value, index, self) => {
+      return self.indexOf(value) === index;
+    });
+
+  const handleChangeTenHang = (event, value) => {
+    setTenHang(value);
+  };
+
+  const handleChangeStatus = (event) => {
+    setStatus(event.target.value);
+  };
+
+  const { handleOpenAlertVariant } = useCustomSnackbar();
+
+  const updateHang = () => {
+    let obj = {
+      id: idHang,
+      ma: hangCode,
+      tenHang: tenHang,
+      status: status,
+    };
+    axios
+      .put(`http://localhost:8080/api/brands`, obj)
+      .then((response) => {
+        getListHang();
+        handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
+        setOpen1(false);
+      })
+      .catch((error) => {
+        handleOpenAlertVariant(error.response.data.message, Notistack.ERROR);
+      });
+  };
+
+  const doiTrangThaiProducts = (idHang) => {
+    axios
+      .put(`http://localhost:8080/api/brands/${idHang}`)
+      .then((response) => {
+        getListHang();
+        handleOpenAlertVariant(
+          "Đổi trạng thái thành công!!!",
+          Notistack.SUCCESS
+        );
+      })
+      .catch((error) => {
+        handleOpenAlertVariant(error.response.data.message, Notistack.ERROR);
+      });
+  };
+
   return (
     <>
       <div
@@ -268,19 +373,101 @@ const ManagementHangs = () => {
           <div className="mx-auto">
             <Pagination
               color="primary" /* page={parseInt(currentPage)} key={refreshPage} count={totalPages} */
-            // onChange={handlePageChange}
+              // onChange={handlePageChange}
             />
           </div>
           <div className="mt-4"></div>
         </Card>
       </div>
-      {isLoading && <LoadingIndicator />}
+      {/* {isLoading && <LoadingIndicator />} */}
       <CreateHang
         open={open}
         close={handleClose}
-        getAll={getListhang}
+        getAll={getListHang}
         hangs={listHang}
       />
+      <Dialog
+        open={open1}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={handleClose1}
+        maxWidth="md"
+        maxHeight="md"
+        sx={{
+          marginBottom: "170px",
+        }}
+      >
+        <DialogContent>
+          <div className="mt-4" style={{ width: "700px" }}>
+            <div className="container" style={{}}>
+              <div className="text-center" style={{}}>
+                <span
+                  className=""
+                  style={{ fontWeight: "550", fontSize: "29px" }}
+                >
+                  SỬA HÃNG
+                </span>
+              </div>
+              <div className="mx-auto mt-3 pt-2">
+                <div>
+                  <Autocomplete
+                    fullWidth
+                    className="custom"
+                    id="free-solo-demo"
+                    freeSolo
+                    inputValue={tenHang}
+                    onInputChange={handleChangeTenHang}
+                    options={uniqueHang}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Tên Hãng" />
+                    )}
+                  />
+                </div>
+                <div className="mt-3" style={{}}>
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">
+                      Trạng Thái
+                    </InputLabel>
+                    <Select
+                      className="custom"
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={status}
+                      label="Trạng Thái"
+                      onChange={handleChangeStatus}
+                      // defaultValue={StatusCommonProductsNumber.ACTIVE}
+                    >
+                      <MenuItem value={StatusCommonProducts.ACTIVE}>
+                        Hoạt Động
+                      </MenuItem>
+                      <MenuItem value={StatusCommonProducts.IN_ACTIVE}>
+                        Ngừng Hoạt Động
+                      </MenuItem>
+                    </Select>
+                  </FormControl>
+                </div>
+                <div className="mt-4 pt-1 d-flex justify-content-end">
+                  <Button
+                    onClick={() => updateHang()}
+                    className="rounded-2 button-mui"
+                    type="primary"
+                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                  >
+                    <span
+                      className=""
+                      style={{ marginBottom: "2px", fontWeight: "500" }}
+                    >
+                      Xác Nhận
+                    </span>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* {isLoading && <LoadingIndicator />} */}
+        </DialogContent>
+        <div className="mt-3"></div>
+      </Dialog>
     </>
   );
 };

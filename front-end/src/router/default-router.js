@@ -107,7 +107,9 @@ import CreateProduct from "../views/admin/order-manager/create-product";
 import ManagementTheNhos from "../views/admin/order-manager/management-the-nho";
 import CreateTheNho from "../views/admin/order-manager/create-the-nho";
 import UpdateMauSac from "../views/admin/order-manager/update-mau-sac";
-import ManagementImage from "../views/admin/order-manager/management-image";
+import ManagementDanhMuc from "../views/admin/order-manager/management-danh-muc";
+import CreateDanhMuc from "../views/admin/order-manager/create-danh-muc";
+import QuetQRCode from "../views/admin/voucher-manager/quetqr";
 
 export const DefaultRouter = [
   {
@@ -321,6 +323,14 @@ export const DefaultRouter = [
         element: <ManagementColors />,
       },
       {
+        path: "dashboard/danh-mucs",
+        element: <ManagementDanhMuc />,
+      },
+      {
+        path: "dashboard/danh-mucs/create",
+        element: <CreateDanhMuc />,
+      },
+      {
         path: "dashboard/hang/create",
         element: <CreateHang />,
       },
@@ -353,16 +363,16 @@ export const DefaultRouter = [
         element: <ManagementTheNhos />,
       },
       {
-        path: "dashboard/image",
-        element: <ManagementImage />,
-      },
-      {
         path: "dashboard/the-nhos/create",
         element: <CreateTheNho />,
       },
       {
         path: "dashboard/create-product",
         element: <CreateProduct />,
+      },
+      {
+        path: "dashboard/quet-qr",
+        element: <QuetQRCode />,
       },
       // {
       //   path: 'dashboard/add-product',

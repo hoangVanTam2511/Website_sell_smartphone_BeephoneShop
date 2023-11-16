@@ -1,11 +1,16 @@
 import {
+  StatusCommonProducts,
+  StatusCommonProductsNumber,
   StatusDiscount,
   StatusDiscountNumber,
+  TypeDiscountNumber,
+  TypeDiscountString,
 } from "../views/admin/order-manager/enum";
 import {
   StatusAccountCus,
   StatusCusNumber,
 } from "../views/admin/account-manager/khachhang/enum";
+
 export const ConvertStatusVoucherNumberToString = (EnumNumber) => {
   let statusNumber;
 
@@ -22,12 +27,50 @@ export const ConvertStatusVoucherNumberToString = (EnumNumber) => {
     case StatusDiscountNumber.DA_HUY:
       statusNumber = StatusDiscount.DA_HUY;
       break;
+    case StatusDiscountNumber.TAM_DUNG:
+      statusNumber = StatusDiscount.TAM_DUNG;
+      break;
     default:
       statusNumber = ""; // Nếu giá trị không khớp với bất kỳ trạng thái nào.
   }
 
   return statusNumber;
 };
+
+export const ConvertTypeVoucherNumberToString = (EnumNumber) => {
+  let statusNumber;
+
+  switch (EnumNumber) {
+    case TypeDiscountNumber.VND:
+      statusNumber = TypeDiscountString.VND;
+      break;
+    case TypeDiscountNumber.PERCENT:
+      statusNumber = TypeDiscountString.PERCENT;
+      break;
+    default:
+      statusNumber = ""; // Nếu giá trị không khớp với bất kỳ trạng thái nào.
+  }
+
+  return statusNumber;
+};
+
+export const ConvertStatusProductsNumberToString = (EnumNumber) => {
+  let statusNumber;
+
+  switch (EnumNumber) {
+    case StatusCommonProductsNumber.ACTIVE:
+      statusNumber = StatusCommonProducts.ACTIVE;
+      break;
+    case StatusCommonProductsNumber.IN_ACTIVE:
+      statusNumber = StatusCommonProducts.IN_ACTIVE;
+      break;
+    default:
+      statusNumber = ""; // Nếu giá trị không khớp với bất kỳ trạng thái nào.
+  }
+
+  return statusNumber;
+};
+
 export const ConvertStatusToString = (EnumNumber) => {
   let statusNumber;
 

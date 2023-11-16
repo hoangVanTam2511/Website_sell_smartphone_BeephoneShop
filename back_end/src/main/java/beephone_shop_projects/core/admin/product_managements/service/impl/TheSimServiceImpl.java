@@ -6,30 +6,32 @@ import beephone_shop_projects.core.admin.product_managements.model.request.TheSi
 import beephone_shop_projects.core.admin.product_managements.model.response.TheSimResponse;
 import beephone_shop_projects.core.admin.product_managements.repository.TheSimRepository;
 import beephone_shop_projects.core.admin.product_managements.service.TheSimService;
-import beephone_shop_projects.entity.ManHinh;
 import beephone_shop_projects.entity.TheSim;
+import beephone_shop_projects.infrastructure.constant.StatusCommon;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.Random;
-
 @Service
 public class TheSimServiceImpl extends AbstractServiceImpl<TheSim, TheSimResponse, TheSimRequest, String> implements TheSimService {
 
-  @Autowired
-  private TheSimRepository theSimRepository;
-  public TheSimServiceImpl(TheSimRepository repo, TheSimConverter converter) {
-    super(repo, converter);
-  }
+    @Autowired
+    private TheSimRepository theSimRepository;
 
-  @Override
-  public Page<TheSim> findAllSimCards(Integer pageNo) {
-    Pageable pageable= PageRequest.of(pageNo-1,5);
-    return theSimRepository.findAll(pageable);
-  }
+    @Autowired
+    private TheSimConverter theSimConverter;
+
+    public TheSimServiceImpl(TheSimRepository repo, TheSimConverter converter) {
+        super(repo, converter);
+    }
+
+    @Override
+    public Page<TheSim> findAllSimCards(Integer pageNo) {
+        Pageable pageable = PageRequest.of(pageNo - 1, 5);
+        return theSimRepository.findAll(pageable);
+    }
 
 //  @Override
 //  public TheSim add(TheSimRequest theSimRequest) {
@@ -48,5 +50,16 @@ public class TheSimServiceImpl extends AbstractServiceImpl<TheSim, TheSimRespons
 //      throw new RuntimeException(e);
 //    }
 //  }
+
+    @Override
+    public TheSim doiTrangThai(String id) throws Exception {
+        TheSim theSim = theSimRepository.findOneById(id);
+        if (theSim.getStatus() == StatusCommon.ACTIVE) {
+            theSim.setStatus(StatusCommon.IN_ACTIVE);
+        } else {
+            theSim.setStatus(StatusCommon.ACTIVE);
+        }
+        return theSimRepository.save(theSim);
+    }
 
 }

@@ -35,6 +35,7 @@ export const StatusDiscount = {
   HOAT_DONG: "HOAT_DONG",
   NGUNG_HOAT_DONG: "NGUNG_HOAT_DONG",
   DA_HUY: "DA_HUY",
+  TAM_DUNG: "TAM_DUNG",
 };
 
 export const StatusDiscountNumber = {
@@ -42,6 +43,7 @@ export const StatusDiscountNumber = {
   HOAT_DONG: 1,
   NGUNG_HOAT_DONG: 2,
   DA_HUY: 3,
+  TAM_DUNG: 4,
 };
 
 export const TypeDiscountString = {

@@ -45,7 +45,7 @@ import LoadingIndicator from "../../../utilities/loading";
 import generateRandomCode from "../../../utilities/randomCode";
 import { Button } from "@mui/joy";
 import useCustomSnackbar from "../../../utilities/notistack";
-import { Notistack } from "./enum";
+import { Notistack, StatusCommonProductsNumber } from "./enum";
 import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
 // import Sketch from '@uiw/react-color-sketch';
 
@@ -56,9 +56,10 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const CreateMauSac = ({ open, close, getAll, colors }) => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = React.useState(false);
-  const [status, setStatus] = React.useState(0);
+  const [status, setStatus] = React.useState(StatusCommonProductsNumber.ACTIVE);
   const [colorName, setColorName] = useState("");
   const [openConfirm, setOpenConfirm] = useState(false);
+  const [key, setKey] = useState(1);
   const { handleOpenAlertVariant } = useCustomSnackbar();
 
   const handleOpenDialogConfirmAdd = () => {
@@ -96,9 +97,9 @@ const CreateMauSac = ({ open, close, getAll, colors }) => {
     axios
       .post(`http://localhost:8080/api/colors`, obj)
       .then((response) => {
+        handleReset();
         close();
         getAll();
-        handleReset();
         handleOpenAlertVariant("Thêm thành công!!!", Notistack.SUCCESS);
       })
       .catch((error) => {
@@ -107,7 +108,7 @@ const CreateMauSac = ({ open, close, getAll, colors }) => {
   };
 
   const handleReset = () => {
-    setStatus("");
+    setStatus(StatusCommonProductsNumber.ACTIVE);
     setColorName("");
   };
 
@@ -142,7 +143,10 @@ const CreateMauSac = ({ open, close, getAll, colors }) => {
           <div className="mt-4" style={{ width: "700px" }}>
             <div className="container">
               <div className="text-center">
-                <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>
+                <span
+                  className=""
+                  style={{ fontWeight: "550", fontSize: "29px" }}
+                >
                   THÊM MÀU SẮC
                 </span>
               </div>
@@ -173,10 +177,15 @@ const CreateMauSac = ({ open, close, getAll, colors }) => {
                       id="demo-simple-select"
                       value={status}
                       label="Trạng Thái"
+                      defaultValue={StatusCommonProductsNumber.ACTIVE}
                       onChange={handleChangeStatus}
                     >
-                      <MenuItem value={0}>Hoạt Động</MenuItem>
-                      <MenuItem value={1}>Ngừng Hoạt Động</MenuItem>
+                      <MenuItem value={StatusCommonProductsNumber.ACTIVE}>
+                        Hoạt Động
+                      </MenuItem>
+                      <MenuItem value={StatusCommonProductsNumber.IN_ACTIVE}>
+                        Ngừng Hoạt Động
+                      </MenuItem>
                     </Select>
                   </FormControl>
                 </div>

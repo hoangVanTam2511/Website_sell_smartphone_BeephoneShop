@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.admin.voucher_management.service.impl;
 
+import beephone_shop_projects.core.admin.voucher_management.model.request.ChangeStatusVoucherRequest;
 import beephone_shop_projects.core.admin.voucher_management.model.request.CreateVoucherRequest;
 import beephone_shop_projects.core.admin.voucher_management.model.request.FindVoucherRequest;
 import beephone_shop_projects.core.admin.voucher_management.model.request.UpdateVoucherRequest;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -32,12 +34,12 @@ import java.util.List;
 public class VoucherServiceImpl implements VoucherService {
 
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    private static final int CODE_LENGTH = 7;
+    private static final int CODE_LENGTH =7;
 
     @Autowired
     private VoucherRepository voucherRepository;
 
-    //    @Scheduled(fixedRate = 5000, initialDelay = 30000)
+//    @Scheduled(fixedRate = 5000, initialDelay = 30000)
     public List<Voucher> updateStatusVoucher() {
         Date dateTime = new Date();
         List<Voucher> listToUpdate = new ArrayList<>();
@@ -46,20 +48,23 @@ public class VoucherServiceImpl implements VoucherService {
         List<Voucher> list1 = voucherRepository.checkEndDateAndStatus(dateTime, StatusDiscount.NGUNG_HOAT_DONG);
         List<Voucher> list3 = voucherRepository.checkToStartBeforDateNowAndStatus(dateTime, StatusDiscount.HOAT_DONG);
         List<Voucher> list4 = voucherRepository.checkToStartBeforDateNowAndStatus(dateTime, StatusDiscount.DA_HUY);
+        List<Voucher> list5 = voucherRepository.checkToStartBeforDateNowAndStatus(dateTime, StatusDiscount.TAM_DUNG);
 
         listToUpdate.addAll(list);
         listToUpdate.addAll(list1);
         listToUpdate.addAll(list3);
         listToUpdate.addAll(list4);
+        listToUpdate.addAll(list5);
+
 
         for (Voucher v : listToUpdate) {
-            if (list.contains(v) && list4.contains(v)) {
+            if (list.contains(v) && list4.contains(v) && list5.contains(v)) {
                 v.setTrangThai(StatusDiscount.CHUA_DIEN_RA);
             }
             if (list1.contains(v)) {
                 v.setTrangThai(StatusDiscount.NGUNG_HOAT_DONG);
             }
-            if (list3.contains(v) && list4.contains(v)) {
+            if (list3.contains(v) && list4.contains(v) && list5.contains(v)) {
                 v.setTrangThai(StatusDiscount.HOAT_DONG);
             }
         }
@@ -103,8 +108,8 @@ public class VoucherServiceImpl implements VoucherService {
         String codeVoucher = request.getMa().trim();
         if (request.getMa().isBlank()) {
             codeVoucher = "BEE" + generateRandomCode();
-        } else if (request.getMa().length() < 10 || request.getMa().length() > 10) {
-            throw new RestApiException("Mã voucher phải đủ 10 ký tự !!!");
+        } else if (request.getMa().length() < 10 ) {
+            throw new RestApiException("Mã voucher phải đủ 10 ký tự!!!");
         }
         Voucher voucher = Voucher.builder()
                 .ma(codeVoucher)
@@ -128,32 +133,38 @@ public class VoucherServiceImpl implements VoucherService {
         String codeVoucher = request.getMa().trim();
         if (request.getMa().isBlank()) {
             codeVoucher = "BEE" + generateRandomCode();
-        } else if (request.getMa().length() < 10 || request.getMa().length() > 10) {
+        } else if (request.getMa().length() < 10 || request.getMa().length() > 15) {
             throw new RestApiException("Mã voucher phải đủ 10 ký tự !!!");
         }
-        StatusDiscount status = StatusDiscount.CHUA_DIEN_RA;
-        Date dateTime = new Date();
-        if (request.getNgayBatDau().after(dateTime) && request.getNgayKetThuc().before(dateTime)) {
-            status = StatusDiscount.HOAT_DONG;
-        }
-        if (request.getNgayBatDau().before(dateTime)) {
-            status = StatusDiscount.NGUNG_HOAT_DONG;
-        }
-        if (request.getNgayKetThuc().after(dateTime)) {
-            status = StatusDiscount.CHUA_DIEN_RA;
-        }
-        if (voucher != null) {
-            voucher.setMa(codeVoucher);
-            voucher.setTen(request.getTen().trim());
-            voucher.setGiaTriToiDa(request.getLoaiVoucher() == TypeDiscount.VND ? null : request.getGiaTriToiDa());
-            voucher.setLoaiVoucher(request.getLoaiVoucher());
-            voucher.setDieuKienApDung(request.getDieuKienApDung());
-            voucher.setSoLuong(request.getSoLuong());
-            voucher.setNgayBatDau(request.getNgayBatDau());
-            voucher.setNgayKetThuc(request.getNgayKetThuc());
-            voucher.setGiaTriVoucher(request.getGiaTriVoucher());
-            voucher.setTrangThai(status);
-            return voucherRepository.save(voucher);
+//        StatusDiscount status = StatusDiscount.CHUA_DIEN_RA;
+//        Date dateTime = new Date();
+//        if (request.getNgayBatDau().after(dateTime) && request.getNgayKetThuc().before(dateTime)) {
+//            status = StatusDiscount.HOAT_DONG;
+//        }
+//        if (request.getNgayBatDau().before(dateTime)) {
+//            status = StatusDiscount.NGUNG_HOAT_DONG;
+//        }
+//        if (request.getNgayKetThuc().after(dateTime)) {
+//            status = StatusDiscount.CHUA_DIEN_RA;
+//        }
+        if (voucher.getTrangThai() == StatusDiscount.HOAT_DONG) {
+            throw new RestApiException("Không thể sửa khi chưa tạm dừng voucher");
+        } else if (voucher.getTrangThai() == StatusDiscount.DA_HUY) {
+            throw new RestApiException("Không thể sửa khi voucher này đã bị hủy");
+        } else {
+            if (voucher != null) {
+                voucher.setMa(codeVoucher);
+                voucher.setTen(request.getTen().trim());
+                voucher.setGiaTriToiDa(request.getLoaiVoucher() == TypeDiscount.VND ? null : request.getGiaTriToiDa());
+                voucher.setLoaiVoucher(request.getLoaiVoucher());
+                voucher.setDieuKienApDung(request.getDieuKienApDung());
+                voucher.setSoLuong(request.getSoLuong());
+                voucher.setNgayBatDau(request.getNgayBatDau());
+                voucher.setNgayKetThuc(request.getNgayKetThuc());
+                voucher.setGiaTriVoucher(request.getGiaTriVoucher());
+//                voucher.setTrangThai(status);
+                return voucherRepository.save(voucher);
+            }
         }
         return null;
     }
@@ -169,23 +180,58 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
-    public Voucher doiTrangThai(String id) {
+    public Voucher doiTrangThai(ChangeStatusVoucherRequest request, String id) {
         Voucher voucher = voucherRepository.findById(id).get();
-
-        if (voucherRepository.findById(id) != null) {
-            // in ra lỗi
-        }
-        if (voucher.getTrangThai() == StatusDiscount.HOAT_DONG || voucher.getTrangThai() == StatusDiscount.CHUA_DIEN_RA) {
-            voucher.setTrangThai(StatusDiscount.DA_HUY);
-        } else if (voucher.getTrangThai() == StatusDiscount.DA_HUY) {
-            if (voucher.getNgayBatDau().after(new Date())) {
-                voucher.setTrangThai(StatusDiscount.CHUA_DIEN_RA);
-            } else if (voucher.getNgayKetThuc().after(new Date())) {
-                voucher.setTrangThai(StatusDiscount.HOAT_DONG);
+//        if (request.getStatus().equals(StatusDiscount.DA_HUY) && request.getLyDoHuy().isBlank()) {
+//            throw new RestApiException("Vui lòng nhập lý do hủy phiếu giảm giá");
+//        } else {
+            if (voucher != null) {
+                voucher.setLyDoHuy(request.getLyDoHuy());
+                voucher.setTrangThai(request.getStatus());
             }
-        }
-        return voucherRepository.save(voucher);
+            return voucherRepository.save(voucher);
+//        }
     }
+
+    @Override
+    public Voucher kichHoatVoucher(String id) {
+        Voucher voucher = voucherRepository.findById(id).get();
+        StatusDiscount status = null;
+        Date dateTime = new Date();
+        if (voucher.getNgayBatDau().after(dateTime) && voucher.getNgayKetThuc().before(dateTime)) {
+            status = StatusDiscount.HOAT_DONG;
+        }
+        if (voucher.getNgayBatDau().before(dateTime)) {
+            status = StatusDiscount.NGUNG_HOAT_DONG;
+        }
+        if (voucher.getNgayKetThuc().after(dateTime)) {
+            status = StatusDiscount.CHUA_DIEN_RA;
+        }
+        if (voucher != null) {
+            voucher.setTrangThai(status);
+            return voucherRepository.save(voucher);
+        }
+        return null;
+    }
+
+//    @Override
+//    public Voucher doiTrangThai(String id) {
+//        Voucher voucher = voucherRepository.findById(id).get();
+//
+//        if (voucherRepository.findById(id) != null) {
+//            // in ra lỗi
+//        }
+//        if (voucher.getTrangThai() == StatusDiscount.HOAT_DONG || voucher.getTrangThai() == StatusDiscount.CHUA_DIEN_RA) {
+//            voucher.setTrangThai(StatusDiscount.DA_HUY);
+//        } else if (voucher.getTrangThai() == StatusDiscount.DA_HUY) {
+//            if (voucher.getNgayBatDau().after(new Date())) {
+//                voucher.setTrangThai(StatusDiscount.CHUA_DIEN_RA);
+//            } else if (voucher.getNgayKetThuc().after(new Date())) {
+//                voucher.setTrangThai(StatusDiscount.HOAT_DONG);
+//            }
+//        }
+//        return voucherRepository.save(voucher);
+//    }
 
     @Override
     public Page<Voucher> getAll(FindVoucherRequest request) {
@@ -243,6 +289,7 @@ public class VoucherServiceImpl implements VoucherService {
             request.setKeyword("");
         }
         Pageable pageable = PageRequest.of(request.getPageNo() - 1, request.getPageSize());
+        updateStatusVoucher();
         return voucherRepository.getVoucherStatusIsActive(pageable, request);
     }
 }

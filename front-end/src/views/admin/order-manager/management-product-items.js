@@ -17,6 +17,8 @@ import * as dayjs from "dayjs";
 import { OrderStatusString, OrderTypeString } from "./enum";
 import LoadingIndicator from '../../../utilities/loading';
 import { FaPencilAlt } from "react-icons/fa";
+import { ImportExcelImei } from "./import-imei-by";
+import { FaDownload, FaUpload } from "react-icons/fa6";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -64,6 +66,15 @@ const ManagementProductItems = ({ open, close, productItems, productName }) => {
       ),
     },
     {
+      title: "Ảnh",
+      align: "center",
+      key: "ma",
+      width: "15%",
+      render: (text, record) => (
+        <img src={record && record.image && record.image.path} alt="" style={{ width: "150px", height: "150px" }} />
+      ),
+    },
+    {
       title: "Mã Sản Phẩm",
       align: "center",
       key: "ma",
@@ -77,7 +88,7 @@ const ManagementProductItems = ({ open, close, productItems, productName }) => {
       title: "Tên Sản Phẩm",
       align: "center",
       key: "tenSanPham",
-      width: "15%",
+      width: "25%",
       dataIndex: "tenSanPham",
       render: (text, record) => (
         <span style={{ fontWeight: "400" }}>{productName + " " + record.ram.dungLuong + "/" +
@@ -87,7 +98,7 @@ const ManagementProductItems = ({ open, close, productItems, productName }) => {
     {
       title: "Màu Sắc",
       align: "center",
-      width: "15%",
+      width: "11%",
       render: (text, record) => (
         <span style={{ fontWeight: "400" }}>{record.mauSac.tenMauSac}</span>
       ),
@@ -95,7 +106,7 @@ const ManagementProductItems = ({ open, close, productItems, productName }) => {
     {
       title: "Đơn Giá",
       align: "center",
-      width: "15%",
+      width: "11%",
       render: (text, record) => (
         <span className="txt-price" style={{ fontWeight: "400" }}>{
           record.donGia && record.donGia.toLocaleString("vi-VN", {
@@ -108,11 +119,15 @@ const ManagementProductItems = ({ open, close, productItems, productName }) => {
     {
       title: "Số Lượng Tồn",
       align: "center",
-      width: "15%",
+      width: "11%",
       render: (text, record) => (
-        <span style={{ fontWeight: "400" }} className="underline-blue">
-          {record.soLuongTonKho}
-        </span>
+        <Tooltip title="Danh sách IMEI" TransitionComponent={Zoom}>
+          <div style={{ cursor: "pointer" }}>
+            <span style={{ fontWeight: "400" }} className="underline-blue">
+              {record.soLuongTonKho}
+            </span>
+          </div>
+        </Tooltip>
       ),
     },
     {
@@ -152,39 +167,106 @@ const ManagementProductItems = ({ open, close, productItems, productName }) => {
                   CHI TIẾT SẢN PHẨM
                 </span>
               </div>
-              <div className="header-title mt-3">
-                <TextField
-                  label="Tìm Sản Phẩm Chi Tiết"
-                  // onChange={handleGetValueFromInputTextField}
-                  // value={keyword}
-                  InputLabelProps={{
-                    sx: {
-                      marginTop: "",
-                      textTransform: "capitalize",
-                    },
-                  }}
-                  inputProps={{
-                    style: {
-                      height: "23px",
-                      width: "250px",
-                    },
-                  }}
-                  size="small"
-                  className=""
-                />
-                <Button
-                  // onClick={handleRefreshData}
-                  className="rounded-2 ms-2"
-                  type="warning"
-                  style={{ width: "100px", fontSize: "15px" }}
-                >
-                  <span
-                    className="text-dark"
-                    style={{ fontWeight: "500", marginBottom: "2px" }}
+              <div className="header-title mt-3 d-flex justify-content-between">
+                <div>
+                  <TextField
+                    label="Tìm Sản Phẩm Chi Tiết"
+                    // onChange={handleGetValueFromInputTextField}
+                    // value={keyword}
+                    InputLabelProps={{
+                      sx: {
+                        marginTop: "",
+                        textTransform: "capitalize",
+                      },
+                    }}
+                    inputProps={{
+                      style: {
+                        height: "23px",
+                        width: "250px",
+                      },
+                    }}
+                    size="small"
+                    className=""
+                  />
+                  <Button
+                    // onClick={handleRefreshData}
+                    className="rounded-2 ms-2"
+                    type="warning"
+                    style={{ width: "100px", fontSize: "15px" }}
                   >
-                    Làm Mới
-                  </span>
-                </Button>
+                    <span
+                      className="text-dark"
+                      style={{ fontWeight: "500", marginBottom: "2px" }}
+                    >
+                      Làm Mới
+                    </span>
+                  </Button>
+                </div>
+                <div>
+                  <Button
+                    // onClick={handleUploadClick}
+                    className="rounded-2 button-mui me-2"
+                    type="primary"
+                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                  >
+                    <FaUpload
+                      className="ms-1"
+                      style={{
+                        position: "absolute",
+                        bottom: "13.5px",
+                        left: "10px",
+                      }}
+                    />
+                    <span
+                      className=""
+                      style={{ marginBottom: "2px", fontWeight: "500", marginLeft: "21px" }}
+                    >
+                      Import IMEI
+                    </span>
+                  </Button>
+                  <Button
+                    // onClick={handleUploadClick}
+                    className="rounded-2 button-mui me-2"
+                    type="primary"
+                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                  >
+                    <FaDownload
+                      className="ms-1"
+                      style={{
+                        position: "absolute",
+                        bottom: "13.5px",
+                        left: "10px",
+                      }}
+                    />
+                    <span
+                      className=""
+                      style={{ marginBottom: "2px", fontWeight: "500", marginLeft: "21px" }}
+                    >
+                      Export Excel
+                    </span>
+                  </Button>
+                  <Button
+                    // onClick={handleUploadClick}
+                    className="rounded-2 button-mui me-2"
+                    type="primary"
+                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                  >
+                    <FaDownload
+                      className="ms-1"
+                      style={{
+                        position: "absolute",
+                        bottom: "13.5px",
+                        left: "10px",
+                      }}
+                    />
+                    <span
+                      className=""
+                      style={{ marginBottom: "2px", fontWeight: "500", marginLeft: "21px" }}
+                    >
+                      Tải Mẫu
+                    </span>
+                  </Button>
+                </div>
               </div>
               <OrderTable />
             </div>

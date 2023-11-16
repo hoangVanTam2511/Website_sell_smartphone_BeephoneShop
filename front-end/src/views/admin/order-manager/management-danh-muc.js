@@ -1,14 +1,8 @@
 import React, { useEffect, useState } from "react";
-import {
-  Link,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from "react-router-dom";
-import { Button, Empty, Popconfirm, Table, Upload } from "antd";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Button, Empty, Table } from "antd";
 import {
   Autocomplete,
-  Box,
   Dialog,
   DialogContent,
   FormControl,
@@ -24,121 +18,131 @@ import {
 import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import { PlusOutlined } from "@ant-design/icons";
 import Card from "../../../components/Card";
-import { format } from "date-fns";
 import axios from "axios";
-import { UploadOutlined } from "@ant-design/icons";
-
-import { parseInt } from "lodash";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import Zoom from "@mui/material/Zoom";
-import * as dayjs from "dayjs";
 import {
   Notistack,
-  OrderStatusString,
-  OrderTypeString,
   StatusCommonProducts,
+  StatusCommonProductsNumber,
 } from "./enum";
+import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import LoadingIndicator from "../../../utilities/loading";
 import useCustomSnackbar from "../../../utilities/notistack";
-import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
-
+import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
+import CreateDanhMuc from "./create-danh-muc";
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const ManagementImage = () => {
+const ManagementDanhMuc = () => {
   const navigate = useNavigate();
-  const [image, setImage] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [totalPages, setTotalPages] = useState();
-  const [refreshPage, setRefreshPage] = useState(1);
+  const [danhMuc, setDanhMuc] = useState([]);
+  const [danhMucPages, setDanhMucPages] = useState([]);
+  // const [isLoading, setIsLoading] = useState(true);
+  const [totalPages, setTotalPages] = useState(0);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [keyword, setKeyword] = useState(searchParams.get("keyword"));
+  const [searchTatCa, setSearchTatCa] = useState("");
+  const [searchTrangThai, setSearchTrangThai] = useState("");
   const [open, setOpen] = React.useState(false);
   const [open1, setOpen1] = React.useState(false);
-  const [colorCode, setImageCode] = useState("");
+  const [danhMucCode, setDanhMucCode] = useState("");
   const [status, setStatus] = React.useState("");
-  const [colorName, setImageName] = useState("");
-  const [idImage, setIdImage] = useState("");
+  const [danhMucName, setDanhMucName] = useState("");
+  const [idDanhMuc, setIdDanhMuc] = useState("");
   const [openConfirm, setOpenConfirm] = useState(false);
   const { handleOpenAlertVariant } = useCustomSnackbar();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [openSelect, setOpenSelect] = useState(false);
 
-  const [isExisted, setIsExisted] = useState(true);
-  const [selectedImageChange, setSelectedImageChange] = useState("");
-  const [selectedImage, setSelectedImage] = useState("");
-  const [isSelectedImages, setIsSelectedImages] = useState(false);
-  const [id, setId] = useState("");
-
-  const [currentPage, setCurrentPage] = useState(
-    searchParams.get("currentPage") || 1
-  );
-
-  const handleImageUpload = (info) => {
-    if (info.file.status === "uploading") {
-      setSelectedImageChange(info.file.originFileObj);
-      setIsSelectedImages(true);
-      setIsExisted(false);
-    }
-  };
-
-  const handleSaveImage = async () => {
-    const formData = new FormData();
-    formData.append("file", selectedImageChange); // `file` là đối tượng File hoặc Blob
-    formData.append("id", id);
-    await axios
-      .post(`http://localhost:8080/api/image`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+  const getListDanhMuc = () => {
+    axios
+      .get(`http://localhost:8080/api/danh-mucs`)
+      .then((response) => {
+        setDanhMuc(response.data.data);
+        setTotalPages(response.data.totalPages);
       })
-      .then((res) => {
-        setSelectedImage(res.data.data);
-        console.log(res);
-        alert("Cập nhật thành công ảnh standee");
-      })
-      .catch((err) => {
-        alert("Cập nhật thất bại");
-        setSelectedImage("");
+      .catch((error) => {
+        console.error(error);
       });
   };
 
-  // const getListImage = async () => {
-  //   await axios
-  //     .get(`http://localhost:8080/api/image`)
-  //     .then((response) => {
-  //       setImage(response.data);
-  //     })
-  //     .catch((error) => {
-  //       // console.error(error);
-  //       setIsLoading(false);
-  //     });
-  // };
-
-  const detailImage = async (id) => {
-    await axios
-      .get(`http://localhost:8080/api/image/${id}`)
+  const getListDanhMucSearchAndPage = (page) => {
+    // setIsLoading(false);
+    axios
+      .get(`http://localhost:8080/api/danh-mucs/search`, {
+        params: {
+          keyword: searchTatCa,
+          currentPage: page,
+          status: ConvertStatusProductsNumberToString(searchTrangThai),
+        },
+      })
       .then((response) => {
-        setImageCode(response.data.data.ma);
+        setDanhMucPages(response.data.data);
+        setTotalPages(response.data.totalPages);
+        // setIsLoading(true);
+      })
+      .catch((error) => {
+        console.error(error);
+        // setIsLoading(false);
+      });
+  };
+
+  const detailDanhMuc = async (id) => {
+    await axios
+      .get(`http://localhost:8080/api/danh-mucs/${id}`)
+      .then((response) => {
+        setDanhMucCode(response.data.data.ma);
         setStatus(response.data.data.status);
-        setImageName(response.data.data.ten);
+        setDanhMucName(response.data.data.tenDanhMuc);
       })
       .catch((error) => {});
   };
 
+  const handleOpenSelect = () => {
+    setOpenSelect(true);
+  };
+
+  const handleCloseSelect = () => {
+    setOpenSelect(false);
+  };
+
+  const handleSearchTrangThaiChange = (event) => {
+    const selectedValue = event.target.value;
+    setSearchTrangThai(parseInt(selectedValue)); // Cập nhật giá trị khi Select thay đổi
+    searchParams.set("trangThai", parseInt(selectedValue));
+    setSearchParams(searchParams);
+    if (selectedValue === 5) {
+      setSearchParams("");
+    }
+    setCurrentPage(1);
+  };
+
+  const handleSearchTatCaChange = (event) => {
+    const searchTatCaInput = event.target.value;
+    setSearchTatCa(searchTatCaInput);
+    setCurrentPage(1);
+  };
+
   const handleClickOpen1 = (id) => {
-    detailImage(id);
+    detailDanhMuc(id);
     setOpen1(true);
-    console.log(colorName);
+  };
+
+  const handleClose1 = () => {
+    setOpen1(false);
   };
 
   useEffect(() => {
-    // getListImage();
+    getListDanhMucSearchAndPage(currentPage);
+  }, [searchTatCa, searchTrangThai, currentPage, totalPages]);
+
+  useEffect(() => {
+    getListDanhMuc();
   }, []);
 
   const handleClickOpen = () => {
+    getListDanhMuc();
     setOpen(true);
   };
 
@@ -146,15 +150,11 @@ const ManagementImage = () => {
     setOpen(false);
   };
 
-  const handleClose1 = () => {
-    setOpen1(false);
-  };
-
-  const doiTrangThaiImage = (idImage) => {
+  const doiTrangThaiDanhMuc = (idDanhMuc) => {
     axios
-      .put(`http://localhost:8080/api/image/doi-trang-thai/${idImage}`)
+      .put(`http://localhost:8080/api/danh-mucs/${idDanhMuc}`)
       .then((response) => {
-        // getListImage();
+        getListDanhMuc();
         handleOpenAlertVariant(
           "Đổi trạng thái thành công!!!",
           Notistack.SUCCESS
@@ -164,23 +164,19 @@ const ManagementImage = () => {
         handleOpenAlertVariant(error.response.data.message, Notistack.ERROR);
       });
   };
-
-  const handleOkConfirm = () => {
-    doiTrangThaiImage(idImage);
-  };
-  const handleCancelConfirm = () => {
-    console.log("Clicked cancel button");
-    setOpen(false);
+  const chuyenTrang = (event, page) => {
+    setCurrentPage(page);
+    getListDanhMucSearchAndPage(page);
   };
 
-  const ImageTable = () => {
+  const DanhMucTable = () => {
     return (
       <>
         <Table
           className="table-container"
           columns={columns}
           rowKey="id"
-          dataSource={image}
+          dataSource={danhMucPages}
           pagination={false}
           locale={{ emptyText: <Empty description="Không có dữ liệu" /> }}
         />
@@ -195,7 +191,9 @@ const ManagementImage = () => {
       dataIndex: "stt",
       width: "5%",
       render: (text, record, index) => (
-        <span style={{ fontWeight: "400" }}>{image.indexOf(record) + 1}</span>
+        <span style={{ fontWeight: "400" }}>
+          {danhMucPages.indexOf(record) + 1}
+        </span>
       ),
     },
     {
@@ -209,11 +207,11 @@ const ManagementImage = () => {
       ),
     },
     {
-      title: "Đường dẫn",
+      title: "Tên Danh Mục",
       align: "center",
       width: "15%",
       render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>{record.path}</span>
+        <span style={{ fontWeight: "400" }}>{record.tenDanhMuc}</span>
       ),
     },
     {
@@ -222,7 +220,7 @@ const ManagementImage = () => {
       align: "center",
       dataIndex: "status",
       render: (type) =>
-        type === 1 ? (
+        type === StatusCommonProducts.ACTIVE ? (
           <div
             className="rounded-pill mx-auto badge-success"
             style={{
@@ -235,7 +233,7 @@ const ManagementImage = () => {
               Hoạt động
             </span>
           </div>
-        ) : type === 2 ? (
+        ) : type === StatusCommonProducts.IN_ACTIVE ? (
           <div
             className="rounded-pill badge-danger mx-auto"
             style={{ height: "35px", width: "140px", padding: "4px" }}
@@ -260,105 +258,75 @@ const ManagementImage = () => {
               <IconButton
                 size=""
                 onClick={() => {
+                  setIdDanhMuc(record.id);
                   handleClickOpen1(record.id);
-                  setIdImage(record.id);
                 }}
               >
-                {/* <BorderImageOutlinedIcon color="primary" /> */}
+                <BorderColorOutlinedIcon color="primary" />
               </IconButton>
             </Tooltip>
 
             {/* Hàm đổi trạng thái */}
-            <Popconfirm
-              description="Bạn có chắc chắn muốn đổi trạng thái không?"
-              onConfirm={handleOkConfirm}
-              onCancel={handleCancelConfirm}
-              placement="topLeft"
+
+            <Tooltip
+              TransitionComponent={Zoom}
+              title={
+                record.status === StatusCommonProducts.ACTIVE
+                  ? "Ngừng kích hoạt"
+                  : record.status === StatusCommonProducts.IN_ACTIVE
+                  ? "Kích hoạt"
+                  : ""
+              }
             >
-              <Tooltip
-                TransitionComponent={Zoom}
-                title={
-                  record.status === 1
-                    ? "Ngừng kích hoạt"
-                    : record.status === 2
-                    ? "Kích hoạt"
-                    : ""
-                }
+              <IconButton
+                className="ms-2"
+                style={{ marginTop: "6px" }}
+                onClick={() => doiTrangThaiDanhMuc(record.id)}
               >
-                <IconButton
-                  className="ms-2"
-                  style={{ marginTop: "6px" }}
-                  onClick={() => setIdImage(record.id)}
-                >
-                  <AssignmentOutlinedIcon
-                    color={
-                      record.status === 2
-                        ? "error"
-                        : record.status === 1
-                        ? "success"
-                        : "disabled"
-                    }
-                  />
-                </IconButton>
-              </Tooltip>
-            </Popconfirm>
+                <AssignmentOutlinedIcon
+                  color={
+                    record.status === StatusCommonProducts.IN_ACTIVE
+                      ? "error"
+                      : record.status === StatusCommonProducts.ACTIVE
+                      ? "success"
+                      : "disabled"
+                  }
+                />
+              </IconButton>
+            </Tooltip>
           </div>
         </div>
       ),
     },
   ];
 
-  const handleOpenDialogConfirmAdd = () => {
-    setOpenConfirm(true);
-  };
-
-  const handleCloseDialogConfirmAdd = () => {
-    setOpenConfirm(false);
-  };
-
-  const Header = () => {
-    return (
-      <>
-        <span style={{ fontWeight: "bold" }}>Xác nhận sửa màu sắc</span>
-      </>
-    );
-  };
-  const Title = () => {
-    return (
-      <>
-        <span>
-          Bạn có chắc chắc muốn sửa thành màu{" "}
-          <span style={{ color: "red" }}>"{colorName}"</span> không ?
-        </span>
-      </>
-    );
-  };
-
-  const updateImage = () => {
+  const updateDanhMuc = () => {
     let obj = {
-      ma: colorCode,
-      ten: colorName,
+      id: idDanhMuc,
+      ma: danhMucCode,
+      tenDanhMuc: danhMucName,
       status: status,
     };
     axios
-      .put(`http://localhost:8080/api/image/${idImage}`, obj)
+      .put(`http://localhost:8080/api/danh-mucs`, obj)
       .then((response) => {
-        // getListImage();
+        getListDanhMuc();
         handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
+        setOpen1(false);
       })
       .catch((error) => {
         handleOpenAlertVariant(error.response.data.message, Notistack.ERROR);
       });
   };
 
-  const uniqueTen = image
-    .map((option) => option.path)
+  const uniqueTenDanhMuc = danhMuc
+    .map((option) => option.tenDanhMuc)
     .filter((value, index, self) => {
       return self.indexOf(value) === index;
     });
 
-  const handleChangeImage = (event, value) => {
-    setImageName(value);
+  const handleChangeDanhMuc = (event, value) => {
+    setDanhMucName(value);
   };
 
   const handleChangeStatus = (event) => {
@@ -369,7 +337,7 @@ const ManagementImage = () => {
       <div
         className="mt-4"
         style={{
-          backgroundImage: "#ffffff",
+          backgroundDanhMuc: "#ffffff",
           boxShadow: "0 0.1rem 0.3rem #00000010",
         }}
       >
@@ -377,9 +345,9 @@ const ManagementImage = () => {
           <Card.Header className="d-flex justify-content-between">
             <div className="header-title mt-2">
               <TextField
-                label="Tìm Ảnh"
-                // onChange={handleGetValueFromInputTextField}
-                // value={keyword}
+                label="Tìm Danh Mục"
+                onChange={handleSearchTatCaChange}
+                value={searchTatCa}
                 InputLabelProps={{
                   sx: {
                     marginTop: "",
@@ -410,7 +378,69 @@ const ManagementImage = () => {
               </Button>
             </div>
 
-            <div className="mt-2">
+            <div className="d-flex mt-2">
+              <div
+                className="d-flex me-5"
+                style={{
+                  height: "40px",
+                  position: "relative",
+                  cursor: "pointer",
+                }}
+              >
+                <div
+                  onClick={handleOpenSelect}
+                  className=""
+                  style={{ marginTop: "7px" }}
+                >
+                  <span
+                    className="ms-2 ps-1"
+                    style={{ fontSize: "15px", fontWeight: "450" }}
+                  >
+                    Trạng Thái:{" "}
+                  </span>
+                </div>
+                <FormControl
+                  sx={{
+                    minWidth: 50,
+                  }}
+                  size="small"
+                >
+                  <Select
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          borderRadius: "7px",
+                        },
+                      },
+                    }}
+                    IconComponent={KeyboardArrowDownOutlinedIcon}
+                    sx={{
+                      "& .MuiOutlinedInput-notchedOutline": {
+                        border: "none !important",
+                      },
+                      "& .MuiSelect-select": {
+                        color: "#2f80ed",
+                        fontWeight: "500",
+                      },
+                    }}
+                    open={openSelect}
+                    onClose={handleCloseSelect}
+                    onOpen={handleOpenSelect}
+                    defaultValue={5}
+                    onChange={handleSearchTrangThaiChange}
+                  >
+                    <MenuItem className="" value={5}>
+                      Tất cả
+                    </MenuItem>
+                    <MenuItem value={StatusCommonProductsNumber.ACTIVE}>
+                      Hoạt động
+                    </MenuItem>
+                    <MenuItem value={StatusCommonProductsNumber.IN_ACTIVE}>
+                      Ngừng hoạt động
+                    </MenuItem>
+                  </Select>
+                </FormControl>
+              </div>
               <Button
                 onClick={handleClickOpen}
                 className="rounded-2 button-mui"
@@ -429,79 +459,31 @@ const ManagementImage = () => {
                   className="ms-3 ps-1"
                   style={{ marginBottom: "3px", fontWeight: "500" }}
                 >
-                  Tạo Ảnh
+                  Tạo Danh Mục
                 </span>
               </Button>
             </div>
           </Card.Header>
           <Card.Body>
-            <ImageTable />
+            <DanhMucTable />
           </Card.Body>
           <div className="mx-auto">
             <Pagination
-              color="primary" /* page={parseInt(currentPage)} key={refreshPage} count={totalPages} */
-              // onChange={handlePageChange}
+              page={parseInt(currentPage)}
+              count={totalPages}
+              onChange={chuyenTrang}
+              color="primary"
             />
-          </div>
-
-          <div>
-            <Upload
-              showUploadList={false}
-              onChange={handleImageUpload}
-              accept=".jpg,.jpeg,.png"
-            >
-              <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
-            </Upload>
-            <Button onClick={() => handleSaveImage()}>Lưu ảnh</Button>
-          </div>
-          <div>
-            {isExisted === true ? (
-              <div>
-                <h4>Ảnh đã lưu:</h4>
-                {image != null ? (
-                  <img
-                    src={image}
-                    style={{ maxWidth: "300px", borderRadius: "8px" }}
-                    alt="Ảnh đã lưu"
-                  />
-                ) : (
-                  <Empty description="Không có ảnh background" />
-                )}
-              </div>
-            ) : (
-              isExisted === false && (
-                <div>
-                  <h4>Ảnh đã chọn:</h4>
-                  <img
-                    src={URL.createObjectURL(selectedImageChange)}
-                    alt="Selected"
-                    style={{ maxWidth: "300px", borderRadius: "8px" }}
-                  />
-                </div>
-              )
-            )}
           </div>
           <div className="mt-4"></div>
         </Card>
       </div>
-      {isLoading && <LoadingIndicator />}
-      <Dialog
+      <CreateDanhMuc
         open={open}
-        TransitionComponent={Transition}
-        keepMounted
-        onClose={handleClose}
-        maxWidth="md"
-        maxHeight="md"
-        sx={{
-          marginBottom: "170px",
-        }}
-      >
-        {/* <DialogContent className="">
-          <Create close={handleClose} getAll={getListImage} image={image} />
-        </DialogContent> */}
-        <div className="mt-3"></div>
-      </Dialog>
-
+        close={handleClose}
+        getAll={getListDanhMuc}
+        danhMucs={danhMuc}
+      />
       <Dialog
         open={open1}
         TransitionComponent={Transition}
@@ -521,7 +503,7 @@ const ManagementImage = () => {
                   className=""
                   style={{ fontWeight: "550", fontSize: "29px" }}
                 >
-                  SỬA ẢNH
+                  SỬA DANH MỤC
                 </span>
               </div>
               <div className="mx-auto mt-3 pt-2">
@@ -531,11 +513,11 @@ const ManagementImage = () => {
                     className="custom"
                     id="free-solo-demo"
                     freeSolo
-                    inputValue={colorName}
-                    onInputChange={handleChangeImage}
-                    options={uniqueTen}
+                    inputValue={danhMucName}
+                    onInputChange={handleChangeDanhMuc}
+                    options={uniqueTenDanhMuc}
                     renderInput={(params) => (
-                      <TextField {...params} label="Tên Màu Sắc" />
+                      <TextField {...params} label="Tên Danh Mục" />
                     )}
                   />
                 </div>
@@ -553,14 +535,18 @@ const ManagementImage = () => {
                       label="Trạng Thái"
                       onChange={handleChangeStatus}
                     >
-                      <MenuItem value={1}>Hoạt Động</MenuItem>
-                      <MenuItem value={2}>Ngừng Hoạt Động</MenuItem>
+                      <MenuItem value={StatusCommonProducts.ACTIVE}>
+                        Hoạt Động
+                      </MenuItem>
+                      <MenuItem value={StatusCommonProducts.IN_ACTIVE}>
+                        Ngừng Hoạt Động
+                      </MenuItem>
                     </Select>
                   </FormControl>
                 </div>
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
-                    onClick={() => handleOpenDialogConfirmAdd()}
+                    onClick={() => updateDanhMuc()}
                     className="rounded-2 button-mui"
                     type="primary"
                     style={{ height: "40px", width: "auto", fontSize: "15px" }}
@@ -576,18 +562,11 @@ const ManagementImage = () => {
               </div>
             </div>
           </div>
-          <ConfirmDialog
-            open={openConfirm}
-            onClose={handleCloseDialogConfirmAdd}
-            add={updateImage}
-            title={<Title />}
-            header={<Header />}
-          />
-          {isLoading && <LoadingIndicator />}
         </DialogContent>
         <div className="mt-3"></div>
       </Dialog>
+      {/* {!isLoading && <LoadingIndicator />} */}
     </>
   );
 };
-export default ManagementImage;
+export default ManagementDanhMuc;
