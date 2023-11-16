@@ -3,6 +3,7 @@ package beephone_shop_projects.core.admin.product_managements.controller;
 import beephone_shop_projects.core.admin.product_managements.model.request.CameraTruocRequest;
 import beephone_shop_projects.core.admin.product_managements.model.request.FindFilterCamerasRequest;
 import beephone_shop_projects.core.admin.product_managements.model.response.CameraTruocResponse;
+import beephone_shop_projects.core.admin.product_managements.model.response.CameraTruocResponse;
 import beephone_shop_projects.core.admin.product_managements.service.impl.CameraTruocServiceImpl;
 import beephone_shop_projects.core.common.base.ResponseObject;
 import beephone_shop_projects.core.common.base.ResponsePage;
@@ -39,6 +40,12 @@ public class CameraTruocController {
     @GetMapping
     public ResponseObject<List<CameraTruocResponse>> getCameraTruoc() {
         List<CameraTruocResponse> cameraTruoc = cameraTruocService.findAll();
+        return new ResponseObject<>(cameraTruoc);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseObject<CameraTruocResponse> getCameraTruocById(@PathVariable("id") String id) {
+        CameraTruocResponse cameraTruoc = cameraTruocService.findOneById(id);
         return new ResponseObject<>(cameraTruoc);
     }
 

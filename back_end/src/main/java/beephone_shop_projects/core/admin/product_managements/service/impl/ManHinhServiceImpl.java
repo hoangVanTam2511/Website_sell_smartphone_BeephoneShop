@@ -63,7 +63,7 @@ public class ManHinhServiceImpl extends AbstractServiceImpl<ManHinh, ManHinhResp
         if (manHinh.getStatus() == StatusCommon.ACTIVE) {
             manHinh.setStatus(StatusCommon.IN_ACTIVE);
         } else {
-            manHinh.setStatus(StatusCommon.IN_ACTIVE);
+            manHinh.setStatus(StatusCommon.ACTIVE);
         }
         return manHinhRepository.save(manHinh);
     }

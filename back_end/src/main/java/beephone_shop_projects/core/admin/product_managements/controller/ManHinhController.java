@@ -29,8 +29,8 @@ public class ManHinhController {
 
     @GetMapping
     public ResponseObject<List<ManHinhResponse>> getSimCards() {
-        List<ManHinhResponse> simCards = manHinhService.findAll();
-        return new ResponseObject<>(simCards);
+        List<ManHinhResponse> manHinh = manHinhService.findAll();
+        return new ResponseObject<>(manHinh);
     }
 
     @GetMapping("/all")
@@ -47,6 +47,12 @@ public class ManHinhController {
     public ResponseObject<ManHinhResponse> updateManHinh(@RequestBody ManHinhRequest manHinhRequest) throws Exception {
         ManHinhResponse manHinhResponse = manHinhService.update(manHinhRequest);
         return new ResponseObject<>(manHinhResponse);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseObject<ManHinhResponse> getManHinhById(@PathVariable("id") String id) {
+        ManHinhResponse manHinh = manHinhService.findOneById(id);
+        return new ResponseObject<>(manHinh);
     }
 
     @PutMapping("/{id}")

@@ -36,6 +36,12 @@ public class TheNhoController {
         return new ResponsePage(theNho);
     }
 
+    @GetMapping("/{id}")
+    public ResponseObject<TheNhoResponse> getTheNhoById(@PathVariable("id") String id) {
+        TheNhoResponse theNho = theNhoService.findOneById(id);
+        return new ResponseObject<>(theNho);
+    }
+
     @GetMapping
     public ResponseObject<List<TheNhoResponse>> getTheNho() {
         List<TheNhoResponse> theNho = theNhoService.findAll();

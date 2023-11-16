@@ -37,7 +37,7 @@ public class RomServiceImpl extends AbstractServiceImpl<Rom, RomResponse, RomReq
         if (rom.getStatus() == StatusCommon.ACTIVE) {
             rom.setStatus(StatusCommon.IN_ACTIVE);
         } else {
-            rom.setStatus(StatusCommon.IN_ACTIVE);
+            rom.setStatus(StatusCommon.ACTIVE);
         }
         return romRepository.save(rom);
     }

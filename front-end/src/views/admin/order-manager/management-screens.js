@@ -1,15 +1,7 @@
 import React, { useEffect, useState } from "react";
-import {
-  Link,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Button, Empty, Table } from "antd";
 import {
-  Box,
-  Dialog,
-  DialogContent,
   IconButton,
   Pagination,
   Slide,
@@ -26,9 +18,14 @@ import LoadingIndicator from "../../../utilities/loading";
 import CreateScreen from "./create-screen";
 import { apiURLDisplay } from "../../../service/api";
 import "./style.css";
+import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
 const ManagementScreens = () => {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   // const [totalPages, setTotalPages] = useState();
   // const [refreshPage, setRefreshPage] = useState(1);
   // const [searchParams, setSearchParams] = useSearchParams();
@@ -42,11 +39,11 @@ const ManagementScreens = () => {
       .get(apiURLDisplay)
       .then((response) => {
         setScreens(response.data.data);
-        setIsLoading(false);
+        // setIsLoading(false);
       })
       .catch((error) => {
         console.error(error);
-        setIsLoading(false);
+        // setIsLoading(false);
       });
   };
   useEffect(() => {
@@ -272,7 +269,7 @@ const ManagementScreens = () => {
           <div className="mt-4"></div>
         </Card>
       </div>
-      {isLoading && <LoadingIndicator />}
+      {/* {isLoading && <LoadingIndicator />} */}
       <CreateScreen
         open={open}
         close={handleClose}

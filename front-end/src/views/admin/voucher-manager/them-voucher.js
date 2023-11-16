@@ -26,8 +26,10 @@ import {
 import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
 import useCustomSnackbar from "../../../utilities/notistack";
 import LoadingIndicator from "../../../utilities/loading";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const AddVoucher = () => {
+  const navigate = useNavigate();
   const [ma, setMa] = useState("");
   const [ten, setTen] = useState("");
   const [ngayBatDau, setNgayBatDau] = useState(dayjs());
@@ -58,22 +60,14 @@ const AddVoucher = () => {
   const Header = () => {
     return (
       <>
-        <span style={{ fontWeight: "bold" }}>Xác nhận thêm voucher</span>
+        <span style={{ fontWeight: "bold" }}>Xác nhận thêm phiếu giảm giá</span>
       </>
     );
   };
   const Title = () => {
     return (
       <>
-        <span>
-          Bạn có chắc chắc muốn thêm voucher có tên là{" "}
-          <span style={{ color: "red" }}>"{ten}"</span> và giá trị{" "}
-          <span style={{ color: "red" }}>"{value}</span>
-          <span style={{ color: "red" }}>
-            {selectDiscount === TypeDiscountString.VND ? "VND" : "%"}"
-          </span>{" "}
-          không ?
-        </span>
+        <span>Bạn có chắc chắn muốn thêm phiếu giảm giá không ?</span>
       </>
     );
   };
@@ -140,8 +134,12 @@ const AddVoucher = () => {
     window.location.href = "/dashboard/voucher";
   };
 
+  const handleUpdateVoucher = (id) => {
+    navigate(`/dashboard/update-voucher/${id}`);
+  };
+
   const addVoucher = () => {
-    setIsLoading(true);
+    setIsLoading(false);
     let obj = {
       ma: ma,
       ten: ten,
@@ -157,10 +155,10 @@ const AddVoucher = () => {
     axios
       .post(apiURLVoucher + "/addVoucher", obj)
       .then((response) => {
-        handleOpenAlertVariant("Thêm thành công!!!", Notistack.SUCCESS);
-        setIsLoading(false);
         setTimeout(() => {
-          redirectToHienThiVoucher();
+          setIsLoading(true);
+          handleUpdateVoucher(response.data.data.id);
+          handleOpenAlertVariant("Thêm thành công!!!", Notistack.SUCCESS);
         }, 1000);
       })
       .catch((error) => {
@@ -322,7 +320,7 @@ const AddVoucher = () => {
                 onInput={handleInputCodeVoucher}
                 style={{ width: "245px" }}
                 inputProps={{
-                  maxLength: 20, // Giới hạn tối đa 10 ký tự
+                  maxLength: 15, // Giới hạn tối đa 10 ký tự
                 }}
                 error={validationMsg.ma !== undefined}
                 helperText={validationMsg.ma}
@@ -561,6 +559,24 @@ const AddVoucher = () => {
         </div>
         <div className="btn-accept-voucher mt-3">
           <Button
+            onClick={() => {
+              handleSubmit();
+            }}
+            className={
+              !isLoading ? "loading" : undefined + " button-mui rounded-2"
+            }
+            type="primary"
+            style={{ height: "40px", width: "auto", fontSize: "15px" }}
+          >
+            <div className="spinner" />
+            <span
+              className="text-loading"
+              style={{ marginBottom: "2px", fontWeight: "500" }}
+            >
+              Xác Nhận
+            </span>
+          </Button>
+          {/* <Button
             onClick={() => handleSubmit()}
             className="rounded-2 button-mui"
             type="primary"
@@ -569,7 +585,7 @@ const AddVoucher = () => {
             <span style={{ marginBottom: "2px", fontWeight: "500" }}>
               Xác Nhận
             </span>
-          </Button>
+          </Button> */}
           <Button
             className="rounded-2 button-mui ms-2"
             type="primary"
@@ -594,7 +610,7 @@ const AddVoucher = () => {
         title={<Title />}
         header={<Header />}
       />
-      {!isLoading && <LoadingIndicator />}
+      {/* {!isLoading && <LoadingIndicator />} */}
     </>
   );
 };

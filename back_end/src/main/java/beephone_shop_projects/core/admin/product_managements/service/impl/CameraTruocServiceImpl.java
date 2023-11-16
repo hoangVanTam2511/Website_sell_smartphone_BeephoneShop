@@ -52,7 +52,7 @@ public class CameraTruocServiceImpl extends AbstractServiceImpl<CameraTruoc, Cam
         if (cameraTruoc.getStatus() == StatusCommon.ACTIVE) {
             cameraTruoc.setStatus(StatusCommon.IN_ACTIVE);
         } else {
-            cameraTruoc.setStatus(StatusCommon.IN_ACTIVE);
+            cameraTruoc.setStatus(StatusCommon.ACTIVE);
         }
         return cameraTruocRepository.save(cameraTruoc);
     }

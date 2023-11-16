@@ -52,7 +52,7 @@ public class CameraSauServiceImpl extends AbstractServiceImpl<CameraSau, CameraS
         if (cameraSau.getStatus() == StatusCommon.ACTIVE) {
             cameraSau.setStatus(StatusCommon.IN_ACTIVE);
         } else {
-            cameraSau.setStatus(StatusCommon.IN_ACTIVE);
+            cameraSau.setStatus(StatusCommon.ACTIVE);
         }
         return cameraSauRepository.save(cameraSau);
     }

@@ -50,7 +50,7 @@ public class TheNhoServiceImpl extends AbstractServiceImpl<TheNho, TheNhoRespons
         if (theNho.getStatus() == StatusCommon.ACTIVE) {
             theNho.setStatus(StatusCommon.IN_ACTIVE);
         } else {
-            theNho.setStatus(StatusCommon.IN_ACTIVE);
+            theNho.setStatus(StatusCommon.ACTIVE);
         }
         return theNhoRepository.save(theNho);
     }

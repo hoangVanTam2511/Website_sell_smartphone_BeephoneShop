@@ -5,6 +5,7 @@ import beephone_shop_projects.core.admin.product_managements.model.request.CongS
 import beephone_shop_projects.core.admin.product_managements.model.request.FindFilterProductsRequest;
 import beephone_shop_projects.core.admin.product_managements.model.response.CongSacResponse;
 import beephone_shop_projects.core.admin.product_managements.model.response.CongSacResponse;
+import beephone_shop_projects.core.admin.product_managements.model.response.CongSacResponse;
 import beephone_shop_projects.core.admin.product_managements.service.impl.CongSacServiceImpl;
 import beephone_shop_projects.core.common.base.ResponseObject;
 import beephone_shop_projects.core.common.base.ResponsePage;
@@ -33,6 +34,12 @@ public class CongSacController {
     @GetMapping
     public ResponseObject<List<CongSacResponse>> getCongSac() {
         List<CongSacResponse> congSac = congSacService.findAll();
+        return new ResponseObject<>(congSac);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseObject<CongSacResponse> getCongSacById(@PathVariable("id") String id) {
+        CongSacResponse congSac = congSacService.findOneById(id);
         return new ResponseObject<>(congSac);
     }
 

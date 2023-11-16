@@ -37,7 +37,7 @@ public class RamServiceImpl extends AbstractServiceImpl<Ram, RamResponse, RamReq
         if (ram.getStatus() == StatusCommon.ACTIVE) {
             ram.setStatus(StatusCommon.IN_ACTIVE);
         } else {
-            ram.setStatus(StatusCommon.IN_ACTIVE);
+            ram.setStatus(StatusCommon.ACTIVE);
         }
         return ramRepository.save(ram);
     }

@@ -10,4 +10,6 @@ public interface ManHinhRepository extends GenericRepository<ManHinh, String> {
 
     Page<ManHinh> getAll(Pageable pageable, FindFilterProductsRequest findFilterProductsRequest);
 
+
+
 }

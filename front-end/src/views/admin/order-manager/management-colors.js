@@ -30,9 +30,7 @@ import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDown
 import LoadingIndicator from "../../../utilities/loading";
 import CreateMauSac from "./create-mau-sac";
 import useCustomSnackbar from "../../../utilities/notistack";
-import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
 import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
-import { FaLaptopHouse } from "react-icons/fa";
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -41,7 +39,7 @@ const ManagementColors = () => {
   const navigate = useNavigate();
   const [colors, setColors] = useState([]);
   const [colorPages, setColorPages] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // const [isLoading, setIsLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(0);
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchTatCa, setSearchTatCa] = useState("");
@@ -70,7 +68,7 @@ const ManagementColors = () => {
   };
 
   const getListColorSearchAndPage = (page) => {
-    setIsLoading(false);
+    // setIsLoading(false);
     axios
       .get(`http://localhost:8080/api/colors/search`, {
         params: {
@@ -82,7 +80,7 @@ const ManagementColors = () => {
       .then((response) => {
         setColorPages(response.data.data);
         setTotalPages(response.data.totalPages);
-        setIsLoading(true);
+        // setIsLoading(true);
       })
       .catch((error) => {
         console.error(error);
@@ -568,7 +566,7 @@ const ManagementColors = () => {
         </DialogContent>
         <div className="mt-3"></div>
       </Dialog>
-      {!isLoading && <LoadingIndicator />}
+      {/* {!isLoading && <LoadingIndicator />} */}
     </>
   );
 };

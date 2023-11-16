@@ -1,15 +1,7 @@
 import React, { useEffect, useState } from "react";
-import {
-  Link,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Empty, Table } from "antd";
 import {
-  Box,
-  Dialog,
-  DialogContent,
   IconButton,
   Pagination,
   Slide,
@@ -18,31 +10,19 @@ import {
 } from "@mui/material";
 import { PlusOutlined } from "@ant-design/icons";
 import Card from "../../../components/Card";
-import { format } from "date-fns";
 import axios from "axios";
-import { parseInt } from "lodash";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import Zoom from "@mui/material/Zoom";
-import * as dayjs from "dayjs";
-import {
-  OrderStatusString,
-  OrderTypeString,
-  StatusCommonProducts,
-} from "./enum";
-import LoadingIndicator from "../../../utilities/loading";
-import CreateSac from "./create-sac";
-import CreateHang from "./create-hang";
-import CreateChip from "./create-chip";
-import CreateRam from "./create-ram";
+import { StatusCommonProducts } from "./enum";
+import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import CreateRom from "./create-rom";
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const ManagementRoms = () => {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const [totalPages, setTotalPages] = useState();
   const [listRom, setListRom] = useState([]);
   const [refreshPage, setRefreshPage] = useState(1);
@@ -58,11 +38,11 @@ const ManagementRoms = () => {
       .then((response) => {
         setListRom(response.data.data);
         setTotalPages(response.data.totalPages);
-        setIsLoading(false);
+        // setIsLoading(false);
       })
       .catch((error) => {
         console.error(error);
-        setIsLoading(false);
+        // setIsLoading(false);
       });
   };
 
@@ -257,7 +237,7 @@ const ManagementRoms = () => {
           <div className="mt-4"></div>
         </Card>
       </div>
-      {isLoading && <LoadingIndicator />}
+      {/* {isLoading && <LoadingIndicator />} */}
       <CreateRom
         open={open}
         close={handleClose}

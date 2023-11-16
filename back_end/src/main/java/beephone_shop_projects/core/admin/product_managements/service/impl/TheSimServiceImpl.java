@@ -57,7 +57,7 @@ public class TheSimServiceImpl extends AbstractServiceImpl<TheSim, TheSimRespons
         if (theSim.getStatus() == StatusCommon.ACTIVE) {
             theSim.setStatus(StatusCommon.IN_ACTIVE);
         } else {
-            theSim.setStatus(StatusCommon.IN_ACTIVE);
+            theSim.setStatus(StatusCommon.ACTIVE);
         }
         return theSimRepository.save(theSim);
     }

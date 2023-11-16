@@ -20,14 +20,8 @@ import Card from "../../../components/Card";
 import axios from "axios";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import Zoom from "@mui/material/Zoom";
-import {
-  Notistack,
-  StatusCommonProducts,
-  StatusCommonProductsNumber,
-} from "./enum";
-import LoadingIndicator from "../../../utilities/loading";
+import { Notistack, StatusCommonProducts } from "./enum";
 import CreateChip from "./create-chip";
-import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
 import useCustomSnackbar from "../../../utilities/notistack";
 import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -37,7 +31,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const ManagementChips = () => {
   const navigate = useNavigate();
   const [listChip, setListChip] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const [totalPages, setTotalPages] = useState();
   const [refreshPage, setRefreshPage] = useState(1);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -66,11 +60,11 @@ const ManagementChips = () => {
         setListChip(response.data.data);
         setTotalPages(response.data.totalPages);
 
-        setIsLoading(false);
+        // setIsLoading(false);
       })
       .catch((error) => {
         console.error(error);
-        setIsLoading(false);
+        // setIsLoading(false);
       });
   };
 
@@ -79,11 +73,11 @@ const ManagementChips = () => {
       .get(`http://localhost:8080/api/chips`)
       .then((response) => {
         setListChip(response.data.data);
-        setIsLoading(false);
+        // setIsLoading(false);
       })
       .catch((error) => {
         console.error(error);
-        setIsLoading(false);
+        // setIsLoading(false);
       });
   };
 
@@ -465,7 +459,7 @@ const ManagementChips = () => {
               </div>
             </div>
           </div>
-          {isLoading && <LoadingIndicator />}
+          {/* {isLoading && <LoadingIndicator />} */}
         </DialogContent>
         <div className="mt-3"></div>
       </Dialog>

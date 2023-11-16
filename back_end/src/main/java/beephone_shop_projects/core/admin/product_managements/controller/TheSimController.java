@@ -35,6 +35,12 @@ public class TheSimController {
         return new ResponseObject<>(simCards);
     }
 
+    @GetMapping("/{id}")
+    public ResponseObject<TheSimResponse> getTheSimById(@PathVariable("id") String id) {
+        TheSimResponse theSim = theSimService.findOneById(id);
+        return new ResponseObject<>(theSim);
+    }
+
     @GetMapping
     public ResponsePage<TheSimResponse> getSimCards(@RequestParam(name = "page", defaultValue = "1") Integer pageNo) {
         return new ResponsePage(theSimService.findAllSimCards(pageNo));

@@ -51,7 +51,7 @@ public class HangServiceImpl extends AbstractServiceImpl<Hang, HangResponse, Han
         if (hang.getStatus() == StatusCommon.ACTIVE) {
             hang.setStatus(StatusCommon.IN_ACTIVE);
         } else {
-            hang.setStatus(StatusCommon.IN_ACTIVE);
+            hang.setStatus(StatusCommon.ACTIVE);
         }
         return hangRepository.save(hang);
     }

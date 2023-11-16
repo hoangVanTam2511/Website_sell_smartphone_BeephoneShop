@@ -51,7 +51,7 @@ public class CongSacServiceImpl extends AbstractServiceImpl<CongSac, CongSacResp
         if (congSac.getStatus() == StatusCommon.ACTIVE) {
             congSac.setStatus(StatusCommon.IN_ACTIVE);
         } else {
-            congSac.setStatus(StatusCommon.IN_ACTIVE);
+            congSac.setStatus(StatusCommon.ACTIVE);
         }
         return congSacRepository.save(congSac);
     }

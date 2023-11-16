@@ -1,45 +1,39 @@
 import React, { useEffect, useState } from "react";
-import {
-  Link,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Empty, Table } from "antd";
 import {
-  Box,
+  Autocomplete,
   Dialog,
   DialogContent,
+  FormControl,
   IconButton,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
   Pagination,
+  Select,
   Slide,
   TextField,
   Tooltip,
 } from "@mui/material";
 import { PlusOutlined } from "@ant-design/icons";
 import Card from "../../../components/Card";
-import { format } from "date-fns";
 import axios from "axios";
-import { parseInt } from "lodash";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import Zoom from "@mui/material/Zoom";
-import * as dayjs from "dayjs";
-import {
-  OrderStatusString,
-  OrderTypeString,
-  StatusCommonProducts,
-} from "./enum";
+import { Notistack, StatusCommonProducts } from "./enum";
 import LoadingIndicator from "../../../utilities/loading";
 import CreateTheNho from "./create-the-nho";
+import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
+import useCustomSnackbar from "../../../utilities/notistack";
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const ManagementTheNhos = () => {
   const navigate = useNavigate();
   const [listTheNho, setListTheNho] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const [totalPages, setTotalPages] = useState();
   const [refreshPage, setRefreshPage] = useState(1);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -48,36 +42,36 @@ const ManagementTheNhos = () => {
     searchParams.get("currentPage") || 1
   );
 
-  const findOrdersByMultipleCriteriaWithPagination = (page) => {
-    axios
-      .get(`http://localhost:8080/api/orders`, {
-        params: {
-          currentPage: page,
-          keyword: keyword,
-          isPending: false,
-        },
-      })
-      .then((response) => {
-        setListTheNho(response.data.data);
-        setTotalPages(response.data.totalPages);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        console.error(error);
-        setIsLoading(false);
-      });
-  };
+  // const findOrdersByMultipleCriteriaWithPagination = (page) => {
+  //   axios
+  //     .get(`http://localhost:8080/api/orders`, {
+  //       params: {
+  //         currentPage: page,
+  //         keyword: keyword,
+  //         isPending: false,
+  //       },
+  //     })
+  //     .then((response) => {
+  //       setListTheNho(response.data.data);
+  //       setTotalPages(response.data.totalPages);
+  //       // setIsLoading(false);
+  //     })
+  //     .catch((error) => {
+  //       console.error(error);
+  //       // setIsLoading(false);
+  //     });
+  // };
 
   const getListTheNho = (page) => {
     axios
       .get(`http://localhost:8080/api/the-nhos`)
       .then((response) => {
         setListTheNho(response.data.data);
-        setIsLoading(false);
+        // setIsLoading(false);
       })
       .catch((error) => {
         console.error(error);
-        setIsLoading(false);
+        // setIsLoading(false);
       });
   };
 
@@ -189,14 +183,47 @@ const ManagementTheNhos = () => {
       title: "Thao Tác",
       align: "center",
       width: "15%",
-      dataIndex: "ma",
       render: (text, record) => (
         <>
           <div className="d-flex justify-content-center">
             <div className="button-container">
               <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
-                <IconButton size="">
+                <IconButton
+                  onClick={() => {
+                    handleClickOpen1(record.id);
+                    setIdTheNho(record.id);
+                  }}
+                >
                   <BorderColorOutlinedIcon color="primary" />
+                </IconButton>
+              </Tooltip>
+
+              {/* Hàm đổi trạng thái */}
+
+              <Tooltip
+                TransitionComponent={Zoom}
+                title={
+                  record.status === StatusCommonProducts.ACTIVE
+                    ? "Ngừng kích hoạt"
+                    : record.status === StatusCommonProducts.IN_ACTIVE
+                    ? "Kích hoạt"
+                    : ""
+                }
+              >
+                <IconButton
+                  className="ms-2"
+                  style={{ marginTop: "6px" }}
+                  onClick={() => doiTrangThaiProducts(record.id)}
+                >
+                  <AssignmentOutlinedIcon
+                    color={
+                      record.status === StatusCommonProducts.IN_ACTIVE
+                        ? "error"
+                        : record.status === StatusCommonProducts.ACTIVE
+                        ? "success"
+                        : "disabled"
+                    }
+                  />
                 </IconButton>
               </Tooltip>
             </div>
@@ -205,6 +232,98 @@ const ManagementTheNhos = () => {
       ),
     },
   ];
+
+  const [theNhoCode, setTheNhoCode] = useState("");
+  const [status, setStatus] = useState("");
+  const [loaiTheNho, setLoaiTheNho] = useState("");
+  const [dungLuongToiDa, setDungLuongToiDa] = useState("");
+  const [idTheNho, setIdTheNho] = useState("");
+
+  const detailTheNhos = async (id) => {
+    await axios
+      .get(`http://localhost:8080/api/the-nhos/${id}`)
+      .then((response) => {
+        setTheNhoCode(response.data.data.ma);
+        setStatus(response.data.data.status);
+        setDungLuongToiDa(response.data.data.dungLuongToiDa);
+        setLoaiTheNho(response.data.data.loaiTheNho);
+        console.log(response.data.data);
+      })
+      .catch((error) => {});
+  };
+
+  const [open1, setOpen1] = React.useState(false);
+
+  const handleClickOpen1 = (id) => {
+    detailTheNhos(id);
+    setOpen1(true);
+  };
+
+  const handleClose1 = () => {
+    setOpen1(false);
+  };
+
+  const uniqueTheNho = listTheNho
+    .map((option) => option.loaiTheNho)
+    .filter((value, index, self) => {
+      return self.indexOf(value) === index;
+    });
+
+  const uniqueDungLuongToiDa = listTheNho
+    .map((option) => option.dungLuongToiDa.toString())
+    .filter((value, index, self) => {
+      return self.indexOf(value) === index;
+    });
+
+  const handleChangeLoaiTheNho = (event, value) => {
+    setLoaiTheNho(value);
+  };
+
+  const handleChangeStatus = (event) => {
+    setStatus(event.target.value);
+  };
+
+  const handleChangeDungLuongToiDa = (event, value) => {
+    setDungLuongToiDa(value);
+  };
+
+  const { handleOpenAlertVariant } = useCustomSnackbar();
+
+  const updateTheNho = () => {
+    let obj = {
+      id: idTheNho,
+      ma: theNhoCode,
+      dungLuongToiDa: dungLuongToiDa,
+      loaiTheNho: loaiTheNho,
+      status: status,
+    };
+    axios
+      .put(`http://localhost:8080/api/the-nhos`, obj)
+      .then((response) => {
+        getListTheNho();
+        handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
+        setOpen1(false);
+      })
+      .catch((error) => {
+        handleOpenAlertVariant(error.response.data.message, Notistack.ERROR);
+      });
+  };
+
+  const doiTrangThaiProducts = (idTheNho) => {
+    axios
+      .put(`http://localhost:8080/api/the-nhos/${idTheNho}`)
+      .then((response) => {
+        getListTheNho();
+        handleOpenAlertVariant(
+          "Đổi trạng thái thành công!!!",
+          Notistack.SUCCESS
+        );
+      })
+      .catch((error) => {
+        handleOpenAlertVariant(error.response.data.message, Notistack.ERROR);
+      });
+  };
+
   return (
     <>
       <div
@@ -286,13 +405,126 @@ const ManagementTheNhos = () => {
           <div className="mt-4"></div>
         </Card>
       </div>
-      {isLoading && <LoadingIndicator />}
+      {/* {isLoading && <LoadingIndicator />} */}
       <CreateTheNho
         open={open}
         close={handleClose}
         getAll={getListTheNho}
         theNhos={listTheNho}
       />
+      <Dialog
+        open={open1}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={handleClose1}
+        maxWidth="md"
+        maxHeight="md"
+        sx={{
+          marginBottom: "170px",
+        }}
+      >
+        <DialogContent>
+          <div className="mt-4" style={{ width: "700px" }}>
+            <div className="container" style={{}}>
+              <div className="text-center" style={{}}>
+                <span
+                  className=""
+                  style={{ fontWeight: "550", fontSize: "29px" }}
+                >
+                  SỬA THẺ NHỚ
+                </span>
+              </div>
+              <div className="mx-auto mt-3 pt-2">
+                <div>
+                  <Autocomplete
+                    fullWidth
+                    className="custom"
+                    id="free-solo-demo"
+                    freeSolo
+                    inputValue={loaiTheNho}
+                    onInputChange={handleChangeLoaiTheNho}
+                    options={uniqueTheNho}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Loại Thẻ Nhớ" />
+                    )}
+                  />
+                </div>
+                <div className="mt-3">
+                  <Autocomplete
+                    fullWidth
+                    className="custom"
+                    id="free-solo-demo-s1"
+                    freeSolo
+                    inputValue={String(dungLuongToiDa)}
+                    onInputChange={handleChangeDungLuongToiDa}
+                    options={uniqueDungLuongToiDa}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        InputProps={{
+                          ...params.InputProps,
+                          startAdornment: (
+                            <>
+                              <InputAdornment
+                                style={{ marginLeft: "5px" }}
+                                position="start"
+                              >
+                                GB
+                              </InputAdornment>
+                              {params.InputProps.startAdornment}
+                            </>
+                          ),
+                        }}
+                        label="Dung Lượng Tối Đa"
+                      />
+                    )}
+                  />
+                </div>
+                <div className="mt-3" style={{}}>
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">
+                      Trạng Thái
+                    </InputLabel>
+                    <Select
+                      className="custom"
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={status}
+                      label="Trạng Thái"
+                      onChange={handleChangeStatus}
+                      // defaultValue={StatusCommonProductsNumber.ACTIVE}
+                    >
+                      <MenuItem value={StatusCommonProducts.ACTIVE}>
+                        Hoạt Động
+                      </MenuItem>
+                      <MenuItem value={StatusCommonProducts.IN_ACTIVE}>
+                        Ngừng Hoạt Động
+                      </MenuItem>
+                    </Select>
+                  </FormControl>
+                </div>
+                <div className="mt-4 pt-1 d-flex justify-content-end">
+                  <Button
+                    onClick={() => updateTheNho()}
+                    className="rounded-2 button-mui"
+                    type="primary"
+                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                  >
+                    <span
+                      className=""
+                      style={{ marginBottom: "2px", fontWeight: "500" }}
+                    >
+                      Xác Nhận
+                    </span>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* {isLoading && <LoadingIndicator />} */}
+        </DialogContent>
+        <div className="mt-3"></div>
+      </Dialog>
     </>
   );
 };

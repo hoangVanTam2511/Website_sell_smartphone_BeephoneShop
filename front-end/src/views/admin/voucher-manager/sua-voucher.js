@@ -11,7 +11,7 @@ import axios from "axios";
 import { apiURLVoucher } from "../../../service/api";
 import TextField from "@mui/material/TextField";
 import "../../../assets/scss/HienThiNV.scss";
-import { InputAdornment } from "@mui/material";
+import { Alert, InputAdornment } from "@mui/material";
 import "../voucher-manager/style.css";
 import { useParams } from "react-router-dom";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
@@ -26,6 +26,8 @@ import Radio, { radioClasses } from "@mui/joy/Radio";
 import RadioGroup from "@mui/joy/RadioGroup";
 import {
   Notistack,
+  StatusDiscount,
+  StatusDiscountNumber,
   TypeDiscountNumber,
   TypeDiscountString,
 } from "../order-manager/enum";
@@ -38,10 +40,9 @@ const UpdateVoucher = () => {
   const [ma, setMa] = useState("");
   const [ten, setTen] = useState("");
   const [soLuong, setSoLuong] = useState("");
+  const [status, setStatus] = useState("");
   const [ngayBatDau, setNgayBatDau] = useState(null);
   const [ngayKetThuc, setNgayKetThuc] = useState(null);
-  const [checkStartDate, setCheckStartDate] = useState(false);
-  const [checkEndDate, setCheckEndDate] = useState(false);
   // const [giaTriVoucherConvert, setGiaTriVoucherConvert] = useState(0);
   const [value, setValue] = React.useState();
   const [value1, setValue1] = React.useState();
@@ -71,22 +72,14 @@ const UpdateVoucher = () => {
   const Header = () => {
     return (
       <>
-        <span className="">Xác nhận chỉnh sửa voucher</span>
+        <span className="">Chỉnh sửa voucher</span>
       </>
     );
   };
   const Title = () => {
     return (
       <>
-        <span>
-          Bạn có chắc chắc muốn chỉnh sửa voucher có tên là{" "}
-          <span style={{ color: "red" }}>"{ten}"</span> và với giá trị{" "}
-          <span style={{ color: "red" }}>{value}</span>
-          <span style={{ color: "red" }}>
-            {selectDiscount === TypeDiscountString.VND ? "VND" : "%"}
-          </span>{" "}
-          không ?
-        </span>
+        <span>Bạn có chắc chắc muốn chỉnh sửa voucher không ?</span>
       </>
     );
   };
@@ -127,6 +120,7 @@ const UpdateVoucher = () => {
       setValueToiDa(response.data.data.giaTriToiDa);
       setValue1(response.data.data.dieuKienApDung);
       setValue(response.data.data.giaTriVoucher);
+      setStatus(response.data.data.trangThai);
       setSelectDiscount(
         response.data.data.loaiVoucher === TypeDiscountNumber.VND
           ? TypeDiscountString.VND
@@ -138,6 +132,7 @@ const UpdateVoucher = () => {
         response.data.data.giaTriToiDa
       );
       setVoucher(response.data.data);
+      console.log(response.data.data);
     } catch (error) {
       // Xử lý lỗi nếu cần
       handleOpenAlertVariant(
@@ -321,15 +316,13 @@ const UpdateVoucher = () => {
       msg.ngayKetThuc = "Ngày kết thúc phải lớn hơn ngày bắt đầu !!!";
     }
 
-    if (
-      dayjs(ngayBatDau).isBefore(voucher.ngayBatDau) ||
-      dayjs(ngayBatDau).isBefore(dayjs()) ||
-      dayjs(ngayBatDau).isAfter(voucher.ngayKetThuc)
-    ) {
-      msg.ngayBatDau = "Không thể chọn ngày quá khứ !!!";
-    }
-
-    console.log(ngayBatDau);
+    // if (
+    //   dayjs(ngayBatDau).isBefore(voucher.ngayBatDau) ||
+    //   dayjs(ngayBatDau).isBefore(dayjs()) ||
+    //   dayjs(ngayBatDau).isAfter(voucher.ngayKetThuc)
+    // ) {
+    //   msg.ngayBatDau = "Không thể chọn ngày quá khứ !!!";
+    // }
 
     setValidationMsg(msg);
     if (Object.keys(msg).length > 0) return false;
@@ -584,7 +577,6 @@ const UpdateVoucher = () => {
                       value={dayjs(ngayBatDau)}
                       onChange={(e) => {
                         setNgayBatDau(e);
-                        setCheckStartDate(true);
                       }}
                       sx={{ width: "380px" }}
                       slotProps={{
@@ -612,7 +604,6 @@ const UpdateVoucher = () => {
                       disablePast={true}
                       onChange={(e) => {
                         setNgayKetThuc(e);
-                        setCheckEndDate(true);
                       }}
                       sx={{ width: "380px" }}
                       slotProps={{
@@ -631,11 +622,24 @@ const UpdateVoucher = () => {
             </div>
           </div>
         </div>
+        <div>
+          {status === StatusDiscountNumber.HOAT_DONG && (
+            <Alert
+              severity="warning"
+              className="mx-auto"
+              style={{ maxWidth: "65%" }}
+            >
+              Không thể sửa khi voucher đang hoạt động, hãy đổi trạng thái thành
+              tạm dừng!
+            </Alert>
+          )}
+        </div>
         <div className="btn-accept-update mt-3">
           <Button
             className="rounded-2 button-mui"
             type="primary"
             style={{ height: "40px", width: "auto", fontSize: "15px" }}
+            disabled={status === StatusDiscountNumber.HOAT_DONG}
             onClick={() => {
               handleSubmit();
             }}

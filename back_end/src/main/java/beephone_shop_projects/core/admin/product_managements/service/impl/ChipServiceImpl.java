@@ -52,7 +52,7 @@ public class ChipServiceImpl extends AbstractServiceImpl<Chip, ChipResponse, Chi
         if (chip.getStatus() == StatusCommon.ACTIVE) {
             chip.setStatus(StatusCommon.IN_ACTIVE);
         } else {
-            chip.setStatus(StatusCommon.IN_ACTIVE);
+            chip.setStatus(StatusCommon.ACTIVE);
         }
         return chipRepository.save(chip);
     }

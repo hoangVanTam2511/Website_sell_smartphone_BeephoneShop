@@ -4,6 +4,7 @@ import beephone_shop_projects.core.admin.product_managements.model.request.Camer
 import beephone_shop_projects.core.admin.product_managements.model.request.FindFilterCamerasRequest;
 import beephone_shop_projects.core.admin.product_managements.model.request.FindFilterProductsRequest;
 import beephone_shop_projects.core.admin.product_managements.model.response.CameraSauResponse;
+import beephone_shop_projects.core.admin.product_managements.model.response.CameraSauResponse;
 import beephone_shop_projects.core.admin.product_managements.model.response.MauSacResponse;
 import beephone_shop_projects.core.admin.product_managements.service.impl.CameraSauServiceImpl;
 import beephone_shop_projects.core.common.base.ResponseObject;
@@ -36,6 +37,12 @@ public class CameraSauController {
     public ResponsePage getCameraSauPhanTrang(@ModelAttribute FindFilterCamerasRequest request) {
         Page<CameraSauResponse> cameraSau = cameraSauService.findAllCameraSau(request);
         return new ResponsePage(cameraSau);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseObject<CameraSauResponse> getCameraSauById(@PathVariable("id") String id) {
+        CameraSauResponse cameraSau = cameraSauService.findOneById(id);
+        return new ResponseObject<>(cameraSau);
     }
 
     @GetMapping

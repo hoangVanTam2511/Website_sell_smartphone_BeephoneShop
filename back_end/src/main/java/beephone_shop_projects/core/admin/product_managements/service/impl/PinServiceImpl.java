@@ -48,7 +48,7 @@ public class PinServiceImpl extends AbstractServiceImpl<Pin, PinResponse, PinReq
         if (pin.getStatus() == StatusCommon.ACTIVE) {
             pin.setStatus(StatusCommon.IN_ACTIVE);
         } else {
-            pin.setStatus(StatusCommon.IN_ACTIVE);
+            pin.setStatus(StatusCommon.ACTIVE);
         }
         return pinRepository.save(pin);
     }

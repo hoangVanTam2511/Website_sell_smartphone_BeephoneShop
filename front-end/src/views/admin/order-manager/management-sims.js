@@ -2,10 +2,15 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Empty, Table } from "antd";
 import {
+  Autocomplete,
   Dialog,
   DialogContent,
+  FormControl,
   IconButton,
+  InputLabel,
+  MenuItem,
   Pagination,
+  Select,
   Slide,
   TextField,
   Tooltip,
@@ -15,15 +20,26 @@ import Card from "../../../components/Card";
 import axios from "axios";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import Zoom from "@mui/material/Zoom";
-import { SimMultiple, SimStatus } from "./enum";
+import {
+  Notistack,
+  SimMultiple,
+  SimStatus,
+  StatusCommonProducts,
+} from "./enum";
 import LoadingIndicator from "../../../utilities/loading";
 import CreateSimCard from "./create-simcard";
 import { apiURLSimCard } from "../../../service/api";
 import "./style.css";
+import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
+import useCustomSnackbar from "../../../utilities/notistack";
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const ManagementSims = () => {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
   const [refreshPage, setRefreshPage] = useState(1);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -37,19 +53,21 @@ const ManagementSims = () => {
   };
 
   const [sims, setSims] = useState([]);
+
   const loadDataList = () => {
     axios
       .get(apiURLSimCard + "/all")
       .then((response) => {
         setSims(response.data.data);
         // setTotalPages(response.data.totalPages);
-        setIsLoading(false);
+        // setIsLoading(false);
       })
       .catch((error) => {
         console.error(error);
-        setIsLoading(false);
+        // setIsLoading(false);
       });
   };
+
   useEffect(() => {
     loadDataList();
   }, []);
@@ -104,12 +122,12 @@ const ManagementSims = () => {
       render: (text, record) => (
         <span style={{ fontWeight: "400" }}>
           {record.simMultiple === SimMultiple.SINGLE_SIM
-            ? " 1 Sim"
+            ? " 1 "
             : record.simMultiple === SimMultiple.DUAL_SIM
-              ? " 2 Sim"
-              : record.simMultiple === SimMultiple.TRIPLE_SIM
-                ? " 3 Sim"
-                : " 4 Sim"}{" "}
+            ? " 2 "
+            : record.simMultiple === SimMultiple.TRIPLE_SIM
+            ? " 3 "
+            : " 4 "}{" "}
           {record.loaiTheSim}
         </span>
       ),
@@ -168,14 +186,48 @@ const ManagementSims = () => {
       title: "Thao Tác",
       align: "center",
       width: "15%",
-      dataIndex: "ma",
       render: (text, record) => (
         <>
           <div className="d-flex justify-content-center">
             <div className="button-container">
               <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
-                <IconButton size="">
+                <IconButton
+                  onClick={() => {
+                    handleClickOpen1(record.id);
+                    setIdTheSim(record.id);
+                    setSimType(record.simMultiple);
+                  }}
+                >
                   <BorderColorOutlinedIcon color="primary" />
+                </IconButton>
+              </Tooltip>
+
+              {/* Hàm đổi trạng thái */}
+
+              <Tooltip
+                TransitionComponent={Zoom}
+                title={
+                  record.status === StatusCommonProducts.ACTIVE
+                    ? "Ngừng kích hoạt"
+                    : record.status === StatusCommonProducts.IN_ACTIVE
+                    ? "Kích hoạt"
+                    : ""
+                }
+              >
+                <IconButton
+                  className="ms-2"
+                  style={{ marginTop: "6px" }}
+                  onClick={() => doiTrangThaiProducts(record.id)}
+                >
+                  <AssignmentOutlinedIcon
+                    color={
+                      record.status === StatusCommonProducts.IN_ACTIVE
+                        ? "error"
+                        : record.status === StatusCommonProducts.ACTIVE
+                        ? "success"
+                        : "disabled"
+                    }
+                  />
                 </IconButton>
               </Tooltip>
             </div>
@@ -184,6 +236,87 @@ const ManagementSims = () => {
       ),
     },
   ];
+
+  const [theSimCode, setTheSimCode] = useState("");
+  const [status, setStatus] = useState("");
+  const [loaiTheSim, setLoaiTheSim] = useState("");
+  const [idTheSim, setIdTheSim] = useState("");
+  const [simType, setSimType] = useState("");
+
+  const detailTheSims = async (id) => {
+    await axios
+      .get(`http://localhost:8080/api/sim-cards/${id}`)
+      .then((response) => {
+        setTheSimCode(response.data.data.ma);
+        setStatus(response.data.data.status);
+        setLoaiTheSim(response.data.data.loaiTheSim);
+        console.log("Detail " + response);
+      })
+      .catch((error) => {});
+  };
+
+  const [open1, setOpen1] = React.useState(false);
+
+  const handleClickOpen1 = (id) => {
+    detailTheSims(id);
+    setOpen1(true);
+  };
+
+  const handleClose1 = () => {
+    setOpen1(false);
+  };
+
+  const uniqueTheSim = sims
+    .map((option) => option.loaiTheSim)
+    .filter((value, index, self) => {
+      return self.indexOf(value) === index;
+    });
+
+  const handleChangeLoaiTheSim = (event, value) => {
+    setLoaiTheSim(value);
+  };
+
+  const handleChangeStatus = (event) => {
+    setStatus(event.target.value);
+  };
+
+  const { handleOpenAlertVariant } = useCustomSnackbar();
+
+  const updateTheSim = () => {
+    let obj = {
+      id: idTheSim,
+      ma: theSimCode,
+      simMultiple: simType,
+      loaiTheSim: loaiTheSim,
+      status: status,
+    };
+    axios
+      .put(`http://localhost:8080/api/sim-cards`, obj)
+      .then((response) => {
+        console.log("Sau Sửa " + response);
+        loadDataList();
+        handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
+        setOpen1(false);
+      })
+      .catch((error) => {
+        handleOpenAlertVariant(error.response.data.message, Notistack.ERROR);
+      });
+  };
+
+  const doiTrangThaiProducts = (idTheSim) => {
+    axios
+      .put(`http://localhost:8080/api/sim-cards/${idTheSim}`)
+      .then((response) => {
+        loadDataList();
+        handleOpenAlertVariant(
+          "Đổi trạng thái thành công!!!",
+          Notistack.SUCCESS
+        );
+      })
+      .catch((error) => {
+        handleOpenAlertVariant(error.response.data.message, Notistack.ERROR);
+      });
+  };
   return (
     <>
       <div
@@ -259,19 +392,101 @@ const ManagementSims = () => {
           <div className="mx-auto">
             <Pagination
               color="primary" /* page={parseInt(currentPage)} key={refreshPage} count={totalPages} */
-            // onChange={handlePageChange}
+              // onChange={handlePageChange}
             />
           </div>
           <div className="mt-4"></div>
         </Card>
       </div>
-      {isLoading && <LoadingIndicator />}
+      {/* {isLoading && <LoadingIndicator />} */}
       <CreateSimCard
         open={open}
         close={handleClose}
         getAll={loadDataList}
         sims={sims}
       />
+      <Dialog
+        open={open1}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={handleClose1}
+        maxWidth="md"
+        maxHeight="md"
+        sx={{
+          marginBottom: "170px",
+        }}
+      >
+        <DialogContent>
+          <div className="mt-4" style={{ width: "700px" }}>
+            <div className="container" style={{}}>
+              <div className="text-center" style={{}}>
+                <span
+                  className=""
+                  style={{ fontWeight: "550", fontSize: "29px" }}
+                >
+                  SỬA THẺ SIM
+                </span>
+              </div>
+              <div className="mx-auto mt-3 pt-2">
+                <div>
+                  <Autocomplete
+                    fullWidth
+                    className="custom"
+                    id="free-solo-demo"
+                    freeSolo
+                    inputValue={loaiTheSim}
+                    onInputChange={handleChangeLoaiTheSim}
+                    options={uniqueTheSim}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Loại Thẻ Sim" />
+                    )}
+                  />
+                </div>
+
+                <div className="mt-3" style={{}}>
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">
+                      Trạng Thái
+                    </InputLabel>
+                    <Select
+                      className="custom"
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={status}
+                      label="Trạng Thái"
+                      onChange={handleChangeStatus}
+                    >
+                      <MenuItem value={StatusCommonProducts.ACTIVE}>
+                        Hoạt Động
+                      </MenuItem>
+                      <MenuItem value={StatusCommonProducts.IN_ACTIVE}>
+                        Ngừng Hoạt Động
+                      </MenuItem>
+                    </Select>
+                  </FormControl>
+                </div>
+                <div className="mt-4 pt-1 d-flex justify-content-end">
+                  <Button
+                    onClick={() => updateTheSim()}
+                    className="rounded-2 button-mui"
+                    type="primary"
+                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                  >
+                    <span
+                      className=""
+                      style={{ marginBottom: "2px", fontWeight: "500" }}
+                    >
+                      Xác Nhận
+                    </span>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* {isLoading && <LoadingIndicator />} */}
+        </DialogContent>
+        <div className="mt-3"></div>
+      </Dialog>
     </>
   );
 };

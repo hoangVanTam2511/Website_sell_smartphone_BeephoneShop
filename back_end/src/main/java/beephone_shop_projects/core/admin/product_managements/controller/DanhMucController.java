@@ -3,6 +3,7 @@ package beephone_shop_projects.core.admin.product_managements.controller;
 import beephone_shop_projects.core.admin.product_managements.model.request.DanhMucRequest;
 import beephone_shop_projects.core.admin.product_managements.model.request.FindFilterProductsRequest;
 import beephone_shop_projects.core.admin.product_managements.model.response.DanhMucResponse;
+import beephone_shop_projects.core.admin.product_managements.model.response.DanhMucResponse;
 import beephone_shop_projects.core.admin.product_managements.service.impl.DanhMucServiceImpl;
 import beephone_shop_projects.core.common.base.ResponseObject;
 import beephone_shop_projects.core.common.base.ResponsePage;
@@ -39,6 +40,12 @@ public class DanhMucController {
     @GetMapping
     public ResponseObject<List<DanhMucResponse>> getDanhMuc() {
         List<DanhMucResponse> danhMuc = danhMucService.findAll();
+        return new ResponseObject<>(danhMuc);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseObject<DanhMucResponse> getDanhMucById(@PathVariable("id") String id) {
+        DanhMucResponse danhMuc = danhMucService.findOneById(id);
         return new ResponseObject<>(danhMuc);
     }
 

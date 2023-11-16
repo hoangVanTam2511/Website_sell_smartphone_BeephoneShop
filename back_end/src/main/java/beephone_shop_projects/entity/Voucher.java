@@ -49,4 +49,7 @@ public class Voucher extends PrimaryEntity implements IsIdentified {
 
     @Enumerated(EnumType.ORDINAL)
     private StatusDiscount trangThai;
+
+    private String lyDoHuy;
+
 }

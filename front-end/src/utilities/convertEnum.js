@@ -3,6 +3,8 @@ import {
   StatusCommonProductsNumber,
   StatusDiscount,
   StatusDiscountNumber,
+  TypeDiscountNumber,
+  TypeDiscountString,
 } from "../views/admin/order-manager/enum";
 import {
   StatusAccountCus,
@@ -24,6 +26,26 @@ export const ConvertStatusVoucherNumberToString = (EnumNumber) => {
       break;
     case StatusDiscountNumber.DA_HUY:
       statusNumber = StatusDiscount.DA_HUY;
+      break;
+    case StatusDiscountNumber.TAM_DUNG:
+      statusNumber = StatusDiscount.TAM_DUNG;
+      break;
+    default:
+      statusNumber = ""; // Nếu giá trị không khớp với bất kỳ trạng thái nào.
+  }
+
+  return statusNumber;
+};
+
+export const ConvertTypeVoucherNumberToString = (EnumNumber) => {
+  let statusNumber;
+
+  switch (EnumNumber) {
+    case TypeDiscountNumber.VND:
+      statusNumber = TypeDiscountString.VND;
+      break;
+    case TypeDiscountNumber.PERCENT:
+      statusNumber = TypeDiscountString.PERCENT;
       break;
     default:
       statusNumber = ""; // Nếu giá trị không khớp với bất kỳ trạng thái nào.

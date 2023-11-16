@@ -51,7 +51,7 @@ public class DanhMucServiceImpl extends AbstractServiceImpl<DanhMuc, DanhMucResp
         if (danhMuc.getStatus() == StatusCommon.ACTIVE) {
             danhMuc.setStatus(StatusCommon.IN_ACTIVE);
         } else {
-            danhMuc.setStatus(StatusCommon.IN_ACTIVE);
+            danhMuc.setStatus(StatusCommon.ACTIVE);
         }
         return danhMucRepository.save(danhMuc);
     }

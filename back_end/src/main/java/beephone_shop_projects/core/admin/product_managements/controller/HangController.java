@@ -3,6 +3,7 @@ package beephone_shop_projects.core.admin.product_managements.controller;
 import beephone_shop_projects.core.admin.product_managements.model.request.FindFilterProductsRequest;
 import beephone_shop_projects.core.admin.product_managements.model.request.HangRequest;
 import beephone_shop_projects.core.admin.product_managements.model.response.HangResponse;
+import beephone_shop_projects.core.admin.product_managements.model.response.HangResponse;
 import beephone_shop_projects.core.admin.product_managements.service.impl.HangServiceImpl;
 import beephone_shop_projects.core.common.base.ResponseObject;
 import beephone_shop_projects.core.common.base.ResponsePage;
@@ -52,6 +53,12 @@ public class HangController {
     public ResponseObject<HangResponse> updateHang(@RequestBody HangRequest hangRequest) throws Exception {
         HangResponse hangResponse = hangService.update(hangRequest);
         return new ResponseObject<>(hangResponse);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseObject<HangResponse> getHangById(@PathVariable("id") String id) {
+        HangResponse hang = hangService.findOneById(id);
+        return new ResponseObject<>(hang);
     }
 
     @PutMapping("/{id}")
