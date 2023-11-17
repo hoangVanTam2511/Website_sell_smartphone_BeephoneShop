@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.client.controller;
 
+import beephone_shop_projects.core.client.models.request.SearchProductDetailClient;
 import beephone_shop_projects.core.client.serives.impl.ProductDetailClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -39,6 +40,23 @@ public class ProductDetailClientRestController {
         } catch (Exception ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @GetMapping("/get-max-price")
+    public ResponseEntity<?> getMaxPrice(){
+        return new ResponseEntity<>(productDetailService.getMaxProductDetail(), HttpStatus.OK);
+    }
+
+    @GetMapping("/get-min-price") 
+    public ResponseEntity<?> getMinPrice(){
+        return new ResponseEntity<>(productDetailService.getMinProductDetail(), HttpStatus.OK);
+    }
+
+    @PostMapping("/search")
+    public ResponseEntity<?> search(@RequestParam(value = "page",defaultValue = "1") Integer page,
+                                              @RequestBody(required = false) SearchProductDetailClient chiTietSanPhamRequest) {
+        Object httpStatus;
+        return new ResponseEntity<>(productDetailService.searchByAllPosition(chiTietSanPhamRequest), HttpStatus.OK);
     }
 
 }

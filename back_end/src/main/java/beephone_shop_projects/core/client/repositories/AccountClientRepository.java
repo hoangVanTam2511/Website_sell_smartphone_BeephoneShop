@@ -14,4 +14,9 @@ public interface AccountClientRepository extends IAccountRepository {
             SELECT * FROM account acc WHERE acc.email = :email AND acc.mat_khau = :pass
             """, nativeQuery = true)
     Account checkEmailAndPass(@Param("email") String email,@Param("pass") String pass);
+
+    @Query(value = """
+            SELECT * FROM account acc WHERE acc.ma IS NULL
+        """, nativeQuery = true)
+    Account findByMa();
 }

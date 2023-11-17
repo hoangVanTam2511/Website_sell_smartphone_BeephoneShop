@@ -26,4 +26,22 @@ public class AccountClientController {
         }
     }
 
+    @GetMapping("/get-account")
+    public ResponseEntity<?> getAccountByIDAccount(@RequestParam("id_account") String idAccount){
+        try{
+            return new ResponseEntity<>(accountClientService.getAccountByIDAccount(idAccount), HttpStatus.OK);
+        }catch (Exception ex){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/create-account-anonymous")
+    public ResponseEntity<?> createAccountAnonymous(){
+        try{
+            return new ResponseEntity<>(accountClientService.createAccountAnonymous(), HttpStatus.OK);
+        }catch (Exception ex){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }

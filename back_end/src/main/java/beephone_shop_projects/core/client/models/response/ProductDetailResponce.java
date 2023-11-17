@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import java.math.BigDecimal;
 
 @Projection(types = {SanPhamChiTiet.class, SanPham.class, KhuyenMaiChiTiet.class})
-public interface ProductDetailResponse {
+public interface ProductDetailResponce {
 
     @Value("#{target.id}")
     String getId();
@@ -15,7 +15,7 @@ public interface ProductDetailResponse {
     @Value("#{target.ten_san_pham}")
     String getTenSanPham();
 
-    @Value("#{target.don_gia_sau_khuyen_mai}")
+    @Value("#{target.don_gia_sau_khuyen_mai}")  
     BigDecimal getDonGiaSauKhuyenMai();
 
     @Value("#{target.don_gia}")

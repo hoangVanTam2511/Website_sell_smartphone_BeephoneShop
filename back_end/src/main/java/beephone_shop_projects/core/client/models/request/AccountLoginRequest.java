@@ -13,5 +13,5 @@ public class AccountLoginRequest {
     @Pattern(regexp = "^[a-zA-Z0-9._-]+@gmail\\.com$", message = "Email sai định dạng hoặc không phải là Gmail")
     private String email;
 
-    private String pass;
+    private String password;
 }
