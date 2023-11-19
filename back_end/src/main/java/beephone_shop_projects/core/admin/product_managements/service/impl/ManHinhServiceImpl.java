@@ -2,6 +2,7 @@ package beephone_shop_projects.core.admin.product_managements.service.impl;
 
 import beephone_shop_projects.core.admin.order_management.service.impl.AbstractServiceImpl;
 import beephone_shop_projects.core.admin.product_managements.converter.ManHinhConverter;
+import beephone_shop_projects.core.admin.product_managements.model.request.FindFilterProductsRequest;
 import beephone_shop_projects.core.admin.product_managements.model.request.ManHinhRequest;
 import beephone_shop_projects.core.admin.product_managements.model.response.ManHinhResponse;
 import beephone_shop_projects.core.admin.product_managements.repository.DoPhanGiaiRepository;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Random;
@@ -29,6 +31,22 @@ public class ManHinhServiceImpl extends AbstractServiceImpl<ManHinh, ManHinhResp
 
     public ManHinhServiceImpl(ManHinhRepository repo, ManHinhConverter converter) {
         super(repo, converter);
+    }
+
+    @Override
+    public Page<ManHinhResponse> findAllMH(FindFilterProductsRequest findFilterProductsRequest) {
+        if (findFilterProductsRequest.getCurrentPage() == null) {
+            findFilterProductsRequest.setCurrentPage(1);
+        }
+        if (findFilterProductsRequest.getPageSize() == null) {
+            findFilterProductsRequest.setPageSize(5);
+        }
+        if (findFilterProductsRequest.getKeyword() == null) {
+            findFilterProductsRequest.setKeyword("");
+        }
+        Pageable pageable = PageRequest.of(findFilterProductsRequest.getCurrentPage() - 1, findFilterProductsRequest.getPageSize(), Sort.by("createdAt").descending());
+        return manHinhConverter.convertToPageResponse(manHinhRepository.getAll(pageable, findFilterProductsRequest));
+
     }
 
     @Override
@@ -54,6 +72,22 @@ public class ManHinhServiceImpl extends AbstractServiceImpl<ManHinh, ManHinhResp
             return manHinhRepository.save(manHinh);
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public ManHinh updateManHinh(ManHinhRequest request, String id) {
+        ManHinh manHinh = manHinhRepository.findOneById(id);
+        if (manHinh != null) {
+            manHinh.setDoPhanGiaiManHinh(doPhanGiaiRepository.findOneById(request.getDoPhanGiaiManHinh()));
+            manHinh.setLoaiManHinh(request.getLoaiManHinh());
+            manHinh.setKichThuoc(request.getKichThuoc());
+            manHinh.setTanSoQuet(request.getTanSoQuet());
+        }
+        try {
+            return manHinhRepository.save(manHinh);
+        } catch (Exception e) {
+            return null;
         }
     }
 

@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.admin.product_managements.controller;
 
+import beephone_shop_projects.core.admin.product_managements.model.request.FindFilterProductsRequest;
 import beephone_shop_projects.core.admin.product_managements.model.request.ManHinhRequest;
 import beephone_shop_projects.core.admin.product_managements.model.response.ManHinhResponse;
 import beephone_shop_projects.core.admin.product_managements.service.ManHinhService;
@@ -8,6 +9,7 @@ import beephone_shop_projects.core.common.base.ResponsePage;
 import beephone_shop_projects.entity.ManHinh;
 import beephone_shop_projects.infrastructure.constant.ApiConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +25,12 @@ public class ManHinhController {
     public ResponseObject<List<ManHinhResponse>> getSimCards() {
         List<ManHinhResponse> manHinh = manHinhService.findAll();
         return new ResponseObject<>(manHinh);
+    }
+
+    @GetMapping("/search")
+    public ResponsePage getMHPhanTrang(@ModelAttribute FindFilterProductsRequest request) {
+        Page<ManHinhResponse> manHinhs = manHinhService.findAllMH(request);
+        return new ResponsePage(manHinhs);
     }
 
     @GetMapping("/all")

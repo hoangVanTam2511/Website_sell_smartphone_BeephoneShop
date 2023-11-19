@@ -186,7 +186,7 @@ public class VoucherServiceImpl implements VoucherService {
 //            throw new RestApiException("Vui lòng nhập lý do hủy phiếu giảm giá");
 //        } else {
             if (voucher != null) {
-                voucher.setLyDoHuy(request.getLyDoHuy());
+//                voucher.setLyDoHuy(request.getLyDoHuy());
                 voucher.setTrangThai(request.getStatus());
             }
             return voucherRepository.save(voucher);

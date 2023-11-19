@@ -26,6 +26,7 @@ import {
   TypeCamera,
   TypeCameraNumber,
 } from "./enum";
+import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import CreateCameraTruoc from "./create-camera-truoc";
 import useCustomSnackbar from "../../../utilities/notistack";
