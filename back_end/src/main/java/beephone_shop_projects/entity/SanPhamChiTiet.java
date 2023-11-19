@@ -45,9 +45,6 @@ public class SanPhamChiTiet extends PrimaryEntity implements Serializable {
   @JoinColumn(name = "id_cau_hinh")
   private CauHinh cauHinh;
 
-  @OneToMany(mappedBy = "sanPhamChiTiet")
-  private Set<Anh> images = new HashSet<>();
-
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_ram")
   private Ram ram;

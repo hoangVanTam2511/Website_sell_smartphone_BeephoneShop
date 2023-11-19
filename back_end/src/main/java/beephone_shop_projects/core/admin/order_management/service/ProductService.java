@@ -2,10 +2,9 @@ package beephone_shop_projects.core.admin.order_management.service;
 
 import beephone_shop_projects.core.admin.order_management.model.request.ProductItemConfigurationsRequest;
 import beephone_shop_projects.core.admin.order_management.model.request.ProductRequest;
-import beephone_shop_projects.core.admin.order_management.model.response.ProductItemConfigurationResponse;
-import beephone_shop_projects.core.admin.order_management.model.response.ProductItemConfigurationsResponse;
-import beephone_shop_projects.core.admin.order_management.model.response.ProductResponse;
+import beephone_shop_projects.core.admin.order_management.model.response.product_response.ProductCustomResponse;
+import beephone_shop_projects.core.admin.order_management.model.response.product_response.ProductResponse;
 
 public interface ProductService extends GenericService<ProductResponse, ProductRequest, String> {
-  ProductItemConfigurationsResponse createProduct(ProductItemConfigurationsRequest req) throws Exception;
+  ProductCustomResponse createProduct(ProductItemConfigurationsRequest req) throws Exception;
 }

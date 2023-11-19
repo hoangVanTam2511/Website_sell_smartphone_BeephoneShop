@@ -1,6 +1,5 @@
-package beephone_shop_projects.core.admin.order_management.model.response;
+package beephone_shop_projects.core.admin.order_management.model.response.product_response;
 
-import beephone_shop_projects.entity.Image;
 import beephone_shop_projects.entity.KhuyenMaiChiTiet;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,7 +13,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductItemConfigurationResponse {
+public class ProductItemCustomResponse {
 
   private String id;
 
@@ -28,16 +27,15 @@ public class ProductItemConfigurationResponse {
 
   private ColorResponse mauSac;
 
-  private Image image;
+  private ImageResponse image;
 
   private RamResponse ram;
 
   private RomResponse rom;
 
-  private List<ProductItemImeiResponse> imeis;
-
-  private ProductResponse sanPham;
+  private List<ImeiResponse> imeis;
 
   private List<KhuyenMaiChiTiet> promotions;
+
 
 }

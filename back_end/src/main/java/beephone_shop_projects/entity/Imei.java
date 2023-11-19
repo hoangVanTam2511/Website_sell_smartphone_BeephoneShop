@@ -2,7 +2,9 @@ package beephone_shop_projects.entity;
 
 import beephone_shop_projects.entity.base.IsIdentified;
 import beephone_shop_projects.entity.base.PrimaryEntity;
+import beephone_shop_projects.infrastructure.constant.StatusImei;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
@@ -21,9 +23,10 @@ import lombok.Setter;
 @Table(name = "imei")
 public class Imei extends PrimaryEntity implements IsIdentified {
 
+//  @Column(unique = true)
   private String soImei;
 
-  private Integer trangThai;
+  private StatusImei trangThai;
 
   private String barcode;
 

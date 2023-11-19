@@ -54,6 +54,12 @@ public class OrderResponse {
 
   private String updatedBy;
 
+  private String tinhThanhPhoNguoiNhan;
+
+  private String quanHuyenNguoiNhan;
+
+  private String xaPhuongNguoiNhan;
+
   private AccountResponse account;
 
   private CartResponse cart;

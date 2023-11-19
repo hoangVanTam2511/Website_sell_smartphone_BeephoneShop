@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @AllArgsConstructor
 @Getter
@@ -22,5 +23,7 @@ public class CartItemRequest {
   private ProductItemRequest productItem;
 
   private String id;
+
+  private List<ImeiCustomRequest> imeis;
 
 }

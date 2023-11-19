@@ -1,4 +1,4 @@
-package beephone_shop_projects.core.admin.order_management.model.response;
+package beephone_shop_projects.core.admin.order_management.model.response.product_response;
 
 import beephone_shop_projects.entity.Chip;
 import beephone_shop_projects.entity.CongSac;
@@ -14,7 +14,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class ProductResponse {
+public class ProductCustomResponse {
 
   private String id;
 
@@ -24,20 +24,28 @@ public class ProductResponse {
 
   private OperatingType operatingType;
 
-  private List<TheSim> theSims;
+  private List<SimCardPhoneResponse> theSims;
 
-  private CongSac congSac;
+  private ChargingPortResponse congSac;
 
   private String moTa;
 
-  private Hang hang;
+  private BrandResponse hang;
 
-  private Chip chip;
+  private ChipResponse chip;
 
-  private ManHinh manHinh;
+  private ScreenResponse manHinh;
 
-  private Pin pin;
+  private PinResponse pin;
+
+  private MemoryStickResponse theNho;
+
+  private List<CameraFrontPhoneResponse> cameraTruocs;
+
+  private List<CameraRearPhoneResponse> cameraSaus;
 
   private Integer trangThai;
+
+  private List<ProductItemCustomResponse> productItems;
 
 }

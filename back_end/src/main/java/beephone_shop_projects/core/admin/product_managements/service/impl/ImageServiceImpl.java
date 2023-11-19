@@ -1,7 +1,7 @@
 package beephone_shop_projects.core.admin.product_managements.service.impl;
 
+import beephone_shop_projects.core.admin.order_management.repository.ProductItemCustomRepository;
 import beephone_shop_projects.core.admin.order_management.service.impl.AbstractServiceImpl;
-import beephone_shop_projects.core.admin.product_management.repository.ProductDetailRepository;
 import beephone_shop_projects.core.admin.product_managements.converter.ImageConverter;
 import beephone_shop_projects.core.admin.product_managements.model.request.ImageRequest;
 import beephone_shop_projects.core.admin.product_managements.model.response.ImageResponse;
@@ -17,6 +17,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class ImageServiceImpl extends AbstractServiceImpl<Image, ImageResponse, ImageRequest, String> implements ImageService {
@@ -32,32 +38,42 @@ public class ImageServiceImpl extends AbstractServiceImpl<Image, ImageResponse, 
   private CloudinaryUtils cloudinaryUtils;
 
   @Autowired
-  private ProductDetailRepository productItemRepository;
+  private ProductItemCustomRepository productItemRepository;
 
   @Override
-  public void uploadImage(MultipartFile[] files) throws Exception {
+  public void uploadImage(MultipartFile[] files, String ma) throws Exception {
+    List<SanPhamChiTiet> products = productItemRepository.getProductsById(ma);
+    Map<String, SanPhamChiTiet> productMap = new ConcurrentHashMap<>();
+    for (SanPhamChiTiet product : products) {
+      productMap.put(product.getMa(), product);
+    }
+
+    ExecutorService executorService = Executors.newFixedThreadPool(10);
+
     Arrays.stream(files)
             .parallel()
             .forEach(file -> {
-              List<SanPhamChiTiet> products = productItemRepository.getProducts();
-              products.parallelStream()
-                      .filter(item -> item.getMa().equals(file.getOriginalFilename()))
-                      .forEach(item -> {
-                        System.out.println(file.getOriginalFilename());
-                        String responseUrl = cloudinaryUtils.uploadImage(file, RandomCodeGenerator.generateRandomCode());
-                        Image image = new Image();
-                        image.setPath(responseUrl);
-                        image.setMa(RandomCodeGenerator.generateRandomCode());
-                        image.setStatus(1);
-                        Image createdImage = null;
-                        try {
-                          createdImage = imageRepository.save(image);
-                        } catch (Exception e) {
-                          throw new RuntimeException(e);
-                        }
-                        item.setImage(createdImage);
-                        productItemRepository.save(item);
-                      });
+              SanPhamChiTiet product = productMap.get(file.getOriginalFilename());
+              if (product != null) {
+                CompletableFuture.runAsync(() -> {
+                  try {
+                    System.out.println(file.getOriginalFilename());
+                    String responseUrl = cloudinaryUtils.uploadImage(file, RandomCodeGenerator.generateRandomCode());
+                    Image image = new Image();
+                    image.setPath(responseUrl);
+                    image.setMa(RandomCodeGenerator.generateRandomCode());
+                    image.setStatus(1);
+                    Image createdImage = imageRepository.save(image);
+                    product.setImage(createdImage);
+                    productItemRepository.save(product);
+                  } catch (Exception e) {
+                    throw new RuntimeException(e);
+                  }
+                }, executorService);
+              }
             });
-}
+
+    executorService.shutdown();
+    executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+  }
 }

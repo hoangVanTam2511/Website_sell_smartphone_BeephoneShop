@@ -21,4 +21,6 @@ public interface GenericConverter<D, E, R> {
   List<D> convertToListResponse(List<E> entityList);
 
   List<E> convertToListEntity(List<D> responseList);
+
+  List<E> convertListRequestToListEntity(List<R> requestList);
 }
