@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Chart from "chart.js/auto";
 import { Col, Row } from "react-bootstrap";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -7,8 +7,46 @@ import Circularprogressbar from "../../../components/circularprogressbar";
 // import Chart from "react-apexcharts";
 import CountUp from "react-countup";
 import { Card } from "@mui/joy";
+import axios from "axios";
 
 const ThongKe = () => {
+  const [listDonHangInDay, setListDonHangInDay] = useState([]);
+  const [listDonHangInMonth, setListDonHangInMonth] = useState([]);
+  const [listSanPham, setListSanPham] = useState([]);
+
+  const thongKeTheoNgay = () => {
+    axios
+      .get(`http://localhost:8080/thong-ke/in-day`)
+      .then((response) => {
+        setListDonHangInDay(response.data);
+      })
+      .catch((error) => {});
+  };
+
+  const thongKeTheoThang = () => {
+    axios
+      .get(`http://localhost:8080/thong-ke/in-month`)
+      .then((response) => {
+        setListDonHangInMonth(response.data);
+      })
+      .catch((error) => {});
+  };
+
+  const thongKeTheoSanPham = () => {
+    axios
+      .get(`http://localhost:8080/thong-ke/san-pham`)
+      .then((response) => {
+        setListSanPham(response.data);
+      })
+      .catch((error) => {});
+  };
+
+  useEffect(() => {
+    thongKeTheoNgay();
+    thongKeTheoThang();
+    thongKeTheoSanPham();
+  }, []);
+
   useEffect(() => {
     const ctx = document.getElementById("mixedChart");
 
@@ -61,6 +99,13 @@ const ThongKe = () => {
     };
   }, []);
 
+  const convertToVND = (number) => {
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(number);
+  };
+
   return (
     <>
       <div className="mt-3">
@@ -77,24 +122,28 @@ const ThongKe = () => {
           >
             <Col>
               <Card variant="outlined">
-                <h5>Doanh số tháng này</h5>
+                <h5>Doanh thu tháng này</h5>
                 <h5 style={{ color: "#2f80ed" }}>
-                  5 đơn hàng / 130.000.000 VNĐ
+                  {listDonHangInDay.soLuong} đơn hàng /{" "}
+                  {convertToVND(listDonHangInDay.tongTien)}
                 </h5>
               </Card>
             </Col>
             <Col>
               <Card variant="outlined">
-                <h5>Doanh số hôm nay</h5>
+                <h5>Doanh thu hôm nay</h5>
                 <h5 style={{ color: "#2f80ed" }}>
-                  5 đơn hàng / 70.000.000 VNĐ
+                  {listDonHangInMonth.soLuong} đơn hàng /{" "}
+                  {convertToVND(listDonHangInMonth.tongTien)}
                 </h5>
               </Card>
             </Col>
             <Col>
               <Card variant="outlined">
-                <h5>Hàng bán được tháng này</h5>
-                <h5 style={{ color: "#2f80ed" }}>34 sản phẩm</h5>
+                <h5>Sản phẩm bán được trong tháng</h5>
+                <h5 style={{ color: "#2f80ed" }}>
+                  {listSanPham.soLuong} sản phẩm
+                </h5>
               </Card>
             </Col>
           </Row>
