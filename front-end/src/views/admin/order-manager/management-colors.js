@@ -50,6 +50,7 @@ const ManagementColors = () => {
   const [status, setStatus] = React.useState("");
   const [colorName, setColorName] = useState("");
   const [idColor, setIdColor] = useState("");
+  const [pageShow, setPageShow] = useState(5);
   const [openConfirm, setOpenConfirm] = useState(false);
   const { handleOpenAlertVariant } = useCustomSnackbar();
   const [currentPage, setCurrentPage] = useState(1);
@@ -67,13 +68,14 @@ const ManagementColors = () => {
       });
   };
 
-  const getListColorSearchAndPage = (page) => {
+  const getListProductSearchAndPage = (page) => {
     // setIsLoading(false);
     axios
       .get(`http://localhost:8080/api/colors/search`, {
         params: {
           keyword: searchTatCa,
           currentPage: page,
+          pageSize: pageShow,
           status: ConvertStatusProductsNumberToString(searchTrangThai),
         },
       })
@@ -86,6 +88,15 @@ const ManagementColors = () => {
         console.error(error);
         // setIsLoading(false);
       });
+  };
+
+  const [openSelect3, setOpenSelect3] = useState(false);
+  const handleCloseSelect3 = () => {
+    setOpenSelect3(false);
+  };
+
+  const handleOpenSelect3 = () => {
+    setOpenSelect3(true);
   };
 
   const detailColor = async (id) => {
@@ -107,6 +118,12 @@ const ManagementColors = () => {
     setOpenSelect(false);
   };
 
+  const handleShowPageVoucher = (event) => {
+    const selectedValue = event.target.value;
+    setPageShow(parseInt(selectedValue));
+    setCurrentPage(1);
+  };
+
   const handleSearchTrangThaiChange = (event) => {
     const selectedValue = event.target.value;
     setSearchTrangThai(parseInt(selectedValue)); // Cập nhật giá trị khi Select thay đổi
@@ -124,6 +141,13 @@ const ManagementColors = () => {
     setCurrentPage(1);
   };
 
+  const handleRefreshData = () => {
+    setSearchTatCa("");
+    setPageShow(5);
+    setSearchTrangThai("");
+    getListProductSearchAndPage(currentPage);
+  };
+
   const handleClickOpen1 = (id) => {
     detailColor(id);
     setOpen1(true);
@@ -134,11 +158,11 @@ const ManagementColors = () => {
   };
 
   useEffect(() => {
-    getListColorSearchAndPage(currentPage);
-  }, [searchTatCa, searchTrangThai, currentPage, totalPages]);
+    getListProductSearchAndPage(currentPage);
+  }, [searchTatCa, searchTrangThai, currentPage, totalPages, pageShow]);
 
   useEffect(() => {
-    getListColor();
+    getListColor(currentPage);
   }, []);
 
   const handleClickOpen = () => {
@@ -166,7 +190,7 @@ const ManagementColors = () => {
   };
   const chuyenTrang = (event, page) => {
     setCurrentPage(page);
-    getListColorSearchAndPage(page);
+    getListProductSearchAndPage(page);
   };
 
   const ColorTable = () => {
@@ -364,7 +388,7 @@ const ManagementColors = () => {
                 className=""
               />
               <Button
-                // onClick={handleRefreshData}
+                onClick={() => handleRefreshData()}
                 className="rounded-2 ms-2"
                 type="warning"
                 style={{ width: "100px", fontSize: "15px" }}
@@ -377,10 +401,12 @@ const ManagementColors = () => {
                 </span>
               </Button>
             </div>
-
-            <div className="d-flex mt-2">
+            <div
+              className="d-flex"
+              style={{ alignItems: "center", justifyContent: "center" }}
+            >
               <div
-                className="d-flex me-5"
+                className="d-flex"
                 style={{
                   height: "40px",
                   position: "relative",
@@ -441,6 +467,67 @@ const ManagementColors = () => {
                   </Select>
                 </FormControl>
               </div>
+              <div
+                className="d-flex"
+                style={{
+                  height: "40px",
+                  position: "relative",
+                  cursor: "pointer",
+                }}
+              >
+                <div
+                  onClick={handleOpenSelect3}
+                  className=""
+                  style={{ marginTop: "7px" }}
+                >
+                  <span
+                    className="ms-2 ps-1"
+                    style={{ fontSize: "15px", fontWeight: "450" }}
+                  >
+                    Hiển Thị:{" "}
+                  </span>
+                </div>
+                <FormControl
+                  sx={{
+                    minWidth: 50,
+                  }}
+                  size="small"
+                >
+                  <Select
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          borderRadius: "7px",
+                        },
+                      },
+                    }}
+                    IconComponent={KeyboardArrowDownOutlinedIcon}
+                    sx={{
+                      "& .MuiOutlinedInput-notchedOutline": {
+                        border: "none !important",
+                      },
+                      "& .MuiSelect-select": {
+                        color: "#2f80ed",
+                        fontWeight: "500",
+                      },
+                    }}
+                    open={openSelect3}
+                    onClose={handleCloseSelect3}
+                    onOpen={handleOpenSelect3}
+                    value={pageShow}
+                    onChange={handleShowPageVoucher}
+                  >
+                    <MenuItem className="" value={5}>
+                      Mặc định
+                    </MenuItem>
+                    <MenuItem value={10}>10</MenuItem>
+                    <MenuItem value={20}>20</MenuItem>
+                    <MenuItem value={50}>50</MenuItem>
+                  </Select>
+                </FormControl>
+              </div>
+            </div>
+            <div className="d-flex mt-2">
               <Button
                 onClick={handleClickOpen}
                 className="rounded-2 button-mui"
@@ -545,6 +632,7 @@ const ManagementColors = () => {
                     </Select>
                   </FormControl>
                 </div>
+
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
                     onClick={() => updateColor()}

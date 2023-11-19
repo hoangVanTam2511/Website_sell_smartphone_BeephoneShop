@@ -24,6 +24,7 @@ import { Notistack, StatusCommonProducts, TypeCamera } from "./enum";
 import CreateCameraSau from "./create-camera-sau";
 import useCustomSnackbar from "../../../utilities/notistack";
 import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
+import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;

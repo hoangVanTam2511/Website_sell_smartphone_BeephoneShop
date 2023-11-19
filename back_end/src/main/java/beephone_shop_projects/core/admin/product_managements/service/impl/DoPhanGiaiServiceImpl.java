@@ -49,6 +49,21 @@ public class DoPhanGiaiServiceImpl extends AbstractServiceImpl<DoPhanGiaiManHinh
         }
     }
 
+
+    @Override
+    public DoPhanGiaiManHinh updateDoPhanGiai(DoPhanGiaiRequest doPhanGiaiRequest, String id) {
+        DoPhanGiaiManHinh doPhanGiaiManHinh = doPhanGiaiRepository.findOneById(id);
+        if (doPhanGiaiManHinh != null){
+            doPhanGiaiManHinh.setChieuDai(doPhanGiaiRequest.getChieuDai());
+            doPhanGiaiManHinh.setChieuRong(doPhanGiaiRequest.getChieuRong());
+        }
+        try {
+            return doPhanGiaiRepository.save(doPhanGiaiManHinh);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public DoPhanGiaiManHinh doiTrangThai(String id) throws Exception {
 //        DoPhanGiaiManHinh doPhanGiai = doPhanGiaiRepository.findOneById(id);

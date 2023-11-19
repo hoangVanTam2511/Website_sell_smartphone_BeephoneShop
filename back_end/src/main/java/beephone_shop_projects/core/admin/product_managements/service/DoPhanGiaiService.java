@@ -13,6 +13,8 @@ public interface DoPhanGiaiService extends GenericService<DoPhanGiaiResponse, Do
 
     DoPhanGiaiManHinh add(DoPhanGiaiRequest doPhanGiaiRequest);
 
+    DoPhanGiaiManHinh updateDoPhanGiai(DoPhanGiaiRequest doPhanGiaiRequest, String id);
+
     DoPhanGiaiManHinh doiTrangThai(String id) throws Exception;
 
 }
