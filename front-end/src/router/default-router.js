@@ -109,7 +109,6 @@ import CreateTheNho from "../views/admin/order-manager/create-the-nho";
 import UpdateMauSac from "../views/admin/order-manager/update-mau-sac";
 import ManagementDanhMuc from "../views/admin/order-manager/management-danh-muc";
 import CreateDanhMuc from "../views/admin/order-manager/create-danh-muc";
-import QuetQRCode from "../views/admin/voucher-manager/quetqr";
 
 export const DefaultRouter = [
   {
@@ -369,10 +368,6 @@ export const DefaultRouter = [
       {
         path: "dashboard/create-product",
         element: <CreateProduct />,
-      },
-      {
-        path: "dashboard/quet-qr",
-        element: <QuetQRCode />,
       },
       // {
       //   path: 'dashboard/add-product',

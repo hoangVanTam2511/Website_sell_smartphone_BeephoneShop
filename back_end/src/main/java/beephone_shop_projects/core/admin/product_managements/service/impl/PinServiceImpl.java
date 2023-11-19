@@ -11,6 +11,9 @@ import beephone_shop_projects.entity.Pin;
 import beephone_shop_projects.infrastructure.constant.StatusCommon;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,18 +31,17 @@ public class PinServiceImpl extends AbstractServiceImpl<Pin, PinResponse, PinReq
 
     @Override
     public Page<PinResponse> findAllPin(FindFilterProductsRequest findFilterProductsRequest) {
-//        if (findFilterProductsRequest.getCurrentPage() == null) {
-//            findFilterProductsRequest.setCurrentPage(1);
-//        }
-//        if (findFilterProductsRequest.getPageSize() == null) {
-//            findFilterProductsRequest.setPageSize(5);
-//        }
-//        if (findFilterProductsRequest.getKeyword() == null) {
-//            findFilterProductsRequest.setKeyword("");
-//        }
-//        Pageable pageable = PageRequest.of(findFilterProductsRequest.getCurrentPage() - 1, findFilterProductsRequest.getPageSize(), Sort.by("createdAt").descending());
-//        return pinConverter.convertToPageResponse(pinRepository.findAllPin(pageable, findFilterProductsRequest));
-        return null;
+        if (findFilterProductsRequest.getCurrentPage() == null) {
+            findFilterProductsRequest.setCurrentPage(1);
+        }
+        if (findFilterProductsRequest.getPageSize() == null) {
+            findFilterProductsRequest.setPageSize(5);
+        }
+        if (findFilterProductsRequest.getKeyword() == null) {
+            findFilterProductsRequest.setKeyword("");
+        }
+        Pageable pageable = PageRequest.of(findFilterProductsRequest.getCurrentPage() - 1, findFilterProductsRequest.getPageSize(), Sort.by("createdAt").descending());
+        return pinConverter.convertToPageResponse(pinRepository.findAllPin(pageable, findFilterProductsRequest));
     }
 
     @Override

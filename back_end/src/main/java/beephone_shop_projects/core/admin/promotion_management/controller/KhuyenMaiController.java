@@ -1,6 +1,7 @@
 package beephone_shop_projects.core.admin.promotion_management.controller;
 
 import beephone_shop_projects.core.admin.promotion_management.model.reponse.KhuyenMaiResponse;
+import beephone_shop_projects.core.admin.promotion_management.model.request.ChangeStatusPromotionRequest;
 import beephone_shop_projects.core.admin.promotion_management.model.request.CreateKhuyenMaiRequest;
 import beephone_shop_projects.core.admin.promotion_management.model.request.FindKhuyenMaiRequest;
 import beephone_shop_projects.core.admin.promotion_management.model.request.UpdateKhuyenMaiRequest;
@@ -50,8 +51,13 @@ public class KhuyenMaiController {
     }
 
     @PutMapping("doi-trang-thai/{id}")
-    public ResponseObject doiTrangThai(@PathVariable("id") String id){
-        return new ResponseObject(khuyenMaiService.doiTrangThai(id));
+    public ResponseObject doiTrangThai(@PathVariable("id") String id,@RequestBody ChangeStatusPromotionRequest request){
+        return new ResponseObject(khuyenMaiService.doiTrangThai(request, id));
+    }
+
+    @PutMapping("/kich-hoat-promotion/{id}")
+    public ResponseObject kichHoatKhuyenMai(@PathVariable("id") String id) {
+        return new ResponseObject(khuyenMaiService.kichHoatKhuyenMai(id));
     }
 
 }

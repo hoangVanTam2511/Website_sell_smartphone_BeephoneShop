@@ -11,6 +11,9 @@ import beephone_shop_projects.entity.Ram;
 import beephone_shop_projects.infrastructure.constant.StatusCommon;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,8 +30,18 @@ public class RamServiceImpl extends AbstractServiceImpl<Ram, RamResponse, RamReq
     private RamConverter ramConverter;
 
     @Override
-    public Page<Ram> findAllRam(FindFilterProductsRequest findFilterProductsRequest) {
-        return null;
+    public Page<RamResponse> findAllRam(FindFilterProductsRequest findFilterProductsRequest) {
+        if (findFilterProductsRequest.getCurrentPage() == null) {
+            findFilterProductsRequest.setCurrentPage(1);
+        }
+        if (findFilterProductsRequest.getPageSize() == null) {
+            findFilterProductsRequest.setPageSize(5);
+        }
+        if (findFilterProductsRequest.getKeyword() == null) {
+            findFilterProductsRequest.setKeyword("");
+        }
+        Pageable pageable = PageRequest.of(findFilterProductsRequest.getCurrentPage() - 1, findFilterProductsRequest.getPageSize(), Sort.by("createdAt").descending());
+        return ramConverter.convertToPageResponse(ramRepository.findAllRam(pageable, findFilterProductsRequest));
     }
 
     @Override

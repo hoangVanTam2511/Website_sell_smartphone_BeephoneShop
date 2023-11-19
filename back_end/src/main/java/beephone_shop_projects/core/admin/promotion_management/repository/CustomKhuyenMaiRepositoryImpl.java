@@ -54,22 +54,39 @@ public class CustomKhuyenMaiRepositoryImpl implements CustomKhuyenMaiRepository{
                 predicates.add(criteriaBuilder.equal(root.get("trangThai"), request.getTrangThai()));
                 countPredicates.add(criteriaBuilder.equal(countRoot.get("trangThai"), request.getTrangThai()));
             }
+            if (request.getSortType() != null) {
+                if (request.getSortType().equals("a-z")) {
+                    criteriaQuery.orderBy(criteriaBuilder.asc(root.get("giaTriKhuyenMai")));
+                } else if (request.getSortType().equals("z-a")) {
+                    criteriaQuery.orderBy(criteriaBuilder.desc(root.get("giaTriKhuyenMai")));
+                }
+            }
 
             Expression<Date> expression2 = criteriaBuilder.function("DATE", Date.class, countRoot.get("ngayBatDau"));
             Expression<Date> expression3 = criteriaBuilder.function("DATE", Date.class, countRoot.get("ngayKetThuc"));
             Expression<Date> expression = criteriaBuilder.function("DATE", Date.class, root.get("ngayBatDau"));
             Expression<Date> expression1 = criteriaBuilder.function("DATE", Date.class, root.get("ngayKetThuc"));
-            if (request.getNgayBatDau() != null && request.getNgayKetThuc() != null) {
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(expression, request.getNgayBatDau()));
-                predicates.add(criteriaBuilder.lessThanOrEqualTo(expression1, request.getNgayKetThuc()));
-                countPredicates.add(criteriaBuilder.greaterThanOrEqualTo(expression2, request.getNgayBatDau()));
-                countPredicates.add(criteriaBuilder.lessThanOrEqualTo(expression3, request.getNgayKetThuc()));
-            } else if (request.getNgayBatDau() != null) {
+//            if (request.getNgayBatDau() != null && request.getNgayKetThuc() != null) {
+//                predicates.add(criteriaBuilder.greaterThanOrEqualTo(expression, request.getNgayBatDau()));
+//                predicates.add(criteriaBuilder.lessThanOrEqualTo(expression1, request.getNgayKetThuc()));
+//                countPredicates.add(criteriaBuilder.greaterThanOrEqualTo(expression2, request.getNgayBatDau()));
+//                countPredicates.add(criteriaBuilder.lessThanOrEqualTo(expression3, request.getNgayKetThuc()));
+//            } else if (request.getNgayBatDau() != null) {
+//                predicates.add(criteriaBuilder.greaterThanOrEqualTo(expression, request.getNgayBatDau()));
+//                countPredicates.add(criteriaBuilder.greaterThanOrEqualTo(expression2, request.getNgayBatDau()));
+//            } else if (request.getNgayKetThuc() != null) {
+//                predicates.add(criteriaBuilder.lessThanOrEqualTo(expression1, request.getNgayKetThuc()));
+//                countPredicates.add(criteriaBuilder.lessThanOrEqualTo(expression3, request.getNgayKetThuc()));
+//            }
+            if (request.getNgayBatDau() != null) {
                 predicates.add(criteriaBuilder.greaterThanOrEqualTo(expression, request.getNgayBatDau()));
                 countPredicates.add(criteriaBuilder.greaterThanOrEqualTo(expression2, request.getNgayBatDau()));
             } else if (request.getNgayKetThuc() != null) {
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(expression1, request.getNgayKetThuc()));
                 countPredicates.add(criteriaBuilder.lessThanOrEqualTo(expression3, request.getNgayKetThuc()));
+            }else if (request.getNgayBatDau() != null && request.getNgayKetThuc() != null) {
+                predicates.add(criteriaBuilder.between(expression, request.getNgayBatDau(), request.getNgayKetThuc()));
+                countPredicates.add(criteriaBuilder.between(expression2, request.getNgayBatDau(), request.getNgayKetThuc()));
             }
 
             criteriaQuery.where(predicates.toArray(new Predicate[0]));

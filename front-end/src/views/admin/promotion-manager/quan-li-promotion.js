@@ -27,6 +27,7 @@ import {
   Zoom,
   FormControl,
   MenuItem,
+  Menu,
 } from "@mui/material";
 import {
   Notistack,
@@ -38,6 +39,7 @@ import {
 import { ConvertStatusVoucherNumberToString } from "../../../utilities/convertEnum";
 import useCustomSnackbar from "../../../utilities/notistack";
 import LoadingIndicator from "../../../utilities/loading";
+import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
 
 //show
 const HienThiKhuyenMai = () => {
@@ -48,24 +50,32 @@ const HienThiKhuyenMai = () => {
   const [searchTatCa, setSearchTatCa] = useState("");
   const [searchNgayBatDau, setSearchNgayBatDau] = useState("");
   const [searchNgayKetThuc, setSearchNgayKetThuc] = useState("");
-  const [searchTrangThai, setSearchTrangThai] = useState("");
+  const [searchTrangThai, setSearchTrangThai] = useState(6);
   const [searchParams, setSearchParams] = useSearchParams();
   const [id, setId] = useState("");
+  const [ma, setMa] = useState("");
   const { handleOpenAlertVariant } = useCustomSnackbar();
   const [isLoading, setIsLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [keySelect, setKeySelect] = useState(0);
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [sortVoucher, setSortVoucher] = useState("all");
+  const [showPage, setShowPage] = useState(5);
 
   const handleReset = () => {
     setIsLoading(false);
     setTimeout(() => {
       loadDataListKhuyenMai(currentPage);
       setSearchTatCa("");
-      setSearchNgayBatDau("");
-      setSearchNgayKetThuc("");
-      setSearchTrangThai("");
+      setSortVoucher("all");
+      setSearchNgayBatDau(null);
+      setSearchNgayKetThuc(null);
+      setShowPage(5);
+      setSearchTrangThai(6);
       setKeySelect(keySelect + 1);
       setSearchParams("");
+      setCurrentPage(1);
       setIsLoading(true);
     }, 200);
   };
@@ -78,7 +88,9 @@ const HienThiKhuyenMai = () => {
         params: {
           keyword: searchTatCa,
           pageNo: page,
+          pageSize: showPage,
           trangThai: ConvertStatusVoucherNumberToString(searchTrangThai),
+          sortType: sortVoucher,
           ngayBatDau: searchNgayBatDau,
           ngayKetThuc: searchNgayKetThuc,
         },
@@ -106,7 +118,9 @@ const HienThiKhuyenMai = () => {
         params: {
           keyword: searchTatCa,
           pageNo: page,
+          pageSize: showPage,
           trangThai: ConvertStatusVoucherNumberToString(searchTrangThai),
+          sortType: sortVoucher,
           ngayBatDau: searchNgayBatDau,
           ngayKetThuc: searchNgayKetThuc,
         },
@@ -131,14 +145,29 @@ const HienThiKhuyenMai = () => {
     loadDataListKhuyenMai1(currentPage);
     const intervalId = setInterval(() => {
       loadDataListKhuyenMai1(currentPage);
-    }, 10000);
+    }, 5000);
     // Xóa interval khi component unmounted
     return () => clearInterval(intervalId);
-  }, [currentPage, searchTatCa, totalPages]);
+  }, [
+    searchTatCa,
+    currentPage,
+    totalPages,
+    showPage,
+    searchTrangThai,
+    searchNgayBatDau,
+    searchNgayKetThuc,
+    sortVoucher,
+  ]);
 
   useEffect(() => {
     loadDataListKhuyenMai(currentPage);
-  }, [searchTrangThai, searchNgayBatDau, searchNgayKetThuc]);
+  }, [
+    searchTrangThai,
+    searchNgayBatDau,
+    searchNgayKetThuc,
+    showPage,
+    sortVoucher,
+  ]);
 
   const isDateFuture = (toDate) => {
     const currentDate = new Date();
@@ -167,18 +196,23 @@ const HienThiKhuyenMai = () => {
     return false;
   };
 
-  const handleOkConfirm = () => {
-    doiTrangThaiKhuyenMai(id);
-  };
-  const handleCancelConfirm = () => {
-    console.log("Clicked cancel button");
-    setOpen(false);
-  };
+  // const handleOkConfirm = () => {
+  //   doiTrangThaiKhuyenMai();
+  // };
+  // const handleCancelConfirm = () => {
+  //   console.log("Clicked cancel button");
+  //   setOpen(false);
+  // };
 
-  const doiTrangThaiKhuyenMai = (id) => {
+  const doiTrangThaiKhuyenMai = () => {
+    let obj = {
+      status: selectedStatus,
+    };
     setIsLoading(false);
+    console.log(obj.status);
+
     axios
-      .put(apiURLKhuyenMai + `/doi-trang-thai/${id}`)
+      .put(`${apiURLKhuyenMai}/doi-trang-thai/${id}`, obj)
       .then((response) => {
         loadDataListKhuyenMai(currentPage);
         handleOpenAlertVariant("Đổi trạng thái thành công!", Notistack.SUCCESS);
@@ -193,6 +227,66 @@ const HienThiKhuyenMai = () => {
       });
   };
 
+  const kichHoatKhuyenMai = () => {
+    setIsLoading(false);
+    axios
+      .put(`${apiURLKhuyenMai}/kich-hoat-promotion/${id}`)
+      .then((response) => {
+        loadDataListKhuyenMai(currentPage);
+        handleOpenAlertVariant("Kích hoạt thành công!", Notistack.SUCCESS);
+        setIsLoading(true);
+      })
+      .catch((error) => {
+        console.error("Đã xảy ra lỗi khi kích hoạt giảm giá");
+        handleOpenAlertVariant(
+          "Đã xảy ra lỗi khi kích hoạt giảm giá!",
+          Notistack.ERROR
+        );
+        setIsLoading(true);
+      });
+  };
+
+  const handleClickChangeStatus = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseChangeStatus = () => {
+    setAnchorEl(null);
+  };
+
+  const [openConfirm, setOpenConfirm] = useState(false);
+
+  const handleOpenDialogConfirmUpdate = () => {
+    setOpenConfirm(true);
+  };
+
+  const handleCloseDialogConfirmUpdate = () => {
+    setOpenConfirm(false);
+    handleCloseChangeStatus();
+  };
+
+  const Header = () => {
+    return (
+      <>
+        <span>Xác nhận đổi trạng thái giảm giá</span>
+      </>
+    );
+  };
+
+  const Title = () => {
+    return (
+      <>
+        {selectedStatus === StatusDiscount.DA_HUY ? (
+          <span>Bạn có chắc muốn hủy giảm giá {ma} này không?</span>
+        ) : selectedStatus === StatusDiscount.TAM_DUNG ? (
+          <span>Bạn có chắc chắn muốn tạm dừng giảm giá {ma} này không?</span>
+        ) : (
+          <span>Bạn có chắc chắn muốn kích hoạt giảm giá {ma} này không?</span>
+        )}
+      </>
+    );
+  };
+
   //Ten column
   const columns = [
     {
@@ -201,7 +295,9 @@ const HienThiKhuyenMai = () => {
       width: "5%",
       align: "center",
       render: (text) => <span>{text}</span>,
-      sorter: (a, b) => a.stt - b.stt,
+      render: (text, record) => (
+        <span>{listKhuyenMai.indexOf(record) + 1}</span>
+      ),
     },
 
     {
@@ -252,20 +348,33 @@ const HienThiKhuyenMai = () => {
         <>
           <div
             className={`rounded-pill mx-auto ${
-              record.trangThai == StatusDiscount.HOAT_DONG
+              record.trangThai === StatusDiscount.HOAT_DONG &&
+              isDatePast(record.ngayBatDau) === true
+                ? "badge-light"
+                : record.trangThai === StatusDiscount.HOAT_DONG &&
+                  isDateFuture(record.ngayKetThuc) === false
                 ? "badge-primary"
-                : record.trangThai == StatusDiscount.NGUNG_HOAT_DONG
+                : record.trangThai === StatusDiscount.NGUNG_HOAT_DONG
                 ? "badge-danger"
-                : record.trangThai == StatusDiscount.CHUA_DIEN_RA
+                : record.trangThai === StatusDiscount.CHUA_DIEN_RA
                 ? "badge-light"
-                : record.trangThai == StatusDiscount.DA_HUY &&
-                  isDateFuture(record.ngayKetThuc) == true
+                : record.trangThai === StatusDiscount.DA_HUY &&
+                  isDateFuture(record.ngayKetThuc) === true
                 ? "badge-danger"
-                : record.trangThai == StatusDiscount.DA_HUY &&
-                  isDatePast(record.ngayBatDau) == true
+                : record.trangThai === StatusDiscount.DA_HUY &&
+                  isDatePast(record.ngayBatDau) === true
                 ? "badge-light"
-                : record.trangThai == StatusDiscount.DA_HUY &&
-                  isRangeDate(record.ngayBatDau, record.ngayKetThuc) == true
+                : record.trangThai === StatusDiscount.DA_HUY &&
+                  isRangeDate(record.ngayBatDau, record.ngayKetThuc) === true
+                ? "badge-primary"
+                : record.trangThai === StatusDiscount.TAM_DUNG &&
+                  isDateFuture(record.ngayKetThuc) === true
+                ? "badge-danger"
+                : record.trangThai === StatusDiscount.TAM_DUNG &&
+                  isDatePast(record.ngayBatDau) === true
+                ? "badge-light"
+                : record.trangThai === StatusDiscount.TAM_DUNG &&
+                  isRangeDate(record.ngayBatDau, record.ngayKetThuc) === true
                 ? "badge-primary"
                 : ""
             }`}
@@ -277,10 +386,16 @@ const HienThiKhuyenMai = () => {
           >
             <span
               className={`p-2 ${
-                record.trangThai == StatusDiscount.CHUA_DIEN_RA
+                record.trangThai === StatusDiscount.CHUA_DIEN_RA
                   ? "text-dark"
-                  : record.trangThai == StatusDiscount.DA_HUY &&
-                    isDatePast(record.ngayBatDau) == true
+                  : record.trangThai === StatusDiscount.DA_HUY &&
+                    isDatePast(record.ngayBatDau) === true
+                  ? "text-dark"
+                  : record.trangThai === StatusDiscount.HOAT_DONG &&
+                    isDatePast(record.ngayBatDau) === true
+                  ? "text-dark"
+                  : record.trangThai === StatusDiscount.TAM_DUNG &&
+                    isDatePast(record.ngayBatDau) === true
                   ? "text-dark"
                   : "text-white"
               }`}
@@ -296,9 +411,9 @@ const HienThiKhuyenMai = () => {
     {
       title: "Trạng Thái",
       dataIndex: "trangThai",
-      width: "15%",
+      width: "10%",
       align: "center",
-      onFilter: (value, record) => record.trangThai == value,
+      onFilter: (value, record) => record.trangThai === value,
       filterSearch: true,
       render: (text, record) => (
         <span>
@@ -341,7 +456,7 @@ const HienThiKhuyenMai = () => {
                 Chưa diễn ra
               </span>
             </div>
-          ) : record.trangThai == StatusDiscount.DA_HUY ? (
+          ) : record.trangThai === StatusDiscount.DA_HUY ? (
             <div
               className="rounded-pill mx-auto badge-danger"
               style={{
@@ -352,6 +467,19 @@ const HienThiKhuyenMai = () => {
             >
               <span className="text-white p-2" style={{ fontSize: "14px" }}>
                 Đã hủy
+              </span>
+            </div>
+          ) : record.trangThai === StatusDiscount.TAM_DUNG ? (
+            <div
+              className="rounded-pill mx-auto badge-warning"
+              style={{
+                height: "35px",
+                width: "90px",
+                padding: "4px",
+              }}
+            >
+              <span className="text-dark p-2" style={{ fontSize: "14px" }}>
+                Tạm Dừng
               </span>
             </div>
           ) : (
@@ -375,87 +503,66 @@ const HienThiKhuyenMai = () => {
                 </IconButton>
               </Link>
             </Tooltip>
-            <Popconfirm
-              okText="Đồng ý"
-              cancelText="Hủy"
-              description="Bạn có chắc chắn muốn đổi trạng thái giảm giá không?"
-              onConfirm={handleOkConfirm}
-              onCancel={handleCancelConfirm}
-              onClick={() => setId(record.id)}
-              placement="topLeft"
-            >
-              <Tooltip
-                TransitionComponent={Zoom}
-                title={
-                  record.trangThai === StatusDiscount.HOAT_DONG ||
-                  record.trangThai === StatusDiscount.CHUA_DIEN_RA
-                    ? "Ngừng kích hoạt"
-                    : record.trangThai === StatusDiscount.DA_HUY &&
-                      isDatePast(record.ngayBatDau) === true
-                    ? "Kích hoạt"
-                    : record.trangThai === StatusDiscount.DA_HUY &&
-                      isRangeDate(record.ngayBatDau, record.ngayKetThuc) ===
-                        true
-                    ? "Kích hoạt"
-                    : record.trangThai === StatusDiscount.NGUNG_HOAT_DONG
-                    ? "Không thể đổi"
-                    : ""
+            <Tooltip TransitionComponent={Zoom} title={"Đổi trạng thái"}>
+              <IconButton
+                disabled={
+                  record.trangThai === StatusDiscount.NGUNG_HOAT_DONG ||
+                  // (
+                  record.trangThai === StatusDiscount.DA_HUY
+                    ? // && isDateFuture(record.ngayKetThuc) === true)
+                      true
+                    : false
                 }
+                className="ms-2"
+                style={{ marginTop: "6px" }}
+                aria-controls="simple-menu"
+                aria-haspopup="true"
+                onClick={(event) => {
+                  handleClickChangeStatus(event);
+                  setId(record.id);
+                  setMa(record.tenKhuyenMai);
+                }}
               >
-                <IconButton
-                  size=""
-                  // onClick={() => doiTrangThaiKhuyenMai(record.id)}
-                  className="ms-2"
-                  style={{ marginTop: "6px" }}
-                  disabled={
-                    record.trangThai === StatusDiscount.NGUNG_HOAT_DONG ||
-                    (record.trangThai === StatusDiscount.DA_HUY &&
-                      isDateFuture(record.ngayKetThuc) === true)
-                      ? true
-                      : false
+                <AssignmentOutlinedIcon
+                  color={
+                    record.trangThai === StatusDiscount.HOAT_DONG ||
+                    record.trangThai === StatusDiscount.CHUA_DIEN_RA
+                      ? "error"
+                      : record.trangThai === StatusDiscount.DA_HUY &&
+                        isDatePast(record.ngayBatDau) === true
+                      ? "white"
+                      : record.trangThai === StatusDiscount.DA_HUY &&
+                        isRangeDate(record.ngayBatDau, record.ngayKetThuc) ===
+                          true
+                      ? "white"
+                      : record.trangThai === StatusDiscount.TAM_DUNG &&
+                        isDatePast(record.ngayBatDau) === true
+                      ? "success"
+                      : record.trangThai === StatusDiscount.TAM_DUNG &&
+                        isRangeDate(record.ngayBatDau, record.ngayKetThuc) ===
+                          true
+                      ? "success"
+                      : "disabled"
                   }
-                >
-                  <AssignmentOutlinedIcon
-                    color={
-                      record.trangThai === StatusDiscount.HOAT_DONG ||
-                      record.trangThai === StatusDiscount.CHUA_DIEN_RA
-                        ? "error"
-                        : record.trangThai === StatusDiscount.DA_HUY &&
-                          isDatePast(record.ngayBatDau) === true
-                        ? "success"
-                        : record.trangThai === StatusDiscount.DA_HUY &&
-                          isRangeDate(record.ngayBatDau, record.ngayKetThuc) ===
-                            true
-                        ? "success"
-                        : "disabled"
-                    }
-                  />
-                </IconButton>
-              </Tooltip>
-            </Popconfirm>
+                />
+              </IconButton>
+            </Tooltip>
+            {/* </Popconfirm> */}
           </>
         );
       },
     },
   ];
 
-  const mergedColumns = columns.map((col) => {
-    if (!col.editable) {
-      return col;
-    }
-    return {
-      ...col,
-      onCell: (record) => ({
-        record,
-        dataIndex: col.dataIndex,
-        title: col.title,
-      }),
-    };
-  });
-
   const handleSearchTatCaChange = (event) => {
     const searchTatCaInput = event.target.value;
     setSearchTatCa(searchTatCaInput);
+    setCurrentPage(1);
+  };
+
+  const handleShowPageVoucher = (event) => {
+    const selectedValue = event.target.value;
+    setShowPage(parseInt(selectedValue));
     setCurrentPage(1);
   };
 
@@ -464,9 +571,15 @@ const HienThiKhuyenMai = () => {
     setSearchTrangThai(selectedValue); // Cập nhật giá trị khi Select thay đổi
     searchParams.set("trangThai", selectedValue);
     setSearchParams(searchParams);
-    if (selectedValue === 5) {
+    if (selectedValue === 6) {
       setSearchParams("");
     }
+    setCurrentPage(1);
+  };
+
+  const handleSortValueVoucher = (event) => {
+    const selectedValue = event.target.value;
+    setSortVoucher(selectedValue);
     setCurrentPage(1);
   };
 
@@ -487,15 +600,15 @@ const HienThiKhuyenMai = () => {
     loadDataListKhuyenMai(page);
   };
 
-  const [openSelect1, setOpenSelect1] = useState(false);
+  // const [openSelect1, setOpenSelect1] = useState(false);
 
-  const handleCloseSelect1 = () => {
-    setOpenSelect1(false);
-  };
+  // const handleCloseSelect1 = () => {
+  //   setOpenSelect1(false);
+  // };
 
-  const handleOpenSelect1 = () => {
-    setOpenSelect1(true);
-  };
+  // const handleOpenSelect1 = () => {
+  //   setOpenSelect1(true);
+  // };
 
   const [openSelect, setOpenSelect] = useState(false);
 
@@ -507,8 +620,91 @@ const HienThiKhuyenMai = () => {
     setOpenSelect(true);
   };
 
+  const [openSelect2, setOpenSelect2] = useState(false);
+
+  const handleCloseSelect2 = () => {
+    setOpenSelect2(false);
+  };
+
+  const handleOpenSelect2 = () => {
+    setOpenSelect2(true);
+  };
+
+  const [openSelect3, setOpenSelect3] = useState(false);
+  const handleCloseSelect3 = () => {
+    setOpenSelect3(false);
+  };
+
+  const handleOpenSelect3 = () => {
+    setOpenSelect3(true);
+  };
+
   return (
     <>
+      <Menu
+        id="simple-menu"
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={handleCloseChangeStatus}
+        PaperProps={{
+          elevation: 0,
+          sx: {
+            overflow: "visible",
+            filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+            mt: 1.5,
+            "& .MuiAvatar-root": {
+              width: 32,
+              height: 32,
+              ml: -0.5,
+              mr: 1,
+            },
+            "&:before": {
+              content: '""',
+              display: "block",
+              position: "absolute",
+              top: 0,
+              right: 14,
+              width: 10,
+              height: 10,
+              bgcolor: "background.paper",
+              transform: "translateY(-50%) rotate(45deg)",
+              zIndex: 0,
+            },
+          },
+        }}
+        transformOrigin={{ horizontal: "right", vertical: "top" }}
+        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+      >
+        <MenuItem
+          // selected={}
+          onClick={() => {
+            handleOpenDialogConfirmUpdate();
+            setSelectedStatus(5);
+          }}
+          style={{ color: "black" }}
+        >
+          Kích Hoạt
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleOpenDialogConfirmUpdate();
+            setSelectedStatus(StatusDiscount.TAM_DUNG);
+          }}
+          style={{ color: "black" }}
+        >
+          Tạm Dừng
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleOpenDialogConfirmUpdate();
+            setSelectedStatus(StatusDiscount.DA_HUY);
+          }}
+          style={{ color: "black" }}
+        >
+          Hủy Giảm Giá
+        </MenuItem>
+      </Menu>
       <div
         className="mt-4"
         style={{
@@ -625,132 +821,199 @@ const HienThiKhuyenMai = () => {
               </Link>
             </div>
           </Card.Header>
-          <div className="mt-3 pt-1 ms-auto me-2 pe-1 d-flex">
+          <div style={{ alignItems: "center", justifyContent: "center" }}>
             <div
-              className="d-flex me-3"
-              style={{
-                height: "40px",
-                position: "relative",
-                cursor: "pointer",
-              }}
+              className="mt-3 pt-1 ms-auto me-2 pe-1 d-flex"
+              style={{ alignItems: "center", justifyContent: "center" }}
             >
               <div
-                onClick={handleOpenSelect}
-                className=""
-                style={{ marginTop: "7px" }}
-              >
-                <span
-                  className="ms-2 ps-1"
-                  style={{ fontSize: "15px", fontWeight: "450" }}
-                >
-                  Trạng Thái:{" "}
-                </span>
-              </div>
-              <FormControl
-                sx={{
-                  minWidth: 50,
+                className="d-flex me-3"
+                style={{
+                  height: "40px",
+                  position: "relative",
+                  cursor: "pointer",
                 }}
-                size="small"
               >
-                <Select
-                  MenuProps={{
-                    PaperProps: {
-                      style: {
-                        borderRadius: "7px",
-                      },
-                    },
-                  }}
-                  IconComponent={KeyboardArrowDownOutlinedIcon}
-                  sx={{
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      border: "none !important",
-                    },
-                    "& .MuiSelect-select": {
-                      color: "#2f80ed",
-                      fontWeight: "500",
-                    },
-                  }}
-                  open={openSelect}
-                  onClose={handleCloseSelect}
-                  onOpen={handleOpenSelect}
-                  defaultValue={5}
-                  key={keySelect}
-                  onChange={handleSearchTrangThaiChange}
+                <div
+                  onClick={handleOpenSelect}
+                  className=""
+                  style={{ marginTop: "7px" }}
                 >
-                  <MenuItem className="" value={5}>
-                    Tất cả
-                  </MenuItem>
-                  <MenuItem value={StatusDiscountNumber.HOAT_DONG}>
-                    Hoạt động
-                  </MenuItem>
-                  <MenuItem value={StatusDiscountNumber.NGUNG_HOAT_DONG}>
-                    Ngừng hoạt động
-                  </MenuItem>
-                  <MenuItem value={StatusDiscountNumber.CHUA_DIEN_RA}>
-                    Chưa diễn ra
-                  </MenuItem>
-                  <MenuItem value={StatusDiscountNumber.DA_HUY}>
-                    Đã hủy
-                  </MenuItem>
-                </Select>
-              </FormControl>
-            </div>
-            <div
-              className="d-flex"
-              style={{
-                height: "40px",
-                position: "relative",
-                cursor: "pointer",
-              }}
-            >
+                  <span
+                    className="ms-2 ps-1"
+                    style={{ fontSize: "15px", fontWeight: "450" }}
+                  >
+                    Trạng Thái:{" "}
+                  </span>
+                </div>
+                <FormControl
+                  sx={{
+                    minWidth: 50,
+                  }}
+                  size="small"
+                >
+                  <Select
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          borderRadius: "7px",
+                        },
+                      },
+                    }}
+                    IconComponent={KeyboardArrowDownOutlinedIcon}
+                    sx={{
+                      "& .MuiOutlinedInput-notchedOutline": {
+                        border: "none !important",
+                      },
+                      "& .MuiSelect-select": {
+                        color: "#2f80ed",
+                        fontWeight: "500",
+                      },
+                    }}
+                    open={openSelect}
+                    onClose={handleCloseSelect}
+                    onOpen={handleOpenSelect}
+                    value={searchTrangThai}
+                    onChange={handleSearchTrangThaiChange}
+                  >
+                    <MenuItem className="" value={6}>
+                      Tất cả
+                    </MenuItem>
+                    <MenuItem value={StatusDiscountNumber.HOAT_DONG}>
+                      Hoạt động
+                    </MenuItem>
+                    <MenuItem value={StatusDiscountNumber.NGUNG_HOAT_DONG}>
+                      Ngừng hoạt động
+                    </MenuItem>
+                    <MenuItem value={StatusDiscountNumber.CHUA_DIEN_RA}>
+                      Chưa diễn ra
+                    </MenuItem>
+                    <MenuItem value={StatusDiscountNumber.DA_HUY}>
+                      Đã hủy
+                    </MenuItem>
+                    <MenuItem value={StatusDiscountNumber.TAM_DUNG}>
+                      Tạm dừng
+                    </MenuItem>
+                  </Select>
+                </FormControl>
+              </div>
               <div
-                onClick={handleOpenSelect1}
-                className=""
-                style={{ marginTop: "7px" }}
-              >
-                <span
-                  className="ms-2 ps-1"
-                  style={{ fontSize: "15px", fontWeight: "450" }}
-                >
-                  Dành Cho:{" "}
-                </span>
-              </div>
-              <FormControl
-                sx={{
-                  minWidth: 50,
+                className="d-flex"
+                style={{
+                  height: "40px",
+                  position: "relative",
+                  cursor: "pointer",
                 }}
-                size="small"
               >
-                <Select
-                  MenuProps={{
-                    PaperProps: {
-                      style: {
-                        borderRadius: "7px",
-                      },
-                    },
-                  }}
-                  IconComponent={KeyboardArrowDownOutlinedIcon}
-                  sx={{
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      border: "none !important",
-                    },
-                    "& .MuiSelect-select": {
-                      color: "#2f80ed",
-                      fontWeight: "500",
-                    },
-                  }}
-                  open={openSelect1}
-                  onClose={handleCloseSelect1}
-                  onOpen={handleOpenSelect1}
-                  defaultValue={14}
+                <div
+                  onClick={handleOpenSelect2}
+                  className=""
+                  style={{ marginTop: "7px" }}
                 >
-                  <MenuItem className="" value={14}>
-                    Tất cả
-                  </MenuItem>
-                  <MenuItem value={15}>Khách hàng mới</MenuItem>
-                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
-                </Select>
-              </FormControl>
+                  <span
+                    className="ms-2 ps-1"
+                    style={{ fontSize: "15px", fontWeight: "450" }}
+                  >
+                    Sắp Xếp:{" "}
+                  </span>
+                </div>
+                <FormControl
+                  sx={{
+                    minWidth: 50,
+                  }}
+                  size="small"
+                >
+                  <Select
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          borderRadius: "7px",
+                        },
+                      },
+                    }}
+                    IconComponent={KeyboardArrowDownOutlinedIcon}
+                    sx={{
+                      "& .MuiOutlinedInput-notchedOutline": {
+                        border: "none !important",
+                      },
+                      "& .MuiSelect-select": {
+                        color: "#2f80ed",
+                        fontWeight: "500",
+                      },
+                    }}
+                    open={openSelect2}
+                    onClose={handleCloseSelect2}
+                    onOpen={handleOpenSelect2}
+                    value={sortVoucher}
+                    onChange={handleSortValueVoucher}
+                  >
+                    <MenuItem className="" value={"all"}>
+                      Mặc định
+                    </MenuItem>
+                    <MenuItem value={"a-z"}>Tăng dần theo giá trị</MenuItem>
+                    <MenuItem value={"z-a"}>Giảm dần theo giá trị</MenuItem>
+                  </Select>
+                </FormControl>
+              </div>
+              <div
+                className="d-flex"
+                style={{
+                  height: "40px",
+                  position: "relative",
+                  cursor: "pointer",
+                }}
+              >
+                <div
+                  onClick={handleOpenSelect3}
+                  className=""
+                  style={{ marginTop: "7px" }}
+                >
+                  <span
+                    className="ms-2 ps-1"
+                    style={{ fontSize: "15px", fontWeight: "450" }}
+                  >
+                    Hiển Thị:{" "}
+                  </span>
+                </div>
+                <FormControl
+                  sx={{
+                    minWidth: 50,
+                  }}
+                  size="small"
+                >
+                  <Select
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          borderRadius: "7px",
+                        },
+                      },
+                    }}
+                    IconComponent={KeyboardArrowDownOutlinedIcon}
+                    sx={{
+                      "& .MuiOutlinedInput-notchedOutline": {
+                        border: "none !important",
+                      },
+                      "& .MuiSelect-select": {
+                        color: "#2f80ed",
+                        fontWeight: "500",
+                      },
+                    }}
+                    open={openSelect3}
+                    onClose={handleCloseSelect3}
+                    onOpen={handleOpenSelect3}
+                    value={showPage}
+                    onChange={handleShowPageVoucher}
+                  >
+                    <MenuItem className="" value={5}>
+                      Mặc định
+                    </MenuItem>
+                    <MenuItem value={10}>10/Pages</MenuItem>
+                    <MenuItem value={20}>20/Pages</MenuItem>
+                    <MenuItem value={50}>50/Pages</MenuItem>
+                  </Select>
+                </FormControl>
+              </div>
             </div>
           </div>
           <Card.Body>
@@ -772,6 +1035,13 @@ const HienThiKhuyenMai = () => {
           </div>
           <div className="mt-4"></div>
         </Card>
+        <ConfirmDialog
+          open={openConfirm}
+          onClose={handleCloseDialogConfirmUpdate}
+          add={selectedStatus === 5 ? kichHoatKhuyenMai : doiTrangThaiKhuyenMai}
+          title={<Title />}
+          header={<Header />}
+        />
         {!isLoading && <LoadingIndicator />}
       </div>
     </>

@@ -1,10 +1,7 @@
 package beephone_shop_projects.core.admin.product_managements.controller;
 
 import beephone_shop_projects.core.admin.product_managements.model.request.CongSacRequest;
-import beephone_shop_projects.core.admin.product_managements.model.request.CongSacRequest;
 import beephone_shop_projects.core.admin.product_managements.model.request.FindFilterProductsRequest;
-import beephone_shop_projects.core.admin.product_managements.model.response.CongSacResponse;
-import beephone_shop_projects.core.admin.product_managements.model.response.CongSacResponse;
 import beephone_shop_projects.core.admin.product_managements.model.response.CongSacResponse;
 import beephone_shop_projects.core.admin.product_managements.service.impl.CongSacServiceImpl;
 import beephone_shop_projects.core.common.base.ResponseObject;

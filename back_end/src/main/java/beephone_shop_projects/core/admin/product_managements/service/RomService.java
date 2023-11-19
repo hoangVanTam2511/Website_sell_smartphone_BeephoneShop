@@ -9,7 +9,7 @@ import org.springframework.data.domain.Page;
 
 public interface RomService extends GenericService<RomResponse, RomRequest, String> {
 
-    Page<Rom> findAllRom(FindFilterProductsRequest findFilterProductsRequest);
+    Page<RomResponse> findAllRom(FindFilterProductsRequest findFilterProductsRequest);
 
     Rom doiTrangThai(String id) throws Exception;
 

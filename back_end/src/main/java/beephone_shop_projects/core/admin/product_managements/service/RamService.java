@@ -9,7 +9,7 @@ import org.springframework.data.domain.Page;
 
 public interface RamService extends GenericService<RamResponse, RamRequest, String> {
 
-    Page<Ram> findAllRam(FindFilterProductsRequest findFilterProductsRequest);
+    Page<RamResponse> findAllRam(FindFilterProductsRequest findFilterProductsRequest);
 
     Ram doiTrangThai(String id) throws Exception;
 
