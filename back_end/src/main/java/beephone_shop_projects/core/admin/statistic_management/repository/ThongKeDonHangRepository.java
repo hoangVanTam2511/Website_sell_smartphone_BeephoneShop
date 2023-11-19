@@ -1,12 +1,37 @@
 package beephone_shop_projects.core.admin.statistic_management.repository;
 
 import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeDonHangResponse;
+import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeSanPhamResponse;
+import beephone_shop_projects.repository.IHoaDonChiTietRepository;
+import beephone_shop_projects.repository.IHoaDonRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
-public interface ThongKeDonHangRepository {
+@Repository
+public interface ThongKeDonHangRepository extends IHoaDonRepository {
 
     @Query(value = """
+          SELECT COUNT(id) AS soLuong, SUM(tong_tien) AS tongTien FROM hoa_don
+          WHERE DATE(created_at) = CURDATE() AND (trang_thai != 0 AND trang_thai != 6 AND trang_thai != 5);
+                        """, nativeQuery = true)
+    ThongKeDonHangResponse getDonHangInDay();
 
-            """, nativeQuery = true)
-    ThongKeDonHangResponse getDonHang();
+
+    @Query(value = """
+            SELECT COUNT(id) AS soLuong, SUM(tong_tien) AS tongTien FROM hoa_don
+                                      WHERE trang_thai != 0 AND trang_thai != 6 AND trang_thai != 5
+                                        AND YEAR(created_at) = YEAR(CURDATE())
+                                        AND MONTH(created_at) = MONTH(CURDATE())
+                                      GROUP BY YEAR(created_at), MONTH(created_at);
+                        """, nativeQuery = true)
+    ThongKeDonHangResponse getDonHangInMonth();
+
+
+    @Query(value = """
+         SELECT SUM(so_luong) AS soLuong FROM hoa_don_chi_tiet
+           WHERE YEAR(created_at) = YEAR(CURDATE())
+           AND MONTH(created_at) = MONTH(CURDATE())
+           GROUP BY YEAR(created_at), MONTH(created_at);
+                        """, nativeQuery = true)
+    ThongKeSanPhamResponse getSanPham();
 }

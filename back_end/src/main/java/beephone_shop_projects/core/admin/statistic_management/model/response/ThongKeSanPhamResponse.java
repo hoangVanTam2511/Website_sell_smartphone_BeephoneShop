@@ -4,12 +4,10 @@ import org.springframework.beans.factory.annotation.Value;
 
 import java.math.BigDecimal;
 
-public interface ThongKeDonHangResponse {
+public interface ThongKeSanPhamResponse {
 
     @Value("#{target.soLuong}")
     Integer getSoLuong();
 
-    @Value("#{target.tongTien}")
-    BigDecimal getTongTien();
 
 }

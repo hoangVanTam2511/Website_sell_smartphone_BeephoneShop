@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -34,12 +33,12 @@ import java.util.List;
 public class VoucherServiceImpl implements VoucherService {
 
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    private static final int CODE_LENGTH =7;
+    private static final int CODE_LENGTH = 7;
 
     @Autowired
     private VoucherRepository voucherRepository;
 
-//    @Scheduled(fixedRate = 5000, initialDelay = 30000)
+    //    @Scheduled(fixedRate = 5000, initialDelay = 30000)
     public List<Voucher> updateStatusVoucher() {
         Date dateTime = new Date();
         List<Voucher> listToUpdate = new ArrayList<>();
@@ -108,7 +107,7 @@ public class VoucherServiceImpl implements VoucherService {
         String codeVoucher = request.getMa().trim();
         if (request.getMa().isBlank()) {
             codeVoucher = "BEE" + generateRandomCode();
-        } else if (request.getMa().length() < 10 ) {
+        } else if (request.getMa().length() < 10) {
             throw new RestApiException("Mã voucher phải đủ 10 ký tự!!!");
         }
         Voucher voucher = Voucher.builder()
@@ -185,11 +184,11 @@ public class VoucherServiceImpl implements VoucherService {
 //        if (request.getStatus().equals(StatusDiscount.DA_HUY) && request.getLyDoHuy().isBlank()) {
 //            throw new RestApiException("Vui lòng nhập lý do hủy phiếu giảm giá");
 //        } else {
-            if (voucher != null) {
+        if (voucher != null) {
 //                voucher.setLyDoHuy(request.getLyDoHuy());
-                voucher.setTrangThai(request.getStatus());
-            }
-            return voucherRepository.save(voucher);
+            voucher.setTrangThai(request.getStatus());
+        }
+        return voucherRepository.save(voucher);
 //        }
     }
 
