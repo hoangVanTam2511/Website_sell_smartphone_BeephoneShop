@@ -2,6 +2,8 @@ package beephone_shop_projects.entity;
 
 import beephone_shop_projects.entity.base.IsIdentified;
 import beephone_shop_projects.entity.base.PrimaryEntity;
+import beephone_shop_projects.infrastructure.constant.StatusImei;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
@@ -20,11 +22,12 @@ import lombok.Setter;
 @Table(name = "imei_da_ban")
 public class ImeiDaBan extends PrimaryEntity implements IsIdentified {
 
-    private String soImei;
+  private String soImei;
 
-    private Integer trangThai;
+  private StatusImei trangThai;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_hoa_don_chi_tiet")
-    private HoaDonChiTiet idHoaDonChiTiet;
+  @JsonIgnore
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_hoa_don_chi_tiet")
+  private HoaDonChiTiet hoaDonChiTiet;
 }

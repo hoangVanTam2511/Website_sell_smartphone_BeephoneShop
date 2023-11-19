@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -42,6 +43,12 @@ public class OrderRequest {
 
   private String diaChiNguoiNhan;
 
+  private String tinhThanhPhoNguoiNhan;
+
+  private String quanHuyenNguoiNhan;
+
+  private String xaPhuongNguoiNhan;
+
   private Date createdAt;
 
 //  private Date updatedAt;
@@ -62,11 +69,30 @@ public class OrderRequest {
 
   private OrderHistoryRequest orderHistory;
 
+  private List<OrderHistoryRequest> orderHistories;
+
   private Boolean isPayment;
 
-  private Boolean isUpdateInfo;
+  private Boolean isUpdateAccount;
 
   private Boolean isUpdateVoucher;
+
+  private Boolean isUpdateInfoShip;
+
+  private Boolean isUpdateInfoShipByCustomer;
+
+  private Boolean isUpdateNameShip;
+
+  private Boolean isUpdatePhoneShip;
+
+  private Boolean isUpdateAddressShip;
+
+  private Boolean isUpdateNoteShip;
+
+  private Boolean isUpdateType;
+
+  private String hinhThucThanhToan;
+
 
 
 }

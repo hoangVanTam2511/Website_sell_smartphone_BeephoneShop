@@ -22,9 +22,9 @@ public class KhuyenMaiChiTietController {
         return new ResponseObject(khuyenMaiChiTietService.addKhuyenMaiChiTiet(request));
     }
 
-    @DeleteMapping ("/khuyen-mai-chi-tiet/update/{id}")
-    public void updateKhuyenMaiChiTiet(@PathVariable("id") String id) {
-        khuyenMaiChiTietService.updateDelected(id);
+    @DeleteMapping ("/khuyen-mai-chi-tiet/update/{id}/{idSP}")
+    public void updateKhuyenMaiChiTiet(@PathVariable("id") String id,@PathVariable("idSP") String idSP) {
+        khuyenMaiChiTietService.updateDelected(id, idSP);
     }
 
 }

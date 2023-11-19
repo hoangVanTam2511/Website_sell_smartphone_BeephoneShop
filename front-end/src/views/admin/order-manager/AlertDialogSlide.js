@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Slider from "@mui/material/Slider";
-import { Button, Table as TableAntd } from "antd";
+import { Button, Empty, Table as TableAntd } from "antd";
+// import  EmptyData from "antd";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import { useTheme } from "@mui/material/styles";
 import OutlinedInput from "@mui/material/OutlinedInput";
@@ -22,12 +23,23 @@ import {
   DialogActions,
   Box,
   InputAdornment,
+  // Checkbox,
+  FormControlLabel,
+  Pagination,
 } from "@mui/material";
+import Checkbox from '@mui/joy/Checkbox';
 import styleCss from "./style.css";
+import List from '@mui/joy/List';
+import ListItem from '@mui/joy/ListItem';
+import Done from '@mui/icons-material/Done';
+import { Checkbox as CheckboxJoy } from '@mui/joy';
+// import { styled } from '@mui/material/styles';
 import { format } from "date-fns";
 import { styled } from "@mui/system";
 import Table from "@mui/material/Table";
+import { PlusOutlined } from "@ant-design/icons";
 import TableBody from "@mui/material/TableBody";
+import DeleteIcon from '@mui/icons-material/Delete';
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
@@ -45,51 +57,15 @@ import Sheet from "@mui/joy/Sheet";
 import RemoveOutlinedIcon from "@mui/icons-material/RemoveOutlined";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import LoadingIndicator from "../../../utilities/loading.js";
-import { Notistack, OrderStatusString, TypeDiscountNumber, TypeDiscountString } from "./enum";
+import { Notistack, OrderStatusString, StatusImei, TypeDiscountNumber, TypeDiscountString } from "./enum";
 import { parseInt } from "lodash";
 import { useSnackbar } from "notistack";
 import useCustomSnackbar from "../../../utilities/notistack";
 import PriceSlider from "./rangePriceSlider";
 import InputNumberAmount from "./input-number-amount-product.js";
+import { FaTrashAlt } from "react-icons/fa";
+import { FaEye } from "react-icons/fa6";
 
-const PrettoSlider = styled(Slider)({
-  color: "#2f80ed",
-  height: 8,
-  "& .MuiSlider-track": {
-    border: "none",
-  },
-  "& .MuiSlider-thumb": {
-    height: 18,
-    width: 18,
-    backgroundColor: "#fff",
-    border: "2px solid currentColor",
-    "&:focus, &:hover, &.Mui-active, &.Mui-focusVisible": {
-      boxShadow: "inherit",
-    },
-    "&:before": {
-      display: "none",
-    },
-  },
-  "& .MuiSlider-valueLabel": {
-    lineHeight: 1.2,
-    fontSize: 12,
-    background: "unset",
-    padding: 0,
-    width: 25,
-    height: 25,
-    borderRadius: "50% 50% 50% 0",
-    backgroundColor: "#2f80ed",
-    transformOrigin: "bottom left",
-    transform: "translate(50%, -100%) rotate(-45deg) scale(0)",
-    "&:before": { display: "none" },
-    "&.MuiSlider-valueLabelOpen": {
-      transform: "translate(50%, -100%) rotate(-45deg) scale(1)",
-    },
-    "& > *": {
-      transform: "rotate(45deg)",
-    },
-  },
-});
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -97,6 +73,103 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const Transition1 = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;
 });
+
+export function OrderConfirmPayment(props) {
+  const { open, onCloseNoAction, ma, confirmPayment, delivery, total, paymentWhenReceive, khachCanTra } = props;
+
+  const checkTotal = () => {
+    if (total === 0) {
+      return khachCanTra;
+    }
+    return total;
+  }
+
+  return (
+    <div className="rounded-pill">
+      <Dialog
+        TransitionComponent={Transition1}
+        open={open}
+        onClose={onCloseNoAction}
+        aria-describedby="alert-dialog-slide-description1"
+        sx={{
+          height: "300px",
+          "& .MuiPaper-root": {
+            borderRadius: "15px", // Giá trị border radius tùy chỉnh
+            marginTop: "150px",
+          },
+        }}
+      >
+        <div className="p-2" style={{}}>
+          <DialogTitle
+            sx={{ color: "#2f80ed", fontWeight: "500", fontSize: "18px" }}
+            id="alert-dialog-title"
+          >
+            {`Xác nhận ${delivery ? 'đặt hàng' : 'thanh toán đơn hàng'}`}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText
+              sx={{ color: "black" }}
+              id="alert-dialog-description"
+            >
+              {`Bạn có chắc chắn muốn ${delivery ? 'đặt đơn hàng' : 'thanh toán đơn hàng'}`}
+              {" "}
+              <span className="" style={{ fontWeight: "500" }}>
+                {" "}
+                {ma}
+              </span>{" "}
+              với số tiền {paymentWhenReceive ? "chưa " : "đã "} nhận được là {" "}
+              <span style={{ color: "#dc1111" }}>
+                {checkTotal().toLocaleString("vi-VN", {
+                  style: "currency",
+                  currency: "VND",
+                })
+                }
+              </span>
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={confirmPayment}
+              className="rounded-2 me-1 button-mui"
+              type="primary"
+              style={{
+                height: "40px",
+                width: "auto",
+                fontSize: "16px",
+                marginBottom: "20px",
+              }}
+            >
+              <span
+                className="text-white"
+                style={{ fontWeight: "500", marginBottom: "2px" }}
+              >
+                Xác nhận
+              </span>
+            </Button>
+            <Button
+              onClick={onCloseNoAction}
+              className="rounded-2 me-3 ant-btn-danger"
+              type="primary"
+              style={{
+                height: "40px",
+                width: "auto",
+                fontSize: "16px",
+                marginBottom: "20px",
+              }}
+            >
+              <span
+                className="text-white"
+                style={{ fontWeight: "500", marginBottom: "2px" }}
+              >
+                Hủy bỏ
+              </span>
+            </Button>
+          </DialogActions>
+        </div>
+      </Dialog>
+    </div>
+  );
+}
 
 export function OrderPendingConfirmCloseDialog(props) {
   const { open, onClose, ma, deleteOrder } = props;
@@ -118,7 +191,7 @@ export function OrderPendingConfirmCloseDialog(props) {
       >
         <div className="p-2" style={{}}>
           <DialogTitle
-            sx={{ color: "#dc3333", fontWeight: "bold", fontSize: "18px" }}
+            sx={{ color: "#dc3333", fontWeight: "500", fontSize: "18px" }}
             id="alert-dialog-title"
           >
             {"Đóng đơn hàng " + ma}
@@ -139,7 +212,7 @@ export function OrderPendingConfirmCloseDialog(props) {
           <DialogActions>
             <Button
               onClick={deleteOrder}
-              className="rounded-2 me-2 button-mui"
+              className="rounded-2 me-1 button-mui"
               type="primary"
               style={{
                 height: "40px",
@@ -224,7 +297,65 @@ export function UpdateRecipientOrderDialog(props) {
     setPersonName(typeof value === "string" ? value.split(",") : value);
   };
 
-  const { open, onClose, onCloseNoAction } = props;
+  const { open, onClose, onCloseNoAction, name, phone, address, province, district, ward, note } = props;
+  const [customerName, setCustomerName] = useState(name);
+  const [customerPhone, setCustomerPhone] = useState(phone);
+  const [customerAddress, setCustomerAddress] = useState(address);
+  const [customerNote, setCustomerNote] = useState(note);
+  const [customerProvince, setCustomerProvince] = useState(province);
+  const [customerDistrict, setCustomerDistrict] = useState(district);
+  const [customerWard, setCustomerWard] = useState(ward);
+
+  useEffect(() => {
+    setCustomerName(name);
+    setCustomerPhone(phone);
+    setCustomerAddress(address);
+    setCustomerNote(note);
+    setCustomerProvince(province);
+    setCustomerDistrict(district);
+    setCustomerWard(ward);
+  }, [name, phone, address, province, district, ward, note])
+
+  const resetData = () => {
+    setCustomerName(name);
+    setCustomerPhone(phone);
+    setCustomerAddress(address);
+    setCustomerNote(note);
+    setCustomerProvince(province);
+    setCustomerDistrict(district);
+    setCustomerWard(ward);
+  }
+
+  const getAllDistrictGhnByIdProvinceByCustomer = async (provinceId, districtName, wardName) => {
+    try {
+      const response = await axios.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district`, {
+        params: {
+          province_id: provinceId,
+        },
+        headers: {
+          token: tokenGhn,
+          Accept: 'application/json',
+        }
+      });
+
+      const data = response.data.data;
+      setDistricts(data);
+
+      if (districtName === "") {
+        setSelectedProvince(provinceId);
+        setSelectedDistrict("");
+        setSelectedWard("");
+        setWards([]);
+      }
+      else {
+        const district = data.find((item) => item.DistrictName === districtName);
+        await getAllWardGhnByIdDistrictByCustomer(provinceId, district.DistrictID, wardName);
+      }
+
+    } catch (error) {
+    }
+  }
+
 
   return (
     <div className="rounded-pill">
@@ -234,42 +365,45 @@ export function UpdateRecipientOrderDialog(props) {
         keepMounted
         onClose={onCloseNoAction}
         aria-describedby="alert-dialog-slide-description"
-        maxWidth="md"
-        maxHeight="md"
-        sx={{
-          marginBottom: "100px",
-        }}
+        maxWidth="xl"
+        maxHeight="xl"
       >
         <DialogTitle id="alert-dialog-title">
           {
-            <span className="fs-4 text-dark text-uppercase">
-              Cập Nhật Thông Tin
-            </span>
+            <div className="mt-2">
+              <span className="fs-4 text-dark text-uppercase">
+                Cập Nhật Thông Tin Giao Hàng
+              </span>
+            </div>
           }
         </DialogTitle>
         <DialogContent>
           <div>
             <TextField
+              value={customerName}
               label="Họ và tên"
+              onChange={(e) => setCustomerName(e.target.value)}
               inputProps={{
                 style: {
                   width: "755px",
                 },
               }}
               size="medium"
-              className="mt-1"
+              className="mt-1 custom"
             />
           </div>
           <div>
             <TextField
               label="Số điện thoại"
+              value={customerPhone}
+              onChange={(e) => setCustomerPhone(e.target.value)}
               inputProps={{
                 style: {
                   width: "755px",
                 },
               }}
               size="medium"
-              className="mt-3"
+              className="mt-3 custom"
             />
           </div>
           <div className="d-flex mt-3">
@@ -279,6 +413,7 @@ export function UpdateRecipientOrderDialog(props) {
               </InputLabel>
               <SelectMui
                 labelId="demo-multiple-name-label"
+                className="custom"
                 id="demo-multiple-name"
                 onChange={handleChange}
                 input={<OutlinedInput label="Tỉnh / Thành Phố" />}
@@ -300,6 +435,7 @@ export function UpdateRecipientOrderDialog(props) {
                 Quận / Huyện
               </InputLabel>
               <SelectMui
+                className="custom"
                 labelId="demo-multiple-name-label"
                 id="demo-multiple-name"
                 onChange={handleChange}
@@ -320,6 +456,7 @@ export function UpdateRecipientOrderDialog(props) {
             <FormControl sx={{ width: 250 }} className="ms-3">
               <InputLabel id="demo-multiple-name-label">Phường / Xã</InputLabel>
               <SelectMui
+                className="custom"
                 labelId="demo-multiple-name-label"
                 id="demo-multiple-name"
                 onChange={handleChange}
@@ -341,18 +478,23 @@ export function UpdateRecipientOrderDialog(props) {
           <div>
             <TextField
               label="Địa chỉ"
+              value={customerAddress}
+              onChange={(e) => setCustomerAddress(e.target.value)}
               inputProps={{
                 style: {
                   width: "755px",
                 },
               }}
               size="medium"
-              className="mt-3"
+              className="mt-3 custom"
             />
           </div>
           <div>
             <TextField
-              label="Mô tả"
+              label="Ghi chú"
+              value={customerNote}
+              onChange={(e) => setCustomerNote(e.target.value)}
+              // onBlur={() => }
               inputProps={{
                 style: {
                   width: "755px",
@@ -360,53 +502,39 @@ export function UpdateRecipientOrderDialog(props) {
                 },
               }}
               size="medium"
-              className="mt-3"
+              className="mt-3 custom"
             />
           </div>
+          <div className="d-flex justify-content-end mt-4">
+            <Button
+              // onClick={handleOpenDialogProducts}
+              className="rounded-2 me-2"
+              type="primary"
+              style={{ height: "40px", width: "110px", fontSize: "16px" }}
+            >
+              <span
+                className="text-white"
+                style={{ marginBottom: "3px", fontWeight: "500" }}
+              >
+                Xác Nhận
+              </span>
+            </Button>
+            <Button
+              onClick={() => { onClose(); resetData() }}
+              className="rounded-2"
+              type="danger"
+              style={{ height: "40px", width: "90px", fontSize: "16px" }}
+            >
+              <span
+                className="text-white"
+                style={{ marginBottom: "3px", fontWeight: "500" }}
+              >
+                Hủy Bỏ
+              </span>
+            </Button>
+          </div>
+          <div className="mt-2"></div>
         </DialogContent>
-        <DialogActions>
-          <Link to={""}>
-            <Button
-              onClick={onClose}
-              danger
-              className="rounded-2 me-3 bg-primary"
-              type="primary"
-              style={{
-                height: "50px",
-                width: "auto",
-                fontSize: "16px",
-                marginBottom: "20px",
-              }}
-            >
-              <span
-                className="text-white"
-                style={{ fontWeight: "550", marginBottom: "2px" }}
-              >
-                Xác nhận
-              </span>
-            </Button>
-            <Button
-              onClick={onCloseNoAction}
-              danger
-              className="rounded-2 me-3"
-              type="primary"
-              style={{
-                height: "50px",
-                width: "auto",
-                fontSize: "16px",
-                marginBottom: "20px",
-                backgroundColor: "#dc3333",
-              }}
-            >
-              <span
-                className="text-white"
-                style={{ fontWeight: "550", marginBottom: "2px" }}
-              >
-                Hủy bỏ
-              </span>
-            </Button>
-          </Link>
-        </DialogActions>
       </Dialog>
     </div>
   );
@@ -539,12 +667,14 @@ export function ProductsDialog(props) {
     openDialogProductItems,
     closeDialogProductDetails,
     closeNoActionDialogProductDetails,
-    getAmount
+    getAmount,
+    openImei,
+    onOpenImei,
+    onCloseImei,
   } = props;
   const StyledTableContainer = styled(TableContainer)({
     boxShadow: "none",
   });
-
 
   const [openSelect, setOpenSelect] = useState(false);
   const [openSelect1, setOpenSelect1] = useState(false);
@@ -557,10 +687,13 @@ export function ProductsDialog(props) {
   const [openSelect8, setOpenSelect8] = useState(false);
   const [openSelect9, setOpenSelect9] = useState(false);
 
-  const filterProducts = data.filter((i) => i.soLuongTonKho > 0);
-  const addProductToCart = (priceProduct, idProduct, amount) => {
-    add(priceProduct, idProduct, amount);
+  const [price, setPrice] = useState(0);
+  const [id, setId] = useState('');
+
+  const addProductToCart = (imeis) => {
+    add(price, id, imeis);
   };
+  const filterdData = data.filter((item) => item.soLuongTonKho > 0)
 
   const StyledTableHead = styled(TableHead)`
     & tr:hover th {
@@ -594,22 +727,13 @@ export function ProductsDialog(props) {
                     Tên Sản Phẩm
                   </TableCell>
                   <TableCell style={{ fontWeight: "500" }} align="center">
-                    RAM
-                  </TableCell>
-                  <TableCell style={{ fontWeight: "500" }} align="center">
-                    ROM
-                  </TableCell>
-                  <TableCell style={{ fontWeight: "500" }} align="center">
                     Màu sắc
                   </TableCell>
                   <TableCell style={{ fontWeight: "500" }} align="center">
                     Hãng
                   </TableCell>
                   <TableCell style={{ fontWeight: "500" }} align="center">
-                    Hệ điều hành
-                  </TableCell>
-                  <TableCell style={{ fontWeight: "500" }} align="center">
-                    Giá
+                    Đơn Giá
                   </TableCell>
                   <TableCell style={{ fontWeight: "500" }} align="center">
                     Số lượng tồn
@@ -620,128 +744,111 @@ export function ProductsDialog(props) {
                 </TableRow>
               </StyledTableHead>
               <TableBody>
-                {data &&
-                  filterProducts.map((item, index) => (
-                    <TableRow
-                      key={index}
-                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                {filterdData.map((item, index) => (
+                  <TableRow
+                    key={index}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell
+                      component="th"
+                      scope="row"
+                      align="center"
+                      style={{ width: "200px" }}
                     >
-                      <TableCell
-                        component="th"
-                        scope="row"
-                        align="center"
-                        style={{ width: "200px" }}
-                      >
-                        <img
-                          src={item && item.image && item.image.path}
-                          alt=""
-                          style={{ width: "110px", height: "110px" }}
-                        />
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        style={{ fontSize: "16px", width: "" }}
-                      >
-                        No.900{index + 1}
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        style={{
-                          width: "430px",
-                          fontSize: "16px",
-                          whiteSpace: "pre-line",
+                      <img
+                        src={item && item.image && item.image.path}
+                        alt=""
+                        style={{ width: "110px", height: "110px" }}
+                      />
+                    </TableCell>
+                    <TableCell
+                      align="center"
+                      style={{ fontSize: "16px", width: "" }}
+                    >
+                      No.900{index + 1}
+                    </TableCell>
+                    <TableCell
+                      align="center"
+                      style={{
+                        width: "430px",
+                        fontSize: "16px",
+                        whiteSpace: "pre-line",
+                      }}
+                    >
+                      {item &&
+                        item.sanPham &&
+                        item.sanPham.tenSanPham +
+                        " " +
+                        item.ram.dungLuong +
+                        "/" +
+                        item.rom.dungLuong +
+                        "GB"}
+                    </TableCell>
+                    <TableCell
+                      align="center"
+                      style={{ fontSize: "16px", width: "150px" }}
+                    >
+                      {item.mauSac.tenMauSac}
+                    </TableCell>
+                    <TableCell
+                      align="center"
+                      style={{ fontSize: "16px", width: "150px" }}
+                    >
+                      {item.sanPham.hang.tenHang}
+                    </TableCell>
+                    <TableCell
+                      align="center"
+                      style={{ width: "150px", fontSize: "16px" }}
+                    >
+                      <span style={{ color: "#dc1111" }}>
+                        {item && item.donGia
+                          ? item.donGia.toLocaleString("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          })
+                          : ""}
+                      </span>
+                    </TableCell>
+                    <TableCell
+                      align="center"
+                      style={{ fontSize: "16px", width: "" }}
+                    >
+                      {item.soLuongTonKho}
+                    </TableCell>
+                    <TableCell align="center" style={{ width: "230px" }}>
+                      <Button
+                        onClick={() => {
+                          handleOpenModalImeiByProductItem(item);
+                          setId(item.id);
+                          setPrice(item.donGia);
                         }}
+                        className="rounded-2 button-mui"
+                        type="primary"
+                        style={{ width: "82px", fontSize: "14px" }}
                       >
-                        {item &&
-                          item.sanPham &&
-                          item.sanPham.tenSanPham +
-                          " " +
-                          item.ram.dungLuong +
-                          "/" +
-                          item.rom.dungLuong +
-                          "GB"}
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        style={{ fontSize: "16px", width: "120px" }}
-                      >
-                        {item.ram.dungLuong + "GB"}
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        style={{ fontSize: "16px", width: "120px" }}
-                      >
-                        {item.rom.dungLuong + "GB"}
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        style={{ fontSize: "16px", width: "120px" }}
-                      >
-                        {item.mauSac.tenMauSac}
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        style={{ fontSize: "16px", width: "120px" }}
-                      >
-                        {"Apple"}
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        style={{ fontSize: "16px", width: "120px" }}
-                      >
-                        {"IOS"}
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        style={{ width: "150px", fontSize: "16px" }}
-                      >
-                        <span style={{ color: "#dc1111" }}>
-                          {item && item.donGia
-                            ? item.donGia.toLocaleString("vi-VN", {
-                              style: "currency",
-                              currency: "VND",
-                            })
-                            : ""}
+                        <span
+                          className=""
+                          style={{ fontWeight: "500", marginBottom: "3px" }}
+                        >
+                          Chọn
                         </span>
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        style={{ fontSize: "16px", width: "" }}
+                      </Button>
+                      <Button
+                        className="rounded-2 ms-2 ant-btn-warning"
+                        onClick={toggleDrawer("left", true)}
+                        type="primary"
+                        style={{ width: "82px", fontSize: "14px" }}
                       >
-                        {item.soLuongTonKho}
-                      </TableCell>
-                      <TableCell align="center" style={{ width: "230px" }}>
-                        <Button
-                          onClick={() => {
-                            handleOpenDialogProductItems(item);
-                          }}
-                          className="rounded-2 button-mui"
-                          type="primary"
-                          style={{ width: "82px", fontSize: "14px" }}
+                        <span
+                          className=""
+                          style={{ fontWeight: "500", marginBottom: "3px" }}
                         >
-                          <span
-                            className=""
-                            style={{ fontWeight: "500", marginBottom: "3px" }}
-                          >
-                            Chọn
-                          </span>
-                        </Button>
-                        <Button
-                          className="rounded-2 ms-2 ant-btn-warning"
-                          onClick={toggleDrawer("left", true)}
-                          type="primary"
-                          style={{ width: "82px", fontSize: "14px" }}
-                        >
-                          <span
-                            className=""
-                            style={{ fontWeight: "500", marginBottom: "3px" }}
-                          >
-                            Chi tiết
-                          </span>
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                          Chi tiết
+                        </span>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
           </StyledTableContainer>
@@ -749,6 +856,16 @@ export function ProductsDialog(props) {
       </>
     );
   };
+
+  // const [openModalImei, setOpenModalImei] = useState(false);
+  const [imeis, setImeis] = useState([]);
+  // const handleCloseOpenModalImei = () => {
+  //   setOpenModalImei(false);
+  // }
+  const handleOpenModalImeiByProductItem = (item) => {
+    onOpenImei();
+    setImeis(item.imeis);
+  }
 
   const handleCloseSelect = () => {
     setOpenSelect(false);
@@ -832,6 +949,7 @@ export function ProductsDialog(props) {
   const [productItem2, setProductItem2] = useState();
   const [productImage, setProductImage] = useState();
   const [productItems, setProductItems] = useState([]);
+  const [productItemAll, setProductItemAll] = useState([]);
   const [productItems1, setProductItems1] = useState([]);
 
   const handleChangeInfoProductItem = (item, color) => {
@@ -860,11 +978,14 @@ export function ProductsDialog(props) {
     if (findColor) {
       setProductItem2(findColor);
     } else {
-      setProductItem2(item);
+      const findColorCurrentIsStocking = data.find(
+        (i) =>
+          i.maCauHinh === item.maCauHinh &&
+          i.soLuongTonKho > 0
+      );
+      setProductItem2(findColorCurrentIsStocking);
       // Tìm vè giá be nhat ?? chưa làm
     }
-    console.log(findColor);
-    // console.log(product);
   };
   const handleChangeProductImage = (item) => {
     const product = {
@@ -875,7 +996,6 @@ export function ProductsDialog(props) {
       donGia: item.donGia,
     };
     setProductItem2(product);
-    console.log(product);
   };
 
   const handleOpenDialogProductItems = (item) => {
@@ -883,6 +1003,12 @@ export function ProductsDialog(props) {
     setProductItem(item); // general
     setProductItem1(item); //ten va cau hinh, gia
     setProductItem2(item); // so luong va image
+
+
+    const findDataAllByIdProduct = data.filter((d) => {
+      return d.sanPham.id === item.sanPham.id;
+    })
+    setProductItemAll(findDataAllByIdProduct);
 
     // const getProductItems = data.filter((item, index) => {
     //   const isDuplicate = data.some((i, iIndex) => i.donGia === item.donGia && iIndex < index);
@@ -1074,7 +1200,7 @@ export function ProductsDialog(props) {
                 className="text-dark"
                 style={{ fontSize: "22px", fontWeight: "500" }}
               >
-                Tìm Kiếm Sản Phẩm
+                Chọn Sản Phẩm
               </span>
             </div>
             <div>
@@ -1645,6 +1771,14 @@ export function ProductsDialog(props) {
 
         <DialogActions></DialogActions>
       </Dialog>
+      <ModalImeiByProductItem
+        isOpen={isOpen}
+        open={openImei}
+        imeis={imeis}
+        close={onCloseImei}
+        addProduct={addProductToCart}
+      />
+      {/*
       <ProductDetailsDialog
         isOpen={isOpen}
         open={openProductDetails}
@@ -1659,7 +1793,9 @@ export function ProductsDialog(props) {
         changeProductItem={handleChangeInfoProductItem}
         changeProductImage={handleChangeProductImage}
         getAmount={getAmount}
+        dataAll={productItemAll}
       />
+*/}
     </div>
   );
 }
@@ -1677,7 +1813,6 @@ export function VouchersDialog(props) {
     total,
     checkDieuKien,
   } = props;
-  const [voucherId, setVoucherId] = useState();
   const StyledTableContainer = styled(TableContainer)({
     boxShadow: "none",
   });
@@ -1698,6 +1833,127 @@ export function VouchersDialog(props) {
       onClose();
     }
   };
+
+  const columns = [
+    {
+      title: "STT",
+      width: "5%",
+      align: "center",
+      render: (text, item) => (
+        <span>{data.indexOf(item) + 1}</span>
+      ),
+    },
+    {
+      title: "Mã",
+      align: "center",
+      width: "15%",
+      render: (text, item) =>
+        <span>{item.ma}
+        </span>
+    },
+    {
+      title: "Giá Trị",
+      align: "center",
+      width: "15%",
+      render: (text, item) =>
+        <span
+          align="center"
+          style={{ width: "", fontSize: "15px", color: "#dc1111" }}
+        >
+          {item.giaTriVoucher.toLocaleString("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          })}
+        </span>
+    },
+    {
+      title: "Giảm Tối Đa",
+      align: "center",
+      width: "15%",
+      render: (text, item) =>
+        <span>
+          {item.loaiVoucher === TypeDiscountNumber.VND ? "..." : item.giaTriToiDa}
+        </span>
+    },
+    {
+      title: "Số Lượng",
+      align: "center",
+      width: "15%",
+      render: (text, item) =>
+        <span>
+          {item.soLuong}
+        </span>
+    },
+    {
+      title: "Điều Kiện Áp Dụng",
+      align: "center",
+      width: "25%",
+      render: (text, item) =>
+        <span
+          align="center"
+          style={{
+            width: "200px",
+            fontSize: "15px",
+            whiteSpace: "pre-line",
+          }}
+        >
+          Áp dụng cho đơn tối thiểu
+          <span className="" style={{}}>
+            {" " +
+              item.dieuKienApDung.toLocaleString("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              })}
+          </span>
+        </span>
+    },
+    {
+      title: "Thời gian",
+      align: "center",
+      width: "15%",
+      render: (text, item) =>
+        <span style={{ fontWeight: "normal" }}>
+          {format(new Date(item.ngayBatDau), "dd/MM/yyyy")} {" - "}
+          {format(new Date(item.ngayKetThuc), "dd/MM/yyyy")}
+        </span>
+    },
+    {
+      title: "Thao Tác",
+      align: "center",
+      width: "15%",
+      render: (text, item) =>
+        <Button
+          onClick={() =>
+            handleAddOrRemoveVoucherToOrder(
+              item.id,
+              item.dieuKienApDung
+            )
+          }
+          className="rounded-2"
+          type={
+            discount === item.id
+              ? "danger"
+              : discount !== item.id
+                ? "primary"
+                : ""
+          }
+          style={{
+            height: "35px",
+            width: "auto",
+            fontSize: "14px",
+          }}
+        >
+          <span
+            className={
+              discount === item.id ? "text-white" : "text-white"
+            }
+            style={{ fontWeight: "500", marginBottom: "3px" }}
+          >
+            {discount === item.id ? "Bỏ áp dụng" : "Áp dụng"}{" "}
+          </span>
+        </Button>
+    },
+  ];
 
   const StyledTableHead = styled(TableHead)`
     & tr:hover th {
@@ -1846,36 +2102,6 @@ export function VouchersDialog(props) {
                       </div>
                     </TableCell>
                     <TableCell align="center" style={{ width: "" }}>
-                      <Button
-                        onClick={() =>
-                          handleAddOrRemoveVoucherToOrder(
-                            item.id,
-                            item.dieuKienApDung
-                          )
-                        }
-                        className="rounded-2"
-                        type={
-                          discount === item.id
-                            ? "danger"
-                            : discount !== item.id
-                              ? "warning"
-                              : ""
-                        }
-                        style={{
-                          height: "35px",
-                          width: "auto",
-                          fontSize: "14px",
-                        }}
-                      >
-                        <span
-                          className={
-                            discount === item.id ? "text-white" : "text-dark"
-                          }
-                          style={{ fontWeight: "500", marginBottom: "3px" }}
-                        >
-                          {discount === item.id ? "Bỏ áp dụng" : "Áp dụng"}{" "}
-                        </span>
-                      </Button>
                     </TableCell>
                   </TableRow>
                 ))) : ""}
@@ -1903,8 +2129,8 @@ export function VouchersDialog(props) {
         <DialogTitle id="alert-dialog-title">
           <div className="d-flex justify-content-between mt-1">
             <div>
-              <span className="text-dark" style={{ fontSize: "22px" }}>
-                Tìm Kiếm Voucher
+              <span className="text-dark" style={{ fontSize: "22px", fontWeight: "500" }}>
+                Chọn Voucher
               </span>
             </div>
           </div>
@@ -1924,7 +2150,7 @@ export function VouchersDialog(props) {
               inputProps={{
                 style: {
                   height: "23px",
-                  width: "200px",
+                  width: "550px",
                 },
               }}
               size="small"
@@ -1932,7 +2158,7 @@ export function VouchersDialog(props) {
             />
             <Button
               // onClick={handleRefreshData}
-              className="rounded-2 ms-3 bg-primary"
+              className="rounded-2 ms-2 bg-primary"
               type="warning"
               style={{ height: "40px", width: "100px", fontSize: "15px" }}
             >
@@ -1944,8 +2170,17 @@ export function VouchersDialog(props) {
               </span>
             </Button>
           </div>
-          <div className="mt-3">
-            <TableVouchers />
+          <div className="mt-4">
+            <TableAntd
+              className='table-container'
+              columns={columns}
+              dataSource={data}
+              pagination={false}
+              rowClassName={record => total() < record.dieuKienApDung && "disabled-row"}
+              rowKey={"id"}
+              key={"id"}
+              locale={{ emptyText: <Empty /> }}
+            />
           </div>
         </DialogContent>
         <DialogActions></DialogActions>
@@ -1955,122 +2190,126 @@ export function VouchersDialog(props) {
 }
 
 export function CustomersDialog(props) {
-  const { open, onClose, onCloseNoAction, data, add } = props;
-  const [customerId, setCustomerId] = useState();
-  const StyledTableContainer = styled(TableContainer)({
-    boxShadow: "none",
-  });
+  const { open, onClose, onCloseNoAction, data, add, idCus, isOpen } = props;
 
   const handleSelectCustomer = (id) => {
-    add(id);
-  };
-
-  const StyledTableHead = styled(TableHead)`
-    & tr:hover th {
-      background-color: white !important;
+    if (idCus === id) {
+      add(null);
     }
-  `;
-
-  const useStyles = () => ({});
-
-  const classes = useStyles();
-
-  const TableCusomter = () => {
-    return (
-      <>
-        <div className="">
-          <StyledTableContainer component={Paper}>
-            <Table
-              sx={{ minWidth: 650, boxShadow: "none" }}
-              aria-label="simple table"
-              className={classes.tableContainer}
-            >
-              <StyledTableHead>
-                <TableRow>
-                  <TableCell style={{ fontWeight: "550" }} align="center">
-                    Avatar
-                  </TableCell>
-                  <TableCell style={{ fontWeight: "550" }} align="center">
-                    Mã
-                  </TableCell>
-                  <TableCell style={{ fontWeight: "550" }} align="center">
-                    Tên Khách Hàng
-                  </TableCell>
-                  <TableCell style={{ fontWeight: "550" }} align="center">
-                    Email
-                  </TableCell>
-                  <TableCell style={{ fontWeight: "550" }} align="center">
-                    Số Điện Thoại
-                  </TableCell>
-                  <TableCell style={{ fontWeight: "550" }} align="center">
-                    Thao Tác
-                  </TableCell>
-                </TableRow>
-              </StyledTableHead>
-              <TableBody>
-                {data.map((item, index) => (
-                  <TableRow
-                    key={index}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  >
-                    <TableCell component="th" scope="row" align="center">
-                      <div className="" style={{ marginLeft: "33px" }}>
-                        <Avatar src="https://ecdn.game4v.com/g4v-content/uploads/2021/02/ava-1.png" />
-                      </div>
-                    </TableCell>
-                    <TableCell align="center" style={{ fontSize: "15px" }}>
-                      {item.ma}
-                    </TableCell>
-                    <TableCell
-                      align="center"
-                      style={{
-                        width: "px",
-                        fontSize: "15px",
-                        whiteSpace: "pre-line",
-                      }}
-                    >
-                      {item.hoVaTen}
-                    </TableCell>
-                    <TableCell
-                      align="center"
-                      style={{ width: "px", fontSize: "15px" }}
-                    >
-                      {item.email}
-                    </TableCell>
-                    <TableCell
-                      align="center"
-                      style={{ width: "px", fontSize: "15px" }}
-                    >
-                      {item.soDienThoai}
-                    </TableCell>
-                    <TableCell align="center" style={{ width: "" }}>
-                      <Button
-                        onClick={() => handleSelectCustomer(item.id)}
-                        className="rounded-2"
-                        type="primary"
-                        style={{
-                          height: "40px",
-                          width: "82px",
-                          fontSize: "14px",
-                        }}
-                      >
-                        <span
-                          className="text-white"
-                          style={{ fontWeight: "550", marginBottom: "3px" }}
-                        >
-                          Chọn
-                        </span>
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </StyledTableContainer>
-        </div>
-      </>
-    );
+    else {
+      add(id);
+    }
   };
+  const columns = [
+    {
+      title: "STT",
+      width: "5%",
+      align: "center",
+      render: (text, item) => (
+        <span>{data.indexOf(item) + 1}</span>
+      ),
+    },
+    {
+      title: "Avatar",
+      align: "center",
+      width: "10%",
+      render: (text, item) =>
+        <div className="d-flex justify-content-center" style={{}}>
+          <Avatar src="https://ecdn.game4v.com/g4v-content/uploads/2021/02/ava-1.png" />
+        </div>
+    },
+    {
+      title: "Mã Khách Hàng",
+      align: "center",
+      width: "15%",
+      render: (text, item) =>
+        <span>{item.ma}
+        </span>
+    },
+    {
+      title: "Tên Khách Hàng",
+      align: "center",
+      width: "15%",
+      render: (text, item) =>
+        <span>{item.hoVaTen}
+        </span>
+    },
+    {
+      title: "Email",
+      align: "center",
+      width: "15%",
+      render: (text, item) =>
+
+        <span>
+          {item.email}
+        </span>
+    },
+    {
+      title: "Số Điện Thoại",
+      align: "center",
+      width: "15%",
+      render: (text, item) =>
+        <span>
+          {item.soDienThoai}
+        </span>
+    },
+    {
+      title: "Ngày Tạo",
+      align: "center",
+      width: "15%",
+      render: (text, item) =>
+        <span style={{ fontWeight: "normal" }}>
+          {format(new Date(), "HH:mm:ss - dd/MM/yyyy")}
+        </span>
+    },
+    {
+      title: "Thao Tác",
+      align: "center",
+      width: "15%",
+      render: (text, item) =>
+        <div>
+          <Button
+            onClick={() => handleSelectCustomer(item.id)}
+            className="rounded-2 button-mui me-2"
+            type={idCus === item.id ? "danger" : "primary"}
+            style={{
+              height: "35px",
+              width: "82px",
+              fontSize: "14px",
+            }}
+          >
+            <span
+              className=
+              {"text-white"}
+
+              style={{ fontWeight: "500", marginBottom: "3px" }}
+            >
+              {idCus === item.id ? "Bỏ chọn" : "Chọn"}
+            </span>
+          </Button>
+          <Button
+            // onClick={() => handleSelectCustomer(item.id)}
+            className="rounded-2"
+            type="warning"
+            style={{
+              height: "35px",
+              width: "92px",
+              fontSize: "14px",
+            }}
+          >
+            <span
+              className=
+              {"text-dark"}
+
+              style={{ fontWeight: "500", marginBottom: "3px" }}
+            >
+              Cập nhật
+            </span>
+          </Button>
+        </div>
+    },
+  ];
+
   return (
     <div className="rounded-pill">
       <Dialog
@@ -2088,56 +2327,298 @@ export function CustomersDialog(props) {
         <DialogTitle id="alert-dialog-title">
           <div className="d-flex justify-content-between mt-1">
             <div>
-              <span className="text-dark" style={{ fontSize: "22px" }}>
-                Tìm Kiếm Khách Hàng
+              <span className="text-dark" style={{ fontSize: "22px", fontWeight: "500" }}>
+                Chọn Khách Hàng
               </span>
             </div>
           </div>
         </DialogTitle>
         <DialogContent style={{ height: "600px" }}>
-          <div className="mt-2 d-flex">
-            <TextField
-              label="Tìm Khách Hàng"
-              // onChange={handleGetValueFromInputTextField}
-              // value={keyword}
-              InputLabelProps={{
-                sx: {
-                  marginTop: "0.5px",
-                  textTransform: "capitalize",
-                },
-              }}
-              inputProps={{
-                style: {
-                  height: "23px",
-                  width: "300px",
-                },
-              }}
-              size="small"
-              className=""
-            />
-            <Button
-              // onClick={handleRefreshData}
-              className="rounded-2 ms-3 bg-primary"
-              type="warning"
-              style={{ height: "40px", width: "100px", fontSize: "15px" }}
-            >
-              <span
-                className="text-dark"
-                style={{ fontWeight: "450", marginBottom: "2px" }}
-              >
-                Làm Mới
-              </span>
-            </Button>
-          </div>
-          <div className="mt-3">
-            <TableCusomter />
-          </div>
+          {isOpen === true ?
+            <>
+              <div className="mt-2 d-flex justify-content-between">
+                <div>
+                  <TextField
+                    label="Tìm Khách Hàng"
+                    // onChange={handleGetValueFromInputTextField}
+                    // value={keyword}
+                    InputLabelProps={{
+                      sx: {
+                        marginTop: "0.5px",
+                        textTransform: "capitalize",
+                      },
+                    }}
+                    inputProps={{
+                      style: {
+                        height: "23px",
+                        width: "550px",
+                      },
+                    }}
+                    size="small"
+                    className=""
+                  />
+                  <Button
+                    // onClick={handleRefreshData}
+                    className="rounded-2 ms-2"
+                    type="warning"
+                    style={{ height: "40px", width: "100px", fontSize: "15px" }}
+                  >
+                    <span
+                      className="text-dark"
+                      style={{ fontWeight: "450", marginBottom: "2px" }}
+                    >
+                      Làm Mới
+                    </span>
+                  </Button>
+                </div>
+                <div>
+                  <Button
+                    // onClick={handleCreateNewOrderPending}
+                    className="rounded-2 button-mui"
+                    type="primary"
+                    style={{ height: "40px", width: "165px", fontSize: "15px" }}
+                  >
+                    <PlusOutlined className="ms-1"
+                      style={{
+                        position: "absolute",
+                        bottom: "12.5px",
+                        left: "12px",
+                      }}
+                    />
+                    <span
+                      className="ms-3 ps-1"
+                      style={{ marginBottom: "2.5px", fontWeight: "500" }}
+                    >
+                      Tạo khách hàng
+                    </span>
+                  </Button>
+                </div>
+              </div>
+              <div className="mt-4">
+                <TableAntd
+                  className='table-container'
+                  columns={columns}
+                  dataSource={data}
+                  pagination={false}
+                  rowKey={"id"}
+                  key={"id"}
+                  locale={{ emptyText: <Empty /> }}
+                />
+              </div>
+            </>
+
+            : null}
         </DialogContent>
         <DialogActions></DialogActions>
       </Dialog>
     </div>
   );
 }
+
+export function AddressDialog(props) {
+  const { open, onClose, data, add, isOpen } = props;
+
+  const handleSelectAddress = (item) => {
+    add(item);
+  };
+  const columns = [
+    {
+      title: "STT",
+      width: "5%",
+      align: "center",
+      showSorterTooltip: false,
+      render: (text, item) => (
+        <span>{data.indexOf(item) + 1}</span>
+      ),
+    },
+    {
+      title: "Họ Và Tên",
+      align: "center",
+      width: "10%",
+      render: (text, item) =>
+        <span>{item.hoTenKH}
+        </span>
+    },
+    {
+      title: "Số Điện Thoại",
+      align: "center",
+      width: "15%",
+      render: (text, item) =>
+        <span>{item.soDienThoaiKhachHang}
+        </span>
+    },
+    {
+      title: "Địa Chỉ",
+      align: "center",
+      width: "40%",
+      render: (text, item) =>
+        <span
+          align="center"
+          style={{
+            width: "200px",
+            fontSize: "15px",
+            whiteSpace: "pre-line",
+          }}
+        >
+          {item.tinhThanhPho + ", " + item.quanHuyen + ", " + item.xaPhuong + ", " + item.diaChi}
+          <span style={{ color: "red" }}>
+            {item.trangThai === 1 ? " (Mặc định)" : ""}
+          </span>
+        </span>
+    },
+    {
+      title: "Thao Tác",
+      align: "center",
+      width: "15%",
+      render: (text, item) =>
+        <div>
+          <Button
+            onClick={() => handleSelectAddress(item)}
+            className="rounded-2 button-mui me-2"
+            type="primary"
+            style={{
+              height: "35px",
+              width: "82px",
+              fontSize: "14px",
+            }}
+          >
+            <span
+              className=
+              {"text-white"}
+
+              style={{ fontWeight: "500", marginBottom: "2px" }}
+            >
+              Chọn
+            </span>
+          </Button>
+          <Button
+            // onClick={() => handleSelectCustomer(item.id)}
+            className="rounded-2 button-mui"
+            type="warning"
+            style={{
+              height: "35px",
+              width: "92px",
+              fontSize: "14px",
+            }}
+          >
+            <span
+              className=
+              {"text-dark"}
+
+              style={{ fontWeight: "500", marginBottom: "2px" }}
+            >
+              {"Cập nhật"}
+            </span>
+          </Button>
+        </div>
+    },
+  ];
+
+
+  return (
+    <div className="rounded-pill">
+      <Dialog
+        className=""
+        open={open}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={onClose}
+        aria-describedby="alert-dialog-slide-description1"
+        maxWidth="lg"
+        maxHeight="lg"
+        fullWidth="lg"
+        sx={{}}
+      >
+        <DialogTitle id="alert-dialog-title">
+          <div className="d-flex justify-content-between mt-1">
+            <div>
+              <span className="text-dark" style={{ fontSize: "22px", fontWeight: "500" }}>
+                Chọn Địa Chỉ Giao Hàng
+              </span>
+            </div>
+          </div>
+        </DialogTitle>
+        <DialogContent style={{ height: "600px" }}>
+          {isOpen === true ?
+            <>
+              <div className="mt-2 d-flex justify-content-between">
+                <div>
+                  <TextField
+                    label="Tìm Địa Chỉ"
+                    // onChange={handleGetValueFromInputTextField}
+                    // value={keyword}
+                    InputLabelProps={{
+                      sx: {
+                        marginTop: "0.5px",
+                        textTransform: "capitalize",
+                      },
+                    }}
+                    inputProps={{
+                      style: {
+                        height: "23px",
+                        width: "550px",
+                      },
+                    }}
+                    size="small"
+                    className=""
+                  />
+                  <Button
+                    // onClick={handleRefreshData}
+                    className="rounded-2 ms-2"
+                    type="warning"
+                    style={{ height: "40px", width: "100px", fontSize: "15px" }}
+                  >
+                    <span
+                      className="text-dark"
+                      style={{ fontWeight: "450", marginBottom: "2.5px" }}
+                    >
+                      Làm Mới
+                    </span>
+                  </Button>
+                </div>
+                <div>
+                  <Button
+                    // onClick={handleCreateNewOrderPending}
+                    className="rounded-2 button-mui"
+                    type="primary"
+                    style={{ height: "40px", width: "175px", fontSize: "15px" }}
+                  >
+                    <PlusOutlined className="ms-1"
+                      style={{
+                        position: "absolute",
+                        bottom: "12.5px",
+                        left: "12px",
+                      }}
+                    />
+                    <span
+                      className="ms-3 ps-1"
+                      style={{ marginBottom: "2px", fontWeight: "500" }}
+                    >
+                      Thêm địa chỉ mới
+                    </span>
+                  </Button>
+                </div>
+              </div>
+              <div className="mt-4">
+                <TableAntd
+                  className='table-container'
+                  columns={columns}
+                  dataSource={data}
+                  pagination={false}
+                  rowKey={"id"}
+                  key={"id"}
+                  locale={{ emptyText: <Empty /> }}
+                />
+              </div>
+            </>
+            : null}
+        </DialogContent>
+        <DialogActions></DialogActions>
+      </Dialog>
+    </div>
+  );
+}
+
 
 export function OrderHistoryDialog(props) {
   const { columns, open, onClose, dataSource } = props;
@@ -2406,6 +2887,7 @@ export const ProductDetailsDialog = (props) => {
     getProductItems1,
     changeProductItem,
     changeProductImage,
+    dataAll,
     getAmount
   } = props;
 
@@ -2414,6 +2896,7 @@ export const ProductDetailsDialog = (props) => {
   };
 
   const handleChangeCauHinh = (id) => {
+    console.log(dataAll)
     const item = getProductItems.find((item) => item.id === id);
     if (item) {
       changeProductItem(
@@ -2435,6 +2918,21 @@ export const ProductDetailsDialog = (props) => {
     setKeyRadio(keyRadio + 1);
   };
 
+  const isAllProductsZeroQuantity = (maCauHinh) => {
+    let isNotStocking = false;
+    const configurationProducts = dataAll.filter((item) => item.maCauHinh === maCauHinh);
+    configurationProducts.map((item) => {
+      if (item.soLuongTonKho <= 0) {
+        isNotStocking = true;
+      }
+      else {
+        isNotStocking = false;
+      }
+    })
+    return isNotStocking;
+  }
+
+
   return (
     <div className="rounded-pill">
       <Dialog
@@ -2442,8 +2940,8 @@ export const ProductDetailsDialog = (props) => {
         TransitionComponent={Transition}
         onClose={onCloseNoAction}
         aria-describedby="alert-dialog-slide-description1"
-        maxWidth="lg"
-        maxHeight="lg"
+        maxWidth="xxl"
+        maxHeight="xxl"
       >
         {isOpen === true ?
           <DialogContent>
@@ -2462,7 +2960,6 @@ export const ProductDetailsDialog = (props) => {
                       className="ms-2"
                       style={{ fontSize: "13.5px", color: "gray" }}
                     >
-                      (No.9001)
                     </span>
                   </span>
                   <Tooltip title="Đóng" TransitionComponent={Zoom}>
@@ -2556,6 +3053,7 @@ export const ProductDetailsDialog = (props) => {
                                 onClick={() => handleSetKey()}
                                 overlay
                                 disableIcon
+                                disabled={isAllProductsZeroQuantity(item.maCauHinh)}
                                 value={
                                   item.ram.dungLuong +
                                   "/" +
@@ -2570,6 +3068,8 @@ export const ProductDetailsDialog = (props) => {
                                       color: checked
                                         ? "text.primary"
                                         : "text.secondary",
+                                      opacity:
+                                        isAllProductsZeroQuantity(item.maCauHinh) ? "0.5" : "1",
                                     },
                                   }),
                                   action: ({ checked }) => ({
@@ -2717,6 +3217,32 @@ export const ProductDetailsDialog = (props) => {
                         29.990.000₫
                       </span>
                     </div>
+                    <div className="" style={{ marginTop: "7px" }}>
+                      <span
+                        className=""
+                        style={{ fontSize: "13.5px", color: "gray" }}
+                      >
+                        {productItem2 && productItem2.soLuongTonKho} sản phẩm có
+                        sẵn
+                      </span>
+                    </div>
+                    <div className="mt-3">
+                      <button
+                        onClick={() => {
+                          addProductItemsToCart(
+                            productItem2 && productItem2.donGia,
+                            productItem2 && productItem2.id
+                          );
+                        }}
+                        type="button"
+                        class="__add-cart1 add-to-cart trigger mt-1"
+                      >
+                        <span class="" style={{ fontSize: "16px" }}>
+                          THÊM VÀO GIỎ HÀNG
+                        </span>
+                      </button>
+                    </div>
+                    {/*
                     <div className="d-flex mt-3">
                       <InputNumberAmount getAmount={getAmount}
                       />
@@ -2746,6 +3272,7 @@ export const ProductDetailsDialog = (props) => {
                         </span>
                       </button>
                     </div>
+*/}
                   </div>
                 </div>
               </div>
@@ -2756,3 +3283,1482 @@ export const ProductDetailsDialog = (props) => {
     </div>
   );
 };
+export const ModalImeiByProductItem = ({ open, close, imeis, addProduct, isOpen }) => {
+  const [selectedImei, setSelectedImei] = useState([]);
+  const { handleOpenAlertVariant } = useCustomSnackbar();
+
+  const filteredData = imeis.filter((item) => item.trangThai === StatusImei.NOT_SOLD || item.trangThai === StatusImei.IN_THE_CART);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+  const totalItems = filteredData.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = currentPage * itemsPerPage;
+  const itemsOnCurrentPage = filteredData.slice(startIndex, endIndex);
+
+  useEffect(() => {
+    setCurrentPage(1);
+    setSelectedImei([]);
+  }, [imeis])
+
+
+  return (
+    <>
+      <Dialog
+        open={open}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={() => { close(); setSelectedImei([]) }}
+        maxWidth="xxl"
+        maxHeight="xxl"
+      >
+        <DialogContent className="">
+          <div className="mt-2" style={{ width: "1100px" }}>
+            <div className="container" style={{}}>
+              <div className="header-title d-flex justify-content-between">
+                <div className="mt-1">
+                  <span className="fs-4 fw-bold">Chọn Imei Sản Phẩm</span>
+                </div>
+                <div className="">
+                  <TextField
+                    label="Tìm IMEI"
+                    // onChange={handleGetValueFromInputTextField}
+                    // value={keyword}
+                    InputLabelProps={{
+                      sx: {
+                        marginTop: "",
+                        textTransform: "capitalize",
+                      },
+                    }}
+                    inputProps={{
+                      style: {
+                        height: "23px",
+                        width: "200px",
+                      },
+                    }}
+                    size="small"
+                    className=""
+                  />
+                  <Button
+                    onClick={() => {
+                    }}
+                    className="rounded-2 ms-2 button-mui"
+                    type="primary"
+                    style={{ width: "100px", fontSize: "15px" }}
+                  >
+                    <span
+                      className="text-white"
+                      style={{ fontWeight: "500", marginBottom: "2px" }}
+                    >
+                      Tìm Kiếm
+                    </span>
+                  </Button>
+                </div>
+              </div>
+              <div className="mx-auto mt-3 pt-2">
+                <div className="">
+                  <table className="table" style={{ borderRadius: "10px" }}>
+                    <thead style={{ borderRadius: "10px" }}>
+                      <tr>
+                        <th scope="col"></th>
+                        <th scope="col" className="text-center text-dark">Mã Imei</th>
+                        <th scope="col" className="text-center text-dark">Trạng Thái</th>
+                      </tr>
+                    </thead>
+                    {isOpen === true ?
+                      <tbody>
+                        {
+                          itemsOnCurrentPage.length
+                            ?
+                            itemsOnCurrentPage.map((item, index) => (
+                              <>
+                                <tr key={index} style={{
+                                  cursor: "pointer",
+                                  pointerEvents: item.trangThai === StatusImei.IN_THE_CART ? "none" : "auto",
+                                  opacity: item.trangThai === StatusImei.IN_THE_CART ? "0.5" : "1"
+                                }}
+                                  onClick={() => {
+                                    if (selectedImei.length >= 4 && !selectedImei.includes(item)) {
+                                      handleOpenAlertVariant("Lựa chọn tối đa 4 số lượng sản phẩm!", "warning");
+                                    }
+                                    else if (!selectedImei.includes(item)) {
+                                      setSelectedImei((val) => [...val, item]);
+                                    }
+                                    else {
+                                      setSelectedImei((val) => val.filter((text) => text !== item));
+                                    }
+                                  }
+                                  }
+                                >
+                                  <th>
+                                    <Checkbox color="primary" checked={selectedImei.includes(item)} />
+                                  </th>
+                                  <td className="text-center">{item.soImei}</td>
+
+                                  <td className="text-center">
+                                    {
+                                      item.trangThai === StatusImei.NOT_SOLD || item.trangThai === StatusImei.IN_THE_CART ? (
+                                        <div
+                                          className="rounded-pill badge-success mx-auto"
+                                          style={{
+                                            height: "35px",
+                                            width: "115px",
+                                            padding: "4px",
+                                          }}
+                                        >
+                                          <span
+                                            className="text-white"
+                                            style={{ fontSize: "14px", fontWeight: "400" }}
+                                          >
+                                            {item.trangThai === StatusImei.NOT_SOLD ? "Chưa Bán" : item.trangThai === StatusImei.IN_THE_CART ? "Chưa Bán" : ""}
+                                          </span>
+                                        </div>
+                                      ) :
+                                        ""
+                                    }
+                                  </td>
+                                </tr>
+                              </>
+                            ))
+                            :
+                            ""
+                        }
+                      </tbody>
+                      : null}
+                  </table>
+                </div>
+                {isOpen === true ?
+                  <div className="d-flex justify-content-center mt-3">
+                    <Pagination color="primary"
+                      page={parseInt(currentPage)} count={totalPages}
+                      onChange={(event, page) => setCurrentPage(page)}
+                    />
+                  </div>
+                  : null}
+                <div className="mt-3">
+                  <span className="fs-4 fw-bold">Imei Đã Chọn</span>
+                </div>
+                <div className="mt-2 d-flex justify-content-between">
+                  <div className="" style={{ marginTop: "2px" }}>
+                    <List
+                      orientation="horizontal"
+                      wrap
+                      sx={{
+                        "maxHeight": "50px",
+                        '--List-gap': '15px',
+                        '--ListItem-radius': '5px',
+                        '--ListItem-gap': '4px',
+                      }}
+                    >
+                      {selectedImei
+                        .map((item, index) => (
+                          <ListItem key={item.id}>
+                            <Done
+                              fontSize="md"
+                              color="primary"
+                              sx={{ ml: -0.5, zIndex: 2, pointerEvents: 'none' }}
+                            />
+                            <CheckboxJoy
+                              slotProps={{
+                                action: ({ checked }) => ({
+                                  sx: checked
+                                    ? {
+                                      border: '1px solid',
+                                      borderColor: '#2f80ed',
+                                    }
+                                    : {},
+                                }),
+                              }}
+                              overlay
+                              disableIcon
+                              checked={selectedImei.includes(item)}
+                              variant={selectedImei.includes(item) ? 'soft' : 'outlined'}
+                              onChange={(event) => {
+                                if (event.target.checked) {
+                                  setSelectedImei((val) => [...val, item]);
+                                } else {
+                                  setSelectedImei((val) => val.filter((text) => text !== item));
+                                }
+                              }}
+                              label={item.soImei}
+                            />
+                          </ListItem>
+                        ))}
+                    </List>
+                  </div>
+                  <div className="d-flex">
+                    <Button
+                      onClick={() => {
+                        if (selectedImei.length === 0) {
+                          handleOpenAlertVariant("Bạn chưa chọn IMEI!", "warning");
+                        }
+                        else {
+                          addProduct(selectedImei);
+                        }
+                      }}
+                      className="rounded-2 button-mui me-2"
+                      type="primary"
+                      style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                    >
+                      <span
+                        className=""
+                        style={{ marginBottom: "2px", fontWeight: "500" }}
+                      >
+                        Xác Nhận
+                      </span>
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        close();
+                        setSelectedImei([]);
+                      }}
+                      className="rounded-2"
+                      type="danger"
+                      style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                    >
+                      <span
+                        className=""
+                        style={{ marginBottom: "2px", fontWeight: "500" }}
+                      >
+                        Hủy Bỏ
+                      </span>
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+        <div className="mt-3"></div>
+      </Dialog>
+    </>
+  )
+}
+export const ModalUpdateImeiByProductItem = ({ open, close, imeis, imeisChuaBan, refresh, update }) => {
+  const [selectedImei, setSelectedImei] = useState(imeisChuaBan);
+  const { handleOpenAlertVariant } = useCustomSnackbar();
+
+  const filteredData = imeis.filter((item) => item.trangThai === StatusImei.NOT_SOLD || item.trangThai === StatusImei.IN_THE_CART);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+  const totalItems = filteredData.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = currentPage * itemsPerPage;
+  const itemsOnCurrentPage = filteredData.slice(startIndex, endIndex);
+
+  useEffect(() => {
+    setCurrentPage(1);
+    setSelectedImei(imeisChuaBan);
+  }, [refresh])
+
+  return (
+    <>
+      <Dialog
+        open={open}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={() => { close();/*  setSelectedImei([])  */ }}
+        maxWidth="xxl"
+        maxHeight="xxl"
+      >
+        <DialogContent className="">
+          <div className="mt-2" style={{ width: "1100px" }}>
+            <div className="container" style={{}}>
+              <div className="header-title d-flex justify-content-between">
+                <div className="mt-1">
+                  <span className="fs-4 fw-bold">Chọn Imei Sản Phẩm</span>
+                </div>
+                <div className="">
+                  <TextField
+                    label="Tìm IMEI"
+                    // onChange={handleGetValueFromInputTextField}
+                    // value={keyword}
+                    InputLabelProps={{
+                      sx: {
+                        marginTop: "",
+                        textTransform: "capitalize",
+                      },
+                    }}
+                    inputProps={{
+                      style: {
+                        height: "23px",
+                        width: "200px",
+                      },
+                    }}
+                    size="small"
+                    className=""
+                  />
+                  <Button
+                    onClick={() => {
+                      console.log(imeisChuaBan);
+                      console.log(imeis);
+                    }}
+                    className="rounded-2 ms-2 button-mui"
+                    type="primary"
+                    style={{ width: "100px", fontSize: "15px" }}
+                  >
+                    <span
+                      className="text-white"
+                      style={{ fontWeight: "500", marginBottom: "2px" }}
+                    >
+                      Tìm Kiếm
+                    </span>
+                  </Button>
+                </div>
+              </div>
+              <div className="mx-auto mt-3 pt-2">
+                <div className="">
+                  <table className="table" style={{ borderRadius: "10px" }}>
+                    <thead style={{ borderRadius: "10px" }}>
+                      <tr >
+                        <th scope="col"></th>
+                        <th scope="col" className="text-center text-dark">Mã Imei</th>
+                        <th scope="col" className="text-center text-dark">Trạng Thái</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {
+                        itemsOnCurrentPage.length
+                          ? itemsOnCurrentPage
+                            .map((item, index) => (
+                              <tr
+                                key={index}
+                                style={{
+                                  cursor: "pointer",
+                                  pointerEvents: item.trangThai === StatusImei.IN_THE_CART && !imeisChuaBan.some(selectedItem => selectedItem.soImei === item.soImei) ? "none" : "auto",
+                                  opacity: item.trangThai === StatusImei.IN_THE_CART && !imeisChuaBan.some(selectedItem => selectedItem.soImei === item.soImei) ? "0.5" : "1"
+                                }}
+                                onClick={() => {
+                                  if (selectedImei.length >= 4 && !selectedImei.some(selectedItem => selectedItem.soImei === item.soImei)) {
+                                    handleOpenAlertVariant("Lựa chọn tối đa 4 số lượng sản phẩm!", "warning");
+                                  } else if (!selectedImei.some(selectedItem => selectedItem.soImei === item.soImei)) {
+                                    setSelectedImei([...selectedImei, item]);
+                                  } else {
+                                    setSelectedImei(selectedImei.filter(selectedItem => selectedItem.soImei !== item.soImei));
+                                  }
+                                }}
+                              >
+                                <th>
+                                  <Checkbox color="primary" checked={selectedImei.some(selectedItem => selectedItem.soImei === item.soImei)} />
+                                </th>
+                                <td className="text-center">{item.soImei}</td>
+                                <td className="text-center">
+                                  {
+                                    item.trangThai === StatusImei.NOT_SOLD || item.trangThai === StatusImei.IN_THE_CART ? (
+                                      <div
+                                        className="rounded-pill badge-success mx-auto"
+                                        style={{
+                                          height: "35px",
+                                          width: "115px",
+                                          padding: "4px",
+                                        }}
+                                      >
+                                        <span
+                                          className="text-white"
+                                          style={{ fontSize: "14px", fontWeight: "400" }}
+                                        >
+                                          {item.trangThai === StatusImei.NOT_SOLD ? "Chưa Bán" : item.trangThai === StatusImei.IN_THE_CART ? "Chưa Bán" : ""}
+                                        </span>
+                                      </div>
+                                    ) :
+                                      ""
+                                  }
+                                </td>
+                              </tr>
+                            ))
+                          : ""
+                      }
+                    </tbody>
+                  </table>
+                </div>
+                <div className="d-flex justify-content-center mt-3">
+                  <Pagination color="primary"
+                    page={parseInt(currentPage)} count={totalPages}
+                    onChange={(event, page) => setCurrentPage(page)}
+                  />
+                </div>
+                <div className="mt-3">
+                  <span className="fs-4 fw-bold">Imei Đã Chọn</span>
+                </div>
+                <div className="mt-2 d-flex justify-content-between">
+                  <div className="" style={{ marginTop: "2px" }}>
+                    <List
+                      orientation="horizontal"
+                      wrap
+                      sx={{
+                        "maxHeight": "50px",
+                        '--List-gap': '15px',
+                        '--ListItem-radius': '5px',
+                        '--ListItem-gap': '4px',
+                      }}
+                    >
+                      {selectedImei
+                        .map((item, index) => (
+                          <ListItem key={index}>
+                            <Done
+                              fontSize="md"
+                              color="primary"
+                              sx={{ ml: -0.5, zIndex: 2, pointerEvents: 'none' }}
+                            />
+                            <CheckboxJoy
+                              slotProps={{
+                                action: ({ checked }) => ({
+                                  sx: checked
+                                    ? {
+                                      border: '1px solid',
+                                      borderColor: '#2f80ed',
+                                    }
+                                    : {},
+                                }),
+                              }}
+                              overlay
+                              disableIcon
+                              checked={selectedImei.includes(item)}
+                              variant={selectedImei.includes(item) ? 'soft' : 'outlined'}
+                              onChange={(event) => {
+                                if (event.target.checked) {
+                                  setSelectedImei((val) => [...val, item]);
+                                } else {
+                                  setSelectedImei((val) => val.filter((text) => text !== item));
+                                }
+                              }}
+                              label={item.soImei}
+                            />
+                          </ListItem>
+                        ))}
+                    </List>
+                  </div>
+                  <div className="d-flex">
+                    <Button
+                      onClick={() => {
+                        if (selectedImei.length === 0) {
+                          handleOpenAlertVariant("Bạn chưa chọn IMEI!", "warning");
+                        }
+                        else {
+                          update(selectedImei);
+                        }
+                      }}
+                      className="rounded-2 button-mui me-2"
+                      type="primary"
+                      style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                    >
+                      <span
+                        className=""
+                        style={{ marginBottom: "2px", fontWeight: "500" }}
+                      >
+                        Xác Nhận
+                      </span>
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        close();
+                        // setSelectedImei([]);
+                      }}
+                      className="rounded-2"
+                      type="danger"
+                      style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                    >
+                      <span
+                        className=""
+                        style={{ marginBottom: "2px", fontWeight: "500" }}
+                      >
+                        Hủy Bỏ
+                      </span>
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+        <div className="mt-3"></div>
+      </Dialog>
+    </>
+  )
+}
+
+export function MultiplePaymentMethods({ open, close, data, khachCanTra, khachThanhToan, handleOpenPayment,
+  handleCloseOpenPayment, addPayment, openPayment, deletePayment }) {
+  const { handleOpenAlertVariant } = useCustomSnackbar();
+  const [payments, setPayments] = useState(data);
+
+  useEffect(() => {
+    setPayments(data);
+  }, [data]);
+
+  const sortPayments = data && payments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+  const [selectedPayment, setSelectedPayment] = useState(["Tiền mặt", "Chuyển khoản thường", "Ví VNPAY"]);
+  const [paymentCurrent, setPaymentCurrent] = useState("Tiền mặt");
+
+  const handleRedirectPaymentView = (url) => {
+    window.open(url, '_blank');
+  };
+
+  const columns = [
+    {
+      title: "Mã Giao Dịch",
+      align: "center",
+      width: "15%",
+      render: (text, item) =>
+        <span style={{ fontWeight: "500" }}>{item.hinhThucThanhToan === 1 || item.hinhThucThanhToan === 2 ? "..." : item.ma}
+        </span>
+    },
+    {
+      title: "Phương Thức Thanh Toán",
+      align: "center",
+      width: "15%",
+      dataIndex: "hinhThucThanhToan",
+      render: (text, record) =>
+        record.hinhThucThanhToan == 0 || record.hinhThucThanhToan === 2 ? (
+          <div
+            className="rounded-pill mx-auto badge-success"
+            style={{
+              height: "35px",
+              width: "120px",
+              padding: "4px",
+            }}
+          >
+            <span
+              className="text-white"
+              style={{ fontSize: "14px", fontWeight: "400" }}
+            >
+              Chuyển khoản
+            </span>
+          </div>
+        ) : record.hinhThucThanhToan == 1 ? (
+          <div
+            className="rounded-pill badge-success mx-auto"
+            style={{ height: "35px", width: "90px", padding: "4px" }}
+          >
+            <span
+              className="text-white"
+              style={{ fontSize: "14px", fontWeight: "400" }}
+            >
+              Tiền mặt
+            </span>
+          </div>
+        ) : (
+          ""
+        ),
+    },
+    {
+      title: "Trạng Thái",
+      align: "center",
+      width: "10%",
+      dataIndex: "trangThai",
+      render: (status) =>
+        status == 1 ? (
+          <div
+            className="rounded-pill badge-primary mx-auto"
+            style={{
+              height: "35px",
+              width: "115px",
+              padding: "4px",
+            }}
+          >
+            <span
+              className="text-white"
+              style={{ fontSize: "14px", fontWeight: "400" }}
+            >
+              Thành công
+            </span>
+          </div>
+        ) : (
+          ""
+        ),
+    },
+    {
+      title: "Thời Gian",
+      align: "center",
+      width: "10%",
+      dataIndex: "createdAt",
+      render: (text, record) => (
+        <span style={{ fontWeight: "normal" }}>
+          {format(new Date(record.createdAt), "HH:mm:ss, dd/MM/yyyy")}
+        </span>
+      ),
+    },
+    {
+      title: "Số Tiền",
+      align: "center",
+      dataIndex: "soTienThanhToan",
+      width: "15%",
+      render: (text, record) => (
+        <span
+          className="txt-danger"
+          style={{ fontSize: "17px" }}
+        >
+          {record &&
+            record.soTienThanhToan &&
+            record.soTienThanhToan.toLocaleString("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            })}
+        </span>
+      ),
+    },
+    {
+      title: "Thao Tác",
+      align: "center",
+      width: "15%",
+      render: (text, record) => (
+        <>
+          {record.hinhThucThanhToan === 1 || record.hinhThucThanhToan === 2 ?
+            <Tooltip title="Xóa" TransitionComponent={Zoom}>
+              <IconButton className='' style={{ height: "40px" }} onClick={() => deletePayment(record.id)}
+              >
+                <FaTrashAlt color="#e5383b" />
+              </IconButton>
+            </Tooltip>
+            :
+            <Tooltip title="Xem lịch sử" TransitionComponent={Zoom}>
+              <IconButton className='' style={{ height: "40px" }} onClick={() =>
+                handleRedirectPaymentView(`https://sandbox.vnpayment.vn/merchantv2/Transaction/PaymentDetail/${record.ma}.htm`)
+              }
+              >
+                <FaEye color="#2f80ed" />
+              </IconButton>
+            </Tooltip>
+          }
+        </>
+      ),
+    },
+  ];
+
+  const paymentBank = () => {
+    addPayment(paymentCurrent, customerPayment);
+  }
+
+  const [customerPayment, setCustomerPayment] = useState(0);
+  const [customerPaymentFormat, setCustomerPaymentFormat] = useState("");
+
+
+  useEffect(() => {
+    const chuaThanhToan = khachCanTra - khachThanhToan;
+    if (chuaThanhToan <= 0) {
+      setCustomerPaymentFormat("0");
+      setCustomerPayment(0);
+    }
+    else {
+      let valueFinal;
+      valueFinal = String(chuaThanhToan)
+        .replace(/[^0-9]+/g, "")
+        .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      setCustomerPaymentFormat(valueFinal);
+      setCustomerPayment(chuaThanhToan);
+
+    }
+  }, [payments, khachThanhToan, khachCanTra])
+
+  const handleCustomerPayment = (event) => {
+
+    const value = event.target.value;
+    const parseNumberPayment = parseFloat(value.replace(/[^0-9.-]+/g, ""));
+    let valueFinal;
+
+    valueFinal = value
+      .replace(/[^0-9]+/g, "")
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    setCustomerPaymentFormat(valueFinal);
+    setCustomerPayment(parseNumberPayment);
+
+    if (value == null || value == "") {
+      setCustomerPayment(0);
+      setCustomerPaymentFormat("");
+    }
+    else if (parseNumberPayment > 1000000000000) {
+      setCustomerPayment(0);
+      setCustomerPaymentFormat("");
+    }
+  }
+
+  return (
+    <>
+      <Dialog
+        open={open}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={() => { close(); }}
+        maxWidth="xxl"
+        maxHeight="xxl"
+      >
+        <DialogContent className="">
+          <div className="mt-2" style={{ width: "950px", height: "auto", minHeight: "500px" }}>
+            <div className="container" style={{}}>
+              <div className="d-flex justify-content-between">
+                <span style={{ fontWeight: "500", fontSize: "24px" }}>
+                  Tiến hành thanh toán
+                </span>
+                <Tooltip title="Đóng" TransitionComponent={Zoom}>
+                  <IconButton size="small" onClick={() => close()}>
+                    <CloseOutlinedIcon />
+                  </IconButton>
+                </Tooltip>
+              </div>
+              <div className='d-flex justify-content-between mt-4 pt-2' style={{ marginLeft: "1px" }}>
+                <span className='text-dark' style={{ fontSize: "20px", fontWeight: "500" }}>Khách cần trả
+                </span>
+                <span
+                  className=""
+                  style={{ fontSize: "20px", color: "#dc1111", fontWeight: "500" }}
+                >
+                  {khachCanTra && khachCanTra.toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  }) || "0 ₫"}
+                </span>
+              </div>
+              <div className='d-flex justify-content-between mt-4' style={{ marginLeft: "1px" }}>
+                <span className='text-dark' style={{ fontSize: "20px", fontWeight: "500", marginTop: "10px" }}>Nhập số tiền
+                </span>
+                <div className="d-flex">
+                  <TextField className='me-3'
+                    onChange={handleCustomerPayment}
+                    value={customerPaymentFormat}
+                    InputProps={{
+                      style: { fontSize: '19px' },
+                    }}
+                    variant="standard"
+                    sx={{ width: "155px", fontSize: "17.5px" }} />
+                  <div className="" style={{ marginTop: "1px", marginRight: "13px" }}>
+                    <List
+                      orientation="horizontal"
+                      wrap
+                      sx={{
+                        "maxHeight": "50px",
+                        '--List-gap': '15px',
+                        '--ListItem-radius': '10px',
+                        '--ListItem-gap': '4px',
+                      }}
+                    >
+                      {selectedPayment
+                        .map((item, index) => (
+                          <ListItem key={index}>
+                            {paymentCurrent === item &&
+                              <Done
+                                fontSize="md"
+                                color="primary"
+                                sx={{ ml: -0.5, zIndex: 2, pointerEvents: 'none' }}
+                              />
+                            }
+                            <CheckboxJoy
+                              slotProps={{
+                                action: ({ checked }) => ({
+                                  sx: checked
+                                    ? {
+                                      border: '1px solid',
+                                      borderColor: '#2f80ed',
+                                      // borderRadius: "10px",
+                                      // height: "40px",
+                                    }
+                                    : {},
+                                }),
+                              }}
+                              overlay
+                              disableIcon
+                              checked={paymentCurrent === item}
+                              variant={'outlined'}
+                              onChange={() => {
+                                if (paymentCurrent === item) {
+                                  setPaymentCurrent(item);
+                                } else {
+                                  setPaymentCurrent(item);
+                                }
+                              }}
+                              label={item}
+                            />
+                          </ListItem>
+                        ))}
+                    </List>
+                  </div>
+                  <Button
+                    onClick={() => {
+                      if (paymentCurrent === null) {
+                        handleOpenAlertVariant("Bạn chưa chọn hình thức thanh toán!", Notistack.ERROR);
+                      }
+                      else if (customerPayment === 0) {
+                        handleOpenAlertVariant("Số tiền không hợp lệ!", Notistack.ERROR);
+                      }
+                      else if (paymentCurrent === "Ví VNPAY") {
+                        handleOpenPayment();
+                      }
+                      else {
+                        addPayment(paymentCurrent, customerPayment);
+                      }
+
+                    }}
+                    className="rounded-2 ant-btn-light"
+                    style={{ height: "37.5px", width: "auto", fontSize: "15px", }}
+                  >
+                    <span
+                      className=""
+                      style={{ marginBottom: "2px", fontWeight: "500" }}
+                    >
+                      Xác Nhận
+                    </span>
+                  </Button>
+                </div>
+              </div>
+              <div className="mx-auto mt-3 pt-2" style={{ minHeight: "200px" }}>
+                <TableAntd
+                  className='table-container'
+                  columns={columns}
+                  dataSource={sortPayments}
+                  pagination={false}
+                  rowKey={"id"}
+                  key={"id"}
+                  locale={{ emptyText: <Empty /> }}
+                />
+              </div>
+              <div className='d-flex justify-content-between mt-4 pt-2' style={{ marginLeft: "1px" }}>
+                <span className='text-dark' style={{ fontSize: "20px", fontWeight: "500" }}>Khách thanh toán
+                </span>
+                <span
+                  className=""
+                  style={{ fontSize: "20px", color: "#2f80ed", fontWeight: "500" }}
+                >
+                  {khachThanhToan && khachThanhToan.toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  }) || "0 ₫"}
+                </span>
+              </div>
+              <div className="mt-4 d-flex justify-content-end">
+                <Button
+                  onClick={() => {
+                    close();
+                  }}
+                  type="primary"
+                  className="rounded-2"
+                  style={{ height: "40px", width: "110px", fontSize: "15px", }}
+                >
+                  <span
+                    className=""
+                    style={{ marginBottom: "2px", fontWeight: "500" }}
+                  >
+                    Xong
+                  </span>
+                </Button>
+              </div>
+            </div>
+          </div>
+          <div className="mt-3"></div>
+        </DialogContent>
+      </Dialog>
+      <PaymentVnPayConfirmDialog open={openPayment} onClose={handleCloseOpenPayment}
+        payment={paymentBank}
+      />
+    </>
+  )
+}
+export function PaymentVnPayConfirmDialog(props) {
+  const { open, onClose, payment } = props;
+
+  return (
+    <div className="rounded-pill">
+      <Dialog
+        TransitionComponent={Transition1}
+        open={open}
+        onClose={onClose}
+        aria-describedby="alert-dialog-slide-description1"
+        maxWidth="lg"
+        maxHeight="lg"
+        sx={{
+          height: "300px",
+          "& .MuiPaper-root": {
+            borderRadius: "15px", // Giá trị border radius tùy chỉnh
+            marginTop: "150px",
+          },
+        }}
+      >
+        <div className="p-2" style={{ width: "600px" }}>
+          <DialogTitle
+            sx={{ color: "#09a129", fontWeight: "500", fontSize: "18px" }}
+            id="alert-dialog-title"
+          >
+            {"Xác nhận chuyển hướng đến trang thanh toán"}
+          </DialogTitle>
+          <DialogContent >
+            <DialogContentText
+              sx={{ color: "black" }}
+              id="alert-dialog-description"
+            >
+              Bạn có chắc chắn muốn chuyển hướng đến trang thanh toán bằng hình thức
+              <span style={{ fontWeight: "500", color: "#2f80ed" }}>{" Chuyển khoản"}</span> {" hoặc "}
+              <span style={{ fontWeight: "500", color: "#2f80ed" }}>{"Thẻ"}</span>
+              {" "} qua ví điện tử
+              <span style={{ fontWeight: "500" }}>{" VNPAY "}</span>
+              ?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={payment}
+              className="rounded-2 me-1 button-mui"
+              type="primary"
+              style={{
+                height: "40px",
+                width: "auto",
+                fontSize: "16px",
+                marginBottom: "20px",
+              }}
+            >
+              <span
+                className="text-white"
+                style={{ fontWeight: "500", marginBottom: "2px" }}
+              >
+                Đồng ý
+              </span>
+            </Button>
+            <Button
+              onClick={onClose}
+              className="rounded-2 me-3 ant-btn-danger"
+              type="primary"
+              style={{
+                height: "40px",
+                width: "auto",
+                fontSize: "16px",
+                marginBottom: "20px",
+              }}
+            >
+              <span
+                className="text-white"
+                style={{ fontWeight: "500", marginBottom: "2px" }}
+              >
+                Hủy
+              </span>
+            </Button>
+          </DialogActions>
+        </div>
+      </Dialog>
+    </div>
+  );
+}
+
+export const ModalPaymentHistories = ({ open, close, data }) => {
+  const { handleOpenAlertVariant } = useCustomSnackbar();
+  const [payments, setPayments] = useState(data);
+
+  useEffect(() => {
+    setPayments(data);
+  }, [data]);
+
+  const columns = [
+    {
+      title: "Mã Giao Dịch",
+      align: "center",
+      width: "15%",
+      render: (text, item) =>
+        <span style={{ fontWeight: "500" }}>{item.ma === null || item.ma === "" ? "..." : item.ma}
+        </span>
+    },
+    {
+      title: "Phương Thức Thanh Toán",
+      align: "center",
+      width: "15%",
+      dataIndex: "hinhThucThanhToan",
+      render: (text, record) =>
+        record.hinhThucThanhToan == 0 ? (
+          <div
+            className="rounded-pill mx-auto badge-success"
+            style={{
+              height: "35px",
+              width: "120px",
+              padding: "4px",
+            }}
+          >
+            <span
+              className="text-white"
+              style={{ fontSize: "14px", fontWeight: "400" }}
+            >
+              Chuyển khoản
+            </span>
+          </div>
+        ) : record.hinhThucThanhToan == 1 ? (
+          <div
+            className="rounded-pill badge-success mx-auto"
+            style={{ height: "35px", width: "90px", padding: "4px" }}
+          >
+            <span
+              className="text-white"
+              style={{ fontSize: "14px", fontWeight: "400" }}
+            >
+              Tiền mặt
+            </span>
+          </div>
+        ) : (
+          ""
+        ),
+    },
+    {
+      title: "Trạng Thái",
+      align: "center",
+      width: "10%",
+      dataIndex: "trangThai",
+      render: (status) =>
+        status == 1 ? (
+          <div
+            className="rounded-pill badge-primary mx-auto"
+            style={{
+              height: "35px",
+              width: "115px",
+              padding: "4px",
+            }}
+          >
+            <span
+              className="text-white"
+              style={{ fontSize: "14px", fontWeight: "400" }}
+            >
+              Thành công
+            </span>
+          </div>
+        ) : (
+          ""
+        ),
+    },
+    {
+      title: "Thời Gian",
+      align: "center",
+      width: "10%",
+      dataIndex: "createdAt",
+      render: (text, record) => (
+        <span style={{ fontWeight: "normal" }}>
+          {format(new Date(record.createdAt), "HH:mm:ss, dd/MM/yyyy")}
+        </span>
+      ),
+    },
+    {
+      title: "Số Tiền",
+      align: "center",
+      dataIndex: "soTienThanhToan",
+      width: "15%",
+      render: (text, record) => (
+        <span
+          className="txt-danger"
+          style={{ fontSize: "17px" }}
+        >
+          {record &&
+            record.soTienThanhToan &&
+            record.soTienThanhToan.toLocaleString("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            })}
+        </span>
+      ),
+    },
+  ];
+
+  return (
+    <>
+      <Dialog
+        open={open}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={() => { close(); }}
+        maxWidth="xxl"
+        maxHeight="xxl"
+        sx={{ marginBottom: "170px" }}
+      >
+        <DialogContent className="">
+          <div className="mt-2" style={{ width: "950px", height: "auto", maxHeight: "200px" }}>
+            <div className="container" style={{}}>
+              <div className="mx-auto mt-3 pt-2">
+                <TableAntd
+                  className='table-container'
+                  columns={columns}
+                  dataSource={payments}
+                  pagination={false}
+                  rowKey={"id"}
+                  key={"id"}
+                  locale={{ emptyText: <Empty /> }}
+                />
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+        <div className="mt-3"></div>
+      </Dialog>
+    </>
+  )
+}
+export function MultiplePaymentMethodsDelivery({ open, close, data, khachCanTra, khachThanhToan, handleOpenPayment,
+  handleCloseOpenPayment, addPayment, openPayment, deletePayment }) {
+  const { handleOpenAlertVariant } = useCustomSnackbar();
+  const [payments, setPayments] = useState(data);
+
+  useEffect(() => {
+    setPayments(data);
+  }, [data]);
+
+  const sortPayments = data && payments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+  const [selectedPayment, setSelectedPayment] = useState(["Tiền mặt", "Chuyển khoản thường", "Ví VNPAY"]);
+  const [paymentCurrent, setPaymentCurrent] = useState("Tiền mặt");
+
+  const handleRedirectPaymentView = (url) => {
+    window.open(url, '_blank');
+  };
+
+  const columns = [
+    {
+      title: "Mã Giao Dịch",
+      align: "center",
+      width: "15%",
+      render: (text, item) =>
+        <span style={{ fontWeight: "500" }}>{item.hinhThucThanhToan === 1 || item.hinhThucThanhToan === 2 ? "..." : item.ma}
+        </span>
+    },
+    {
+      title: "Phương Thức Thanh Toán",
+      align: "center",
+      width: "15%",
+      dataIndex: "hinhThucThanhToan",
+      render: (text, record) =>
+        record.hinhThucThanhToan == 0 || record.hinhThucThanhToan === 2 ? (
+          <div
+            className="rounded-pill mx-auto badge-success"
+            style={{
+              height: "35px",
+              width: "120px",
+              padding: "4px",
+            }}
+          >
+            <span
+              className="text-white"
+              style={{ fontSize: "14px", fontWeight: "400" }}
+            >
+              Chuyển khoản
+            </span>
+          </div>
+        ) : record.hinhThucThanhToan == 1 ? (
+          <div
+            className="rounded-pill badge-success mx-auto"
+            style={{ height: "35px", width: "90px", padding: "4px" }}
+          >
+            <span
+              className="text-white"
+              style={{ fontSize: "14px", fontWeight: "400" }}
+            >
+              Tiền mặt
+            </span>
+          </div>
+        ) : (
+          ""
+        ),
+    },
+    {
+      title: "Trạng Thái",
+      align: "center",
+      width: "10%",
+      dataIndex: "trangThai",
+      render: (status) =>
+        status == 1 ? (
+          <div
+            className="rounded-pill badge-primary mx-auto"
+            style={{
+              height: "35px",
+              width: "115px",
+              padding: "4px",
+            }}
+          >
+            <span
+              className="text-white"
+              style={{ fontSize: "14px", fontWeight: "400" }}
+            >
+              Thành công
+            </span>
+          </div>
+        ) : (
+          ""
+        ),
+    },
+    {
+      title: "Thời Gian",
+      align: "center",
+      width: "10%",
+      dataIndex: "createdAt",
+      render: (text, record) => (
+        <span style={{ fontWeight: "normal" }}>
+          {format(new Date(record.createdAt), "HH:mm:ss, dd/MM/yyyy")}
+        </span>
+      ),
+    },
+    {
+      title: "Số Tiền",
+      align: "center",
+      dataIndex: "soTienThanhToan",
+      width: "15%",
+      render: (text, record) => (
+        <span
+          className="txt-danger"
+          style={{ fontSize: "17px" }}
+        >
+          {record &&
+            record.soTienThanhToan &&
+            record.soTienThanhToan.toLocaleString("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            })}
+        </span>
+      ),
+    },
+    {
+      title: "Thao Tác",
+      align: "center",
+      width: "15%",
+      render: (text, record) => (
+        <>
+          {record.hinhThucThanhToan === 1 || record.hinhThucThanhToan === 2 ?
+            <Tooltip title="Xóa" TransitionComponent={Zoom}>
+              <IconButton className='' style={{ height: "40px" }} onClick={() => deletePayment(record.id)}
+              >
+                <FaTrashAlt color="#e5383b" />
+              </IconButton>
+            </Tooltip>
+            :
+            <Tooltip title="Xem lịch sử" TransitionComponent={Zoom}>
+              <IconButton className='' style={{ height: "40px" }} onClick={() =>
+                handleRedirectPaymentView(`https://sandbox.vnpayment.vn/merchantv2/Transaction/PaymentDetail/${record.ma}.htm`)
+              }
+              >
+                <FaEye color="#2f80ed" />
+              </IconButton>
+            </Tooltip>
+          }
+        </>
+      ),
+    },
+  ];
+
+  const paymentBank = () => {
+    addPayment(paymentCurrent, customerPayment);
+  }
+
+  const [customerPayment, setCustomerPayment] = useState(0);
+  const [customerPaymentFormat, setCustomerPaymentFormat] = useState("");
+
+
+  useEffect(() => {
+    const chuaThanhToan = khachCanTra - khachThanhToan;
+    if (chuaThanhToan <= 0) {
+      setCustomerPaymentFormat("0");
+      setCustomerPayment(0);
+    }
+    else {
+      let valueFinal;
+      valueFinal = String(chuaThanhToan)
+        .replace(/[^0-9]+/g, "")
+        .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      setCustomerPaymentFormat(valueFinal);
+      setCustomerPayment(chuaThanhToan);
+
+    }
+  }, [payments, khachThanhToan, khachCanTra])
+
+  const handleCustomerPayment = (event) => {
+
+    const value = event.target.value;
+    const parseNumberPayment = parseFloat(value.replace(/[^0-9.-]+/g, ""));
+    let valueFinal;
+
+    valueFinal = value
+      .replace(/[^0-9]+/g, "")
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    setCustomerPaymentFormat(valueFinal);
+    setCustomerPayment(parseNumberPayment);
+
+    if (value == null || value == "") {
+      setCustomerPayment(0);
+      setCustomerPaymentFormat("");
+    }
+    else if (parseNumberPayment > 1000000000000) {
+      setCustomerPayment(0);
+      setCustomerPaymentFormat("");
+    }
+  }
+
+  return (
+    <>
+      <Dialog
+        open={open}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={() => { close(); }}
+        maxWidth="xxl"
+        maxHeight="xxl"
+      >
+        <DialogContent className="">
+          <div className="mt-2" style={{ width: "950px", height: "auto", minHeight: "500px" }}>
+            <div className="container" style={{}}>
+              <div className="d-flex justify-content-between">
+                <span style={{ fontWeight: "500", fontSize: "24px" }}>
+                  Tiến hành thanh toán
+                </span>
+                <Tooltip title="Đóng" TransitionComponent={Zoom}>
+                  <IconButton size="small" onClick={() => close()}>
+                    <CloseOutlinedIcon />
+                  </IconButton>
+                </Tooltip>
+              </div>
+              <div className='d-flex justify-content-between mt-4 pt-2' style={{ marginLeft: "1px" }}>
+                <span className='text-dark' style={{ fontSize: "20px", fontWeight: "500" }}>Khách cần trả
+                </span>
+                <span
+                  className=""
+                  style={{ fontSize: "20px", color: "#dc1111", fontWeight: "500" }}
+                >
+                  {khachCanTra && khachCanTra.toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  }) || "0 ₫"}
+                </span>
+              </div>
+              <div className='d-flex justify-content-between mt-4' style={{ marginLeft: "1px" }}>
+                <span className='text-dark' style={{ fontSize: "20px", fontWeight: "500", marginTop: "10px" }}>Nhập số tiền
+                </span>
+                <div className="d-flex">
+                  <TextField className='me-3'
+                    onChange={handleCustomerPayment}
+                    value={customerPaymentFormat}
+                    InputProps={{
+                      style: { fontSize: '19px' },
+                    }}
+                    variant="standard"
+                    sx={{ width: "155px", fontSize: "17.5px" }} />
+                  <div className="" style={{ marginTop: "1px", marginRight: "13px" }}>
+                    <List
+                      orientation="horizontal"
+                      wrap
+                      sx={{
+                        "maxHeight": "50px",
+                        '--List-gap': '15px',
+                        '--ListItem-radius': '10px',
+                        '--ListItem-gap': '4px',
+                      }}
+                    >
+                      {selectedPayment
+                        .map((item, index) => (
+                          <ListItem key={index}>
+                            {paymentCurrent === item &&
+                              <Done
+                                fontSize="md"
+                                color="primary"
+                                sx={{ ml: -0.5, zIndex: 2, pointerEvents: 'none' }}
+                              />
+                            }
+                            <CheckboxJoy
+                              slotProps={{
+                                action: ({ checked }) => ({
+                                  sx: checked
+                                    ? {
+                                      border: '1px solid',
+                                      borderColor: '#2f80ed',
+                                      // borderRadius: "10px",
+                                      // height: "40px",
+                                    }
+                                    : {},
+                                }),
+                              }}
+                              overlay
+                              disableIcon
+                              checked={paymentCurrent === item}
+                              variant={'outlined'}
+                              onChange={() => {
+                                if (paymentCurrent === item) {
+                                  setPaymentCurrent(item);
+                                } else {
+                                  setPaymentCurrent(item);
+                                }
+                              }}
+                              label={item}
+                            />
+                          </ListItem>
+                        ))}
+                    </List>
+                  </div>
+                  <Button
+                    onClick={() => {
+                      if (paymentCurrent === null) {
+                        handleOpenAlertVariant("Bạn chưa chọn hình thức thanh toán!", Notistack.ERROR);
+                      }
+                      else if (customerPayment === 0) {
+                        handleOpenAlertVariant("Số tiền không hợp lệ!", Notistack.ERROR);
+                      }
+                      else if (paymentCurrent === "Ví VNPAY") {
+                        handleOpenPayment();
+                      }
+                      else {
+                        addPayment(paymentCurrent, customerPayment);
+                      }
+
+                    }}
+                    className="rounded-2 ant-btn-light"
+                    style={{ height: "37.5px", width: "auto", fontSize: "15px", }}
+                  >
+                    <span
+                      className=""
+                      style={{ marginBottom: "2px", fontWeight: "500" }}
+                    >
+                      Xác Nhận
+                    </span>
+                  </Button>
+                </div>
+              </div>
+              <div className="mx-auto mt-3 pt-2" style={{ minHeight: "200px" }}>
+                <TableAntd
+                  className='table-container'
+                  columns={columns}
+                  dataSource={sortPayments}
+                  pagination={false}
+                  rowKey={"id"}
+                  key={"id"}
+                  locale={{ emptyText: <Empty /> }}
+                />
+              </div>
+              <div className='d-flex justify-content-between mt-4 pt-2' style={{ marginLeft: "1px" }}>
+                <span className='text-dark' style={{ fontSize: "20px", fontWeight: "500" }}>Khách thanh toán
+                </span>
+                <span
+                  className=""
+                  style={{ fontSize: "20px", color: "#2f80ed", fontWeight: "500" }}
+                >
+                  {khachThanhToan && khachThanhToan.toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  }) || "0 ₫"}
+                </span>
+              </div>
+              <div className="mt-4 d-flex justify-content-end">
+                <Button
+                  onClick={() => {
+                    close();
+                  }}
+                  type="primary"
+                  className="rounded-2"
+                  style={{ height: "40px", width: "110px", fontSize: "15px", }}
+                >
+                  <span
+                    className=""
+                    style={{ marginBottom: "2px", fontWeight: "500" }}
+                  >
+                    Xong
+                  </span>
+                </Button>
+              </div>
+            </div>
+          </div>
+          <div className="mt-3"></div>
+        </DialogContent>
+      </Dialog>
+      <PaymentVnPayConfirmDialog open={openPayment} onClose={handleCloseOpenPayment}
+        payment={paymentBank}
+      />
+    </>
+  )
+}

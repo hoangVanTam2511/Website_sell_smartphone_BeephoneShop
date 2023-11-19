@@ -46,21 +46,6 @@ public interface ProductDetailRepository extends ISanPhamChiTietRepository {
           """)
   Optional<SanPhamChiTiet> findProductById(String id);
 
-  @Query("""
-                select P from SanPhamChiTiet P
-                left join fetch P.sanPham S
-                left join fetch S.theNho
-                left join fetch S.theSims
-                left join fetch S.pin
-                left join fetch S.manHinh
-                left join fetch S.congSac
-                left join fetch S.chip
-                left join fetch S.hang
-                left join fetch S.chip
-                where P.maCauHinh = ?1
-          """)
-  List<SanPhamChiTiet> findProductByMa(String ma);
-
   @Query(value = """
         SELECT SUBSTRING(ma,16) + 1 FROM san_pham_chi_tiet ORDER BY ma DESC LIMIT 0,1
     """,nativeQuery = true)

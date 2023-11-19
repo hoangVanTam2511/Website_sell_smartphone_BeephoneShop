@@ -3,6 +3,7 @@ package beephone_shop_projects.entity;
 import beephone_shop_projects.entity.base.IsIdentified;
 import beephone_shop_projects.entity.base.PrimaryEntity;
 import beephone_shop_projects.infrastructure.constant.ResolutionType;
+import beephone_shop_projects.infrastructure.constant.StatusCommon;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -26,5 +27,8 @@ public class DoPhanGiaiManHinh extends PrimaryEntity implements IsIdentified {
 
   @Enumerated(EnumType.ORDINAL)
   private ResolutionType resolutionType;
+
+//  @Enumerated(EnumType.ORDINAL)
+//  private StatusCommon status;
 
 }

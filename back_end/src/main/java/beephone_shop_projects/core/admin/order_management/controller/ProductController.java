@@ -1,20 +1,24 @@
 package beephone_shop_projects.core.admin.order_management.controller;
 
 import beephone_shop_projects.core.admin.order_management.model.request.ProductItemConfigurationsRequest;
-import beephone_shop_projects.core.admin.order_management.model.response.ProductItemConfigurationsResponse;
-import beephone_shop_projects.core.admin.order_management.service.impl.ProductItemServiceImpl;
+import beephone_shop_projects.core.admin.order_management.model.response.product_response.ProductCustomResponse;
+import beephone_shop_projects.core.admin.order_management.model.response.product_response.ProductItemResponse;
+import beephone_shop_projects.core.admin.order_management.repository.ProductItemCustomRepository;
+import beephone_shop_projects.core.admin.order_management.repository.impl.ProductRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.service.impl.ProductServiceImpl;
 import beephone_shop_projects.core.admin.product_managements.service.impl.ImageServiceImpl;
 import beephone_shop_projects.core.common.base.ResponseObject;
 import beephone_shop_projects.infrastructure.constant.ApiConstants;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,56 +29,39 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProductController {
 
   @Autowired
-  private ProductItemServiceImpl productItemService;
-
-  @Autowired
   private ImageServiceImpl imageService;
+
   @Autowired
   private ProductServiceImpl productService;
 
-//  @GetMapping
-//  public ResponsePage<OrderResponse> getOrders(@ModelAttribute SearchFilterOrderDto searchFilter) throws Exception {
-//    Page<OrderResponse> orders = hoaDonService.findOrdersByMultipleCriteriaWithPagination(searchFilter);
-//    return new ResponsePage(orders);
-//  }
+  @Autowired
+  private ProductItemCustomRepository productItemCustomRepository;
 
+  @Autowired
+  private ProductRepositoryImpl productRepository;
 
-//  @GetMapping("/{id}")
-//  public ResponseObject<OrderResponse> getOrderDetailsById(@PathVariable("id") String id) {
-//    OrderResponse order = hoaDonService.getOrderDetailsById(id);
-//    return new ResponseObject(order);
-//  }
+  @Autowired
+  private ModelMapper modelMapper;
 
-  //  @PostMapping("/productItems")
-//  public ResponseObject<List<ProductItemConfigurationResponse>> createProductItemConfiguration(@RequestBody ProductItemConfigurationsRequest req) throws Exception {
-//    List<ProductItemConfigurationResponse> createdProductItems = productItemService.createProductItemConfiguration(req);
-//    return new ResponseObject(createdProductItems);
-//  }
+  @GetMapping("/product-items")
+  public ResponseObject home1() {
+    return new ResponseObject(productItemCustomRepository.getProducts().stream().map(s -> modelMapper.map(s, ProductItemResponse.class)));
+  }
 
-//  @GetMapping("/files")V
-//  public ResponseEntity<?> getFiles(@RequestBody ){
-//    return ResponseEntity.ok();
-//  }
+  @GetMapping
+  public ResponseObject home111() {
+    return new ResponseObject(productRepository.findAll().stream().map(s -> modelMapper.map(s, ProductCustomResponse.class)));
+  }
 
-  //  @PostMapping("/upload-multiple")
-//  public ResponseEntity<?> createFiles(@RequestParam("files") MultipartFile[] files
-//  ) throws Exception {
-//      for (MultipartFile file : files){
-//        imageService.uploadImage(file, RandomCodeGenerator.generateRandomCode());
-//      }
-//      return ResponseEntity.ok("Files uploaded successfully.");
-//  }
-//
-//
   @PostMapping(value = "/upload-multiple")
-  public ResponseEntity<?> createFiles(@RequestPart("files") MultipartFile[] files) throws Exception {
-    imageService.uploadImage(files);
+  public ResponseEntity<?> createFiles(@RequestPart("files") MultipartFile[] files, @RequestParam String ma) throws Exception {
+    imageService.uploadImage(files, ma);
     return new ResponseEntity("a", HttpStatus.OK);
   }
 
   @PostMapping
-  public ResponseObject<ProductItemConfigurationsResponse> createProduct(@RequestBody ProductItemConfigurationsRequest req) throws Exception {
-    ProductItemConfigurationsResponse createdProduct = productService.createProduct(req);
+  public ResponseObject<ProductCustomResponse> createProduct(@RequestBody ProductItemConfigurationsRequest req) throws Exception {
+    ProductCustomResponse createdProduct = productService.createProduct(req);
     return new ResponseObject(createdProduct);
   }
 
