@@ -17,6 +17,7 @@ import { Select as SelectJoy } from '@mui/joy';
 import { Option as OptionJoy } from '@mui/joy';
 import TextFieldSearchColors from "./text-field-search-colors";
 import DeleteIcon from '@mui/icons-material/Delete';
+import { FaTrashAlt } from "react-icons/fa";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -175,7 +176,7 @@ const ModalUpdateCauHinh = ({ open, close, updateData, defaultRam, defaultRom, i
             <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
               <IconButton
                 onClick={() => {
-                  handleOpenModalUpdate();
+                  // handleOpenModalUpdate();
                   // setSelectedRam(record.ram);
                   // setDefaultRam(record.ram);
                   // setDefaultRom(record.rom);
@@ -196,7 +197,7 @@ const ModalUpdateCauHinh = ({ open, close, updateData, defaultRam, defaultRom, i
                   handleOpenAlertVariant("Xóa cấu hình thành công!", Notistack.SUCCESS)
                 }}
               >
-                <DeleteIcon sx={{ color: "#e5383b" }} />
+                <FaTrashAlt color="#e5383b" />
               </IconButton>
             </Tooltip>
           </div>

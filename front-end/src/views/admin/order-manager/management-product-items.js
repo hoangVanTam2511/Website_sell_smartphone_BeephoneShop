@@ -287,7 +287,7 @@ const ManagementProductItems = ({ open, close, productItems, productName }) => {
                       className="ms-2 ps-1"
                       style={{ fontSize: "15px", fontWeight: "450" }}
                     >
-                      Bộ Nhớ RAM:{""}
+                      RAM:{""}
                     </span>
                   </div>
                   <FormControl
@@ -344,7 +344,7 @@ const ManagementProductItems = ({ open, close, productItems, productName }) => {
                       className="ms-2 ps-1"
                       style={{ fontSize: "15px", fontWeight: "450" }}
                     >
-                      Bộ Nhớ ROM:{""}
+                      ROM:{""}
                     </span>
                   </div>
                   <FormControl

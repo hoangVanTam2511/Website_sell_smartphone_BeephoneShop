@@ -18,7 +18,7 @@ import { OrderStatusString, OrderTypeString } from "./enum";
 import LoadingIndicator from '../../../utilities/loading';
 import { FaPencilAlt } from "react-icons/fa";
 import ManagementProductItems from "./management-product-items";
-import { FaDownload, FaUpload } from "react-icons/fa6";
+import { FaDownload, FaEye, FaUpload } from "react-icons/fa6";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 
 const ManagementProducts = () => {
@@ -41,7 +41,7 @@ const ManagementProducts = () => {
 
   const getAll = () => {
     axios
-      .get(`http://localhost:8080/api/products/all`, {
+      .get(`http://localhost:8080/api/products`, {
       })
       .then((response) => {
         setProducts(response.data.data);
@@ -343,7 +343,7 @@ const ManagementProducts = () => {
                   className="ms-2 ps-1"
                   style={{ fontSize: "15px", fontWeight: "450" }}
                 >
-                  Trạng Thái:{" "}
+                  Danh Mục:{" "}
                 </span>
               </div>
               <FormControl
@@ -613,6 +613,63 @@ const ManagementProducts = () => {
             </div>
           </div>
           <div className="d-flex mt-3 mx-auto">
+            <div
+              className="d-flex ms-3"
+              style={{
+                height: "40px",
+                position: "relative",
+                cursor: "pointer",
+              }}
+            >
+              <div
+                // onClick={handleOpenSelect1}
+                className=""
+                style={{ marginTop: "8px" }}
+              >
+                <span
+                  className="ms-2 ps-1"
+                  style={{ fontSize: "15px", fontWeight: "450" }}
+                >
+                  Trạng Thái:{""}
+                </span>
+              </div>
+              <FormControl
+                sx={{
+                  minWidth: 50,
+                }}
+                size="small"
+              >
+                <Select
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        borderRadius: "7px",
+                      },
+                    },
+                  }}
+                  IconComponent={KeyboardArrowDownOutlinedIcon}
+                  sx={{
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none !important",
+                    },
+                    "& .MuiSelect-select": {
+                      color: "#2f80ed",
+                      fontWeight: "500",
+                    },
+                  }}
+                  // open={openSelect1}
+                  // onClose={handleCloseSelect1}
+                  // onOpen={handleOpenSelect1}
+                  defaultValue={14}
+                >
+                  <MenuItem className="" value={14}>
+                    Tất cả
+                  </MenuItem>
+                  <MenuItem value={15}>Khách hàng mới</MenuItem>
+                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
             <div
               className="d-flex ms-3"
               style={{

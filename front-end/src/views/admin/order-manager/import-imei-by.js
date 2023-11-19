@@ -9,7 +9,7 @@ import { FaDownload, FaTrashAlt } from "react-icons/fa";
 import { FaUpload } from "react-icons/fa6";
 import { format } from "date-fns";
 import useCustomSnackbar from "../../../utilities/notistack";
-import { Notistack } from "./enum";
+import { Notistack, StatusImei } from "./enum";
 import LoadingIndicator from "../../../utilities/loading";
 
 export const ImportExcelImei = ({ get, ma }) => {
@@ -58,7 +58,7 @@ export const ImportExcelImei = ({ get, ma }) => {
                 return; // Kết thúc hàm nếu có giá trị trùng lặp
               }
               duplicateSet.add(cellValue); // Thêm giá trị vào đối tượng Set
-              imeis.push({ imei: cellValue, createdAt: new Date() });
+              imeis.push({ imei: cellValue, createdAt: new Date(), trangThai: StatusImei.NOT_SOLD });
             }
             // else {
             //   alert("null");

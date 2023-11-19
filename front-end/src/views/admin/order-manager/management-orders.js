@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Table } from "antd";
 import { Box, FormControl, IconButton, MenuItem, Pagination, Select, TextField, Tooltip, } from "@mui/material";
@@ -17,6 +17,7 @@ import * as dayjs from "dayjs";
 import { OrderStatusString, OrderTypeString } from "./enum";
 import LoadingIndicator from '../../../utilities/loading';
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
+import moment from 'moment';
 
 const ManagementOrders = () => {
   const navigate = useNavigate();
@@ -49,47 +50,35 @@ const ManagementOrders = () => {
         setOrders(response.data.data);
         setTotalPages(response.data.totalPages);
         setIsLoading(false);
+        console.log(response.data.data);
         // localStorage.setItem('orders', response.data.content);
         // localStorage.setItem('totalPages', response.data.totalPages);
       })
       .catch((error) => {
+        setIsLoading(false);
         console.error(error);
       });
   }
 
+  const isFirstRender = useRef(true);
   useEffect(() => {
-    // const savedToDate = localStorage.getItem('toDate');
-    // const savedFromDate = localStorage.getItem('fromDate');
-    // const savedKeyword = localStorage.getItem('keyword');
-    // const savedCurrentPage = localStorage.getItem('currentPage');
-    // const savedTotalPages = localStorage.getItem('totalPages');
-    // const savedOrders = localStorage.getItem('orders');
-
-    // if (savedToDate) {
-    //   setToDate(savedToDate);
-    // }
-    // if (savedFromDate) {
-    //   setFromDate(savedFromDate);
-    // }
-    // if (savedKeyword) {
-    //   setKeyword(savedKeyword);
-    // }
-    // if (savedCurrentPage) {
-    //   setCurrentPage(savedCurrentPage);
-    // }
-    // if (savedTotalPages) {
-    //   setTotalPages(savedTotalPages);
-    // }
-    // if (savedOrders) {
-    //   setOrders(savedOrders);
-    // }
-    findOrdersByMultipleCriteriaWithPagination(currentPage);
+      setIsLoading(true);
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      findOrdersByMultipleCriteriaWithPagination(currentPage);
+    } else {
+      findOrdersByMultipleCriteriaWithPagination(currentPage);
+    }
   }, [fromDate, toDate, keyword, currentPage]);
 
-  useEffect(() => {
-    setIsLoading(true);
-    findOrdersByMultipleCriteriaWithPagination(currentPage);
-  }, [])
+  // const isMounted = useRef(false);
+  // useEffect(() => {
+  //   if (!isMounted.current) {
+  //     isMounted.current = true;
+  //     setIsLoading(true);
+  //     findOrdersByMultipleCriteriaWithPagination(currentPage);
+  //   }
+  // }, [])
 
   const handleRefreshData = () => {
     navigate(`/dashboard/management-orders`);
@@ -132,7 +121,7 @@ const ManagementOrders = () => {
   }
 
   const handleGetToDateFromDatePicker = (newDate) => {
-    const value = newDate.format("DD/MM/YYYY");
+    const value = newDate.format("DD-MM-YYYY");
     setToDate(value);
     searchParams.set('toDate', newDate.format("DD-MM-YYYY"));
     searchParams.delete('currentPage');
@@ -144,7 +133,7 @@ const ManagementOrders = () => {
   }
 
   const handleGetFromDateFromDatePicker = (newDate) => {
-    const value = newDate.format("DD/MM/YYYY");
+    const value = newDate.format("DD-MM-YYYY");
     setFromDate(value);
     searchParams.set('fromDate', newDate.format("DD-MM-YYYY"));
     searchParams.delete('currentPage');
@@ -156,6 +145,7 @@ const ManagementOrders = () => {
   }
 
   const handlePageChange = (event, page) => {
+    setIsLoading(true);
     setCurrentPage(page);
     searchParams.set('currentPage', page);
     setSearchParams(searchParams);

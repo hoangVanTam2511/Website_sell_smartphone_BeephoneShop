@@ -536,7 +536,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay }) => {
           "Content-Type": "application/json",
         }
       })
-      await addFiles();
+      await addFiles(request.product.ma);
       handleOpenAlertVariant("Thêm sản phẩm thành công!", Notistack.SUCCESS);
       setIsLoadingInside(false);
       getOverplay(false);
@@ -565,9 +565,13 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay }) => {
     formData.append('files', blobWithCustomFileName, newFileName);
   });
 
-  const addFiles = async () => {
+  const addFiles = async (ma) => {
     try {
       await axios.post('http://localhost:8080/api/products/upload-multiple', formData, {
+        params: {
+          ma: ma,
+        }
+      }, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
