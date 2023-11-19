@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter
-@Setter
+@Setter 
 public class AccountLoginRequest {
 
     @NotBlank(message = "Email trống")
