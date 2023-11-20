@@ -13,7 +13,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "dia_chi")
+@Table(name = "dia_chi_khach_hang")
 public class DiaChi extends PrimaryEntity implements IsIdentified {
 
     private String hoTenKH;

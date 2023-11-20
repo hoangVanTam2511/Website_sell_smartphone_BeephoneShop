@@ -5,7 +5,7 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const ImageUploadComponent = ({ setAnhDaiDien, hoten }) => {
   const [imageUrl, setImageUrl] = useState(null);
-  const [imageSize, setImageSize] = useState({ width: 160, height: 160 });
+  const [imageSize, setImageSize] = useState({ width: 120, height: 120 });
 
   const handleChange = (info) => {
     if (info.file.status === "uploading") {
@@ -55,7 +55,7 @@ const ImageUploadComponent = ({ setAnhDaiDien, hoten }) => {
   };
   const calculateImageSize = (width, height) => {
     const aspectRatio = width / height;
-    const maxDimension = 160;
+    const maxDimension = 120;
 
     if (aspectRatio > 1) {
       return { width: maxDimension, height: maxDimension / aspectRatio };
@@ -67,7 +67,7 @@ const ImageUploadComponent = ({ setAnhDaiDien, hoten }) => {
     <div
       style={{
         width: "auto",
-        height: "200px",
+        // height: "200px",
         overflow: "hidden",
         position: "relative",
       }}
@@ -75,9 +75,9 @@ const ImageUploadComponent = ({ setAnhDaiDien, hoten }) => {
       {/* Hiển thị ảnh đã chọn (nếu có) */}
       <div
         style={{
-          width: "160px",
-          height: "160px",
-          borderRadius: "50%",
+          width: "120px",
+          height: "120px",
+          borderRadius: "120%",
           border: "1px dashed #ccc",
           position: "relative",
           overflow: "hidden",
@@ -89,15 +89,17 @@ const ImageUploadComponent = ({ setAnhDaiDien, hoten }) => {
             src={imageUrl}
             alt="Uploaded"
             style={{
-              width: "100%",
-              height: "100%",
+              width: "120%",
+              height: "120%",
               objectFit: "cover",
-              borderRadius: "50%",
+              borderRadius: "120%",
               ...imageSize,
             }}
             onLoad={(e) => {
               const imgElement = e.target;
-              setImageSize(calculateImageSize(imgElement));
+              setImageSize(
+                calculateImageSize(imgElement.width, imgElement.height)
+              );
             }}
           />
         ) : (
@@ -110,6 +112,7 @@ const ImageUploadComponent = ({ setAnhDaiDien, hoten }) => {
               alignItems: "center",
               fontSize: "36px",
               fontWeight: "bold",
+              color: "black",
             }}
           >
             {hoten ? hoten[0].toUpperCase() : ""}
@@ -123,7 +126,7 @@ const ImageUploadComponent = ({ setAnhDaiDien, hoten }) => {
               position: "absolute",
               bottom: 0,
               right: 0,
-              borderRadius: "50%",
+              borderRadius: "120%",
               width: "30px",
               height: "30px",
               display: "flex",
@@ -139,13 +142,15 @@ const ImageUploadComponent = ({ setAnhDaiDien, hoten }) => {
           </div>
         )}
       </div>
+
+      {/* Chọn ảnh từ máy tính cá nhân */}
       <div
         style={{
           position: "absolute",
           bottom: 0,
           right: 0,
           background: "#3a57e8",
-          borderRadius: "100%",
+          borderRadius: "120%",
           width: "30px",
           height: "30px",
           display: "flex",
@@ -155,9 +160,7 @@ const ImageUploadComponent = ({ setAnhDaiDien, hoten }) => {
           fontWeight: "bold",
           cursor: "pointer",
           zIndex: 1,
-          marginBottom: "32px",
           backgroundColor: "#4b69ff",
-          marginRight: "10px",
         }}
       >
         <Upload {...customUploadProps} onChange={handleChange}>
