@@ -482,22 +482,24 @@ const AddKhuyenMai = () => {
       align: "center",
       maxWidth: "20%",
       render: (value, record) => {
-        let tenSanPham = value;
         return (
           <span style={{ whiteSpace: "pre-line" }}>
-            {record.tenSanPham} {record.kichThuocRam}GB/{record.kichThuocRom}GB
+            {record.tenSanPham} {record.kichThuocRam}GB/{record.kichThuocRom}GB{" "}
+            {"("}
+            {record.tenMauSac}
+            {")"}
           </span>
         );
       },
     },
-    {
-      title: "Màu Sắc ",
-      dataIndex: "tenMauSac",
-      key: "tenMauSac",
-      width: "10%",
-      editable: true,
-      align: "center",
-    },
+    // {
+    //   title: "Màu Sắc ",
+    //   dataIndex: "tenMauSac",
+    //   key: "tenMauSac",
+    //   width: "10%",
+    //   editable: true,
+    //   align: "center",
+    // },
     {
       title: "Đơn giá ",
       dataIndex: "donGia",
@@ -520,8 +522,30 @@ const AddKhuyenMai = () => {
       editable: true,
       align: "center",
       render: (_, record) => {
-        let formattedValue = value;
-
+        // let formattedValue = value;
+        let formattedValue;
+        if (record.giaTriKhuyenMai === null) {
+          formattedValue = value;
+        } else {
+          if (value === "0") {
+            formattedValue = record.giaTriKhuyenMai;
+          } else if (record.tong === null) {
+            formattedValue = Math.round(
+              (0 + parseInt(value)) / (record.size + 1)
+            );
+          } else {
+            formattedValue = Math.round(
+              (record.tong + parseInt(value)) / (record.size + 1)
+            );
+          }
+        }
+        // let formattedValue;
+        // if (record.giaTriKhuyenMai === null) {
+        //   formattedValue = value;
+        // } else {
+        //   formattedValue = (record.tong === null ? 0 : record.tong) + value;
+        //   formattedValue /= record.size + 1;
+        // }
         // if (selectDiscount === TypeDiscountString.VND) {
         //   formattedValue = numeral(value).format("0,0 VND") + " ₫";
         // } else if (selectDiscount === TypeDiscountString.PERCENT) {
@@ -545,9 +569,26 @@ const AddKhuyenMai = () => {
       align: "center",
       whiteSpace: "pre-line",
       render: (_, record) => {
-        const numericValue2 = parseFloat(value?.replace(/[^0-9.-]+/g, ""));
+        // const numericValue2 = parseFloat(value?.replace(/[^0-9.-]+/g, ""));
+        let formattedValue;
+        if (record.giaTriKhuyenMai === null) {
+          formattedValue = value;
+        } else {
+          if (value === "0") {
+            formattedValue = record.giaTriKhuyenMai;
+          } else if (record.tong === null) {
+            formattedValue = Math.round(
+              (0 + parseInt(value)) / (record.size + 1)
+            );
+          } else {
+            formattedValue = Math.round(
+              (record.tong + parseInt(value)) / (record.size + 1)
+            );
+          }
+        }
         let giaTriKhuyenMai = record.donGia;
-        giaTriKhuyenMai = record.donGia - (record.donGia * numericValue2) / 100;
+        giaTriKhuyenMai =
+          record.donGia - (record.donGia * formattedValue) / 100;
         return <span>{numeral(giaTriKhuyenMai).format("0,0 VND") + " ₫"}</span>;
         // if (isInputChanged) {
         //   const numericValue2 = parseFloat(value?.replace(/[^0-9.-]+/g, ""));

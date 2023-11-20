@@ -63,6 +63,7 @@ public class SanPhamChiTietKhuyenMaiServiceImpl implements SanPhamChiTietKhuyenM
                         chuyenDoi = giaTriKhuyenMai;
                     }
                     tong = tong.add(chuyenDoi);
+                    responseCustom.setTong(tong);
                 }
                 if (kmct.size() > 0) {
                     responseCustom.setGiaTriKhuyenMai(tong.divide(new BigDecimal(kmct.size()), 0, RoundingMode.HALF_UP));

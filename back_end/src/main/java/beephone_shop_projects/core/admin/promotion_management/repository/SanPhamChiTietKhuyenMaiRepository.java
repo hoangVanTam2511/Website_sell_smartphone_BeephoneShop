@@ -16,12 +16,12 @@ public interface SanPhamChiTietKhuyenMaiRepository extends ISanPhamChiTietReposi
     @Query(value = """
             SELECT ctsp.id, f.path, a.ten_san_pham, c.ten_mau_sac, d.dung_luong as kich_thuoc_ram, e.dung_luong as kich_thuoc_rom, ctsp.don_gia, ctsp.delected, ctsp.id_san_pham
             FROM san_pham_chi_tiet ctsp
-            LEFT JOIN san_pham a ON a.id = ctsp.id_san_pham
-            LEFT JOIN mau_sac c ON c.id = ctsp.id_mau_sac
-            LEFT JOIN ram d ON d.id = ctsp.id_ram
-            LEFT JOIN rom e ON e.id = ctsp.id_rom
-            LEFT JOIN image f ON f.id = ctsp.id_image
-            WHERE ctsp.id_san_pham = ?1 AND f.status = 1
+            RIGHT JOIN san_pham a ON a.id = ctsp.id_san_pham
+            RIGHT JOIN mau_sac c ON c.id = ctsp.id_mau_sac
+            RIGHT JOIN ram d ON d.id = ctsp.id_ram
+            RIGHT JOIN rom e ON e.id = ctsp.id_rom
+            LEFT JOIN image f on ctsp.id_image = f.id
+            WHERE ctsp.id_san_pham = ?1 
             ORDER BY ctsp.created_at DESC 
              """, nativeQuery = true)
     List<SanPhamChiTietKhuyenMaiResponse> findAllChiTietSanPham(@Param("id") String id);

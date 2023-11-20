@@ -1,13 +1,10 @@
 package beephone_shop_projects.core.admin.statistic_management.controller;
 
+import beephone_shop_projects.core.admin.statistic_management.model.request.FindByMonthAndYearRequest;
 import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeDonHangResponse;
-import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeSanPhamResponse;
 import beephone_shop_projects.core.admin.statistic_management.service.ThongKeDonHangService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/thong-ke")
@@ -22,14 +19,15 @@ public class ThongKeDonHangController {
         return thongKeDonHangService.xemThongKeTheoNgay();
     }
 
-    @GetMapping("/in-month")
-    private ThongKeDonHangResponse getDonHangInMonth(){
-        return thongKeDonHangService.xemThongKeTheoThang();
+//    @GetMapping("/in-month")
+//    private ThongKeDonHangResponse getDonHangInMonth(){
+//        return thongKeDonHangService.xemThongKeTheoThang();
+//    }
+
+    @GetMapping("/don-hang-year")
+    private ThongKeDonHangResponse getDonHangTheoNamThang(@ModelAttribute FindByMonthAndYearRequest request){
+        return thongKeDonHangService.getDonHangAllTheoNam(request);
     }
 
-    @GetMapping("/san-pham")
-    private ThongKeSanPhamResponse getSanPham(){
-        return thongKeDonHangService.xemSanPham();
-    }
 
 }
