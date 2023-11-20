@@ -1,30 +1,39 @@
 import React, { useEffect, useState } from "react";
-import { Grid, TextField } from "@mui/material";
-import { Button, Card, Checkbox, Modal, message } from "antd";
+import {
+  FormControl,
+  FormControlLabel,
+  Grid,
+  Radio,
+  RadioGroup,
+  TextField,
+} from "@mui/material";
+import { Button, Card, Modal, Tag, message } from "antd";
 import { useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowLeft,
+  faFileCirclePlus,
   faFloppyDisk,
+  faMars,
+  faNoteSticky,
   faPlus,
+  faVenus,
 } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { apiURLKH } from "../../../../service/api";
 import "react-toastify/dist/ReactToastify.css";
-import {
-  FormControl,
-  FormControlLabel,
-  Radio,
-  RadioGroup,
-} from "@mui/material";
 import ImageUploadComponent from "./AnhUpdate";
 import AddressTable from "./HienThiDiaChi";
 import ModalAddDiaChiKhachHang from "./ModalAddDiaChiKhachHang";
+// import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+// import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+// import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+// import * as dayjs from "dayjs";
+import "./style.css";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import * as dayjs from "dayjs";
-
 const UpdateKH = () => {
   const { id } = useParams();
   let [hoVaTen, setTen] = useState("");
@@ -215,9 +224,9 @@ const UpdateKH = () => {
   // const redirectToHienThiKH = () => {
   //   window.location.href = "/update-khach-hang/" + id;
   // };
-  // const redirectTable = () => {
-  //   window.location.href = "/khach-hang/";
-  // };
+  const redirectTable = () => {
+    window.location.href = "/khach-hang/";
+  };
   const handleCloseModal = () => {
     setIsModalVisibleS(false);
     setFormSubmittedS(false);
@@ -302,7 +311,7 @@ const UpdateKH = () => {
   };
 
   const showRetable = () => {
-    // redirectTable();
+    redirectTable();
   };
   const handleCancel = () => {
     setIsConfirmVisible(false); // Đóng hộp thoại xác nhận khi người dùng hủy
@@ -365,183 +374,302 @@ const UpdateKH = () => {
       <Card bordered={false} style={{ width: "100%" }}>
         <Grid container justifyContent="space-between">
           {/* Left column */}
-          <Grid item xs={5.4}>
-            <Card
-              title={
-                <span style={{ color: "gray" }}>Thông tin Khách Hàng</span>
-              }
-              bordered={false}
-              headStyle={{ borderLeft: "4px solid #e2e2e2", borderRadius: 0 }}
+          <Grid item xs={6.5}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                position: "sticky",
+                fontSize: "16px",
+                top: 0,
+                backgroundColor: "white",
+                borderLeft: "4px solid #e2e2e2",
+                zIndex: 1,
+                paddingLeft: "10px",
+                color: "gray",
+              }}
             >
-              <div
+              <span
                 style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  marginBottom: "20px",
-                  width: "95%",
+                  color: "gray",
+                  display: "block",
+                  padding: "15px",
+                  borderBottom: "1px solid #e2e2e2",
+                  flex: "1",
+                  margin: "0",
                 }}
               >
-                <ImageUploadComponent
-                  setAnhDaiDien={handleAnhDaiDienChange}
-                  existingImageUrl={anhDaiDien}
-                  hoten={hoVaTen}
-                />
-              </div>
-              <div style={{ width: "100%" }}>
-                <div
-                  className="text-f"
-                  style={{ textAlign: "center", marginBottom: "20px" }}
-                >
-                  <TextField
-                    label="Họ và tên"
-                    value={hoVaTen}
-                    id="fullWidth"
-                    onChange={handleHoVaTenChange}
-                    error={(formSubmitted && !hoVaTen) || !!hoVaTenError}
-                    helperText={
-                      hoVaTenError ||
-                      (formSubmitted && !hoVaTen && "Họ và tên trống")
-                    }
-                    style={{ width: "100%" }}
-                  />
-                </div>
-                <div style={{ display: "flex", alignItems: "right" }}>
-                  <div
-                    className="text-f"
-                    style={{
-                      marginBottom: "30px",
-                      width: "45%",
-                    }}
-                  >
-                    {/* Ngày sinh */}
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DemoContainer components={["DatePicker"]}>
-                        <DatePicker
-                          disableFuture
-                          label="Ngày Sinh"
-                          value={dayjs(ngaySinh)}
-                          format="DD/MM/YYYY"
-                          onChange={handleChangeDate}
-                          sx={{
-                            position: "relative",
+                Thông tin Khách Hàng
+              </span>
+            </div>
+            <div
+              bordered={false}
+              headStyle={{ borderLeft: "4px solid #e2e2e2", borderRadius: 0 }}
+              style={{
+                height: "100%",
+                overflowY: "auto",
 
-                            "& .MuiInputBase-root": {
-                              width: "100%",
-                            },
-                          }}
-                          slotProps={{
-                            textField: {
-                              error: formSubmitted && !ngaySinh,
-                              helperText:
-                                formSubmitted && !ngaySinh
-                                  ? "Chưa chọn ngày sinh"
-                                  : "",
-                            },
-                          }}
-                        />
-                      </DemoContainer>
-                    </LocalizationProvider>
-                  </div>
+                zIndex: 0,
+                position: "relative",
+              }}
+            >
+              <Grid container justifyContent="space-between">
+                <Grid item xs={4}>
                   <div
-                    className="text-f"
                     style={{
-                      marginBottom: "30px",
-                      marginLeft: "50px",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      width: "95%",
                       marginTop: "20px",
                     }}
                   >
-                    {/* Giới tính */}
-                    <FormControl component="fieldset">
-                      <RadioGroup
-                        row
-                        aria-label="gioiTinh"
-                        name="gioiTinh"
-                        value={gioiTinh}
-                        onChange={(e) => {
-                          setGioiTinh(e.target.value === "true"); // Convert the string to a boolean value
+                    <ImageUploadComponent
+                      setAnhDaiDien={handleAnhDaiDienChange}
+                      existingImageUrl={anhDaiDien}
+                      hoten={hoVaTen}
+                    />
+                    <br />
+                    <Grid
+                      item
+                      xs={12}
+                      style={{
+                        textAlign: "center",
+                        border: "1px solid #c2c2c2",
+                        padding: "10px",
+                        borderRadius: "10px",
+                      }}
+                    >
+                      Đơn hàng mới nhất <br />
+                      <b>#DH123</b> <br />
+                      Từ quản lý đơn hàng
+                    </Grid>
+                  </div>
+                </Grid>
+                <Grid item xs={8} style={{ marginTop: "40px" }}>
+                  {/* <b style={{ fontSize: "16px" }}>{hoVaTen}</b>{" "}
+                {gioiTinh === true ? (
+                  <FontAwesomeIcon icon={faMars} />
+                ) : gioiTinh === false ? (
+                  <FontAwesomeIcon icon={faVenus} />
+                ) : null}{" "}
+                <br />
+                {email} */}
+                  <div style={{ width: "95%" }}>
+                    <div
+                      className="text-f"
+                      style={{ textAlign: "center", marginBottom: "20px" }}
+                    >
+                      <TextField
+                        label="Họ và tên"
+                        value={hoVaTen}
+                        id="fullWidth"
+                        onChange={handleHoVaTenChange}
+                        error={(formSubmitted && !hoVaTen) || !!hoVaTenError}
+                        helperText={
+                          hoVaTenError ||
+                          (formSubmitted && !hoVaTen && "Họ và tên trống")
+                        }
+                        style={{ width: "100%" }}
+                      />
+                    </div>
+                    <div style={{ display: "flex", alignItems: "right" }}>
+                      <div
+                        className="text-f"
+                        style={{
+                          marginBottom: "30px",
+                          width: "63%",
                         }}
                       >
-                        <FormControlLabel
-                          value="true"
-                          control={<Radio style={{ borderRadius: "50%" }} />} // Add border radius to the radio button
-                          label="Nam"
-                        />
-                        <FormControlLabel
-                          value="false"
-                          control={<Radio style={{ borderRadius: "50%" }} />} // Add border radius to the radio button
-                          label="Nữ"
-                        />
-                      </RadioGroup>
-                    </FormControl>
-                  </div>
-                </div>
+                        {/* Ngày sinh */}
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                          <DemoContainer components={["DatePicker"]}>
+                            <DatePicker
+                              disableFuture
+                              label="Ngày Sinh"
+                              value={dayjs(ngaySinh)}
+                              format="DD/MM/YYYY"
+                              onChange={handleChangeDate}
+                              sx={{
+                                position: "relative",
 
-                <div
-                  className="text-f"
-                  style={{ textAlign: "center", marginBottom: "30px" }}
-                >
-                  <TextField
-                    label="Email"
-                    value={email}
-                    // id="fullWidth"
-                    onChange={handleEmailChange}
-                    error={(formSubmitted && !email) || !!emailError} // Show error if form submitted and hoVaTen is empty
-                    helperText={
-                      emailError || (formSubmitted && !email && "Email trống")
-                    }
-                    style={{ width: "100%" }}
-                  />
-                </div>
-                <div
-                  className="text-f"
-                  style={{ textAlign: "center", marginBottom: "30px" }}
-                >
-                  <TextField
-                    label="Số điện thoại"
-                    id="fullWidth"
-                    value={soDienThoai}
-                    onChange={handleSDT}
-                    error={(formSubmitted && !soDienThoai) || !!sdtError} // Show error if form submitted and hoVaTen is empty
-                    helperText={
-                      sdtError ||
-                      (formSubmitted && !soDienThoai && "Số điện thoại trống")
-                    }
-                    style={{ width: "100%" }}
-                  />
-                </div>
-              </div>{" "}
-            </Card>
+                                "& .MuiInputBase-root": {
+                                  width: "100%",
+                                },
+                              }}
+                              slotProps={{
+                                textField: {
+                                  error: formSubmitted && !ngaySinh,
+                                  helperText:
+                                    formSubmitted && !ngaySinh
+                                      ? "Chưa chọn ngày sinh"
+                                      : "",
+                                },
+                              }}
+                            />
+                          </DemoContainer>
+                        </LocalizationProvider>
+                      </div>
+                      <div
+                        className="text-f"
+                        style={{
+                          width: "45%",
+                          marginLeft: "15px",
+                          marginTop: "15px",
+                        }}
+                      >
+                        {/* Giới tính */}
+                        <FormControl component="fieldset">
+                          <RadioGroup
+                            row
+                            aria-label="gioiTinh"
+                            name="gioiTinh"
+                            value={gioiTinh}
+                            onChange={(e) => {
+                              setGioiTinh(e.target.value === "true"); // Convert the string to a boolean value
+                            }}
+                          >
+                            <FormControlLabel
+                              value="true"
+                              control={
+                                <Radio style={{ borderRadius: "50%" }} />
+                              } // Add border radius to the radio button
+                              label="Nam"
+                            />
+                            <FormControlLabel
+                              value="false"
+                              control={
+                                <Radio style={{ borderRadius: "50%" }} />
+                              } // Add border radius to the radio button
+                              label="Nữ"
+                            />
+                          </RadioGroup>
+                        </FormControl>
+                      </div>
+                    </div>
+
+                    <div
+                      className="text-f"
+                      style={{ textAlign: "center", marginBottom: "30px" }}
+                    >
+                      <TextField
+                        label="Email"
+                        value={email}
+                        // id="fullWidth"
+                        onChange={handleEmailChange}
+                        error={(formSubmitted && !email) || !!emailError} // Show error if form submitted and hoVaTen is empty
+                        helperText={
+                          emailError ||
+                          (formSubmitted && !email && "Email trống")
+                        }
+                        style={{ width: "100%" }}
+                      />
+                    </div>
+                    <div
+                      className="text-f"
+                      style={{ textAlign: "center", marginBottom: "30px" }}
+                    >
+                      <TextField
+                        label="Số điện thoại"
+                        id="fullWidth"
+                        value={soDienThoai}
+                        onChange={handleSDT}
+                        error={(formSubmitted && !soDienThoai) || !!sdtError}
+                        helperText={
+                          sdtError ||
+                          (formSubmitted &&
+                            !soDienThoai &&
+                            "Số điện thoại trống")
+                        }
+                        style={{ width: "100%" }}
+                      />
+                    </div>
+                  </div>{" "}
+                </Grid>
+              </Grid>
+              {/* <Grid container justifyContent="space-between">
+              <Grid item xs={3.7} style={{ textAlign: "center" }}>
+                Tổng chi tiêu <br />
+                <b>500.000 đ</b>
+                <br />
+                Từ quản lý đơn hàng
+              </Grid>
+              <Grid item xs={3.7} style={{ textAlign: "center" }}>
+                Chi tiêu trung bình <br />
+                <b>500.000 đ</b>
+                <br />
+              </Grid>
+            </Grid> */}
+            </div>
           </Grid>{" "}
-          <Grid item xs={6}>
-            <Card
-              title={<span style={{ color: "gray" }}>Thông tin Địa Chỉ </span>}
+          <Grid
+            item
+            xs={5.4}
+            style={{ borderLeft: "1px solid #e2e2e2", paddingLeft: "20px" }}
+          >
+            {/* <div style={{ position: 'relative' }}> */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                position: "sticky",
+                fontSize: "16px",
+                top: 0,
+                backgroundColor: "white",
+                borderLeft: "4px solid #e2e2e2",
+                zIndex: 1,
+                paddingLeft: "10px",
+                color: "gray",
+              }}
+            >
+              <span
+                style={{
+                  color: "gray",
+                  display: "block",
+                  padding: "15px",
+                  borderBottom: "1px solid #e2e2e2",
+                  flex: "1",
+                  margin: "0",
+                }}
+              >
+                Thông tin Địa Chỉ
+                <Button
+                  style={{
+                    backgroundColor: "#4b69ff",
+                    color: "white",
+                    float: "right",
+                    marginLeft: "auto",
+                    marginTop: "-3px",
+                  }}
+                  size=""
+                  onClick={() => {
+                    setIsModalVisibleS(true);
+                  }}
+                >
+                  <FontAwesomeIcon icon={faPlus} />
+                  &nbsp; Thêm địa chỉ
+                </Button>
+              </span>
+            </div>
+            <div
+              // title={<span style={{ color: "gray" }}>Thông tin Địa Chỉ </span>}
               bordered={false}
+              // bodyStyle={{ padding: 0 }}
               headStyle={{
                 // backgroundColor: "#d5dbfa",
                 borderLeft: "4px solid #e2e2e2",
                 borderRadius: 0,
               }}
               style={{
-                height: "100%", // Set Card height to 100% of its parent container
-                overflowY: "auto", // Add a vertical scrollbar when content overflows
-                maxHeight: "calc(102vh - 100px)",
+                height: "100%",
+                overflowY: "auto",
+                maxHeight: "calc(67vh - 100px)",
+                zIndex: 0,
+                position: "relative",
               }}
             >
-              <Button
-                style={{
-                  backgroundColor: "#4b69ff",
-                  color: "white",
-                  float: "right",
-                  marginBottom: "20px",
-                }}
-                size="large"
-                onClick={() => {
-                  setIsModalVisibleS(true);
-                }}
-              >
-                <FontAwesomeIcon icon={faPlus} /> &nbsp; Thêm địa chỉ
-              </Button>
               <Modal
                 closable={false}
                 open={isModalVisibleS}
@@ -647,17 +775,6 @@ const UpdateKH = () => {
                       set={setHuy}
                     />
                   </div>
-                  {/* <Checkbox
-                    size="large"
-                    style={{
-                      fontSize: "16px",
-                      marginBottom: "20px",
-                    }}
-                    checked={trangThaiKH === 1}
-                    onChange={handleCheckboxChange}
-                  >
-                    Địa chỉ mặc định
-                  </Checkbox>{" "} */}
                 </div>
               </Modal>
               <div style={{ clear: "both" }}>
@@ -667,7 +784,7 @@ const UpdateKH = () => {
                   updateDiaChiList={updateDiaChiList}
                 />
               </div>{" "}
-            </Card>{" "}
+            </div>{" "}
           </Grid>{" "}
         </Grid>
         <div style={{ marginTop: "10px" }}>
@@ -697,6 +814,61 @@ const UpdateKH = () => {
             </Modal>
           </div>
         </div>
+      </Card>
+      <Card style={{ marginTop: "20px" }}>
+        <div
+          style={{
+            position: "sticky",
+            fontSize: "16px",
+            top: 10,
+            backgroundColor: "white",
+            borderLeft: "4px solid #e2e2e2",
+            zIndex: 1,
+            paddingLeft: "10px",
+            marginTop: "20px",
+          }}
+        >
+          <span
+            style={{
+              color: "gray",
+              display: "block",
+              padding: "10px",
+              borderBottom: "1px solid #e2e2e2", // Border for separation
+            }}
+          >
+            Đơn Hàng Gần Đây
+            <a style={{ float: "right", color: "#4b69ff" }}>
+              Xem toàn bộ đơn hàng &nbsp;{" "}
+            </a>
+            {/* </Button> */}
+          </span>
+        </div>
+        {/* Hiển thị đơn hàng gần đây - có dlieu*/}
+        <Grid container justifyContent="space-between">
+          <Grid item xs={4} style={{ padding: "10px", paddingLeft: "20px" }}>
+            Đơn hàng <b>#DH123</b> <br />
+            500.000đ từ <b>Quản lý đơn hàng</b>
+          </Grid>
+          <Grid item xs={4} style={{ padding: "20px" }}>
+            <Tag color="cyan">Chưa thanh toán</Tag>
+            <Tag color="red">Chưa chuyển</Tag>
+          </Grid>
+          <Grid
+            item
+            xs={4}
+            style={{ padding: "10px", textAlign: "right", color: "gray" }}
+          >
+            21/03/2023 11:11
+          </Grid>
+        </Grid>
+        {/* Hiển thị đơn hàng gần đây - không dlieu*/}
+        {/* <div style={{ padding: "30px", textAlign: "center" }}>
+          {" "}
+          <FontAwesomeIcon icon={faFileCirclePlus} shake size="2xl" /> <br />
+          <span style={{ marginTop: "20px" }}>
+            Khách hàng chưa có đơn đặt nào
+          </span>
+        </div> */}
       </Card>
     </>
   );

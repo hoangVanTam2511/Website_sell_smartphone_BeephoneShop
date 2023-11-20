@@ -83,10 +83,6 @@ public interface AccountRepository extends IAccountRepository {
                         OR ac.hoVaTen LIKE CONCAT('%', :tenKH, '%')
                         OR ac.ma LIKE CONCAT('%', :tenKH, '%')
                         OR ac.email LIKE CONCAT('%', :tenKH, '%')
-                        OR ac.diaChi LIKE CONCAT('%', :tenKH, '%')
-                        OR ac.xaPhuong LIKE CONCAT('%', :tenKH, '%')
-                        OR ac.tinhThanhPho LIKE CONCAT('%', :tenKH, '%')
-                        OR ac.quanHuyen LIKE CONCAT('%', :tenKH, '%')
                         OR ac.soDienThoai LIKE CONCAT('%', :tenKH, '%')
                         OR CAST(ac.ngaySinh AS string) LIKE CONCAT('%', :tenKH, '%')
                         ) AND ac.idRole.ma='role1'

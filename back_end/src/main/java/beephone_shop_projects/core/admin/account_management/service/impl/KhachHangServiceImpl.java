@@ -1,27 +1,18 @@
 package beephone_shop_projects.core.admin.account_management.service.impl;
 
-import beephone_shop_projects.core.admin.account_management.model.request.CreateAccountRequest;
 import beephone_shop_projects.core.admin.account_management.model.request.CreateKhachHangRequest;
 import beephone_shop_projects.core.admin.account_management.model.response.AccountResponse;
 import beephone_shop_projects.core.admin.account_management.repository.AccountRepository;
-import beephone_shop_projects.core.admin.account_management.repository.DiaChiRepository;
 import beephone_shop_projects.core.admin.account_management.repository.RoleRepository;
 import beephone_shop_projects.core.admin.account_management.service.KhachHangService;
 import beephone_shop_projects.entity.Account;
-import beephone_shop_projects.entity.DiaChi;
 import beephone_shop_projects.infrastructure.constant.StatusAccountCus;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.text.Normalizer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

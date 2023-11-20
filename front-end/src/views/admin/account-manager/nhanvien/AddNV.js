@@ -2,7 +2,7 @@ import { Button, Card, Modal, message } from "antd";
 import React from "react";
 import { useState } from "react";
 import axios from "axios";
-import { apiURLNV } from "../../../../service/api";
+import { apiURLKH, apiURLNV } from "../../../../service/api";
 import TextField from "@mui/material/TextField";
 import "../../../../assets/scss/HienThiNV.scss";
 import { ToastContainer } from "react-toastify";
@@ -50,7 +50,17 @@ const AddNV = () => {
   const [cccdError, setCCCDError] = useState("");
   const [diaChiError, setDiaChiError] = useState("");
   const [sdtError, setSDTError] = useState("");
-
+  const [diaChiList, setDiaChiList] = useState([
+    {
+      diaChi: "",
+      xaPhuong: "",
+      tinhThanhPho: "",
+      quanHuyen: "",
+      account: "",
+      id: "",
+      trangThaiNV: "",
+    },
+  ]);
   //Scan
   const handleScanData = (data) => {
     if (data) {
@@ -136,7 +146,7 @@ const AddNV = () => {
     setXaPhuong(value);
   };
   const handleDiaChiChange = (result) => {
-    setDiaChi(result);
+    setDiaChi(diaChiList.diaChi);
   };
   //Choose Anh
   const handleAnhDaiDienChange = (imageURL) => {
@@ -153,64 +163,86 @@ const AddNV = () => {
     setIsConfirmVisible(false);
   };
   // add
-  const AddNV = () => {
+  const AddNV = async () => {
     setSubmitted(true);
     setFormSubmitted(true);
-    let obj = {
-      hoVaTen: hoVaTen,
-      ngaySinh: ngaySinh,
-      soDienThoai: soDienThoai,
+    try {
+      const obj = {
+        hoVaTen: hoVaTen,
+        ngaySinh: ngaySinh,
+        soDienThoai: soDienThoai,
+        diaChiList: [],
+        gioiTinh: gioiTinh,
+        email: email,
+        anhDaiDien: anhDaiDien,
+        canCuocCongDan: cccd,
+      };
+      if (
+        !hoVaTen ||
+        !ngaySinh ||
+        !email ||
+        !soDienThoai ||
+        !diaChi ||
+        !xaPhuong ||
+        !quanHuyen ||
+        !tinhThanhPho
+      ) {
+        message.error("Vui lòng điền đủ thông tin");
+        setIsConfirmVisible(false);
+        return;
+      }
+      if (hoVaTenError || sdtError || emailError || cccdError || diaChiError) {
+        message.error("Vui lòng điền đúng thông tin trước khi lưu.");
+        setIsConfirmVisible(false);
+        return;
+      }
+      const nhanVienRespone = await axios.post(apiURLNV + "/add", obj);
+
+      const generatedMaKhachHang = nhanVienRespone.data.data.id;
+      addDiaChiList(generatedMaKhachHang);
+      redirectToHienThiKH(generatedMaKhachHang);
+      const newNhanVienRespone = {
+        hoVaTen: hoVaTen,
+        ngaySinh: ngaySinh,
+        soDienThoai: soDienThoai,
+        diaChiList: [],
+        gioiTinh: gioiTinh,
+        email: email,
+        anhDaiDien: anhDaiDien,
+        canCuocCongDan: cccd,
+      };
+      setListNV([newNhanVienRespone, ...listNV]);
+      message.success("Thêm nhân viên thành công");
+    } catch (error) {
+      // Xử lý lỗi
+      alert("Thêm khách hàng thất bại");
+      console.log(error);
+    }
+  };
+  const addDiaChiList = (generatedMaKhachHang) => {
+    //day
+    setSubmitted(true);
+    setFormSubmitted(true);
+    let newAddress = {
+      diaChi: diaChi,
       xaPhuong: xaPhuong,
       quanHuyen: quanHuyen,
       tinhThanhPho: tinhThanhPho,
-      gioiTinh: gioiTinh,
-      diaChi: diaChi,
-      email: email,
-      anhDaiDien: anhDaiDien,
-      canCuocCongDan: cccd,
+      account: generatedMaKhachHang,
+      trangThaiNV: 1,
     };
-    if (
-      !hoVaTen ||
-      !ngaySinh ||
-      !email ||
-      !soDienThoai ||
-      !diaChi ||
-      !xaPhuong ||
-      !quanHuyen ||
-      !tinhThanhPho
-    ) {
-      message.error("Vui lòng điền đủ thông tin");
-      setIsConfirmVisible(false);
-      return;
-    }
-    if (hoVaTenError || sdtError || emailError || cccdError || diaChiError) {
-      message.error("Vui lòng điền đúng thông tin trước khi lưu.");
-      setIsConfirmVisible(false);
-      return;
-    }
     axios
-      .post(apiURLNV + "/add", obj)
+      .post(`${apiURLNV}/dia-chi/add?id=${generatedMaKhachHang}`, newAddress)
       .then((response) => {
         let newKhachHangResponse = {
-          hoVaTen: hoVaTen,
-          ngaySinh: ngaySinh,
-          soDienThoai: soDienThoai,
+          diaChi: diaChi,
           xaPhuong: xaPhuong,
           quanHuyen: quanHuyen,
           tinhThanhPho: tinhThanhPho,
-          gioiTinh: gioiTinh,
-          diaChi: diaChi,
-          email: email,
-          anhDaiDien: anhDaiDien,
-          canCuocCongDan: cccd,
+          account: generatedMaKhachHang,
+          trangThaiNV: 1,
         };
-        const generatedMaKhachHang = response.data.data.id;
-        setListNV([newKhachHangResponse, ...listNV]);
-        message.success("Thêm nhân viên thành công");
-        redirectToHienThiKH(generatedMaKhachHang);
-      })
-      .catch((error) => {
-        alert("Thêm thất bại");
+        setDiaChiList([newKhachHangResponse, ...diaChiList]);
       });
   };
   const handleChangeDate = (date) => {

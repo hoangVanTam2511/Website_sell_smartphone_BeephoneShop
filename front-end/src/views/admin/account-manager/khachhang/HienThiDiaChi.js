@@ -252,20 +252,39 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
     setXaPhuong(value);
   };
   const [openPanelKey, setOpenPanelKey] = useState(null);
+  const defaultAddressIndex = sortedDiaChiList.findIndex(
+    (diaChiList) => diaChiList.trangThai === 1
+  );
+  const defaultActiveKey =
+    defaultAddressIndex !== -1 ? `${defaultAddressIndex}` : null;
+
   return (
-    <div className="address-container">
+    <div>
       <Collapse
         accordion
         bordered={false}
         activeKey={openPanelKey}
-        defaultActiveKey={[openPanelKey]}
+        defaultActiveKey={[defaultActiveKey]}
         onChange={(key) => setOpenPanelKey(key)}
+        style={{
+          boxShadow: "white -1px 10px 8px",
+          marginBottom: "10px",
+          marginTop: "10px",
+        }}
       >
         {sortedDiaChiList.map((diaChiList, index) => (
           <Panel
             key={diaChiList.id}
             header={`Địa chỉ ${index + 1}`}
-            className="collapse-panel"
+            bordered={false}
+            // className="collapse-panel"
+            style={{
+              marginBottom: "10px",
+              borderRadius: "10px",
+              border: 0,
+              width: "100%",
+              backgroundColor: "white",
+            }}
           >
             <Row gutter={20}>
               <Col span={17}>
@@ -467,7 +486,7 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
                   }}
                   onClick={() => setShowSetDefaultModal(true)}
                 >
-                  Thiết lập mặc định
+                  Đặt mặc định
                 </Button>
               </Col>
             </Row>

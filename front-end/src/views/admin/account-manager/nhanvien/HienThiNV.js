@@ -203,21 +203,21 @@ const HienThiNV = () => {
       editable: true,
       align: "center",
     },
-    {
-      title: "Địa chỉ",
-      width: "10%",
-      editable: true,
-      align: "center",
-      ellipsis: true,
-      render: (text, record) => {
-        return (
-          <span>
-            {record.diaChi} {record.xaPhuong}
-            {record.quanHuyen} {record.tinhThanhPho}
-          </span>
-        );
-      },
-    },
+    // {
+    //   title: "Địa chỉ",
+    //   width: "10%",
+    //   editable: true,
+    //   align: "center",
+    //   ellipsis: true,
+    //   render: (text, record) => {
+    //     return (
+    //       <span>
+    //         {record.diaChiList[0].diaChi} {record.diaChiList[0].xaPhuong}
+    //         {record.diaChiList[0].quanHuyen} {record.diaChiList[0].tinhThanhPho}
+    //       </span>
+    //     );
+    //   },
+    // },
 
     {
       title: "Trạng thái",

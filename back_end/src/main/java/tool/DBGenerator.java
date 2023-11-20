@@ -108,10 +108,6 @@ public class DBGenerator implements CommandLineRunner {
         admin.setGioiTinh(true);
         admin.setEmail("dung@gmail.com");
         admin.setSoDienThoai("0395561234");
-        admin.setDiaChi("Phú diễn");
-        admin.setXaPhuong("Phường phú diễn");
-        admin.setQuanHuyen("Quận Bắc Từ Liêm");
-        admin.setTinhThanhPho("Thành phố Hà Nội");
         admin.setMatKhau("12345");
         admin.setTrangThai(StatusAccountCus.HOAT_DONG);
         admin.setIdRole(chuCuaHang);
@@ -126,11 +122,7 @@ public class DBGenerator implements CommandLineRunner {
         accountNhanVien.setGioiTinh(true);
         accountNhanVien.setEmail("hatq@gmail.com");
         accountNhanVien.setSoDienThoai("0913010291");
-        accountNhanVien.setDiaChi("Kiều mai");
-        accountNhanVien.setXaPhuong("Phường Đại Mỗ");
-        accountNhanVien.setQuanHuyen("Quận Nam Từ Liêm");
-        accountNhanVien.setTinhThanhPho("Thành phố Hà Nội");
-        accountNhanVien.setMatKhau("12345");
+       accountNhanVien.setMatKhau("12345");
         accountNhanVien.setTrangThai(StatusAccountCus.LAM_VIEC);
         accountNhanVien.setIdRole(nhanVien);
         accountNhanVien.setId(accountRepository.save(accountNhanVien).getId());

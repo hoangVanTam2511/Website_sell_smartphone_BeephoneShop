@@ -37,6 +37,17 @@ const UpdateNV = () => {
   let [diaChi, setDiaChi] = useState("");
   let [cccd, setCCCD] = useState("");
   let [ma, setMa] = useState("");
+  const [diaChiList, setDiaChiList] = useState([
+    {
+      diaChi: "",
+      xaPhuong: "",
+      tinhThanhPho: "",
+      quanHuyen: "",
+      account: "",
+      id: id,
+      trangThaiNV: "",
+    },
+  ]);
   let [matKhau, setMatKhau] = useState("");
   let [trangThai, setTrangThai] = useState(1);
   let [anhDaiDien, setAnhDaiDien] = useState("");
@@ -79,10 +90,10 @@ const UpdateNV = () => {
         setAnhDaiDien(data.anhDaiDien);
         setEmail(data.email);
         setSdt(data.soDienThoai);
-        setDiaChi(data.diaChi);
-        setXaPhuong(data.xaPhuong);
-        setQuanHuyen(data.quanHuyen);
-        setTinhThanhPho(data.tinhThanhPho);
+        setDiaChi(data.diaChiList[0].diaChi);
+        setXaPhuong(data.diaChiList[0].xaPhuong);
+        setQuanHuyen(data.diaChiList[0].quanHuyen);
+        setTinhThanhPho(data.diaChiList[0].tinhThanhPho);
       })
       .catch((error) => {
         console.error("Error fetching customer information:", error);
@@ -100,7 +111,7 @@ const UpdateNV = () => {
     setXaPhuong(value);
   };
   const handleDiaChiChange = (diaChi) => {
-    setDiaChi(diaChi); // Cập nhật giá trị diaChi trong thành phần cha
+    setDiaChi(diaChiList.diaChi); // Cập nhật giá trị diaChi trong thành phần cha
   };
   const handleAnhDaiDienChange = (imageURL) => {
     setAnhDaiDien(imageURL);
@@ -174,38 +185,34 @@ const UpdateNV = () => {
     }
   };
   const save = async (id) => {
-    setSubmitted(true);
-    setFormSubmitted(true);
-    if (
-      !hoVaTen ||
-      !ngaySinh ||
-      !email ||
-      !soDienThoai ||
-      !diaChi ||
-      !tinhThanhPho ||
-      !quanHuyen ||
-      !xaPhuong
-    ) {
-      message.error("Vui lòng điền đủ thông tin trước khi lưu.");
-      setIsConfirmVisible(false);
-      return;
-    }
-    if (hoVaTenError || sdtError || emailError || cccdError || diaChiError) {
-      message.error("Vui lòng điền đúng thông tin trước khi lưu.");
-      setIsConfirmVisible(false);
-      return;
-    }
     try {
-      let updatedItem = {
+      setSubmitted(true);
+      setFormSubmitted(true);
+
+      const requiredFields = [hoVaTen, ngaySinh, email, soDienThoai, diaChi];
+      const errorFields = [
+        hoVaTenError,
+        sdtError,
+        emailError,
+        cccdError,
+        diaChiError,
+      ];
+
+      if (
+        requiredFields.some((field) => !field) ||
+        errorFields.some((error) => error)
+      ) {
+        message.error("Vui lòng điền đủ và đúng thông tin trước khi lưu.");
+        setIsConfirmVisible(false);
+        return;
+      }
+
+      const updatedEmployee = {
         ma: ma,
         hoVaTen: hoVaTen,
         ngaySinh: ngaySinh,
         soDienThoai: soDienThoai,
-        xaPhuong: xaPhuong,
-        quanHuyen: quanHuyen,
-        tinhThanhPho: tinhThanhPho,
         gioiTinh: gioiTinh,
-        diaChi: diaChi,
         email: email,
         anhDaiDien: anhDaiDien,
         canCuocCongDan: cccd,
@@ -213,26 +220,52 @@ const UpdateNV = () => {
         matKhau: matKhau,
       };
 
-      axios
-        .put(`${apiURLNV}/update/${id}`, updatedItem)
-        .then((response) => {
-          if (response.status === 200) {
-            if (!tinhThanhPho || !xaPhuong || !quanHuyen) {
-              message.error("Vui lòng điền đủ thông tin trước khi lưu.");
-              setIsConfirmVisible(false);
-              return;
-            }
-            setIsConfirmVisible(false);
-            message.success("Sửa thành công");
-          } else {
-            message.error("Sửa thất bại");
-          }
-        })
-        .catch((error) => {
-          toast.error("An error occurred while updating customer information.");
-        });
-    } catch (errInfo) {
-      console.error("Validate Failed:", errInfo);
+      const updateEmployeeResponse = await axios.put(
+        `${apiURLNV}/update/${id}`,
+        updatedEmployee
+      );
+
+      if (updateEmployeeResponse.status === 200) {
+        if (!tinhThanhPho || !xaPhuong || !quanHuyen) {
+          message.error("Vui lòng điền đủ thông tin trước khi lưu.");
+          setIsConfirmVisible(false);
+          return;
+        }
+
+        setIsConfirmVisible(false);
+
+        const updatedAddress = {
+          diaChi: diaChi,
+          xaPhuong: xaPhuong,
+          quanHuyen: quanHuyen,
+          tinhThanhPho: tinhThanhPho,
+          account: id,
+        };
+
+        const updateAddressResponse = await axios.put(
+          `${apiURLNV}/dia-chi/update?id=` + id,
+          updatedAddress
+        );
+
+        if (updateAddressResponse.status === 200) {
+          const updatedAddressInfo = {
+            diaChi: updatedAddress.diaChi,
+            xaPhuong: updatedAddress.xaPhuong,
+            quanHuyen: updatedAddress.quanHuyen,
+            tinhThanhPho: updatedAddress.tinhThanhPho,
+            account: id,
+          };
+          setDiaChiList(updatedAddressInfo);
+          message.success("Sửa thông tin thành công");
+        } else {
+          message.error("Sửa thông tin thất bại");
+        }
+      } else {
+        message.error("Sửa thông tin thất bại");
+      }
+    } catch (error) {
+      toast.error("Có lỗi xảy ra khi cập nhật thông tin nhân viên và địa chỉ.");
+      console.error("Error:", error);
     }
   };
 
