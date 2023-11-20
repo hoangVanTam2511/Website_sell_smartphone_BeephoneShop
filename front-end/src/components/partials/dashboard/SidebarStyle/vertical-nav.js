@@ -256,34 +256,7 @@ const VerticalNav = memo((props) => {
                   <span className="item-name">Màu sắc</span>
                 </Link>
               </li>
-              <li className="nav-item">
-                <Link
-                  className={`${
-                    location.pathname === "/dashboard/quet-qr" ? "active" : ""
-                  } nav-link`}
-                  to="/dashboard/quet-qr"
-                >
-                  <i className="icon">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="10"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                    >
-                      <g>
-                        <circle
-                          cx="12"
-                          cy="12"
-                          r="8"
-                          fill="currentColor"
-                        ></circle>
-                      </g>
-                    </svg>
-                  </i>
-                  <i className="sidenav-mini-icon"> M </i>
-                  <span className="item-name">Quét QR</span>
-                </Link>
-              </li>
+
               <li className="nav-item">
                 <Link
                   className={`${
@@ -312,6 +285,36 @@ const VerticalNav = memo((props) => {
                   <span className="item-name">Chip </span>
                 </Link>
               </li>
+
+              <li className="nav-item">
+                <Link
+                  className={`${
+                    location.pathname === "/dashboard/imeis" ? "active" : ""
+                  } nav-link`}
+                  to="/dashboard/imeis"
+                >
+                  <i className="icon">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="10"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <g>
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="8"
+                          fill="currentColor"
+                        ></circle>
+                      </g>
+                    </svg>
+                  </i>
+                  <i className="sidenav-mini-icon"> C </i>
+                  <span className="item-name">Imei </span>
+                </Link>
+              </li>
+
               <li className="nav-item">
                 <Link
                   className={`${

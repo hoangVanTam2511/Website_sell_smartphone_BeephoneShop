@@ -45,7 +45,7 @@ export const initialState: SettingState = {
       "value": "default"
     },
     "sidebar_color": {
-      "value": "sidebar-dark"
+      "value": "sidebar-white"
     },
     "sidebar_type": {
       "value": []
@@ -176,7 +176,7 @@ export const defaultState: SettingDefaultState = {
         "sidebar-glass",
       ],
       type: "layout_design",
-      value: "sidebar-dark",
+      value: "sidebar-white",
     },
     sidebar_type: {
       target: '[data-toggle="main-sidebar"]',

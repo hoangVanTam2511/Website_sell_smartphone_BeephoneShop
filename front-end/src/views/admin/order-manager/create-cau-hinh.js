@@ -596,7 +596,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay }) => {
           "Content-Type": "application/json",
         },
       });
-      await addFiles();
+      await addFiles(request.product.ma);
       handleOpenAlertVariant("Thêm sản phẩm thành công!", Notistack.SUCCESS);
       setIsLoadingInside(false);
       getOverplay(false);
@@ -626,11 +626,16 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay }) => {
     formData.append("files", blobWithCustomFileName, newFileName);
   });
 
-  const addFiles = async () => {
+  const addFiles = async (ma) => {
     try {
       await axios.post(
         "http://localhost:8080/api/products/upload-multiple",
         formData,
+        {
+          params: {
+            ma: ma,
+          },
+        },
         {
           headers: {
             "Content-Type": "multipart/form-data",
@@ -1315,7 +1320,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay }) => {
                 </Button>
               </div>
               {cauHinhs.length > 0 && (
-                <div className="mt-3 text-end">
+                <div className="mt-3 d-flex justify-content-between">
                   <Button
                     onClick={handleDownloadSample}
                     className="rounded-2 button-mui me-2"
@@ -1419,7 +1424,6 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay }) => {
                                   (cauHinh) => cauHinh.id !== item.id
                                 );
                                 setCauHinhsFinal(newCauHinhsFinal);
-                                // console.log(objectsTachRa);
                                 handleOpenAlertVariant(
                                   "Xóa cấu hình thành công!",
                                   Notistack.SUCCESS
@@ -1507,7 +1511,6 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay }) => {
         imeis={imeis}
         productName={productName}
       />
-      {isLoading && <LoadingIndicator />}
     </>
   );
 };

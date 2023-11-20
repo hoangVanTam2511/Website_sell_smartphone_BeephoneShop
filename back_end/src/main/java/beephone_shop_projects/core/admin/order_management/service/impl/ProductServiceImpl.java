@@ -2,17 +2,16 @@ package beephone_shop_projects.core.admin.order_management.service.impl;
 
 import beephone_shop_projects.core.admin.order_management.converter.ProductColorConverter;
 import beephone_shop_projects.core.admin.order_management.converter.ProductConverter;
-import beephone_shop_projects.core.admin.order_management.converter.ProductImeiConverter;
-import beephone_shop_projects.core.admin.order_management.converter.ProductItemConfigurationConverter;
+import beephone_shop_projects.core.admin.order_management.converter.ProductItemCustomConverter;
 import beephone_shop_projects.core.admin.order_management.converter.ProductRamConverter;
 import beephone_shop_projects.core.admin.order_management.converter.ProductRomConverter;
-import beephone_shop_projects.core.admin.order_management.model.request.ProductItemConfigurationRequest;
 import beephone_shop_projects.core.admin.order_management.model.request.ProductItemConfigurationsRequest;
+import beephone_shop_projects.core.admin.order_management.model.request.ProductItemCustomRequest;
 import beephone_shop_projects.core.admin.order_management.model.request.ProductItemImeiRequest;
 import beephone_shop_projects.core.admin.order_management.model.request.ProductRequest;
-import beephone_shop_projects.core.admin.order_management.model.response.ProductItemConfigurationResponse;
-import beephone_shop_projects.core.admin.order_management.model.response.ProductItemConfigurationsResponse;
-import beephone_shop_projects.core.admin.order_management.model.response.ProductResponse;
+import beephone_shop_projects.core.admin.order_management.model.response.product_response.ProductCustomResponse;
+import beephone_shop_projects.core.admin.order_management.model.response.product_response.ProductItemCustomResponse;
+import beephone_shop_projects.core.admin.order_management.model.response.product_response.ProductResponse;
 import beephone_shop_projects.core.admin.order_management.repository.impl.ImeiRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.repository.impl.ProductItemRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.repository.impl.ProductRepositoryImpl;
@@ -43,14 +42,14 @@ public class ProductServiceImpl extends AbstractServiceImpl<SanPham, ProductResp
   private ProductRepositoryImpl productRepositoryImpl;
 
   @Autowired
-  private ProductItemConfigurationConverter productItemConverter;
-  @Autowired
-  private ProductImeiConverter productImeiConverter;
+  private ProductItemCustomConverter productItemConverter;
 
   @Autowired
   private ProductRomConverter productRomConverter;
+
   @Autowired
   private ProductRamConverter productRamConverter;
+
   @Autowired
   private ProductColorConverter productColorConverter;
 
@@ -65,8 +64,8 @@ public class ProductServiceImpl extends AbstractServiceImpl<SanPham, ProductResp
   }
 
   @Override
-  public ProductItemConfigurationsResponse createProduct(ProductItemConfigurationsRequest req) throws Exception {
-    ProductItemConfigurationsResponse response = new ProductItemConfigurationsResponse();
+  public ProductCustomResponse createProduct(ProductItemConfigurationsRequest req) throws Exception {
+    ProductCustomResponse response = new ProductCustomResponse();
     if (req.getProduct() != null) {
       ProductRequest getProduct = req.getProduct();
       if (getProduct.getTheNho().getId() == null) {
@@ -88,8 +87,8 @@ public class ProductServiceImpl extends AbstractServiceImpl<SanPham, ProductResp
       }
 
       if (req.getProductItems() != null) {
-        List<ProductItemConfigurationResponse> productItems = new ArrayList<>();
-        for (ProductItemConfigurationRequest item : req.getProductItems()) {
+        List<ProductItemCustomResponse> productItems = new ArrayList<>();
+        for (ProductItemCustomRequest item : req.getProductItems()) {
           SanPhamChiTiet product = new SanPhamChiTiet();
           product.setSanPham(productConverter.convertResponseToEntity(createdProduct));
           product.setSoLuongTonKho(item.getSoLuongTonKho());
@@ -108,6 +107,7 @@ public class ProductServiceImpl extends AbstractServiceImpl<SanPham, ProductResp
               productImei.setSoImei(imei.getImei());
               productImei.setCreatedAt(imei.getCreatedAt());
               productImei.setSanPhamChiTiet(createdProductItem);
+              productImei.setTrangThai(imei.getTrangThai());
               imeiRepositoryImpl.save(productImei);
             }
           }

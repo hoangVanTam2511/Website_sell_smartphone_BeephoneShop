@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Table } from "antd";
-import { Box, IconButton, Pagination, TextField, Tooltip, } from "@mui/material";
+import { Box, FormControl, IconButton, MenuItem, Pagination, Select, TextField, Tooltip, } from "@mui/material";
 import { PlusOutlined } from "@ant-design/icons";
 import Card from "../../../components/Card";
 import { format } from "date-fns";
@@ -16,6 +16,8 @@ import Zoom from '@mui/material/Zoom';
 import * as dayjs from "dayjs";
 import { OrderStatusString, OrderTypeString } from "./enum";
 import LoadingIndicator from '../../../utilities/loading';
+import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
+import moment from 'moment';
 
 const ManagementOrders = () => {
   const navigate = useNavigate();
@@ -48,48 +50,35 @@ const ManagementOrders = () => {
         setOrders(response.data.data);
         setTotalPages(response.data.totalPages);
         setIsLoading(false);
+        console.log(response.data.data);
         // localStorage.setItem('orders', response.data.content);
         // localStorage.setItem('totalPages', response.data.totalPages);
       })
       .catch((error) => {
-        console.error(error);
         setIsLoading(false);
+        console.error(error);
       });
   }
 
+  const isFirstRender = useRef(true);
   useEffect(() => {
-    // const savedToDate = localStorage.getItem('toDate');
-    // const savedFromDate = localStorage.getItem('fromDate');
-    // const savedKeyword = localStorage.getItem('keyword');
-    // const savedCurrentPage = localStorage.getItem('currentPage');
-    // const savedTotalPages = localStorage.getItem('totalPages');
-    // const savedOrders = localStorage.getItem('orders');
-
-    // if (savedToDate) {
-    //   setToDate(savedToDate);
-    // }
-    // if (savedFromDate) {
-    //   setFromDate(savedFromDate);
-    // }
-    // if (savedKeyword) {
-    //   setKeyword(savedKeyword);
-    // }
-    // if (savedCurrentPage) {
-    //   setCurrentPage(savedCurrentPage);
-    // }
-    // if (savedTotalPages) {
-    //   setTotalPages(savedTotalPages);
-    // }
-    // if (savedOrders) {
-    //   setOrders(savedOrders);
-    // }
-    findOrdersByMultipleCriteriaWithPagination(currentPage);
+      setIsLoading(true);
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      findOrdersByMultipleCriteriaWithPagination(currentPage);
+    } else {
+      findOrdersByMultipleCriteriaWithPagination(currentPage);
+    }
   }, [fromDate, toDate, keyword, currentPage]);
 
-  useEffect(() => {
-    setIsLoading(true);
-    findOrdersByMultipleCriteriaWithPagination(currentPage);
-  }, [])
+  // const isMounted = useRef(false);
+  // useEffect(() => {
+  //   if (!isMounted.current) {
+  //     isMounted.current = true;
+  //     setIsLoading(true);
+  //     findOrdersByMultipleCriteriaWithPagination(currentPage);
+  //   }
+  // }, [])
 
   const handleRefreshData = () => {
     navigate(`/dashboard/management-orders`);
@@ -132,7 +121,7 @@ const ManagementOrders = () => {
   }
 
   const handleGetToDateFromDatePicker = (newDate) => {
-    const value = newDate.format("DD/MM/YYYY");
+    const value = newDate.format("DD-MM-YYYY");
     setToDate(value);
     searchParams.set('toDate', newDate.format("DD-MM-YYYY"));
     searchParams.delete('currentPage');
@@ -144,7 +133,7 @@ const ManagementOrders = () => {
   }
 
   const handleGetFromDateFromDatePicker = (newDate) => {
-    const value = newDate.format("DD/MM/YYYY");
+    const value = newDate.format("DD-MM-YYYY");
     setFromDate(value);
     searchParams.set('fromDate', newDate.format("DD-MM-YYYY"));
     searchParams.delete('currentPage');
@@ -156,6 +145,7 @@ const ManagementOrders = () => {
   }
 
   const handlePageChange = (event, page) => {
+    setIsLoading(true);
     setCurrentPage(page);
     searchParams.set('currentPage', page);
     setSearchParams(searchParams);
@@ -435,7 +425,7 @@ const ManagementOrders = () => {
   const OrderTable = () => {
     return (
       <>
-        <Table className="table-container"
+        <Table className="table-container mt-2"
           columns={columns}
           rowKey="ma"
           dataSource={orders}
@@ -555,6 +545,236 @@ const ManagementOrders = () => {
               </Button>
             </div>
           </Card.Header>
+          <div className="d-flex mt-4 pt-1 mx-auto">
+            <div
+              className="d-flex"
+              style={{
+                height: "40px",
+                position: "relative",
+                cursor: "pointer",
+              }}
+            >
+              <div
+                // onClick={handleOpenSelect1}
+                className=""
+                style={{ marginTop: "8px" }}
+              >
+                <span
+                  className="ms-2 ps-1"
+                  style={{ fontSize: "15px", fontWeight: "450" }}
+                >
+                  Trạng Thái:{" "}
+                </span>
+              </div>
+              <FormControl
+                sx={{
+                  minWidth: 50,
+                }}
+                size="small"
+              >
+                <Select
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        borderRadius: "7px",
+                      },
+                    },
+                  }}
+                  IconComponent={KeyboardArrowDownOutlinedIcon}
+                  sx={{
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none !important",
+                    },
+                    "& .MuiSelect-select": {
+                      color: "#2f80ed",
+                      fontWeight: "500",
+                    },
+                  }}
+                  // open={openSelect1}
+                  // onClose={handleCloseSelect1}
+                  // onOpen={handleOpenSelect1}
+                  defaultValue={14}
+                >
+                  <MenuItem className="" value={14}>
+                    Tất cả
+                  </MenuItem>
+                  <MenuItem value={15}>Khách hàng mới</MenuItem>
+                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
+            <div
+              className="d-flex ms-3"
+              style={{
+                height: "40px",
+                position: "relative",
+                cursor: "pointer",
+              }}
+            >
+              <div
+                // onClick={handleOpenSelect1}
+                className=""
+                style={{ marginTop: "8px" }}
+              >
+                <span
+                  className="ms-2 ps-1"
+                  style={{ fontSize: "15px", fontWeight: "450" }}
+                >
+                  Loại Đơn Hàng:{" "}
+                </span>
+              </div>
+              <FormControl
+                sx={{
+                  minWidth: 50,
+                }}
+                size="small"
+              >
+                <Select
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        borderRadius: "7px",
+                      },
+                    },
+                  }}
+                  IconComponent={KeyboardArrowDownOutlinedIcon}
+                  sx={{
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none !important",
+                    },
+                    "& .MuiSelect-select": {
+                      color: "#2f80ed",
+                      fontWeight: "500",
+                    },
+                  }}
+                  // open={openSelect1}
+                  // onClose={handleCloseSelect1}
+                  // onOpen={handleOpenSelect1}
+                  defaultValue={14}
+                >
+                  <MenuItem className="" value={14}>
+                    Tất cả
+                  </MenuItem>
+                  <MenuItem value={15}>Khách hàng mới</MenuItem>
+                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
+            <div
+              className="d-flex ms-3"
+              style={{
+                height: "40px",
+                position: "relative",
+                cursor: "pointer",
+              }}
+            >
+              <div
+                // onClick={handleOpenSelect1}
+                className=""
+                style={{ marginTop: "8px" }}
+              >
+                <span
+                  className="ms-2 ps-1"
+                  style={{ fontSize: "15px", fontWeight: "450" }}
+                >
+                  Sắp Xếp:{" "}
+                </span>
+              </div>
+              <FormControl
+                sx={{
+                  minWidth: 50,
+                }}
+                size="small"
+              >
+                <Select
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        borderRadius: "7px",
+                      },
+                    },
+                  }}
+                  IconComponent={KeyboardArrowDownOutlinedIcon}
+                  sx={{
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none !important",
+                    },
+                    "& .MuiSelect-select": {
+                      color: "#2f80ed",
+                      fontWeight: "500",
+                    },
+                  }}
+                  // open={openSelect1}
+                  // onClose={handleCloseSelect1}
+                  // onOpen={handleOpenSelect1}
+                  defaultValue={14}
+                >
+                  <MenuItem className="" value={14}>
+                    Tất cả
+                  </MenuItem>
+                  <MenuItem value={15}>Khách hàng mới</MenuItem>
+                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
+            <div
+              className="d-flex ms-3"
+              style={{
+                height: "40px",
+                position: "relative",
+                cursor: "pointer",
+              }}
+            >
+              <div
+                // onClick={handleOpenSelect1}
+                className=""
+                style={{ marginTop: "8px" }}
+              >
+                <span
+                  className="ms-2 ps-1"
+                  style={{ fontSize: "15px", fontWeight: "450" }}
+                >
+                  Hiển Thị:{""}
+                </span>
+              </div>
+              <FormControl
+                sx={{
+                  minWidth: 50,
+                }}
+                size="small"
+              >
+                <Select
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        borderRadius: "7px",
+                      },
+                    },
+                  }}
+                  IconComponent={KeyboardArrowDownOutlinedIcon}
+                  sx={{
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none !important",
+                    },
+                    "& .MuiSelect-select": {
+                      color: "#2f80ed",
+                      fontWeight: "500",
+                    },
+                  }}
+                  // open={openSelect1}
+                  // onClose={handleCloseSelect1}
+                  // onOpen={handleOpenSelect1}
+                  defaultValue={14}
+                >
+                  <MenuItem className="" value={14}>
+                    Tất cả
+                  </MenuItem>
+                  <MenuItem value={15}>Khách hàng mới</MenuItem>
+                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
+          </div>
           <Card.Body>
             <OrderTable />
           </Card.Body>

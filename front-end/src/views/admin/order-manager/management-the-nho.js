@@ -391,7 +391,7 @@ const ManagementTheNhos = () => {
     axios
       .put(`http://localhost:8080/api/the-nhos`, obj)
       .then((response) => {
-        getListTheNho();
+        getListProductSearchAndPage();
         handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
         setOpen1(false);
       })
@@ -404,7 +404,7 @@ const ManagementTheNhos = () => {
     axios
       .put(`http://localhost:8080/api/the-nhos/${idTheNho}`)
       .then((response) => {
-        getListTheNho();
+        getListProductSearchAndPage();
         handleOpenAlertVariant(
           "Đổi trạng thái thành công!!!",
           Notistack.SUCCESS

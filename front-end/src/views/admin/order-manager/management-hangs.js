@@ -364,7 +364,7 @@ const ManagementHangs = () => {
     axios
       .put(`http://localhost:8080/api/brands`, obj)
       .then((response) => {
-        getListHang();
+        getListProductSearchAndPage();
         handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
         setOpen1(false);
       })
@@ -377,7 +377,7 @@ const ManagementHangs = () => {
     axios
       .put(`http://localhost:8080/api/brands/${idHang}`)
       .then((response) => {
-        getListHang();
+        getListProductSearchAndPage();
         handleOpenAlertVariant(
           "Đổi trạng thái thành công!!!",
           Notistack.SUCCESS

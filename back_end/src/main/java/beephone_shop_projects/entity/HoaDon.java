@@ -38,6 +38,12 @@ public class HoaDon extends PrimaryEntity implements IsIdentified {
 
   private String diaChiNguoiNhan;
 
+  private String tinhThanhPhoNguoiNhan;
+
+  private String quanHuyenNguoiNhan;
+
+  private String xaPhuongNguoiNhan;
+
   private BigDecimal tongTien;
 
   private BigDecimal tienThua;

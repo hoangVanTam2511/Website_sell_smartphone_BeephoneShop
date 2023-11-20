@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { MenuItem, Grid, TextField } from "@mui/material";
 
-const host = "https://online-gateway.ghn.vn/shiip/public-api/master-data/";
+const host = "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/";
 
 const AddressFormUpdate = ({
   submitted,
@@ -64,7 +64,7 @@ const AddressFormUpdate = ({
     return axios
       .get(api, {
         headers: {
-          token: "c2f01f86-3164-11ee-af43-6ead57e9219a",
+          token: "62124d79-4ffa-11ee-b1d4-92b443b7a897",
         },
       })
       .then((response) => {

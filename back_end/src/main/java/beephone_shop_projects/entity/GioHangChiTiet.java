@@ -2,11 +2,11 @@ package beephone_shop_projects.entity;
 
 import beephone_shop_projects.entity.base.PrimaryEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,6 +15,7 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Getter
@@ -27,6 +28,9 @@ public class GioHangChiTiet extends PrimaryEntity implements Serializable {
   private Integer soLuong;
 
   private BigDecimal donGia;
+
+  @OneToMany(mappedBy = "gioHangChiTiet")
+  private List<ImeiChuaBan> imeisChuaBan;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_gio_hang")

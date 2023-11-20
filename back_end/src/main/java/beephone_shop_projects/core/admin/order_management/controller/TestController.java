@@ -1,19 +1,16 @@
 package beephone_shop_projects.core.admin.order_management.controller;
 
+import beephone_shop_projects.core.admin.order_management.converter.PaymentConverter;
 import beephone_shop_projects.core.admin.order_management.model.request.CartItemRequest;
 import beephone_shop_projects.core.admin.order_management.model.request.ImeiRequest;
 import beephone_shop_projects.core.admin.order_management.model.request.ImeisRequest;
 import beephone_shop_projects.core.admin.order_management.model.response.CartItemResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.OrderResponse;
-import beephone_shop_projects.core.admin.order_management.model.response.ProductCustomResponse;
-import beephone_shop_projects.core.admin.order_management.model.response.ProductItemConfigurationResponse;
-import beephone_shop_projects.core.admin.order_management.model.response.ProductItemResponse;
-import beephone_shop_projects.core.admin.order_management.model.response.ProductResponse;
 import beephone_shop_projects.core.admin.order_management.repository.CartItemRepository;
+import beephone_shop_projects.core.admin.order_management.repository.HinhThucThanhToanCustomRepository;
 import beephone_shop_projects.core.admin.order_management.repository.impl.CartRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.repository.impl.HinhThucThanhToanRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.repository.impl.OrderRepositoryImpl;
-import beephone_shop_projects.core.admin.order_management.repository.impl.ProductRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.service.impl.CartItemServiceImpl;
 import beephone_shop_projects.core.admin.order_management.service.impl.HoaDonServiceImpl;
 import beephone_shop_projects.core.admin.product_management.repository.ProductDetailRepository;
@@ -22,7 +19,6 @@ import beephone_shop_projects.entity.HinhThucThanhToan;
 import beephone_shop_projects.entity.HoaDon;
 import beephone_shop_projects.infrastructure.constant.HttpStatus;
 import beephone_shop_projects.infrastructure.constant.Message;
-import beephone_shop_projects.utils.CloudinaryUtils;
 import beephone_shop_projects.utils.ReadFileExcelUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -45,17 +41,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
 @CrossOrigin(origins = "http://localhost:3000")
 public class TestController {
-
   @Autowired
   private ProductDetailRepository sanPhamChiTietRepository;
 
@@ -75,13 +70,17 @@ public class TestController {
   private ModelMapper modelMapper;
 
   @Autowired
+  private HinhThucThanhToanCustomRepository hinhThucThanhToanCustomRepository;
+
+  @Autowired
+  private PaymentConverter paymentConverter;
+
+  @Autowired
   private HinhThucThanhToanRepositoryImpl hinhThucThanhToanRepository;
 
   @Autowired
   private CartItemServiceImpl cartItemService;
 
-  @Autowired
-  private ProductRepositoryImpl productRepository;
 
   @GetMapping("/test1")
   public ResponseEntity<?> home10() {
@@ -95,15 +94,6 @@ public class TestController {
     return new ResponseObject(hoaDon);
   }
 
-  @GetMapping("/products")
-  public ResponseObject home1() {
-    return new ResponseObject(sanPhamChiTietRepository.getProducts().stream().map(s -> modelMapper.map(s, ProductItemConfigurationResponse.class)));
-  }
-
-  @GetMapping("/products/all")
-  public ResponseObject home111() {
-    return new ResponseObject(productRepository.findAll().stream().map(s -> modelMapper.map(s, ProductCustomResponse.class)));
-  }
 
 //  @PostMapping("/image1")
 //  public ResponseObject home3(@RequestParam String url) {
@@ -139,9 +129,25 @@ public class TestController {
   }
 
   @GetMapping("/payments/{id}")
-  public ResponseEntity<?> home(@PathVariable("id") String id) {
+  public ResponseObject home(@PathVariable("id") String id) {
     List<HinhThucThanhToan> list = hinhThucThanhToanRepository.getPaymentMethodsByOrderId(id);
-    return new ResponseEntity<>(list, org.springframework.http.HttpStatus.OK);
+    return new ResponseObject(list);
+  }
+
+  @DeleteMapping("/payment/{id}")
+  public ResponseObject deletePaymentCash(@PathVariable String id, @RequestParam("orderId") String orderId) throws Exception {
+    HoaDon findOrder = hoaDonRepository.getOrderPendingById(orderId);
+    if (findOrder != null) {
+      Optional<HinhThucThanhToan> payment = hinhThucThanhToanCustomRepository.findById(id);
+      if (payment.isPresent()) {
+        if (payment.get().getSoTienThanhToan() != null){
+          findOrder.setTienKhachTra(findOrder.getTienKhachTra().subtract(payment.get().getSoTienThanhToan()));
+          hoaDonRepository.save(findOrder);
+          hinhThucThanhToanCustomRepository.delete(payment.get());
+        }
+      }
+    }
+    return new ResponseObject(HttpStatus.NO_CONTENT_CODE, Message.SUCCESS);
   }
 
   @GetMapping("/test1000/{id}")
@@ -238,7 +244,7 @@ public class TestController {
       row.setHeight(height);
       rowNum++;
     }
-    if (imeis.size() > 15){
+    if (imeis.size() > 15) {
       Row lastRow = sheet.createRow(rowNum);
       lastRow.setHeight(height);
       Cell cellA = lastRow.createCell(0); // Cột A

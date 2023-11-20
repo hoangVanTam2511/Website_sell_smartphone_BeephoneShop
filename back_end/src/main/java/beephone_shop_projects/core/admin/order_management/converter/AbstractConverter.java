@@ -77,4 +77,9 @@ public class AbstractConverter<D, E, R> implements GenericConverter<D, E, R> {
   public List<E> convertToListEntity(List<D> dtoList) {
     return dtoList.stream().map(d -> getModelMapper().map(d, entityClass)).collect(Collectors.toList());
   }
+
+  @Override
+  public List<E> convertListRequestToListEntity(List<R> reqList) {
+    return reqList.stream().map(r -> getModelMapper().map(r, entityClass)).collect(Collectors.toList());
+  }
 }
