@@ -10,6 +10,7 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import * as dayjs from "dayjs";
+import { Empty } from "antd";
 
 const ThongKe = () => {
   const [listDonHangAll, setListDonHangAll] = useState([]);
@@ -52,6 +53,7 @@ const ThongKe = () => {
       .get(`http://localhost:8080/thong-ke/san-pham-top5`)
       .then((response) => {
         setListSanPhamTop5(response.data);
+        console.log(response.data);
       })
       .catch((error) => {});
   };
@@ -326,8 +328,8 @@ const ThongKe = () => {
               Top 3 sản phẩm bán chạy
               <hr />
             </h5>
-            {listSanPhamTop5 == null ? (
-              <div style={{ textAlign: "center" }}>Không có sản phẩm</div>
+            {listSanPhamTop5 === null ? (
+              <Empty />
             ) : (
               listSanPhamTop5.map((item, index) => (
                 <Col key={index} xs={4} className="product-selling">
