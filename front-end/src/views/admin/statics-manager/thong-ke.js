@@ -322,7 +322,7 @@ const ThongKe = () => {
             }}
           >
             <h5>
-              <FontAwesomeIcon icon="fa-solid fa-ranking-star" />
+              <FontAwesomeIcon icon={faRankingStar} />
               Top 3 sản phẩm bán chạy
               <hr />
             </h5>
