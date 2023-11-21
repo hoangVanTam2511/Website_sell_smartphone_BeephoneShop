@@ -23,7 +23,7 @@ const router = createBrowserRouter(
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <Provider store={store}>
-      <SnackbarProvider anchorOrigin={{
+      <SnackbarProvider style={{whiteSpace: "pre-line", maxWidth: "500px"}} anchorOrigin={{
         vertical: 'top',
         horizontal: 'right',
       }}>

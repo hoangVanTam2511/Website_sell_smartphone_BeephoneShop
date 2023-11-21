@@ -16,10 +16,10 @@ public class SearchFilterOrderDto {
 
   private String keyword;
 
-  @DateTimeFormat(pattern = "dd/MM/yyyy")
+  @DateTimeFormat(pattern = "dd-MM-yyyy")
   private Date fromDate;
 
-  @DateTimeFormat(pattern = "dd/MM/yyyy")
+  @DateTimeFormat(pattern = "dd-MM-yyyy")
   private Date toDate;
 
   private Integer state;

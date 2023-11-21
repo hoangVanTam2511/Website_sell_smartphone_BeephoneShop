@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { styled } from '@mui/material/styles';
 import { Row, Col } from "react-bootstrap";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { Button, Table } from "antd";
+import { Button, Empty, Table } from "antd";
 import axios from "axios";
 import { FaTruck, FaRegCalendarCheck, FaRegFileAlt, FaRegCalendarTimes, FaBusinessTime } from "react-icons/fa";
 import { Table as TableMui, Tooltip, Zoom } from '@mui/material';
@@ -26,9 +26,11 @@ import {
   PaymentDialog,
   OrderHistoryDialog,
   ConfirmDialog,
+  MultiplePaymentMethodsDelivery,
 } from "./AlertDialogSlide.js";
 import { OrderStatusString, OrderTypeString, Notistack } from './enum';
 import useCustomSnackbar from '../../../utilities/notistack';
+import { add } from "lodash";
 
 const OrderDetail = (props) => {
   const navigate = useNavigate();
@@ -41,21 +43,56 @@ const OrderDetail = (props) => {
   const [orderHistories, setOrderHistories] = useState([]);
   const [status, setStatus] = useState();
   const [paymentHistorys, setPaymentHistorys] = useState([]);
+  const [orderItems, setOrderItems] = useState([]);
   const { id } = useParams();
   const { handleOpenAlertVariant } = useCustomSnackbar();
+  const [addressDefault, setAddressDefault] = useState("");
+
+  const [customerName, setCustomerName] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
+  const [customerAddress, setCustomerAddress] = useState("");
+  const [customerNote, setCustomerNote] = useState("");
+  const [customerProvince, setCustomerProvince] = useState("");
+  const [customerDistrict, setCustomerDistrict] = useState("");
+  const [customerWard, setCustomerWard] = useState("");
+
+  const [openPayment, setOpenPayment] = useState(false);
+
+  const handleCloseOpenPayment = () => {
+    setOpenPayment(false);
+  }
 
   const getOrderItemsById = () => {
     setIsLoading(true);
     axios
       .get(`http://localhost:8080/api/orders/${id}`)
       .then((response) => {
-        setOrder(response.data.data);
-        setOrderHistories(response.data.data.orderHistories);
-        setPaymentHistorys(response.data.data.paymentMethods)
+        const data = response.data.data;
+        setOrder(data);
+        setOrderHistories(data.orderHistories);
+        const sortPayments = data.paymentMethods && data.paymentMethods.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        setPaymentHistorys(sortPayments)
+        // const sortOrderItems = data.paymentMethods && data.paymentMethods.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        setOrderItems(data.orderItems);
+
+        const address = data && data.account && data.account.diaChiList && data.account.diaChiList.find((item) => item.trangThai === 1);
+        const getAddressDefault = address && address.diaChi + ", " + address.xaPhuong + ", " + address.quanHuyen + ", " + address.tinhThanhPho;
+        setAddressDefault(getAddressDefault);
+
+        if (data.loaiHoaDon === OrderTypeString.DELIVERY) {
+          setCustomerName(data.tenNguoiNhan === null ? "" : data.tenNguoiNhan);
+          setCustomerPhone(data.soDienThoaiNguoiNhan === null ? "" : data.soDienThoaiNguoiNhan);
+          setCustomerAddress(data.diaChiNguoiNhan === null ? "" : data.diaChiNguoiNhan);
+          setCustomerDistrict(data.quanHuyenNguoiNhan === null ? "" : data.quanHuyenNguoiNhan);
+          setCustomerProvince(data.tinhThanhPhoNguoiNhan === null ? "" : data.tinhThanhPhoNguoiNhan);
+          setCustomerWard(data.xaPhuongNguoiNhan === null ? "" : data.xaPhuongNguoiNhan);
+          setCustomerNote(data.ghiChu === null ? "" : data.ghiChu);
+        }
         setIsLoading(false);
       })
       .catch((error) => {
         console.error(error);
+        setIsLoading(false);
       });
   }
 
@@ -69,16 +106,6 @@ const OrderDetail = (props) => {
 
   const totalOrder = (total, discount, feeShip) => {
     return total - discount + feeShip;
-  }
-
-  const IconTrash = () => {
-    return (
-      <>
-        <svg fill="none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-          <path fill-rule="evenodd" clip-rule="evenodd" d="M20.2871 5.24297C20.6761 5.24297 21 5.56596 21 5.97696V6.35696C21 6.75795 20.6761 7.09095 20.2871 7.09095H3.71385C3.32386 7.09095 3 6.75795 3 6.35696V5.97696C3 5.56596 3.32386 5.24297 3.71385 5.24297H6.62957C7.22185 5.24297 7.7373 4.82197 7.87054 4.22798L8.02323 3.54598C8.26054 2.61699 9.0415 2 9.93527 2H14.0647C14.9488 2 15.7385 2.61699 15.967 3.49699L16.1304 4.22698C16.2627 4.82197 16.7781 5.24297 17.3714 5.24297H20.2871ZM18.8058 19.134C19.1102 16.2971 19.6432 9.55712 19.6432 9.48913C19.6626 9.28313 19.5955 9.08813 19.4623 8.93113C19.3193 8.78413 19.1384 8.69713 18.9391 8.69713H5.06852C4.86818 8.69713 4.67756 8.78413 4.54529 8.93113C4.41108 9.08813 4.34494 9.28313 4.35467 9.48913C4.35646 9.50162 4.37558 9.73903 4.40755 10.1359C4.54958 11.8992 4.94517 16.8102 5.20079 19.134C5.38168 20.846 6.50498 21.922 8.13206 21.961C9.38763 21.99 10.6811 22 12.0038 22C13.2496 22 14.5149 21.99 15.8094 21.961C17.4929 21.932 18.6152 20.875 18.8058 19.134Z" fill="currentColor" />
-        </svg>
-      </>
-    )
   }
 
   const updateStatusOrderDelivery = async (orderRequest) => {
@@ -211,7 +238,9 @@ const OrderDetail = (props) => {
       width: "15%",
       dataIndex: "ma",
       render: (text, record) => (
-        <span style={{ fontWeight: "500" }}>{record.ma}</span>
+        <span style={{ fontWeight: "500" }}>{
+          record.hinhThucThanhToan === 0 ? record.ma
+            : "..."}</span>
       ),
     },
     {
@@ -258,12 +287,12 @@ const OrderDetail = (props) => {
       width: "10%",
       dataIndex: "hinhThucThanhToan",
       render: (text, record) =>
-        record.hinhThucThanhToan == 0 ? (
+        record.hinhThucThanhToan === 0 || record.hinhThucThanhToan === 2 ? (
           <div
             className="rounded-pill mx-auto badge-success"
             style={{
               height: "35px",
-              width: "140px",
+              width: "120px",
               padding: "4px",
             }}
           >
@@ -593,7 +622,7 @@ const OrderDetail = (props) => {
           {order.trangThai == OrderStatusString.PENDING_CONFIRM && order.loaiHoaDon == OrderTypeString.DELIVERY ? (
             <div>
               <Button
-                onClick={() => handleOpenDialogConfirmOrder(order.trangThai, false)}
+                onClick={() => handleOpenDialogConfirmOrder(OrderStatusString.PENDING_CONFIRM, false)}
                 className="rounded-2 ms-2"
                 type="primary"
                 style={{
@@ -611,73 +640,76 @@ const OrderDetail = (props) => {
               </Button>
             </div>
           )
-            : order.trangThai == OrderStatusString.CONFIRMED && order.loaiHoaDon == OrderTypeString.DELIVERY ? (
-              <div>
-                <Button
-                  onClick={() => handleOpenDialogConfirmOrder(order.trangThai, false)}
-                  className="rounded-2 ms-2"
-                  type="warning"
-                  style={{
-                    height: "40px",
-                    width: "auto",
-                    fontSize: "16px",
-                  }}
+            : null}
+          {((order.trangThai === OrderStatusString.PREPARING || order.trangThai === OrderStatusString.CONFIRMED) && order.loaiHoaDon === OrderTypeString.DELIVERY) ? (
+            <div>
+              <Button
+                onClick={() => handleOpenDialogConfirmOrder(OrderStatusString.PREPARING, false)}
+                className="rounded-2 ms-2"
+                type="primary"
+                style={{
+                  height: "40px",
+                  width: "auto",
+                  fontSize: "16px",
+                }}
+              >
+                <span
+                  className=""
+                  style={{ fontWeight: "500", marginBottom: "2px" }}
                 >
-                  <span
-                    className=""
-                    style={{ fontWeight: "500", marginBottom: "2px" }}
-                  >
-                    ĐANG CHUẨN BỊ
-                  </span>
-                </Button>
-              </div>
-            )
-              : order.trangThai == OrderStatusString.PREPARING && order.loaiHoaDon == OrderTypeString.DELIVERY ? (
-                <div>
-                  <Button
-                    onClick={() => handleOpenDialogConfirmOrder(order.trangThai, false)}
-                    className="rounded-2 ms-2"
-                    type="primary"
-                    style={{
-                      height: "40px",
-                      width: "auto",
-                      fontSize: "16px",
-                    }}
-                  >
-                    <span
-                      className=""
-                      style={{ fontWeight: "500", marginBottom: "2px" }}
-                    >
-                      GIAO HÀNG
-                    </span>
-                  </Button>
-                </div>
-              )
-                : isDone == true && order.trangThai == OrderStatusString.DELIVERING && order.loaiHoaDon == OrderTypeString.DELIVERY ? (
-                  <div>
-                    <Button
-                      onClick={() => handleOpenDialogConfirmOrder(order.trangThai, false)}
-                      className="rounded-2 ms-2"
-                      type="primary"
-                      style={{
-                        height: "40px",
-                        width: "auto",
-                        fontSize: "16px",
-                      }}
-                    >
-                      <span
-                        className=""
-                        style={{ fontWeight: "500", marginBottom: "2px" }}
-                      >
-                        ĐÃ GIAO HÀNG
-                      </span>
-                    </Button>
-                  </div>
-                ) : (
-                  ""
-                )}
+                  GIAO HÀNG
+                </span>
+              </Button>
+            </div>
+          )
+            : null}
+          {order.trangThai == OrderStatusString.CONFIRMED && order.loaiHoaDon == OrderTypeString.DELIVERY ? (
+            <div>
+              <Button
+                onClick={() => handleOpenDialogConfirmOrder(OrderStatusString.CONFIRMED, false)}
+                className="rounded-2 ms-2"
+                type="warning"
+                style={{
+                  height: "40px",
+                  width: "auto",
+                  fontSize: "16px",
+                }}
+              >
+                <span
+                  className=""
+                  style={{ fontWeight: "500", marginBottom: "2px" }}
+                >
+                  ĐANG CHUẨN BỊ
+                </span>
+              </Button>
+            </div>
+          )
+            : null}
+          {isDone == true && order.trangThai == OrderStatusString.DELIVERING && order.loaiHoaDon == OrderTypeString.DELIVERY ? (
+            <div>
+              <Button
+                onClick={() => handleOpenDialogConfirmOrder(OrderStatusString.DELIVERING, false)}
+                className="rounded-2 ms-2"
+                type="primary"
+                style={{
+                  height: "40px",
+                  width: "auto",
+                  fontSize: "16px",
+                }}
+              >
+                <span
+                  className=""
+                  style={{ fontWeight: "500", marginBottom: "2px" }}
+                >
+                  ĐÃ GIAO HÀNG
+                </span>
+              </Button>
+            </div>
+          ) : (
+            ""
+          )}
           {order.trangThai != OrderStatusString.CANCELLED && order.trangThai != OrderStatusString.SUCCESS_DELIVERY && order.loaiHoaDon == OrderTypeString.DELIVERY ? (
-            <div className="ms-1">
+            <div className="">
               <Button
                 onClick={() => handleOpenDialogConfirmOrder(null, true)}
                 danger
@@ -704,6 +736,23 @@ const OrderDetail = (props) => {
         <div>
           <Button
             onClick={handleClickOpenDialogDetailOrderHistories}
+            className="rounded-2 me-2"
+            type="primary"
+            style={{
+              height: "40px",
+              width: "130px",
+              fontSize: "16px",
+            }}
+          >
+            <span
+              className="text-white"
+              style={{ fontWeight: "500", marginBottom: "2px" }}
+            >
+              IN HÓA ĐƠN
+            </span>
+          </Button>
+          <Button
+            onClick={handleClickOpenDialogDetailOrderHistories}
             className="rounded-2"
             type="warning"
             style={{
@@ -728,30 +777,33 @@ const OrderDetail = (props) => {
   const OrderInfo = () => {
     return (
 
-      <div className="wrap-order-detail mt-4" style={{ height: order.loaiHoaDon === OrderTypeString.AT_COUNTER ? "340px" : "480px" }}>
+      <div className="wrap-order-detail mt-4" style={{ height: order.loaiHoaDon === OrderTypeString.AT_COUNTER ? "340px" : /* "480px" */ "340px" }}>
         <div className="p-3">
           <div className="d-flex justify-content-between">
             <div className="ms-2" style={{ marginTop: "3px" }}>
               <span className='' style={{ fontSize: "25px" }}>THÔNG TIN ĐƠN HÀNG</span>
             </div>
             <div className="">
-              <Button
-                onClick={handleClickOpenDialogUpdateRecipientOrder}
-                className="rounded-2 ms-2"
-                type="primary"
-                style={{
-                  height: "40px",
-                  fontSize: "16px",
-                  width: "100px",
-                }}
-              >
-                <span
-                  className=""
-                  style={{ fontWeight: "500", marginBottom: "2px" }}
+              {order.trangThai === OrderStatusString.PENDING_CONFIRM || order.trangThai ===
+                OrderStatusString.CONFIRMED || order.trangThai === OrderStatusString.PREPARING ?
+                <Button
+                  onClick={handleClickOpenDialogUpdateRecipientOrder}
+                  className="rounded-2 ms-2"
+                  type="primary"
+                  style={{
+                    height: "40px",
+                    fontSize: "16px",
+                    width: "100px",
+                  }}
                 >
-                  Cập nhật
-                </span>
-              </Button>
+                  <span
+                    className=""
+                    style={{ fontWeight: "500", marginBottom: "2px" }}
+                  >
+                    Cập nhật
+                  </span>
+                </Button>
+                : null}
             </div>
           </div>
           <div className='ms-2 mt-2' style={{ borderBottom: "2px solid #C7C7C7", width: "99.2%", borderWidth: "2px" }}></div>
@@ -972,7 +1024,7 @@ const OrderDetail = (props) => {
                 </div>
               </div>
             </div>
-            {order.loaiHoaDon === OrderTypeString.DELIVERY ?
+            {/*order.loaiHoaDon === OrderTypeString.DELIVERY ?
               <div className="ms-4 mt-4 d-flex" style={{ height: "30px" }}>
                 <div className="ms-2 mt-1" style={{ width: "140px" }}>
                   <span style={{ fontSize: "17px" }}>
@@ -999,8 +1051,8 @@ const OrderDetail = (props) => {
                   </div>
                 </div>
               </div>
-              : ""}
-            {order.loaiHoaDon === OrderTypeString.DELIVERY ?
+              : ""*/}
+            {/*order.loaiHoaDon === OrderTypeString.DELIVERY ?
               <div className="ms-4 mt-4 d-flex" style={{ height: "30px" }}>
                 <div className="ms-2 mt-1" style={{ width: "140px" }}>
                   <span style={{ fontSize: "17px" }}>
@@ -1027,7 +1079,7 @@ const OrderDetail = (props) => {
                   </div>
                 </div>
               </div>
-              : ""}
+              : ""*/}
           </Col>
           <Col sm="6" className="ms-5">
             <div className="ms-4 mt-3 d-flex" style={{ height: "30px" }}>
@@ -1035,7 +1087,7 @@ const OrderDetail = (props) => {
                 <span style={{ fontSize: "17px" }}>Tên Khách Hàng</span>
               </div>
               <div className="ms-5 ps-5">
-                {order.tenNguoiNhan == null ?
+                {order.loaiHoaDon === OrderTypeString.AT_COUNTER && order.account === null ?
                   <div
                     className="rounded-pill"
                     style={{
@@ -1049,7 +1101,10 @@ const OrderDetail = (props) => {
                       Khách hàng lẻ
                     </span>
                   </div>
-                  : order.tenNguoiNhan
+                  : order.loaiHoaDon === OrderTypeString.AT_COUNTER && order.account &&
+                    order.account.hoVaTen ? order.account.hoVaTen
+                    :
+                    order.tenNguoiNhan
                 }
               </div>
             </div>
@@ -1058,8 +1113,11 @@ const OrderDetail = (props) => {
                 <span style={{ fontSize: "17px" }}>Số Điện Thoại</span>
               </div>
               <div className="ms-5 ps-5 mt-1">
-                <span className="text-dark ms-1" style={{ fontSize: "17px" }}>
-                  {order.soDienThoaiNguoiNhan == null ? "..." : order.soDienThoaiNguoiNhan}
+                <span className="text-dark" style={{ fontSize: "17px" }}>
+                  {order.loaiHoaDon === OrderTypeString.AT_COUNTER && order.account === null ? "..."
+                    : order.loaiHoaDon === OrderTypeString.AT_COUNTER && order.account &&
+                      order.account.soDienThoai ? order.account.soDienThoai :
+                      order.soDienThoaiNguoiNhan}
                 </span>
               </div>
             </div>
@@ -1068,25 +1126,32 @@ const OrderDetail = (props) => {
                 <span style={{ fontSize: "17px" }}>Email</span>
               </div>
               <div className="ms-5 ps-5 mt-1">
-                <span className="text-dark ms-1" style={{ fontSize: "17px" }}>
-                  {order.account === null ? "..." : order && order.account && order.account.email}
+                <span className="text-dark" style={{ fontSize: "17px" }}>
+                  {order.account === null ? "..."
+                    : order.account && order.account.email ? order.account.email
+                      : "..."}
                 </span>
               </div>
             </div>
             <div className="ms-4 mt-4 mt-1 d-flex" style={{ height: "30px" }}>
               <div className="ms-2 mt-1" style={{ width: "140px" }}>
-                <span style={{ fontSize: "17px" }}>Địa Chỉ Nhận</span>
+                <span style={{ fontSize: "17px" }}>Địa Chỉ {order.loaiHoaDon === OrderTypeString.AT_COUNTER ? "" : " Nhận"}</span>
               </div>
               <div
                 className="ms-5 ps-5 mt-1"
                 style={{ whiteSpace: "pre-line", flex: "1" }}
               >
-                <span className="text-dark ms-1" style={{ fontSize: "17px" }}>
-                  {order.diaChiNguoiNhan == null ? "..." : order.diaChiNguoiNhan}
+                <span className="text-dark" style={{ fontSize: "17px" }}>
+                  {order.loaiHoaDon === OrderTypeString.AT_COUNTER && order.account === null ?
+                    "..." : order.loaiHoaDon === OrderTypeString.AT_COUNTER && order.account &&
+                      order.account.diaChiList ? addressDefault
+                      : order.diaChiNguoiNhan + ", " + order.xaPhuongNguoiNhan
+                      + ", " + order.quanHuyenNguoiNhan + ", " + order.tinhThanhPhoNguoiNhan
+                  }
                 </span>
               </div>
             </div>
-            {order.loaiHoaDon === OrderTypeString.DELIVERY ?
+            {/*order.loaiHoaDon === OrderTypeString.DELIVERY ?
               <div className="ms-4 mt-4 mt-1 d-flex" style={{ height: "30px" }}>
                 <div className="ms-2 mt-1" style={{ width: "140px" }}>
                   <span style={{ fontSize: "17px" }}>Ghi Chú Shipper</span>
@@ -1100,8 +1165,8 @@ const OrderDetail = (props) => {
                   </span>
                 </div>
               </div>
-              : ""}
-            {order.loaiHoaDon === OrderTypeString.DELIVERY ?
+              : ""*/}
+            {/*order.loaiHoaDon === OrderTypeString.DELIVERY ?
               <div className="ms-4 mt-4 d-flex" style={{ height: "30px" }}>
                 <div className="ms-2 mt-1" style={{ width: "140px" }}>
                   <span style={{ fontSize: "17px" }}>
@@ -1128,7 +1193,7 @@ const OrderDetail = (props) => {
                   </div>
                 </div>
               </div>
-              : ""}
+              : ""*/}
           </Col>
         </Row>
       </div>
@@ -1147,20 +1212,20 @@ const OrderDetail = (props) => {
             </div>
             <div className="">
               <Button
-                onClick={handleClickOpenDialogPayment}
+                onClick={() => setOpenPayment(true)}
                 className="rounded-2 ms-2"
                 type="primary"
                 style={{
                   height: "40px",
                   fontSize: "16px",
-                  width: "120px",
+                  width: "180px",
                 }}
               >
                 <span
                   className=""
                   style={{ fontWeight: "500", marginBottom: "2px" }}
                 >
-                  Thanh toán
+                  Tiến hành thanh toán
                 </span>
               </Button>
             </div>
@@ -1169,17 +1234,17 @@ const OrderDetail = (props) => {
 
         </div>
         <div className="mt-3">
-          {paymentHistorys.length <= 0 ? (
-            <EmptyData />
-          ) : (
-            <>
-              <Table
-                className="scroll-container1"
-                columns={columns}
-                dataSource={paymentHistorys}
-                pagination={false}
-              />
-              {/*
+          <Table
+            className="scroll-container1"
+            columns={columns}
+            dataSource={paymentHistorys}
+            pagination={false}
+            rowKey={"id"}
+            key={"id"}
+            locale={{ emptyText: <Empty /> }}
+
+          />
+          {/*
               <div className="d-flex justify-content-between p-3">
                 <div className="ms-1 mt-2">
                   <div className="" style={{ marginTop: "1px" }}>
@@ -1216,276 +1281,166 @@ const OrderDetail = (props) => {
                 </div>
               </div>
 */}
-            </>
-          )}
         </div>
       </div>
     )
   }
 
+  const columnsOrderItems = [
+    {
+      title: "Sản phẩm",
+      width: "40%",
+      align: "center",
+      render: (text, item) => (
+
+        <div className='d-flex'>
+          <div className="product-img">
+            <img src={item && item.sanPhamChiTiet && item.sanPhamChiTiet.image && item.sanPhamChiTiet.image.path} class='' alt="" style={{ width: "125px", height: "125px" }} />
+          </div>
+          <div className='product ms-3 text-start'>
+            <Tooltip TransitionComponent={Zoom} title="Xem sản phẩm" style={{ cursor: "pointer" }} placement="top-start">
+              <div classNamountme='product-name'>
+                <span className='underline-custom' style={{ whiteSpace: "pre-line", fontSize: "17.5px", fontWeight: "500" }}>{item.sanPhamChiTiet.sanPham.tenSanPham + "\u00A0" + item.sanPhamChiTiet.ram.dungLuong + "/" + item.sanPhamChiTiet.rom.dungLuong + "GB" + " " + `(${item.sanPhamChiTiet.mauSac.tenMauSac})`}</span>
+              </div>
+            </Tooltip>
+            <div className='mt-2'>
+              <span className='product-price txt-price' style={{ fontSize: "17.5px", fontWeight: "" }}>
+                {item && item.sanPhamChiTiet.donGia ? item.sanPhamChiTiet.donGia.toLocaleString("vi-VN", {
+                  style: "currency",
+                  currency: "VND",
+                }) : ""}
+              </span>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Số lượng",
+      align: "center",
+      dataIndex: "soLuong",
+      width: "10%",
+      render: (text, item) =>
+        <div>
+          <span style={{ fontWeight: "", fontSize: "17px" }} className="">
+            {"x" + item.soLuong}
+          </span>
+        </div>
+
+    },
+    {
+      title: "Thành tiền",
+      align: "center",
+      width: "20%",
+      render: (text, item) =>
+        <div>
+          <span style={{ fontSize: "17.5px", fontWeight: "" }} className="txt-price">
+            {item &&
+              totalItem(item.soLuong, item.donGia).toLocaleString("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              }) || 0}
+          </span>
+        </div>
+    },
+    {
+      title: "Thao tác",
+      align: "center",
+      dataIndex: "actions",
+      width: "15%",
+      render: (text, item) =>
+        <div>
+          <div className="button-container">
+            <Button
+              onClick={() => {
+                // onOpenUpdateImei();
+                // const imeisChuaBan = item.imeisChuaBan;
+                // const imeiAll = item.sanPhamChiTiet.imeis;
+                // const isSelected = (item) => imeisChuaBan.some(selectedItem => selectedItem.soImei === item.soImei);
+                // const sortedItems = [...imeiAll].sort((a, b) => {
+                //   const isSelectedA = isSelected(a);
+                //   const isSelectedB = isSelected(b);
+                //   if (isSelectedA && !isSelectedB) {
+                //     return -1;
+                //   } else if (!isSelectedA && isSelectedB) {
+                //     return 1;
+                //   }
+                //   return 0;
+                // });
+                // setImeis(sortedItems);
+                // setIdCartItem(item.id);
+                // setSelectedImei(item.imeisChuaBan)
+                // setSelectedImeiRefresh([]);
+              }}
+              className="rounded-2 button-mui me-2"
+              type="primary"
+              style={{ height: "38px", width: "100px", fontSize: "15px" }}
+            >
+              <span
+                className="text-white"
+                style={{ marginBottom: "2px", fontSize: "15px", fontWeight: "500" }}
+              >
+                Cập Nhật
+              </span>
+            </Button>
+            <Button
+              // onClick={() => removeProductInCart(item.id)}
+              className="rounded-2 button-mui"
+              type="danger"
+              style={{ height: "38px", width: "80px", fontSize: "15px" }}
+            >
+              <span
+                className="text-white"
+                style={{ marginBottom: "2px", fontSize: "15px", fontWeight: "500" }}
+              >
+                Xóa
+              </span>
+            </Button>
+          </div>
+        </div>
+    },
+  ];
+
+
   const OrderSummary = () => {
     return (
       <div className="wrap-order-summary mt-4 p-3">
         <div className="">
-          <div className="d-flex justify-content-between">
-            <div className="ms-2" style={{ marginTop: "3px" }}>
-              <span className='' style={{ fontSize: "25px" }}>DANH SÁCH SẢN PHẨM</span>
-            </div>
-            <div className="">
-              <Button
-                // onClick={handleOpenDialogProducts}
-                className="rounded-2"
-                type="primary"
-                style={{ height: "40px", width: "145px", fontSize: "16px" }}
-              >
-                <span
-                  className="text-white"
-                  style={{ marginBottom: "3px", fontWeight: "500" }}
+          <div className="d-flex justify-content-end">
+            <div className="me-2">
+              {order.trangThai === OrderStatusString.PENDING_CONFIRM || order.trangThai ===
+                OrderStatusString.CONFIRMED || order.trangThai === OrderStatusString.PREPARING ?
+                <Button
+                  // onClick={handleOpenDialogProducts}
+                  className="rounded-2"
+                  type="primary"
+                  style={{ height: "40px", width: "145px", fontSize: "16px" }}
                 >
-                  Thêm sản phẩm
-                </span>
-              </Button>
+                  <span
+                    className="text-white"
+                    style={{ marginBottom: "3px", fontWeight: "500" }}
+                  >
+                    Thêm sản phẩm
+                  </span>
+                </Button>
+                : null}
             </div>
           </div>
           <div className='ms-2 mt-2' style={{ borderBottom: "2px solid #C7C7C7", width: "99.2%", borderWidth: "2px" }}></div>
         </div>
 
-        <div className="wrap-cart-order" style={{ height: "auto" }}>
+        <div className="wrap-cart-order mx-auto" style={{ height: "auto", width: "98%" }}>
           <Row className="">
             <div className="">
-              <div className='' style={{ height: "auto" }}>
-                <StyledTableContainer component={Paper}>
-                  <TableMui sx={{ minWidth: 650, boxShadow: "none" }} aria-label="simple table" className={classes.tableContainer}>
-                    <StyledTableHead>
-                      <TableRow>
-                        <TableCell align="center">Ảnh</TableCell>
-                        <TableCell align="center">Sản Phẩm</TableCell>
-                        <TableCell align="center">Số lượng</TableCell>
-                        <TableCell align="center">Thành tiền</TableCell>
-                        <TableCell align="center">Thao Tác</TableCell>
-                      </TableRow>
-                    </StyledTableHead>
-                    <StyledTableBody>
-                      {order && order.orderItems && order.orderItems.map((item, index) => (
-                        <TableRow
-                          key={index}
-                          sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                        >
-                          <TableCell align='center'>
-                            <img src={item && item.sanPhamChiTiet.image.path} class='' alt="" style={{ width: "155px", height: "155px" }} />
-                          </TableCell>
-                          <TableCell align="center" style={{ width: "350px" }}>
-                            <div>
-                              <span className='' style={{ whiteSpace: "pre-line", fontSize: "18px" }}>{item.sanPhamChiTiet.sanPham.tenSanPham}</span>
-                            </div>
-                            <div className='mt-2'>
-                              <span style={{ color: "#dc1111", fontSize: "17px" }}>
-                                {item && item.donGia ? item.donGia.toLocaleString("vi-VN", {
-                                  style: "currency",
-                                  currency: "VND",
-                                }) : ""}
-                              </span>
-                            </div>
-                            <div className='mt-2 pt-1 d-flex justify-content-around mx-auto'>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <RadioGroup orientation='horizontal'
-                                aria-labelledby="storage-label"
-                                size="lg"
-                                sx={{ gap: 1.7 }}
-                              >
-                                <Sheet
-                                  sx={{
-                                    borderRadius: 'md',
-                                    boxShadow: 'sm',
-                                  }}
-                                >
-                                  <Radio disabled
-                                    label={
-                                      <>
-                                        <div>
-                                          <span className="p-2" style={{ fontSize: "15px", fontWeight: "500" }}>{item.sanPhamChiTiet.ram.dungLuong + "/" + item.sanPhamChiTiet.rom.dungLuong + "GB"}</span>
-                                        </div>
-                                      </>
-                                    }
-                                    overlay
-                                    disableIcon
-                                    slotProps={{
-                                      label: ({ checked }) => ({
-                                        sx: {
-                                          fontWeight: 'lg',
-                                          fontSize: 'md',
-                                          color: checked ? 'text.primary' : 'text.secondary',
-                                        },
-                                      }),
-                                      action: ({ checked }) => ({
-                                        sx: (theme) => ({
-                                          ...(checked && {
-                                            '--variant-borderWidth': '2px',
-                                            '&&': {
-                                              // && to increase the specificity to win the base :hover styles
-                                              borderColor: "#2f80ed",
-                                            },
-                                          }),
-                                        }),
-                                      }),
-                                    }}
-                                  />
-                                </Sheet>
-                              </RadioGroup>
-                              <RadioGroup orientation='horizontal' className="ms-2"
-                                aria-labelledby="storage-label"
-                                size="lg"
-                                sx={{ gap: 1.7 }}
-                              >
-                                <Sheet
-                                  sx={{
-                                    borderRadius: 'md',
-                                    boxShadow: 'sm',
-                                  }}
-                                >
-                                  <Radio disabled
-                                    label={
-                                      <>
-                                        <div className="">
-                                          <span className="p-2" style={{ fontSize: "15px", fontWeight: "500" }}>{item.sanPhamChiTiet.mauSac.tenMauSac}</span>
-                                        </div>
-                                      </>
-                                    }
-                                    overlay
-                                    disableIcon
-                                    slotProps={{
-                                      label: ({ checked }) => ({
-                                        sx: {
-                                          fontWeight: 'lg',
-                                          fontSize: 'md',
-                                          color: checked ? 'text.primary' : 'text.secondary',
-                                        },
-                                      }),
-                                      action: ({ checked }) => ({
-                                        sx: (theme) => ({
-                                          ...(checked && {
-                                            '--variant-borderWidth': '2px',
-                                            '&&': {
-                                              // && to increase the specificity to win the base :hover styles
-                                              borderColor: "#2f80ed",
-                                            },
-                                          }),
-                                        }),
-                                      }),
-                                    }}
-                                  />
-                                </Sheet>
-                              </RadioGroup>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                            </div>
-                          </TableCell>
-                          <TableCell align="center" style={{ fontSize: "15px" }}>
-                            <div className="ms-5">
-                              <RadioGroup orientation='horizontal'
-                                aria-labelledby="storage-label"
-                                size="lg"
-                                sx={{ gap: 1.7 }}
-                              >
-                                <Sheet
-                                  sx={{
-                                    borderRadius: 'md',
-                                    boxShadow: 'sm',
-                                  }}
-                                >
-                                  <Radio disabled
-                                    label={
-                                      <>
-                                        <div>
-                                          <span className="p-2" style={{ fontSize: "15px", fontWeight: "500" }}>{"x" + item.soLuong}</span>
-                                        </div>
-                                      </>
-                                    }
-                                    overlay
-                                    disableIcon
-                                    slotProps={{
-                                      label: ({ checked }) => ({
-                                        sx: {
-                                          fontWeight: 'lg',
-                                          fontSize: 'md',
-                                          color: checked ? 'text.primary' : 'text.secondary',
-                                        },
-                                      }),
-                                      action: ({ checked }) => ({
-                                        sx: (theme) => ({
-                                          ...(checked && {
-                                            '--variant-borderWidth': '2px',
-                                            '&&': {
-                                              // && to increase the specificity to win the base :hover styles
-                                              borderColor: "#2f80ed",
-                                            },
-                                          }),
-                                        }),
-                                      }),
-                                    }}
-                                  />
-                                </Sheet>
-                              </RadioGroup>
-                            </div>
-                          </TableCell>
-                          <TableCell align="center" style={{ color: "#dc1111", fontSize: "15px" }}>
-                            <span style={{ color: "#dc1111", fontSize: "17.5px" }}>
-                              {item && totalItem(item.soLuong, item.donGia).toLocaleString("vi-VN", {
-                                style: "currency",
-                                currency: "VND",
-                              })}
-                            </span>
-                          </TableCell>
-                          <TableCell align="center" className=''>
-                            <Tooltip TransitionComponent={Zoom} title="Cập nhật">
-                              <Button className=''
-                                icon={
-                                  <EditIcon />
-                                }
-                                // onClick={() => openDialogProductDetails()}
-                                type="primary"
-                                style={{ fontSize: "13px", height: "32.5px" }}
-                              >
-                              </Button>
-
-                            </Tooltip>
-                            <Tooltip TransitionComponent={Zoom} title="Xóa khỏi giỏ hàng">
-                              <Button className='ms-2'
-                                // onClick={() => removeProductInCart(item.id)}
-                                icon={
-                                  <IconTrash />
-                                }
-                                type="danger"
-                                style={{ fontSize: "13px", height: "32.5px" }}
-                              >
-                              </Button>
-
-
-                            </Tooltip>
-
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </StyledTableBody>
-                  </TableMui>
-                </StyledTableContainer>
+              <div className='mt-2' style={{ height: "auto" }}>
+                <Table
+                  className='table-cart'
+                  columns={columnsOrderItems}
+                  dataSource={orderItems}
+                  pagination={false}
+                  rowKey={"id"}
+                  key={"id"}
+                />
               </div>
             </div>
           </Row>
@@ -1660,7 +1615,6 @@ const OrderDetail = (props) => {
       <PaymentHistories />
       <OrderSummary />
 
-
       <OrderHistoryDialog
         columns={columnsTableOrderHistories}
         open={openDialogDetailOrderHistories}
@@ -1678,6 +1632,17 @@ const OrderDetail = (props) => {
         open={openDialogUpdateRecipientOrder}
         onClose={handleCloseDialogUpdateRecipientOrder}
         onCloseNoAction={handleCloseNoActionDialogUpdateRecipientOrder}
+        name={customerName}
+        phone={customerPhone}
+        address={customerAddress}
+        province={customerProvince}
+        district={customerDistrict}
+        ward={customerWard}
+        note={customerNote}
+      />
+
+      <MultiplePaymentMethodsDelivery open={openPayment} close={handleCloseOpenPayment}
+        data={paymentHistorys}
       />
 
       {isLoading && <LoadingIndicator />}

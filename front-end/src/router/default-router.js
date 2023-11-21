@@ -110,6 +110,8 @@ import UpdateMauSac from "../views/admin/order-manager/update-mau-sac";
 import ManagementDanhMuc from "../views/admin/order-manager/management-danh-muc";
 import CreateDanhMuc from "../views/admin/order-manager/create-danh-muc";
 import ThongKe from "../views/admin/statics-manager/thong-ke";
+import ManagementImage from "../views/admin/order-manager/management-image";
+import PaymentSuccess from "../views/admin/order-manager/vnpay-payment-success";
 
 export const DefaultRouter = [
   {
@@ -263,6 +265,10 @@ export const DefaultRouter = [
         element: <PointOfSales />,
       },
       {
+        path: "dashboard/point-of-sales/:id",
+        element: <PointOfSales />,
+      },
+      {
         path: "dashboard/order-detail/:id",
         element: <OrderDetail />,
       },
@@ -373,6 +379,10 @@ export const DefaultRouter = [
       {
         path: "dashboard/thong-ke",
         element: <ThongKe />,
+      },
+      {
+        path: "dashboard/payment-success",
+        element: <PaymentSuccess />,
       },
       // {
       //   path: 'dashboard/add-product',

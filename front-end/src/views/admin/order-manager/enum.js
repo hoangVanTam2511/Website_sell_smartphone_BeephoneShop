@@ -133,3 +133,8 @@ export const TypeCameraNumber = {
 //   NANO_SIM : "MICRO_SIM",
 //   E_SIM : "MICRO_SIM",
 // };
+export const StatusImei = {
+  IN_THE_CART: "IN_THE_CART",
+  SOLD: "SOLD",
+  NOT_SOLD: "NOT_SOLD"
+}

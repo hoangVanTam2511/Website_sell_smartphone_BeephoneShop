@@ -2,7 +2,6 @@ package beephone_shop_projects.entity;
 
 import beephone_shop_projects.entity.base.IsIdentified;
 import beephone_shop_projects.entity.base.PrimaryEntity;
-import beephone_shop_projects.infrastructure.constant.NetworkSupport;
 import beephone_shop_projects.infrastructure.constant.OperatingType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
@@ -33,9 +32,6 @@ public class SanPham extends PrimaryEntity implements IsIdentified {
   private String ma;
 
   private String tenSanPham;
-
-  @Enumerated(EnumType.ORDINAL)
-  private NetworkSupport networkSupport;
 
   @Enumerated(EnumType.ORDINAL)
   private OperatingType operatingType;
@@ -78,10 +74,10 @@ public class SanPham extends PrimaryEntity implements IsIdentified {
   private Pin pin;
 
 //  @OneToMany(mappedBy = "sanPham")
-//  private List<CameraTruoc> cameraTruocs;
+//  private List<CameraTruocDienThoai> cameraTruocs;
 //
 //  @OneToMany(mappedBy = "sanPham")
-//  private List<CameraSau> cameraSaus;
+//  private List<CameraSauDienThoai> cameraSaus;
 
   @JsonIgnore
   @OneToMany(mappedBy = "sanPham")

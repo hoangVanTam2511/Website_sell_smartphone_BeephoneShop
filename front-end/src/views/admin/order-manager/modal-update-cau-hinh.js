@@ -1,80 +1,35 @@
 import React, { useEffect, useState } from "react";
-import {
-  Link,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Empty, Table, Input } from "antd";
-import {
-  Box,
-  FormControl,
-  Table as TableMui,
-  IconButton,
-  Select,
-  InputLabel,
-  MenuItem,
-  Pagination,
-  TextField,
-  Tooltip,
-  FormControlLabel,
-  Autocomplete,
-  InputAdornment,
-  OutlinedInput,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogActions,
-  Slide,
-  ListItemText,
-  Rating,
-  TableContainer,
-  Paper,
-  TableRow,
-  TableCell,
-  TableBody,
-  TableHead,
-} from "@mui/material";
+import { Box, FormControl, Table as TableMui, IconButton, Select, InputLabel, MenuItem, Pagination, TextField, Tooltip, FormControlLabel, Autocomplete, InputAdornment, OutlinedInput, Dialog, DialogContent, DialogTitle, DialogActions, Slide, ListItemText, Rating, TableContainer, Paper, TableRow, TableCell, TableBody, TableHead, } from "@mui/material";
 import axios from "axios";
-import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
-import Zoom from "@mui/material/Zoom";
+import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
+import Zoom from '@mui/material/Zoom';
 import { AiOutlineClear, AiOutlinePlus } from "react-icons/ai";
-import LoadingIndicator from "../../../utilities/loading";
-import useCustomSnackbar from "../../../utilities/notistack";
+import LoadingIndicator from '../../../utilities/loading';
+import useCustomSnackbar from '../../../utilities/notistack';
 import { Notistack } from "./enum";
-import Checkbox from "@mui/joy/Checkbox";
-import List from "@mui/joy/List";
-import ListItem from "@mui/joy/ListItem";
-import Done from "@mui/icons-material/Done";
-import { Select as SelectJoy } from "@mui/joy";
-import { Option as OptionJoy } from "@mui/joy";
+import Checkbox from '@mui/joy/Checkbox';
+import List from '@mui/joy/List';
+import ListItem from '@mui/joy/ListItem';
+import Done from '@mui/icons-material/Done';
+import { Select as SelectJoy } from '@mui/joy';
+import { Option as OptionJoy } from '@mui/joy';
 import TextFieldSearchColors from "./text-field-search-colors";
-import DeleteIcon from "@mui/icons-material/Delete";
+import DeleteIcon from '@mui/icons-material/Delete';
+import { FaTrashAlt } from "react-icons/fa";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const ModalUpdateCauHinh = ({
-  open,
-  close,
-  updateData,
-  defaultRam,
-  defaultRom,
-  id,
-  colorsHadSelect,
-  list,
-  rams,
-  roms,
-  listColor,
-  listFinal,
-}) => {
+const ModalUpdateCauHinh = ({ open, close, updateData, defaultRam, defaultRom, id, colorsHadSelect, list, rams, roms, listColor, listFinal }) => {
+
   const [selectedRam, setSelectedRam] = useState(defaultRam);
   const [selectedRom, setSelectedRom] = useState(defaultRom);
   const [selectedColors, setSelectedColors] = useState(colorsHadSelect);
   const [selectedId, setSelectedId] = useState(id);
-  const [valueColorFinalSelected, setValueColorFinalSelected] =
-    useState(colorsHadSelect);
+  const [valueColorFinalSelected, setValueColorFinalSelected] = useState(colorsHadSelect);
   const [openSelectColorSelected, setOpenSelectColorSelected] = useState(false);
   const [selectColorSelected, setSelectColorSelected] = useState(false);
 
@@ -85,13 +40,13 @@ const ModalUpdateCauHinh = ({
     setSelectedColors(colorsHadSelect);
     setValueColorFinalSelected(colorsHadSelect);
     setCauHinhs(list);
-  }, [defaultRom, defaultRam, colorsHadSelect, id, list]);
+  }, [defaultRom, defaultRam, colorsHadSelect, id, list])
 
   const [listColorCurrent, setListColorCurrent] = useState([]);
 
   const update = (id, ram, rom, colors) => {
     updateData(id, ram, rom, colors);
-  };
+  }
 
   const { handleOpenAlertVariant } = useCustomSnackbar();
   const [cauHinhs, setCauHinhs] = useState(list);
@@ -99,7 +54,7 @@ const ModalUpdateCauHinh = ({
   const [openSelectColor, setOpenSelectColor] = useState(false);
   const [openListColorCurrent, setOpenListColorCurrent] = useState(false);
   const [selectColor, setSelectColor] = useState(false);
-  const [keyword, setKeyword] = useState("");
+  const [keyword, setKeyword] = useState('');
   const handleCloseSelectColorSelected = () => {
     setOpenSelectColorSelected(false);
   };
@@ -109,10 +64,10 @@ const ModalUpdateCauHinh = ({
 
   const handleOpenListColorCurrent = () => {
     setOpenListColorCurrent(true);
-  };
+  }
   const handleCloseListColorCurrent = () => {
     setOpenListColorCurrent(false);
-  };
+  }
 
   const handleCloseSelectColor = () => {
     setOpenSelectColor(false);
@@ -133,6 +88,7 @@ const ModalUpdateCauHinh = ({
     }
   });
 
+
   // const [valueColorFinal, setValueColorFinal] = useState([]);
 
   const joinedStringArr = (arr) => {
@@ -144,14 +100,15 @@ const ModalUpdateCauHinh = ({
       }
     }, "");
     return joinedString;
-  };
+  }
 
   // const joinedColors = joinedStringArr(valueColorFinal.map((color) => color.tenMauSac));
-  const joinedColorsSelected = joinedStringArr(
-    selectedColors.map((color) => color.tenMauSac)
+  const joinedColorsSelected = joinedStringArr(selectedColors.map((color) => color.tenMauSac));
+
+  const [colors, setColors] = useState(
+    listColor
   );
 
-  const [colors, setColors] = useState(listColor);
 
   const filterColors = listColor.filter((color) =>
     color.tenMauSac.toLowerCase().includes(keyword.toLowerCase())
@@ -159,7 +116,7 @@ const ModalUpdateCauHinh = ({
 
   const getKeyword = (value) => {
     setKeyword(value);
-  };
+  }
 
   // const [ram, setRam] = useState();
   // const [rom, setRom] = useState();
@@ -177,9 +134,7 @@ const ModalUpdateCauHinh = ({
       dataIndex: "stt",
       width: "5%",
       render: (text, record, index) => (
-        <span style={{ fontWeight: "400" }}>
-          {cauHinhs.indexOf(record) + 1}
-        </span>
+        <span style={{ fontWeight: "400" }}>{cauHinhs.indexOf(record) + 1}</span>
       ),
     },
     {
@@ -188,11 +143,9 @@ const ModalUpdateCauHinh = ({
       width: "20%",
       render: (text, record) => {
         return (
-          <span style={{ fontWeight: "400" }}>
-            {record.ram.dungLuong + "GB"}
-          </span>
-        );
-      },
+          <span style={{ fontWeight: "400" }}>{record.ram.dungLuong + "GB"}</span>
+        )
+      }
     },
     {
       title: "ROM",
@@ -200,9 +153,7 @@ const ModalUpdateCauHinh = ({
       width: "20%",
       render: (text, record) => (
         <span style={{ fontWeight: "400" }}>
-          {record.rom.dungLuong === 1024
-            ? 1 + "TB"
-            : record.rom.dungLuong + "GB"}
+          {record.rom.dungLuong === 1024 ? 1 + "TB" : record.rom.dungLuong + "GB"}
         </span>
       ),
     },
@@ -211,9 +162,7 @@ const ModalUpdateCauHinh = ({
       align: "center",
       width: "45%",
       render: (text, record) => (
-        <span style={{ fontWeight: "400", whiteSpace: "pre-line" }}>
-          {joinedStringArr(record.colors.map((color) => color.tenMauSac))}
-        </span>
+        <span style={{ fontWeight: "400", whiteSpace: "pre-line" }}>{joinedStringArr(record.colors.map((color) => color.tenMauSac))}</span>
       ),
     },
     {
@@ -236,28 +185,19 @@ const ModalUpdateCauHinh = ({
                   // setValueColorFinalSelected(record.colors);
                   // setSelectedId(record.id)
                 }}
-                className="me-2"
-                style={{ height: "40px" }}
-              >
+                className="me-2" style={{ height: "40px" }}>
                 <BorderColorOutlinedIcon color="primary" />
               </IconButton>
             </Tooltip>
             <Tooltip title="Xóa" TransitionComponent={Zoom}>
-              <IconButton
-                className=""
-                style={{ height: "40px" }}
+              <IconButton className='' style={{ height: "40px" }}
                 onClick={() => {
-                  const newCauHinhs = cauHinhs.filter(
-                    (cauHinh) => cauHinh.id !== record.id
-                  );
+                  const newCauHinhs = cauHinhs.filter((cauHinh) => cauHinh.id !== record.id);
                   setCauHinhs(newCauHinhs);
-                  handleOpenAlertVariant(
-                    "Xóa cấu hình thành công!",
-                    Notistack.SUCCESS
-                  );
+                  handleOpenAlertVariant("Xóa cấu hình thành công!", Notistack.SUCCESS)
                 }}
               >
-                <DeleteIcon sx={{ color: "#e5383b" }} />
+                <FaTrashAlt color="#e5383b" />
               </IconButton>
             </Tooltip>
           </div>
@@ -269,8 +209,7 @@ const ModalUpdateCauHinh = ({
   const CauHinhTable = () => {
     return (
       <>
-        <Table
-          className="table-container mt-4"
+        <Table className="table-container mt-4"
           columns={columns}
           rowKey="id"
           key={"id"}
@@ -303,28 +242,19 @@ const ModalUpdateCauHinh = ({
         <DialogContent className="">
           <div style={{ width: "600px", height: "auto" }}>
             <div className="text-center mt-1" style={{}}>
-              <span
-                className=""
-                style={{ fontWeight: "550", fontSize: "29px" }}
-              >
-                CẬP NHẬT CẤU HÌNH
-              </span>
+              <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>CẬP NHẬT CẤU HÌNH</span>
             </div>
             <div className="d-flex mt-4">
               <div className="" style={{ width: "100%" }}>
                 <FormControl fullWidth>
-                  <Select
-                    className="custom"
+                  <Select className="custom"
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
                     value={selectedRam}
                     onChange={(e) => setSelectedRam(e.target.value)}
                     startAdornment={
                       <>
-                        <InputAdornment
-                          position="start"
-                          style={{ marginBottom: "1px" }}
-                        >
+                        <InputAdornment position="start" style={{ marginBottom: "1px" }}>
                           RAM
                         </InputAdornment>
                       </>
@@ -343,18 +273,14 @@ const ModalUpdateCauHinh = ({
               </div>
               <div className="ms-3" style={{ width: "100%" }}>
                 <FormControl fullWidth>
-                  <Select
-                    className="custom"
+                  <Select className="custom"
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
                     value={selectedRom}
                     onChange={(e) => setSelectedRom(e.target.value)}
                     startAdornment={
                       <>
-                        <InputAdornment
-                          position="start"
-                          style={{ marginBottom: "1px" }}
-                        >
+                        <InputAdornment position="start" style={{ marginBottom: "1px" }}>
                           ROM
                         </InputAdornment>
                       </>
@@ -365,9 +291,7 @@ const ModalUpdateCauHinh = ({
                       .sort((ram1, ram2) => ram1.dungLuong - ram2.dungLuong)
                       .map((item) => (
                         <MenuItem key={item.id} value={item}>
-                          {item.dungLuong === 1024
-                            ? 1 + "TB"
-                            : item.dungLuong + "GB"}
+                          {item.dungLuong === 1024 ? 1 + "TB" : item.dungLuong + "GB"}
                         </MenuItem>
                       ))}
                   </Select>
@@ -376,8 +300,7 @@ const ModalUpdateCauHinh = ({
             </div>
             <div className="mx-auto mt-3" style={{ width: "100%" }}>
               <FormControl fullWidth>
-                <Select
-                  className="custom"
+                <Select className="custom"
                   onOpen={handleOpenSelectColorSelected}
                   open={openSelectColorSelected}
                   labelId="demo-simple-select-label"
@@ -385,52 +308,25 @@ const ModalUpdateCauHinh = ({
                   value={0}
                   startAdornment={
                     <>
-                      <InputAdornment
-                        position="start"
-                        style={{ marginBottom: "1px" }}
-                      >
+                      <InputAdornment position="start" style={{ marginBottom: "1px" }}>
                         Màu Sắc
                       </InputAdornment>
                     </>
                   }
                 >
-                  <MenuItem style={{ display: "none" }} value={0}>
-                    {selectedColors.length > 0
-                      ? joinedColorsSelected
-                      : "Chọn Màu Sắc"}
-                  </MenuItem>
-                  <MenuItem
-                    value={1}
+                  <MenuItem style={{ display: "none" }} value={0}>{selectedColors.length > 0 ? joinedColorsSelected : "Chọn Màu Sắc"}</MenuItem>
+                  <MenuItem value={1}
                     disableRipple
-                    style={{
-                      backgroundColor: "transparent",
-                      display: "block",
-                      cursor: "auto",
-                      width: "1098px",
-                    }}
+                    style={{ backgroundColor: "transparent", display: "block", cursor: "auto", width: "1098px" }}
                   >
-                    <div
-                      style={{
-                        height:
-                          cauHinhs.length > 0 && listFinal.length > 0
-                            ? "589px"
-                            : "455px",
-                      }}
-                    >
+                    <div style={{ height: cauHinhs.length > 0 && listFinal.length > 0 ? "589px" : "455px" }}>
                       <div className="d-flex justify-content-between">
                         <div className="d-flex" style={{}}>
-                          <TextFieldSearchColors
-                            getColor={getKeyword}
-                            defaultValue={keyword}
-                          />
+                          <TextFieldSearchColors getColor={getKeyword} defaultValue={keyword} />
                           <Button
                             className="rounded-2 button-mui ms-2"
                             type="primary"
-                            style={{
-                              height: "40px",
-                              width: "auto",
-                              fontSize: "15px",
-                            }}
+                            style={{ height: "40px", width: "auto", fontSize: "15px" }}
                           >
                             <span
                               className="text-white"
@@ -443,11 +339,7 @@ const ModalUpdateCauHinh = ({
                             onClick={() => setSelectedColors([])}
                             className="rounded-2 button-mui ms-2"
                             type="warning"
-                            style={{
-                              height: "40px",
-                              width: "auto",
-                              fontSize: "15px",
-                            }}
+                            style={{ height: "40px", width: "auto", fontSize: "15px" }}
                           >
                             <span
                               className="text-dark"
@@ -464,7 +356,8 @@ const ModalUpdateCauHinh = ({
                                 setSelectColorSelected(false);
                                 setValueColorFinalSelected([]);
                                 handleCloseSelectColorSelected();
-                              } else {
+                              }
+                              else {
                                 setSelectColorSelected(true);
                                 setValueColorFinalSelected(selectedColors);
                                 handleCloseSelectColorSelected();
@@ -472,11 +365,7 @@ const ModalUpdateCauHinh = ({
                             }}
                             className="rounded-2 button-mui  me-2"
                             type="primary"
-                            style={{
-                              height: "40px",
-                              width: "auto",
-                              fontSize: "15px",
-                            }}
+                            style={{ height: "40px", width: "auto", fontSize: "15px" }}
                           >
                             <span
                               className=""
@@ -492,11 +381,7 @@ const ModalUpdateCauHinh = ({
                             }}
                             className="rounded-2"
                             type="danger"
-                            style={{
-                              height: "40px",
-                              width: "auto",
-                              fontSize: "15px",
-                            }}
+                            style={{ height: "40px", width: "auto", fontSize: "15px" }}
                           >
                             <span
                               className=""
@@ -514,49 +399,41 @@ const ModalUpdateCauHinh = ({
                             orientation="horizontal"
                             wrap
                             sx={{
-                              maxHeight: "50px",
-                              "--List-gap": "15px",
-                              "--ListItem-radius": "5px",
-                              "--ListItem-gap": "4px",
+                              "maxHeight": "50px",
+                              '--List-gap': '15px',
+                              '--ListItem-radius': '5px',
+                              '--ListItem-gap': '4px',
                             }}
                           >
-                            {filterColors.map((item) => (
-                              <ListItem key={item.id}>
-                                <Checkbox
-                                  slotProps={{
-                                    action: ({ checked }) => ({
-                                      sx: checked
-                                        ? {
-                                            border: "1px solid",
-                                            borderColor: "#2f80ed",
+                            {filterColors
+                              .map((item) => (
+                                <ListItem key={item.id}>
+                                  <Checkbox
+                                    slotProps={{
+                                      action: ({ checked }) => ({
+                                        sx: checked
+                                          ? {
+                                            border: '1px solid',
+                                            borderColor: '#2f80ed',
                                           }
-                                        : {},
-                                    }),
-                                  }}
-                                  overlay
-                                  disableIcon
-                                  checked={selectedColors.includes(item)}
-                                  variant={
-                                    selectedColors.includes(item)
-                                      ? "soft"
-                                      : "outlined"
-                                  }
-                                  onChange={(event) => {
-                                    if (event.target.checked) {
-                                      setSelectedColors((val) => [
-                                        ...val,
-                                        item,
-                                      ]);
-                                    } else {
-                                      setSelectedColors((val) =>
-                                        val.filter((text) => text !== item)
-                                      );
-                                    }
-                                  }}
-                                  label={item.tenMauSac}
-                                />
-                              </ListItem>
-                            ))}
+                                          : {},
+                                      }),
+                                    }}
+                                    overlay
+                                    disableIcon
+                                    checked={selectedColors.includes(item)}
+                                    variant={selectedColors.includes(item) ? 'soft' : 'outlined'}
+                                    onChange={(event) => {
+                                      if (event.target.checked) {
+                                        setSelectedColors((val) => [...val, item]);
+                                      } else {
+                                        setSelectedColors((val) => val.filter((text) => text !== item));
+                                      }
+                                    }}
+                                    label={item.tenMauSac}
+                                  />
+                                </ListItem>
+                              ))}
                           </List>
                         </div>
                       </div>
@@ -570,73 +447,55 @@ const ModalUpdateCauHinh = ({
                       ></div>
                       <h5 className="ms-1 mt-3">Màu Sắc Đã Chọn</h5>
                       <div className="colors-had-select ms-1 mt-3 d-flex">
-                        <div
-                          style={
-                            {
-                              /* maxWidth: "200px" */
-                            }
-                          }
-                        >
+                        <div style={{ /* maxWidth: "200px" */ }}>
                           <List
                             orientation="horizontal"
                             wrap
                             sx={{
-                              maxHeight: "50px",
-                              "--List-gap": "15px",
-                              "--ListItem-radius": "5px",
-                              "--ListItem-gap": "4px",
+                              "maxHeight": "50px",
+                              '--List-gap': '15px',
+                              '--ListItem-radius': '5px',
+                              '--ListItem-gap': '4px',
                             }}
                           >
-                            {selectedColors.map((item) => (
-                              <ListItem key={item.id}>
-                                <Done
-                                  fontSize="md"
-                                  color="primary"
-                                  sx={{
-                                    ml: -0.5,
-                                    zIndex: 2,
-                                    pointerEvents: "none",
-                                  }}
-                                />
-                                <Checkbox
-                                  slotProps={{
-                                    action: ({ checked }) => ({
-                                      sx: checked
-                                        ? {
-                                            border: "1px solid",
-                                            borderColor: "#2f80ed",
+                            {selectedColors
+                              .map((item) => (
+                                <ListItem key={item.id}>
+                                  <Done
+                                    fontSize="md"
+                                    color="primary"
+                                    sx={{ ml: -0.5, zIndex: 2, pointerEvents: 'none' }}
+                                  />
+                                  <Checkbox
+                                    slotProps={{
+                                      action: ({ checked }) => ({
+                                        sx: checked
+                                          ? {
+                                            border: '1px solid',
+                                            borderColor: '#2f80ed',
                                           }
-                                        : {},
-                                    }),
-                                  }}
-                                  overlay
-                                  disableIcon
-                                  checked={selectedColors.includes(item)}
-                                  variant={
-                                    selectedColors.includes(item)
-                                      ? "soft"
-                                      : "outlined"
-                                  }
-                                  onChange={(event) => {
-                                    if (event.target.checked) {
-                                      setSelectedColors((val) => [
-                                        ...val,
-                                        item,
-                                      ]);
-                                    } else {
-                                      setSelectedColors((val) =>
-                                        val.filter((text) => text !== item)
-                                      );
-                                    }
-                                  }}
-                                  label={item.tenMauSac}
-                                />
-                              </ListItem>
-                            ))}
+                                          : {},
+                                      }),
+                                    }}
+                                    overlay
+                                    disableIcon
+                                    checked={selectedColors.includes(item)}
+                                    variant={selectedColors.includes(item) ? 'soft' : 'outlined'}
+                                    onChange={(event) => {
+                                      if (event.target.checked) {
+                                        setSelectedColors((val) => [...val, item]);
+                                      } else {
+                                        setSelectedColors((val) => val.filter((text) => text !== item));
+                                      }
+                                    }}
+                                    label={item.tenMauSac}
+                                  />
+                                </ListItem>
+                              ))}
                           </List>
                         </div>
                       </div>
-                      {cauHinhs.length > 0 && listFinal.length > 0 ? (
+                      {cauHinhs.length > 0 && listFinal.length > 0 ?
                         <>
                           <div style={{ height: "10px" }}></div>
                           <div className="mt-5 pt-4">
@@ -650,119 +509,74 @@ const ModalUpdateCauHinh = ({
                             ></div>
                           </div>
                           <div className="ms-1">
-                            <h5 className="mt-3">
-                              Màu Sắc Của Các Cấu Hình Hiện Tại
-                            </h5>
+                            <h5 className="mt-3">Màu Sắc Của Các Cấu Hình Hiện Tại</h5>
                           </div>
                           <div className="mt-3 ms-1">
                             <div className="" style={{ width: "99.5%" }}>
                               <FormControl fullWidth size="small">
-                                <Select
-                                  className="custom"
+                                <Select className="custom"
                                   onOpen={handleOpenListColorCurrent}
                                   open={openListColorCurrent}
                                   labelId="demo-simple-select-label"
                                   id="demo-simple-select"
                                   value={0}
                                 >
-                                  <MenuItem
-                                    style={{ display: "none" }}
-                                    value={0}
-                                  >
-                                    {"Chọn Màu Sắc"}
-                                  </MenuItem>
-                                  <MenuItem
-                                    value={1}
+                                  <MenuItem style={{ display: "none" }} value={0}>{"Chọn Màu Sắc"}</MenuItem>
+                                  <MenuItem value={1}
                                     disableRipple
-                                    style={{
-                                      backgroundColor: "transparent",
-                                      display: "block",
-                                      cursor: "auto",
-                                      width: "1095px",
-                                    }}
+                                    style={{ backgroundColor: "transparent", display: "block", cursor: "auto", width: "1095px" }}
                                   >
-                                    <div>
-                                      <div
-                                        className="colors-had-select ms-1 d-flex scroll-color"
-                                        style={{ height: "215px" }}
-                                      >
+                                    <div >
+                                      <div className="colors-had-select ms-1 d-flex scroll-color" style={{ height: "215px" }}>
                                         <div style={{}} className="">
                                           <List
                                             orientation="horizontal"
                                             wrap
                                             sx={{
-                                              maxHeight: "50px",
-                                              "--List-gap": "15px",
-                                              "--ListItem-radius": "5px",
-                                              "--ListItem-gap": "4px",
-                                              marginTop: "1px",
-                                              paddingTop: "5px",
+                                              "maxHeight": "50px",
+                                              '--List-gap': '15px',
+                                              '--ListItem-radius': '5px',
+                                              '--ListItem-gap': '4px',
+                                              'marginTop': '1px',
+                                              'paddingTop': '5px',
                                             }}
                                           >
-                                            {uniqueConfigurations.map(
-                                              (item) => (
+                                            {uniqueConfigurations
+                                              .map((item) => (
                                                 <ListItem key={item.id}>
-                                                  {listColorCurrent ===
-                                                    item && (
+                                                  {listColorCurrent === item && (
                                                     <Done
                                                       fontSize="md"
                                                       color="primary"
-                                                      sx={{
-                                                        ml: -0.5,
-                                                        zIndex: 2,
-                                                        pointerEvents: "none",
-                                                      }}
+                                                      sx={{ ml: -0.5, zIndex: 2, pointerEvents: 'none' }}
                                                     />
                                                   )}
                                                   <Checkbox
                                                     slotProps={{
-                                                      action: ({
-                                                        checked,
-                                                      }) => ({
+                                                      action: ({ checked }) => ({
                                                         sx: checked
                                                           ? {
-                                                              border:
-                                                                "1px solid",
-                                                              borderColor:
-                                                                "#2f80ed",
-                                                            }
+                                                            border: '1px solid',
+                                                            borderColor: '#2f80ed',
+                                                          }
                                                           : {},
                                                       }),
                                                     }}
                                                     overlay
                                                     disableIcon
-                                                    variant={
-                                                      listColorCurrent === item
-                                                        ? "soft"
-                                                        : "outlined"
-                                                    }
-                                                    checked={
-                                                      listColorCurrent === item
-                                                    }
+                                                    variant={listColorCurrent === item ? 'soft' : 'outlined'}
+                                                    checked={listColorCurrent === item}
                                                     onChange={() => {
-                                                      if (
-                                                        listColorCurrent ===
-                                                        item
-                                                      ) {
-                                                        setListColorCurrent(
-                                                          null
-                                                        );
+                                                      if (listColorCurrent === item) {
+                                                        setListColorCurrent(null);
                                                       } else {
-                                                        setListColorCurrent(
-                                                          item
-                                                        );
+                                                        setListColorCurrent(item);
                                                       }
                                                     }}
-                                                    label={item.colors
-                                                      .map(
-                                                        (color) =>
-                                                          color.tenMauSac
-                                                      )
-                                                      .join(", ")}
+                                                    label={item.colors.map((color) => color.tenMauSac).join(', ')}
                                                   />
                                                 </ListItem>
-                                              )
-                                            )}
+                                              ))}
                                           </List>
                                         </div>
                                       </div>
@@ -772,37 +586,22 @@ const ModalUpdateCauHinh = ({
                                         <Button
                                           onClick={() => {
                                             if (listColorCurrent === null) {
-                                              handleOpenAlertVariant(
-                                                "Bạn chưa chọn màu sắc!",
-                                                "warning"
-                                              );
-                                            } else {
-                                              setSelectedColors(
-                                                listColorCurrent &&
-                                                  listColorCurrent.colors
-                                              );
+                                              handleOpenAlertVariant("Bạn chưa chọn màu sắc!", "warning");
+                                            }
+                                            else {
+                                              setSelectedColors(listColorCurrent && listColorCurrent.colors);
                                               setListColorCurrent(null);
-                                              handleOpenAlertVariant(
-                                                "Chọn màu sắc thành công!",
-                                                Notistack.SUCCESS
-                                              );
+                                              handleOpenAlertVariant("Chọn màu sắc thành công!", Notistack.SUCCESS);
                                               handleCloseListColorCurrent();
                                             }
                                           }}
                                           className="rounded-2 button-mui  me-2"
                                           type="primary"
-                                          style={{
-                                            height: "40px",
-                                            width: "auto",
-                                            fontSize: "15px",
-                                          }}
+                                          style={{ height: "40px", width: "auto", fontSize: "15px" }}
                                         >
                                           <span
                                             className=""
-                                            style={{
-                                              marginBottom: "2px",
-                                              fontWeight: "500",
-                                            }}
+                                            style={{ marginBottom: "2px", fontWeight: "500" }}
                                           >
                                             Xác Nhận
                                           </span>
@@ -814,18 +613,11 @@ const ModalUpdateCauHinh = ({
                                           }}
                                           className="rounded-2"
                                           type="danger"
-                                          style={{
-                                            height: "40px",
-                                            width: "auto",
-                                            fontSize: "15px",
-                                          }}
+                                          style={{ height: "40px", width: "auto", fontSize: "15px" }}
                                         >
                                           <span
                                             className=""
-                                            style={{
-                                              marginBottom: "2px",
-                                              fontWeight: "500",
-                                            }}
+                                            style={{ marginBottom: "2px", fontWeight: "500" }}
                                           >
                                             Hủy Bỏ
                                           </span>
@@ -838,9 +630,7 @@ const ModalUpdateCauHinh = ({
                             </div>
                           </div>
                         </>
-                      ) : (
-                        ""
-                      )}
+                        : ""}
                     </div>
                   </MenuItem>
                 </Select>
@@ -852,43 +642,25 @@ const ModalUpdateCauHinh = ({
               onClick={() => {
                 if (!selectedRam) {
                   handleOpenAlertVariant("Bạn chưa chọn RAM!", "warning");
-                } else if (!selectedRom) {
+                }
+                else if (!selectedRom) {
                   handleOpenAlertVariant("Bạn chưa chọn ROM!", "warning");
-                } else if (
-                  selectedRam.dungLuong === defaultRam.dungLuong &&
-                  selectedRom.dungLuong === defaultRom.dungLuong
-                ) {
-                  update(
-                    selectedId,
-                    defaultRam,
-                    defaultRom,
-                    valueColorFinalSelected
-                  );
+                }
+                else if (selectedRam.dungLuong === defaultRam.dungLuong &&
+                  selectedRom.dungLuong === defaultRom.dungLuong) {
+                  update(selectedId, defaultRam, defaultRom, valueColorFinalSelected);
                   close();
-                  handleOpenAlertVariant(
-                    "Cập nhật cấu hình thành công!",
-                    Notistack.SUCCESS
-                  );
-                } else if (
-                  cauHinhs.some(
-                    (d) =>
-                      d.ram.dungLuong === selectedRam.dungLuong &&
-                      d.rom.dungLuong === selectedRom.dungLuong
-                  )
+                  handleOpenAlertVariant("Cập nhật cấu hình thành công!", Notistack.SUCCESS);
+                }
+                else if (
+                  cauHinhs.some((d) => d.ram.dungLuong === selectedRam.dungLuong && d.rom.dungLuong === selectedRom.dungLuong)
                 ) {
                   handleOpenAlertVariant(`Cấu hình đã tồn tại!`, "warning");
-                } else {
-                  update(
-                    selectedId,
-                    selectedRam,
-                    selectedRom,
-                    valueColorFinalSelected
-                  );
+                }
+                else {
+                  update(selectedId, selectedRam, selectedRom, valueColorFinalSelected);
                   close();
-                  handleOpenAlertVariant(
-                    "Cập nhật cấu hình thành công!",
-                    Notistack.SUCCESS
-                  );
+                  handleOpenAlertVariant("Cập nhật cấu hình thành công!", Notistack.SUCCESS);
                 }
               }}
               className="rounded-2 button-mui"
@@ -907,6 +679,7 @@ const ModalUpdateCauHinh = ({
         <div className="mt-2"></div>
       </Dialog>
     </>
-  );
-};
+  )
+
+}
 export default ModalUpdateCauHinh;

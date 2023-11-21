@@ -42,6 +42,7 @@ public class DBGenerator implements CommandLineRunner {
 
     @Autowired
     private ITheNhoRepository theNhoRepository;
+
     @Autowired
     private ICongSacRepository congSacRepository;
 
@@ -102,7 +103,7 @@ public class DBGenerator implements CommandLineRunner {
         chuCuaHang.setMa("role2");
         chuCuaHang.setTen("Khách Hàng");
         chuCuaHang.setId(roleRepository.save(chuCuaHang).getId());
-
+//
         //Bảng Account
         Account admin = new Account();
         admin.setMa("Account1");
@@ -121,26 +122,24 @@ public class DBGenerator implements CommandLineRunner {
         admin.setTrangThai(StatusAccountCus.HOAT_DONG);
         admin.setIdRole(chuCuaHang);
         admin.setId(accountRepository.save(admin).getId());
-
-        Account accountNhanVien = new Account();
-        accountNhanVien.setMa("Account2");
-        accountNhanVien.setHoVaTen("Trần Quang Hà");
-        accountNhanVien.setAnhDaiDien("https://i.pinimg.com/736x/c8/44/25/c84425742604c8e5b1d827a7b40cfa1c.jpg");
-        accountNhanVien.setCanCuocCongDan("0191231002");
-        accountNhanVien.setNgaySinh(new Date());
-        accountNhanVien.setGioiTinh(true);
-        accountNhanVien.setEmail("hatq@gmail.com");
-        accountNhanVien.setSoDienThoai("0913010291");
-        accountNhanVien.setDiaChi("Kiều mai");
-        accountNhanVien.setXaPhuong("Phường Đại Mỗ");
-        accountNhanVien.setQuanHuyen("Quận Nam Từ Liêm");
-        accountNhanVien.setTinhThanhPho("Thành phố Hà Nội");
-        accountNhanVien.setMatKhau("12345");
-        accountNhanVien.setTrangThai(StatusAccountCus.LAM_VIEC);
-        accountNhanVien.setIdRole(nhanVien);
-        accountNhanVien.setId(accountRepository.save(accountNhanVien).getId());
-
-
+//
+//        Account accountNhanVien = new Account();
+//        accountNhanVien.setMa("Account2");
+//        accountNhanVien.setHoVaTen("Trần Quang Hà");
+//        accountNhanVien.setAnhDaiDien("https://i.pinimg.com/736x/c8/44/25/c84425742604c8e5b1d827a7b40cfa1c.jpg");
+//        accountNhanVien.setCanCuocCongDan("0191231002");
+//        accountNhanVien.setNgaySinh(new Date());
+//        accountNhanVien.setGioiTinh(true);
+//        accountNhanVien.setEmail("hatq@gmail.com");
+//        accountNhanVien.setSoDienThoai("0913010291");
+//        accountNhanVien.setDiaChi("Kiều mai");
+//        accountNhanVien.setXaPhuong("Phường Đại Mỗ");
+//        accountNhanVien.setQuanHuyen("Quận Nam Từ Liêm");
+//        accountNhanVien.setTinhThanhPho("Thành phố Hà Nội");
+//        accountNhanVien.setMatKhau("12345");
+//        accountNhanVien.setTrangThai(StatusAccountCus.LAM_VIEC);
+//        accountNhanVien.setIdRole(nhanVien);
+//        accountNhanVien.setId(accountRepository.save(accountNhanVien).getId());
 
         //Bảng Camera
         Camera camera = new Camera();
@@ -187,41 +186,41 @@ public class DBGenerator implements CommandLineRunner {
         diaChi.setAccount(admin);
         diaChi.setId(diaChiRepository.save(diaChi).getId());
 
-        DiaChi diaChi1 = new DiaChi();
-        diaChi1.setHoTenKH("Trần Thanh phong");
-        diaChi1.setSoDienThoaiKhachHang("0918239812");
-        diaChi1.setDiaChi("Hồ Tùng Mậu");
-        diaChi1.setXaPhuong("Xã An Lĩnh");
-        diaChi1.setQuanHuyen("Huyện Tuy Hòa");
-        diaChi1.setTinhThanhPho("Phú Yên");
-        diaChi1.setAccount(admin);
-        diaChi1.setId(diaChiRepository.save(diaChi1).getId());
+//        DiaChi diaChi1 = new DiaChi();
+//        diaChi1.setHoTenKH("Trần Thanh phong");
+//        diaChi1.setSoDienThoaiKhachHang("0918239812");
+//        diaChi1.setDiaChi("Hồ Tùng Mậu");
+//        diaChi1.setXaPhuong("Xã An Lĩnh");
+//        diaChi1.setQuanHuyen("Huyện Tuy Hòa");
+//        diaChi1.setTinhThanhPho("Phú Yên");
+//        diaChi1.setAccount(admin);
+//        diaChi1.setId(diaChiRepository.save(diaChi1).getId());
 
-        DiaChi diaChi2 = new DiaChi();
-        diaChi2.setHoTenKH("Vũ Văn Nguyên");
-        diaChi2.setSoDienThoaiKhachHang("0391928712");
-        diaChi2.setDiaChi("Xóm 4, Thôn Lai Ổn");
-        diaChi2.setXaPhuong("Xã An Quí");
-        diaChi2.setQuanHuyen("Huyện Quỳnh Phụ");
-        diaChi2.setTinhThanhPho("Thái Bình");
-        diaChi2.setAccount(accountNhanVien);
-        diaChi2.setId(diaChiRepository.save(diaChi2).getId());
-
-        //Bảng Dòng Sản Phẩm
-        DongSanPham dongSanPham = new DongSanPham();
-        dongSanPham.setMa("dongSanPham1");
-        dongSanPham.setTenDongSanPham("Galaxy Z");
-        dongSanPham.setId(dongSanPhamRepository.save(dongSanPham).getId());
-
-        DongSanPham dongSanPham2 = new DongSanPham();
-        dongSanPham2.setMa("dongSanPham12");
-        dongSanPham2.setTenDongSanPham("Iphone 15 Pro Max");
-        dongSanPham2.setId(dongSanPhamRepository.save(dongSanPham2).getId());
-
-        DongSanPham dongSanPham3 = new DongSanPham();
-        dongSanPham3.setMa("dongSanPham13");
-        dongSanPham3.setTenDongSanPham("Xiaomi Mi");
-        dongSanPham3.setId(dongSanPhamRepository.save(dongSanPham3).getId());
+//        DiaChi diaChi2 = new DiaChi();
+//        diaChi2.setHoTenKH("Vũ Văn Nguyên");
+//        diaChi2.setSoDienThoaiKhachHang("0391928712");
+//        diaChi2.setDiaChi("Xóm 4, Thôn Lai Ổn");
+//        diaChi2.setXaPhuong("Xã An Quí");
+//        diaChi2.setQuanHuyen("Huyện Quỳnh Phụ");
+//        diaChi2.setTinhThanhPho("Thái Bình");
+//        diaChi2.setAccount(accountNhanVien);
+//        diaChi2.setId(diaChiRepository.save(diaChi2).getId());
+//
+//        //Bảng Dòng Sản Phẩm
+//        DongSanPham dongSanPham = new DongSanPham();
+//        dongSanPham.setMa("dongSanPham1");
+//        dongSanPham.setTenDongSanPham("Galaxy Z");
+//        dongSanPham.setId(dongSanPhamRepository.save(dongSanPham).getId());
+//
+//        DongSanPham dongSanPham2 = new DongSanPham();
+//        dongSanPham2.setMa("dongSanPham12");
+//        dongSanPham2.setTenDongSanPham("Iphone 15 Pro Max");
+//        dongSanPham2.setId(dongSanPhamRepository.save(dongSanPham2).getId());
+//
+//        DongSanPham dongSanPham3 = new DongSanPham();
+//        dongSanPham3.setMa("dongSanPham13");
+//        dongSanPham3.setTenDongSanPham("Xiaomi Mi");
+//        dongSanPham3.setId(dongSanPhamRepository.save(dongSanPham3).getId());
 
 
         //Bảng Màn hình
@@ -232,6 +231,19 @@ public class DBGenerator implements CommandLineRunner {
         dpg.setChieuRong(234.9);
         dpg.setId(doPhanGiaiRepository.save(dpg).getId());
         //Bảng Thẻ sim
+        TheSim theSim2=new TheSim();
+        theSim2.setMa("TS2");
+        theSim2.setStatus(StatusCommon.ACTIVE);
+        theSim2.setSimMultiple(SimMultiple.SINGLE_SIM);
+        theSim2.setLoaiTheSim("eSIM");
+        theSim2.setId(theSimRepository.save(theSim2).getId());
+
+        TheSim theSim3=new TheSim();
+        theSim3.setMa("TS2");
+        theSim3.setStatus(StatusCommon.IN_ACTIVE);
+        theSim3.setSimMultiple(SimMultiple.DUAL_SIM);
+        theSim3.setLoaiTheSim("Micro SIM");
+        theSim3.setId(theSimRepository.save(theSim3).getId());
         TheSim theSim=new TheSim();
         theSim.setMa("TS1");
         theSim.setStatus(StatusCommon.ACTIVE);
@@ -276,23 +288,44 @@ public class DBGenerator implements CommandLineRunner {
         //Bảng Màu sắc
         MauSac mauSac = new MauSac();
         mauSac.setMa("MauSac1");
-        mauSac.setTenMauSac("YELLOW");
+        mauSac.setTenMauSac("Vàng");
         mauSac.setId(mauSacRepository.save(mauSac).getId());
 
         MauSac mauSac1 = new MauSac();
         mauSac1.setMa("MauSac12");
-        mauSac1.setTenMauSac("SLIVER");
+        mauSac1.setTenMauSac("Trắng");
         mauSac1.setId(mauSacRepository.save(mauSac1).getId());
 
         MauSac mauSac2 = new MauSac();
         mauSac2.setMa("MauSac13");
-        mauSac2.setTenMauSac("BLACK");
+        mauSac2.setTenMauSac("Đen");
         mauSac2.setId(mauSacRepository.save(mauSac2).getId());
 
         MauSac mauSac3 = new MauSac();
         mauSac3.setMa("MauSac13");
-        mauSac3.setTenMauSac("BLUE");
+        mauSac3.setTenMauSac("Xanh dương");
         mauSac3.setId(mauSacRepository.save(mauSac3).getId());
+
+        MauSac mauSac4 = new MauSac();
+        mauSac4.setMa("MauSac1123");
+        mauSac4.setTenMauSac("Đen nhám");
+        mauSac4.setId(mauSacRepository.save(mauSac4).getId());
+        MauSac mauSac5 = new MauSac();
+        mauSac5.setMa("MauSac1121");
+        mauSac5.setTenMauSac("Hồng");
+        mauSac5.setId(mauSacRepository.save(mauSac5).getId());
+        MauSac mauSac6 = new MauSac();
+        mauSac6.setMa("MauSac1120");
+        mauSac6.setTenMauSac("Bạc");
+        mauSac6.setId(mauSacRepository.save(mauSac6).getId());
+        MauSac mauSac7 = new MauSac();
+        mauSac7.setMa("MauSac1122");
+        mauSac7.setTenMauSac("Đỏ");
+        mauSac7.setId(mauSacRepository.save(mauSac7).getId());
+        MauSac mauSac8 = new MauSac();
+        mauSac8.setMa("MauSac1125");
+        mauSac8.setTenMauSac("Xám");
+        mauSac8.setId(mauSacRepository.save(mauSac8).getId());
 
         //Bảng Nhà sản xuất
         Hang hang = new Hang();

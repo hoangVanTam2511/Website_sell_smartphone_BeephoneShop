@@ -29,7 +29,6 @@ public class CameraSau extends PrimaryEntity implements IsIdentified {
 
   private Integer doPhanGiai;
 
-
   @Enumerated(EnumType.ORDINAL)
   private CameraType cameraType;
 

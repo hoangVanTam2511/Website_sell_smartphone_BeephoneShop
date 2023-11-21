@@ -27,6 +27,7 @@ public class Account extends PrimaryEntity implements IsIdentified {
 
     private String hoVaTen;
 
+//    @Column(unique = true)
     private String email;
 
     @Temporal(TemporalType.DATE)
@@ -48,6 +49,7 @@ public class Account extends PrimaryEntity implements IsIdentified {
 
     private String anhDaiDien;
 
+    @Column(unique = true)
     private String canCuocCongDan;
 
     @Enumerated(EnumType.ORDINAL)

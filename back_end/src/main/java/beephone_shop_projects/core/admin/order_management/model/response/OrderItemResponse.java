@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.admin.order_management.model.response;
 
+import beephone_shop_projects.core.admin.order_management.model.response.product_response.ProductItemResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
