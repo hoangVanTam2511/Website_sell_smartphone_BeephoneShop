@@ -39,4 +39,6 @@ public class SanPhamChiTietKhuyenMaiResponseCustom {
     private BigDecimal giaTriKhuyenMai;
 
     private String idSanPham;
+
+    private BigDecimal tong;
 }

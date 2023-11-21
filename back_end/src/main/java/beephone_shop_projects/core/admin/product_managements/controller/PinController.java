@@ -1,14 +1,15 @@
 package beephone_shop_projects.core.admin.product_managements.controller;
 
+import beephone_shop_projects.core.admin.product_managements.model.request.FindFilterProductsRequest;
 import beephone_shop_projects.core.admin.product_managements.model.request.PinRequest;
-import beephone_shop_projects.core.admin.product_managements.model.request.PinRequest;
-import beephone_shop_projects.core.admin.product_managements.model.response.PinResponse;
 import beephone_shop_projects.core.admin.product_managements.model.response.PinResponse;
 import beephone_shop_projects.core.admin.product_managements.service.impl.PinServiceImpl;
 import beephone_shop_projects.core.common.base.ResponseObject;
+import beephone_shop_projects.core.common.base.ResponsePage;
 import beephone_shop_projects.entity.Pin;
 import beephone_shop_projects.infrastructure.constant.ApiConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +21,18 @@ public class PinController {
 
     @Autowired
     private PinServiceImpl pinService;
+
+    @GetMapping("/search")
+    public ResponsePage getPinPhanTrang(@ModelAttribute FindFilterProductsRequest request) {
+        Page<PinResponse> pin = pinService.findAllPin(request);
+        return new ResponsePage(pin);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseObject<PinResponse> getPinById(@PathVariable("id") String id) {
+        PinResponse pinResponse = pinService.findOneById(id);
+        return new ResponseObject<>(pinResponse);
+    }
 
 
     @GetMapping

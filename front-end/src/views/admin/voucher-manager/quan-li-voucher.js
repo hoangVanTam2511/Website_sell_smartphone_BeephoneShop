@@ -289,7 +289,6 @@ const HienThiVoucher = () => {
 
   const handleSearchNgayKetThucChange = (selectedDate) => {
     const value = selectedDate.format("DD/MM/YYYY");
-
     setSearchNgayKetThuc(value); // Cập nhật giá trị khi Select thay đổi
     setCurrentPage(1);
   };
