@@ -539,7 +539,7 @@ const ManagementRoms = () => {
                                 style={{ marginLeft: "5px" }}
                                 position="start"
                               >
-                                mAh
+                                GB
                               </InputAdornment>
                               {params.InputProps.startAdornment}
                             </>

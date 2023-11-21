@@ -177,18 +177,21 @@ public class DBGenerator implements CommandLineRunner {
         CameraTruoc cameraTruoc = new CameraTruoc();
         cameraTruoc.setMa("camera1");
         cameraTruoc.setDoPhanGiai(54);
+        cameraTruoc.setCameraType(CameraType.WIDE_CAMERA);
         cameraTruoc.setStatus(StatusCommon.ACTIVE);
         cameraTruoc.setId(cameraTruocRepository.save(cameraTruoc).getId());
 
         CameraTruoc cameraTruoc1 = new CameraTruoc();
         cameraTruoc1.setMa("camera2");
         cameraTruoc1.setDoPhanGiai(1);
+        cameraTruoc.setCameraType(CameraType.MARCO_CAMERA);
         cameraTruoc1.setStatus(StatusCommon.ACTIVE);
         cameraTruoc1.setId(cameraTruocRepository.save(cameraTruoc1).getId());
 
         CameraTruoc cameraTruoc2 = new CameraTruoc();
         cameraTruoc2.setMa("camera3");
         cameraTruoc2.setDoPhanGiai(5);
+        cameraTruoc.setCameraType(CameraType.TELEPHOTO_CAMERA);
         cameraTruoc2.setStatus(StatusCommon.ACTIVE);
         cameraTruoc2.setId(cameraTruocRepository.save(cameraTruoc2).getId());
 
@@ -196,35 +199,41 @@ public class DBGenerator implements CommandLineRunner {
         cameraTruoc3.setMa("camera4");
         cameraTruoc3.setDoPhanGiai(8);
         cameraTruoc3.setStatus(StatusCommon.ACTIVE);
+        cameraTruoc.setCameraType(CameraType.STANDARD_CAMERA);
         cameraTruoc3.setId(cameraTruocRepository.save(cameraTruoc3).getId());
 
         CameraTruoc cameraTruoc4 = new CameraTruoc();
         cameraTruoc4.setMa("camera5");
         cameraTruoc4.setDoPhanGiai(12);
         cameraTruoc4.setStatus(StatusCommon.ACTIVE);
+        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
         cameraTruoc4.setId(cameraTruocRepository.save(cameraTruoc4).getId());
 
         CameraTruoc cameraTruoc5 = new CameraTruoc();
         cameraTruoc5.setMa("camera6");
         cameraTruoc5.setDoPhanGiai(16);
+        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
         cameraTruoc5.setStatus(StatusCommon.ACTIVE);
         cameraTruoc5.setId(cameraTruocRepository.save(cameraTruoc5).getId());
 
         CameraTruoc cameraTruoc6 = new CameraTruoc();
         cameraTruoc6.setMa("camera7");
         cameraTruoc6.setDoPhanGiai(24);
+        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
         cameraTruoc6.setStatus(StatusCommon.ACTIVE);
         cameraTruoc6.setId(cameraTruocRepository.save(cameraTruoc6).getId());
 
         CameraTruoc cameraTruoc7 = new CameraTruoc();
         cameraTruoc7.setMa("camera8");
         cameraTruoc7.setDoPhanGiai(32);
+        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
         cameraTruoc7.setStatus(StatusCommon.ACTIVE);
         cameraTruoc7.setId(cameraTruocRepository.save(cameraTruoc7).getId());
 
         CameraTruoc cameraTruoc8 = new CameraTruoc();
         cameraTruoc8.setMa("camera9");
         cameraTruoc8.setDoPhanGiai(48);
+        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
         cameraTruoc8.setStatus(StatusCommon.ACTIVE);
         cameraTruoc8.setId(cameraTruocRepository.save(cameraTruoc8).getId());
 
@@ -232,24 +241,28 @@ public class DBGenerator implements CommandLineRunner {
         CameraSau cameraSau = new CameraSau();
         cameraSau.setMa("camera1");
         cameraSau.setDoPhanGiai(60);
+        cameraTruoc.setCameraType(CameraType.STANDARD_CAMERA);
         cameraSau.setStatus(StatusCommon.ACTIVE);
         cameraSau.setId(cameraSauRepository.save(cameraSau).getId());
 
         CameraSau cameraSau1 = new CameraSau();
         cameraSau1.setMa("camera2");
         cameraSau1.setDoPhanGiai(1);
+        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
         cameraSau1.setStatus(StatusCommon.ACTIVE);
         cameraSau1.setId(cameraSauRepository.save(cameraSau1).getId());
 
         CameraSau cameraSau2 = new CameraSau();
         cameraSau2.setMa("camera3");
         cameraSau2.setDoPhanGiai(5);
+        cameraTruoc.setCameraType(CameraType.TELEPHOTO_CAMERA);
         cameraSau2.setStatus(StatusCommon.ACTIVE);
         cameraSau2.setId(cameraSauRepository.save(cameraSau2).getId());
 
         CameraSau cameraSau3 = new CameraSau();
         cameraSau3.setMa("camera4");
         cameraSau3.setDoPhanGiai(8);
+        cameraTruoc.setCameraType(CameraType.DEPTH_CAMERA);
         cameraSau3.setStatus(StatusCommon.ACTIVE);
         cameraSau3.setId(cameraSauRepository.save(cameraSau3).getId());
 
@@ -262,36 +275,42 @@ public class DBGenerator implements CommandLineRunner {
         CameraSau cameraSau5 = new CameraSau();
         cameraSau5.setMa("camera6");
         cameraSau5.setDoPhanGiai(16);
+        cameraTruoc.setCameraType(CameraType.PERISCOPE_TELEPHOTO_CAMERA);
         cameraSau5.setStatus(StatusCommon.ACTIVE);
         cameraSau5.setId(cameraSauRepository.save(cameraSau5).getId());
 
         CameraSau cameraSau6 = new CameraSau();
         cameraSau6.setMa("camera7");
         cameraSau6.setDoPhanGiai(24);
+        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
         cameraSau6.setStatus(StatusCommon.ACTIVE);
         cameraSau6.setId(cameraSauRepository.save(cameraSau6).getId());
 
         CameraSau cameraSau7 = new CameraSau();
         cameraSau7.setMa("camera8");
         cameraSau7.setDoPhanGiai(32);
+        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
         cameraSau7.setStatus(StatusCommon.ACTIVE);
         cameraSau7.setId(cameraSauRepository.save(cameraSau7).getId());
 
         CameraSau cameraSau8 = new CameraSau();
         cameraSau8.setMa("camera9");
         cameraSau8.setDoPhanGiai(48);
+        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
         cameraSau8.setStatus(StatusCommon.ACTIVE);
         cameraSau8.setId(cameraSauRepository.save(cameraSau8).getId());
 
         CameraSau cameraSau9 = new CameraSau();
         cameraSau9.setMa("camera10");
         cameraSau9.setDoPhanGiai(64);
+        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
         cameraSau9.setStatus(StatusCommon.ACTIVE);
         cameraSau9.setId(cameraSauRepository.save(cameraSau9).getId());
 
         CameraSau cameraSau10 = new CameraSau();
         cameraSau10.setMa("camera11");
         cameraSau10.setDoPhanGiai(108);
+        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
         cameraSau10.setStatus(StatusCommon.ACTIVE);
         cameraSau10.setId(cameraSauRepository.save(cameraSau10).getId());
 
@@ -562,49 +581,49 @@ public class DBGenerator implements CommandLineRunner {
         MauSac mauSac1 = new MauSac();
         mauSac1.setMa("MauSac12");
         mauSac1.setTenMauSac("Trắng");
-        mauSac.setStatus(StatusCommon.ACTIVE);
+        mauSac1.setStatus(StatusCommon.ACTIVE);
         mauSac1.setId(mauSacRepository.save(mauSac1).getId());
 
         MauSac mauSac2 = new MauSac();
         mauSac2.setMa("MauSac13");
         mauSac2.setTenMauSac("Đen");
-        mauSac.setStatus(StatusCommon.ACTIVE);
+        mauSac2.setStatus(StatusCommon.ACTIVE);
         mauSac2.setId(mauSacRepository.save(mauSac2).getId());
 
         MauSac mauSac3 = new MauSac();
         mauSac3.setMa("MauSac13");
         mauSac3.setTenMauSac("Xanh dương");
-        mauSac.setStatus(StatusCommon.ACTIVE);
+        mauSac3.setStatus(StatusCommon.ACTIVE);
         mauSac3.setId(mauSacRepository.save(mauSac3).getId());
 
         MauSac mauSac4 = new MauSac();
         mauSac4.setMa("MauSac1123");
         mauSac4.setTenMauSac("Đen nhám");
-        mauSac.setStatus(StatusCommon.ACTIVE);
+        mauSac4.setStatus(StatusCommon.ACTIVE);
         mauSac4.setId(mauSacRepository.save(mauSac4).getId());
 
         MauSac mauSac5 = new MauSac();
         mauSac5.setMa("MauSac1121");
         mauSac5.setTenMauSac("Hồng");
-        mauSac.setStatus(StatusCommon.ACTIVE);
+        mauSac5.setStatus(StatusCommon.ACTIVE);
         mauSac5.setId(mauSacRepository.save(mauSac5).getId());
 
         MauSac mauSac6 = new MauSac();
         mauSac6.setMa("MauSac1120");
         mauSac6.setTenMauSac("Bạc");
-        mauSac.setStatus(StatusCommon.ACTIVE);
+        mauSac6.setStatus(StatusCommon.ACTIVE);
         mauSac6.setId(mauSacRepository.save(mauSac6).getId());
 
         MauSac mauSac7 = new MauSac();
         mauSac7.setMa("MauSac1122");
         mauSac7.setTenMauSac("Đỏ");
-        mauSac.setStatus(StatusCommon.ACTIVE);
+        mauSac7.setStatus(StatusCommon.ACTIVE);
         mauSac7.setId(mauSacRepository.save(mauSac7).getId());
 
         MauSac mauSac8 = new MauSac();
         mauSac8.setMa("MauSac1125");
         mauSac8.setTenMauSac("Xám");
-        mauSac.setStatus(StatusCommon.ACTIVE);
+        mauSac8.setStatus(StatusCommon.ACTIVE);
         mauSac8.setId(mauSacRepository.save(mauSac8).getId());
 
         //Bảng Nhà sản xuất
@@ -655,80 +674,95 @@ public class DBGenerator implements CommandLineRunner {
         pin.setMa("Pin01");
         pin.setLoaiPin("Lithium-polymer");
         pin.setDungLuong(6000);
+        pin.setStatus(StatusCommon.ACTIVE);
         pin.setId(pinRepository.save(pin).getId());
 
         Pin pin1 = new Pin();
         pin1.setMa("Pin012");
         pin1.setDungLuong(4800);
         pin1.setLoaiPin("Lithium-ion");
+        pin1.setStatus(StatusCommon.ACTIVE);
         pin1.setId(pinRepository.save(pin1).getId());
 
         Pin pin2 = new Pin();
         pin2.setMa("Pin013");
         pin2.setDungLuong(5000);
         pin2.setLoaiPin("Lithium-ion");
+        pin2.setStatus(StatusCommon.ACTIVE);
         pin2.setId(pinRepository.save(pin2).getId());
 
         //Bảng Ram
         Ram ram = new Ram();
         ram.setMa("ram01");
         ram.setDungLuong(6);
+        ram.setStatus(StatusCommon.ACTIVE);
         ram.setId(ramRepository.save(ram).getId());
 
         Ram ram1 = new Ram();
         ram1.setMa("ram013");
         ram1.setDungLuong(2);
+        ram1.setStatus(StatusCommon.ACTIVE);
         ram1.setId(ramRepository.save(ram1).getId());
 
         Ram ram2 = new Ram();
         ram2.setMa("ram012");
         ram2.setDungLuong(3);
+        ram2.setStatus(StatusCommon.ACTIVE);
         ram2.setId(ramRepository.save(ram2).getId());
 
         Ram ram3 = new Ram();
         ram3.setMa("ram0123");
         ram3.setDungLuong(4);
+        ram3.setStatus(StatusCommon.ACTIVE);
         ram3.setId(ramRepository.save(ram3).getId());
 
         Ram ram5 = new Ram();
         ram5.setMa("ram0172");
         ram5.setDungLuong(8);
+        ram5.setStatus(StatusCommon.ACTIVE);
         ram5.setId(ramRepository.save(ram5).getId());
 
         Ram ram4 = new Ram();
         ram4.setMa("ram0163");
         ram4.setDungLuong(12);
+        ram4.setStatus(StatusCommon.ACTIVE);
         ram4.setId(ramRepository.save(ram4).getId());
 
         //Bảng Rom
         Rom rom5 = new Rom();
         rom5.setMa("Rom01");
         rom5.setDungLuong(32);
+        rom5.setStatus(StatusCommon.ACTIVE);
         rom5.setId(romRepository.save(rom5).getId());
 
         Rom rom4 = new Rom();
         rom4.setMa("Rom01");
         rom4.setDungLuong(64);
+        rom4.setStatus(StatusCommon.ACTIVE);
         rom4.setId(romRepository.save(rom4).getId());
 
         Rom rom = new Rom();
         rom.setMa("Rom01");
         rom.setDungLuong(128);
+        rom.setStatus(StatusCommon.ACTIVE);
         rom.setId(romRepository.save(rom).getId());
 
         Rom rom1 = new Rom();
         rom1.setMa("Rom014");
         rom1.setDungLuong(256);
+        rom1.setStatus(StatusCommon.ACTIVE);
         rom1.setId(romRepository.save(rom1).getId());
 
         Rom rom2 = new Rom();
         rom2.setMa("Rom015");
         rom2.setDungLuong(512);
+        rom2.setStatus(StatusCommon.ACTIVE);
         rom2.setId(romRepository.save(rom2).getId());
 
         Rom rom3 = new Rom();
         rom3.setMa("Rom0153");
         rom3.setDungLuong(1024);
+        rom3.setStatus(StatusCommon.ACTIVE);
         rom3.setId(romRepository.save(rom3).getId());
 
         //bảng sản phẩm
