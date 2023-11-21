@@ -393,6 +393,10 @@ export const DefaultRouter = [
         path: "dashboard/thong-ke",
         element: <ThongKe />,
       },
+      {
+        path: "dashboard/payment-success",
+        element: <PaymentSuccess />,
+      },
       // {
       //   path: 'dashboard/add-product',
       //   element: <ManagementProducts />,
