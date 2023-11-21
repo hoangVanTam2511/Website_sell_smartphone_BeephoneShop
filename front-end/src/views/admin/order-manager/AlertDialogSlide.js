@@ -63,7 +63,7 @@ import { useSnackbar } from "notistack";
 import useCustomSnackbar from "../../../utilities/notistack";
 import PriceSlider from "./rangePriceSlider";
 import InputNumberAmount from "./input-number-amount-product.js";
-import { FaTrashAlt } from "react-icons/fa";
+import { FaExternalLinkSquareAlt, FaTrashAlt } from "react-icons/fa";
 import { FaEye } from "react-icons/fa6";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -389,7 +389,7 @@ export function UpdateRecipientOrderDialog(props) {
                 },
               }}
               size="medium"
-              className="mt-1 custom"
+              className="mt-2 custom"
             />
           </div>
           <div>
@@ -3287,7 +3287,7 @@ export const ModalImeiByProductItem = ({ open, close, imeis, addProduct, isOpen 
   const [selectedImei, setSelectedImei] = useState([]);
   const { handleOpenAlertVariant } = useCustomSnackbar();
 
-  const filteredData = imeis.filter((item) => item.trangThai === StatusImei.NOT_SOLD || item.trangThai === StatusImei.IN_THE_CART);
+  const filteredData = imeis.filter((item) => item.trangThai === StatusImei.NOT_SOLD || item.trangThai === StatusImei.IN_THE_CART || item.trangThai === StatusImei.PENDING_DELIVERY);
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
@@ -3376,8 +3376,8 @@ export const ModalImeiByProductItem = ({ open, close, imeis, addProduct, isOpen 
                               <>
                                 <tr key={index} style={{
                                   cursor: "pointer",
-                                  pointerEvents: item.trangThai === StatusImei.IN_THE_CART ? "none" : "auto",
-                                  opacity: item.trangThai === StatusImei.IN_THE_CART ? "0.5" : "1"
+                                  pointerEvents: item.trangThai === StatusImei.PENDING_DELIVERY || item.trangThai === StatusImei.IN_THE_CART ? "none" : "auto",
+                                  opacity: item.trangThai === StatusImei.PENDING_DELIVERY || item.trangThai === StatusImei.IN_THE_CART ? "0.5" : "1"
                                 }}
                                   onClick={() => {
                                     if (selectedImei.length >= 4 && !selectedImei.includes(item)) {
@@ -3392,16 +3392,16 @@ export const ModalImeiByProductItem = ({ open, close, imeis, addProduct, isOpen 
                                   }
                                   }
                                 >
-                                  <th>
+                                  <td>
                                     <Checkbox color="primary" checked={selectedImei.includes(item)} />
-                                  </th>
+                                  </td>
                                   <td className="text-center">{item.soImei}</td>
 
                                   <td className="text-center">
                                     {
-                                      item.trangThai === StatusImei.NOT_SOLD || item.trangThai === StatusImei.IN_THE_CART ? (
+                                      item.trangThai === StatusImei.PENDING_DELIVERY || item.trangThai === StatusImei.NOT_SOLD || item.trangThai === StatusImei.IN_THE_CART ? (
                                         <div
-                                          className="rounded-pill badge-success mx-auto"
+                                          className={item.trangThai === StatusImei.PENDING_DELIVERY ? "badge-primary rounded-pill mx-auto" : "badge-success rounded-pill mx-auto"}
                                           style={{
                                             height: "35px",
                                             width: "115px",
@@ -3412,7 +3412,7 @@ export const ModalImeiByProductItem = ({ open, close, imeis, addProduct, isOpen 
                                             className="text-white"
                                             style={{ fontSize: "14px", fontWeight: "400" }}
                                           >
-                                            {item.trangThai === StatusImei.NOT_SOLD ? "Chưa Bán" : item.trangThai === StatusImei.IN_THE_CART ? "Chưa Bán" : ""}
+                                            {item.trangThai === StatusImei.NOT_SOLD ? "Chưa Bán" : item.trangThai === StatusImei.IN_THE_CART ? "Chưa Bán" : item.trangThai === StatusImei.PENDING_DELIVERY ? "Chờ Giao" : ""}
                                           </span>
                                         </div>
                                       ) :
@@ -3536,11 +3536,12 @@ export const ModalImeiByProductItem = ({ open, close, imeis, addProduct, isOpen 
     </>
   )
 }
-export const ModalUpdateImeiByProductItem = ({ open, close, imeis, imeisChuaBan, refresh, update }) => {
+export const ModalUpdateImeiByProductItem = ({ open, close, imeis, imeisChuaBan, refresh, update, max }) => {
   const [selectedImei, setSelectedImei] = useState(imeisChuaBan);
   const { handleOpenAlertVariant } = useCustomSnackbar();
 
-  const filteredData = imeis.filter((item) => item.trangThai === StatusImei.NOT_SOLD || item.trangThai === StatusImei.IN_THE_CART);
+  const filteredData = imeis.filter((item) => item.trangThai === StatusImei.NOT_SOLD
+    || item.trangThai === StatusImei.IN_THE_CART || item.trangThai === StatusImei.PENDING_DELIVERY);
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
@@ -3616,7 +3617,8 @@ export const ModalUpdateImeiByProductItem = ({ open, close, imeis, imeisChuaBan,
                   <table className="table" style={{ borderRadius: "10px" }}>
                     <thead style={{ borderRadius: "10px" }}>
                       <tr >
-                        <th scope="col"></th>
+                        <th scope="col">
+                        </th>
                         <th scope="col" className="text-center text-dark">Mã Imei</th>
                         <th scope="col" className="text-center text-dark">Trạng Thái</th>
                       </tr>
@@ -3630,8 +3632,8 @@ export const ModalUpdateImeiByProductItem = ({ open, close, imeis, imeisChuaBan,
                                 key={index}
                                 style={{
                                   cursor: "pointer",
-                                  pointerEvents: item.trangThai === StatusImei.IN_THE_CART && !imeisChuaBan.some(selectedItem => selectedItem.soImei === item.soImei) ? "none" : "auto",
-                                  opacity: item.trangThai === StatusImei.IN_THE_CART && !imeisChuaBan.some(selectedItem => selectedItem.soImei === item.soImei) ? "0.5" : "1"
+                                  pointerEvents: (item.trangThai === StatusImei.PENDING_DELIVERY || item.trangThai === StatusImei.IN_THE_CART) && !imeisChuaBan.some(selectedItem => selectedItem.soImei === item.soImei) ? "none" : "auto",
+                                  opacity: (item.trangThai === StatusImei.PENDING_DELIVERY || item.trangThai === StatusImei.IN_THE_CART) && !imeisChuaBan.some(selectedItem => selectedItem.soImei === item.soImei) ? "0.5" : "1"
                                 }}
                                 onClick={() => {
                                   if (selectedImei.length >= 4 && !selectedImei.some(selectedItem => selectedItem.soImei === item.soImei)) {
@@ -3643,15 +3645,15 @@ export const ModalUpdateImeiByProductItem = ({ open, close, imeis, imeisChuaBan,
                                   }
                                 }}
                               >
-                                <th>
+                                <td>
                                   <Checkbox color="primary" checked={selectedImei.some(selectedItem => selectedItem.soImei === item.soImei)} />
-                                </th>
+                                </td>
                                 <td className="text-center">{item.soImei}</td>
                                 <td className="text-center">
                                   {
-                                    item.trangThai === StatusImei.NOT_SOLD || item.trangThai === StatusImei.IN_THE_CART ? (
+                                    item.trangThai === StatusImei.PENDING_DELIVERY || item.trangThai === StatusImei.NOT_SOLD || item.trangThai === StatusImei.IN_THE_CART ? (
                                       <div
-                                        className="rounded-pill badge-success mx-auto"
+                                        className={item.trangThai === StatusImei.PENDING_DELIVERY ? "badge-primary rounded-pill mx-auto" : "badge-success rounded-pill mx-auto"}
                                         style={{
                                           height: "35px",
                                           width: "115px",
@@ -3662,7 +3664,7 @@ export const ModalUpdateImeiByProductItem = ({ open, close, imeis, imeisChuaBan,
                                           className="text-white"
                                           style={{ fontSize: "14px", fontWeight: "400" }}
                                         >
-                                          {item.trangThai === StatusImei.NOT_SOLD ? "Chưa Bán" : item.trangThai === StatusImei.IN_THE_CART ? "Chưa Bán" : ""}
+                                          {item.trangThai === StatusImei.NOT_SOLD ? "Chưa Bán" : item.trangThai === StatusImei.IN_THE_CART ? "Chưa Bán" : item.trangThai === StatusImei.PENDING_DELIVERY ? "Chờ Giao" : ""}
                                         </span>
                                       </div>
                                     ) :
@@ -3802,12 +3804,23 @@ export function MultiplePaymentMethods({ open, close, data, khachCanTra, khachTh
 
   const columns = [
     {
-      title: "Mã Giao Dịch",
+      title: "Số Tiền",
       align: "center",
-      width: "15%",
-      render: (text, item) =>
-        <span style={{ fontWeight: "500" }}>{item.hinhThucThanhToan === 1 || item.hinhThucThanhToan === 2 ? "..." : item.ma}
+      dataIndex: "soTienThanhToan",
+      width: "20%",
+      render: (text, record) => (
+        <span
+          className="txt-danger"
+          style={{ fontSize: "17px" }}
+        >
+          {record &&
+            record.soTienThanhToan &&
+            record.soTienThanhToan.toLocaleString("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            })}
         </span>
+      ),
     },
     {
       title: "Phương Thức Thanh Toán",
@@ -3885,23 +3898,12 @@ export function MultiplePaymentMethods({ open, close, data, khachCanTra, khachTh
       ),
     },
     {
-      title: "Số Tiền",
+      title: "Mã Giao Dịch",
       align: "center",
-      dataIndex: "soTienThanhToan",
       width: "15%",
-      render: (text, record) => (
-        <span
-          className="txt-danger"
-          style={{ fontSize: "17px" }}
-        >
-          {record &&
-            record.soTienThanhToan &&
-            record.soTienThanhToan.toLocaleString("vi-VN", {
-              style: "currency",
-              currency: "VND",
-            })}
+      render: (text, item) =>
+        <span style={{ fontWeight: "500" }}>{item.hinhThucThanhToan === 1 || item.hinhThucThanhToan === 2 ? "..." : item.ma}
         </span>
-      ),
     },
     {
       title: "Thao Tác",
@@ -3922,7 +3924,7 @@ export function MultiplePaymentMethods({ open, close, data, khachCanTra, khachTh
                 handleRedirectPaymentView(`https://sandbox.vnpayment.vn/merchantv2/Transaction/PaymentDetail/${record.ma}.htm`)
               }
               >
-                <FaEye color="#2f80ed" />
+                <FaExternalLinkSquareAlt color="#2f80ed" />
               </IconButton>
             </Tooltip>
           }
@@ -4117,7 +4119,7 @@ export function MultiplePaymentMethods({ open, close, data, khachCanTra, khachTh
                 />
               </div>
               <div className='d-flex justify-content-between mt-4 pt-2' style={{ marginLeft: "1px" }}>
-                <span className='text-dark' style={{ fontSize: "20px", fontWeight: "500" }}>Khách thanh toán
+                <span className='text-dark' style={{ fontSize: "20px", fontWeight: "500" }}>Khách đã thanh toán
                 </span>
                 <span
                   className=""
@@ -4387,8 +4389,8 @@ export const ModalPaymentHistories = ({ open, close, data }) => {
     </>
   )
 }
-export function MultiplePaymentMethodsDelivery({ open, close, data, khachCanTra, khachThanhToan, handleOpenPayment,
-  handleCloseOpenPayment, addPayment, openPayment, deletePayment }) {
+export function MultiplePaymentMethodsDelivery({ open, close, data, khachCanTra, khachThanhToan,
+  addPayment, hoanTien, canTraKhach }) {
   const { handleOpenAlertVariant } = useCustomSnackbar();
   const [payments, setPayments] = useState(data);
 
@@ -4396,155 +4398,23 @@ export function MultiplePaymentMethodsDelivery({ open, close, data, khachCanTra,
     setPayments(data);
   }, [data]);
 
-  const sortPayments = data && payments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-  const [selectedPayment, setSelectedPayment] = useState(["Tiền mặt", "Chuyển khoản thường", "Ví VNPAY"]);
+  const [selectedPayment, setSelectedPayment] = useState(["Tiền mặt", "Chuyển khoản"]);
   const [paymentCurrent, setPaymentCurrent] = useState("Tiền mặt");
-
-  const handleRedirectPaymentView = (url) => {
-    window.open(url, '_blank');
-  };
-
-  const columns = [
-    {
-      title: "Mã Giao Dịch",
-      align: "center",
-      width: "15%",
-      render: (text, item) =>
-        <span style={{ fontWeight: "500" }}>{item.hinhThucThanhToan === 1 || item.hinhThucThanhToan === 2 ? "..." : item.ma}
-        </span>
-    },
-    {
-      title: "Phương Thức Thanh Toán",
-      align: "center",
-      width: "15%",
-      dataIndex: "hinhThucThanhToan",
-      render: (text, record) =>
-        record.hinhThucThanhToan == 0 || record.hinhThucThanhToan === 2 ? (
-          <div
-            className="rounded-pill mx-auto badge-success"
-            style={{
-              height: "35px",
-              width: "120px",
-              padding: "4px",
-            }}
-          >
-            <span
-              className="text-white"
-              style={{ fontSize: "14px", fontWeight: "400" }}
-            >
-              Chuyển khoản
-            </span>
-          </div>
-        ) : record.hinhThucThanhToan == 1 ? (
-          <div
-            className="rounded-pill badge-success mx-auto"
-            style={{ height: "35px", width: "90px", padding: "4px" }}
-          >
-            <span
-              className="text-white"
-              style={{ fontSize: "14px", fontWeight: "400" }}
-            >
-              Tiền mặt
-            </span>
-          </div>
-        ) : (
-          ""
-        ),
-    },
-    {
-      title: "Trạng Thái",
-      align: "center",
-      width: "10%",
-      dataIndex: "trangThai",
-      render: (status) =>
-        status == 1 ? (
-          <div
-            className="rounded-pill badge-primary mx-auto"
-            style={{
-              height: "35px",
-              width: "115px",
-              padding: "4px",
-            }}
-          >
-            <span
-              className="text-white"
-              style={{ fontSize: "14px", fontWeight: "400" }}
-            >
-              Thành công
-            </span>
-          </div>
-        ) : (
-          ""
-        ),
-    },
-    {
-      title: "Thời Gian",
-      align: "center",
-      width: "10%",
-      dataIndex: "createdAt",
-      render: (text, record) => (
-        <span style={{ fontWeight: "normal" }}>
-          {format(new Date(record.createdAt), "HH:mm:ss, dd/MM/yyyy")}
-        </span>
-      ),
-    },
-    {
-      title: "Số Tiền",
-      align: "center",
-      dataIndex: "soTienThanhToan",
-      width: "15%",
-      render: (text, record) => (
-        <span
-          className="txt-danger"
-          style={{ fontSize: "17px" }}
-        >
-          {record &&
-            record.soTienThanhToan &&
-            record.soTienThanhToan.toLocaleString("vi-VN", {
-              style: "currency",
-              currency: "VND",
-            })}
-        </span>
-      ),
-    },
-    {
-      title: "Thao Tác",
-      align: "center",
-      width: "15%",
-      render: (text, record) => (
-        <>
-          {record.hinhThucThanhToan === 1 || record.hinhThucThanhToan === 2 ?
-            <Tooltip title="Xóa" TransitionComponent={Zoom}>
-              <IconButton className='' style={{ height: "40px" }} onClick={() => deletePayment(record.id)}
-              >
-                <FaTrashAlt color="#e5383b" />
-              </IconButton>
-            </Tooltip>
-            :
-            <Tooltip title="Xem lịch sử" TransitionComponent={Zoom}>
-              <IconButton className='' style={{ height: "40px" }} onClick={() =>
-                handleRedirectPaymentView(`https://sandbox.vnpayment.vn/merchantv2/Transaction/PaymentDetail/${record.ma}.htm`)
-              }
-              >
-                <FaEye color="#2f80ed" />
-              </IconButton>
-            </Tooltip>
-          }
-        </>
-      ),
-    },
-  ];
-
-  const paymentBank = () => {
-    addPayment(paymentCurrent, customerPayment);
-  }
 
   const [customerPayment, setCustomerPayment] = useState(0);
   const [customerPaymentFormat, setCustomerPaymentFormat] = useState("");
 
 
   useEffect(() => {
+    if (hoanTien){
+      let valueFinal;
+      valueFinal = String(canTraKhach)
+        .replace(/[^0-9]+/g, "")
+        .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      setCustomerPaymentFormat(valueFinal);
+      setCustomerPayment(canTraKhach);
+    }
+    else{
     const chuaThanhToan = khachCanTra - khachThanhToan;
     if (chuaThanhToan <= 0) {
       setCustomerPaymentFormat("0");
@@ -4559,7 +4429,8 @@ export function MultiplePaymentMethodsDelivery({ open, close, data, khachCanTra,
       setCustomerPayment(chuaThanhToan);
 
     }
-  }, [payments, khachThanhToan, khachCanTra])
+    }
+  }, [payments, khachThanhToan, khachCanTra, hoanTien, canTraKhach])
 
   const handleCustomerPayment = (event) => {
 
@@ -4592,9 +4463,10 @@ export function MultiplePaymentMethodsDelivery({ open, close, data, khachCanTra,
         onClose={() => { close(); }}
         maxWidth="xxl"
         maxHeight="xxl"
+        sx={{ marginBottom: "100px" }}
       >
         <DialogContent className="">
-          <div className="mt-2" style={{ width: "950px", height: "auto", minHeight: "500px" }}>
+          <div className="mt-2" style={{ width: "950px", height: "auto", minHeight: "300px" }}>
             <div className="container" style={{}}>
               <div className="d-flex justify-content-between">
                 <span style={{ fontWeight: "500", fontSize: "24px" }}>
@@ -4631,7 +4503,7 @@ export function MultiplePaymentMethodsDelivery({ open, close, data, khachCanTra,
                     }}
                     variant="standard"
                     sx={{ width: "155px", fontSize: "17.5px" }} />
-                  <div className="" style={{ marginTop: "1px", marginRight: "13px" }}>
+                  <div className="" style={{ marginTop: "1px" }}>
                     <List
                       orientation="horizontal"
                       wrap
@@ -4682,47 +4554,10 @@ export function MultiplePaymentMethodsDelivery({ open, close, data, khachCanTra,
                         ))}
                     </List>
                   </div>
-                  <Button
-                    onClick={() => {
-                      if (paymentCurrent === null) {
-                        handleOpenAlertVariant("Bạn chưa chọn hình thức thanh toán!", Notistack.ERROR);
-                      }
-                      else if (customerPayment === 0) {
-                        handleOpenAlertVariant("Số tiền không hợp lệ!", Notistack.ERROR);
-                      }
-                      else if (paymentCurrent === "Ví VNPAY") {
-                        handleOpenPayment();
-                      }
-                      else {
-                        addPayment(paymentCurrent, customerPayment);
-                      }
-
-                    }}
-                    className="rounded-2 ant-btn-light"
-                    style={{ height: "37.5px", width: "auto", fontSize: "15px", }}
-                  >
-                    <span
-                      className=""
-                      style={{ marginBottom: "2px", fontWeight: "500" }}
-                    >
-                      Xác Nhận
-                    </span>
-                  </Button>
                 </div>
               </div>
-              <div className="mx-auto mt-3 pt-2" style={{ minHeight: "200px" }}>
-                <TableAntd
-                  className='table-container'
-                  columns={columns}
-                  dataSource={sortPayments}
-                  pagination={false}
-                  rowKey={"id"}
-                  key={"id"}
-                  locale={{ emptyText: <Empty /> }}
-                />
-              </div>
               <div className='d-flex justify-content-between mt-4 pt-2' style={{ marginLeft: "1px" }}>
-                <span className='text-dark' style={{ fontSize: "20px", fontWeight: "500" }}>Khách thanh toán
+                <span className='text-dark' style={{ fontSize: "20px", fontWeight: "500" }}>Khách đã thanh toán
                 </span>
                 <span
                   className=""
@@ -4737,28 +4572,270 @@ export function MultiplePaymentMethodsDelivery({ open, close, data, khachCanTra,
               <div className="mt-4 d-flex justify-content-end">
                 <Button
                   onClick={() => {
-                    close();
+                    if (paymentCurrent === null) {
+                      handleOpenAlertVariant("Bạn chưa chọn hình thức thanh toán!", Notistack.ERROR);
+                    }
+                    else if (customerPayment === 0) {
+                      handleOpenAlertVariant("Số tiền không hợp lệ!", Notistack.ERROR);
+                    }
+                    else {
+                      addPayment(paymentCurrent, customerPayment);
+                    }
+
                   }}
+                  className="rounded-2 button-mui"
                   type="primary"
-                  className="rounded-2"
-                  style={{ height: "40px", width: "110px", fontSize: "15px", }}
+                  style={{ height: "40px", width: "auto", fontSize: "15px", }}
                 >
                   <span
                     className=""
                     style={{ marginBottom: "2px", fontWeight: "500" }}
                   >
-                    Xong
+                    Xác Nhận
                   </span>
                 </Button>
               </div>
             </div>
           </div>
-          <div className="mt-3"></div>
+          <div className="mt-2"></div>
         </DialogContent>
       </Dialog>
-      <PaymentVnPayConfirmDialog open={openPayment} onClose={handleCloseOpenPayment}
-        payment={paymentBank}
-      />
+    </>
+  )
+}
+
+export const ModalRefundProduct = ({ open, close, imeis, refresh, refund, img, price, name }) => {
+  const [selectedImei, setSelectedImei] = useState([]);
+  const { handleOpenAlertVariant } = useCustomSnackbar();
+
+  const [isAll, setIsAll] = useState(false);
+
+  const [priceFormat, setPriceFormat] = useState("");
+  const [priceValue, setPriceValue] = useState(0);
+  const [note, setNote] = useState("");
+  const handleChangePrice = (event) => {
+    const value = event.target.value;
+    let valueFinal;
+
+    const price = value.replace(/[^0-9]+/g, "")
+
+    valueFinal = value
+      .replace(/[^0-9]+/g, "")
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    setPriceFormat(valueFinal);
+    setPriceValue(price);
+
+    // if (value == null || value == "") {
+    //   setCustomerPayment(0);
+    //   setCustomerPaymentFormat("");
+    // }
+    // else if (parseNumberPayment > 100000000000) {
+    //   setCustomerPayment(0);
+    //   setCustomerPaymentFormat("");
+    // }
+  }
+
+  const total = (price) => {
+    return selectedImei.length * price;
+
+  }
+  const totalString = () => {
+    return total(selectedImei.length * price).toLocaleString("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    })
+  }
+  const handleAllCheckboxChange = (e) => {
+    const checked = e.target.checked;
+    setIsAll(checked);
+    if (checked) {
+      setSelectedImei(imeis);
+    } else {
+      setSelectedImei([]);
+    }
+  };
+
+
+  useEffect(() => {
+    // setCurrentPage(1);
+    // setSelectedImei(imeisChuaBan);
+    setSelectedImei([]);
+    setPriceValue(0);
+    setPriceFormat("");
+    setNote("");
+    setIsAll(false);
+
+  }, [refresh])
+
+  return (
+    <>
+      <Dialog
+        open={open}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={() => { close();/*  setSelectedImei([])  */ }}
+        maxWidth="xxl"
+        maxHeight="xxl"
+      >
+        <DialogContent className="">
+          <div className="mt-2" style={{ width: "1000px" }}>
+            <div className="container" style={{}}>
+              <div className="header-title d-flex justify-content-center">
+                <div className="mt-1">
+                  <span className="fs-4" style={{ fontWeight: "500" }}>Xác Nhận Trả Hàng</span>
+                </div>
+              </div>
+              <div className="mt-3 pt-2">
+                <div className="d-flex justify-content-between">
+                  <div className='d-flex ms-1'>
+                    <div className="product-img">
+                      <img src={img} class='' alt="" style={{ width: "215px", height: "215px" }} />
+                    </div>
+                    <div className='product ms-3 text-start'>
+                      <Tooltip TransitionComponent={Zoom} title="Xem sản phẩm" style={{ cursor: "pointer" }} placement="top-start">
+                        <div className='product-name'>
+                          <span className='underline-custom' style={{ whiteSpace: "pre-line", fontSize: "17.5px", fontWeight: "500" }}>{name}</span>
+                        </div>
+                      </Tooltip>
+                      <div className='mt-3'>
+                        <span className='product-price txt-price' style={{ fontSize: "17.5px", fontWeight: "" }}>
+                          {price.toLocaleString("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          }) || 0}
+                        </span>
+                      </div>
+                      <div className="mt-3">
+                        <span>Số lượng hoàn trả:</span>
+                        <span style={{ fontWeight: "", fontSize: "17px" }} className="ms-2">
+                          {"x" + selectedImei.length}
+                        </span>
+                      </div>
+                      <div className='mt-3'>
+                        {"Hoàn trả tổng cộng:"}
+                        <span className='product-price txt-price ms-2' style={{ fontSize: "17.5px", fontWeight: "" }}>
+                          {total(price).toLocaleString("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          }) || 0}
+                        </span>
+                      </div>
+                      <div className="mt-3">
+                        <TextField
+                          label="Phụ phí"
+                          id="outlined-size-small"
+                          size="small"
+                          style={{ width: "150px" }}
+                          value={priceFormat}
+                          onChange={handleChangePrice}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                    </div>
+                  </div>
+
+                  <div className="me-2" style={{ width: "370px" }}>
+                    <table className="table" style={{ borderRadius: "10px" }}>
+                      <thead style={{ borderRadius: "10px" }}>
+                        <tr >
+                          <th scope="col">
+                            <Checkbox color="primary" checked={isAll} onChange={handleAllCheckboxChange} />
+                          </th>
+                          <th scope="col" className="text-center text-dark">Chọn Imei Cần Trả Hàng</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {
+                          imeis.length
+                            ? imeis
+                              .map((item, index) => (
+                                <tr
+                                  key={index}
+                                  style={{
+                                    cursor: "pointer",
+                                  }}
+                                  onClick={() => {
+                                    if (!selectedImei.some(selectedItem => selectedItem.soImei === item.soImei)) {
+                                      setSelectedImei([...selectedImei, item]);
+                                    } else {
+                                      setSelectedImei(selectedImei.filter(selectedItem => selectedItem.soImei !== item.soImei));
+                                    }
+                                  }}
+                                >
+                                  <td>
+                                    <Checkbox color="primary" checked={selectedImei.some(selectedItem => selectedItem.soImei === item.soImei)} />
+                                  </td>
+                                  <td className="text-center">{item.soImei}</td>
+                                </tr>
+                              ))
+                            : ""
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div className="mt-1 p-3">
+                  <TextField
+                    label="Mô tả"
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
+                    multiline
+                    fullWidth
+                    maxRows={1}
+                    inputProps={{
+                      style: {
+                        paddingBottom: "70px",
+                      },
+                    }}
+                    size="medium"
+                    className="mt-2"
+                  />
+                </div>
+                <div className="d-flex justify-content-end mt-2 me-2">
+                  <Button
+                    onClick={() => {
+                      if (selectedImei.length === 0) {
+                        handleOpenAlertVariant("Bạn chưa chọn IMEI cần trả!", "warning");
+                      }
+                      else {
+                        refund(selectedImei, selectedImei.length * price, note, priceValue, totalString());
+                      }
+                    }}
+                    className="rounded-2 button-mui me-2"
+                    type="primary"
+                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                  >
+                    <span
+                      className=""
+                      style={{ marginBottom: "2px", fontWeight: "500" }}
+                    >
+                      Xác Nhận
+                    </span>
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      close();
+                      // setSelectedImei([]);
+                    }}
+                    className="rounded-2"
+                    type="danger"
+                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                  >
+                    <span
+                      className=""
+                      style={{ marginBottom: "2px", fontWeight: "500" }}
+                    >
+                      Hủy Bỏ
+                    </span>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+        <div className="mt-2"></div>
+      </Dialog>
     </>
   )
 }

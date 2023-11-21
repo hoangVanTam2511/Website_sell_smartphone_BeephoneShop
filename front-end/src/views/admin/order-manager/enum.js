@@ -136,5 +136,8 @@ export const TypeCameraNumber = {
 export const StatusImei = {
   IN_THE_CART: "IN_THE_CART",
   SOLD: "SOLD",
-  NOT_SOLD: "NOT_SOLD"
+  NOT_SOLD: "NOT_SOLD",
+  PENDING_DELIVERY: "PENDING_DELIVERY",
+  REFUND: "REFUND",
+  CANCELLED: "CANCELLED"
 }
