@@ -33,8 +33,10 @@ public class HoaDonChiTiet extends PrimaryEntity implements Serializable {
 
   private BigDecimal thanhTien;
 
+  private Integer trangThai;
+
   @OneToMany(mappedBy = "hoaDonChiTiet")
-  private List<ImeiDaBan> imeis;
+  private List<ImeiDaBan> imeisDaBan;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_chi_tiet_san_pham")

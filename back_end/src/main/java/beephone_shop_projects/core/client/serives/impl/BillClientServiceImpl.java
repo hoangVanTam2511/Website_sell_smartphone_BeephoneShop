@@ -208,7 +208,7 @@ public class BillClientServiceImpl {
             }
             return orderConverter.convertEntityToResponse(paymentOrder);
 
-        } else if (req.getIsUpdateInfo()) {
+        } else if (req.getIsUpdateInfoShip()) {
             orderCurrent.setLoaiHoaDon(req.getLoaiHoaDon());
             orderCurrent.setTenNguoiNhan(req.getTenNguoiNhan());
             orderCurrent.setSoDienThoaiNguoiNhan(req.getSoDienThoaiNguoiNhan());

@@ -36,6 +36,12 @@ public class OrderResponse {
 
   private BigDecimal tienKhachTra;
 
+  private BigDecimal tienTraKhach;
+
+  private BigDecimal khachCanTra;
+
+  private BigDecimal tienTraHang;
+
   private OrderType loaiHoaDon;
 
   private OrderStatus trangThai;
