@@ -588,7 +588,13 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
       BigDecimal khachCanTraCurrent = findOrderCurrent.getKhachCanTra();
       BigDecimal khachCanTra = khachCanTraCurrent.subtract(req.getTongTien().add(req.getPhuPhi()));
       findOrderCurrent.setKhachCanTra(khachCanTra);
-      findOrderCurrent.setTienTraHang(req.getTongTien());
+      if (findOrderCurrent.getTienTraHang() != null){
+        findOrderCurrent.setTienTraHang(findOrderCurrent.getTienTraHang().add(req.getTongTien()));
+
+      }
+      else{
+        findOrderCurrent.setTienTraHang((req.getTongTien()));
+      }
 
 //      findOrderCurrent.setTienTraKhach();
       orderRepository.save(findOrderCurrent);
