@@ -21,16 +21,23 @@ import Card from "../../../components/Card";
 import styleCss from "./style.css";
 import { format } from "date-fns";
 import { Timeline, TimelineEvent } from "@mailtop/horizontal-timeline";
+import Box from '@mui/joy/Box';
+import Alert from '@mui/joy/Alert';
 import {
   UpdateRecipientOrderDialog,
   PaymentDialog,
   OrderHistoryDialog,
   ConfirmDialog,
   MultiplePaymentMethodsDelivery,
+  ProductsDialog,
+  ModalUpdateImeiByProductItem,
+  ModalRefundProduct,
 } from "./AlertDialogSlide.js";
-import { OrderStatusString, OrderTypeString, Notistack } from './enum';
+import { OrderStatusString, OrderTypeString, Notistack, StatusImei } from './enum';
 import useCustomSnackbar from '../../../utilities/notistack';
 import { add } from "lodash";
+import { FaMoneyBillTransfer, FaMoneyCheckDollar } from "react-icons/fa6";
+import InputNumberAmount from "./input-number-amount-product";
 
 const OrderDetail = (props) => {
   const navigate = useNavigate();
@@ -38,12 +45,15 @@ const OrderDetail = (props) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [alert, setAlert] = useState({});
 
+  const [isOpen, setIsOpen] = useState(false);
+  const [isRefund, setIsRefund] = useState(false);
   const [isDone, setIsDone] = useState(false);
   const [order, setOrder] = useState({});
   const [orderHistories, setOrderHistories] = useState([]);
   const [status, setStatus] = useState();
   const [paymentHistorys, setPaymentHistorys] = useState([]);
   const [orderItems, setOrderItems] = useState([]);
+  const [orderItemRefund, setOrderItemRefund] = useState([]);
   const { id } = useParams();
   const { handleOpenAlertVariant } = useCustomSnackbar();
   const [addressDefault, setAddressDefault] = useState("");
@@ -61,19 +71,175 @@ const OrderDetail = (props) => {
   const handleCloseOpenPayment = () => {
     setOpenPayment(false);
   }
+  const [products, setProducts] = useState([]);
+  const [openProducts, setOpenProducts] = useState(false);
+  const handleCloseOpenProducts = () => {
+    setIsOpen(false);
+    setOpenProducts(false);
+  }
+  const [openModalImei, setOpenModalImei] = useState(false);
+  const handleOpenModalImei = () => {
+    setOpenModalImei(true);
+  }
+  const handleCloseOpenModalImei = () => {
+    setOpenModalImei(false);
+  }
+  const getAllProducts = async () => {
+    await axios.get(`http://localhost:8080/api/products/product-items`)
+      .then(response => {
+        setProducts(response.data.data);
+      }).catch(error => {
+        console.error("Error");
+      })
+  }
+  const [openModalUpdateImei, setOpenModalUpdateImei] = useState(false);
+  const handleOpenModalUpdateImei = () => {
+    setOpenModalUpdateImei(true);
+  }
+  const handleCloseOpenModalUpdateImei = () => {
+    setOpenModalUpdateImei(false);
+  }
+  const [idOrderItem, setIdOrderItem] = useState("");
+  const [orderItem, setOrderItem] = useState({});
+  const [itemImg, setItemImg] = useState("");
+  const [itemPrice, setItemPrice] = useState("");
+  const [itemName, setItemName] = useState("");
+  const [imeis, setImeis] = useState([]);
+  const [selectedImei, setSelectedImei] = useState([]);
+  const [selectedImeiRefresh, setSelectedImeiRefresh] = useState([]);
 
-  const getOrderItemsById = () => {
+  const [openModalRefund, setOpenModalRefund] = useState(false);
+
+  const handleCloseOpenModalRefund = () => {
+    setOpenModalRefund(false);
+  }
+
+  const filteredData = selectedImei && selectedImei.filter(item => item.trangThai !== StatusImei.REFUND);
+
+  const addCartItemsToCartOrder = async (cartItems) => {
     setIsLoading(true);
-    axios
+    const data = {
+      amount: cartItems.amount,
+      price: cartItems.price,
+      order: {
+        id: cartItems.orderId,
+      },
+      productItem: {
+        id: cartItems.productId
+      },
+      imeis: cartItems.imeis,
+    };
+    try {
+      await axios.put(`http://localhost:8080/api/carts/order`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      await getOrderItemsById();
+      handleCloseOpenModalImei();
+      handleCloseOpenProducts();
+      handleOpenAlertVariant("Thêm sản phẩm thành công ", Notistack.SUCCESS);
+      setIsLoading(false);
+      setIsOpen(false);
+    } catch (error) {
+      handleOpenAlertVariant(error.response.data.message, "warning");
+      setIsLoading(false);
+      // setIsOpen(false);
+    }
+  };
+  const handleAddProductToCartOrder = (price, id, imeis) => {
+    const amount = imeis && imeis.length;
+    const cartItems = {
+      amount: amount,
+      price: price,
+      orderId: order.id,
+      productId: id,
+      imeis: imeis,
+    }
+    if (imeis.length > 0) {
+      addCartItemsToCartOrder(cartItems);
+    }
+  }
+
+  const handleDeleteCartItemOrderById = async (id) => {
+    setIsLoading(true);
+    try {
+      await axios.delete(`http://localhost:8080/api/carts/order/${id}`);
+      await getOrderItemsById();
+      setIsLoading(false);
+      handleOpenAlertVariant("Xóa thành công sản phẩm khỏi giỏ hàng!", Notistack.SUCCESS);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleUpdateAmountCartItemOrder = async (imeis) => {
+    setIsLoading(true);
+    const request = {
+      id: idOrderItem,
+      amount: imeis && imeis.length,
+      imeis: imeis,
+      order: {
+        id: order.id,
+      },
+    }
+    try {
+      await axios.put(`http://localhost:8080/api/carts/order/amount`, request, {
+        headers: {
+          "Content-Type": "application/json",
+        }
+      });
+      await getOrderItemsById();
+      handleCloseOpenModalUpdateImei();
+      handleOpenAlertVariant("Cập nhật số lượng thành công!", Notistack.SUCCESS);
+      setIsLoading(false);
+    }
+    catch (error) {
+      setIsLoading(false);
+      handleOpenAlertVariant(error.response.data.message, "warning");
+      console.error("Error");
+    }
+  }
+
+  const [total, setTotal] = useState(0);
+
+  const getOrderItemsById = async () => {
+    setIsLoading(true);
+    await axios
       .get(`http://localhost:8080/api/orders/${id}`)
       .then((response) => {
         const data = response.data.data;
         setOrder(data);
-        setOrderHistories(data.orderHistories);
+        const sortOrderHistories = data.orderHistories && data.orderHistories.sort((a, b) => a.loaiThaoTac - b.loaiThaoTac);
+        setOrderHistories(sortOrderHistories);
         const sortPayments = data.paymentMethods && data.paymentMethods.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         setPaymentHistorys(sortPayments)
         // const sortOrderItems = data.paymentMethods && data.paymentMethods.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        setOrderItems(data.orderItems);
+
+        const sortOrderItems = data && data.orderItems.flatMap(orderItem => {
+          const imeisWithRefund = orderItem.imeisDaBan.filter(imei => imei.trangThai === StatusImei.REFUND);
+          if (imeisWithRefund.length > 0) {
+            const imeisWithoutRefund = orderItem.imeisDaBan.filter(imei => imei.trangThai !== StatusImei.REFUND);
+            const orderItemWithoutRefundImei = {
+              ...orderItem,
+              imeisDaBan: imeisWithoutRefund,
+              soLuong: imeisWithoutRefund.length,
+            };
+            const orderItemsWithRefundImei = imeisWithRefund.map(imei => ({
+              ...orderItem,
+              imeisDaBan: [imei],
+              trangThai: StatusImei.REFUND,
+              soLuong: 1,
+            }));
+            return [orderItemWithoutRefundImei, ...orderItemsWithRefundImei];
+          }
+          return orderItem;
+        });
+
+        console.log(sortOrderItems.filter((item) => item.soLuong > 0))
+
+        setOrderItems(sortOrderItems.filter((item) => item.soLuong > 0));
+        // setOrderItemRefund(sortOrderItemRefund);
 
         const address = data && data.account && data.account.diaChiList && data.account.diaChiList.find((item) => item.trangThai === 1);
         const getAddressDefault = address && address.diaChi + ", " + address.xaPhuong + ", " + address.quanHuyen + ", " + address.tinhThanhPho;
@@ -88,6 +254,11 @@ const OrderDetail = (props) => {
           setCustomerWard(data.xaPhuongNguoiNhan === null ? "" : data.xaPhuongNguoiNhan);
           setCustomerNote(data.ghiChu === null ? "" : data.ghiChu);
         }
+
+        const tongTien = data && data.tongTien || 0;
+        const discount = data && data.voucher && data.voucher.giaTriVoucher || 0;
+        const phiShip = data && data.phiShip || 0;
+        setTotal(tongTien - discount + phiShip);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -98,7 +269,43 @@ const OrderDetail = (props) => {
 
   useEffect(() => {
     getOrderItemsById();
+    getAllProducts();
   }, []);
+
+  const handleRefund = async (imeis, total, note, fee, totalString) => {
+    setIsLoading(true);
+    const request = {
+      id: idOrderItem,
+      amount: imeis && imeis.length,
+      imeis: imeis,
+      order: {
+        id: order.id,
+      },
+      tongTien: total || 0,
+      ghiChu: note,
+      phuPhi: fee || 0,
+      tongTienString: totalString,
+    }
+    try {
+      await axios.put(`http://localhost:8080/api/carts/order/refund`, request, {
+        headers: {
+          "Content-Type": "application/json",
+        }
+      });
+      await getOrderItemsById();
+      handleCloseOpenModalRefund();
+      handleOpenAlertVariant("Xác nhận trả hàng thành công!", Notistack.SUCCESS);
+      setIsLoading(false);
+    }
+    catch (error) {
+      setIsLoading(false);
+      handleOpenAlertVariant(error.response.data.message, "warning");
+      console.error("Error");
+    }
+  }
+
+
+  const [maxAmount, setMaxAmount] = useState(0);
 
   const totalItem = (amount, price) => {
     return amount * price;
@@ -107,6 +314,9 @@ const OrderDetail = (props) => {
   const totalOrder = (total, discount, feeShip) => {
     return total - discount + feeShip;
   }
+
+  const isOrderValidDelivery = order && order.orderItems && order.orderItems.every((item) => item.soLuong === item.imeisDaBan.length);
+
 
   const updateStatusOrderDelivery = async (orderRequest) => {
     setIsLoading(true);
@@ -131,9 +341,36 @@ const OrderDetail = (props) => {
     }
   };
 
-  const handlePaymentOrder = () => {
-
-  }
+  const handlePaymentOrder = async (type, total) => {
+    setIsLoading(true);
+    const orderRequest = {
+      tienKhachTra: total,
+      id: id,
+      hinhThucThanhToan: type === "Chuyển khoản" ? "Chuyển khoản thường" : "Tiền mặt",
+      hoanTien: isRefund === true ? "Hoàn tiền" : "",
+    }
+    try {
+      await axios.put(`http://localhost:8080/api/vnpay/payment/delivery`, orderRequest, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then((response) => {
+        const order = response.data.data;
+        setOrder(order);
+        setPaymentHistorys(order.paymentMethods);
+        handleCloseOpenPayment();
+        handleOpenAlertVariant("Xác nhận thanh toán thành công", Notistack.SUCCESS);
+        setIsRefund(false);
+        setIsLoading(false);
+      })
+    } catch (error) {
+      const message = error.response.data.message;
+      setIsLoading(false);
+      setIsRefund(false);
+      handleOpenAlertVariant(message, Notistack.ERROR);
+      console.log(error.response.data)
+    }
+  };
 
   const soTienThanhToan = 15000000;
   const handleAddPayment = () => {
@@ -166,7 +403,7 @@ const OrderDetail = (props) => {
               : item.loaiThaoTac == 1
                 ?
                 <>
-                  <FaRegFileAlt color="#09a129" size={"40px"} style={{ marginBottom: "5px" }} />
+                  <FaMoneyCheckDollar color="#09a129" size={"40px"} style={{ marginBottom: "5px" }} />
                   <span className="ms-4">{item.thaoTac}</span>
                 </>
                 : item.loaiThaoTac == 2
@@ -199,7 +436,15 @@ const OrderDetail = (props) => {
                             <FaRegCalendarCheck color="#09a129" size={"40px"} style={{ marginBottom: "5px" }} />
                             <span className="ms-4">{item.thaoTac}</span>
                           </>
-                          : ""
+                          :
+item.loaiThaoTac == 7
+                          ?
+                          <>
+                            <FaMoneyBillTransfer color="#e5383b" size={"40px"} style={{ marginBottom: "5px" }} />
+                            <span className="ms-4">{item.thaoTac}</span>
+                          </>
+                          :
+                          ""
           }</span>
         </div>
       ),
@@ -227,20 +472,31 @@ const OrderDetail = (props) => {
     {
       title: "Ghi Chú",
       align: "center",
-      width: "15%",
+      width: "35%",
       dataIndex: "moTa",
+      render: (text, record) => (
+        <span style={{ fontWeight: "400", whiteSpace: "pre-line" }}>{record.moTa}</span>
+      ),
     },
   ];
   const columns = [
     {
-      title: "Mã Giao Dịch",
+      title: "Số Tiền",
       align: "center",
+      dataIndex: "soTienThanhToan",
       width: "15%",
-      dataIndex: "ma",
       render: (text, record) => (
-        <span style={{ fontWeight: "500" }}>{
-          record.hinhThucThanhToan === 0 ? record.ma
-            : "..."}</span>
+        <span
+          className="txt-danger"
+          style={{ fontSize: "17px" }}
+        >
+          {record &&
+            record.soTienThanhToan &&
+            record.soTienThanhToan.toLocaleString("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            })}
+        </span>
       ),
     },
     {
@@ -357,22 +613,14 @@ const OrderDetail = (props) => {
       ),
     },
     {
-      title: "Số Tiền",
+      title: "Mã Giao Dịch",
       align: "center",
-      dataIndex: "soTienThanhToan",
-      width: "10%",
+      width: "15%",
+      dataIndex: "ma",
       render: (text, record) => (
-        <span
-          className="txt-danger"
-          style={{ fontSize: "17px" }}
-        >
-          {record &&
-            record.soTienThanhToan &&
-            record.soTienThanhToan.toLocaleString("vi-VN", {
-              style: "currency",
-              currency: "VND",
-            })}
-        </span>
+        <span style={{ fontWeight: "500" }}>{
+          record.hinhThucThanhToan === 0 ? record.ma
+            : "..."}</span>
       ),
     },
     {
@@ -563,7 +811,7 @@ const OrderDetail = (props) => {
                 item.loaiThaoTac == 0
                   ? FaRegFileAlt
                   : item.loaiThaoTac == 1
-                    ? FaRegFileAlt
+                    ? FaMoneyCheckDollar
                     : item.loaiThaoTac == 2
                       ?
                       FaBusinessTime
@@ -575,6 +823,8 @@ const OrderDetail = (props) => {
                             ? FaRegCalendarTimes
                             : item.loaiThaoTac == 6
                               ? FaRegCalendarCheck
+                              : item.loaiThaoTac == 7 ?
+                                FaMoneyBillTransfer
                               : ""
               }
               title={
@@ -605,6 +855,8 @@ const OrderDetail = (props) => {
                             ? "#e5383b"
                             : item.loaiThaoTac == 6
                               ? "#09a129"
+                            : item.loaiThaoTac == 7 
+                            ? "#e5383b"
                               : ""
               }
             />
@@ -685,7 +937,7 @@ const OrderDetail = (props) => {
             </div>
           )
             : null}
-          {isDone == true && order.trangThai == OrderStatusString.DELIVERING && order.loaiHoaDon == OrderTypeString.DELIVERY ? (
+          {order.tienKhachTra >= total && order.trangThai == OrderStatusString.DELIVERING && order.loaiHoaDon == OrderTypeString.DELIVERY ? (
             <div>
               <Button
                 onClick={() => handleOpenDialogConfirmOrder(OrderStatusString.DELIVERING, false)}
@@ -701,14 +953,14 @@ const OrderDetail = (props) => {
                   className=""
                   style={{ fontWeight: "500", marginBottom: "2px" }}
                 >
-                  ĐÃ GIAO HÀNG
+                  HOÀN THÀNH ĐƠN
                 </span>
               </Button>
             </div>
           ) : (
             ""
           )}
-          {order.trangThai != OrderStatusString.CANCELLED && order.trangThai != OrderStatusString.SUCCESS_DELIVERY && order.loaiHoaDon == OrderTypeString.DELIVERY ? (
+          {paymentHistorys && paymentHistorys.length <= 0 && order.trangThai != OrderStatusString.CANCELLED && order.trangThai != OrderStatusString.SUCCESS_DELIVERY && order.loaiHoaDon == OrderTypeString.DELIVERY ? (
             <div className="">
               <Button
                 onClick={() => handleOpenDialogConfirmOrder(null, true)}
@@ -735,7 +987,7 @@ const OrderDetail = (props) => {
         </div>
         <div>
           <Button
-            onClick={handleClickOpenDialogDetailOrderHistories}
+            onClick={() => console.log(isOrderValidDelivery ? "OK" : "NOT")}
             className="rounded-2 me-2"
             type="primary"
             style={{
@@ -1211,23 +1463,46 @@ const OrderDetail = (props) => {
               <span className='' style={{ fontSize: "25px" }}>LỊCH SỬ THANH TOÁN</span>
             </div>
             <div className="">
-              <Button
-                onClick={() => setOpenPayment(true)}
-                className="rounded-2 ms-2"
-                type="primary"
-                style={{
-                  height: "40px",
-                  fontSize: "16px",
-                  width: "180px",
-                }}
-              >
-                <span
-                  className=""
-                  style={{ fontWeight: "500", marginBottom: "2px" }}
+              {order.loaiHoaDon === OrderTypeString.DELIVERY && order.tienKhachTra < total
+                ?
+                <Button
+                  onClick={() => setOpenPayment(true)}
+                  className="rounded-2 ms-2"
+                  type="primary"
+                  style={{
+                    height: "40px",
+                    fontSize: "16px",
+                    width: "180px",
+                  }}
                 >
-                  Tiến hành thanh toán
-                </span>
-              </Button>
+                  <span
+                    className=""
+                    style={{ fontWeight: "500", marginBottom: "2px" }}
+                  >
+                    Tiến hành thanh toán
+                  </span>
+                </Button>
+                :
+                orderItems.some((item) => item.trangThai === StatusImei.REFUND)
+                  ?
+                  <Button
+                    onClick={() => { setOpenPayment(true); setIsRefund(true) }}
+                    className="rounded-2 ms-2"
+                    type="primary"
+                    style={{
+                      height: "40px",
+                      fontSize: "16px",
+                      width: "110px",
+                    }}
+                  >
+                    <span
+                      className=""
+                      style={{ fontWeight: "500", marginBottom: "2px" }}
+                    >
+                      Hoàn tiền
+                    </span>
+                  </Button>
+                  : null}
             </div>
           </div>
           <div className='ms-2 mt-2' style={{ borderBottom: "2px solid #C7C7C7", width: "99.2%", borderWidth: "2px" }}></div>
@@ -1311,6 +1586,13 @@ const OrderDetail = (props) => {
                 }) : ""}
               </span>
             </div>
+            {item.imeisDaBan && item.imeisDaBan.length <= 0 && item.imeisDaBan.length !== item.soLuong &&
+              <div className="mt-2 pt-1">
+                <Box sx={{ width: '100%' }}>
+                  <Alert color="danger" variant="soft">Bạn cần chọn Imei cho sản phẩm trước khi giao hàng.</Alert>
+                </Box>
+              </div>
+            }
           </div>
         </div>
       ),
@@ -1351,51 +1633,110 @@ const OrderDetail = (props) => {
       render: (text, item) =>
         <div>
           <div className="button-container">
-            <Button
-              onClick={() => {
-                // onOpenUpdateImei();
-                // const imeisChuaBan = item.imeisChuaBan;
-                // const imeiAll = item.sanPhamChiTiet.imeis;
-                // const isSelected = (item) => imeisChuaBan.some(selectedItem => selectedItem.soImei === item.soImei);
-                // const sortedItems = [...imeiAll].sort((a, b) => {
-                //   const isSelectedA = isSelected(a);
-                //   const isSelectedB = isSelected(b);
-                //   if (isSelectedA && !isSelectedB) {
-                //     return -1;
-                //   } else if (!isSelectedA && isSelectedB) {
-                //     return 1;
-                //   }
-                //   return 0;
-                // });
-                // setImeis(sortedItems);
-                // setIdCartItem(item.id);
-                // setSelectedImei(item.imeisChuaBan)
-                // setSelectedImeiRefresh([]);
-              }}
-              className="rounded-2 button-mui me-2"
-              type="primary"
-              style={{ height: "38px", width: "100px", fontSize: "15px" }}
-            >
-              <span
-                className="text-white"
-                style={{ marginBottom: "2px", fontSize: "15px", fontWeight: "500" }}
+            {item.trangThai !== StatusImei.REFUND ?
+              <Button
+                onClick={() => {
+                  setOpenModalRefund(true);
+                  setSelectedImei(item.imeisDaBan); setIdOrderItem(item.id);
+                  setItemImg(item && item.sanPhamChiTiet && item.sanPhamChiTiet.image && item.sanPhamChiTiet.image.path);
+                  setItemName(item.sanPhamChiTiet.sanPham.tenSanPham + "\u00A0" + item.sanPhamChiTiet.ram.dungLuong + "/" + item.sanPhamChiTiet.rom.dungLuong + "GB" + " " + `(${item.sanPhamChiTiet.mauSac.tenMauSac})`);
+                  setItemPrice(item && item.sanPhamChiTiet.donGia);
+                  setSelectedImeiRefresh([]);
+                }}
+                className="rounded-2 button-mui"
+                type="danger"
+                style={{ height: "38px", width: "100px", fontSize: "15px" }}
               >
-                Cập Nhật
-              </span>
-            </Button>
-            <Button
-              // onClick={() => removeProductInCart(item.id)}
-              className="rounded-2 button-mui"
-              type="danger"
-              style={{ height: "38px", width: "80px", fontSize: "15px" }}
-            >
-              <span
-                className="text-white"
-                style={{ marginBottom: "2px", fontSize: "15px", fontWeight: "500" }}
-              >
-                Xóa
-              </span>
-            </Button>
+                <span
+                  className="text-white"
+                  style={{ marginBottom: "2px", fontSize: "15px", fontWeight: "500" }}
+                >
+                  Trả Hàng
+                </span>
+              </Button>
+              :
+              order.trangThai === OrderStatusString.PENDING_CONFIRM ||
+                order.trangThai === OrderStatusString.PREPARING ||
+                order.trangThai === OrderStatusString.CONFIRMED ?
+                <>
+                  <Button
+                    onClick={() => {
+                      handleOpenModalUpdateImei();
+                      const imeisDaBan = item.imeisDaBan;
+                      const imeiAll = item.sanPhamChiTiet.imeis;
+                      const isSelected = (item) => imeisDaBan.some(selectedItem => selectedItem.soImei === item.soImei);
+                      const sortedItems = [...imeiAll].sort((a, b) => {
+                        const isSelectedA = isSelected(a);
+                        const isSelectedB = isSelected(b);
+                        if (isSelectedA && !isSelectedB) {
+                          return -1;
+                        } else if (!isSelectedA && isSelectedB) {
+                          return 1;
+                        }
+                        return 0;
+                      });
+                      setImeis(sortedItems);
+                      setMaxAmount(item.soLuong);
+                      setIdOrderItem(item.id);
+                      setSelectedImei(item.imeisDaBan)
+                      setSelectedImeiRefresh([]);
+                    }}
+                    className="rounded-2 button-mui"
+                    type="primary"
+                    style={{ height: "38px", width: "100px", fontSize: "15px" }}
+                  >
+                    <span
+                      className="text-white"
+                      style={{ marginBottom: "2px", fontSize: "15px", fontWeight: "500" }}
+                    >
+                      Cập Nhật
+                    </span>
+                  </Button>
+                  {orderItems && orderItems.length > 1
+                    &&
+                    <Button
+                      onClick={() => handleDeleteCartItemOrderById(item.id)}
+                      className="rounded-2 button-mui ms-2"
+                      type="danger"
+                      style={{ height: "38px", width: "80px", fontSize: "15px" }}
+                    >
+                      <span
+                        className="text-white"
+                        style={{ marginBottom: "2px", fontSize: "15px", fontWeight: "500" }}
+                      >
+                        Xóa
+                      </span>
+                    </Button>
+                  }
+                </>
+                : item.trangThai === StatusImei.REFUND ?
+                  <Button
+                    // onClick={() => removeProductInCart(item.id)}
+                    className="rounded-2                   ant-btn-danger-light"
+                    style={{ height: "38px", width: "130px", fontSize: "15px" }}
+                  >
+                    <span
+                      className=""
+                      style={{ marginBottom: "2px", fontSize: "15px", fontWeight: "500" }}
+                    >
+                      Đã Hoàn Trả
+                    </span>
+                  </Button>
+                  :
+                  <Button
+                    // onClick={() => removeProductInCart(item.id)}
+                    className="rounded-2 ant-btn-light"
+                    style={{ height: "38px", width: "90px", fontSize: "15px" }}
+                  >
+                    <span
+                      className=""
+                      style={{ marginBottom: "2px", fontSize: "15px", fontWeight: "500" }}
+                    >
+                      Chi Tiết
+                    </span>
+                  </Button>
+
+            }
           </div>
         </div>
     },
@@ -1406,12 +1747,19 @@ const OrderDetail = (props) => {
     return (
       <div className="wrap-order-summary mt-4 p-3">
         <div className="">
-          <div className="d-flex justify-content-end">
-            <div className="me-2">
+          <div className="d-flex justify-content-between">
+            <div className="ms-2" style={{ marginTop: "3px" }}>
+              <span className='' style={{ fontSize: "25px" }}>DANH SÁCH SẢN PHẨM ĐÃ {order.loaiHoaDon === OrderTypeString.AT_COUNTER ? "" : " ĐẶT "} MUA</span>
+            </div>
+            <div className="">
               {order.trangThai === OrderStatusString.PENDING_CONFIRM || order.trangThai ===
                 OrderStatusString.CONFIRMED || order.trangThai === OrderStatusString.PREPARING ?
                 <Button
-                  // onClick={handleOpenDialogProducts}
+                  onClick={() => {
+                    setOpenProducts(true);
+                    getAllProducts();
+                    setIsOpen(true);
+                  }}
                   className="rounded-2"
                   type="primary"
                   style={{ height: "40px", width: "145px", fontSize: "16px" }}
@@ -1495,7 +1843,7 @@ const OrderDetail = (props) => {
                       className="text-dark"
                       style={{ fontSize: "17px" }}
                     >
-                      {order && order.tongTienSauKhiGiam && order.tongTienSauKhiGiam.toLocaleString("vi-VN", {
+                      {total.toLocaleString("vi-VN", {
                         style: "currency",
                         currency: "VND",
                       })}
@@ -1543,7 +1891,7 @@ const OrderDetail = (props) => {
                       style={{ fontSize: "17px", color: "#dc1111" }}
                     >
                       {order &&
-                        totalOrder(order.tongTien, order.voucher && order.voucher.giaTriVoucher, order.phiShip).toLocaleString("vi-VN", {
+                        order.khachCanTra && order.khachCanTra.toLocaleString("vi-VN", {
                           style: "currency",
                           currency: "VND",
                         })}
@@ -1555,7 +1903,7 @@ const OrderDetail = (props) => {
                     </span>
                     <span
                       className="fw-bold"
-                      style={{ fontSize: "17px", color: order.tienKhachTra && "#dc1111" || "#2f80ed" }}
+                      style={{ fontSize: "17px", color: "#2f80ed" }}
                     >
                       {order && order.tienKhachTra && order.tienKhachTra.toLocaleString("vi-VN", {
                         style: "currency",
@@ -1581,6 +1929,38 @@ const OrderDetail = (props) => {
                   </span>
                 </div>
                 : ""}
+              {order.tienTraHang &&
+                <div className="d-flex justify-content-between mt-3">
+                  <span className="" style={{ fontSize: "16px", color: "" }}>
+                    Hoàn trả
+                  </span>
+                  <span
+                    className="text-dark"
+                    style={{ fontSize: "17px" }}
+                  >
+                    {order && order.tienTraHang.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })}
+                  </span>
+                </div>
+              }
+              {order.tienTraKhach &&
+                <div className="d-flex justify-content-between mt-3">
+                  <span className="" style={{ fontSize: "16px", color: "" }}>
+                    Đã trả khách
+                  </span>
+                  <span
+                    className="text-dark"
+                    style={{ fontSize: "17px" }}
+                  >
+                    {order && order.tienTraKhach.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })}
+                  </span>
+                </div>
+              }
             </div>
           </div>
         </div>
@@ -1641,8 +2021,35 @@ const OrderDetail = (props) => {
         note={customerNote}
       />
 
-      <MultiplePaymentMethodsDelivery open={openPayment} close={handleCloseOpenPayment}
-        data={paymentHistorys}
+      <MultiplePaymentMethodsDelivery open={openPayment} close={handleCloseOpenPayment} hoanTien={isRefund}
+        data={paymentHistorys} khachCanTra={order.khachCanTra} khachThanhToan={order.tienKhachTra} canTraKhach={order.tienTraHang}
+        addPayment={handlePaymentOrder}
+      />
+
+      <ProductsDialog
+        onOpenImei={handleOpenModalImei}
+        onCloseImei={handleCloseOpenModalImei}
+        openImei={openModalImei}
+        isOpen={isOpen}
+        open={openProducts}
+        onClose={handleCloseOpenProducts}
+        data={products}
+        add={handleAddProductToCartOrder}
+      />
+
+      <ModalUpdateImeiByProductItem
+        open={openModalUpdateImei}
+        close={handleCloseOpenModalUpdateImei}
+        imeis={imeis}
+        imeisChuaBan={selectedImei}
+        refresh={selectedImeiRefresh}
+        update={handleUpdateAmountCartItemOrder}
+        delivery={true}
+        max={maxAmount}
+      />
+
+      <ModalRefundProduct open={openModalRefund} close={handleCloseOpenModalRefund}
+        imeis={filteredData} refresh={selectedImeiRefresh} img={itemImg} price={itemPrice} name={itemName} refund={handleRefund}
       />
 
       {isLoading && <LoadingIndicator />}
