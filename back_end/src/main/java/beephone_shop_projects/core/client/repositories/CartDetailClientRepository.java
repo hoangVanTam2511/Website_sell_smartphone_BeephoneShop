@@ -51,7 +51,7 @@ public interface CartDetailClientRepository extends IGioHangChiTietRepository {
             spct.so_luong_ton_kho, spct.don_gia, ms.ten_mau_sac,
             sp.ten_san_pham,
             ram.dung_luong AS dung_luong_ram,
-            rom.dung_luong AS dung_luong_rom,
+            rom.dung_luong AS dung_luong_rom,   
             ghct.so_luong AS so_luong_sap_mua,
             IF(kmct.don_gia_sau_khuyen_mai is null ,0, kmct.don_gia_sau_khuyen_mai) AS don_gia_sau_khuyen_mai
             FROM gio_hang_chi_tiet ghct
@@ -66,4 +66,9 @@ public interface CartDetailClientRepository extends IGioHangChiTietRepository {
         """, nativeQuery = true)
     ArrayList<CartDetailResponce> getCartDetails(@Param("id_khach_hang")String idKhachHang);
 
+    @Modifying
+    @Query(value = """
+        delete from gio_hang_chi_tiet where id_gio_hang = :id_gio_hang and id_chi_tiet_san_pham = :id_chi_tiet_san_pham
+    """, nativeQuery = true)
+    void deleteCartDetailByIdGioHangAndIdCTSP(@Param("id_gio_hang")String idGioHang, @Param("id_chi_tiet_san_pham")String idChiTietSanPham);
 }

@@ -7,9 +7,10 @@ import beephone_shop_projects.core.client.repositories.CartDetailClientRepositor
 import beephone_shop_projects.core.client.serives.AccountClientService;
 import beephone_shop_projects.entity.Account;
 import beephone_shop_projects.entity.GioHang;
-import beephone_shop_projects.infrastructure.exeption.rest.RestApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.nio.CharBuffer;
 
 @Service
 public class AccountClientServiceImpl implements AccountClientService {
@@ -17,11 +18,13 @@ public class AccountClientServiceImpl implements AccountClientService {
     @Autowired
     private AccountClientRepository accountClientRepository;
 
+
     @Autowired
     private CartDetailClientRepository cartDetailClientRepository;
 
     @Autowired
     private CartClientRepository cartClientRepository;
+
     @Override
     public Account checkEmailAndPass(AccountLoginRequest accountLoginRequest) {
         Account account = accountClientRepository.checkEmailAndPass(accountLoginRequest.getEmail(), accountLoginRequest.getPassword());
@@ -50,4 +53,28 @@ public class AccountClientServiceImpl implements AccountClientService {
             }
         return account;
     }
+
+    public Account login(AccountLoginRequest accountLoginRequest) {
+        Account account = accountClientRepository.checkEmailAndPass(accountLoginRequest.getEmail(), accountLoginRequest.getPassword());
+        if(account != null){
+            return account;
+        }else{
+            throw new RuntimeException("Email hoặc mật khẩu không đúng");
+        }
+    }
+
+//    public UserDto login(CredentialsDto credentialsDto) {
+//        User user = userRepository.findByLogin(credentialsDto.getLogin())
+//                .orElseThrow(() -> new AppException("Unknown user", HttpStatus.NOT_FOUND));
+//
+//        if (passwordEncoder.matches(CharBuffer.wrap(credentialsDto.getPassword()), user.getPassword())) {
+//            return userMapper.toUserDto(user);
+//        }
+//        throw new AppException("Invalid password", HttpStatus.BAD_REQUEST);
+//    }
+
+    public Account findByEmail(String email){
+        return accountClientRepository.findByEmail(email);
+    }
+
 }
