@@ -110,7 +110,7 @@ import UpdateMauSac from "../views/admin/order-manager/update-mau-sac";
 import ManagementDanhMuc from "../views/admin/order-manager/management-danh-muc";
 import CreateDanhMuc from "../views/admin/order-manager/create-danh-muc";
 import ThongKe from "../views/admin/statics-manager/thong-ke";
-import ManagementImage from "../views/admin/order-manager/management-image";
+// import ManagementImage from "../views/admin/order-manager/management-image";
 import PaymentSuccess from "../views/admin/order-manager/vnpay-payment-success";
 
 export const DefaultRouter = [

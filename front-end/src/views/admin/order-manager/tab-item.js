@@ -1,36 +1,66 @@
-import React, { useEffect, useState, memo } from 'react'
-import { TextField, FormControl, InputLabel, Select as SelectMui, OutlinedInput, MenuItem, IconButton, Tooltip, Zoom } from '@mui/material'
-import style from './style.css'
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import axios from 'axios';
-import { styled } from '@mui/material/styles';
-import { Button, Table as TableAntd } from 'antd'
-import { ModalUpdateImeiByProductItem, ProductDetailsDialog, ProductsDialog } from './AlertDialogSlide';
-import RemoveOutlinedIcon from '@mui/icons-material/RemoveOutlined';
-import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
-import Radio from '@mui/joy/Radio';
-import RadioGroup from '@mui/joy/RadioGroup';
-import Sheet from '@mui/joy/Sheet';
-import EditIcon from '@mui/icons-material/Edit';
-import { parseInt } from 'lodash';
-import { Notistack } from './enum';
-import useCustomSnackbar from '../../../utilities/notistack';
-import CircularProgress from '@mui/material/CircularProgress';
-import LoadingIndicator from '../../../utilities/loading';
-import InputNumberAmountCart from './input-number-amount-cart';
-import { TextFieldAddress, TextFieldName, TextFieldPhone } from './text-field-info-ship';
-import QrCodeScannerOutlinedIcon from '@mui/icons-material/QrCodeScannerOutlined';
-import { FaPencilAlt, FaTrashAlt } from 'react-icons/fa';
+import React, { useEffect, useState, memo } from "react";
+import {
+  TextField,
+  FormControl,
+  InputLabel,
+  Select as SelectMui,
+  OutlinedInput,
+  MenuItem,
+  IconButton,
+  Tooltip,
+  Zoom,
+} from "@mui/material";
+import style from "./style.css";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
+import axios from "axios";
+import { styled } from "@mui/material/styles";
+import { Button, Table as TableAntd } from "antd";
+import {
+  ModalUpdateImeiByProductItem,
+  ProductDetailsDialog,
+  ProductsDialog,
+} from "./AlertDialogSlide";
+import RemoveOutlinedIcon from "@mui/icons-material/RemoveOutlined";
+import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
+import Radio from "@mui/joy/Radio";
+import RadioGroup from "@mui/joy/RadioGroup";
+import Sheet from "@mui/joy/Sheet";
+import EditIcon from "@mui/icons-material/Edit";
+import { parseInt } from "lodash";
+import { Notistack } from "./enum";
+import useCustomSnackbar from "../../../utilities/notistack";
+import CircularProgress from "@mui/material/CircularProgress";
+import LoadingIndicator from "../../../utilities/loading";
+import InputNumberAmountCart from "./input-number-amount-cart";
+import {
+  TextFieldAddress,
+  TextFieldName,
+  TextFieldPhone,
+} from "./text-field-info-ship";
+import QrCodeScannerOutlinedIcon from "@mui/icons-material/QrCodeScannerOutlined";
+import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 
-const TabItem = ({ openUpdateImei, onCloseUpdateImei, onOpenUpdateImei, openImei, onCloseImei, onOpenImei,
-  /* getCustomer, idCustomer, */ update, /* getAmount, */ isOpen, /* delivery, */ cartItems, add, remove/* , openProductDetails, openDialogProductDetails, closeDialogProductDetails, closeNoActionDialogProductDetails, */
-  , openProducts, openDialogProducts, closeDialogProducts/* , getShipFee */
+const TabItem = ({
+  openUpdateImei,
+  onCloseUpdateImei,
+  onOpenUpdateImei,
+  openImei,
+  onCloseImei,
+  onOpenImei,
+  /* getCustomer, idCustomer, */ update,
+  /* getAmount, */ isOpen,
+  /* delivery, */ cartItems,
+  add,
+  remove /* , openProductDetails, openDialogProductDetails, closeDialogProductDetails, closeNoActionDialogProductDetails, */,
+  openProducts,
+  openDialogProducts,
+  closeDialogProducts /* , getShipFee */,
 }) => {
   const { handleOpenAlertVariant } = useCustomSnackbar();
   const [loadingChild, setLoadingChild] = useState(false);
@@ -39,7 +69,7 @@ const TabItem = ({ openUpdateImei, onCloseUpdateImei, onOpenUpdateImei, openImei
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
-  const [selectedProvince, setSelectedProvince] = useState('');
+  const [selectedProvince, setSelectedProvince] = useState("");
   const [selectedWard, setSelectedWard] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [receiveDate, setReceiveDate] = useState();
@@ -58,7 +88,7 @@ const TabItem = ({ openUpdateImei, onCloseUpdateImei, onOpenUpdateImei, openImei
 
   const handleOpenImei = () => {
     onOpenImei();
-  }
+  };
 
   // useEffect(() => {
   //   if (idCustomer === "") {
@@ -88,7 +118,6 @@ const TabItem = ({ openUpdateImei, onCloseUpdateImei, onOpenUpdateImei, openImei
   //   getCustomer(customer);
   //
   // }, [customerAddress, customerName, customerPhone])
-
 
   // const getPhone = (phone) => {
   //   setCustomerPhone(phone);
@@ -135,38 +164,40 @@ const TabItem = ({ openUpdateImei, onCloseUpdateImei, onOpenUpdateImei, openImei
   // }, [selectedProvince])
 
   const openDialogProductItems = () => {
-    openDialogProductDetails();
-  }
+    // openDialogProductDetails();
+  };
   const removeProductInCart = (id) => {
     remove(id);
-  }
+  };
 
   const addProductToCart = (priceProduct, idProduct, amount) => {
     add(priceProduct, idProduct, amount);
-  }
+  };
 
   const updateAmount = (imeis) => {
     update(idCartItem, imeis);
-  }
+  };
 
   const closeProductsDialog = () => {
     closeDialogProducts();
     setProducts([]);
-  }
+  };
 
   const openProductsDialog = () => {
     getAllProducts();
     openDialogProducts();
-  }
+  };
 
   const getAllProducts = async () => {
-    await axios.get(`http://localhost:8080/api/products/product-items`)
-      .then(response => {
+    await axios
+      .get(`http://localhost:8080/api/products/product-items`)
+      .then((response) => {
         setProducts(response.data.data);
-      }).catch(error => {
-        console.error("Error");
       })
-  }
+      .catch((error) => {
+        console.error("Error");
+      });
+  };
   // const tokenGhn = "62124d79-4ffa-11ee-b1d4-92b443b7a897";
   //
   // const getShipFeeGhn = () => {
@@ -245,7 +276,9 @@ const TabItem = ({ openUpdateImei, onCloseUpdateImei, onOpenUpdateImei, openImei
   // const shopDistrictId = 1482;
   // const shopWardCode = 11007;
   //
-  const cartItemsSort = cartItems.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  const cartItemsSort = cartItems.sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  );
   //
   // const getReceiveDate = () => {
   //   axios.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/leadtime`, {
@@ -328,27 +361,34 @@ const TabItem = ({ openUpdateImei, onCloseUpdateImei, onOpenUpdateImei, openImei
   const CartEmpty = () => {
     return (
       <>
-        <div className='text-center' style={{ height: "324px" }}>
-          <img src="https://img.freepik.com/premium-vector/shopping-cart-with-cross-mark-wireless-paymant-icon-shopping-bag-failure-paymant-sign-online-shopping-vector_662353-912.jpg"
-            style={{ width: "240px" }} />
-          <p className='text-dark' style={{ fontSize: "16px", fontWeight: "550" }}>Chưa có sản phẩm nào trong giỏ hàng!</p>
+        <div className="text-center" style={{ height: "324px" }}>
+          <img
+            src="https://img.freepik.com/premium-vector/shopping-cart-with-cross-mark-wireless-paymant-icon-shopping-bag-failure-paymant-sign-online-shopping-vector_662353-912.jpg"
+            style={{ width: "240px" }}
+          />
+          <p
+            className="text-dark"
+            style={{ fontSize: "16px", fontWeight: "550" }}
+          >
+            Chưa có sản phẩm nào trong giỏ hàng!
+          </p>
         </div>
       </>
-    )
-  }
+    );
+  };
 
   const total = (donGia, soLuong) => {
     const result = donGia * soLuong;
     return result;
-  }
+  };
 
   const cartTotalPrice = () => {
     let total = 0;
     cartItems.map((item) => {
       total += item.donGia * item.soLuong;
-    })
+    });
     return total;
-  }
+  };
 
   const columns = [
     {
@@ -356,23 +396,58 @@ const TabItem = ({ openUpdateImei, onCloseUpdateImei, onOpenUpdateImei, openImei
       width: "40%",
       align: "center",
       render: (text, item) => (
-
-        <div className='d-flex'>
+        <div className="d-flex">
           <div className="product-img">
-            <img src={item && item.sanPhamChiTiet && item.sanPhamChiTiet.image && item.sanPhamChiTiet.image.path} class='' alt="" style={{ width: "125px", height: "125px" }} />
+            <img
+              src={
+                item &&
+                item.sanPhamChiTiet &&
+                item.sanPhamChiTiet.image &&
+                item.sanPhamChiTiet.image.path
+              }
+              class=""
+              alt=""
+              style={{ width: "125px", height: "125px" }}
+            />
           </div>
-          <div className='product ms-3 text-start'>
-            <Tooltip TransitionComponent={Zoom} title="Xem sản phẩm" style={{ cursor: "pointer" }} placement="top-start">
-              <div classNamountme='product-name'>
-                <span className='underline-custom' style={{ whiteSpace: "pre-line", fontSize: "17.5px", fontWeight: "500" }}>{item.sanPhamChiTiet.sanPham.tenSanPham + "\u00A0" + item.sanPhamChiTiet.ram.dungLuong + "/" + item.sanPhamChiTiet.rom.dungLuong + "GB" + " " + `(${item.sanPhamChiTiet.mauSac.tenMauSac})`}</span>
+          <div className="product ms-3 text-start">
+            <Tooltip
+              TransitionComponent={Zoom}
+              title="Xem sản phẩm"
+              style={{ cursor: "pointer" }}
+              placement="top-start"
+            >
+              <div classNamountme="product-name">
+                <span
+                  className="underline-custom"
+                  style={{
+                    whiteSpace: "pre-line",
+                    fontSize: "17.5px",
+                    fontWeight: "500",
+                  }}
+                >
+                  {item.sanPhamChiTiet.sanPham.tenSanPham +
+                    "\u00A0" +
+                    item.sanPhamChiTiet.ram.dungLuong +
+                    "/" +
+                    item.sanPhamChiTiet.rom.dungLuong +
+                    "GB" +
+                    " " +
+                    `(${item.sanPhamChiTiet.mauSac.tenMauSac})`}
+                </span>
               </div>
             </Tooltip>
-            <div className='mt-2'>
-              <span className='product-price txt-price' style={{ fontSize: "17.5px", fontWeight: "" }}>
-                {item && item.sanPhamChiTiet.donGia ? item.sanPhamChiTiet.donGia.toLocaleString("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
-                }) : ""}
+            <div className="mt-2">
+              <span
+                className="product-price txt-price"
+                style={{ fontSize: "17.5px", fontWeight: "" }}
+              >
+                {item && item.sanPhamChiTiet.donGia
+                  ? item.sanPhamChiTiet.donGia.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })
+                  : ""}
               </span>
             </div>
           </div>
@@ -384,34 +459,38 @@ const TabItem = ({ openUpdateImei, onCloseUpdateImei, onOpenUpdateImei, openImei
       align: "center",
       dataIndex: "soLuong",
       width: "10%",
-      render: (text, item) =>
+      render: (text, item) => (
         <div>
           <span style={{ fontWeight: "", fontSize: "17px" }} className="">
             {"x" + item.soLuong}
           </span>
         </div>
-
+      ),
     },
     {
       title: "Thành tiền",
       align: "center",
       dataIndex: "donGia",
       width: "20%",
-      render: (text, item) =>
-        <span style={{ fontSize: "17.5px", fontWeight: "" }} className="txt-price">
-          {
-            item && total(item.donGia, item.soLuong).toLocaleString("vi-VN", {
+      render: (text, item) => (
+        <span
+          style={{ fontSize: "17.5px", fontWeight: "" }}
+          className="txt-price"
+        >
+          {item &&
+            total(item.donGia, item.soLuong).toLocaleString("vi-VN", {
               style: "currency",
               currency: "VND",
             })}
         </span>
+      ),
     },
     {
       title: "Thao tác",
       align: "center",
       dataIndex: "actions",
       width: "15%",
-      render: (text, item) =>
+      render: (text, item) => (
         <div>
           <div className="button-container">
             <Button
@@ -419,7 +498,10 @@ const TabItem = ({ openUpdateImei, onCloseUpdateImei, onOpenUpdateImei, openImei
                 onOpenUpdateImei();
                 const imeisChuaBan = item.imeisChuaBan;
                 const imeiAll = item.sanPhamChiTiet.imeis;
-                const isSelected = (item) => imeisChuaBan.some(selectedItem => selectedItem.soImei === item.soImei);
+                const isSelected = (item) =>
+                  imeisChuaBan.some(
+                    (selectedItem) => selectedItem.soImei === item.soImei
+                  );
                 const sortedItems = [...imeiAll].sort((a, b) => {
                   const isSelectedA = isSelected(a);
                   const isSelectedB = isSelected(b);
@@ -432,7 +514,7 @@ const TabItem = ({ openUpdateImei, onCloseUpdateImei, onOpenUpdateImei, openImei
                 });
                 setImeis(sortedItems);
                 setIdCartItem(item.id);
-                setSelectedImei(item.imeisChuaBan)
+                setSelectedImei(item.imeisChuaBan);
                 setSelectedImeiRefresh([]);
               }}
               className="rounded-2 button-mui me-2"
@@ -441,7 +523,11 @@ const TabItem = ({ openUpdateImei, onCloseUpdateImei, onOpenUpdateImei, openImei
             >
               <span
                 className="text-white"
-                style={{ marginBottom: "2px", fontSize: "15px", fontWeight: "500" }}
+                style={{
+                  marginBottom: "2px",
+                  fontSize: "15px",
+                  fontWeight: "500",
+                }}
               >
                 Cập Nhật
               </span>
@@ -454,24 +540,38 @@ const TabItem = ({ openUpdateImei, onCloseUpdateImei, onOpenUpdateImei, openImei
             >
               <span
                 className="text-white"
-                style={{ marginBottom: "2px", fontSize: "15px", fontWeight: "500" }}
+                style={{
+                  marginBottom: "2px",
+                  fontSize: "15px",
+                  fontWeight: "500",
+                }}
               >
                 Xóa
               </span>
             </Button>
           </div>
         </div>
+      ),
     },
   ];
 
-
   return (
     <>
-      <div style={{ width: "", height: "auto" }} className='mt-3'>
-        <div /* className={"p-2"} */ style={{ /* boxShadow: "0 0.1rem 0.3rem #00000050", marginTop: "", */ height: "auto" }}>
+      <div style={{ width: "", height: "auto" }} className="mt-3">
+        <div
+          /* className={"p-2"} */ style={{
+            /* boxShadow: "0 0.1rem 0.3rem #00000050", marginTop: "", */ height:
+              "auto",
+          }}
+        >
           <div className="d-flex justify-content-between mt-1">
             <div className="ms-2" style={{ marginTop: "5px" }}>
-              <span className='' style={{ fontSize: "22px", fontWeight: "500" }}>Giỏ hàng</span>
+              <span
+                className=""
+                style={{ fontSize: "22px", fontWeight: "500" }}
+              >
+                Giỏ hàng
+              </span>
             </div>
             <div className="">
               {/*
@@ -495,38 +595,54 @@ const TabItem = ({ openUpdateImei, onCloseUpdateImei, onOpenUpdateImei, openImei
               >
                 <span
                   className="text-white"
-                  style={{ marginBottom: "2px", fontSize: "15px", fontWeight: "500" }}
+                  style={{
+                    marginBottom: "2px",
+                    fontSize: "15px",
+                    fontWeight: "500",
+                  }}
                 >
                   Thêm sản phẩm
                 </span>
               </Button>
             </div>
           </div>
-          <div className='mt-2' style={{ borderBottom: "2px solid #C7C7C7", width: "100%", borderWidth: "2px" }}></div>
-          <div >
-            {cartItemsSort && cartItemsSort.length === 0 ? <CartEmpty /> :
+          <div
+            className="mt-2"
+            style={{
+              borderBottom: "2px solid #C7C7C7",
+              width: "100%",
+              borderWidth: "2px",
+            }}
+          ></div>
+          <div>
+            {cartItemsSort && cartItemsSort.length === 0 ? (
+              <CartEmpty />
+            ) : (
               <TableAntd
-                className='table-cart'
+                className="table-cart"
                 columns={columns}
                 dataSource={cartItemsSort}
                 pagination={false}
                 rowKey={"id"}
                 key={"id"}
-              />}
+              />
+            )}
           </div>
-          <div className='mt-3'></div>
-          {cartItems.length > 0 &&
+          <div className="mt-3"></div>
+          {cartItems.length > 0 && (
             <div className="d-flex justify-content-end mt-3">
               <span
                 className="text-dark"
-                style={{ fontSize: "16px", color: "", fontWeight: "", width: "130px" }}
+                style={{
+                  fontSize: "16px",
+                  color: "",
+                  fontWeight: "",
+                  width: "130px",
+                }}
               >
                 Tổng cộng
               </span>
-              <span
-                className=""
-                style={{ fontSize: "17px", color: "#dc1111" }}
-              >
+              <span className="" style={{ fontSize: "17px", color: "#dc1111" }}>
                 {cartTotalPrice() &&
                   cartTotalPrice().toLocaleString("vi-VN", {
                     style: "currency",
@@ -534,7 +650,7 @@ const TabItem = ({ openUpdateImei, onCloseUpdateImei, onOpenUpdateImei, openImei
                   })}
               </span>
             </div>
-          }
+          )}
         </div>
       </div>
       <ProductsDialog
@@ -559,6 +675,6 @@ const TabItem = ({ openUpdateImei, onCloseUpdateImei, onOpenUpdateImei, openImei
 
       {isLoading && <LoadingIndicator />}
     </>
-  )
+  );
 };
 export default memo(TabItem);
