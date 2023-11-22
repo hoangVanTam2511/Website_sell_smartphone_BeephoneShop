@@ -58,6 +58,59 @@ public class VNPayController {
     return new ResponseObject(vnpayUrl);
   }
 
+  @PutMapping("/payment/delivery")
+  public ResponseObject createPaymentCashOrderDelivery(@RequestBody OrderRequest req) throws Exception {
+    OrderResponse orderCurrent = hoaDonService.getOrderDetailsById(req.getId());
+    if (orderCurrent == null) {
+      throw new RestApiException("Đơn hàng không tồn tại!");
+    }
+    HinhThucThanhToan hinhThucThanhToan = new HinhThucThanhToan();
+    boolean checkCodeExists = false;
+    String code;
+
+    do {
+      code = RandomCodeGenerator.generateRandomNumber();
+      Optional<HinhThucThanhToan> payment = hinhThucThanhToanRepository.getPaymentMethodById(code);
+
+      if (!payment.isPresent()) {
+        checkCodeExists = false;
+      } else {
+        checkCodeExists = true;
+      }
+    } while (checkCodeExists);
+
+    hinhThucThanhToan.setMa(code);
+    hinhThucThanhToan.setHoaDon(orderConverter.convertResponseToEntity(orderCurrent));
+    hinhThucThanhToan.setSoTienThanhToan(req.getTienKhachTra());
+    hinhThucThanhToan.setLoaiThanhToan(req.getHoanTien().equals("Hoàn tiền") ? 1 : 0);
+    hinhThucThanhToan.setHinhThucThanhToan(req.getHinhThucThanhToan().equals("Chuyển khoản thường") ? 2 : 1);
+    hinhThucThanhToan.setTrangThai(1);
+    hinhThucThanhToan.setCreatedAt(new Date());
+    hinhThucThanhToan.setNguoiXacNhan("Admin");
+    hinhThucThanhToanRepository.save(hinhThucThanhToan);
+
+    if (req.getHoanTien().equals("Hoàn tiền")) {
+      orderCurrent.setTienTraKhach(req.getTienKhachTra());
+      orderRepository.save(orderConverter.convertResponseToEntity(orderCurrent));
+    } else {
+      if (orderCurrent.getTienKhachTra() != null) {
+        orderCurrent.setTienKhachTra(orderCurrent.getTienKhachTra().add(req.getTienKhachTra()));
+      } else {
+        orderCurrent.setTienKhachTra(req.getTienKhachTra());
+      }
+      orderRepository.save(orderConverter.convertResponseToEntity(orderCurrent));
+    }
+
+    orderRepository.save(orderConverter.convertResponseToEntity(orderCurrent));
+    if (orderCurrent.getPaymentMethods() != null) {
+      orderCurrent.setPaymentMethods(null);
+      List<HinhThucThanhToan> payments = hinhThucThanhToanRepository.getPaymentMethodsById(orderCurrent.getId());
+      orderCurrent.setPaymentMethods(paymentConverter.convertToListResponse(payments));
+    }
+    return new ResponseObject(orderCurrent);
+
+  }
+
   @PutMapping("/payment/cash")
   public ResponseObject createPaymentCashOrderPending(@RequestBody OrderRequest req) throws Exception {
     OrderResponse orderCurrent = hoaDonService.getOrderPendingById(req.getId());

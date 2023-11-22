@@ -141,3 +141,18 @@ tr:hover {
   background-color: #2e80ed;
   color: white;
 }
+/* .image-container {
+  position: relative;
+}
+
+.discount-value {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(247, 28, 28, 0.8);
+  padding: 5px;
+  border-radius: 5px;
+  font-weight: bold;
+  font-size: 14px;
+} */

@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.admin.voucher_management.controller;
 
+import beephone_shop_projects.core.admin.voucher_management.model.request.ChangeStatusVoucherRequest;
 import beephone_shop_projects.core.admin.voucher_management.model.request.CreateVoucherRequest;
 import beephone_shop_projects.core.admin.voucher_management.model.request.FindVoucherRequest;
 import beephone_shop_projects.core.admin.voucher_management.model.request.UpdateVoucherRequest;
@@ -9,8 +10,6 @@ import beephone_shop_projects.core.common.base.ResponsePage;
 import beephone_shop_projects.utils.mail.EmailUtils;
 import beephone_shop_projects.utils.mail.MailBeePhoneRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,56 +28,61 @@ import java.math.BigDecimal;
 @RequestMapping("/voucher")
 @CrossOrigin("*")
 public class VoucherRestController {
-  @Autowired
-  private VoucherService voucherService;
+    @Autowired
+    private VoucherService voucherService;
 
-  @Autowired
-  private EmailUtils emailUtils;
+    @Autowired
+    private EmailUtils emailUtils;
 
-  @PostMapping("/sendMail")
-  private void testMail(@RequestBody MailBeePhoneRequest emails) {
-    emailUtils.sendEmailEvent(emails);
-  }
+    @PostMapping("/sendMail")
+    private void testMail(@RequestBody MailBeePhoneRequest emails) {
+        emailUtils.sendEmailEvent(emails);
+    }
 
-  @GetMapping("/get-by-id/{id}")
-  public ResponseObject getOneVoucher(@PathVariable("id") String id) {
-    return new ResponseObject(voucherService.getOne(id));
-  }
+    @GetMapping("/get-by-id/{id}")
+    public ResponseObject getOneVoucher(@PathVariable("id") String id) {
+        return new ResponseObject(voucherService.getOne(id));
+    }
 
-  @PostMapping("/addVoucher")
-  public ResponseObject addVoucher(@RequestBody CreateVoucherRequest request) {
-    return new ResponseObject(voucherService.addVoucher(request));
-  }
+    @PostMapping("/addVoucher")
+    public ResponseObject addVoucher(@RequestBody CreateVoucherRequest request) {
+        return new ResponseObject(voucherService.addVoucher(request));
+    }
 
-  @PutMapping("/updateVoucher/{id}")
-  public ResponseObject updateVoucher(@PathVariable("id") String id, @RequestBody UpdateVoucherRequest request) {
-    return new ResponseObject(voucherService.updateVoucher(request, id));
-  }
+    @PutMapping("/updateVoucher/{id}")
+    public ResponseObject updateVoucher(@PathVariable("id") String id, @RequestBody UpdateVoucherRequest request) {
+        return new ResponseObject(voucherService.updateVoucher(request, id));
+    }
 
-  @DeleteMapping("/deleteVoucher/{id}")
-  public ResponseObject deleteVoucher(@PathVariable("id") String id) {
-    return new ResponseObject(voucherService.deleteVoucher(id));
-  }
+    @DeleteMapping("/deleteVoucher/{id}")
+    public ResponseObject deleteVoucher(@PathVariable("id") String id) {
+        return new ResponseObject(voucherService.deleteVoucher(id));
+    }
 
-  @PutMapping("/deleteTrangThaiVoucher/{id}")
-  public ResponseObject deleteTrangThaiVoucher(@PathVariable("id") String id) {
-    return new ResponseObject(voucherService.doiTrangThai(id));
-  }
+    @PutMapping("/deleteTrangThaiVoucher/{id}")
+    public ResponseObject deleteTrangThaiVoucher(@PathVariable("id") String id, @RequestBody ChangeStatusVoucherRequest request) {
+        return new ResponseObject(voucherService.doiTrangThai(request, id));
+    }
 
-  @GetMapping("/vouchers")
-  public ResponsePage hienThiVoucher(@ModelAttribute FindVoucherRequest request) {
-    return new ResponsePage(voucherService.getAll(request));
-  }
+    @PutMapping("/kichHoatVoucher/{id}")
+    public ResponseObject kichHoatVoucher(@PathVariable("id") String id) {
+        return new ResponseObject(voucherService.kichHoatVoucher(id));
+    }
 
-  @GetMapping("/findVoucher")
-  public ResponseObject getList(@RequestParam(value = "input", defaultValue = "") String input,
-                                @RequestParam(value = "tongTien", defaultValue = "0") BigDecimal tongTien) {
-    return new ResponseObject(voucherService.checkVoucher(input, tongTien));
-  }
+    @GetMapping("/vouchers")
+    public ResponsePage hienThiVoucher(@ModelAttribute FindVoucherRequest request) {
+        return new ResponsePage(voucherService.getAll(request));
+    }
 
-  @GetMapping("/voucherActive")
-  public ResponsePage getVoucherActive(@ModelAttribute FindVoucherRequest request) {
-    return new ResponsePage(voucherService.getVoucherStatusIsActive(request));
-  }
+    @GetMapping("/findVoucher")
+    public ResponseObject getList(@RequestParam(value = "input", defaultValue = "") String input,
+                                  @RequestParam(value = "tongTien", defaultValue = "0") BigDecimal tongTien) {
+        return new ResponseObject(voucherService.checkVoucher(input, tongTien));
+    }
+
+    @GetMapping("/voucherActive")
+    public ResponsePage getVoucherActive(@ModelAttribute FindVoucherRequest request) {
+        return new ResponsePage(voucherService.getVoucherStatusIsActive(request));
+    }
 
 }

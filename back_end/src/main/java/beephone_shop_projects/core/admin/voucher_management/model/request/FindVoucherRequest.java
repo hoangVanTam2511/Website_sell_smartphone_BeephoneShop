@@ -39,6 +39,8 @@ public class FindVoucherRequest {
 
     private String keyword;
 
+    private String sortType;
+
     private Integer pageNo;
 
     private Integer pageSize;

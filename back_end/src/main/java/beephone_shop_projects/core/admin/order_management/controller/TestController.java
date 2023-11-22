@@ -4,7 +4,9 @@ import beephone_shop_projects.core.admin.order_management.converter.PaymentConve
 import beephone_shop_projects.core.admin.order_management.model.request.CartItemRequest;
 import beephone_shop_projects.core.admin.order_management.model.request.ImeiRequest;
 import beephone_shop_projects.core.admin.order_management.model.request.ImeisRequest;
+import beephone_shop_projects.core.admin.order_management.model.request.OrderItemRequest;
 import beephone_shop_projects.core.admin.order_management.model.response.CartItemResponse;
+import beephone_shop_projects.core.admin.order_management.model.response.OrderItemResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.OrderResponse;
 import beephone_shop_projects.core.admin.order_management.repository.CartItemRepository;
 import beephone_shop_projects.core.admin.order_management.repository.HinhThucThanhToanCustomRepository;
@@ -101,11 +103,19 @@ public class TestController {
 //    return new ResponseObject(nweUrl);
 //  }
 
-//  @GetMapping("/carts/{id}")
+  //  @GetMapping("/carts/{id}")
 //  public ResponseEntity<?> home3(@PathVariable("id") String id) {
 //    List<GioHangChiTiet> list = cartItemRepository.getAllByIdCart(id);
 //    return new ResponseEntity<>(list, HttpStatus.OK);
 //  }
+  @DeleteMapping("/carts/order/{id}")
+  public ResponseObject home44(@PathVariable("id") String id) throws Exception {
+    boolean deleted = cartItemService.removeCartItemOrderById(id);
+    if (deleted) {
+      return new ResponseObject(HttpStatus.NO_CONTENT_CODE, Message.SUCCESS);
+    }
+    return new ResponseObject(HttpStatus.SERVER_ERROR_COMMON, Message.SERVER_ERROR_COMMON);
+  }
 
   @DeleteMapping("/carts/{id}")
   public ResponseObject home4(@PathVariable("id") String id) throws Exception {
@@ -116,10 +126,28 @@ public class TestController {
     return new ResponseObject(HttpStatus.SERVER_ERROR_COMMON, Message.SERVER_ERROR_COMMON);
   }
 
+  @PutMapping("/carts/order/refund")
+  public ResponseObject refund(@RequestBody OrderItemRequest req) throws Exception {
+    OrderItemResponse refundProduct = cartItemService.refundOrder(req);
+    return new ResponseObject(refundProduct);
+  }
+
   @PutMapping("/carts")
   public ResponseObject home2(@RequestBody CartItemRequest req) throws Exception {
     CartItemResponse addProductItemToCart = cartItemService.addProductItemToCart(req);
     return new ResponseObject(addProductItemToCart);
+  }
+
+  @PutMapping("/carts/order")
+  public ResponseObject home2222(@RequestBody OrderItemRequest req) throws Exception {
+    OrderItemResponse addProductItemToCartOrder = cartItemService.addProductItemToCartOrder(req);
+    return new ResponseObject(addProductItemToCartOrder);
+  }
+
+  @PutMapping("/carts/order/amount")
+  public ResponseObject home22222(@RequestBody OrderItemRequest req) throws Exception {
+    OrderItemResponse updateProductItemToCartOrder = cartItemService.updateAmountItemInCartOrder(req);
+    return new ResponseObject(updateProductItemToCartOrder);
   }
 
   @PutMapping("/carts/amount")
@@ -140,7 +168,7 @@ public class TestController {
     if (findOrder != null) {
       Optional<HinhThucThanhToan> payment = hinhThucThanhToanCustomRepository.findById(id);
       if (payment.isPresent()) {
-        if (payment.get().getSoTienThanhToan() != null){
+        if (payment.get().getSoTienThanhToan() != null) {
           findOrder.setTienKhachTra(findOrder.getTienKhachTra().subtract(payment.get().getSoTienThanhToan()));
           hoaDonRepository.save(findOrder);
           hinhThucThanhToanCustomRepository.delete(payment.get());

@@ -12,6 +12,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class DoPhanGiaiRequest {
 
+    private  String id;
+
     private String ma;
 
     private Double chieuDai;

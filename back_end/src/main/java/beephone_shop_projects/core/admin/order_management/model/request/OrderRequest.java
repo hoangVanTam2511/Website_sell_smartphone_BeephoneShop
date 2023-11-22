@@ -29,7 +29,13 @@ public class OrderRequest {
 
   private BigDecimal tienKhachTra;
 
+  private BigDecimal tienTraKhach;
+
+  private BigDecimal khachCanTra;
+
   private OrderType loaiHoaDon;
+
+  private BigDecimal tienTraHang;
 
   private OrderStatus trangThai;
 
@@ -92,6 +98,8 @@ public class OrderRequest {
   private Boolean isUpdateType;
 
   private String hinhThucThanhToan;
+
+  private String hoanTien;
 
 
 

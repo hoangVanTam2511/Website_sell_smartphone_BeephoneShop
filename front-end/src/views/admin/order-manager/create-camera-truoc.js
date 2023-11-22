@@ -1,52 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "antd";
 import {
-  Link,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from "react-router-dom";
-import { Button, Empty, Table } from "antd";
-import {
-  Box,
   FormControl,
-  IconButton,
   Select,
   InputLabel,
   MenuItem,
-  Pagination,
   TextField,
-  Tooltip,
-  Checkbox,
-  FormControlLabel,
   Autocomplete,
   InputAdornment,
-  OutlinedInput,
   Dialog,
   DialogContent,
-  DialogTitle,
-  DialogActions,
   Slide,
-  ListItemText,
-  Rating,
 } from "@mui/material";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import { PlusOutlined } from "@ant-design/icons";
-import Card from "../../../components/Card";
-import { format } from "date-fns";
 import axios from "axios";
-import { parseInt } from "lodash";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
-import Zoom from "@mui/material/Zoom";
-import * as dayjs from "dayjs";
 import LoadingIndicator from "../../../utilities/loading";
-import CloseIcon from "@mui/icons-material/Close";
-import { ClearIcon } from "@mui/x-date-pickers";
 import generateRandomCode from "../../../utilities/randomCode";
-import { Notistack, TypeCameraNumber } from "./enum";
+import {
+  Notistack,
+  StatusCommonProductsNumber,
+  TypeCameraNumber,
+} from "./enum";
 import useCustomSnackbar from "../../../utilities/notistack";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -58,7 +32,7 @@ const CreateCameraTruoc = ({ open, close, getAll, cameraFront }) => {
   const [isLoading, setIsLoading] = React.useState(false);
   const [cameraType, setCameraType] = React.useState("");
   const [doPhanGiai, setDoPhanGiai] = React.useState("");
-  const [status, setStatus] = React.useState("");
+  const [status, setStatus] = React.useState(StatusCommonProductsNumber.ACTIVE);
   const { handleOpenAlertVariant } = useCustomSnackbar();
 
   const handleChangeStatus = (event) => {
@@ -94,7 +68,7 @@ const CreateCameraTruoc = ({ open, close, getAll, cameraFront }) => {
   };
 
   const handleReset = (event) => {
-    setStatus("");
+    setStatus(StatusCommonProductsNumber.ACTIVE);
     setDoPhanGiai("");
     setCameraType("");
   };
@@ -122,7 +96,10 @@ const CreateCameraTruoc = ({ open, close, getAll, cameraFront }) => {
           <div className="mt-4" style={{ width: "700px", height: "auto" }}>
             <div className="container" style={{}}>
               <div className="text-center" style={{}}>
-                <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>
+                <span
+                  className=""
+                  style={{ fontWeight: "550", fontSize: "29px" }}
+                >
                   THÊM CAMERA TRƯỚC
                 </span>
               </div>
@@ -161,7 +138,9 @@ const CreateCameraTruoc = ({ open, close, getAll, cameraFront }) => {
 
                 <div className="mt-3" style={{}}>
                   <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">Tính Năng</InputLabel>
+                    <InputLabel id="demo-simple-select-label">
+                      Tính Năng
+                    </InputLabel>
                     <Select
                       className="custom"
                       labelId="demo-simple-select-label"
@@ -182,7 +161,9 @@ const CreateCameraTruoc = ({ open, close, getAll, cameraFront }) => {
                       <MenuItem value={TypeCameraNumber.TELEPHOTO_CAMERA}>
                         Telephoto Camera
                       </MenuItem>
-                      <MenuItem value={TypeCameraNumber.PERISCOPE_TELEPHOTO_CAMERA}>
+                      <MenuItem
+                        value={TypeCameraNumber.PERISCOPE_TELEPHOTO_CAMERA}
+                      >
                         Periscope Telephoto Camera
                       </MenuItem>
                       <MenuItem value={TypeCameraNumber.MARCO_CAMERA}>
@@ -207,9 +188,14 @@ const CreateCameraTruoc = ({ open, close, getAll, cameraFront }) => {
                       value={status}
                       label="Trạng Thái"
                       onChange={handleChangeStatus}
+                      defaultValue={StatusCommonProductsNumber.ACTIVE}
                     >
-                      <MenuItem value={0}>Hoạt Động</MenuItem>
-                      <MenuItem value={1}>Ngừng Hoạt Động</MenuItem>
+                      <MenuItem value={StatusCommonProductsNumber.ACTIVE}>
+                        Hoạt Động
+                      </MenuItem>
+                      <MenuItem value={StatusCommonProductsNumber.IN_ACTIVE}>
+                        Ngừng Hoạt Động
+                      </MenuItem>
                     </Select>
                   </FormControl>
                 </div>

@@ -36,9 +36,6 @@ public class DBGenerator implements CommandLineRunner {
     private IDiaChiRepository diaChiRepository;
 
     @Autowired
-    private IDongSanPhamRepository dongSanPhamRepository;
-
-    @Autowired
     private ITheSimRepository theSimRepository;
 
     @Autowired
@@ -91,8 +88,42 @@ public class DBGenerator implements CommandLineRunner {
     @Autowired
     private ICameraRepository cameraRepository;
 
+    @Autowired
+    private ICameraTruocRepository cameraTruocRepository;
+
+    @Autowired
+    private ICameraSauRepository cameraSauRepository;
+
+    @Autowired
+    private IDanhMucRepository danhMucRepository;
+
     @Override
     public void run(String... args) throws Exception {
+
+        //Bảng Danh Mục
+        DanhMuc danhMuc = new DanhMuc();
+        danhMuc.setMa("DMUC1");
+        danhMuc.setTenDanhMuc("Chơi Game, Cấu Hình Cao");
+        danhMuc.setStatus(StatusCommon.ACTIVE);
+        danhMuc.setId(danhMucRepository.save(danhMuc).getId());
+
+        DanhMuc danhMuc1 = new DanhMuc();
+        danhMuc1.setMa("DMUC14");
+        danhMuc1.setTenDanhMuc("Xem Phim, Quay Video, Chụp Ảnh");
+        danhMuc1.setStatus(StatusCommon.ACTIVE);
+        danhMuc1.setId(danhMucRepository.save(danhMuc1).getId());
+
+        DanhMuc danhMuc2 = new DanhMuc();
+        danhMuc2.setMa("DMUC13");
+        danhMuc2.setTenDanhMuc("Pin Trâu");
+        danhMuc2.setStatus(StatusCommon.ACTIVE);
+        danhMuc2.setId(danhMucRepository.save(danhMuc2).getId());
+
+        DanhMuc danhMuc3 = new DanhMuc();
+        danhMuc3.setMa("DMUC12");
+        danhMuc3.setTenDanhMuc("Mỏng Nhẹ");
+        danhMuc3.setStatus(StatusCommon.ACTIVE);
+        danhMuc3.setId(danhMucRepository.save(danhMuc3).getId());
 
         //Bảng Role
         Role nhanVien = new Role();
@@ -142,38 +173,265 @@ public class DBGenerator implements CommandLineRunner {
 //        accountNhanVien.setIdRole(nhanVien);
 //        accountNhanVien.setId(accountRepository.save(accountNhanVien).getId());
 
-        //Bảng Camera
-        Camera camera = new Camera();
-        camera.setMa("camera1");
-        camera.setDoPhanGiai("120");
-        camera.setId(cameraRepository.save(camera).getId());
+        //Bảng Camera Trước
+        CameraTruoc cameraTruoc = new CameraTruoc();
+        cameraTruoc.setMa("camera1");
+        cameraTruoc.setDoPhanGiai(54);
+        cameraTruoc.setCameraType(CameraType.WIDE_CAMERA);
+        cameraTruoc.setStatus(StatusCommon.ACTIVE);
+        cameraTruoc.setId(cameraTruocRepository.save(cameraTruoc).getId());
+
+        CameraTruoc cameraTruoc1 = new CameraTruoc();
+        cameraTruoc1.setMa("camera2");
+        cameraTruoc1.setDoPhanGiai(1);
+        cameraTruoc.setCameraType(CameraType.MARCO_CAMERA);
+        cameraTruoc1.setStatus(StatusCommon.ACTIVE);
+        cameraTruoc1.setId(cameraTruocRepository.save(cameraTruoc1).getId());
+
+        CameraTruoc cameraTruoc2 = new CameraTruoc();
+        cameraTruoc2.setMa("camera3");
+        cameraTruoc2.setDoPhanGiai(5);
+        cameraTruoc.setCameraType(CameraType.TELEPHOTO_CAMERA);
+        cameraTruoc2.setStatus(StatusCommon.ACTIVE);
+        cameraTruoc2.setId(cameraTruocRepository.save(cameraTruoc2).getId());
+
+        CameraTruoc cameraTruoc3 = new CameraTruoc();
+        cameraTruoc3.setMa("camera4");
+        cameraTruoc3.setDoPhanGiai(8);
+        cameraTruoc3.setStatus(StatusCommon.ACTIVE);
+        cameraTruoc.setCameraType(CameraType.STANDARD_CAMERA);
+        cameraTruoc3.setId(cameraTruocRepository.save(cameraTruoc3).getId());
+
+        CameraTruoc cameraTruoc4 = new CameraTruoc();
+        cameraTruoc4.setMa("camera5");
+        cameraTruoc4.setDoPhanGiai(12);
+        cameraTruoc4.setStatus(StatusCommon.ACTIVE);
+        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
+        cameraTruoc4.setId(cameraTruocRepository.save(cameraTruoc4).getId());
+
+        CameraTruoc cameraTruoc5 = new CameraTruoc();
+        cameraTruoc5.setMa("camera6");
+        cameraTruoc5.setDoPhanGiai(16);
+        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
+        cameraTruoc5.setStatus(StatusCommon.ACTIVE);
+        cameraTruoc5.setId(cameraTruocRepository.save(cameraTruoc5).getId());
+
+        CameraTruoc cameraTruoc6 = new CameraTruoc();
+        cameraTruoc6.setMa("camera7");
+        cameraTruoc6.setDoPhanGiai(24);
+        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
+        cameraTruoc6.setStatus(StatusCommon.ACTIVE);
+        cameraTruoc6.setId(cameraTruocRepository.save(cameraTruoc6).getId());
+
+        CameraTruoc cameraTruoc7 = new CameraTruoc();
+        cameraTruoc7.setMa("camera8");
+        cameraTruoc7.setDoPhanGiai(32);
+        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
+        cameraTruoc7.setStatus(StatusCommon.ACTIVE);
+        cameraTruoc7.setId(cameraTruocRepository.save(cameraTruoc7).getId());
+
+        CameraTruoc cameraTruoc8 = new CameraTruoc();
+        cameraTruoc8.setMa("camera9");
+        cameraTruoc8.setDoPhanGiai(48);
+        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
+        cameraTruoc8.setStatus(StatusCommon.ACTIVE);
+        cameraTruoc8.setId(cameraTruocRepository.save(cameraTruoc8).getId());
+
+        //Bảng Camera Sau
+        CameraSau cameraSau = new CameraSau();
+        cameraSau.setMa("camera1");
+        cameraSau.setDoPhanGiai(60);
+        cameraTruoc.setCameraType(CameraType.STANDARD_CAMERA);
+        cameraSau.setStatus(StatusCommon.ACTIVE);
+        cameraSau.setId(cameraSauRepository.save(cameraSau).getId());
+
+        CameraSau cameraSau1 = new CameraSau();
+        cameraSau1.setMa("camera2");
+        cameraSau1.setDoPhanGiai(1);
+        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
+        cameraSau1.setStatus(StatusCommon.ACTIVE);
+        cameraSau1.setId(cameraSauRepository.save(cameraSau1).getId());
+
+        CameraSau cameraSau2 = new CameraSau();
+        cameraSau2.setMa("camera3");
+        cameraSau2.setDoPhanGiai(5);
+        cameraTruoc.setCameraType(CameraType.TELEPHOTO_CAMERA);
+        cameraSau2.setStatus(StatusCommon.ACTIVE);
+        cameraSau2.setId(cameraSauRepository.save(cameraSau2).getId());
+
+        CameraSau cameraSau3 = new CameraSau();
+        cameraSau3.setMa("camera4");
+        cameraSau3.setDoPhanGiai(8);
+        cameraTruoc.setCameraType(CameraType.DEPTH_CAMERA);
+        cameraSau3.setStatus(StatusCommon.ACTIVE);
+        cameraSau3.setId(cameraSauRepository.save(cameraSau3).getId());
+
+        CameraSau cameraSau4 = new CameraSau();
+        cameraSau4.setMa("camera5");
+        cameraSau4.setDoPhanGiai(12);
+        cameraSau4.setStatus(StatusCommon.ACTIVE);
+        cameraSau4.setId(cameraSauRepository.save(cameraSau4).getId());
+
+        CameraSau cameraSau5 = new CameraSau();
+        cameraSau5.setMa("camera6");
+        cameraSau5.setDoPhanGiai(16);
+        cameraTruoc.setCameraType(CameraType.PERISCOPE_TELEPHOTO_CAMERA);
+        cameraSau5.setStatus(StatusCommon.ACTIVE);
+        cameraSau5.setId(cameraSauRepository.save(cameraSau5).getId());
+
+        CameraSau cameraSau6 = new CameraSau();
+        cameraSau6.setMa("camera7");
+        cameraSau6.setDoPhanGiai(24);
+        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
+        cameraSau6.setStatus(StatusCommon.ACTIVE);
+        cameraSau6.setId(cameraSauRepository.save(cameraSau6).getId());
+
+        CameraSau cameraSau7 = new CameraSau();
+        cameraSau7.setMa("camera8");
+        cameraSau7.setDoPhanGiai(32);
+        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
+        cameraSau7.setStatus(StatusCommon.ACTIVE);
+        cameraSau7.setId(cameraSauRepository.save(cameraSau7).getId());
+
+        CameraSau cameraSau8 = new CameraSau();
+        cameraSau8.setMa("camera9");
+        cameraSau8.setDoPhanGiai(48);
+        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
+        cameraSau8.setStatus(StatusCommon.ACTIVE);
+        cameraSau8.setId(cameraSauRepository.save(cameraSau8).getId());
+
+        CameraSau cameraSau9 = new CameraSau();
+        cameraSau9.setMa("camera10");
+        cameraSau9.setDoPhanGiai(64);
+        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
+        cameraSau9.setStatus(StatusCommon.ACTIVE);
+        cameraSau9.setId(cameraSauRepository.save(cameraSau9).getId());
+
+        CameraSau cameraSau10 = new CameraSau();
+        cameraSau10.setMa("camera11");
+        cameraSau10.setDoPhanGiai(108);
+        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
+        cameraSau10.setStatus(StatusCommon.ACTIVE);
+        cameraSau10.setId(cameraSauRepository.save(cameraSau10).getId());
 
         TheNho theNho = new TheNho();
         theNho.setMa("ma1");
         theNho.setLoaiTheNho("MircoSD");
-        theNho.setDungLuongToiDa(1024);
+        theNho.setDungLuongToiDa(256);
+        theNho.setStatus(StatusCommon.ACTIVE);
         theNho.setId(theNhoRepository.save(theNho).getId());
+
+        TheNho theNho1 = new TheNho();
+        theNho1.setMa("ma2");
+        theNho1.setLoaiTheNho("microSDHC");
+        theNho1.setDungLuongToiDa(32);
+        theNho1.setStatus(StatusCommon.ACTIVE);
+        theNho1.setId(theNhoRepository.save(theNho1).getId());
+
+        TheNho theNho2 = new TheNho();
+        theNho2.setMa("ma3");
+        theNho2.setLoaiTheNho("microSDXC");
+        theNho2.setDungLuongToiDa(64);
+        theNho2.setStatus(StatusCommon.ACTIVE);
+        theNho2.setId(theNhoRepository.save(theNho2).getId());
+
+        TheNho theNho3 = new TheNho();
+        theNho3.setMa("ma4");
+        theNho3.setLoaiTheNho("microSDUC");
+        theNho3.setDungLuongToiDa(128);
+        theNho3.setStatus(StatusCommon.ACTIVE);
+        theNho3.setId(theNhoRepository.save(theNho3).getId());
 
         CongSac congSac = new CongSac();
         congSac.setMa("ma1");
         congSac.setLoaiCongSac("Type-C");
+        congSac.setStatus(StatusCommon.ACTIVE);
         congSac.setId(congSacRepository.save(congSac).getId());
+
+        CongSac congSac1 = new CongSac();
+        congSac.setMa("ma2");
+        congSac1.setLoaiCongSac("Micro USB");
+        congSac1.setStatus(StatusCommon.ACTIVE);
+        congSac1.setId(congSacRepository.save(congSac1).getId());
+
+        CongSac congSac2 = new CongSac();
+        congSac2.setMa("ma3");
+        congSac2.setLoaiCongSac("Lightning");
+        congSac2.setStatus(StatusCommon.ACTIVE);
+        congSac2.setId(congSacRepository.save(congSac2).getId());
+
+        CongSac congSac3 = new CongSac();
+        congSac3.setMa("ma4");
+        congSac3.setLoaiCongSac("OTG");
+        congSac3.setStatus(StatusCommon.ACTIVE);
+        congSac3.setId(congSacRepository.save(congSac3).getId());
 
         //Bảng chip
         Chip chip = new Chip();
         chip.setMa("chip1");
         chip.setTenChip("Snapdragon 888");
+        chip.setStatus(StatusCommon.ACTIVE);
         chip.setId(chipRepository.save(chip).getId());
 
         Chip chip2 = new Chip();
-        chip2.setMa("chip12");
+        chip2.setMa("chip2");
         chip2.setTenChip("A15");
+        chip2.setStatus(StatusCommon.ACTIVE);
         chip2.setId(chipRepository.save(chip2).getId());
 
         Chip chip3 = new Chip();
-        chip3.setMa("chip13");
+        chip3.setMa("chip3");
         chip3.setTenChip("Dymensity 1800");
+        chip3.setStatus(StatusCommon.ACTIVE);
         chip3.setId(chipRepository.save(chip3).getId());
+
+        Chip chip4 = new Chip();
+        chip4.setMa("chip133");
+        chip4.setTenChip("Helio G99");
+        chip4.setStatus(StatusCommon.ACTIVE);
+        chip4.setId(chipRepository.save(chip4).getId());
+
+        Chip chip5 = new Chip();
+        chip5.setMa("chip13");
+        chip5.setTenChip("Helio X25");
+        chip5.setStatus(StatusCommon.ACTIVE);
+        chip5.setId(chipRepository.save(chip5).getId());
+
+        Chip chip6 = new Chip();
+        chip6.setMa("chip134");
+        chip6.setTenChip("Dymensity 9200");
+        chip6.setStatus(StatusCommon.ACTIVE);
+        chip6.setId(chipRepository.save(chip6).getId());
+
+        Chip chip7 = new Chip();
+        chip7.setMa("chip13");
+        chip7.setTenChip("Dymensity 1800");
+        chip7.setStatus(StatusCommon.ACTIVE);
+        chip7.setId(chipRepository.save(chip7).getId());
+
+        Chip chip8 = new Chip();
+        chip8.setMa("chip13");
+        chip8.setTenChip("Exynos 2200");
+        chip8.setStatus(StatusCommon.ACTIVE);
+        chip8.setId(chipRepository.save(chip8).getId());
+
+        Chip chip9 = new Chip();
+        chip9.setMa("chip13");
+        chip9.setTenChip("Exynos 9825");
+        chip9.setStatus(StatusCommon.ACTIVE);
+        chip9.setId(chipRepository.save(chip9).getId());
+
+        Chip chip10 = new Chip();
+        chip10.setMa("chip13");
+        chip10.setTenChip("SnapDragon 8+ Gen 2");
+        chip10.setStatus(StatusCommon.ACTIVE);
+        chip10.setId(chipRepository.save(chip10).getId());
+
+        Chip chip11 = new Chip();
+        chip11.setMa("chip13");
+        chip11.setTenChip("Kirin 9900");
+        chip11.setStatus(StatusCommon.ACTIVE);
+        chip11.setId(chipRepository.save(chip11).getId());
 
         //Bảng Địa chỉ
         DiaChi diaChi = new DiaChi();
@@ -181,31 +439,31 @@ public class DBGenerator implements CommandLineRunner {
         diaChi.setTrangThai(1);
         diaChi.setSoDienThoaiKhachHang("01993910212");
         diaChi.setDiaChi("Hoàng Quốc Việt");
-        diaChi.setXaPhuong("Phường Cổ Nhuế");
+        diaChi.setXaPhuong("Phường Cổ Nhuế 1");
         diaChi.setQuanHuyen("Quận Bắc Từ Liêm");
         diaChi.setTinhThanhPho("Hà Nội");
         diaChi.setAccount(admin);
         diaChi.setId(diaChiRepository.save(diaChi).getId());
 
-//        DiaChi diaChi1 = new DiaChi();
-//        diaChi1.setHoTenKH("Trần Thanh phong");
-//        diaChi1.setSoDienThoaiKhachHang("0918239812");
-//        diaChi1.setDiaChi("Hồ Tùng Mậu");
-//        diaChi1.setXaPhuong("Xã An Lĩnh");
-//        diaChi1.setQuanHuyen("Huyện Tuy Hòa");
-//        diaChi1.setTinhThanhPho("Phú Yên");
-//        diaChi1.setAccount(admin);
-//        diaChi1.setId(diaChiRepository.save(diaChi1).getId());
+        DiaChi diaChi1 = new DiaChi();
+        diaChi1.setHoTenKH("Trần Thanh phong");
+        diaChi1.setSoDienThoaiKhachHang("0918239812");
+        diaChi1.setDiaChi("Mỹ Đình");
+        diaChi1.setXaPhuong("Phường Mỹ Đình 1");
+        diaChi1.setQuanHuyen("Quận Nam Từ Liêm");
+        diaChi1.setTinhThanhPho("Hà Nội");
+        diaChi1.setAccount(admin);
+        diaChi1.setId(diaChiRepository.save(diaChi1).getId());
 
-//        DiaChi diaChi2 = new DiaChi();
-//        diaChi2.setHoTenKH("Vũ Văn Nguyên");
-//        diaChi2.setSoDienThoaiKhachHang("0391928712");
-//        diaChi2.setDiaChi("Xóm 4, Thôn Lai Ổn");
-//        diaChi2.setXaPhuong("Xã An Quí");
-//        diaChi2.setQuanHuyen("Huyện Quỳnh Phụ");
-//        diaChi2.setTinhThanhPho("Thái Bình");
-//        diaChi2.setAccount(accountNhanVien);
-//        diaChi2.setId(diaChiRepository.save(diaChi2).getId());
+        DiaChi diaChi2 = new DiaChi();
+        diaChi2.setHoTenKH("Vũ Văn Nguyên");
+        diaChi2.setSoDienThoaiKhachHang("0391928712");
+        diaChi2.setDiaChi("Xóm 4, Thôn Lai Ổn");
+        diaChi2.setXaPhuong("Phường Thượng Đình");
+        diaChi2.setQuanHuyen("Quận Thanh Xuân");
+        diaChi2.setTinhThanhPho("Hà Nội");
+        diaChi2.setAccount(admin);
+        diaChi2.setId(diaChiRepository.save(diaChi2).getId());
 //
 //        //Bảng Dòng Sản Phẩm
 //        DongSanPham dongSanPham = new DongSanPham();
@@ -226,34 +484,52 @@ public class DBGenerator implements CommandLineRunner {
 
         //Bảng Màn hình
         //Bảng Độ phân giải
-        DoPhanGiaiManHinh dpg=new DoPhanGiaiManHinh();
+        DoPhanGiaiManHinh dpg = new DoPhanGiaiManHinh();
         dpg.setMa("DPG123");
-        dpg.setChieuDai(123.4);
-        dpg.setChieuRong(234.9);
+        dpg.setChieuDai(1080.0);
+        dpg.setChieuRong(2340.0);
         dpg.setId(doPhanGiaiRepository.save(dpg).getId());
+
+        DoPhanGiaiManHinh dpg1 = new DoPhanGiaiManHinh();
+        dpg1.setMa("DPG1234");
+        dpg1.setChieuDai(2796.0);
+        dpg1.setChieuRong(1290.0);
+        dpg1.setId(doPhanGiaiRepository.save(dpg1).getId());
+
+        DoPhanGiaiManHinh dpg2 = new DoPhanGiaiManHinh();
+        dpg2.setMa("DPG1235");
+        dpg2.setChieuDai(1080.0);
+        dpg2.setChieuRong(2408.0);
+        dpg2.setId(doPhanGiaiRepository.save(dpg2).getId());
+
+        DoPhanGiaiManHinh dpg3 = new DoPhanGiaiManHinh();
+        dpg3.setMa("DPG1236");
+        dpg3.setChieuDai(2388.0);
+        dpg3.setChieuRong(1080.0);
+        dpg3.setId(doPhanGiaiRepository.save(dpg3).getId());
         //Bảng Thẻ sim
-        TheSim theSim2=new TheSim();
+        TheSim theSim2 = new TheSim();
         theSim2.setMa("TS2");
         theSim2.setStatus(StatusCommon.ACTIVE);
         theSim2.setSimMultiple(SimMultiple.SINGLE_SIM);
         theSim2.setLoaiTheSim("eSIM");
         theSim2.setId(theSimRepository.save(theSim2).getId());
 
-        TheSim theSim3=new TheSim();
-        theSim3.setMa("TS2");
+        TheSim theSim3 = new TheSim();
+        theSim3.setMa("TS3");
         theSim3.setStatus(StatusCommon.IN_ACTIVE);
         theSim3.setSimMultiple(SimMultiple.DUAL_SIM);
         theSim3.setLoaiTheSim("Micro SIM");
         theSim3.setId(theSimRepository.save(theSim3).getId());
-        TheSim theSim=new TheSim();
+        TheSim theSim = new TheSim();
         theSim.setMa("TS1");
         theSim.setStatus(StatusCommon.ACTIVE);
         theSim.setSimMultiple(SimMultiple.SINGLE_SIM);
         theSim.setLoaiTheSim("Nano SIM");
         theSim.setId(theSimRepository.save(theSim).getId());
 
-        TheSim theSim1=new TheSim();
-        theSim1.setMa("TS2");
+        TheSim theSim1 = new TheSim();
+        theSim1.setMa("TS4");
         theSim1.setStatus(StatusCommon.IN_ACTIVE);
         theSim1.setSimMultiple(SimMultiple.DUAL_SIM);
         theSim1.setLoaiTheSim("Nano SIM");
@@ -264,7 +540,7 @@ public class DBGenerator implements CommandLineRunner {
         manHinh.setLoaiManHinh("AMOLED");
         manHinh.setDoPhanGiaiManHinh(doPhanGiaiRepository.findByMa("DPG123"));
         manHinh.setKichThuoc(6.1);
-        manHinh.setTanSoQuet(25);
+        manHinh.setTanSoQuet(90);
         manHinh.setStatus(StatusCommon.ACTIVE);
         manHinh.setId(manHinhRepository.save(manHinh).getId());
 
@@ -273,7 +549,7 @@ public class DBGenerator implements CommandLineRunner {
         manHinh1.setLoaiManHinh("SUPER AMOLED");
         manHinh1.setDoPhanGiaiManHinh(doPhanGiaiRepository.findByMa("DPG123"));
         manHinh1.setKichThuoc(6.5);
-        manHinh1.setTanSoQuet(23);
+        manHinh1.setTanSoQuet(120);
         manHinh1.setStatus(StatusCommon.ACTIVE);
         manHinh1.setId(manHinhRepository.save(manHinh1).getId());
 
@@ -282,162 +558,211 @@ public class DBGenerator implements CommandLineRunner {
         manHinh2.setLoaiManHinh("OLED");
         manHinh2.setDoPhanGiaiManHinh(doPhanGiaiRepository.findByMa("DPG123"));
         manHinh2.setKichThuoc(6.7);
-        manHinh2.setTanSoQuet(21);
+        manHinh2.setTanSoQuet(144);
         manHinh2.setStatus(StatusCommon.IN_ACTIVE);
         manHinh2.setId(manHinhRepository.save(manHinh2).getId());
+
+        ManHinh manHinh3 = new ManHinh();
+        manHinh3.setMa("ManHinh0123");
+        manHinh3.setLoaiManHinh("LCD");
+        manHinh3.setDoPhanGiaiManHinh(doPhanGiaiRepository.findByMa("DPG123"));
+        manHinh3.setKichThuoc(6.8);
+        manHinh3.setTanSoQuet(165);
+        manHinh3.setStatus(StatusCommon.ACTIVE);
+        manHinh3.setId(manHinhRepository.save(manHinh3).getId());
 
         //Bảng Màu sắc
         MauSac mauSac = new MauSac();
         mauSac.setMa("MauSac1");
         mauSac.setTenMauSac("Vàng");
+        mauSac.setStatus(StatusCommon.ACTIVE);
         mauSac.setId(mauSacRepository.save(mauSac).getId());
 
         MauSac mauSac1 = new MauSac();
         mauSac1.setMa("MauSac12");
         mauSac1.setTenMauSac("Trắng");
+        mauSac1.setStatus(StatusCommon.ACTIVE);
         mauSac1.setId(mauSacRepository.save(mauSac1).getId());
 
         MauSac mauSac2 = new MauSac();
         mauSac2.setMa("MauSac13");
         mauSac2.setTenMauSac("Đen");
+        mauSac2.setStatus(StatusCommon.ACTIVE);
         mauSac2.setId(mauSacRepository.save(mauSac2).getId());
 
         MauSac mauSac3 = new MauSac();
         mauSac3.setMa("MauSac13");
         mauSac3.setTenMauSac("Xanh dương");
+        mauSac3.setStatus(StatusCommon.ACTIVE);
         mauSac3.setId(mauSacRepository.save(mauSac3).getId());
 
         MauSac mauSac4 = new MauSac();
         mauSac4.setMa("MauSac1123");
         mauSac4.setTenMauSac("Đen nhám");
+        mauSac4.setStatus(StatusCommon.ACTIVE);
         mauSac4.setId(mauSacRepository.save(mauSac4).getId());
+
         MauSac mauSac5 = new MauSac();
         mauSac5.setMa("MauSac1121");
         mauSac5.setTenMauSac("Hồng");
+        mauSac5.setStatus(StatusCommon.ACTIVE);
         mauSac5.setId(mauSacRepository.save(mauSac5).getId());
+
         MauSac mauSac6 = new MauSac();
         mauSac6.setMa("MauSac1120");
         mauSac6.setTenMauSac("Bạc");
+        mauSac6.setStatus(StatusCommon.ACTIVE);
         mauSac6.setId(mauSacRepository.save(mauSac6).getId());
+
         MauSac mauSac7 = new MauSac();
         mauSac7.setMa("MauSac1122");
         mauSac7.setTenMauSac("Đỏ");
+        mauSac7.setStatus(StatusCommon.ACTIVE);
         mauSac7.setId(mauSacRepository.save(mauSac7).getId());
+
         MauSac mauSac8 = new MauSac();
         mauSac8.setMa("MauSac1125");
         mauSac8.setTenMauSac("Xám");
+        mauSac8.setStatus(StatusCommon.ACTIVE);
         mauSac8.setId(mauSacRepository.save(mauSac8).getId());
 
         //Bảng Nhà sản xuất
         Hang hang = new Hang();
         hang.setMa("NhaSanXuat1");
         hang.setTenHang("Samsung");
+        hang.setStatus(StatusCommon.ACTIVE);
         hang.setId(nhaSanXuatRepository.save(hang).getId());
 
         Hang hang1 = new Hang();
         hang1.setMa("NhaSanXuat12");
         hang1.setTenHang("Xiaomi");
+        hang1.setStatus(StatusCommon.ACTIVE);
         hang1.setId(nhaSanXuatRepository.save(hang1).getId());
 
         Hang hang2 = new Hang();
         hang2.setMa("NhaSanXuat13");
         hang2.setTenHang("Apple");
+        hang2.setStatus(StatusCommon.ACTIVE);
         hang2.setId(nhaSanXuatRepository.save(hang2).getId());
 
         Hang hang3 = new Hang();
         hang3.setMa("NhaSanXuat17");
         hang3.setTenHang("Oppo");
+        hang3.setStatus(StatusCommon.ACTIVE);
         hang3.setId(nhaSanXuatRepository.save(hang3).getId());
 
         Hang hang4 = new Hang();
         hang4.setMa("NhaSanXuat125");
         hang4.setTenHang("Realme");
+        hang4.setStatus(StatusCommon.ACTIVE);
         hang4.setId(nhaSanXuatRepository.save(hang4).getId());
 
         Hang hang5 = new Hang();
         hang5.setMa("NhaSanXuat134");
         hang5.setTenHang("Nokia");
+        hang5.setStatus(StatusCommon.ACTIVE);
         hang5.setId(nhaSanXuatRepository.save(hang5).getId());
+
+        Hang hang6 = new Hang();
+        hang6.setMa("NhaSanXuat1323");
+        hang6.setTenHang("Vivo");
+        hang6.setStatus(StatusCommon.ACTIVE);
+        hang6.setId(nhaSanXuatRepository.save(hang5).getId());
 
         //Bảng Pin
         Pin pin = new Pin();
         pin.setMa("Pin01");
-        pin.setLoaiPin("Polymer");
+        pin.setLoaiPin("Lithium-polymer");
         pin.setDungLuong(6000);
+        pin.setStatus(StatusCommon.ACTIVE);
         pin.setId(pinRepository.save(pin).getId());
 
         Pin pin1 = new Pin();
         pin1.setMa("Pin012");
         pin1.setDungLuong(4800);
-        pin1.setLoaiPin("Polymer");
+        pin1.setLoaiPin("Lithium-ion");
+        pin1.setStatus(StatusCommon.ACTIVE);
         pin1.setId(pinRepository.save(pin1).getId());
 
         Pin pin2 = new Pin();
         pin2.setMa("Pin013");
         pin2.setDungLuong(5000);
-        pin2.setLoaiPin("Polymer");
+        pin2.setLoaiPin("Lithium-ion");
+        pin2.setStatus(StatusCommon.ACTIVE);
         pin2.setId(pinRepository.save(pin2).getId());
 
         //Bảng Ram
         Ram ram = new Ram();
         ram.setMa("ram01");
         ram.setDungLuong(6);
+        ram.setStatus(StatusCommon.ACTIVE);
         ram.setId(ramRepository.save(ram).getId());
 
         Ram ram1 = new Ram();
         ram1.setMa("ram013");
         ram1.setDungLuong(2);
+        ram1.setStatus(StatusCommon.ACTIVE);
         ram1.setId(ramRepository.save(ram1).getId());
 
         Ram ram2 = new Ram();
         ram2.setMa("ram012");
         ram2.setDungLuong(3);
+        ram2.setStatus(StatusCommon.ACTIVE);
         ram2.setId(ramRepository.save(ram2).getId());
 
         Ram ram3 = new Ram();
         ram3.setMa("ram0123");
         ram3.setDungLuong(4);
+        ram3.setStatus(StatusCommon.ACTIVE);
         ram3.setId(ramRepository.save(ram3).getId());
 
         Ram ram5 = new Ram();
         ram5.setMa("ram0172");
         ram5.setDungLuong(8);
+        ram5.setStatus(StatusCommon.ACTIVE);
         ram5.setId(ramRepository.save(ram5).getId());
 
         Ram ram4 = new Ram();
         ram4.setMa("ram0163");
         ram4.setDungLuong(12);
+        ram4.setStatus(StatusCommon.ACTIVE);
         ram4.setId(ramRepository.save(ram4).getId());
 
         //Bảng Rom
         Rom rom5 = new Rom();
         rom5.setMa("Rom01");
         rom5.setDungLuong(32);
+        rom5.setStatus(StatusCommon.ACTIVE);
         rom5.setId(romRepository.save(rom5).getId());
 
         Rom rom4 = new Rom();
         rom4.setMa("Rom01");
         rom4.setDungLuong(64);
+        rom4.setStatus(StatusCommon.ACTIVE);
         rom4.setId(romRepository.save(rom4).getId());
 
         Rom rom = new Rom();
         rom.setMa("Rom01");
         rom.setDungLuong(128);
+        rom.setStatus(StatusCommon.ACTIVE);
         rom.setId(romRepository.save(rom).getId());
 
         Rom rom1 = new Rom();
         rom1.setMa("Rom014");
         rom1.setDungLuong(256);
+        rom1.setStatus(StatusCommon.ACTIVE);
         rom1.setId(romRepository.save(rom1).getId());
 
         Rom rom2 = new Rom();
         rom2.setMa("Rom015");
         rom2.setDungLuong(512);
+        rom2.setStatus(StatusCommon.ACTIVE);
         rom2.setId(romRepository.save(rom2).getId());
 
         Rom rom3 = new Rom();
         rom3.setMa("Rom0153");
         rom3.setDungLuong(1024);
+        rom3.setStatus(StatusCommon.ACTIVE);
         rom3.setId(romRepository.save(rom3).getId());
 
         //bảng sản phẩm
@@ -1023,7 +1348,6 @@ public class DBGenerator implements CommandLineRunner {
 //        imei2.setIdSanPhamChiTiet(sanPhamChiTiet2);
 //        imei2.setId(imeiRepository.save(imei2).getId());
     }
-
 
 
     public static void main(String[] args) {

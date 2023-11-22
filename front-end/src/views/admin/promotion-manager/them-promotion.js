@@ -2,7 +2,12 @@ import { Button, Checkbox } from "antd";
 import React, { useEffect } from "react";
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faCheck, faEye } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowLeft,
+  faBookmark,
+  faCheck,
+  faEye,
+} from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { apiURLKhuyenMai, apiURLSanPham } from "../../../service/api";
 import TextField from "@mui/material/TextField";
@@ -31,8 +36,10 @@ const AddKhuyenMai = () => {
   const [giaTriKhuyenMai, setGiaTriKhuyenMai] = useState(0);
   const [ngayBatDau, setNgayBatDau] = useState(dayjs());
   const [ngayKetThuc, setNgayKetThuc] = useState(dayjs());
-  const [selectDiscount, setSeclectDiscount] = useState(TypeDiscountString.VND);
-  const [value, setValue] = React.useState();
+  const [selectDiscount, setSeclectDiscount] = useState(
+    TypeDiscountString.PERCENT
+  );
+  const [value, setValue] = React.useState("0");
   const [value2, setValue2] = React.useState();
 
   //san-pham
@@ -143,48 +150,48 @@ const AddKhuyenMai = () => {
   }, []);
 
   const handleChange = (event) => {
-    if (selectDiscount === TypeDiscountString.VND) {
-      const inputValue = event.target.value;
-      const numericValue = parseFloat(inputValue.replace(/[^0-9.-]+/g, ""));
-      const formattedValue = inputValue
-        .replace(/[^0-9]+/g, "")
-        .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      setValue(formattedValue);
-      setGiaTriKhuyenMai(numericValue);
-      setIsInputChanged(true);
+    // if (selectDiscount === TypeDiscountString.VND) {
+    //   const inputValue = event.target.value;
+    //   const numericValue = parseFloat(inputValue.replace(/[^0-9.-]+/g, ""));
+    //   const formattedValue = inputValue
+    //     .replace(/[^0-9]+/g, "")
+    //     .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    //   setValue(formattedValue);
+    //   setGiaTriKhuyenMai(numericValue);
+    //   setIsInputChanged(true);
+    // }
+    // if (selectDiscount === TypeDiscountString.PERCENT) {
+    let inputValue = event.target.value;
+    inputValue = inputValue.replace(/[^0-9]+/g, "");
+    inputValue = inputValue || "0";
+    inputValue = inputValue.replace(/\D/g, "");
+    if (isNaN(inputValue) || inputValue < 1) {
+      inputValue = "0";
+    } else if (inputValue > 100) {
+      inputValue = "100";
     }
-    if (selectDiscount === TypeDiscountString.PERCENT) {
-      let inputValue = event.target.value;
-      // Loại bỏ các ký tự không phải số
-      inputValue = inputValue.replace(/\D/g, "");
-      // Xử lý giới hạn giá trị từ 1 đến 100
-      if (isNaN(inputValue) || inputValue < 1) {
-        inputValue = "0";
-      } else if (inputValue > 100) {
-        inputValue = "100";
-      }
-      setValue(inputValue);
-      setGiaTriKhuyenMai(inputValue);
-    }
+    setValue(inputValue);
+    setGiaTriKhuyenMai(inputValue);
+    // }
   };
 
-  const handleChangeToggleButtonDiscount = (event, newAlignment) => {
-    var oldAligment = event.target.value;
+  // const handleChangeToggleButtonDiscount = (event, newAlignment) => {
+  //   var oldAligment = event.target.value;
 
-    if (newAlignment != null) {
-      setSeclectDiscount(newAlignment);
-      setValue2(null);
-    }
+  //   if (newAlignment != null) {
+  //     setSeclectDiscount(newAlignment);
+  //     setValue2(null);
+  //   }
 
-    if (newAlignment == null) {
-      setSeclectDiscount(oldAligment);
-    }
-    handleReset();
-  };
+  //   if (newAlignment == null) {
+  //     setSeclectDiscount(oldAligment);
+  //   }
+  //   handleReset();
+  // };
 
-  const handleReset = () => {
-    setValue("");
-  };
+  // const handleReset = () => {
+  //   setValue("");
+  // };
 
   //Detail sản phẩm chi tiết đã áp dụng khuyến mãi
   const detailSanPhamSauKhuyenMai = (id) => {
@@ -418,14 +425,55 @@ const AddKhuyenMai = () => {
           badgeContent={record.size}
           color="primary"
         >
-          <img
-            src={record.duongDan}
-            alt="Ảnh"
-            style={{ width: "100px", height: "100px" }}
-          />
+          <div className="image-container" style={{ position: "relative" }}>
+            <img
+              src={record.duongDan}
+              alt="Ảnh"
+              style={{ width: "100px", height: "100px" }}
+            />
+            {record.giaTriKhuyenMai !== null && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
+              >
+                <FontAwesomeIcon
+                  icon={faBookmark}
+                  style={{
+                    fontSize: "2.7em",
+                    color: record.giaTriKhuyenMai > 50 ? "red" : "#ffcc00",
+                    zIndex: 1,
+                    position: "relative",
+                  }}
+                />
+                <span
+                  style={{
+                    position: "absolute",
+                    top: "43%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    fontSize: "11px",
+                    color: record.giaTriKhuyenMai > 50 ? "white" : "black",
+                    zIndex: 2,
+                  }}
+                >
+                  <strong>
+                    Giảm
+                    <br /> {record.giaTriKhuyenMai}%
+                  </strong>
+                </span>
+              </div>
+            )}
+          </div>
         </Badge>
       ),
     },
+
     {
       title: "Tên sản phẩm",
       dataIndex: "tenSanPham",
@@ -434,22 +482,24 @@ const AddKhuyenMai = () => {
       align: "center",
       maxWidth: "20%",
       render: (value, record) => {
-        let tenSanPham = value;
         return (
           <span style={{ whiteSpace: "pre-line" }}>
-            {record.tenSanPham} {record.kichThuocRam}GB/{record.kichThuocRom}GB
+            {record.tenSanPham} {record.kichThuocRam}GB/{record.kichThuocRom}GB{" "}
+            {"("}
+            {record.tenMauSac}
+            {")"}
           </span>
         );
       },
     },
-    {
-      title: "Màu Sắc ",
-      dataIndex: "tenMauSac",
-      key: "tenMauSac",
-      width: "10%",
-      editable: true,
-      align: "center",
-    },
+    // {
+    //   title: "Màu Sắc ",
+    //   dataIndex: "tenMauSac",
+    //   key: "tenMauSac",
+    //   width: "10%",
+    //   editable: true,
+    //   align: "center",
+    // },
     {
       title: "Đơn giá ",
       dataIndex: "donGia",
@@ -472,13 +522,41 @@ const AddKhuyenMai = () => {
       editable: true,
       align: "center",
       render: (_, record) => {
-        let formattedValue = value;
-        if (selectDiscount === TypeDiscountString.VND) {
-          formattedValue = numeral(value).format("0,0 VND") + " ₫";
-        } else if (selectDiscount === TypeDiscountString.PERCENT) {
-          formattedValue = value + " %";
+        // let formattedValue = value;
+        let formattedValue;
+        if (record.giaTriKhuyenMai === null) {
+          formattedValue = value;
+        } else {
+          if (value === "0") {
+            formattedValue = record.giaTriKhuyenMai;
+          } else if (record.tong === null) {
+            formattedValue = Math.round(
+              (0 + parseInt(value)) / (record.size + 1)
+            );
+          } else {
+            formattedValue = Math.round(
+              (record.tong + parseInt(value)) / (record.size + 1)
+            );
+          }
         }
-        return <span>{formattedValue}</span>;
+        // let formattedValue;
+        // if (record.giaTriKhuyenMai === null) {
+        //   formattedValue = value;
+        // } else {
+        //   formattedValue = (record.tong === null ? 0 : record.tong) + value;
+        //   formattedValue /= record.size + 1;
+        // }
+        // if (selectDiscount === TypeDiscountString.VND) {
+        //   formattedValue = numeral(value).format("0,0 VND") + " ₫";
+        // } else if (selectDiscount === TypeDiscountString.PERCENT) {
+        //   formattedValue = value + " %";
+        // }
+
+        // if (value == null || value == "") {
+        //   formattedValue = 0;
+        // }
+
+        return <span>{formattedValue + " %"}</span>;
       },
     },
 
@@ -491,26 +569,47 @@ const AddKhuyenMai = () => {
       align: "center",
       whiteSpace: "pre-line",
       render: (_, record) => {
-        if (isInputChanged) {
-          const numericValue2 = parseFloat(value?.replace(/[^0-9.-]+/g, ""));
-          let giaTriKhuyenMai = record.donGia;
-          if (selectDiscount === TypeDiscountString.VND) {
-            giaTriKhuyenMai = record.donGia - numericValue2;
-            return (
-              <span>{numeral(giaTriKhuyenMai).format("0,0 VND") + " ₫"}</span>
+        // const numericValue2 = parseFloat(value?.replace(/[^0-9.-]+/g, ""));
+        let formattedValue;
+        if (record.giaTriKhuyenMai === null) {
+          formattedValue = value;
+        } else {
+          if (value === "0") {
+            formattedValue = record.giaTriKhuyenMai;
+          } else if (record.tong === null) {
+            formattedValue = Math.round(
+              (0 + parseInt(value)) / (record.size + 1)
             );
-          } else if (selectDiscount === TypeDiscountString.PERCENT) {
-            giaTriKhuyenMai =
-              record.donGia - (record.donGia * numericValue2) / 100;
-            return (
-              <span>{numeral(giaTriKhuyenMai).format("0,0 VND") + " ₫"}</span>
+          } else {
+            formattedValue = Math.round(
+              (record.tong + parseInt(value)) / (record.size + 1)
             );
           }
-        } else {
-          let formattedValue = record.donGia;
-          formattedValue = numeral(record.donGia).format("0,0 VND") + " ₫";
-          return <span>{formattedValue}</span>;
         }
+        let giaTriKhuyenMai = record.donGia;
+        giaTriKhuyenMai =
+          record.donGia - (record.donGia * formattedValue) / 100;
+        return <span>{numeral(giaTriKhuyenMai).format("0,0 VND") + " ₫"}</span>;
+        // if (isInputChanged) {
+        //   const numericValue2 = parseFloat(value?.replace(/[^0-9.-]+/g, ""));
+        //   let giaTriKhuyenMai = record.donGia;
+        //   if (selectDiscount === TypeDiscountString.VND) {
+        //     giaTriKhuyenMai = record.donGia - numericValue2;
+        //     return (
+        //       <span>{numeral(giaTriKhuyenMai).format("0,0 VND") + " ₫"}</span>
+        //     );
+        //   } else if (selectDiscount === TypeDiscountString.PERCENT) {
+        //     giaTriKhuyenMai =
+        //       record.donGia - (record.donGia * numericValue2) / 100;
+        //     return (
+        //       <span>{numeral(giaTriKhuyenMai).format("0,0 VND") + " ₫"}</span>
+        //     );
+        //   }
+        // } else {
+        //   let formattedValue = record.donGia;
+        //   formattedValue = numeral(record.donGia).format("0,0 VND") + " ₫";
+        //   return <span>{formattedValue}</span>;
+        // }
       },
     },
   ];
@@ -546,7 +645,7 @@ const AddKhuyenMai = () => {
             </div>
 
             <div className="d-flex ms-3">
-              <div>
+              {/* <div>
                 <RadioGroup
                   orientation="horizontal"
                   aria-label="Alignment"
@@ -556,7 +655,7 @@ const AddKhuyenMai = () => {
                   onChange={handleChangeToggleButtonDiscount}
                   sx={{ borderRadius: "12px" }}
                 >
-                  {[TypeDiscountString.VND, TypeDiscountString.PERCENT].map(
+                  {[TypeDiscountString.PERCENT, TypeDiscountString.VND].map(
                     (item) => (
                       <Box
                         key={item}
@@ -605,7 +704,7 @@ const AddKhuyenMai = () => {
                     )
                   )}
                 </RadioGroup>
-              </div>
+              </div> */}
               <div>
                 <TextField
                   label="Nhập Giá Trị Giảm Giá"
@@ -616,17 +715,17 @@ const AddKhuyenMai = () => {
                     inputMode: "numeric",
                     startAdornment: (
                       <InputAdornment position="start">
-                        {selectDiscount === TypeDiscountString.VND
+                        {/* {selectDiscount === TypeDiscountString.VND
                           ? TypeDiscountString.VND
                           : TypeDiscountString.PERCENT
                           ? "%"
-                          : ""}
+                          : ""} */}
+                        %
                       </InputAdornment>
                     ),
                   }}
                   style={{
-                    marginLeft: "15px",
-                    width: "320px",
+                    width: "430px",
                   }}
                   inputProps={{
                     maxLength: 20, // Giới hạn tối đa 10 ký tự

@@ -12,6 +12,7 @@ import beephone_shop_projects.core.admin.order_management.model.request.OrderReq
 import beephone_shop_projects.core.admin.order_management.model.request.SearchFilterOrderDto;
 import beephone_shop_projects.core.admin.order_management.model.response.CartItemResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.OrderHistoryResponse;
+import beephone_shop_projects.core.admin.order_management.model.response.OrderItemResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.OrderResponse;
 import beephone_shop_projects.core.admin.order_management.repository.ImeiChuaBanCustomRepository;
 import beephone_shop_projects.core.admin.order_management.repository.ImeiDaBanCustomRepository;
@@ -26,7 +27,6 @@ import beephone_shop_projects.core.admin.product_management.repository.ProductDe
 import beephone_shop_projects.core.admin.voucher_management.repository.VoucherRepository;
 import beephone_shop_projects.entity.GioHang;
 import beephone_shop_projects.entity.GioHangChiTiet;
-import beephone_shop_projects.entity.HinhThucThanhToan;
 import beephone_shop_projects.entity.HoaDon;
 import beephone_shop_projects.entity.HoaDonChiTiet;
 import beephone_shop_projects.entity.Imei;
@@ -193,6 +193,64 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
     if (req.getTrangThai().equals(OrderStatus.CANCELLED) && req.getOrderHistory().getMoTa().isBlank()) {
       throw new RestApiException("Bạn chưa nhập lý do hủy đơn hàng!");
     }
+    if (req.getTrangThai().equals(OrderStatus.CANCELLED)) {
+      if (orderCurrent.getTrangThai().equals(OrderStatus.DELIVERING)) {
+        for (OrderItemResponse orderItem : orderCurrent.getOrderItems()) {
+          Optional<SanPhamChiTiet> findProductItem = sanPhamChiTietRepository.
+                  findProductById(orderItem.getSanPhamChiTiet().getId());
+
+          Set<Imei> imeisProduct = findProductItem.get().getImeis();
+          orderItem.getImeisDaBan().forEach(s -> {
+            imeisProduct.forEach(s1 -> {
+              if (s1.getSoImei().equals(s.getSoImei())) {
+                s1.setTrangThai(StatusImei.NOT_SOLD);
+              }
+            });
+            s.setTrangThai(StatusImei.CANCELLED);
+            imeiDaBanCustomRepository.save(s);
+          });
+          findProductItem.get().setSoLuongTonKho(findProductItem.get().getSoLuongTonKho() +
+                  orderItem.getImeisDaBan().size());
+          sanPhamChiTietRepository.save(findProductItem.get());
+        }
+      } else {
+        for (OrderItemResponse orderItem : orderCurrent.getOrderItems()) {
+          Optional<SanPhamChiTiet> findProductItem = sanPhamChiTietRepository.
+                  findProductById(orderItem.getSanPhamChiTiet().getId());
+          Set<Imei> imeisProduct = findProductItem.get().getImeis();
+          orderItem.getImeisDaBan().forEach(s -> {
+            imeisProduct.forEach(s1 -> {
+              if (s1.getSoImei().equals(s.getSoImei())) {
+                s1.setTrangThai(StatusImei.NOT_SOLD);
+              }
+            });
+            s.setTrangThai(StatusImei.CANCELLED);
+            imeiDaBanCustomRepository.save(s);
+          });
+          sanPhamChiTietRepository.save(findProductItem.get());
+        }
+      }
+    }
+    if (req.getTrangThai().equals(OrderStatus.DELIVERING)) {
+      for (OrderItemResponse orderItem : orderCurrent.getOrderItems()) {
+        Optional<SanPhamChiTiet> findProductItem = sanPhamChiTietRepository.
+                findProductById(orderItem.getSanPhamChiTiet().getId());
+
+        Set<Imei> imeisProduct = findProductItem.get().getImeis();
+        orderItem.getImeisDaBan().forEach(s -> {
+          imeisProduct.forEach(s1 -> {
+            if (s1.getSoImei().equals(s.getSoImei())) {
+              s1.setTrangThai(StatusImei.SOLD);
+            }
+          });
+          s.setTrangThai(StatusImei.SOLD);
+          imeiDaBanCustomRepository.save(s);
+        });
+        findProductItem.get().setSoLuongTonKho(findProductItem.get().getSoLuongTonKho() -
+                orderItem.getImeisDaBan().size());
+        sanPhamChiTietRepository.save(findProductItem.get());
+      }
+    }
     orderCurrent.setTrangThai(req.getTrangThai());
     orderHistoryServiceImpl.save(req.getOrderHistory());
     HoaDon updatedOrderCurrent = hoaDonRepository.save(orderConverter.convertResponseToEntity(orderCurrent));
@@ -273,8 +331,9 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
       orderCurrent.setTienThua(req.getTienThua());
       orderCurrent.setLoaiHoaDon(req.getLoaiHoaDon());
       orderCurrent.setPhiShip(req.getPhiShip());
+      orderCurrent.setKhachCanTra(req.getKhachCanTra());
 
-      if (req.getLoaiHoaDon().equals(OrderType.AT_COUNTER)){
+      if (req.getLoaiHoaDon().equals(OrderType.AT_COUNTER)) {
         orderCurrent.setTenNguoiNhan(null);
         orderCurrent.setSoDienThoaiNguoiNhan(null);
         orderCurrent.setDiaChiNguoiNhan(null);
@@ -298,19 +357,21 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
 
           Optional<SanPhamChiTiet> findProductItem = sanPhamChiTietRepository.
                   findProductById(cartItem.getSanPhamChiTiet().getId());
-          findProductItem.get().setSoLuongTonKho(findProductItem.get().getSoLuongTonKho()
-                  - cartItem.getImeisChuaBan().size());
+          if (paymentOrder.getLoaiHoaDon().equals(OrderType.AT_COUNTER)) {
+            findProductItem.get().setSoLuongTonKho(findProductItem.get().getSoLuongTonKho()
+                    - cartItem.getImeisChuaBan().size());
+          }
           Set<Imei> imeisProduct = findProductItem.get().getImeis();
           cartItem.getImeisChuaBan().forEach((s) -> {
             ImeiDaBan imeiDaBan = new ImeiDaBan();
             imeiDaBan.setHoaDonChiTiet(createdOrderItem);
             imeiDaBan.setSoImei(s.getSoImei());
-            imeiDaBan.setTrangThai(StatusImei.SOLD);
+            imeiDaBan.setTrangThai(paymentOrder.getLoaiHoaDon().equals(OrderType.AT_COUNTER) ? StatusImei.SOLD : StatusImei.PENDING_DELIVERY);
             imeiDaBanCustomRepository.save(imeiDaBan);
 
             imeisProduct.forEach((i) -> {
               if (s.getSoImei().equals(i.getSoImei())) {
-                i.setTrangThai(StatusImei.SOLD);
+                i.setTrangThai(paymentOrder.getLoaiHoaDon().equals(OrderType.AT_COUNTER) ? StatusImei.SOLD : StatusImei.PENDING_DELIVERY);
               }
             });
           });

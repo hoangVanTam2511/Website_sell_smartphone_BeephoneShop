@@ -16,21 +16,19 @@ public class FindKhuyenMaiRequest {
 
     private String tenKhuyenMai;
 
-    private BigDecimal mucGiamGiaTheoPhanTram;
-
-    private BigDecimal mucGiamGiaTheoSoTien;
-
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date ngayBatDau;
 
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date ngayKetThuc;
 
-    private String dieuKienGiamGia;
+    private BigDecimal giaTriKhuyenMai;
 
     private StatusDiscount trangThai;
 
     private String keyword;
+
+    private String sortType;
 
     private Integer pageNo;
 

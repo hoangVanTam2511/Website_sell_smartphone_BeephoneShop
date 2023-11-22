@@ -29,7 +29,7 @@ export function ConfirmDialog(props) {
         onClose={onClose}
         aria-describedby="alert-dialog-slide-description1"
         sx={{
-          height: "300px",
+          height: "350px",
           "& .MuiPaper-root": {
             borderRadius: "15px", // Giá trị border radius tùy chỉnh
             marginTop: "150px",

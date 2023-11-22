@@ -7,6 +7,8 @@ public class ApiConstants {
     public static final String API_CART_URI = "/api/carts";
 
     public static final String API_ROM_URI = "/api/roms";
+    public static final String API_IMEI_URI = "/api/imeis";
+    public static final String API_DANH_MUC_URI = "/api/danh-mucs";
     public static final String API_RAM_URI = "/api/rams";
     public static final String API_SIM_CARD_URI = "/api/sim-cards";
     public static final String API_RESOLUTION_URI = "/api/resolution";

@@ -1,14 +1,8 @@
 import React, { useEffect, useState } from "react";
-import {
-  Link,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from "react-router-dom";
-import { Button, Empty, Popconfirm, Table } from "antd";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Button, Empty, Table } from "antd";
 import {
   Autocomplete,
-  Box,
   Dialog,
   DialogContent,
   FormControl,
@@ -24,28 +18,19 @@ import {
 import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import { PlusOutlined } from "@ant-design/icons";
 import Card from "../../../components/Card";
-import { format } from "date-fns";
 import axios from "axios";
-import { parseInt } from "lodash";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import Zoom from "@mui/material/Zoom";
-import * as dayjs from "dayjs";
 import {
   Notistack,
-  OrderStatusString,
-  OrderTypeString,
   StatusCommonProducts,
+  StatusCommonProductsNumber,
 } from "./enum";
+import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import LoadingIndicator from "../../../utilities/loading";
-import CreateSimCard from "./create-simcard";
 import CreateMauSac from "./create-mau-sac";
-import UpdateMauSac from "./update-mau-sac";
 import useCustomSnackbar from "../../../utilities/notistack";
-import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
+import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -53,35 +38,65 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const ManagementColors = () => {
   const navigate = useNavigate();
   const [colors, setColors] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [totalPages, setTotalPages] = useState();
-  const [refreshPage, setRefreshPage] = useState(1);
+  const [colorPages, setColorPages] = useState([]);
+  // const [isLoading, setIsLoading] = useState(true);
+  const [totalPages, setTotalPages] = useState(0);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [keyword, setKeyword] = useState(searchParams.get("keyword"));
+  const [searchTatCa, setSearchTatCa] = useState("");
+  const [searchTrangThai, setSearchTrangThai] = useState("");
   const [open, setOpen] = React.useState(false);
   const [open1, setOpen1] = React.useState(false);
   const [colorCode, setColorCode] = useState("");
   const [status, setStatus] = React.useState("");
   const [colorName, setColorName] = useState("");
   const [idColor, setIdColor] = useState("");
+  const [pageShow, setPageShow] = useState(5);
   const [openConfirm, setOpenConfirm] = useState(false);
   const { handleOpenAlertVariant } = useCustomSnackbar();
-  const [currentPage, setCurrentPage] = useState(
-    searchParams.get("currentPage") || 1
-  );
+  const [currentPage, setCurrentPage] = useState(1);
+  const [openSelect, setOpenSelect] = useState(false);
 
-  const getListColor = async () => {
-    await axios
+  const getListColor = () => {
+    axios
       .get(`http://localhost:8080/api/colors`)
       .then((response) => {
         setColors(response.data.data);
         setTotalPages(response.data.totalPages);
-        setIsLoading(false);
       })
       .catch((error) => {
         console.error(error);
-        setIsLoading(false);
       });
+  };
+
+  const getListProductSearchAndPage = (page) => {
+    // setIsLoading(false);
+    axios
+      .get(`http://localhost:8080/api/colors/search`, {
+        params: {
+          keyword: searchTatCa,
+          currentPage: page,
+          pageSize: pageShow,
+          status: ConvertStatusProductsNumberToString(searchTrangThai),
+        },
+      })
+      .then((response) => {
+        setColorPages(response.data.data);
+        setTotalPages(response.data.totalPages);
+        // setIsLoading(true);
+      })
+      .catch((error) => {
+        console.error(error);
+        // setIsLoading(false);
+      });
+  };
+
+  const [openSelect3, setOpenSelect3] = useState(false);
+  const handleCloseSelect3 = () => {
+    setOpenSelect3(false);
+  };
+
+  const handleOpenSelect3 = () => {
+    setOpenSelect3(true);
   };
 
   const detailColor = async (id) => {
@@ -92,29 +107,71 @@ const ManagementColors = () => {
         setStatus(response.data.data.status);
         setColorName(response.data.data.tenMauSac);
       })
-      .catch((error) => { });
+      .catch((error) => {});
+  };
+
+  const handleOpenSelect = () => {
+    setOpenSelect(true);
+  };
+
+  const handleCloseSelect = () => {
+    setOpenSelect(false);
+  };
+
+  const handleShowPageVoucher = (event) => {
+    const selectedValue = event.target.value;
+    setPageShow(parseInt(selectedValue));
+    setCurrentPage(1);
+  };
+
+  const handleSearchTrangThaiChange = (event) => {
+    const selectedValue = event.target.value;
+    setSearchTrangThai(parseInt(selectedValue)); // Cập nhật giá trị khi Select thay đổi
+    searchParams.set("trangThai", parseInt(selectedValue));
+    setSearchParams(searchParams);
+    if (selectedValue === 5) {
+      setSearchParams("");
+    }
+    setCurrentPage(1);
+  };
+
+  const handleSearchTatCaChange = (event) => {
+    const searchTatCaInput = event.target.value;
+    setSearchTatCa(searchTatCaInput);
+    setCurrentPage(1);
+  };
+
+  const handleRefreshData = () => {
+    setSearchTatCa("");
+    setPageShow(5);
+    setSearchTrangThai("");
+    getListProductSearchAndPage(currentPage);
   };
 
   const handleClickOpen1 = (id) => {
     detailColor(id);
     setOpen1(true);
-    console.log(colorName);
+  };
+
+  const handleClose1 = () => {
+    setOpen1(false);
   };
 
   useEffect(() => {
-    getListColor();
+    getListProductSearchAndPage(currentPage);
+  }, [searchTatCa, searchTrangThai, currentPage, totalPages, pageShow]);
+
+  useEffect(() => {
+    getListColor(currentPage);
   }, []);
 
   const handleClickOpen = () => {
+    getListColor();
     setOpen(true);
   };
 
   const handleClose = () => {
     setOpen(false);
-  };
-
-  const handleClose1 = () => {
-    setOpen1(false);
   };
 
   const doiTrangThaiColor = (idColor) => {
@@ -131,13 +188,9 @@ const ManagementColors = () => {
         handleOpenAlertVariant(error.response.data.message, Notistack.ERROR);
       });
   };
-
-  const handleOkConfirm = () => {
-    doiTrangThaiColor(idColor);
-  };
-  const handleCancelConfirm = () => {
-    console.log("Clicked cancel button");
-    setOpen(false);
+  const chuyenTrang = (event, page) => {
+    setCurrentPage(page);
+    getListProductSearchAndPage(page);
   };
 
   const ColorTable = () => {
@@ -147,7 +200,7 @@ const ManagementColors = () => {
           className="table-container"
           columns={columns}
           rowKey="id"
-          dataSource={colors}
+          dataSource={colorPages}
           pagination={false}
           locale={{ emptyText: <Empty description="Không có dữ liệu" /> }}
         />
@@ -162,7 +215,9 @@ const ManagementColors = () => {
       dataIndex: "stt",
       width: "5%",
       render: (text, record, index) => (
-        <span style={{ fontWeight: "400" }}>{colors.indexOf(record) + 1}</span>
+        <span style={{ fontWeight: "400" }}>
+          {colorPages.indexOf(record) + 1}
+        </span>
       ),
     },
     {
@@ -227,8 +282,8 @@ const ManagementColors = () => {
               <IconButton
                 size=""
                 onClick={() => {
-                  handleClickOpen1(record.id);
                   setIdColor(record.id);
+                  handleClickOpen1(record.id);
                 }}
               >
                 <BorderColorOutlinedIcon color="primary" />
@@ -236,82 +291,52 @@ const ManagementColors = () => {
             </Tooltip>
 
             {/* Hàm đổi trạng thái */}
-            <Popconfirm
-              description="Bạn có chắc chắn muốn đổi trạng thái không?"
-              onConfirm={handleOkConfirm}
-              onCancel={handleCancelConfirm}
-              placement="topLeft"
+
+            <Tooltip
+              TransitionComponent={Zoom}
+              title={
+                record.status === StatusCommonProducts.ACTIVE
+                  ? "Ngừng kích hoạt"
+                  : record.status === StatusCommonProducts.IN_ACTIVE
+                  ? "Kích hoạt"
+                  : ""
+              }
             >
-              <Tooltip
-                TransitionComponent={Zoom}
-                title={
-                  record.status === StatusCommonProducts.ACTIVE
-                    ? "Ngừng kích hoạt"
-                    : record.status === StatusCommonProducts.IN_ACTIVE
-                      ? "Kích hoạt"
-                      : ""
-                }
+              <IconButton
+                className="ms-2"
+                style={{ marginTop: "6px" }}
+                onClick={() => doiTrangThaiColor(record.id)}
               >
-                <IconButton
-                  className="ms-2"
-                  style={{ marginTop: "6px" }}
-                  onClick={() => setIdColor(record.id)}
-                >
-                  <AssignmentOutlinedIcon
-                    color={
-                      record.status === StatusCommonProducts.IN_ACTIVE
-                        ? "error"
-                        : record.status === StatusCommonProducts.ACTIVE
-                          ? "success"
-                          : "disabled"
-                    }
-                  />
-                </IconButton>
-              </Tooltip>
-            </Popconfirm>
+                <AssignmentOutlinedIcon
+                  color={
+                    record.status === StatusCommonProducts.IN_ACTIVE
+                      ? "error"
+                      : record.status === StatusCommonProducts.ACTIVE
+                      ? "success"
+                      : "disabled"
+                  }
+                />
+              </IconButton>
+            </Tooltip>
           </div>
         </div>
       ),
     },
   ];
 
-  const handleOpenDialogConfirmAdd = () => {
-    setOpenConfirm(true);
-  };
-
-  const handleCloseDialogConfirmAdd = () => {
-    setOpenConfirm(false);
-  };
-
-  const Header = () => {
-    return (
-      <>
-        <span style={{ fontWeight: "bold" }}>Xác nhận sửa màu sắc</span>
-      </>
-    );
-  };
-  const Title = () => {
-    return (
-      <>
-        <span>
-          Bạn có chắc chắc muốn sửa thành màu{" "}
-          <span style={{ color: "red" }}>"{colorName}"</span> không ?
-        </span>
-      </>
-    );
-  };
-
   const updateColor = () => {
     let obj = {
+      id: idColor,
       ma: colorCode,
       tenMauSac: colorName,
       status: status,
     };
     axios
-      .put(`http://localhost:8080/api/colors/${idColor}`, obj)
+      .put(`http://localhost:8080/api/colors`, obj)
       .then((response) => {
         getListColor();
         handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
+        setOpen1(false);
       })
       .catch((error) => {
         handleOpenAlertVariant(error.response.data.message, Notistack.ERROR);
@@ -345,8 +370,8 @@ const ManagementColors = () => {
             <div className="header-title mt-2">
               <TextField
                 label="Tìm Màu Sắc"
-                // onChange={handleGetValueFromInputTextField}
-                // value={keyword}
+                onChange={handleSearchTatCaChange}
+                value={searchTatCa}
                 InputLabelProps={{
                   sx: {
                     marginTop: "",
@@ -363,7 +388,7 @@ const ManagementColors = () => {
                 className=""
               />
               <Button
-                // onClick={handleRefreshData}
+                onClick={() => handleRefreshData()}
                 className="rounded-2 ms-2"
                 type="warning"
                 style={{ width: "100px", fontSize: "15px" }}
@@ -376,7 +401,133 @@ const ManagementColors = () => {
                 </span>
               </Button>
             </div>
-            <div className="mt-2">
+            <div
+              className="d-flex"
+              style={{ alignItems: "center", justifyContent: "center" }}
+            >
+              <div
+                className="d-flex"
+                style={{
+                  height: "40px",
+                  position: "relative",
+                  cursor: "pointer",
+                }}
+              >
+                <div
+                  onClick={handleOpenSelect}
+                  className=""
+                  style={{ marginTop: "7px" }}
+                >
+                  <span
+                    className="ms-2 ps-1"
+                    style={{ fontSize: "15px", fontWeight: "450" }}
+                  >
+                    Trạng Thái:{" "}
+                  </span>
+                </div>
+                <FormControl
+                  sx={{
+                    minWidth: 50,
+                  }}
+                  size="small"
+                >
+                  <Select
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          borderRadius: "7px",
+                        },
+                      },
+                    }}
+                    IconComponent={KeyboardArrowDownOutlinedIcon}
+                    sx={{
+                      "& .MuiOutlinedInput-notchedOutline": {
+                        border: "none !important",
+                      },
+                      "& .MuiSelect-select": {
+                        color: "#2f80ed",
+                        fontWeight: "500",
+                      },
+                    }}
+                    open={openSelect}
+                    onClose={handleCloseSelect}
+                    onOpen={handleOpenSelect}
+                    defaultValue={5}
+                    onChange={handleSearchTrangThaiChange}
+                  >
+                    <MenuItem className="" value={5}>
+                      Tất cả
+                    </MenuItem>
+                    <MenuItem value={StatusCommonProductsNumber.ACTIVE}>
+                      Hoạt động
+                    </MenuItem>
+                    <MenuItem value={StatusCommonProductsNumber.IN_ACTIVE}>
+                      Ngừng hoạt động
+                    </MenuItem>
+                  </Select>
+                </FormControl>
+              </div>
+              <div
+                className="d-flex"
+                style={{
+                  height: "40px",
+                  position: "relative",
+                  cursor: "pointer",
+                }}
+              >
+                <div
+                  onClick={handleOpenSelect3}
+                  className=""
+                  style={{ marginTop: "7px" }}
+                >
+                  <span
+                    className="ms-2 ps-1"
+                    style={{ fontSize: "15px", fontWeight: "450" }}
+                  >
+                    Hiển Thị:{" "}
+                  </span>
+                </div>
+                <FormControl
+                  sx={{
+                    minWidth: 50,
+                  }}
+                  size="small"
+                >
+                  <Select
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          borderRadius: "7px",
+                        },
+                      },
+                    }}
+                    IconComponent={KeyboardArrowDownOutlinedIcon}
+                    sx={{
+                      "& .MuiOutlinedInput-notchedOutline": {
+                        border: "none !important",
+                      },
+                      "& .MuiSelect-select": {
+                        color: "#2f80ed",
+                        fontWeight: "500",
+                      },
+                    }}
+                    open={openSelect3}
+                    onClose={handleCloseSelect3}
+                    onOpen={handleOpenSelect3}
+                    value={pageShow}
+                    onChange={handleShowPageVoucher}
+                  >
+                    <MenuItem className="" value={5}>
+                      Mặc định
+                    </MenuItem>
+                    <MenuItem value={10}>10</MenuItem>
+                    <MenuItem value={20}>20</MenuItem>
+                    <MenuItem value={50}>50</MenuItem>
+                  </Select>
+                </FormControl>
+              </div>
+            </div>
+            <div className="d-flex mt-2">
               <Button
                 onClick={handleClickOpen}
                 className="rounded-2 button-mui"
@@ -405,14 +556,16 @@ const ManagementColors = () => {
           </Card.Body>
           <div className="mx-auto">
             <Pagination
-              color="primary" /* page={parseInt(currentPage)} key={refreshPage} count={totalPages} */
-            // onChange={handlePageChange}
+              page={parseInt(currentPage)}
+              count={totalPages}
+              onChange={chuyenTrang}
+              color="primary"
             />
           </div>
           <div className="mt-4"></div>
         </Card>
       </div>
-      {isLoading && <LoadingIndicator />}
+      {/* {isLoading && <LoadingIndicator />} */}
       <CreateMauSac
         open={open}
         close={handleClose}
@@ -479,9 +632,10 @@ const ManagementColors = () => {
                     </Select>
                   </FormControl>
                 </div>
+
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
-                    onClick={() => handleOpenDialogConfirmAdd()}
+                    onClick={() => updateColor()}
                     className="rounded-2 button-mui"
                     type="primary"
                     style={{ height: "40px", width: "auto", fontSize: "15px" }}
@@ -497,17 +651,10 @@ const ManagementColors = () => {
               </div>
             </div>
           </div>
-          <ConfirmDialog
-            open={openConfirm}
-            onClose={handleCloseDialogConfirmAdd}
-            add={updateColor}
-            title={<Title />}
-            header={<Header />}
-          />
-          {isLoading && <LoadingIndicator />}
         </DialogContent>
         <div className="mt-3"></div>
       </Dialog>
+      {/* {!isLoading && <LoadingIndicator />} */}
     </>
   );
 };

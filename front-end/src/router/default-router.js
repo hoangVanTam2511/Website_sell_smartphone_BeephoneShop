@@ -107,8 +107,12 @@ import CreateProduct from "../views/admin/order-manager/create-product";
 import ManagementTheNhos from "../views/admin/order-manager/management-the-nho";
 import CreateTheNho from "../views/admin/order-manager/create-the-nho";
 import UpdateMauSac from "../views/admin/order-manager/update-mau-sac";
-import ManagementImage from "../views/admin/order-manager/management-image";
+import ManagementDanhMuc from "../views/admin/order-manager/management-danh-muc";
+import CreateDanhMuc from "../views/admin/order-manager/create-danh-muc";
+import ThongKe from "../views/admin/statics-manager/thong-ke";
+// import ManagementImage from "../views/admin/order-manager/management-image";
 import PaymentSuccess from "../views/admin/order-manager/vnpay-payment-success";
+import ManagementImei from "../views/admin/order-manager/management-imei";
 
 export const DefaultRouter = [
   {
@@ -326,6 +330,14 @@ export const DefaultRouter = [
         element: <ManagementColors />,
       },
       {
+        path: "dashboard/danh-mucs",
+        element: <ManagementDanhMuc />,
+      },
+      {
+        path: "dashboard/danh-mucs/create",
+        element: <CreateDanhMuc />,
+      },
+      {
         path: "dashboard/hang/create",
         element: <CreateHang />,
       },
@@ -358,9 +370,13 @@ export const DefaultRouter = [
         element: <ManagementTheNhos />,
       },
       {
-        path: "dashboard/image",
-        element: <ManagementImage />,
+        path: "dashboard/imeis",
+        element: <ManagementImei />,
       },
+      // {
+      //   path: "dashboard/image",
+      //   element: <ManagementImage />,
+      // },
       {
         path: "dashboard/the-nhos/create",
         element: <CreateTheNho />,
@@ -368,6 +384,14 @@ export const DefaultRouter = [
       {
         path: "dashboard/create-product",
         element: <CreateProduct />,
+      },
+      {
+        path: "dashboard/payment-success",
+        element: <PaymentSuccess />,
+      },
+      {
+        path: "dashboard/thong-ke",
+        element: <ThongKe />,
       },
       {
         path: "dashboard/payment-success",

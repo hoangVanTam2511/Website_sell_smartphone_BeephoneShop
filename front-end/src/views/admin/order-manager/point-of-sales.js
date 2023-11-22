@@ -1,54 +1,82 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { Row, Col } from 'react-bootstrap'
-import { Link, useNavigate, useParams } from 'react-router-dom'
-import { responsiveFontSizes, styled } from '@mui/material/styles';
-import Switch from '@mui/material/Switch';
-import CircularProgress from '@mui/material/CircularProgress';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import CloseIcon from '@mui/icons-material/Close';
-import FormLabel from '@mui/joy/FormLabel';
-import Radio, { radioClasses } from '@mui/joy/Radio';
-import RadioGroup from '@mui/joy/RadioGroup';
-import PaymentIcon from '@mui/icons-material/Payment';
-import Box from '@mui/material/Box';
-import TabContext from '@mui/lab/TabContext';
-import TabList from '@mui/lab/TabList';
-import TabPanel from '@mui/lab/TabPanel';
-import { FormHelperText, InputLabel, selectClasses, Tooltip } from '@mui/material';
-import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined';
-import CreditScoreOutlinedIcon from '@mui/icons-material/CreditScoreOutlined';
-import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
-import Badge from '@mui/material/Badge';
-import Zoom from '@mui/material/Zoom';
+import React, { useEffect, useRef, useState } from "react";
+import { Row, Col } from "react-bootstrap";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { responsiveFontSizes, styled } from "@mui/material/styles";
+import Switch from "@mui/material/Switch";
+import CircularProgress from "@mui/material/CircularProgress";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import CloseIcon from "@mui/icons-material/Close";
+import FormLabel from "@mui/joy/FormLabel";
+import Radio, { radioClasses } from "@mui/joy/Radio";
+import RadioGroup from "@mui/joy/RadioGroup";
+import PaymentIcon from "@mui/icons-material/Payment";
+import Box from "@mui/material/Box";
+import TabContext from "@mui/lab/TabContext";
+import TabList from "@mui/lab/TabList";
+import TabPanel from "@mui/lab/TabPanel";
+import {
+  FormHelperText,
+  InputLabel,
+  selectClasses,
+  Tooltip,
+} from "@mui/material";
+import HighlightOffOutlinedIcon from "@mui/icons-material/HighlightOffOutlined";
+import CreditScoreOutlinedIcon from "@mui/icons-material/CreditScoreOutlined";
+import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
+import Badge from "@mui/material/Badge";
+import Zoom from "@mui/material/Zoom";
 
-import Alert from '@mui/joy/Alert';
-import { Button as ButtonJoy } from '@mui/joy';
-import PlaylistAddCheckCircleRoundedIcon from '@mui/icons-material/PlaylistAddCheckCircleRounded';
-import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
-import { IconButton as IconButtonJoy } from '@mui/joy';
+import Alert from "@mui/joy/Alert";
+import { Button as ButtonJoy } from "@mui/joy";
+import PlaylistAddCheckCircleRoundedIcon from "@mui/icons-material/PlaylistAddCheckCircleRounded";
+import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
+import { IconButton as IconButtonJoy } from "@mui/joy";
 import { format } from "date-fns";
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { IoPersonCircle } from "react-icons/io5";
-import Sheet from '@mui/joy/Sheet';
-import { tabsClasses } from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import { Box as BoxJoy } from '@mui/joy';
-import { Button } from 'antd'
-import { FormControl, Input, OutlinedInput, FormControlLabel, InputAdornment, IconButton } from '@mui/material'
-import Checkbox, { checkboxClasses } from '@mui/joy/Checkbox';
-import TextField from '@mui/material/TextField';
-import style from './style.css'
-import { AddressDialog, ConfirmPaymentDialog, CustomersDialog, ModalPaymentHistories, MultiplePaymentMethods, OrderConfirmPayment, OrderPendingConfirmCloseDialog, PaymentVnPayConfirmDialog, ProductsDialog, ShipFeeInput, VouchersDialog } from './AlertDialogSlide';
-import axios from 'axios';
-import { FaRegMoneyBillAlt } from 'react-icons/fa';
-import { isNaN, map, parseInt, debounce, update } from 'lodash';
-import CloseOutlined from '@mui/icons-material/CloseOutlined';
-import TabItem from './tab-item';
-import LoadingIndicator from '../../../utilities/loading';
-import { OrderStatusString, OrderTypeString, Notistack } from './enum';
-import useCustomSnackbar from '../../../utilities/notistack';
-import { TextFieldAddress, TextFieldName, TextFieldPhone } from './text-field-info-ship';
-import DeliveryInfoShip from './delivery-info-ship';
+import Sheet from "@mui/joy/Sheet";
+import { tabsClasses } from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import { Box as BoxJoy } from "@mui/joy";
+import { Button } from "antd";
+import {
+  FormControl,
+  Input,
+  OutlinedInput,
+  FormControlLabel,
+  InputAdornment,
+  IconButton,
+} from "@mui/material";
+import Checkbox, { checkboxClasses } from "@mui/joy/Checkbox";
+import TextField from "@mui/material/TextField";
+import style from "./style.css";
+import {
+  AddressDialog,
+  ConfirmPaymentDialog,
+  CustomersDialog,
+  ModalPaymentHistories,
+  MultiplePaymentMethods,
+  OrderConfirmPayment,
+  OrderPendingConfirmCloseDialog,
+  PaymentVnPayConfirmDialog,
+  ProductsDialog,
+  ShipFeeInput,
+  VouchersDialog,
+} from "./AlertDialogSlide";
+import axios from "axios";
+import { FaRegMoneyBillAlt } from "react-icons/fa";
+import { isNaN, map, parseInt, debounce, update } from "lodash";
+import CloseOutlined from "@mui/icons-material/CloseOutlined";
+import TabItem from "./tab-item";
+import LoadingIndicator from "../../../utilities/loading";
+import { OrderStatusString, OrderTypeString, Notistack } from "./enum";
+import useCustomSnackbar from "../../../utilities/notistack";
+import {
+  TextFieldAddress,
+  TextFieldName,
+  TextFieldPhone,
+} from "./text-field-info-ship";
+import DeliveryInfoShip from "./delivery-info-ship";
 
 const IOSSwitch = styled((props) => (
   <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
@@ -56,46 +84,46 @@ const IOSSwitch = styled((props) => (
   width: 42,
   height: 26,
   padding: 0,
-  '& .MuiSwitch-switchBase': {
+  "& .MuiSwitch-switchBase": {
     padding: 0,
     margin: 2,
-    transitionDuration: '300ms',
-    '&.Mui-checked': {
-      transform: 'translateX(16px)',
-      color: '#fff',
-      '& + .MuiSwitch-track': {
-        backgroundColor: theme.palette.mode === 'dark' ? '#2ECA45' : '#65C466',
+    transitionDuration: "300ms",
+    "&.Mui-checked": {
+      transform: "translateX(16px)",
+      color: "#fff",
+      "& + .MuiSwitch-track": {
+        backgroundColor: theme.palette.mode === "dark" ? "#2ECA45" : "#65C466",
         opacity: 1,
         border: 0,
       },
-      '&.Mui-disabled + .MuiSwitch-track': {
+      "&.Mui-disabled + .MuiSwitch-track": {
         opacity: 0.5,
       },
     },
-    '&.Mui-focusVisible .MuiSwitch-thumb': {
-      color: '#33cf4d',
-      border: '6px solid #fff',
+    "&.Mui-focusVisible .MuiSwitch-thumb": {
+      color: "#33cf4d",
+      border: "6px solid #fff",
     },
-    '&.Mui-disabled .MuiSwitch-thumb': {
+    "&.Mui-disabled .MuiSwitch-thumb": {
       color:
-        theme.palette.mode === 'light'
+        theme.palette.mode === "light"
           ? theme.palette.grey[100]
           : theme.palette.grey[600],
     },
-    '&.Mui-disabled + .MuiSwitch-track': {
-      opacity: theme.palette.mode === 'light' ? 0.7 : 0.3,
+    "&.Mui-disabled + .MuiSwitch-track": {
+      opacity: theme.palette.mode === "light" ? 0.7 : 0.3,
     },
   },
-  '& .MuiSwitch-thumb': {
-    boxSizing: 'border-box',
+  "& .MuiSwitch-thumb": {
+    boxSizing: "border-box",
     width: 22,
     height: 22,
   },
-  '& .MuiSwitch-track': {
+  "& .MuiSwitch-track": {
     borderRadius: 26 / 2,
-    backgroundColor: theme.palette.mode === 'light' ? '#E9E9EA' : '#39393D',
+    backgroundColor: theme.palette.mode === "light" ? "#E9E9EA" : "#39393D",
     opacity: 1,
-    transition: theme.transitions.create(['background-color'], {
+    transition: theme.transitions.create(["background-color"], {
       duration: 500,
     }),
   },
@@ -109,11 +137,11 @@ const PointOfSales = () => {
   const [loadingChild, setLoadingChild] = useState(false);
   const [delivery, setDelivery] = React.useState(false);
   const [paymentWhenReceive, setPaymentWhenReceive] = useState(false);
-  const [description, setDescription] = useState('');
+  const [description, setDescription] = useState("");
   const [discount, setDiscount] = useState("");
   const [discountValue, setDiscountValue] = useState(0);
   const [discountValidate, setDiscountValidate] = useState("");
-  const [discountFormat, setDiscountFormat] = useState('');
+  const [discountFormat, setDiscountFormat] = useState("");
   const [shipFee, setShipFee] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [clearCus, setClearCus] = useState(false);
@@ -158,16 +186,15 @@ const PointOfSales = () => {
   const [customerAddressList, setCustomerAddressList] = useState([]);
   const [isShow, setIsShow] = useState(false);
 
-  const [selectedValuePaymentMethod, setSelectedValuePaymentMethod] = useState('Tiền mặt');
+  const [selectedValuePaymentMethod, setSelectedValuePaymentMethod] =
+    useState("Tiền mặt");
   const handleRadioChange = (event) => {
     const value = event.target.value;
     if (value === "Chuyển khoản" && !delivery) {
       setOpenModalConfirmRedirectPayment(true);
-    }
-    else if (value === "Cả 2" && !delivery) {
+    } else if (value === "Cả 2" && !delivery) {
       setOpenModalPaymentMultipleCounter(true);
-    }
-    else {
+    } else {
       setSelectedValuePaymentMethod(value);
     }
   };
@@ -175,50 +202,56 @@ const PointOfSales = () => {
   const getCustomerPayment = (money, moneyFormat) => {
     setCustomerPayment(money);
     setCustomerPaymentFormat(moneyFormat);
-  }
+  };
 
   const getIsShow = (data) => {
     setIsShow(data);
-  }
+  };
 
   const getNameShip = (data) => {
     setCustomerNameShip(data);
-  }
+  };
   const getPhoneShip = (data) => {
     setCustomerPhoneShip(data);
-  }
+  };
   const getAddressShip = (data) => {
     setCustomerAddressShip(data);
-  }
+  };
   const getDistrictShip = (data) => {
     setCustomerDistrictShip(data);
-  }
+  };
   const getProvinceShip = (data) => {
     setCustomerProvinceShip(data);
-  }
+  };
   const getWardShip = (data) => {
     setCustomerWardShip(data);
-  }
+  };
   const getNoteShip = (data) => {
     setCustomerNoteShip(data);
-  }
+  };
 
   const updateInfoShip = async (data) => {
     setIsLoading(true);
     setIsShow(true);
     const orderRequest = {
-      soDienThoaiNguoiNhan: data.soDienThoaiKhachHang !== ""
-        || data.soDienThoaiKhachHang !== null ? data.soDienThoaiKhachHang : null,
-      tenNguoiNhan: data.hoTenKH !== ""
-        || data.hoTenKH !== null ? data.hoTenKH : null,
-      diaChiNguoiNhan: data.diaChi !== ""
-        || data.diaChi !== null ? data.diaChi : null,
-      tinhThanhPhoNguoiNhan: data.tinhThanhPho !== ""
-        || data.tinhThanhPho !== null ? data.tinhThanhPho : null,
-      quanHuyenNguoiNhan: data.quanHuyen !== ""
-        || data.quanHuyen !== null ? data.quanHuyen : null,
-      xaPhuongNguoiNhan: data.xaPhuong !== ""
-        || data.xaPhuong !== null ? data.xaPhuong : null,
+      soDienThoaiNguoiNhan:
+        data.soDienThoaiKhachHang !== "" || data.soDienThoaiKhachHang !== null
+          ? data.soDienThoaiKhachHang
+          : null,
+      tenNguoiNhan:
+        data.hoTenKH !== "" || data.hoTenKH !== null ? data.hoTenKH : null,
+      diaChiNguoiNhan:
+        data.diaChi !== "" || data.diaChi !== null ? data.diaChi : null,
+      tinhThanhPhoNguoiNhan:
+        data.tinhThanhPho !== "" || data.tinhThanhPho !== null
+          ? data.tinhThanhPho
+          : null,
+      quanHuyenNguoiNhan:
+        data.quanHuyen !== "" || data.quanHuyen !== null
+          ? data.quanHuyen
+          : null,
+      xaPhuongNguoiNhan:
+        data.xaPhuong !== "" || data.xaPhuong !== null ? data.xaPhuong : null,
       // loaiHoaDon: delivery ? OrderTypeString.DELIVERY : OrderTypeString.AT_COUNTER,
       isPayment: false,
       isUpdateType: false,
@@ -232,27 +265,32 @@ const PointOfSales = () => {
       isUpdatePhoneShip: false,
     };
     try {
-      await axios.put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        params: {
-          isUpdateStatusOrderDelivery: false,
-        }
-      }).then(response => {
-        const data = response.data.data;
-        setOrder(data);
-        setCustomerNameShip(data && data.tenNguoiNhan);
-        setCustomerPhoneShip(data && data.soDienThoaiNguoiNhan);
-        setCustomerAddressShip(data && data.diaChiNguoiNhan);
-        setCustomerWardShip(data && data.xaPhuongNguoiNhan);
-        setCustomerProvinceShip(data && data.tinhThanhPhoNguoiNhan);
-        setCustomerDistrictShip(data && data.quanHuyenNguoiNhan);
-        getAllOrdersPending();
-        setIsLoading(false);
-        handleCloseDialogAddresses();
-        handleOpenAlertVariant('Chọn địa chỉ giao hàng thành công!', Notistack.SUCCESS);
-      });
+      await axios
+        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          params: {
+            isUpdateStatusOrderDelivery: false,
+          },
+        })
+        .then((response) => {
+          const data = response.data.data;
+          setOrder(data);
+          setCustomerNameShip(data && data.tenNguoiNhan);
+          setCustomerPhoneShip(data && data.soDienThoaiNguoiNhan);
+          setCustomerAddressShip(data && data.diaChiNguoiNhan);
+          setCustomerWardShip(data && data.xaPhuongNguoiNhan);
+          setCustomerProvinceShip(data && data.tinhThanhPhoNguoiNhan);
+          setCustomerDistrictShip(data && data.quanHuyenNguoiNhan);
+          getAllOrdersPending();
+          setIsLoading(false);
+          handleCloseDialogAddresses();
+          handleOpenAlertVariant(
+            "Chọn địa chỉ giao hàng thành công!",
+            Notistack.SUCCESS
+          );
+        });
     } catch (error) {
       setIsLoading(false);
     }
@@ -272,21 +310,22 @@ const PointOfSales = () => {
       isUpdateType: false,
     };
     try {
-      await axios.put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        params: {
-          isUpdateStatusOrderDelivery: false,
-        }
-      }).then(response => {
-        const data = response.data.data;
-        setOrder(data);
-        setCustomerPhoneShip(data && data.soDienThoaiNguoiNhan);
-        getAllOrdersPending();
-      });
-    } catch (error) {
-    }
+      await axios
+        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          params: {
+            isUpdateStatusOrderDelivery: false,
+          },
+        })
+        .then((response) => {
+          const data = response.data.data;
+          setOrder(data);
+          setCustomerPhoneShip(data && data.soDienThoaiNguoiNhan);
+          getAllOrdersPending();
+        });
+    } catch (error) {}
   };
   const updateAddressShipOrder = async (address) => {
     const orderRequest = {
@@ -303,21 +342,22 @@ const PointOfSales = () => {
       isUpdateInfoShipByCustomer: false,
     };
     try {
-      await axios.put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        params: {
-          isUpdateStatusOrderDelivery: false,
-        }
-      }).then(response => {
-        const data = response.data.data;
-        setOrder(data);
-        setCustomerAddressShip(data && data.diaChiNguoiNhan);
-        getAllOrdersPending();
-      });
-    } catch (error) {
-    }
+      await axios
+        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          params: {
+            isUpdateStatusOrderDelivery: false,
+          },
+        })
+        .then((response) => {
+          const data = response.data.data;
+          setOrder(data);
+          setCustomerAddressShip(data && data.diaChiNguoiNhan);
+          getAllOrdersPending();
+        });
+    } catch (error) {}
   };
   const updateNoteShipOrder = async (note) => {
     const orderRequest = {
@@ -334,21 +374,22 @@ const PointOfSales = () => {
       isUpdateType: false,
     };
     try {
-      await axios.put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        params: {
-          isUpdateStatusOrderDelivery: false,
-        }
-      }).then(response => {
-        const data = response.data.data;
-        setOrder(data);
-        setCustomerNoteShip(data && data.ghiChu);
-        getAllOrdersPending();
-      });
-    } catch (error) {
-    }
+      await axios
+        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          params: {
+            isUpdateStatusOrderDelivery: false,
+          },
+        })
+        .then((response) => {
+          const data = response.data.data;
+          setOrder(data);
+          setCustomerNoteShip(data && data.ghiChu);
+          getAllOrdersPending();
+        });
+    } catch (error) {}
   };
 
   const updateTypeOrder = async (type) => {
@@ -367,42 +408,81 @@ const PointOfSales = () => {
       isUpdateInfoShipByCustomer: false,
     };
     try {
-      await axios.put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        params: {
-          isUpdateStatusOrderDelivery: false,
-        }
-      }).then(response => {
-        const order = response.data.data;
-        setOrder(order);
+      await axios
+        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          params: {
+            isUpdateStatusOrderDelivery: false,
+          },
+        })
+        .then((response) => {
+          const order = response.data.data;
+          setOrder(order);
 
-        const delivery = order.loaiHoaDon === OrderTypeString.DELIVERY ? true : false;
-        setDelivery(order.loaiHoaDon === OrderTypeString.DELIVERY ? true : false);
+          const delivery =
+            order.loaiHoaDon === OrderTypeString.DELIVERY ? true : false;
+          setDelivery(
+            order.loaiHoaDon === OrderTypeString.DELIVERY ? true : false
+          );
 
-        if (delivery) {
-          setCustomerNameShip(order.loaiHoaDon === OrderTypeString.DELIVERY && order.tenNguoiNhan !== null ? order.tenNguoiNhan : "");
-          setCustomerPhoneShip(order.loaiHoaDon === OrderTypeString.DELIVERY && order.soDienThoaiNguoiNhan !== null ? order.soDienThoaiNguoiNhan : "");
-          setCustomerAddressShip(order.loaiHoaDon === OrderTypeString.DELIVERY && order.diaChiNguoiNhan !== null ? order.diaChiNguoiNhan : "");
-          setCustomerWardShip(order.loaiHoaDon === OrderTypeString.DELIVERY && order.xaPhuongNguoiNhan !== null ? order.xaPhuongNguoiNhan : "");
-          setCustomerProvinceShip(order.loaiHoaDon === OrderTypeString.DELIVERY && order.tinhThanhPhoNguoiNhan !== null ? order.tinhThanhPhoNguoiNhan : "");
-          setCustomerDistrictShip(order.loaiHoaDon === OrderTypeString.DELIVERY && order.quanHuyenNguoiNhan != null ? order.quanHuyenNguoiNhan : "");
-          setCustomerNoteShip(order.loaiHoaDon === OrderTypeString.DELIVERY && order.ghiChu != null ? order.ghiChu : "");
-        }
-        else {
-          setSelectedValuePaymentMethod("Tiền mặt");
-          setCustomerNameShip("");
-          setCustomerPhoneShip("");
-          setCustomerAddressShip("");
-          setCustomerWardShip("");
-          setCustomerProvinceShip("");
-          setCustomerDistrictShip("");
-          setCustomerNoteShip("");
-        }
-        getAllOrdersPending();
-        setIsLoading(false);
-      });
+          if (delivery) {
+            setCustomerNameShip(
+              order.loaiHoaDon === OrderTypeString.DELIVERY &&
+                order.tenNguoiNhan !== null
+                ? order.tenNguoiNhan
+                : ""
+            );
+            setCustomerPhoneShip(
+              order.loaiHoaDon === OrderTypeString.DELIVERY &&
+                order.soDienThoaiNguoiNhan !== null
+                ? order.soDienThoaiNguoiNhan
+                : ""
+            );
+            setCustomerAddressShip(
+              order.loaiHoaDon === OrderTypeString.DELIVERY &&
+                order.diaChiNguoiNhan !== null
+                ? order.diaChiNguoiNhan
+                : ""
+            );
+            setCustomerWardShip(
+              order.loaiHoaDon === OrderTypeString.DELIVERY &&
+                order.xaPhuongNguoiNhan !== null
+                ? order.xaPhuongNguoiNhan
+                : ""
+            );
+            setCustomerProvinceShip(
+              order.loaiHoaDon === OrderTypeString.DELIVERY &&
+                order.tinhThanhPhoNguoiNhan !== null
+                ? order.tinhThanhPhoNguoiNhan
+                : ""
+            );
+            setCustomerDistrictShip(
+              order.loaiHoaDon === OrderTypeString.DELIVERY &&
+                order.quanHuyenNguoiNhan != null
+                ? order.quanHuyenNguoiNhan
+                : ""
+            );
+            setCustomerNoteShip(
+              order.loaiHoaDon === OrderTypeString.DELIVERY &&
+                order.ghiChu != null
+                ? order.ghiChu
+                : ""
+            );
+          } else {
+            setSelectedValuePaymentMethod("Tiền mặt");
+            setCustomerNameShip("");
+            setCustomerPhoneShip("");
+            setCustomerAddressShip("");
+            setCustomerWardShip("");
+            setCustomerProvinceShip("");
+            setCustomerDistrictShip("");
+            setCustomerNoteShip("");
+          }
+          getAllOrdersPending();
+          setIsLoading(false);
+        });
     } catch (error) {
       setIsLoading(false);
     }
@@ -423,24 +503,33 @@ const PointOfSales = () => {
       isUpdateInfoShipByCustomer: false,
     };
     try {
-      await axios.put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        params: {
-          isUpdateStatusOrderDelivery: false,
-        }
-      }).then(response => {
-        const data = response.data.data;
-        setOrder(data);
-        setCustomerNameShip(data && data.tenNguoiNhan);
-        getAllOrdersPending();
-      });
-    } catch (error) {
-    }
+      await axios
+        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          params: {
+            isUpdateStatusOrderDelivery: false,
+          },
+        })
+        .then((response) => {
+          const data = response.data.data;
+          setOrder(data);
+          setCustomerNameShip(data && data.tenNguoiNhan);
+          getAllOrdersPending();
+        });
+    } catch (error) {}
   };
 
-  const updateInfoShipOrder = async (name, phone, address, province, district, ward, note) => {
+  const updateInfoShipOrder = async (
+    name,
+    phone,
+    address,
+    province,
+    district,
+    ward,
+    note
+  ) => {
     const orderRequest = {
       tinhThanhPhoNguoiNhan: province === "" ? null : province,
       quanHuyenNguoiNhan: district === "" ? null : district,
@@ -457,23 +546,24 @@ const PointOfSales = () => {
       isUpdateInfoShipByCustomer: false,
     };
     try {
-      await axios.put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        params: {
-          isUpdateStatusOrderDelivery: false,
-        }
-      }).then(response => {
-        const data = response.data.data;
-        setOrder(data);
-        setCustomerWardShip(data && data.xaPhuongNguoiNhan);
-        setCustomerProvinceShip(data && data.tinhThanhPhoNguoiNhan);
-        setCustomerDistrictShip(data && data.quanHuyenNguoiNhan);
-        getAllOrdersPending();
-      });
-    } catch (error) {
-    }
+      await axios
+        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          params: {
+            isUpdateStatusOrderDelivery: false,
+          },
+        })
+        .then((response) => {
+          const data = response.data.data;
+          setOrder(data);
+          setCustomerWardShip(data && data.xaPhuongNguoiNhan);
+          setCustomerProvinceShip(data && data.tinhThanhPhoNguoiNhan);
+          setCustomerDistrictShip(data && data.quanHuyenNguoiNhan);
+          getAllOrdersPending();
+        });
+    } catch (error) {}
   };
 
   const getCustomerById = async (id) => {
@@ -492,14 +582,16 @@ const PointOfSales = () => {
           setCustomerAddressList(data.diaChiList);
           setIsLoading(false);
           handleCloseDialogCustomers();
-          handleOpenAlertVariant("Chọn khách hàng thành công!", Notistack.SUCCESS);
+          handleOpenAlertVariant(
+            "Chọn khách hàng thành công!",
+            Notistack.SUCCESS
+          );
         })
         .catch((error) => {
           console.error(error);
           setIsLoading(false);
         });
-    }
-    else {
+    } else {
       await updateAccount(null);
       setCustomer(null);
       setCustomerName("");
@@ -509,13 +601,17 @@ const PointOfSales = () => {
       setCustomerAddressList([]);
       setIsLoading(false);
       handleCloseDialogCustomers();
-      handleOpenAlertVariant("Bỏ chọn khách hàng thành công!", Notistack.SUCCESS);
+      handleOpenAlertVariant(
+        "Bỏ chọn khách hàng thành công!",
+        Notistack.SUCCESS
+      );
     }
   };
 
   const { handleOpenAlertVariant } = useCustomSnackbar();
 
-  const [openDialogConfirmPayment, setOpenDialogConfirmPayment] = useState(false);
+  const [openDialogConfirmPayment, setOpenDialogConfirmPayment] =
+    useState(false);
 
   const handleOpenDialogConfirmPayment = () => {
     if (cartItems && cartItems.length == 0) {
@@ -527,71 +623,80 @@ const PointOfSales = () => {
     // else if (paymentWhenReceive === false && delivery === true && customerPaymentFormat === "") {
     //   handleOpenAlertVariant("Vui lòng nhập số tiền thanh toán!", Notistack.ERROR);
     // }
-    else if (customerPayment < handleCountTotalMoneyCustomerNeedPay() && delivery == false) {
-      handleOpenAlertVariant("Số tiền thanh toán không khớp với số tiền cần trả!", Notistack.ERROR);
-    }
-    else if (customerPayment < handleCountTotalMoneyCustomerNeedPay() && delivery == true && paymentWhenReceive === false) {
-      handleOpenAlertVariant("Số tiền thanh toán không khớp với số tiền cần trả!", Notistack.ERROR);
-    }
-    else {
+    else if (
+      customerPayment < handleCountTotalMoneyCustomerNeedPay() &&
+      delivery == false
+    ) {
+      handleOpenAlertVariant(
+        "Số tiền thanh toán không khớp với số tiền cần trả!",
+        Notistack.ERROR
+      );
+    } else if (
+      customerPayment < handleCountTotalMoneyCustomerNeedPay() &&
+      delivery == true &&
+      paymentWhenReceive === false
+    ) {
+      handleOpenAlertVariant(
+        "Số tiền thanh toán không khớp với số tiền cần trả!",
+        Notistack.ERROR
+      );
+    } else {
       setOpenDialogConfirmPayment(true);
     }
-  }
+  };
   const handleCloseDialogConfirmPayment = () => {
     setOpenDialogConfirmPayment(false);
-  }
+  };
 
   const getShipFee = (fee) => {
     setShipFee(delivery ? fee : 0);
-  }
+  };
   const getDieuKien = (dieuKien) => {
     setDieuKien(dieuKien);
-  }
+  };
 
   const getCustomer = (customer) => {
     setCustomer(customer);
-  }
+  };
   const getClear = (clear) => {
     setClear(clear);
-  }
+  };
 
   let amountProductItem = 1;
 
   const getAmount = (amount) => {
     amountProductItem = amount;
-  }
+  };
 
   const getIdCustomer = (id) => {
     setIdCustomer(id);
-  }
+  };
 
   useEffect(() => {
     if (cartItems.length === 0 && discountValue != 0) {
       handleCheckVoucher(discount);
-    }
-    else if (cartItems.length !== 0) {
+    } else if (cartItems.length !== 0) {
       if (discount != "" && discountValue == 0) {
         if (discount.trim().length === 10) {
           handleCheckVoucher(discount);
         }
-      }
-      else if (discount != "" && discountValue != 0) {
+      } else if (discount != "" && discountValue != 0) {
         if (handleCountTotalMoney() < dieuKien) {
           handleCheckVoucher(discount);
         }
       }
     }
-
-  }, [changedCartItems])
-
+  }, [changedCartItems]);
 
   const paymentOrder = async (data) => {
     setIsLoading(true);
+    // const sortOrderHistories = data.orderHistories && data.orderHistories.sort((a, b) => a.stt - b.stt);
     const orderRequest = {
       // isDelivery: delivery,
       tongTien: handleCountTotalMoney(),
       tienThua: paymentWhenReceive === true ? 0 : handleCountTotalSurplus(),
       tongTienSauKhiGiam: handleCountTotalMoneyCustomerNeedPay(),
+      khachCanTra: handleCountTotalMoneyCustomerNeedPay(),
       // tienKhachTra: paymentWhenReceive === true ? null : customerPayment,
       trangThai: data.trangThai,
       loaiHoaDon: data.loaiHoaDon,
@@ -611,20 +716,29 @@ const PointOfSales = () => {
       isUpdatePhoneShip: false,
     };
     try {
-      await axios.put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        params: {
-          isUpdateStatusOrderDelivery: false,
-        }
-      }).then(response => {
-        setIsLoading(false);
-        handleOpenAlertVariant(`${data.loaiHoaDon == OrderTypeString.DELIVERY ? "Xác nhận đặt hàng thành công!" : "Xác nhận thanh toán thành công!"}`, Notistack.SUCCESS);
-        navigate(`/dashboard/order-detail/${order.ma}`);
-        console.log(orderRequest);
-      });
-    } catch (error) { }
+      await axios
+        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          params: {
+            isUpdateStatusOrderDelivery: false,
+          },
+        })
+        .then((response) => {
+          setIsLoading(false);
+          handleOpenAlertVariant(
+            `${
+              data.loaiHoaDon == OrderTypeString.DELIVERY
+                ? "Xác nhận đặt hàng thành công!"
+                : "Xác nhận thanh toán thành công!"
+            }`,
+            Notistack.SUCCESS
+          );
+          navigate(`/dashboard/order-detail/${order.ma}`);
+          console.log(orderRequest);
+        });
+    } catch (error) {}
   };
 
   const updateAccount = async (id) => {
@@ -641,27 +755,33 @@ const PointOfSales = () => {
       isUpdatePhoneShip: false,
       account: {
         id: id,
-      }
+      },
     };
     try {
-      await axios.put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        params: {
-          isUpdateStatusOrderDelivery: false,
-        }
-      }).then(response => {
-        setOrder(response.data.data);
-        // setShipFee(response.data.data.phiShip);
-        getAllOrdersPending();
-        // setIsLoading(false);
-        // handleOpenAlertVariant(message, Notistack.SUCCESS);
-      });
-    } catch (error) { }
+      await axios
+        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          params: {
+            isUpdateStatusOrderDelivery: false,
+          },
+        })
+        .then((response) => {
+          setOrder(response.data.data);
+          // setShipFee(response.data.data.phiShip);
+          getAllOrdersPending();
+          // setIsLoading(false);
+          // handleOpenAlertVariant(message, Notistack.SUCCESS);
+        });
+    } catch (error) {}
   };
   const handleAddOrRemoveVoucher = async (idVoucher, loading, keep) => {
-    const message = `${idVoucher === null ? "Mã giảm giá đã được gỡ bỏ thành công!" : "Áp dụng thành công mã giảm giá!"}`;
+    const message = `${
+      idVoucher === null
+        ? "Mã giảm giá đã được gỡ bỏ thành công!"
+        : "Áp dụng thành công mã giảm giá!"
+    }`;
     const orderRequest = {
       voucher: {
         id: idVoucher,
@@ -681,96 +801,101 @@ const PointOfSales = () => {
       setLoadingChild(true);
       setTimeout(() => {
         try {
-          axios.put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
-            headers: {
-              "Content-Type": "application/json",
-            },
-            params: {
-              isUpdateStatusOrderDelivery: false,
-            }
-          }).then(response => {
-            setOrder(response.data.data);
-            setDiscount("");
-            setIdVoucher("");
-            setDiscountValue(0);
-            setDiscountValidate("");
-            getAllOrdersPending();
-            handleOpenAlertVariant(message, Notistack.SUCCESS);
-            setLoadingChild(false);
-          });
+          axios
+            .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+              headers: {
+                "Content-Type": "application/json",
+              },
+              params: {
+                isUpdateStatusOrderDelivery: false,
+              },
+            })
+            .then((response) => {
+              setOrder(response.data.data);
+              setDiscount("");
+              setIdVoucher("");
+              setDiscountValue(0);
+              setDiscountValidate("");
+              getAllOrdersPending();
+              handleOpenAlertVariant(message, Notistack.SUCCESS);
+              setLoadingChild(false);
+            });
         } catch (error) {
           console.log(error);
         }
-      }, 1000)
-    }
-    else if (idVoucher === null && !loading) {
+      }, 1000);
+    } else if (idVoucher === null && !loading) {
       try {
-        axios.put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          params: {
-            isUpdateStatusOrderDelivery: false,
-          }
-        }).then(response => {
-          setOrder(response.data.data);
-          setIdVoucher("");
-          if (!keep) {
-            setDiscountValue(0);
-            setDiscount("");
-            setDiscountValidate("");
-          }
-          getAllOrdersPending();
-        });
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    else if (idVoucher != null && loading) {
-      setLoadingChild(true);
-      setTimeout(() => {
-        try {
-          axios.put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+        axios
+          .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
             headers: {
               "Content-Type": "application/json",
             },
             params: {
               isUpdateStatusOrderDelivery: false,
-            }
-          }).then(response => {
+            },
+          })
+          .then((response) => {
             setOrder(response.data.data);
-            setDiscount(response.data.data.voucher.ma);
+            setIdVoucher("");
+            if (!keep) {
+              setDiscountValue(0);
+              setDiscount("");
+              setDiscountValidate("");
+            }
+            getAllOrdersPending();
+          });
+      } catch (error) {
+        console.log(error);
+      }
+    } else if (idVoucher != null && loading) {
+      setLoadingChild(true);
+      setTimeout(() => {
+        try {
+          axios
+            .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+              headers: {
+                "Content-Type": "application/json",
+              },
+              params: {
+                isUpdateStatusOrderDelivery: false,
+              },
+            })
+            .then((response) => {
+              setOrder(response.data.data);
+              setDiscount(response.data.data.voucher.ma);
+              setIdVoucher(response.data.data.voucher.id);
+              setDiscountValue(response.data.data.voucher.giaTriVoucher);
+              setDiscountValidate("");
+              getAllOrdersPending();
+              handleOpenAlertVariant(message, Notistack.SUCCESS);
+              setLoadingChild(false);
+            });
+        } catch (error) {
+          console.log(error);
+        }
+      }, 1000);
+    } else {
+      try {
+        await axios
+          .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+            headers: {
+              "Content-Type": "application/json",
+            },
+            params: {
+              isUpdateStatusOrderDelivery: false,
+            },
+          })
+          .then((response) => {
+            setOrder(response.data.data);
             setIdVoucher(response.data.data.voucher.id);
+            setDiscount(response.data.data.voucher.ma);
             setDiscountValue(response.data.data.voucher.giaTriVoucher);
             setDiscountValidate("");
             getAllOrdersPending();
             handleOpenAlertVariant(message, Notistack.SUCCESS);
             setLoadingChild(false);
           });
-        } catch (error) {
-          console.log(error);
-        }
-      }, 1000);
-    }
-    else {
-      try {
-        await axios.put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          params: {
-            isUpdateStatusOrderDelivery: false,
-          }
-        }).then(response => {
-          setOrder(response.data.data);
-          setIdVoucher(response.data.data.voucher.id);
-          setDiscount(response.data.data.voucher.ma);
-          setDiscountValue(response.data.data.voucher.giaTriVoucher);
-          setDiscountValidate("");
-          getAllOrdersPending();
-          handleOpenAlertVariant(message, Notistack.SUCCESS);
-          setLoadingChild(false);
-        });
       } catch (error) {
         console.log(error);
       }
@@ -786,31 +911,36 @@ const PointOfSales = () => {
       cart: {
         id: cartId,
       },
-    }
+    };
     try {
       await axios.put(`http://localhost:8080/api/carts/amount`, request, {
         headers: {
           "Content-Type": "application/json",
-        }
+        },
       });
       await getAllOrdersPending();
       await getCartItems();
       handleCloseOpenModalUpdateImei();
-      handleOpenAlertVariant("Cập nhật số lượng thành công!", Notistack.SUCCESS);
+      handleOpenAlertVariant(
+        "Cập nhật số lượng thành công!",
+        Notistack.SUCCESS
+      );
       setIsLoading(false);
-    }
-    catch (error) {
+    } catch (error) {
       setIsLoading(false);
       handleOpenAlertVariant(error.response.data.message, "warning");
       console.error("Error");
     }
-  }
-
+  };
 
   const processingPaymentOrder = () => {
     if (cartItems && cartItems.length > 0) {
-      const statusOrder = delivery ? OrderStatusString.CONFIRMED : OrderStatusString.HAD_PAID;
-      const typeOrder = delivery ? OrderTypeString.DELIVERY : OrderTypeString.AT_COUNTER;
+      const statusOrder = delivery
+        ? OrderStatusString.CONFIRMED
+        : OrderStatusString.HAD_PAID;
+      const typeOrder = delivery
+        ? OrderTypeString.DELIVERY
+        : OrderTypeString.AT_COUNTER;
       const orderHistoryCounter = [
         {
           stt: 1,
@@ -820,7 +950,7 @@ const PointOfSales = () => {
           createdAt: new Date(),
           createdBy: "Admin",
           hoaDon: {
-            id: order.id
+            id: order.id,
           },
         },
         {
@@ -831,10 +961,10 @@ const PointOfSales = () => {
           createdAt: new Date(),
           createdBy: "Admin",
           hoaDon: {
-            id: order.id
+            id: order.id,
           },
-        }
-      ]
+        },
+      ];
       const orderHistoryDelivery = [
         {
           stt: 1,
@@ -844,7 +974,7 @@ const PointOfSales = () => {
           createdAt: new Date(),
           createdBy: "Admin",
           hoaDon: {
-            id: order.id
+            id: order.id,
           },
         },
         {
@@ -855,55 +985,95 @@ const PointOfSales = () => {
           createdAt: new Date(),
           createdBy: "Admin",
           hoaDon: {
-            id: order.id
+            id: order.id,
           },
-        }
-      ]
+        },
+      ];
       const data = {
         trangThai: statusOrder,
         loaiHoaDon: typeOrder,
         orderHistories: delivery ? orderHistoryDelivery : orderHistoryCounter,
-      }
+      };
       paymentOrder(data);
     }
-  }
+  };
 
   const getAllOrdersPending = async () => {
     await axios
-      .get(`http://localhost:8080/api/orders/pending`, {
-      })
+      .get(`http://localhost:8080/api/orders/pending`, {})
       .then((response) => {
         setOrders(response.data.data);
       })
       .catch((error) => {
         console.error(error);
         setIsLoading(false);
-      }).finally(() => {
-        setIsFirstGet(false);
       })
-  }
+      .finally(() => {
+        setIsFirstGet(false);
+      });
+  };
 
   const getOrderPendingDefaultFirst = async () => {
     await axios
-      .get(`http://localhost:8080/api/orders/pending`, {
-      })
+      .get(`http://localhost:8080/api/orders/pending`, {})
       .then((response) => {
         const order = response && response.data.data[0];
-        navigate(`/dashboard/point-of-sales/${order.ma}`)
+        navigate(`/dashboard/point-of-sales/${order.ma}`);
         setValueTabs(1);
 
-        setCustomerNameShip(order.loaiHoaDon === OrderTypeString.DELIVERY && order.tenNguoiNhan !== null ? order.tenNguoiNhan : "");
-        setCustomerPhoneShip(order.loaiHoaDon === OrderTypeString.DELIVERY && order.soDienThoaiNguoiNhan !== null ? order.soDienThoaiNguoiNhan : "");
-        setCustomerAddressShip(order.loaiHoaDon === OrderTypeString.DELIVERY && order.diaChiNguoiNhan !== null ? order.diaChiNguoiNhan : "");
-        setCustomerWardShip(order.loaiHoaDon === OrderTypeString.DELIVERY && order.xaPhuongNguoiNhan !== null ? order.xaPhuongNguoiNhan : "");
-        setCustomerProvinceShip(order.loaiHoaDon === OrderTypeString.DELIVERY && order.tinhThanhPhoNguoiNhan !== null ? order.tinhThanhPhoNguoiNhan : "");
-        setCustomerDistrictShip(order.loaiHoaDon === OrderTypeString.DELIVERY && order.quanHuyenNguoiNhan != null ? order.quanHuyenNguoiNhan : "");
-        setCustomerNoteShip(order.loaiHoaDon === OrderTypeString.DELIVERY && order.ghiChu != null ? order.ghiChu : "");
-
+        if (order.loaiHoaDon === OrderTypeString.DELIVERY) {
+          setCustomerNameShip(
+            order.loaiHoaDon === OrderTypeString.DELIVERY &&
+              order.tenNguoiNhan !== null
+              ? order.tenNguoiNhan
+              : ""
+          );
+          setCustomerPhoneShip(
+            order.loaiHoaDon === OrderTypeString.DELIVERY &&
+              order.soDienThoaiNguoiNhan !== null
+              ? order.soDienThoaiNguoiNhan
+              : ""
+          );
+          setCustomerAddressShip(
+            order.loaiHoaDon === OrderTypeString.DELIVERY &&
+              order.diaChiNguoiNhan !== null
+              ? order.diaChiNguoiNhan
+              : ""
+          );
+          setCustomerWardShip(
+            order.loaiHoaDon === OrderTypeString.DELIVERY &&
+              order.xaPhuongNguoiNhan !== null
+              ? order.xaPhuongNguoiNhan
+              : ""
+          );
+          setCustomerProvinceShip(
+            order.loaiHoaDon === OrderTypeString.DELIVERY &&
+              order.tinhThanhPhoNguoiNhan !== null
+              ? order.tinhThanhPhoNguoiNhan
+              : ""
+          );
+          setCustomerDistrictShip(
+            order.loaiHoaDon === OrderTypeString.DELIVERY &&
+              order.quanHuyenNguoiNhan != null
+              ? order.quanHuyenNguoiNhan
+              : ""
+          );
+          setCustomerNoteShip(
+            order.loaiHoaDon === OrderTypeString.DELIVERY &&
+              order.ghiChu != null
+              ? order.ghiChu
+              : ""
+          );
+        }
         setOrder(order);
-        setCartId(response && response.data.data[0].cart.id || "");
+        setCartId((response && response.data.data[0].cart.id) || "");
         // setShipFee(response && response.data.data[0].phiShip || 0);
-        setDelivery(response && response.data.data[0].loaiHoaDon === OrderTypeString.DELIVERY ? true : false);
+        setDelivery(
+          response &&
+            response.data.data[0].loaiHoaDon === OrderTypeString.DELIVERY
+            ? true
+            : false
+        );
         setCartItems(response && response.data.data[0].cart.cartItems);
         const account = response && response.data.data[0].account;
 
@@ -925,7 +1095,7 @@ const PointOfSales = () => {
           let total = 0;
           payments.map((item) => {
             total += item.soTienThanhToan;
-          })
+          });
           setCustomerPayment(total);
           setPaymentWhenReceive(false);
           // if (payments.length === 1) {
@@ -938,18 +1108,31 @@ const PointOfSales = () => {
           //   });
           //
           // }
-        }
-        else {
+        } else {
           setPaymentHistories([]);
           setCustomerPayment(0);
           // setSelectedValuePaymentMethod("Tiền mặt");
           // setHadPaymentBank(false);
         }
 
-
-        setDiscount(response && response.data.data[0].voucher && response.data.data[0].voucher.ma || "");
-        setIdVoucher(response && response.data.data[0].voucher && response.data.data[0].voucher.id || "");
-        setDiscountValue(response && response.data.data[0].voucher && response.data.data[0].voucher.giaTriVoucher || 0);
+        setDiscount(
+          (response &&
+            response.data.data[0].voucher &&
+            response.data.data[0].voucher.ma) ||
+            ""
+        );
+        setIdVoucher(
+          (response &&
+            response.data.data[0].voucher &&
+            response.data.data[0].voucher.id) ||
+            ""
+        );
+        setDiscountValue(
+          (response &&
+            response.data.data[0].voucher &&
+            response.data.data[0].voucher.giaTriVoucher) ||
+            0
+        );
         console.log(order);
 
         setIsLoading(false);
@@ -957,15 +1140,15 @@ const PointOfSales = () => {
       .catch((error) => {
         console.error(error);
         setIsLoading(false);
-      }).finally(() => {
-        setIsFirstGet(false);
       })
-  }
+      .finally(() => {
+        setIsFirstGet(false);
+      });
+  };
 
   const getOrderPendingById = async () => {
     await axios
-      .get(`http://localhost:8080/api/orders/pending`, {
-      })
+      .get(`http://localhost:8080/api/orders/pending`, {})
       .then((response) => {
         const data = response && response.data.data;
         const order = data.find((item) => item.ma === id);
@@ -980,18 +1163,57 @@ const PointOfSales = () => {
         const indexTab = data.indexOf(order);
         setValueTabs(indexTab + 1);
 
-        setCustomerNameShip(order.loaiHoaDon === OrderTypeString.DELIVERY && order.tenNguoiNhan !== null ? order.tenNguoiNhan : "");
-        setCustomerPhoneShip(order.loaiHoaDon === OrderTypeString.DELIVERY && order.soDienThoaiNguoiNhan !== null ? order.soDienThoaiNguoiNhan : "");
-        setCustomerAddressShip(order.loaiHoaDon === OrderTypeString.DELIVERY && order.diaChiNguoiNhan !== null ? order.diaChiNguoiNhan : "");
-        setCustomerWardShip(order.loaiHoaDon === OrderTypeString.DELIVERY && order.xaPhuongNguoiNhan !== null ? order.xaPhuongNguoiNhan : "");
-        setCustomerProvinceShip(order.loaiHoaDon === OrderTypeString.DELIVERY && order.tinhThanhPhoNguoiNhan !== null ? order.tinhThanhPhoNguoiNhan : "");
-        setCustomerDistrictShip(order.loaiHoaDon === OrderTypeString.DELIVERY && order.quanHuyenNguoiNhan != null ? order.quanHuyenNguoiNhan : "");
-        setCustomerNoteShip(order.loaiHoaDon === OrderTypeString.DELIVERY && order.ghiChu != null ? order.ghiChu : "");
+        if (order.loaiHoaDon === OrderTypeString.DELIVERY) {
+          setCustomerNameShip(
+            order.loaiHoaDon === OrderTypeString.DELIVERY &&
+              order.tenNguoiNhan !== null
+              ? order.tenNguoiNhan
+              : ""
+          );
+          setCustomerPhoneShip(
+            order.loaiHoaDon === OrderTypeString.DELIVERY &&
+              order.soDienThoaiNguoiNhan !== null
+              ? order.soDienThoaiNguoiNhan
+              : ""
+          );
+          setCustomerAddressShip(
+            order.loaiHoaDon === OrderTypeString.DELIVERY &&
+              order.diaChiNguoiNhan !== null
+              ? order.diaChiNguoiNhan
+              : ""
+          );
+          setCustomerWardShip(
+            order.loaiHoaDon === OrderTypeString.DELIVERY &&
+              order.xaPhuongNguoiNhan !== null
+              ? order.xaPhuongNguoiNhan
+              : ""
+          );
+          setCustomerProvinceShip(
+            order.loaiHoaDon === OrderTypeString.DELIVERY &&
+              order.tinhThanhPhoNguoiNhan !== null
+              ? order.tinhThanhPhoNguoiNhan
+              : ""
+          );
+          setCustomerDistrictShip(
+            order.loaiHoaDon === OrderTypeString.DELIVERY &&
+              order.quanHuyenNguoiNhan != null
+              ? order.quanHuyenNguoiNhan
+              : ""
+          );
+          setCustomerNoteShip(
+            order.loaiHoaDon === OrderTypeString.DELIVERY &&
+              order.ghiChu != null
+              ? order.ghiChu
+              : ""
+          );
+        }
 
         setOrder(order);
-        setCartId(order && order.cart.id || "");
+        setCartId((order && order.cart.id) || "");
         // setShipFee(order && order.phiShip || 0);
-        setDelivery(order && order.loaiHoaDon === OrderTypeString.DELIVERY ? true : false);
+        setDelivery(
+          order && order.loaiHoaDon === OrderTypeString.DELIVERY ? true : false
+        );
         console.log(order && order.loaiHoaDon);
         setCartItems(order && order.cart.cartItems);
         const account = order && order.account;
@@ -1010,7 +1232,7 @@ const PointOfSales = () => {
           let total = 0;
           payments.map((item) => {
             total += item.soTienThanhToan;
-          })
+          });
           setCustomerPayment(total);
           setPaymentWhenReceive(false);
 
@@ -1024,37 +1246,37 @@ const PointOfSales = () => {
           //   });
           //
           // }
-        }
-        else {
+        } else {
           setPaymentHistories([]);
           // setHadPaymentBank(false);
           setCustomerPayment(0);
           // setSelectedValuePaymentMethod("Tiền mặt");
         }
 
-
         if (account && account.diaChiList && account.diaChiList.length > 0) {
           setCustomerAddressList(account.diaChiList);
         }
 
-        setDiscount(order && order.voucher && order.voucher.ma || "");
-        setIdVoucher(order && order.voucher && order.voucher.id || "");
-        setDiscountValue(order && order.voucher && order.voucher.giaTriVoucher || 0);
+        setDiscount((order && order.voucher && order.voucher.ma) || "");
+        setIdVoucher((order && order.voucher && order.voucher.id) || "");
+        setDiscountValue(
+          (order && order.voucher && order.voucher.giaTriVoucher) || 0
+        );
 
         setIsLoading(false);
       })
       .catch((error) => {
         console.error(error);
         setIsLoading(false);
-      }).finally(() => {
-        setIsFirstGet(false);
       })
-  }
+      .finally(() => {
+        setIsFirstGet(false);
+      });
+  };
 
   const handleRedirectPayment = (url) => {
     window.location.href = url;
   };
-
 
   const handleGetUrlRedirectPayment = async (type, total) => {
     setIsLoading(true);
@@ -1063,55 +1285,58 @@ const PointOfSales = () => {
         total: parseInt(total),
         info: order.ma,
         code: order.ma,
-      }
+      };
       try {
-        await axios.post(`http://localhost:8080/api/vnpay/payment`, vnpayReq, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }).then((response) => {
-          setIsLoading(false);
-          handleCloseOpenModalConfirmRedirectPayment();
-          handleRedirectPayment(response.data.data);
-        })
+        await axios
+          .post(`http://localhost:8080/api/vnpay/payment`, vnpayReq, {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+          .then((response) => {
+            setIsLoading(false);
+            handleCloseOpenModalConfirmRedirectPayment();
+            handleRedirectPayment(response.data.data);
+          });
       } catch (error) {
         const message = error.response.data.message;
         setIsLoading(false);
         handleOpenAlertVariant(message, Notistack.ERROR);
         handleCloseOpenModalConfirmRedirectPayment();
-        console.log(error.response.data)
+        console.log(error.response.data);
       }
-    }
-    else {
+    } else {
       const orderRequest = {
         tienKhachTra: total,
         id: order.id,
         hinhThucThanhToan: type,
-      }
+      };
       try {
-        await axios.put(`http://localhost:8080/api/vnpay/payment/cash`, orderRequest, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }).then((response) => {
-          const order = response.data.data;
-          setOrder(order);
-          setPaymentHistories(order.paymentMethods);
-          let total = 0;
-          order.paymentMethods.map((item) => {
-            total += item.soTienThanhToan;
+        await axios
+          .put(`http://localhost:8080/api/vnpay/payment/cash`, orderRequest, {
+            headers: {
+              "Content-Type": "application/json",
+            },
           })
-          setCustomerPayment(total);
-          setPaymentWhenReceive(false);
-          getAllOrdersPending();
-          handleOpenAlertVariant("Xác nhận thành công", Notistack.SUCCESS);
-          setIsLoading(false);
-        })
+          .then((response) => {
+            const order = response.data.data;
+            setOrder(order);
+            setPaymentHistories(order.paymentMethods);
+            let total = 0;
+            order.paymentMethods.map((item) => {
+              total += item.soTienThanhToan;
+            });
+            setCustomerPayment(total);
+            setPaymentWhenReceive(false);
+            getAllOrdersPending();
+            handleOpenAlertVariant("Xác nhận thành công", Notistack.SUCCESS);
+            setIsLoading(false);
+          });
       } catch (error) {
         const message = error.response.data.message;
         setIsLoading(false);
         handleOpenAlertVariant(message, Notistack.ERROR);
-        console.log(error.response.data)
+        console.log(error.response.data);
       }
     }
   };
@@ -1121,11 +1346,12 @@ const PointOfSales = () => {
       .get(`http://localhost:8080/voucher/voucherActive`)
       .then((response) => {
         setVouchers(response.data.data);
+        console.log(response.data.data);
       })
       .catch((error) => {
         console.error(error);
       });
-  }
+  };
 
   const [customerPaymentEx, setCustomerPaymentEx] = useState(0);
 
@@ -1139,7 +1365,7 @@ const PointOfSales = () => {
     // if (handleCountTotalMoneyCustomerNeedPay() === 0) {
     //   setCustomerPaymentFormat("");
     // }
-  }, [cartItems, discountValue, shipFee])
+  }, [cartItems, discountValue, shipFee]);
 
   const getCartItems = async () => {
     await axios
@@ -1165,7 +1391,7 @@ const PointOfSales = () => {
       .catch((error) => {
         console.error(error);
       });
-  }
+  };
 
   const getPaymentsOfOrder = async () => {
     await axios
@@ -1177,30 +1403,28 @@ const PointOfSales = () => {
         let total = 0;
         data.paymentMethods.map((item) => {
           total += item.soTienThanhToan;
-        })
+        });
         setCustomerPayment(total);
 
         if (data.paymentHistories && data.paymentHistories.length > 0) {
           setPaymentWhenReceive(false);
         }
-
       })
       .catch((error) => {
         console.error(error);
       });
-  }
+  };
 
   const getOrderPendingLastRemove = async () => {
     // setIsLoading(true);
     await axios
-      .get(`http://localhost:8080/api/orders/pending`, {
-      })
+      .get(`http://localhost:8080/api/orders/pending`, {})
       .then((response) => {
         const orders = response.data.data;
         setOrders(orders);
         const lastOrder = orders[orders.length - 1];
         setOrder(lastOrder);
-        navigate(`/dashboard/point-of-sales/${lastOrder.ma}`)
+        navigate(`/dashboard/point-of-sales/${lastOrder.ma}`);
         setCartId(lastOrder.cart.id);
         // setShipFee(lastOrder.shipFee || 0);
         setCartItems(lastOrder.cart.cartItems);
@@ -1212,7 +1436,7 @@ const PointOfSales = () => {
           let total = 0;
           payments.map((item) => {
             total += item.soTienThanhToan;
-          })
+          });
           setCustomerPayment(total);
           setPaymentWhenReceive(false);
           // if (payments.length === 1) {
@@ -1225,30 +1449,64 @@ const PointOfSales = () => {
           //   });
           //
           // }
-        }
-        else {
+        } else {
           setPaymentHistories([]);
           setCustomerPayment(0);
           // setSelectedValuePaymentMethod("Tiền mặt");
           // setHadPaymentBank(false);
         }
 
-        setCustomerNameShip(order.loaiHoaDon === OrderTypeString.DELIVERY && order.tenNguoiNhan !== null ? order.tenNguoiNhan : "");
-        setCustomerPhoneShip(order.loaiHoaDon === OrderTypeString.DELIVERY && order.soDienThoaiNguoiNhan !== null ? order.soDienThoaiNguoiNhan : "");
-        setCustomerAddressShip(order.loaiHoaDon === OrderTypeString.DELIVERY && order.diaChiNguoiNhan !== null ? order.diaChiNguoiNhan : "");
-        setCustomerWardShip(order.loaiHoaDon === OrderTypeString.DELIVERY && order.xaPhuongNguoiNhan !== null ? order.xaPhuongNguoiNhan : "");
-        setCustomerProvinceShip(order.loaiHoaDon === OrderTypeString.DELIVERY && order.tinhThanhPhoNguoiNhan !== null ? order.tinhThanhPhoNguoiNhan : "");
-        setCustomerDistrictShip(order.loaiHoaDon === OrderTypeString.DELIVERY && order.quanHuyenNguoiNhan != null ? order.quanHuyenNguoiNhan : "");
-        setCustomerNoteShip(order.loaiHoaDon === OrderTypeString.DELIVERY && order.ghiChu != null ? order.ghiChu : "");
+        setCustomerNameShip(
+          order.loaiHoaDon === OrderTypeString.DELIVERY &&
+            order.tenNguoiNhan !== null
+            ? order.tenNguoiNhan
+            : ""
+        );
+        setCustomerPhoneShip(
+          order.loaiHoaDon === OrderTypeString.DELIVERY &&
+            order.soDienThoaiNguoiNhan !== null
+            ? order.soDienThoaiNguoiNhan
+            : ""
+        );
+        setCustomerAddressShip(
+          order.loaiHoaDon === OrderTypeString.DELIVERY &&
+            order.diaChiNguoiNhan !== null
+            ? order.diaChiNguoiNhan
+            : ""
+        );
+        setCustomerWardShip(
+          order.loaiHoaDon === OrderTypeString.DELIVERY &&
+            order.xaPhuongNguoiNhan !== null
+            ? order.xaPhuongNguoiNhan
+            : ""
+        );
+        setCustomerProvinceShip(
+          order.loaiHoaDon === OrderTypeString.DELIVERY &&
+            order.tinhThanhPhoNguoiNhan !== null
+            ? order.tinhThanhPhoNguoiNhan
+            : ""
+        );
+        setCustomerDistrictShip(
+          order.loaiHoaDon === OrderTypeString.DELIVERY &&
+            order.quanHuyenNguoiNhan != null
+            ? order.quanHuyenNguoiNhan
+            : ""
+        );
+        setCustomerNoteShip(
+          order.loaiHoaDon === OrderTypeString.DELIVERY && order.ghiChu != null
+            ? order.ghiChu
+            : ""
+        );
 
-        setDelivery(lastOrder.loaiHoaDon === OrderTypeString.DELIVERY ? true : false);
+        setDelivery(
+          lastOrder.loaiHoaDon === OrderTypeString.DELIVERY ? true : false
+        );
         // setPaymentWhenReceive(order.loaiHoaDon === OrderTypeString.DELIVERY ? true : false);
         if (lastOrder.voucher != null) {
           setDiscount(lastOrder.voucher.ma);
           setIdVoucher(lastOrder.voucher.id);
           setDiscountValue(lastOrder.voucher.giaTriVoucher);
-        }
-        else {
+        } else {
           setDiscount("");
           setIdVoucher("");
           setDiscountValue(0);
@@ -1259,8 +1517,7 @@ const PointOfSales = () => {
           setCustomerPhone(lastOrder.account.soDienThoai);
           setCustomerEmail(lastOrder.account.email);
           setCustomerAddressList(lastOrder.account.diaChiList);
-        }
-        else {
+        } else {
           setIdCustomer("");
           setCustomerName("");
           setCustomerPhone("");
@@ -1274,23 +1531,26 @@ const PointOfSales = () => {
         setIsLoading(false);
         console.error(error);
       });
-  }
+  };
 
   const handleAddOrderPending = async () => {
     setIsLoading(true);
     if (orders.length >= 5) {
       handleOpenAlertVariant("Tối đa 6 tab!", "warning");
-    }
-    else {
+      setIsLoading(true);
+    } else {
       const data = {
-        id: order.id
+        id: order.id,
       };
       try {
-        const response = await axios.post(`http://localhost:8080/api/orders?isPending=true`, data);
+        const response = await axios.post(
+          `http://localhost:8080/api/orders?isPending=true`,
+          data
+        );
         await getAllOrdersPending();
         setValueTabs(orders.length + 1);
         setOrder(response.data.data);
-        navigate(`/dashboard/point-of-sales/${response.data.data.ma}`)
+        navigate(`/dashboard/point-of-sales/${response.data.data.ma}`);
         setCartId(response.data.data.cart.id);
         setDelivery(false);
         setPaymentWhenReceive(false);
@@ -1321,15 +1581,15 @@ const PointOfSales = () => {
         console.log(error);
       }
     }
-  }
+  };
 
   const handleDeletePaymentById = async (id) => {
     setIsLoading(true);
     try {
       await axios.delete(`http://localhost:8080/api/payment/${id}`, {
         params: {
-          orderId: order.id
-        }
+          orderId: order.id,
+        },
       });
       await getPaymentsOfOrder();
       await getAllOrdersPending();
@@ -1348,7 +1608,10 @@ const PointOfSales = () => {
       await getCartItems();
       await getAllOrdersPending();
       setIsLoading(false);
-      handleOpenAlertVariant("Xóa thành công sản phẩm khỏi giỏ hàng!", Notistack.SUCCESS);
+      handleOpenAlertVariant(
+        "Xóa thành công sản phẩm khỏi giỏ hàng!",
+        Notistack.SUCCESS
+      );
     } catch (error) {
       console.log(error);
     }
@@ -1356,9 +1619,11 @@ const PointOfSales = () => {
 
   const handleDeleteOrderPendingById = async (id) => {
     if (order && order.paymentMethods && order.paymentMethods.length > 0) {
-      handleOpenAlertVariant("Không cho phép xóa đơn hàng đã thanh toán!", Notistack.ERROR);
-    }
-    else {
+      handleOpenAlertVariant(
+        "Không cho phép xóa đơn hàng đã thanh toán!",
+        Notistack.ERROR
+      );
+    } else {
       if (sizeCartItems > 0) {
         setIsLoading(true);
       }
@@ -1379,26 +1644,59 @@ const PointOfSales = () => {
   const handleConfirmBeforeDeleteOrderPendingHasProduct = (size, id) => {
     if (size == 0) {
       handleDeleteOrderPendingById(id);
-    }
-    else {
+    } else {
       handleOpenDialogOrderClose();
     }
-  }
+  };
 
   const getOrderPendingByTabIndex = (index) => {
     const order = orders[index - 1];
-    navigate(`/dashboard/point-of-sales/${order.ma}`)
+    navigate(`/dashboard/point-of-sales/${order.ma}`);
     setOrder(order);
     setCartId(order.cart.id);
     setCartItems(order.cart.cartItems);
 
-    setCustomerNameShip(order.loaiHoaDon === OrderTypeString.DELIVERY && order.tenNguoiNhan !== null ? order.tenNguoiNhan : "");
-    setCustomerPhoneShip(order.loaiHoaDon === OrderTypeString.DELIVERY && order.soDienThoaiNguoiNhan !== null ? order.soDienThoaiNguoiNhan : "");
-    setCustomerAddressShip(order.loaiHoaDon === OrderTypeString.DELIVERY && order.diaChiNguoiNhan !== null ? order.diaChiNguoiNhan : "");
-    setCustomerWardShip(order.loaiHoaDon === OrderTypeString.DELIVERY && order.xaPhuongNguoiNhan !== null ? order.xaPhuongNguoiNhan : "");
-    setCustomerProvinceShip(order.loaiHoaDon === OrderTypeString.DELIVERY && order.tinhThanhPhoNguoiNhan !== null ? order.tinhThanhPhoNguoiNhan : "");
-    setCustomerDistrictShip(order.loaiHoaDon === OrderTypeString.DELIVERY && order.quanHuyenNguoiNhan != null ? order.quanHuyenNguoiNhan : "");
-    setCustomerNoteShip(order.loaiHoaDon === OrderTypeString.DELIVERY && order.ghiChu != null ? order.ghiChu : "");
+    setCustomerNameShip(
+      order.loaiHoaDon === OrderTypeString.DELIVERY &&
+        order.tenNguoiNhan !== null
+        ? order.tenNguoiNhan
+        : ""
+    );
+    setCustomerPhoneShip(
+      order.loaiHoaDon === OrderTypeString.DELIVERY &&
+        order.soDienThoaiNguoiNhan !== null
+        ? order.soDienThoaiNguoiNhan
+        : ""
+    );
+    setCustomerAddressShip(
+      order.loaiHoaDon === OrderTypeString.DELIVERY &&
+        order.diaChiNguoiNhan !== null
+        ? order.diaChiNguoiNhan
+        : ""
+    );
+    setCustomerWardShip(
+      order.loaiHoaDon === OrderTypeString.DELIVERY &&
+        order.xaPhuongNguoiNhan !== null
+        ? order.xaPhuongNguoiNhan
+        : ""
+    );
+    setCustomerProvinceShip(
+      order.loaiHoaDon === OrderTypeString.DELIVERY &&
+        order.tinhThanhPhoNguoiNhan !== null
+        ? order.tinhThanhPhoNguoiNhan
+        : ""
+    );
+    setCustomerDistrictShip(
+      order.loaiHoaDon === OrderTypeString.DELIVERY &&
+        order.quanHuyenNguoiNhan != null
+        ? order.quanHuyenNguoiNhan
+        : ""
+    );
+    setCustomerNoteShip(
+      order.loaiHoaDon === OrderTypeString.DELIVERY && order.ghiChu != null
+        ? order.ghiChu
+        : ""
+    );
 
     const payments = order.paymentMethods;
     if (payments.length > 0) {
@@ -1406,7 +1704,7 @@ const PointOfSales = () => {
       let total = 0;
       payments.map((item) => {
         total += item.soTienThanhToan;
-      })
+      });
       setCustomerPayment(total);
       setPaymentWhenReceive(false);
 
@@ -1421,15 +1719,14 @@ const PointOfSales = () => {
       //   });
       //
       // }
-    }
-    else {
+    } else {
       setPaymentHistories([]);
       // setSelectedValuePaymentMethod("Tiền mặt");
       // setHadPaymentBank(false);
       setCustomerPayment(0);
     }
 
-    setDelivery(order.loaiHoaDon === OrderTypeString.DELIVERY ? true : false)
+    setDelivery(order.loaiHoaDon === OrderTypeString.DELIVERY ? true : false);
     console.log(order.loaiHoaDon);
     // setPaymentWhenReceive(order.loaiHoaDon === OrderTypeString.DELIVERY ? true : false);
     // if (order.loaiHoaDon === OrderTypeString.DELIVERY) {
@@ -1439,8 +1736,7 @@ const PointOfSales = () => {
       setIdVoucher(order && order.voucher && order.voucher.id);
       setDiscount(order && order.voucher && order.voucher.ma);
       setDiscountValue(order && order.voucher && order.voucher.giaTriVoucher);
-    }
-    else {
+    } else {
       setIdVoucher("");
       setDiscount("");
       setDiscountValue(0);
@@ -1451,8 +1747,7 @@ const PointOfSales = () => {
       setCustomerPhone(order.account.soDienThoai);
       setCustomerEmail(order.account.email);
       setCustomerAddressList(order.account.diaChiList);
-    }
-    else {
+    } else {
       setIdCustomer("");
       setCustomerName("");
       setCustomerPhone("");
@@ -1460,27 +1755,30 @@ const PointOfSales = () => {
       setCustomerAddressList([]);
     }
     setDiscountValidate("");
-  }
+  };
 
   const getAllCustomers = () => {
-    axios.get(`http://localhost:8080/khach-hang/hien-thi`)
-      .then(response => {
+    axios
+      .get(`http://localhost:8080/khach-hang/hien-thi`)
+      .then((response) => {
         setCustomers(response.data.data);
-      }).catch(error => {
-        console.error("Error");
       })
-  }
+      .catch((error) => {
+        console.error("Error");
+      });
+  };
 
   const handleCheckVoucher = (value) => {
     setLoadingChild(true);
     setTimeout(() => {
-      axios.get(`http://localhost:8080/voucher/findVoucher`, {
-        params: {
-          input: value,
-          tongTien: handleCountTotalMoney(),
-        }
-      })
-        .then(response => {
+      axios
+        .get(`http://localhost:8080/voucher/findVoucher`, {
+          params: {
+            input: value,
+            tongTien: handleCountTotalMoney(),
+          },
+        })
+        .then((response) => {
           setDiscountValidate("");
           if (response.data.data.status === true) {
             handleAddOrRemoveVoucher(response.data.data.voucher.id, false);
@@ -1494,92 +1792,90 @@ const PointOfSales = () => {
             }
           }
           setLoadingChild(false);
-        }).catch(error => {
-          console.error("Error");
         })
+        .catch((error) => {
+          console.error("Error");
+        });
     }, 1000);
-  }
+  };
 
   const handleCountTotalSurplus = () => {
     let total = 0;
-    cartItems && cartItems.map((item) => {
-      total += item.donGia * item.soLuong;
-    })
-    const result = (customerPayment - (total + shipFee - discountValue || 0));
+    cartItems &&
+      cartItems.map((item) => {
+        total += item.donGia * item.soLuong;
+      });
+    const result = customerPayment - (total + shipFee - discountValue || 0);
     return result;
-
-  }
+  };
   const handleCountTotalSurplusFormat = () => {
     let total = 0;
-    cartItems && cartItems.map((item) => {
-      total += item.donGia * item.soLuong;
-    })
-    const surplus = (customerPayment - (total + shipFee - discountValue || 0));
-    const result = surplus
-      .toLocaleString("vi-VN", {
-        style: "currency",
-        currency: "VND",
-      })
+    cartItems &&
+      cartItems.map((item) => {
+        total += item.donGia * item.soLuong;
+      });
+    const surplus = customerPayment - (total + shipFee - discountValue || 0);
+    const result = surplus.toLocaleString("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    });
     return result;
-
-  }
+  };
   const handleCountTotalMoney = () => {
     let total = 0;
-    cartItems && cartItems.map((item) => {
-      total += item.donGia * item.soLuong;
-    })
+    cartItems &&
+      cartItems.map((item) => {
+        total += item.donGia * item.soLuong;
+      });
     return total;
-
-  }
+  };
   const handleCountTotalMoneyFormat = () => {
     let total = 0;
-    cartItems && cartItems.map((item) => {
-      total += item.donGia * item.soLuong;
-    })
-    const result = total
-      .toLocaleString("vi-VN", {
-        style: "currency",
-        currency: "VND",
-      })
+    cartItems &&
+      cartItems.map((item) => {
+        total += item.donGia * item.soLuong;
+      });
+    const result = total.toLocaleString("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    });
     return result;
-  }
+  };
   const handleCountTotalMoneyCustomerNeedPay = () => {
     let total = 0;
-    cartItems && cartItems.map((item) => {
-      total += item.donGia * item.soLuong;
-    })
+    cartItems &&
+      cartItems.map((item) => {
+        total += item.donGia * item.soLuong;
+      });
     const result = total + shipFee - (discountValue || 0);
     return result;
-  }
+  };
   const handleCountTotalMoneyCustomerNeedPayFormat = () => {
     let result = "";
     let total = 0;
-    cartItems && cartItems.map((item) => {
-      total += item.donGia * item.soLuong;
-    })
+    cartItems &&
+      cartItems.map((item) => {
+        total += item.donGia * item.soLuong;
+      });
     let totalFinal = total + shipFee - (discountValue || 0);
-    result = totalFinal
-      .toLocaleString("vi-VN", {
-        style: "currency",
-        currency: "VND",
-      })
+    result = totalFinal.toLocaleString("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    });
     return result;
-  }
-
+  };
 
   const handleChangeDiscount = (event) => {
     setDiscountValidate("");
     const value = event.target.value;
-    setDiscount(value)
+    setDiscount(value);
     if (value === null || value === "" || value.trim().length === 0) {
-      setDiscount("")
+      setDiscount("");
       setDiscountValidate("");
-    }
-    else if (value.trim().length === 10) {
+    } else if (value.trim().length === 10) {
       handleCheckVoucher(value);
     }
-
-  }
+  };
 
   const isMounted = useRef(false);
   useEffect(() => {
@@ -1589,73 +1885,73 @@ const PointOfSales = () => {
       getAllOrdersPending();
       if (id) {
         getOrderPendingById(id);
-      }
-      else {
+      } else {
         getOrderPendingDefaultFirst();
       }
       getAllCustomers();
     }
   }, []);
 
-  const [openModalConfirmRedirectPayment, setOpenModalConfirmRedirectPayment] = useState(false);
-  const [openModalPaymentMultipleCounter, setOpenModalPaymentMultipleCounter] = useState(false);
+  const [openModalConfirmRedirectPayment, setOpenModalConfirmRedirectPayment] =
+    useState(false);
+  const [openModalPaymentMultipleCounter, setOpenModalPaymentMultipleCounter] =
+    useState(false);
 
   const handleCloseModalpaymentMultipleCounter = () => {
     setOpenModalPaymentMultipleCounter(false);
-  }
-
+  };
 
   const handleOpenModalConfirmRedirectPayment = () => {
     setOpenModalConfirmRedirectPayment(true);
-  }
+  };
 
   const handleCloseOpenModalConfirmRedirectPayment = () => {
     setOpenModalConfirmRedirectPayment(false);
-  }
+  };
 
   const [openModalUpdateImei, setOpenModalUpdateImei] = useState(false);
   const handleOpenModalUpdateImei = () => {
     setOpenModalUpdateImei(true);
-  }
+  };
   const handleCloseOpenModalUpdateImei = () => {
     setOpenModalUpdateImei(false);
-  }
+  };
   const [openModalImei, setOpenModalImei] = useState(false);
   const handleOpenModalImei = () => {
     setOpenModalImei(true);
-  }
+  };
   const handleCloseOpenModalImei = () => {
     setOpenModalImei(false);
-  }
+  };
 
   const [openProducts, setOpenProducts] = useState(false);
   const [openProductDetails, setOpenProductDetails] = useState(false);
 
   const handleOpenDialogProductDetails = () => {
     setOpenProductDetails(true);
-  }
+  };
 
   const handleCloseNoActionDialogProductDetails = () => {
     setOpenProductDetails(false);
-  }
+  };
 
   const handleCloseDialogProductDetails = () => {
     setCount(1);
     setOpenProductDetails(false);
-  }
+  };
 
   const handleOpenDialogProducts = () => {
     setOpenProducts(true);
     setIsOpen(true);
-  }
+  };
 
   const handleCloseDialogProducts = () => {
     setOpenProducts(false);
     setIsOpen(false);
-  }
+  };
   const handleCloseNoActionDialogProducts = () => {
     setOpenProducts(false);
-  }
+  };
   const [count, setCount] = useState(1);
   const handleChangeCount = (value) => {
     let newValue = value;
@@ -1671,7 +1967,7 @@ const PointOfSales = () => {
     // else {
     setCount(count - 1);
     // }
-  }
+  };
   const handleClickCount = () => {
     // if (count == 4) {
     //   handleOpenAlertVariant("Tối đa 4 sản phẩm!", Notistack.ERROR);
@@ -1679,7 +1975,7 @@ const PointOfSales = () => {
     // else {
     setCount(count + 1);
     // }
-  }
+  };
 
   const addCartItemsToCart = async (cartItems) => {
     setIsLoading(true);
@@ -1690,7 +1986,7 @@ const PointOfSales = () => {
         id: cartItems.cartId,
       },
       productItem: {
-        id: cartItems.productId
+        id: cartItems.productId,
       },
       imeis: cartItems.imeis,
     };
@@ -1704,7 +2000,10 @@ const PointOfSales = () => {
       await getCartItems();
       handleCloseOpenModalImei();
       handleCloseDialogProducts();
-      handleOpenAlertVariant("Thêm vào giỏ hàng thành công ", Notistack.SUCCESS);
+      handleOpenAlertVariant(
+        "Thêm vào giỏ hàng thành công ",
+        Notistack.SUCCESS
+      );
       setIsLoading(false);
       setIsOpen(false);
     } catch (error) {
@@ -1721,14 +2020,14 @@ const PointOfSales = () => {
       cartId: cartId,
       productId: id,
       imeis: imeis,
-    }
+    };
     if (imeis.length > 0) {
       addCartItemsToCart(cartItems);
     }
-  }
+  };
 
   const handleDeliveryChange = (event) => {
-    updateTypeOrder(event.target.checked)
+    updateTypeOrder(event.target.checked);
     // setDelivery(event.target.checked);
     // if (event.target.checked == true) {
     //   // setPaymentWhenReceive(true);
@@ -1751,7 +2050,6 @@ const PointOfSales = () => {
   };
 
   const handleCustomerPayment = (event) => {
-
     const value = event.target.value;
     const parseNumberPayment = parseFloat(value.replace(/[^0-9.-]+/g, ""));
     let valueFinal;
@@ -1765,12 +2063,11 @@ const PointOfSales = () => {
     if (value == null || value == "") {
       setCustomerPayment(0);
       setCustomerPaymentFormat("");
-    }
-    else if (parseNumberPayment > 100000000000) {
+    } else if (parseNumberPayment > 100000000000) {
       setCustomerPayment(0);
       setCustomerPaymentFormat("");
     }
-  }
+  };
 
   const [openAddresses, setOpenAddresses] = useState();
   const [openCustomers, setOpenCustomers] = useState();
@@ -1780,54 +2077,54 @@ const PointOfSales = () => {
 
   const handleCloseOpenPayment = () => {
     setOpenPayments(false);
-  }
+  };
 
   const handleOpenDialogAddresses = () => {
     setIsOpen(true);
     setOpenAddresses(true);
-  }
+  };
 
   const handleCloseDialogAddresses = () => {
     setOpenAddresses(false);
     setIsOpen(false);
-  }
+  };
 
   const handleOpenDialogOrderClose = () => {
     setOpenOrderClose(true);
-  }
+  };
 
   const handleCloseNoActionDialogOrderClose = () => {
     setOpenOrderClose(false);
     setSizeCartItems(0);
-  }
+  };
   const handleCloseDialogOrderClose = (id) => {
     handleDeleteOrderPendingById(id);
     setOpenOrderClose(false);
-  }
+  };
 
   const handleOpenDialogVouchers = () => {
     getVouchersIsActive();
     setOpenVouchers(true);
     setIsOpen(true);
-  }
+  };
   const handleCloseNoActionDialogVouchers = () => {
     setOpenVouchers(false);
     setIsOpen(false);
-  }
+  };
 
   const handleCloseDialogVouchers = () => {
     setOpenVouchers(false);
     setIsOpen(false);
-  }
+  };
   const handleOpenDialogCustomers = () => {
     setOpenCustomers(true);
     setIsOpen(true);
-  }
+  };
 
   const handleCloseDialogCustomers = () => {
     setOpenCustomers(false);
     setIsOpen(false);
-  }
+  };
 
   // const [receiveName, setReceiveName] = useState("");
   // const handleChangeReceiveName = (event) => {
@@ -1842,115 +2139,208 @@ const PointOfSales = () => {
   const handleChange = (event, newValue) => {
     setIsLoading(true);
     setValueTabs(newValue);
-    getOrderPendingByTabIndex(newValue)
+    getOrderPendingByTabIndex(newValue);
     setTimeout(() => {
       setIsLoading(false);
     }, 500);
   };
 
   const StyledBadge = styled(Badge)(({ theme }) => ({
-    '& .MuiBadge-badge': {
+    "& .MuiBadge-badge": {
       right: -4,
       top: 1,
       border: `2px solid ${theme.palette.background.paper}`,
-      padding: '0 4px',
+      padding: "0 4px",
     },
   }));
 
   const CssTextField = styled(TextField)({
     "& label.Mui-focused": {
-      color: "#2f80ed"
+      color: "#2f80ed",
     },
     "& .MuiInput-underline:after": {
-      borderBottomColor: "#2f80ed"
+      borderBottomColor: "#2f80ed",
     },
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
-        borderColor: "#E0E3E7"
+        borderColor: "#E0E3E7",
       },
       "&:hover fieldset": {
-        borderColor: "#E0E3E7" // use the same color as original border color
+        borderColor: "#E0E3E7", // use the same color as original border color
       },
       "&.Mui-focused fieldset": {
-        borderColor: "#2f80ed"
-      }
-    }
+        borderColor: "#2f80ed",
+      },
+    },
   });
 
   return (
     <>
       <div style={{ pointerEvents: isLoading ? "none" : "auto" }}>
-        <div className="mt-4 tab-order-pending p-3" style={{ backgroundColor: "#ffffff", borderRadius: "7px 7px 0px 0px", boxShadow: "0 0.1rem 0.3rem #00000020", }}>
+        <div
+          className="mt-4 tab-order-pending p-3"
+          style={{
+            backgroundColor: "#ffffff",
+            borderRadius: "7px 7px 0px 0px",
+            boxShadow: "0 0.1rem 0.3rem #00000020",
+          }}
+        >
           <TabContext value={valueTabs}>
-            <div className='' style={{
-            }}>
-              <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                <div className='d-flex' style={{ position: "sticky", top: 0, zIndex: 1, width: "99%" }}>
+            <div className="" style={{}}>
+              <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                <div
+                  className="d-flex"
+                  style={{
+                    position: "sticky",
+                    top: 0,
+                    zIndex: 1,
+                    width: "99%",
+                  }}
+                >
                   <TabList
                     style={{}}
                     variant="scrollable"
                     TabIndicatorProps={{
                       title: "indicator",
-                      sx: { backgroundColor: "#0B6BCB", height: 4 } //width: "25% !important"
+                      sx: { backgroundColor: "#0B6BCB", height: 4 }, //width: "25% !important"
                     }}
                     sx={{
                       [`& .${tabsClasses.scrollButtons}`]: {
-                        '&.Mui-disabled': { opacity: 0.35 },
+                        "&.Mui-disabled": { opacity: 0.35 },
                       },
                     }}
-                    onChange={handleChange} aria-label="lab API tabs example"
+                    onChange={handleChange}
+                    aria-label="lab API tabs example"
                   >
-                    {orders && orders.map((item, index) => {
-                      return (
-                        <Tab sx={{ height: "20px" }}
-                          style={{ borderRadius: "7px 7px 0 0", color: "black" }} label={
-                            <div className='d-flex' style={{}}>
-                              <span className='active' style={{ fontWeight: "", fontSize: "15px", textTransform: "capitalize" }}>Đơn hàng {item.ma.substring(8)}</span>
-                              <StyledBadge showZero={true} className='ms-2' badgeContent={item && item.cart && item.cart.cartItems && item.cart.cartItems.length} color="primary">
-                                <img style={{ width: "15px", height: "19px" }} src="https://www.svgrepo.com/show/224235/shopping-cart.svg" />
-                              </StyledBadge>
-                              <div className='ms-1'></div>
-                              {orders && orders.length > 1 ?
-                                <>
-                                  <div onClick={(event) => { event.stopPropagation() }} onMouseDown={() => { handleConfirmBeforeDeleteOrderPendingHasProduct(item && item.cart && item.cart.cartItems && item.cart.cartItems.length, item.id); setItemMa(item.ma); setItemId(item.id); setSizeCartItems(item.cart.cartItems.length || 0) }} className='ms-2 ps-1 iconButton' style={{ position: "relative" }}>
-                                    <div className='' style={{ position: "absolute", bottom: "-5px" }}>
-                                      <Tooltip title="Đóng" TransitionComponent={Zoom}>
-                                        <IconButton aria-label="delete" size="small" className=''>
-                                          <CloseIcon className='text-dark' fontSize="inherit" />
-                                        </IconButton>
-                                      </Tooltip>
+                    {orders &&
+                      orders.map((item, index) => {
+                        return (
+                          <Tab
+                            sx={{ height: "20px" }}
+                            style={{
+                              borderRadius: "7px 7px 0 0",
+                              color: "black",
+                            }}
+                            label={
+                              <div className="d-flex" style={{}}>
+                                <span
+                                  className="active"
+                                  style={{
+                                    fontWeight: "",
+                                    fontSize: "15px",
+                                    textTransform: "capitalize",
+                                  }}
+                                >
+                                  Đơn hàng {item.ma.substring(8)}
+                                </span>
+                                <StyledBadge
+                                  showZero={true}
+                                  className="ms-2"
+                                  badgeContent={
+                                    item &&
+                                    item.cart &&
+                                    item.cart.cartItems &&
+                                    item.cart.cartItems.length
+                                  }
+                                  color="primary"
+                                >
+                                  <img
+                                    style={{ width: "15px", height: "19px" }}
+                                    src="https://www.svgrepo.com/show/224235/shopping-cart.svg"
+                                  />
+                                </StyledBadge>
+                                <div className="ms-1"></div>
+                                {orders && orders.length > 1 ? (
+                                  <>
+                                    <div
+                                      onClick={(event) => {
+                                        event.stopPropagation();
+                                      }}
+                                      onMouseDown={() => {
+                                        handleConfirmBeforeDeleteOrderPendingHasProduct(
+                                          item &&
+                                            item.cart &&
+                                            item.cart.cartItems &&
+                                            item.cart.cartItems.length,
+                                          item.id
+                                        );
+                                        setItemMa(item.ma);
+                                        setItemId(item.id);
+                                        setSizeCartItems(
+                                          item.cart.cartItems.length || 0
+                                        );
+                                      }}
+                                      className="ms-2 ps-1 iconButton"
+                                      style={{ position: "relative" }}
+                                    >
+                                      <div
+                                        className=""
+                                        style={{
+                                          position: "absolute",
+                                          bottom: "-5px",
+                                        }}
+                                      >
+                                        <Tooltip
+                                          title="Đóng"
+                                          TransitionComponent={Zoom}
+                                        >
+                                          <IconButton
+                                            aria-label="delete"
+                                            size="small"
+                                            className=""
+                                          >
+                                            <CloseIcon
+                                              className="text-dark"
+                                              fontSize="inherit"
+                                            />
+                                          </IconButton>
+                                        </Tooltip>
+                                      </div>
                                     </div>
-                                  </div>
-                                  <div className='ms-3 ps-1'></div>
-                                </>
-                                : ""
-                              }
-                            </div>
-                          } value={index + 1} />
-                      )
-                    })
-                    }
+                                    <div className="ms-3 ps-1"></div>
+                                  </>
+                                ) : (
+                                  ""
+                                )}
+                              </div>
+                            }
+                            value={index + 1}
+                          />
+                        );
+                      })}
                   </TabList>
-                  <div style={{ cursor: "pointer" }} className='mt-1'>
-                    <div onClick={() => handleAddOrderPending()} className='ms-2 ps-1'
-                      style={{
-
-                      }}
+                  <div style={{ cursor: "pointer" }} className="mt-1">
+                    <div
+                      onClick={() => handleAddOrderPending()}
+                      className="ms-2 ps-1"
+                      style={{}}
                     >
                       <Tooltip title="Thêm mới" TransitionComponent={Zoom}>
                         <IconButton aria-label="delete" size="medium">
-                          <AddCircleOutlineIcon className='text-dark' fontSize="inherit" />
+                          <AddCircleOutlineIcon
+                            className="text-dark"
+                            fontSize="inherit"
+                          />
                         </IconButton>
                       </Tooltip>
                     </div>
                   </div>
-
                 </div>
               </Box>
-              <div style={{ /* opacity: hadPaymentBank ? "0.8" : "1", pointerEvents: hadPaymentBank ? "none" : "auto" */ }}  /* className='scroll-container3' */ /* style={{ width: "100.6%" }} */>
-                <TabPanel className='' sx={{ margin: 0.1, padding: 0 }} value={valueTabs}>
+              <div
+                style={
+                  {
+                    /* opacity: hadPaymentBank ? "0.8" : "1", pointerEvents: hadPaymentBank ? "none" : "auto" */
+                  }
+                } /* className='scroll-container3' */ /* style={{ width: "100.6%" }} */
+              >
+                <TabPanel
+                  className=""
+                  sx={{ margin: 0.1, padding: 0 }}
+                  value={valueTabs}
+                >
                   {/*
-*/}
+                   */}
                   <TabItem
                     openUpdateImei={openModalUpdateImei}
                     onOpenUpdateImei={handleOpenModalUpdateImei}
@@ -1958,20 +2348,22 @@ const PointOfSales = () => {
                     openImei={openModalImei}
                     onOpenImei={handleOpenModalImei}
                     onCloseImei={handleCloseOpenModalImei}
-                    getCustomer={getCustomer}
-                    getAmount={getAmount}
+                    // getCustomer={getCustomer}
+                    // getAmount={getAmount}
                     isOpen={isOpen}
                     openProducts={openProducts}
                     openDialogProducts={handleOpenDialogProducts}
                     closeDialogProducts={handleCloseDialogProducts}
-                    closeNoActionDialogProducts={handleCloseNoActionDialogProducts}
-                    openProductDetails={openProductDetails}
-                    openDialogProductDetails={handleOpenDialogProductDetails}
-                    closeDialogProductDetails={handleCloseDialogProductDetails}
-                    closeNoActionDialogProductDetails={handleCloseNoActionDialogProductDetails}
+                    closeNoActionDialogProducts={
+                      handleCloseNoActionDialogProducts
+                    }
+                    // openProductDetails={openProductDetails}
+                    // openDialogProductDetails={handleOpenDialogProductDetails}
+                    // closeDialogProductDetails={handleCloseDialogProductDetails}
+                    // closeNoActionDialogProductDetails={handleCloseNoActionDialogProductDetails}
                     add={handleAddProductToCart}
                     remove={handleDeleteCartItemById}
-                    delivery={delivery}
+                    // delivery={delivery}
                     cartItems={cartItems}
                     update={handleUpdateAmountCartItem}
                   />
@@ -1980,10 +2372,22 @@ const PointOfSales = () => {
             </div>
           </TabContext>
         </div>
-        <div className="mt-4 customer-order p-3" style={{ backgroundColor: "#ffffff", /* borderRadius: "15px 15px 0px 0px", */ boxShadow: "0 0.1rem 0.3rem #00000020", }}>
+        <div
+          className="mt-4 customer-order p-3"
+          style={{
+            backgroundColor: "#ffffff",
+            /* borderRadius: "15px 15px 0px 0px", */ boxShadow:
+              "0 0.1rem 0.3rem #00000020",
+          }}
+        >
           <div className="d-flex justify-content-between mt-1">
             <div className="ms-2" style={{ marginTop: "5px" }}>
-              <span className='' style={{ fontSize: "22px", fontWeight: "500" }}>Khách hàng</span>
+              <span
+                className=""
+                style={{ fontSize: "22px", fontWeight: "500" }}
+              >
+                Khách hàng
+              </span>
             </div>
             <div className="">
               <Button
@@ -2003,13 +2407,23 @@ const PointOfSales = () => {
               </Button>
             </div>
           </div>
-          <div className='mt-2' style={{ borderBottom: "2px solid #C7C7C7", width: "100%", borderWidth: "2px" }}></div>
-          <div className='d-flex ms-2 mt-4'>
-            <div className='d-flex'>
-              <div className='' style={{ marginTop: "5px", width: "200px", height: "35px" }}>
+          <div
+            className="mt-2"
+            style={{
+              borderBottom: "2px solid #C7C7C7",
+              width: "100%",
+              borderWidth: "2px",
+            }}
+          ></div>
+          <div className="d-flex ms-2 mt-4">
+            <div className="d-flex">
+              <div
+                className=""
+                style={{ marginTop: "5px", width: "200px", height: "35px" }}
+              >
                 Tên khách hàng
               </div>
-              {!isLoading && customerName === "" ?
+              {!isLoading && customerName === "" ? (
                 <div
                   className="rounded-pill"
                   style={{
@@ -2023,73 +2437,87 @@ const PointOfSales = () => {
                     Khách hàng lẻ
                   </span>
                 </div>
-                :
+              ) : (
                 <span className="text-dark ms-1" style={{ marginTop: "5px" }}>
                   {!isLoading && customerName}
                 </span>
-              }
-
+              )}
             </div>
 
-            {!isLoading && customerEmail !== "" &&
-              <div className=' d-flex' style={{ marginLeft: "300px", marginTop: "5px" }}>
-                <div className='' style={{ width: "130px" }}>
+            {!isLoading && customerEmail !== "" && (
+              <div
+                className=" d-flex"
+                style={{ marginLeft: "300px", marginTop: "5px" }}
+              >
+                <div className="" style={{ width: "130px" }}>
                   Email
                 </div>
-                <div
-                  style={{
-                  }}
-                >
+                <div style={{}}>
                   <span className="text-dark" style={{}}>
-                    {!isLoading && customerEmail}</span>
+                    {!isLoading && customerEmail}
+                  </span>
                 </div>
               </div>
-            }
+            )}
           </div>
-          {customerPhone !== "" &&
-            <div className='d-flex ms-2 mt-2'>
-              <div className='' style={{ width: "200px" }}>
+          {customerPhone !== "" && (
+            <div className="d-flex ms-2 mt-2">
+              <div className="" style={{ width: "200px" }}>
                 Số điện thoại
               </div>
-              <div
-                style={{
-                }}
-              >
+              <div style={{}}>
                 <span className="text-dark ms-1" style={{}}>
                   {!isLoading && customerPhone}
                 </span>
               </div>
             </div>
-          }
-          <div className='mt-2'>
-          </div>
+          )}
+          <div className="mt-2"></div>
         </div>
-        <div className='mt-4 p-3' style={{ height: "auto", /* margin: "auto", */  backgroundColor: "#ffffff", width: "", /* borderRadius: "15px 15px 0px 0px", */ boxShadow: "0 0.1rem 0.3rem #00000030" }}>
+        <div
+          className="mt-4 p-3"
+          style={{
+            height: "auto",
+            /* margin: "auto", */ backgroundColor: "#ffffff",
+            width: "",
+            /* borderRadius: "15px 15px 0px 0px", */ boxShadow:
+              "0 0.1rem 0.3rem #00000030",
+          }}
+        >
           <div className="d-flex justify-content-between mt-1">
             <div className="ms-2" style={{ marginTop: "5px" }}>
-              <span className='' style={{ fontSize: "22px", fontWeight: "500" }}>Thông tin đơn hàng</span>
+              <span
+                className=""
+                style={{ fontSize: "22px", fontWeight: "500" }}
+              >
+                Thông tin đơn hàng
+              </span>
             </div>
             <div className="d-flex">
               <div className={"me-2"}>
                 <BoxJoy
                   sx={{
-                    display: 'flex',
+                    display: "flex",
                     gap: 1,
                     width: 160,
-                    '& > div': { p: 1, borderRadius: 'md', display: 'flex' },
+                    "& > div": { p: 1, borderRadius: "md", display: "flex" },
                   }}
                 >
-                  <Sheet variant="outlined" color='primary'>
-                    <Checkbox overlay checked={delivery} onChange={handleDeliveryChange}
+                  <Sheet variant="outlined" color="primary">
+                    <Checkbox
+                      overlay
+                      checked={delivery}
+                      onChange={handleDeliveryChange}
                       label={
                         <span style={{ fontSize: "16.5px", fontWeight: "400" }}>
                           Bán Giao Hàng
                         </span>
-                      } />
+                      }
+                    />
                   </Sheet>
                 </BoxJoy>
               </div>
-              {idCustomer !== "" && delivery &&
+              {idCustomer !== "" && delivery && (
                 <Button
                   onClick={() => {
                     handleOpenDialogAddresses();
@@ -2104,10 +2532,10 @@ const PointOfSales = () => {
                     Chọn địa chỉ giao hàng
                   </span>
                 </Button>
-              }
+              )}
               <Button
                 onClick={() => {
-                  setOpenModalPaymentMultipleCounter(true)
+                  setOpenModalPaymentMultipleCounter(true);
                 }}
                 className="rounded-2 ant-btn-light"
                 style={{ height: "38px", width: "auto", fontSize: "15px" }}
@@ -2140,10 +2568,21 @@ const PointOfSales = () => {
 */}
             </div>
           </div>
-          <div className='mt-2' style={{ borderBottom: "2px solid #C7C7C7", width: "100%", borderWidth: "2px" }}></div>
+          <div
+            className="mt-2"
+            style={{
+              borderBottom: "2px solid #C7C7C7",
+              width: "100%",
+              borderWidth: "2px",
+            }}
+          ></div>
           <div className="d-flex justify-content-between">
-            <div className='' style={{}}>
-              <DeliveryInfoShip delivery={delivery} getShipFee={getShipFee} update={updateInfoShipOrder} loading={isLoading}
+            <div className="" style={{}}>
+              <DeliveryInfoShip
+                delivery={delivery}
+                getShipFee={getShipFee}
+                update={updateInfoShipOrder}
+                loading={isLoading}
                 customerNameShip={customerNameShip}
                 customerAddressShip={customerAddressShip}
                 customerPhoneShip={customerPhoneShip}
@@ -2165,42 +2604,60 @@ const PointOfSales = () => {
                 updatePhone={updatePhoneShipOrder}
                 updateAddress={updateAddressShipOrder}
               />
-              <div className='mt-3'></div>
+              <div className="mt-3"></div>
             </div>
-            <div className='' style={{}}>
-              <div className='mt-2'>
+            <div className="" style={{}}>
+              <div className="mt-2">
                 <div style={{ height: "480px", width: "380px" }}>
-
-                  <div className='ms-2 ps-1 mt-3 pt-1'>
+                  <div className="ms-2 ps-1 mt-3 pt-1">
                     <>
-                      <div className='d-flex mt-3' style={{ position: "relative" }}>
-                        <TextField size='small'
+                      <div
+                        className="d-flex mt-3"
+                        style={{ position: "relative" }}
+                      >
+                        <TextField
+                          size="small"
                           onChange={handleChangeDiscount}
                           value={discount}
                           InputLabelProps={{
                             sx: {
-                              fontSize: "14.5px"
-                            }
+                              fontSize: "14.5px",
+                            },
                           }}
                           InputProps={{
                             readOnly: discountValue && true,
-                            endAdornment: loadingChild === true ? <CircularProgress
-                              size={25}
-                              sx={{
-                                position: 'relative',
-                                display: 'flex',
-                                justifyContent: 'flex-end',
-                                alignItems: 'center',
-                              }}
-                            />
-                              : discountValue != 0 ? <Tooltip
-                                title="Bỏ chọn" className='' TransitionComponent={Zoom}>
-                                <IconButton size='small' sx={{ marginLeft: "5px" }}
-                                  onClick={() => handleAddOrRemoveVoucher(null, true)}
+                            endAdornment:
+                              loadingChild === true ? (
+                                <CircularProgress
+                                  size={25}
+                                  sx={{
+                                    position: "relative",
+                                    display: "flex",
+                                    justifyContent: "flex-end",
+                                    alignItems: "center",
+                                  }}
+                                />
+                              ) : discountValue != 0 ? (
+                                <Tooltip
+                                  title="Bỏ chọn"
+                                  className=""
+                                  TransitionComponent={Zoom}
                                 >
-                                  <CloseOutlined style={{ fontSize: "18px" }} />
-                                </IconButton>
-                              </Tooltip> : ""
+                                  <IconButton
+                                    size="small"
+                                    sx={{ marginLeft: "5px" }}
+                                    onClick={() =>
+                                      handleAddOrRemoveVoucher(null, true)
+                                    }
+                                  >
+                                    <CloseOutlined
+                                      style={{ fontSize: "18px" }}
+                                    />
+                                  </IconButton>
+                                </Tooltip>
+                              ) : (
+                                ""
+                              ),
                           }}
                           inputProps={{
                             maxLength: 10,
@@ -2209,70 +2666,145 @@ const PointOfSales = () => {
                             },
                           }}
                           label="Mã Giảm Giá"
-                          sx={{ fontSize: "13px" }} className='me-2' style={{ width: "170px"/* , opacity: hadPaymentBank ? "0.7" : "1", pointerEvents: hadPaymentBank ? "none" : "auto" */ }} />
-                        <div style={{ position: "absolute", left: "2px", top: "36px" }}>
-                          <FormHelperText><span style={{ color: "#dc1111" }}>
-                            {(discount === "" || discount.length === 0) ? "" : discountValidate}
-                          </span></FormHelperText>
+                          sx={{ fontSize: "13px" }}
+                          className="me-2"
+                          style={{
+                            width:
+                              "170px" /* , opacity: hadPaymentBank ? "0.7" : "1", pointerEvents: hadPaymentBank ? "none" : "auto" */,
+                          }}
+                        />
+                        <div
+                          style={{
+                            position: "absolute",
+                            left: "2px",
+                            top: "36px",
+                          }}
+                        >
+                          <FormHelperText>
+                            <span style={{ color: "#dc1111" }}>
+                              {discount === "" || discount.length === 0
+                                ? ""
+                                : discountValidate}
+                            </span>
+                          </FormHelperText>
                         </div>
                         <Button
                           onClick={() => handleOpenDialogVouchers()}
                           className="rounded-2 button-mui"
                           type="warning"
-                          style={{ height: "38.8px", width: "auto", fontSize: "15px" /* , opacity: hadPaymentBank ? "0.7" : "1", pointerEvents: hadPaymentBank ? "none" : "auto"  */ }}
+                          style={{
+                            height: "38.8px",
+                            width: "auto",
+                            fontSize:
+                              "15px" /* , opacity: hadPaymentBank ? "0.7" : "1", pointerEvents: hadPaymentBank ? "none" : "auto"  */,
+                          }}
                         >
                           <span
                             className="text-dark"
-                            style={{ marginBottom: "3px", fontSize: "13.5px", fontWeight: "500" }}
+                            style={{
+                              marginBottom: "3px",
+                              fontSize: "13.5px",
+                              fontWeight: "500",
+                            }}
                           >
                             Chọn Mã Giảm Giá
                           </span>
                         </Button>
                       </div>
                     </>
-                    <div className='d-flex justify-content-between mt-4' style={{ marginLeft: "1px" }}>
-                      <span className='' style={{ fontSize: "15px", marginTop: "1px" }}>Tổng tiền hàng</span>
-                      <span className='text-dark me-2' style={{ fontSize: "17.5px" }}>
-                        {
-                          handleCountTotalMoneyFormat()
-                        }
+                    <div
+                      className="d-flex justify-content-between mt-4"
+                      style={{ marginLeft: "1px" }}
+                    >
+                      <span
+                        className=""
+                        style={{ fontSize: "15px", marginTop: "1px" }}
+                      >
+                        Tổng tiền hàng
+                      </span>
+                      <span
+                        className="text-dark me-2"
+                        style={{ fontSize: "17.5px" }}
+                      >
+                        {handleCountTotalMoneyFormat()}
                       </span>
                     </div>
-                    <div className='d-flex justify-content-between mt-4' style={{ marginLeft: "1px" }}>
-                      <span className='' style={{ fontSize: "15px", marginTop: "1px" }}>Giảm giá</span>
-                      <span className='text-dark me-2' style={{ fontSize: "17.5px" }}>
-                        {
-                          discountValue.toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                          })
-                        }
+                    <div
+                      className="d-flex justify-content-between mt-4"
+                      style={{ marginLeft: "1px" }}
+                    >
+                      <span
+                        className=""
+                        style={{ fontSize: "15px", marginTop: "1px" }}
+                      >
+                        Giảm giá
+                      </span>
+                      <span
+                        className="text-dark me-2"
+                        style={{ fontSize: "17.5px" }}
+                      >
+                        {discountValue.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
                       </span>
                     </div>
 
-                    {delivery == false ?
+                    {delivery == false ? (
                       <>
-                        <div className='d-flex justify-content-between mt-4' style={{ marginLeft: "1px" }}>
-                          <span className='fw-bold' style={{ fontSize: "15px", marginTop: "2px" }}>Khách cần trả
+                        <div
+                          className="d-flex justify-content-between mt-4"
+                          style={{ marginLeft: "1px" }}
+                        >
+                          <span
+                            className="fw-bold"
+                            style={{ fontSize: "15px", marginTop: "2px" }}
+                          >
+                            Khách cần trả
                           </span>
-                          <span className='me-2' style={{ fontSize: "17.5px", fontWeight: "500", color: "#dc1111" }}>
-                            {
-                              handleCountTotalMoneyCustomerNeedPayFormat()}
+                          <span
+                            className="me-2"
+                            style={{
+                              fontSize: "17.5px",
+                              fontWeight: "500",
+                              color: "#dc1111",
+                            }}
+                          >
+                            {handleCountTotalMoneyCustomerNeedPayFormat()}
                           </span>
                         </div>
-                        {cartItems.length > 0 ?
-                          <div className='d-flex justify-content-between mt-3' style={{ marginLeft: "1px" }}>
-                            <div className='d-flex'>
-                              <span className='fw-bold text-dark' style={{ fontSize: "15px", color: "#777", marginTop: "10px" }}>Khách thanh toán
+                        {cartItems.length > 0 ? (
+                          <div
+                            className="d-flex justify-content-between mt-3"
+                            style={{ marginLeft: "1px" }}
+                          >
+                            <div className="d-flex">
+                              <span
+                                className="fw-bold text-dark"
+                                style={{
+                                  fontSize: "15px",
+                                  color: "#777",
+                                  marginTop: "10px",
+                                }}
+                              >
+                                Khách thanh toán
                               </span>
                             </div>
-                            <span className='me-2' style={{ fontSize: "17.5px", fontWeight: "500", color: "#2f80ed", marginTop: "7.5px" }}>
-                              {
-                                customerPayment !== 0 && customerPayment.toLocaleString("vi-VN", {
+                            <span
+                              className="me-2"
+                              style={{
+                                fontSize: "17.5px",
+                                fontWeight: "500",
+                                color: "#2f80ed",
+                                marginTop: "7.5px",
+                              }}
+                            >
+                              {(customerPayment !== 0 &&
+                                customerPayment.toLocaleString("vi-VN", {
                                   style: "currency",
                                   currency: "VND",
-                                }) || "0 ₫"
-                              }
+                                })) ||
+                                "0 ₫"}
                             </span>
                             {/*
                             <TextField className='me-2'
@@ -2286,45 +2818,80 @@ const PointOfSales = () => {
                               sx={{ width: "105px", fontSize: "17.5px" }} />
 */}
                           </div>
-                          : ""
-                        }
+                        ) : (
+                          ""
+                        )}
                       </>
-                      :
+                    ) : (
                       <>
-                        <div className='d-flex justify-content-between mt-4' style={{ marginLeft: "1px" }}>
-                          <span className='' style={{ fontSize: "15px", marginTop: "1px" }}>Phí vận chuyển</span>
-                          <span className='me-2' style={{ fontSize: "17.5px" }}>
-                            {
-                              shipFee.toLocaleString("vi-VN", {
-                                style: "currency",
-                                currency: "VND",
-                              })
-                            }
+                        <div
+                          className="d-flex justify-content-between mt-4"
+                          style={{ marginLeft: "1px" }}
+                        >
+                          <span
+                            className=""
+                            style={{ fontSize: "15px", marginTop: "1px" }}
+                          >
+                            Phí vận chuyển
+                          </span>
+                          <span className="me-2" style={{ fontSize: "17.5px" }}>
+                            {shipFee.toLocaleString("vi-VN", {
+                              style: "currency",
+                              currency: "VND",
+                            })}
                           </span>
                         </div>
-                        <div className='d-flex justify-content-between mt-4' style={{ marginLeft: "1px" }}>
-                          <div className='d-flex'>
-                            <span className='fw-bold' style={{ fontSize: "15px", marginTop: "1px" }}>Tổng cộng</span>
+                        <div
+                          className="d-flex justify-content-between mt-4"
+                          style={{ marginLeft: "1px" }}
+                        >
+                          <div className="d-flex">
+                            <span
+                              className="fw-bold"
+                              style={{ fontSize: "15px", marginTop: "1px" }}
+                            >
+                              Tổng cộng
+                            </span>
                           </div>
-                          <span className='me-2 fw-bold' style={{ fontSize: "17.5px", color: "#dc1111" }}>
-                            {
-                              handleCountTotalMoneyCustomerNeedPayFormat()
-                            }
+                          <span
+                            className="me-2 fw-bold"
+                            style={{ fontSize: "17.5px", color: "#dc1111" }}
+                          >
+                            {handleCountTotalMoneyCustomerNeedPayFormat()}
                           </span>
                         </div>
-                        {cartItems.length > 0 && !paymentWhenReceive ?
-                          <div className='d-flex justify-content-between mt-3' style={{ marginLeft: "1px" }}>
-                            <div className='d-flex'>
-                              <span className='fw-bold text-dark' style={{ fontSize: "15px", color: "#777", marginTop: "10px" }}>Khách thanh toán
+                        {cartItems.length > 0 && !paymentWhenReceive ? (
+                          <div
+                            className="d-flex justify-content-between mt-3"
+                            style={{ marginLeft: "1px" }}
+                          >
+                            <div className="d-flex">
+                              <span
+                                className="fw-bold text-dark"
+                                style={{
+                                  fontSize: "15px",
+                                  color: "#777",
+                                  marginTop: "10px",
+                                }}
+                              >
+                                Khách thanh toán
                               </span>
                             </div>
-                            <span className='me-2' style={{ fontSize: "17.5px", fontWeight: "500", color: "#2f80ed", marginTop: "7.5px" }}>
-                              {
-                                customerPayment !== 0 && customerPayment.toLocaleString("vi-VN", {
+                            <span
+                              className="me-2"
+                              style={{
+                                fontSize: "17.5px",
+                                fontWeight: "500",
+                                color: "#2f80ed",
+                                marginTop: "7.5px",
+                              }}
+                            >
+                              {(customerPayment !== 0 &&
+                                customerPayment.toLocaleString("vi-VN", {
                                   style: "currency",
                                   currency: "VND",
-                                }) || "0 ₫"
-                              }
+                                })) ||
+                                "0 ₫"}
                             </span>
                             {/*
                             <TextField className='me-2'
@@ -2338,8 +2905,9 @@ const PointOfSales = () => {
                               sx={{ width: "105px", fontSize: "17.5px" }} />
 */}
                           </div>
-                          : ""
-                        }
+                        ) : (
+                          ""
+                        )}
                         {/*
                           paymentWhenReceive == false && cartItems.length > 0 ?
                             <div className='d-flex justify-content-between mt-3 pt-1' style={{ marginLeft: "1px" }}>
@@ -2353,30 +2921,50 @@ const PointOfSales = () => {
                             : ""
                         */}
                       </>
-                    }
+                    )}
                   </div>
 
-                  {(customerPayment != (handleCountTotalMoneyCustomerNeedPay())) && (delivery == true || delivery == false) && paymentWhenReceive == false && cartItems.length > 0 ?
-                    <div className={`d-flex justify-content-between ${`${paymentWhenReceive == false && delivery == true ? "pt-4 mt-1" : "pt-3 mt-2"}`} ms-2`} style={{ marginLeft: "1px" }} >
-                      <span className='ms-1' style={{ fontSize: "15px", marginTop: "2px" }}>Tiền thừa trả khách</span>
-                      <span className='me-2' style={{ fontSize: "17.5px" }}>{
-                        handleCountTotalSurplusFormat()
-                      }</span>
-                    </div> : ""
-                  }
-                  {delivery == true && customerPayment === 0 ?
-                    <div className='mt-3 ms-3'>
+                  {customerPayment != handleCountTotalMoneyCustomerNeedPay() &&
+                  (delivery == true || delivery == false) &&
+                  paymentWhenReceive == false &&
+                  cartItems.length > 0 ? (
+                    <div
+                      className={`d-flex justify-content-between ${`${
+                        paymentWhenReceive == false && delivery == true
+                          ? "pt-4 mt-1"
+                          : "pt-3 mt-2"
+                      }`} ms-2`}
+                      style={{ marginLeft: "1px" }}
+                    >
+                      <span
+                        className="ms-1"
+                        style={{ fontSize: "15px", marginTop: "2px" }}
+                      >
+                        Tiền thừa trả khách
+                      </span>
+                      <span className="me-2" style={{ fontSize: "17.5px" }}>
+                        {handleCountTotalSurplusFormat()}
+                      </span>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {delivery == true && customerPayment === 0 ? (
+                    <div className="mt-3 ms-3">
                       <FormControlLabel
                         checked={paymentWhenReceive}
                         onChange={handlePaymentWhenReceiveChange}
                         control={<IOSSwitch sx={{ m: 1 }} />}
                         label={
-                          <span className='ms-1' style={{ fontSize: "15px" }}>Thanh toán khi nhận hàng</span>
+                          <span className="ms-1" style={{ fontSize: "15px" }}>
+                            Thanh toán khi nhận hàng
+                          </span>
                         }
                       />
                     </div>
-                    : ""
-                  }
+                  ) : (
+                    ""
+                  )}
 
                   {/*(delivery == true && paymentWhenReceive == true) || cartItems.length == 0 ? "" :
                     <div className={
@@ -2481,75 +3069,106 @@ const PointOfSales = () => {
                 </div>
 
                 <div className="mt-4 pt-2">
-                  <div className=''>
-                    <div className='text-center'>
-                      <Button type="primary" onClick={handleOpenDialogConfirmPayment}
-                        className="__add-cart0 add-to-cart trigger ms-1">
-                        <span class="" style={{ fontSize: "17.5px", fontWeight: "450" }}>
-                          {delivery == true ? "XÁC NHẬN ĐẶT HÀNG" : "XÁC NHẬN THANH TOÁN"}
+                  <div className="">
+                    <div className="text-center">
+                      <Button
+                        type="primary"
+                        onClick={handleOpenDialogConfirmPayment}
+                        className="__add-cart0 add-to-cart trigger ms-1"
+                      >
+                        <span
+                          class=""
+                          style={{ fontSize: "17.5px", fontWeight: "450" }}
+                        >
+                          {delivery == true
+                            ? "XÁC NHẬN ĐẶT HÀNG"
+                            : "XÁC NHẬN THANH TOÁN"}
                         </span>
                       </Button>
                     </div>
                   </div>
                 </div>
-
               </div>
             </div>
-          </div >
+          </div>
 
-          <div className='mt-3'>
-            {paymentHistories && paymentHistories.filter((i) => i.hinhThucThanhToan === 0 && i.ma && i.ma.length <= 8).map((item) => {
-              return (
-                <>
-                  <div className='mt-2'>
-                    <BoxJoy sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%' }}>
-                      <Alert
-                        variant="soft"
-                        color="success"
-                        startDecorator={<PlaylistAddCheckCircleRoundedIcon />}
-                        endDecorator={
-                          <IconButtonJoy variant="plain" size="sm" color='success'
-                            onClick={() => {
-                              const payments = paymentHistories.filter((pay) => pay.ma !== item.ma);
-                              setPaymentHistories(payments);
-                            }}
+          <div className="mt-3">
+            {paymentHistories &&
+              paymentHistories
+                .filter(
+                  (i) => i.hinhThucThanhToan === 0 && i.ma && i.ma.length <= 8
+                )
+                .map((item) => {
+                  return (
+                    <>
+                      <div className="mt-2">
+                        <BoxJoy
+                          sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 2,
+                            width: "100%",
+                          }}
+                        >
+                          <Alert
+                            variant="soft"
+                            color="success"
+                            startDecorator={
+                              <PlaylistAddCheckCircleRoundedIcon />
+                            }
+                            endDecorator={
+                              <IconButtonJoy
+                                variant="plain"
+                                size="sm"
+                                color="success"
+                                onClick={() => {
+                                  const payments = paymentHistories.filter(
+                                    (pay) => pay.ma !== item.ma
+                                  );
+                                  setPaymentHistories(payments);
+                                }}
+                              >
+                                <CloseRoundedIcon />
+                              </IconButtonJoy>
+                            }
                           >
-                            <CloseRoundedIcon />
-                          </IconButtonJoy>
-                        }
-                      >
-                        <span>
-                          Đơn hàng
-                        </span>
-                        <span style={{ fontWeight: '500' }}>
-                          {order.ma}
-                        </span>
-                        <span>
-                          vừa có một giao dịch được thực hiện thành công vào lúc {" "}
-                          {format(new Date(item.createdAt), "HH:mm:ss - dd/MM/yyyy")}
-                          . Bạn có thể xem lịch sử giao dịch
-                        </span>
-                        <a target={"_blank"} href={`https://sandbox.vnpayment.vn/merchantv2/Transaction/PaymentDetail/${item.ma}.htm`}>
-                          <span style={{ cursor: "pointer" }}
-                            // onClick={() =>
-                            //   window.open(`https://sandbox.vnpayment.vn/merchantv2/Transaction/PaymentDetail/${item.ma}.htm`, '_blank')}
-                            className='underline-custom'>
-                            tại đây!
-                          </span>
-                        </a>
-                      </Alert>
-                    </BoxJoy>
-                  </div>
-                </>
-              )
-            })}
+                            <span>Đơn hàng</span>
+                            <span style={{ fontWeight: "500" }}>
+                              {order.ma}
+                            </span>
+                            <span>
+                              vừa có một giao dịch được thực hiện thành công vào
+                              lúc{" "}
+                              {format(
+                                new Date(item.createdAt),
+                                "HH:mm:ss - dd/MM/yyyy"
+                              )}
+                              . Bạn có thể xem lịch sử giao dịch
+                            </span>
+                            <a
+                              target={"_blank"}
+                              href={`https://sandbox.vnpayment.vn/merchantv2/Transaction/PaymentDetail/${item.ma}.htm`}
+                            >
+                              <span
+                                style={{ cursor: "pointer" }}
+                                // onClick={() =>
+                                //   window.open(`https://sandbox.vnpayment.vn/merchantv2/Transaction/PaymentDetail/${item.ma}.htm`, '_blank')}
+                                className="underline-custom"
+                              >
+                                tại đây!
+                              </span>
+                            </a>
+                          </Alert>
+                        </BoxJoy>
+                      </div>
+                    </>
+                  );
+                })}
           </div>
 
-          <div className="mt-2">
-          </div>
+          <div className="mt-2"></div>
         </div>
-        <div className="mt-4">
-        </div>
+        <div className="mt-4"></div>
       </div>
       <CustomersDialog
         open={openCustomers}
@@ -2560,7 +3179,9 @@ const PointOfSales = () => {
         isOpen={isOpen}
       />
 
-      <AddressDialog open={openAddresses} onClose={handleCloseDialogAddresses}
+      <AddressDialog
+        open={openAddresses}
+        onClose={handleCloseDialogAddresses}
         data={customerAddressList}
         isOpen={isOpen}
         add={updateInfoShip}
@@ -2572,7 +3193,6 @@ const PointOfSales = () => {
         khachThanhToan={customerPayment}
         open={openModalPaymentMultipleCounter}
         close={handleCloseModalpaymentMultipleCounter}
-
         handleOpenPayment={handleOpenModalConfirmRedirectPayment}
         handleCloseOpenPayment={handleCloseOpenModalConfirmRedirectPayment}
         addPayment={handleGetUrlRedirectPayment}
@@ -2601,11 +3221,20 @@ const PointOfSales = () => {
         total={customerPayment}
         khachCanTra={handleCountTotalMoneyCustomerNeedPay()}
       />
-      <ModalPaymentHistories open={openPayments} close={handleCloseOpenPayment} data={order && order.paymentMethods && order.paymentMethods} />
-      <OrderPendingConfirmCloseDialog open={openOrderClose} onClose={handleCloseNoActionDialogOrderClose} ma={itemMa && itemMa.substring(8)} deleteOrder={() => handleCloseDialogOrderClose(itemId)} />
+      <ModalPaymentHistories
+        open={openPayments}
+        close={handleCloseOpenPayment}
+        data={order && order.paymentMethods && order.paymentMethods}
+      />
+      <OrderPendingConfirmCloseDialog
+        open={openOrderClose}
+        onClose={handleCloseNoActionDialogOrderClose}
+        ma={itemMa && itemMa.substring(8)}
+        deleteOrder={() => handleCloseDialogOrderClose(itemId)}
+      />
       {isLoading && <LoadingIndicator />}
     </>
-  )
-}
+  );
+};
 
 export default PointOfSales;

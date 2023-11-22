@@ -148,6 +148,13 @@ div.rs-picker-menu{
 }
 .rs-auto-complete .rs-input::placeholder {
 }
+.ant-btn-danger-light {
+  background-color: white !important;
+  color: #e5383b;
+  border: 1px solid #e5383b !important;
+  height: 40px;
+  font-weight: 500;
+}
 .ant-btn-light {
   background-color: white !important;
   color: #2f80ed;
@@ -672,8 +679,8 @@ input[type="number"]::-ms-outer-spin-button {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    max-width: 100px;
-    height: 38px;
+    max-width: 90px;
+    height: 32px;
     border: 1px solid #ddd;
     overflow: hidden;
   border-radius: 5px;

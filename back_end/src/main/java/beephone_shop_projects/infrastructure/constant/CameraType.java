@@ -8,4 +8,5 @@ public enum CameraType {
   PERISCOPE_TELEPHOTO_CAMERA,
   MARCO_CAMERA,
   DEPTH_CAMERA,
+
 }

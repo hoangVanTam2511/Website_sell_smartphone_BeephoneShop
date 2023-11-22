@@ -2,7 +2,12 @@ import { Button, Checkbox, Tooltip } from "antd";
 import React, { useEffect } from "react";
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faCheck, faEye } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowLeft,
+  faBookmark,
+  faCheck,
+  faEye,
+} from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { apiURLKhuyenMai } from "../../../service/api";
 import TextField from "@mui/material/TextField";
@@ -212,14 +217,13 @@ const SuaKhuyenMai = () => {
       .then((response) => {
         const data1 = response.data.data;
         const listIdSanPham = data1.map((item) => item.idSanPham);
+        const uniqueSelectedRowKeys = Array.from(new Set(listIdSanPham));
         const listIdSanPhamChiTiet = data1.map((item) => item.idSanPhamChiTiet);
-        // setSelectedProductDetails(listIdSanPhamChiTiet);
-        setIdSanPham(listIdSanPham);
-        listIdSanPham.forEach((idSanPham) => {
+        setIdSanPham(uniqueSelectedRowKeys);
+        uniqueSelectedRowKeys.forEach((idSanPham) => {
           loadDatalistSanPhamChiTiet(idSanPham, true);
         });
-        setIdSanPhamChiTiet(listIdSanPhamChiTiet);
-        setSelectedRowKeys(listIdSanPham);
+        setSelectedRowKeys(uniqueSelectedRowKeys);
         setSelectedRowKeys1(listIdSanPhamChiTiet);
       })
       .catch((error) => {
@@ -389,6 +393,7 @@ const SuaKhuyenMai = () => {
   // Code check box
   const onSelectChange = (newSelectedRowKeys) => {
     setSelectedRowKeys(newSelectedRowKeys);
+    console.log("onSelectChange :" + newSelectedRowKeys);
     if (newSelectedRowKeys.length === 0) {
       clear();
     } else {
@@ -412,16 +417,6 @@ const SuaKhuyenMai = () => {
       Table.SELECTION_NONE,
     ],
   };
-
-  // const onSelectChange1 = (newSelectedRowKeys1) => {
-  //   console.log("selectedRowKeys changed: ", newSelectedRowKeys1);
-  //   setSelectedRowKeys1(newSelectedRowKeys1);
-  //   setSelectedProductDetails(newSelectedRowKeys1);
-  //   // console.log("lấy id check box: ", selectedProductDetails);
-  // };
-  const [previouslySelectedRowKeys, setPreviouslySelectedRowKeys] = useState(
-    []
-  );
 
   // Hàm xử lý sự kiện khi chọn (select) thay đổi
   const onSelectChange1 = (newSelectedRowKeys1) => {
@@ -511,11 +506,51 @@ const SuaKhuyenMai = () => {
           badgeContent={record.size}
           color="primary"
         >
-          <img
-            src={record.duongDan}
-            alt="Ảnh"
-            style={{ width: "100px", height: "100px" }}
-          />
+          <div className="image-container" style={{ position: "relative" }}>
+            <img
+              src={record.duongDan}
+              alt="Ảnh"
+              style={{ width: "100px", height: "100px" }}
+            />
+            {record.giaTriKhuyenMai !== null && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
+              >
+                <FontAwesomeIcon
+                  icon={faBookmark}
+                  style={{
+                    fontSize: "2.7em",
+                    color: record.giaTriKhuyenMai > 50 ? "red" : "#ffcc00",
+                    zIndex: 1,
+                    position: "relative",
+                  }}
+                />
+                <span
+                  style={{
+                    position: "absolute",
+                    top: "43%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    fontSize: "11px",
+                    color: record.giaTriKhuyenMai > 50 ? "white" : "black",
+                    zIndex: 2,
+                  }}
+                >
+                  <strong>
+                    Giảm
+                    <br /> {record.giaTriKhuyenMai}%
+                  </strong>
+                </span>
+              </div>
+            )}
+          </div>
         </Badge>
       ),
     },
@@ -527,22 +562,24 @@ const SuaKhuyenMai = () => {
       align: "center",
       maxWidth: "20%",
       render: (value, record) => {
-        let tenSanPham = value;
         return (
           <span style={{ whiteSpace: "pre-line" }}>
-            {record.tenSanPham} {record.kichThuocRam}GB/{record.kichThuocRom}GB
+            {record.tenSanPham} {record.kichThuocRam}GB/{record.kichThuocRom}GB{" "}
+            {"("}
+            {record.tenMauSac}
+            {")"}
           </span>
         );
       },
     },
-    {
-      title: "Màu Sắc ",
-      dataIndex: "tenMauSac",
-      key: "tenMauSac",
-      width: "10%",
-      editable: true,
-      align: "center",
-    },
+    // {
+    //   title: "Màu Sắc ",
+    //   dataIndex: "tenMauSac",
+    //   key: "tenMauSac",
+    //   width: "10%",
+    //   editable: true,
+    //   align: "center",
+    // },
     {
       title: "Đơn giá ",
       dataIndex: "donGia",
@@ -565,13 +602,23 @@ const SuaKhuyenMai = () => {
       editable: true,
       align: "center",
       render: (_, record) => {
-        let formattedValue = value;
-        if (selectDiscount === TypeDiscountString.VND) {
-          formattedValue = numeral(value).format("0,0 VND") + " ₫";
-        } else if (selectDiscount === TypeDiscountString.PERCENT) {
-          formattedValue = value + " %";
+        let formattedValue;
+        if (record.giaTriKhuyenMai === null) {
+          formattedValue = value;
+        } else {
+          if (value === "0") {
+            formattedValue = record.giaTriKhuyenMai;
+          } else if (record.tong === null) {
+            formattedValue = Math.round(
+              (0 + parseInt(value)) / (record.size + 1)
+            );
+          } else {
+            formattedValue = Math.round(
+              (record.tong + parseInt(value)) / (record.size + 1)
+            );
+          }
         }
-        return <span>{formattedValue}</span>;
+        return <span>{formattedValue + " %"}</span>;
       },
     },
 
@@ -584,20 +631,26 @@ const SuaKhuyenMai = () => {
       align: "center",
       whiteSpace: "pre-line",
       render: (_, record) => {
-        const numericValue2 = parseFloat(value?.replace(/[^0-9.-]+/g, ""));
-        let giaTriKhuyenMai = record.donGia;
-        if (selectDiscount === TypeDiscountString.VND) {
-          giaTriKhuyenMai = record.donGia - numericValue2;
-          return (
-            <span>{numeral(giaTriKhuyenMai).format("0,0 VND") + " ₫"}</span>
-          );
-        } else if (selectDiscount === TypeDiscountString.PERCENT) {
-          giaTriKhuyenMai =
-            record.donGia - (record.donGia * numericValue2) / 100;
-          return (
-            <span>{numeral(giaTriKhuyenMai).format("0,0 VND") + " ₫"}</span>
-          );
+        let formattedValue;
+        if (record.giaTriKhuyenMai === null) {
+          formattedValue = value;
+        } else {
+          if (value === "0") {
+            formattedValue = record.giaTriKhuyenMai;
+          } else if (record.tong === null) {
+            formattedValue = Math.round(
+              (0 + parseInt(value)) / (record.size + 1)
+            );
+          } else {
+            formattedValue = Math.round(
+              (record.tong + parseInt(value)) / (record.size + 1)
+            );
+          }
         }
+        let giaTriKhuyenMai = record.donGia;
+        giaTriKhuyenMai =
+          record.donGia - (record.donGia * formattedValue) / 100;
+        return <span>{numeral(giaTriKhuyenMai).format("0,0 VND") + " ₫"}</span>;
       },
     },
   ];
@@ -649,7 +702,7 @@ const SuaKhuyenMai = () => {
             </div>
 
             <div className="d-flex ms-3" style={{ marginBottom: "5px" }}>
-              <div>
+              {/* <div>
                 <RadioGroup
                   orientation="horizontal"
                   aria-label="Alignment"
@@ -659,7 +712,7 @@ const SuaKhuyenMai = () => {
                   onChange={handleChangeToggleButtonDiscount}
                   sx={{ borderRadius: "12px" }}
                 >
-                  {[TypeDiscountString.VND, TypeDiscountString.PERCENT].map(
+                  {[TypeDiscountString.PERCENT, TypeDiscountString.VND].map(
                     (item) => (
                       <Box
                         key={item}
@@ -712,7 +765,7 @@ const SuaKhuyenMai = () => {
                     )
                   )}
                 </RadioGroup>
-              </div>
+              </div> */}
               <div>
                 <TextField
                   label="Nhập Giá Trị Giảm Giá"
@@ -732,8 +785,7 @@ const SuaKhuyenMai = () => {
                     ),
                   }}
                   style={{
-                    marginLeft: "15px",
-                    width: "320px",
+                    width: "430px",
                   }}
                   inputProps={{
                     maxLength: 20, // Giới hạn tối đa 10 ký tự

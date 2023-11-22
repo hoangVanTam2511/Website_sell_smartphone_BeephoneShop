@@ -62,7 +62,7 @@ const ManagementOrders = () => {
 
   const isFirstRender = useRef(true);
   useEffect(() => {
-      setIsLoading(true);
+    setIsLoading(true);
     if (isFirstRender.current) {
       isFirstRender.current = false;
       findOrdersByMultipleCriteriaWithPagination(currentPage);
@@ -186,8 +186,8 @@ const ManagementOrders = () => {
       align: "center",
       dataIndex: "tenNguoiNhan",
       width: "15%",
-      render: (text, record) =>
-        record.tenNguoiNhan == null ? (
+      render: (text, order) =>
+        order.account === null && order.loaiHoaDon === OrderTypeString.AT_COUNTER ? (
           <div
             className="rounded-pill mx-auto"
             style={{
@@ -205,15 +205,22 @@ const ManagementOrders = () => {
             </span>
           </div>
         ) : (
-          <span>{record.tenNguoiNhan}</span>
+          order.loaiHoaDon === OrderTypeString.AT_COUNTER && order.account &&
+            order.account.hoVaTen ? order.account.hoVaTen
+            :
+            order.tenNguoiNhan
+
         ),
     },
     {
       title: "Số Điện Thoại",
       align: "center",
       dataIndex: "soDienThoaiNguoiNhan",
-      render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>{record.soDienThoaiNguoiNhan || "..."}</span>
+      render: (text, order) => (
+        <span style={{ fontWeight: "400" }}>{order.loaiHoaDon === OrderTypeString.AT_COUNTER && order.account === null ? "..."
+          : order.loaiHoaDon === OrderTypeString.AT_COUNTER && order.account &&
+            order.account.soDienThoai ? order.account.soDienThoai :
+            order.soDienThoaiNguoiNhan}</span>
       ),
     },
     {
@@ -299,7 +306,7 @@ const ManagementOrders = () => {
                 className="rounded-pill mx-auto badge-warning"
                 style={{
                   height: "35px",
-                  width: "auto",
+                  width: "150px",
                   padding: "4px",
                 }}
               >

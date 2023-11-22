@@ -1,52 +1,54 @@
 import React, { useEffect, useState } from "react";
-import {
-  Link,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Empty, Table } from "antd";
 import {
-  Box,
+  Autocomplete,
   Dialog,
   DialogContent,
+  FormControl,
   IconButton,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
   Pagination,
+  Select,
   Slide,
   TextField,
   Tooltip,
 } from "@mui/material";
 import { PlusOutlined } from "@ant-design/icons";
 import Card from "../../../components/Card";
-import { format } from "date-fns";
 import axios from "axios";
-import { parseInt } from "lodash";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import Zoom from "@mui/material/Zoom";
-import * as dayjs from "dayjs";
 import {
-  OrderStatusString,
-  OrderTypeString,
+  Notistack,
   StatusCommonProducts,
+  StatusCommonProductsNumber,
 } from "./enum";
-import LoadingIndicator from "../../../utilities/loading";
+import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import CreatePin from "./create-pin";
+import useCustomSnackbar from "../../../utilities/notistack";
+import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
+import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const ManagementPins = () => {
   const navigate = useNavigate();
   const [pins, setPins] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const [totalPages, setTotalPages] = useState();
+  const [pinPages, setPinPages] = useState([]);
   const [refreshPage, setRefreshPage] = useState(1);
   const [searchParams, setSearchParams] = useSearchParams();
+  const [searchTatCa, setSearchTatCa] = useState("");
+  const [searchTrangThai, setSearchTrangThai] = useState("");
   const [keyword, setKeyword] = useState(searchParams.get("keyword"));
-  const [currentPage, setCurrentPage] = useState(
-    searchParams.get("currentPage") || 1
-  );
+  const [currentPage, setCurrentPage] = useState(1);
+  const [openSelect, setOpenSelect] = useState(false);
 
   const loadDataPins = () => {
     axios
@@ -54,17 +56,42 @@ const ManagementPins = () => {
       .then((response) => {
         setPins(response.data.data);
         setTotalPages(response.data.totalPages);
-        setIsLoading(false);
+        // setIsLoading(false);
       })
       .catch((error) => {
         console.error(error);
-        setIsLoading(false);
+        // setIsLoading(false);
+      });
+  };
+
+  const getListPinSearchAndPage = (page) => {
+    // setIsLoading(false);
+    axios
+      .get(`http://localhost:8080/api/pins/search`, {
+        params: {
+          keyword: searchTatCa,
+          currentPage: page,
+          status: ConvertStatusProductsNumberToString(searchTrangThai),
+        },
+      })
+      .then((response) => {
+        setPinPages(response.data.data);
+        setTotalPages(response.data.totalPages);
+        // setIsLoading(true);
+      })
+      .catch((error) => {
+        console.error(error);
+        // setIsLoading(false);
       });
   };
 
   useEffect(() => {
     loadDataPins();
   }, []);
+
+  useEffect(() => {
+    getListPinSearchAndPage(currentPage);
+  }, [searchTatCa, searchTrangThai, currentPage, totalPages]);
 
   const [open, setOpen] = React.useState(false);
   const handleClickOpen = () => {
@@ -75,6 +102,36 @@ const ManagementPins = () => {
     setOpen(false);
   };
 
+  const handleOpenSelect = () => {
+    setOpenSelect(true);
+  };
+
+  const handleCloseSelect = () => {
+    setOpenSelect(false);
+  };
+
+  const handleSearchTrangThaiChange = (event) => {
+    const selectedValue = event.target.value;
+    setSearchTrangThai(parseInt(selectedValue)); // Cập nhật giá trị khi Select thay đổi
+    searchParams.set("trangThai", parseInt(selectedValue));
+    setSearchParams(searchParams);
+    if (selectedValue === 5) {
+      setSearchParams("");
+    }
+    setCurrentPage(1);
+  };
+
+  const handleSearchTatCaChange = (event) => {
+    const searchTatCaInput = event.target.value;
+    setSearchTatCa(searchTatCaInput);
+    setCurrentPage(1);
+  };
+
+  const chuyenTrang = (event, page) => {
+    setCurrentPage(page);
+    getListPinSearchAndPage(page);
+  };
+
   const PinTable = () => {
     return (
       <>
@@ -82,7 +139,7 @@ const ManagementPins = () => {
           className="table-container"
           columns={columns}
           rowKey="id"
-          dataSource={pins}
+          dataSource={pinPages}
           pagination={false}
           locale={{ emptyText: <Empty description="Không có dữ liệu" /> }}
         />
@@ -97,7 +154,9 @@ const ManagementPins = () => {
       dataIndex: "stt",
       width: "5%",
       render: (text, record, index) => (
-        <span style={{ fontWeight: "400" }}>{pins.indexOf(record) + 1}</span>
+        <span style={{ fontWeight: "400" }}>
+          {pinPages.indexOf(record) + 1}
+        </span>
       ),
     },
     {
@@ -171,8 +230,42 @@ const ManagementPins = () => {
           <div className="d-flex justify-content-center">
             <div className="button-container">
               <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
-                <IconButton size="">
+                <IconButton
+                  onClick={() => {
+                    handleClickOpen1(record.id);
+                    setIdPin(record.id);
+                  }}
+                >
                   <BorderColorOutlinedIcon color="primary" />
+                </IconButton>
+              </Tooltip>
+
+              {/* Hàm đổi trạng thái */}
+
+              <Tooltip
+                TransitionComponent={Zoom}
+                title={
+                  record.status === StatusCommonProducts.ACTIVE
+                    ? "Ngừng kích hoạt"
+                    : record.status === StatusCommonProducts.IN_ACTIVE
+                    ? "Kích hoạt"
+                    : ""
+                }
+              >
+                <IconButton
+                  className="ms-2"
+                  style={{ marginTop: "6px" }}
+                  onClick={() => doiTrangThaiProducts(record.id)}
+                >
+                  <AssignmentOutlinedIcon
+                    color={
+                      record.status === StatusCommonProducts.IN_ACTIVE
+                        ? "error"
+                        : record.status === StatusCommonProducts.ACTIVE
+                        ? "success"
+                        : "disabled"
+                    }
+                  />
                 </IconButton>
               </Tooltip>
             </div>
@@ -181,6 +274,98 @@ const ManagementPins = () => {
       ),
     },
   ];
+
+  const [pinCode, setPinCode] = useState("");
+  const [status, setStatus] = useState("");
+  const [loaiPin, setLoaiPin] = useState("");
+  const [dungLuong, setDungLuong] = useState("");
+  const [idPin, setIdPin] = useState("");
+
+  const detailPins = async (id) => {
+    await axios
+      .get(`http://localhost:8080/api/pins/${id}`)
+      .then((response) => {
+        setPinCode(response.data.data.ma);
+        setStatus(response.data.data.status);
+        setLoaiPin(response.data.data.loaiPin);
+        setDungLuong(response.data.data.dungLuong);
+        console.log(response.data.data);
+      })
+      .catch((error) => {});
+  };
+
+  const [open1, setOpen1] = React.useState(false);
+
+  const handleClickOpen1 = (id) => {
+    detailPins(id);
+    setOpen1(true);
+  };
+
+  const handleClose1 = () => {
+    setOpen1(false);
+  };
+
+  const uniquePin = pins
+    .map((option) => option.loaiPin)
+    .filter((value, index, self) => {
+      return self.indexOf(value) === index;
+    });
+
+  const uniqueDungLuong = pins
+    .map((option) => option.dungLuong.toString())
+    .filter((value, index, self) => {
+      return self.indexOf(value) === index;
+    });
+
+  const handleChangeLoaiPin = (event, value) => {
+    setLoaiPin(value);
+  };
+
+  const handleChangeDungLuong = (event, value) => {
+    setDungLuong(value);
+  };
+
+  const handleChangeStatus = (event) => {
+    setStatus(event.target.value);
+  };
+
+  const { handleOpenAlertVariant } = useCustomSnackbar();
+
+  const updatePin = () => {
+    let obj = {
+      id: idPin,
+      ma: pinCode,
+      loaiPin: loaiPin,
+      dungLuong: dungLuong,
+      status: status,
+    };
+    axios
+      .put(`http://localhost:8080/api/pins`, obj)
+      .then((response) => {
+        loadDataPins();
+        handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
+        setOpen1(false);
+      })
+      .catch((error) => {
+        handleOpenAlertVariant(error.response.data.message, Notistack.ERROR);
+      });
+  };
+
+  const doiTrangThaiProducts = (idPin) => {
+    axios
+      .put(`http://localhost:8080/api/pins/${idPin}`)
+      .then((response) => {
+        loadDataPins();
+        handleOpenAlertVariant(
+          "Đổi trạng thái thành công!!!",
+          Notistack.SUCCESS
+        );
+      })
+      .catch((error) => {
+        handleOpenAlertVariant(error.response.data.message, Notistack.ERROR);
+      });
+  };
+
   return (
     <>
       <div
@@ -195,8 +380,8 @@ const ManagementPins = () => {
             <div className="header-title mt-2">
               <TextField
                 label="Tìm Pin"
-                // onChange={handleGetValueFromInputTextField}
-                // value={keyword}
+                onChange={handleSearchTatCaChange}
+                value={searchTatCa}
                 InputLabelProps={{
                   sx: {
                     marginTop: "",
@@ -226,12 +411,75 @@ const ManagementPins = () => {
                 </span>
               </Button>
             </div>
-            <div className="mt-2">
+
+            <div className="d-flex mt-2">
+              <div
+                className="d-flex me-5"
+                style={{
+                  height: "40px",
+                  position: "relative",
+                  cursor: "pointer",
+                }}
+              >
+                <div
+                  onClick={handleOpenSelect}
+                  className=""
+                  style={{ marginTop: "7px" }}
+                >
+                  <span
+                    className="ms-2 ps-1"
+                    style={{ fontSize: "15px", fontWeight: "450" }}
+                  >
+                    Trạng Thái:{" "}
+                  </span>
+                </div>
+                <FormControl
+                  sx={{
+                    minWidth: 50,
+                  }}
+                  size="small"
+                >
+                  <Select
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          borderRadius: "7px",
+                        },
+                      },
+                    }}
+                    IconComponent={KeyboardArrowDownOutlinedIcon}
+                    sx={{
+                      "& .MuiOutlinedInput-notchedOutline": {
+                        border: "none !important",
+                      },
+                      "& .MuiSelect-select": {
+                        color: "#2f80ed",
+                        fontWeight: "500",
+                      },
+                    }}
+                    open={openSelect}
+                    onClose={handleCloseSelect}
+                    onOpen={handleOpenSelect}
+                    defaultValue={5}
+                    onChange={handleSearchTrangThaiChange}
+                  >
+                    <MenuItem className="" value={5}>
+                      Tất cả
+                    </MenuItem>
+                    <MenuItem value={StatusCommonProductsNumber.ACTIVE}>
+                      Hoạt động
+                    </MenuItem>
+                    <MenuItem value={StatusCommonProductsNumber.IN_ACTIVE}>
+                      Ngừng hoạt động
+                    </MenuItem>
+                  </Select>
+                </FormControl>
+              </div>
               <Button
                 onClick={handleClickOpen}
                 className="rounded-2 button-mui"
                 type="primary"
-                style={{ height: "40px", width: "115px", fontSize: "15px" }}
+                style={{ height: "40px", width: "145px", fontSize: "15px" }}
               >
                 <PlusOutlined
                   className="ms-1"
@@ -255,15 +503,135 @@ const ManagementPins = () => {
           </Card.Body>
           <div className="mx-auto">
             <Pagination
-              color="primary" /* page={parseInt(currentPage)} key={refreshPage} count={totalPages} */
-            // onChange={handlePageChange}
+              page={parseInt(currentPage)}
+              count={totalPages}
+              onChange={chuyenTrang}
+              color="primary"
             />
           </div>
           <div className="mt-4"></div>
         </Card>
       </div>
-      {isLoading && <LoadingIndicator />}
-      <CreatePin open={open} close={handleClose} getAll={loadDataPins} pins={pins} />
+      {/* {isLoading && <LoadingIndicator />} */}
+      <CreatePin
+        open={open}
+        close={handleClose}
+        getAll={loadDataPins}
+        pins={pins}
+      />
+      <Dialog
+        open={open1}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={handleClose1}
+        maxWidth="md"
+        maxHeight="md"
+        sx={{
+          marginBottom: "170px",
+        }}
+      >
+        <DialogContent>
+          <div className="mt-4" style={{ width: "700px" }}>
+            <div className="container" style={{}}>
+              <div className="text-center" style={{}}>
+                <span
+                  className=""
+                  style={{ fontWeight: "550", fontSize: "29px" }}
+                >
+                  SỬA PIN
+                </span>
+              </div>
+              <div className="mx-auto mt-3 pt-2">
+                <div>
+                  <Autocomplete
+                    fullWidth
+                    className="custom"
+                    id="free-solo-demo"
+                    freeSolo
+                    inputValue={loaiPin}
+                    onInputChange={handleChangeLoaiPin}
+                    options={uniquePin}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Tên Pin" />
+                    )}
+                  />
+                </div>
+                <div className="mt-3">
+                  <Autocomplete
+                    fullWidth
+                    className="custom"
+                    id="free-solo-demo"
+                    freeSolo
+                    inputValue={String(dungLuong)}
+                    onInputChange={handleChangeDungLuong}
+                    options={uniqueDungLuong}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        InputProps={{
+                          ...params.InputProps,
+                          startAdornment: (
+                            <>
+                              <InputAdornment
+                                style={{ marginLeft: "5px" }}
+                                position="start"
+                              >
+                                mAh
+                              </InputAdornment>
+                              {params.InputProps.startAdornment}
+                            </>
+                          ),
+                        }}
+                        label="Dung Lượng PIN"
+                      />
+                    )}
+                  />
+                </div>
+                <div className="mt-3" style={{}}>
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">
+                      Trạng Thái
+                    </InputLabel>
+                    <Select
+                      className="custom"
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={status}
+                      label="Trạng Thái"
+                      onChange={handleChangeStatus}
+                      // defaultValue={StatusCommonProductsNumber.ACTIVE}
+                    >
+                      <MenuItem value={StatusCommonProducts.ACTIVE}>
+                        Hoạt Động
+                      </MenuItem>
+                      <MenuItem value={StatusCommonProducts.IN_ACTIVE}>
+                        Ngừng Hoạt Động
+                      </MenuItem>
+                    </Select>
+                  </FormControl>
+                </div>
+                <div className="mt-4 pt-1 d-flex justify-content-end">
+                  <Button
+                    onClick={() => updatePin()}
+                    className="rounded-2 button-mui"
+                    type="primary"
+                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                  >
+                    <span
+                      className=""
+                      style={{ marginBottom: "2px", fontWeight: "500" }}
+                    >
+                      Xác Nhận
+                    </span>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* {isLoading && <LoadingIndicator />} */}
+        </DialogContent>
+        <div className="mt-3"></div>
+      </Dialog>
     </>
   );
 };
