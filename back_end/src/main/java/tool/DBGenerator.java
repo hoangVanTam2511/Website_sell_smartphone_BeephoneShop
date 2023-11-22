@@ -820,7 +820,7 @@ public class DBGenerator implements CommandLineRunner {
         //Bảng khuyến mại
         KhuyenMai khuyenMai = new KhuyenMai();
         khuyenMai.setMa("KhuyenMai1");
-        khuyenMai.setTenKhuyenMai("FPT Shop giảm ngay 250K khi khách hàng mua laptop hoặc MacBook có giá từ 8 triệu đồng");
+        khuyenMai.setTenKhuyenMai("FPT Shop giảm 250K VNĐ");
         khuyenMai.setGiaTriKhuyenMai(new BigDecimal(250000));
         khuyenMai.setLoaiKhuyenMai(TypeDiscount.VND);
         SimpleDateFormat dateFormat5 = new SimpleDateFormat("dd-MM-yyyy");
@@ -839,7 +839,7 @@ public class DBGenerator implements CommandLineRunner {
 
         KhuyenMai khuyenMai2 = new KhuyenMai();
         khuyenMai2.setMa("KhuyenMai2");
-        khuyenMai2.setTenKhuyenMai("FPT Shop giảm ngay 500k khi khách hàng mua Iphone 15 hoặc MacBook có giá từ 12 triệu đồng");
+        khuyenMai2.setTenKhuyenMai("FPT Shop giảm 500k VNĐ");
         khuyenMai2.setGiaTriKhuyenMai(new BigDecimal(250000));
         khuyenMai2.setLoaiKhuyenMai(TypeDiscount.VND);
         SimpleDateFormat dateFormat6 = new SimpleDateFormat("dd-MM-yyyy");
@@ -858,9 +858,9 @@ public class DBGenerator implements CommandLineRunner {
 
         KhuyenMai khuyenMai3 = new KhuyenMai();
         khuyenMai3.setMa("KhuyenMai1");
-        khuyenMai3.setTenKhuyenMai("FPT Shop giảm ngay 10% khi khách hàng mua laptop hoặc MacBook có giá từ 5 triệu đồng");
-        khuyenMai3.setGiaTriKhuyenMai(new BigDecimal(10));
-        khuyenMai3.setLoaiKhuyenMai(TypeDiscount.PERCENT);
+        khuyenMai3.setTenKhuyenMai("FPT Shop giảm 1 triệu VNĐ");
+        khuyenMai3.setGiaTriKhuyenMai(new BigDecimal(1000000));
+        khuyenMai3.setLoaiKhuyenMai(TypeDiscount.VND);
         SimpleDateFormat dateFormat7 = new SimpleDateFormat("dd-MM-yyyy");
         Date ngayBatDau7 = null;
         Date ngayKetThuc7 = null;
@@ -927,13 +927,13 @@ public class DBGenerator implements CommandLineRunner {
         Voucher voucher3 = new Voucher();
         voucher3.setMa("VOUCHER678");
         voucher3.setTen("""
-                Giảm ngay 30% cho đơn hàng của khách hàng đạt 15000k
+                Giảm ngay 3 triệu cho đơn hàng của khách hàng đạt 15000k
                 """);
-        voucher3.setGiaTriVoucher(new BigDecimal(30));
+        voucher3.setGiaTriVoucher(new BigDecimal(3000000));
         voucher3.setDieuKienApDung(new BigDecimal(15000000));
-        voucher3.setGiaTriToiDa(new BigDecimal(3000000));
+        voucher3.setGiaTriToiDa(null);
         voucher3.setSoLuong(1000);
-        voucher3.setLoaiVoucher(TypeDiscount.PERCENT);
+        voucher3.setLoaiVoucher(TypeDiscount.VND);
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
         Date ngayBatDau = null;
         Date ngayKetThuc = null;

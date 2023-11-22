@@ -125,7 +125,10 @@ const ManagementSims = () => {
   const handleRefreshData = () => {
     setSearchTatCa("");
     setPageShow(5);
-    setSearchTrangThai("");
+    setSearchTrangThai(5);
+    if (searchTrangThai === 5) {
+      setSearchParams("");
+    }
     getListProductSearchAndPage(currentPage);
   };
 
@@ -501,7 +504,7 @@ const ManagementSims = () => {
                     open={openSelect}
                     onClose={handleCloseSelect}
                     onOpen={handleOpenSelect}
-                    defaultValue={5}
+                    value={5}
                     onChange={handleSearchTrangThaiChange}
                   >
                     <MenuItem className="" value={5}>

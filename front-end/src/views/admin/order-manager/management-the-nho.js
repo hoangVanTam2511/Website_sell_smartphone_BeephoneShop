@@ -511,7 +511,7 @@ const ManagementTheNhos = () => {
                     open={openSelect}
                     onClose={handleCloseSelect}
                     onOpen={handleOpenSelect}
-                    defaultValue={5}
+                    value={showPage}
                     onChange={handleSearchTrangThaiChange}
                   >
                     <MenuItem className="" value={5}>
