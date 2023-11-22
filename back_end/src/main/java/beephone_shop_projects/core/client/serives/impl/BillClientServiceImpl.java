@@ -108,6 +108,8 @@ public class BillClientServiceImpl {
         newOrder.setTrangThai(OrderStatus.PENDING_CONFIRM);
         newOrder.setTongTien(orderRequest.getTongTien());
         newOrder.setTongTienSauKhiGiam(orderRequest.getTongTienSauKhiGiam());
+        newOrder.setKhachCanTra(orderRequest.getTienKhachTra());
+        newOrder.setPhiShip(new BigDecimal(25600));
         newOrder.setCreatedAt(new Date());
         newOrder.setTongTien(orderRequest.getTongTien());
         HoaDon createdOrder = hoaDonRepository.save(newOrder);

@@ -378,28 +378,28 @@ const HienThiVoucher = () => {
         );
       },
     },
-    {
-      title: "Giá Trị Tối Đa",
-      dataIndex: "giaTriToiDa",
-      width: "10%",
-      align: "center",
-      render: (value, record) => {
-        let formattedValue = value;
-        if (record.loaiVoucher === TypeDiscountString.VND) {
-          formattedValue = "...";
-        } else if (record.loaiVoucher === TypeDiscountString.PERCENT) {
-          formattedValue = record.giaTriToiDa.toLocaleString("vi-VN", {
-            style: "currency",
-            currency: "VND",
-          });
-        }
-        return (
-          <span className="txt-danger" style={{ fontWeight: "400" }}>
-            {formattedValue}
-          </span>
-        );
-      },
-    },
+    // {
+    //   title: "Giá Trị Tối Đa",
+    //   dataIndex: "giaTriToiDa",
+    //   width: "10%",
+    //   align: "center",
+    //   render: (value, record) => {
+    //     let formattedValue = value;
+    //     if (record.loaiVoucher === TypeDiscountString.VND) {
+    //       formattedValue = "...";
+    //     } else if (record.loaiVoucher === TypeDiscountString.PERCENT) {
+    //       formattedValue = record.giaTriToiDa.toLocaleString("vi-VN", {
+    //         style: "currency",
+    //         currency: "VND",
+    //       });
+    //     }
+    //     return (
+    //       <span className="txt-danger" style={{ fontWeight: "400" }}>
+    //         {formattedValue}
+    //       </span>
+    //     );
+    //   },
+    // },
     {
       title: "Điều kiện",
       dataIndex: "dieuKienApDung",
@@ -836,7 +836,7 @@ const HienThiVoucher = () => {
           <Card.Header className="">
             <div className="header-title mt-2">
               <TextField
-                label="Tìm voucher"
+                label="Tìm mã, giá trị, số lượng voucher  "
                 value={searchTatCa}
                 onChange={handleSearchTatCaChange}
                 InputLabelProps={{
@@ -848,7 +848,7 @@ const HienThiVoucher = () => {
                 inputProps={{
                   style: {
                     height: "23px",
-                    width: "190px",
+                    width: "280px",
                   },
                 }}
                 size="small"
@@ -1033,7 +1033,7 @@ const HienThiVoucher = () => {
                   </Select>
                 </FormControl>
               </div>
-              <div
+              {/* <div
                 className="d-flex"
                 style={{
                   height: "40px",
@@ -1094,7 +1094,7 @@ const HienThiVoucher = () => {
                     </MenuItem>
                   </Select>
                 </FormControl>
-              </div>
+              </div> */}
               <div
                 className="d-flex"
                 style={{

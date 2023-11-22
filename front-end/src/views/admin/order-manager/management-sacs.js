@@ -64,12 +64,15 @@ const ManagementCongSacs = () => {
   const [productPages, setProductPages] = useState([]);
   const [pageShow, setPageShow] = useState(5);
   const [searchTatCa, setSearchTatCa] = useState("");
-  const [searchTrangThai, setSearchTrangThai] = useState("");
+  const [searchTrangThai, setSearchTrangThai] = useState(5);
 
   const handleRefreshData = () => {
     setSearchTatCa("");
     setPageShow(5);
-    setSearchTrangThai("");
+    setSearchTrangThai(5);
+    if (searchTrangThai === 5) {
+      setSearchParams("");
+    }
     getListProductSearchAndPage(currentPage);
   };
 
@@ -464,7 +467,7 @@ const ManagementCongSacs = () => {
                     open={openSelect}
                     onClose={handleCloseSelect}
                     onOpen={handleOpenSelect}
-                    defaultValue={5}
+                    value={searchTrangThai}
                     onChange={handleSearchTrangThaiChange}
                   >
                     <MenuItem className="" value={5}>

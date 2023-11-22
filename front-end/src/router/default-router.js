@@ -113,6 +113,7 @@ import ThongKe from "../views/admin/statics-manager/thong-ke";
 // import ManagementImage from "../views/admin/order-manager/management-image";
 import PaymentSuccess from "../views/admin/order-manager/vnpay-payment-success";
 import ManagementImei from "../views/admin/order-manager/management-imei";
+import ThongKeDoanhThu from "../views/admin/statics-manager/thong-ke-doanh-thu";
 
 export const DefaultRouter = [
   {
@@ -396,6 +397,10 @@ export const DefaultRouter = [
       {
         path: "dashboard/payment-success",
         element: <PaymentSuccess />,
+      },
+      {
+        path: "dashboard/doanh-thu",
+        element: <ThongKeDoanhThu />,
       },
       // {
       //   path: 'dashboard/add-product',

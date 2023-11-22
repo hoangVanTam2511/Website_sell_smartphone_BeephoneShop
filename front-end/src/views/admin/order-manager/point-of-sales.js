@@ -1537,7 +1537,7 @@ const PointOfSales = () => {
     setIsLoading(true);
     if (orders.length >= 5) {
       handleOpenAlertVariant("Tối đa 6 tab!", "warning");
-      setIsLoading(true);
+      setIsLoading(false);
     } else {
       const data = {
         id: order.id,
