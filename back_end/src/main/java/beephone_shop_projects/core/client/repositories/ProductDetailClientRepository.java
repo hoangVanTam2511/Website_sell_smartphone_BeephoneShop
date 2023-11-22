@@ -89,19 +89,18 @@ public interface ProductDetailClientRepository extends ISanPhamChiTietRepository
                          SELECT m.id
                          FROM san_pham_chi_tiet a
                          JOIN san_pham m on m.id = a.id_san_pham
-                         JOIN hang c on c.id = m.id_hang
+                         LEFT JOIN hang c on c.id = m.id_hang
                          JOIN ram f on f.id = a.id_ram
                          JOIN rom g on g.id = a.id_rom
-                         JOIN pin k on k.id = m.id_pin
-                         JOIN dong_san_pham l on l.id = m.id_dong_san_pham
-                         JOIN chip n on n.id = m.id_chip
-                         JOIN man_hinh o on o.id = m.id_man_hinh
+                         LEFT JOIN pin k on k.id = m.id_pin
+                         LEFT JOIN dong_san_pham l on l.id = m.id_dong_san_pham
+                         LEFT JOIN chip n on n.id = m.id_chip
+                         LEFT JOIN man_hinh o on o.id = m.id_man_hinh
                          WHERE  f.dung_luong LIKE :ram
                          AND  g.dung_luong LIKE :rom
                          AND  c.ten_hang LIKE :nha_san_xuat
                          AND   k.dung_luong LIKE :dung_luong
                          AND  o.tan_so_quet LIKE :tan_so_quet
-                         AND  l.ten_dong_san_pham LIKE :dong_san_pham
                          AND a.don_gia BETWEEN :donGiaMin and :donGiaMax
                          AND n.ten_chip LIKE :chip
                          AND o.kich_thuoc LIKE :manHinh
@@ -115,7 +114,6 @@ public interface ProductDetailClientRepository extends ISanPhamChiTietRepository
                                           @Param("rom") String rom,
                                           @Param("nha_san_xuat") String nhaSanXuat,
                                           @Param("dung_luong") String dungLuongPin,
-                                          @Param("dong_san_pham") String dongSanPham,
                                           @Param("donGiaMin") String donGiaMin,
                                           @Param("donGiaMax") String donGiaMax,
                                           @Param("chip") String chip,
