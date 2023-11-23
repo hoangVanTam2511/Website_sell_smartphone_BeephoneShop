@@ -492,14 +492,6 @@ const AddKhuyenMai = () => {
         );
       },
     },
-    // {
-    //   title: "Màu Sắc ",
-    //   dataIndex: "tenMauSac",
-    //   key: "tenMauSac",
-    //   width: "10%",
-    //   editable: true,
-    //   align: "center",
-    // },
     {
       title: "Đơn giá ",
       dataIndex: "donGia",
@@ -522,7 +514,6 @@ const AddKhuyenMai = () => {
       editable: true,
       align: "center",
       render: (_, record) => {
-        // let formattedValue = value;
         let formattedValue;
         if (record.giaTriKhuyenMai === null) {
           formattedValue = value;

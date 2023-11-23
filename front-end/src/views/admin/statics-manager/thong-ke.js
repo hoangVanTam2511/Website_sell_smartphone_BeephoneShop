@@ -23,7 +23,7 @@ const ThongKe = () => {
 
   const thongKeTheoNgay = () => {
     axios
-      .get(`http://localhost:8080/thong-ke/in-day`)
+      .get(`http://localhost:8080/thong-ke/don-hang-all`)
       .then((response) => {
         setListDonHangAll(response.data);
       })
@@ -50,7 +50,7 @@ const ThongKe = () => {
 
   const getSanPhamTop5 = () => {
     axios
-      .get(`http://localhost:8080/thong-ke/san-pham-top5`)
+      .get(`http://localhost:8080/thong-ke/san-pham-ban-chay`)
       .then((response) => {
         setListSanPhamTop5(response.data);
         console.log(response.data);
