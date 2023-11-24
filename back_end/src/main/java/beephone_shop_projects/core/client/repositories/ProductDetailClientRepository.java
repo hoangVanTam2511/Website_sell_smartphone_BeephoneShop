@@ -1,6 +1,7 @@
 package beephone_shop_projects.core.client.repositories;
 
 import beephone_shop_projects.core.client.models.response.ConfigResponce;
+import beephone_shop_projects.core.client.models.response.ProductBestSeller;
 import beephone_shop_projects.core.client.models.response.ProductDetailResponce;
 import beephone_shop_projects.core.client.models.response.ProductResponce;
 import beephone_shop_projects.repository.ISanPhamChiTietRepository;
@@ -118,4 +119,33 @@ public interface ProductDetailClientRepository extends ISanPhamChiTietRepository
                                           @Param("manHinh") String manHinh,
                                           @Param("tan_so_quet") String tanSoQuet
     );
+
+    @Query(value = """
+        SELECT count(id_chi_tiet_san_pham) AS so_luong_ban_ra, id_chi_tiet_san_pham FROM hoa_don_chi_tiet
+        GROUP BY id_chi_tiet_san_pham
+        ORDER BY so_luong_ban_ra DESC
+        """,nativeQuery = true)
+    ArrayList<ProductBestSeller> getProductSeller();
+
+    @Query(value = """
+                  SELECT
+                  sp.id,
+                  anh.duong_dan,
+                  sp.ten_san_pham, 
+                  IF(kmct.don_gia_sau_khuyen_mai is null ,0, kmct.don_gia_sau_khuyen_mai) AS don_gia_sau_khuyen_mai,
+                  spct.don_gia, 
+                  ram.dung_luong as dung_luong_ram,
+                  rom.dung_luong as dung_luong_rom
+                  FROM san_pham sp
+                  JOIN san_pham_chi_tiet spct ON spct.id_san_pham = sp.id
+                  LEFT JOIN khuyen_mai_chi_tiet kmct ON kmct.id_chi_tiet_san_pham = spct.id
+                  LEFT JOIN anh ON anh.id = spct.id_image
+                  JOIN ram ON ram.id = spct.id_ram
+                  JOIN rom ON rom.id = spct.id_rom
+                   WHERE spct.id = :id_product_detail
+                  ORDER BY ram.dung_luong ASC, rom.dung_luong ASC
+                  LIMIT 0,1
+            """, nativeQuery = true)
+    ProductDetailResponce getProductDetailByIDProductDetail(@Param("id_product_detail") String idProductDetail);
+
 }
