@@ -24,6 +24,8 @@ const ThongKeDoanhThu = () => {
   const [listSanPham, setListSanPham] = useState([]);
   const [listSanPhamTop5, setListSanPhamTop5] = useState([]);
   const [listDonHangTheoNam, setListDonHangTheoNam] = useState([]);
+  const [listDonHangInMonth, setListDonHangInMonth] = useState([]);
+  const [listDonHangInDay, setListDonHangInDay] = useState([]);
   const [searchMonth, setSearchMonth] = useState();
   const [searchYear, setSearchYear] = useState(dayjs());
   const currentYear = new Date().getFullYear();
@@ -39,19 +41,19 @@ const ThongKeDoanhThu = () => {
     axios
       .get(`http://localhost:8080/thong-ke/in-day`)
       .then((response) => {
-        setListDonHangAll(response.data);
+        setListDonHangInDay(response.data);
       })
       .catch((error) => {});
   };
 
-  // const thongKeTheoThang = () => {
-  //   axios
-  //     .get(`http://localhost:8080/thong-ke/in-month`)
-  //     .then((response) => {
-  //       setListDonHangInMonth(response.data);
-  //     })
-  //     .catch((error) => {});
-  // };
+  const thongKeTheoThang = () => {
+    axios
+      .get(`http://localhost:8080/thong-ke/in-month`)
+      .then((response) => {
+        setListDonHangInMonth(response.data);
+      })
+      .catch((error) => {});
+  };
 
   const thongKeTheoSanPham = () => {
     axios
@@ -87,6 +89,7 @@ const ThongKeDoanhThu = () => {
 
   useEffect(() => {
     thongKeTheoNgay();
+    thongKeTheoThang();
     thongKeTheoSanPham();
     getDonHangTheoNam();
     getSanPhamTop5();
@@ -324,14 +327,12 @@ const ThongKeDoanhThu = () => {
             <Col>
               <Card variant="outlined" style={{ padding: "20px" }}>
                 <Row className="align-items-center">
-                  {/* <Col xs="auto">
-                    <FontAwesomeIcon icon={faSackDollar} size="2xl" />
-                  </Col> */}
                   <h5>Doanh thu tháng này</h5>
                   <h5 style={{ color: "#2f80ed" }}>
-                    {listDonHangAll.tongTien == null
+                    {listDonHangInMonth.soLuong} đơn hàng /{" "}
+                    {listDonHangInMonth.tongTien == null
                       ? "0 ₫"
-                      : convertToVND(listDonHangAll.tongTien)}
+                      : convertToVND(listDonHangInMonth.tongTien)}
                   </h5>
                 </Row>
               </Card>
@@ -340,13 +341,18 @@ const ThongKeDoanhThu = () => {
               <Card variant="outlined" style={{ padding: "20px" }}>
                 <h5>Doanh thu hôm nay</h5>
                 <h5 style={{ color: "#2f80ed" }}>
-                  {listDonHangAll.soLuong == null ? 0 : listDonHangAll.soLuong}
+                  <h5 style={{ color: "#2f80ed" }}>
+                    {listDonHangInDay.soLuong} đơn hàng /{" "}
+                    {listDonHangInDay.tongTien == null
+                      ? "0 ₫"
+                      : convertToVND(listDonHangInDay.tongTien)}
+                  </h5>
                 </h5>
               </Card>
             </Col>
             <Col>
               <Card variant="outlined" style={{ padding: "20px" }}>
-                <h5>Sản phẩm đã bán trong ngày</h5>
+                <h5>Sản phẩm đã bán trong tháng</h5>
                 <h5 style={{ color: "#2f80ed" }}>
                   {listSanPham.soLuong == null ? 0 : listSanPham.soLuong} sản
                   phẩm
