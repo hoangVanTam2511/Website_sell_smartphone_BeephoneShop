@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 
 public interface ThongKeSanPhamResponse {
 
-    @Value("#{target.soLuong}")
+    @Value("#{target.so_luong}")
     Integer getSoLuong();
 
 

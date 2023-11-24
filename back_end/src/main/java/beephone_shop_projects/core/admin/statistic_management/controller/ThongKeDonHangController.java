@@ -1,14 +1,13 @@
 package beephone_shop_projects.core.admin.statistic_management.controller;
 
 import beephone_shop_projects.core.admin.statistic_management.model.request.FindByMonthAndYearRequest;
+import beephone_shop_projects.core.admin.statistic_management.model.request.ThongKeKhoangNgayDonHangRequest;
 import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeDonHangKhoangNgay;
 import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeDonHangResponse;
-import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeSanPhamKhoangNgay;
 import beephone_shop_projects.core.admin.statistic_management.service.ThongKeDonHangService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -46,8 +45,8 @@ public class ThongKeDonHangController {
 
     // Hàm này lấy ra số lượng đơn hàng bán được trong từng ngày
     @GetMapping("/don-hang-khoang-ngay")
-    private List<ThongKeDonHangKhoangNgay> getDonHangKhoangNgay(@RequestParam(name = "date1") Date date1, @RequestParam(name = "date2") Date date2 ){
-        return thongKeDonHangService.getDonHangKhoangNgay(date1, date2);
+    private List<ThongKeDonHangKhoangNgay> getDonHangKhoangNgay(final ThongKeKhoangNgayDonHangRequest request){
+        return thongKeDonHangService.getDonHangKhoangNgay(request);
     }
 
 }
