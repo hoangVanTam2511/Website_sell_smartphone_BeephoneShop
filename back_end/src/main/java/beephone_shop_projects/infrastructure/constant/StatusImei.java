@@ -7,4 +7,5 @@ public enum StatusImei {
   PENDING_DELIVERY,
   REFUND,
   CANCELLED,
+  IN_ACTIVE,
 }

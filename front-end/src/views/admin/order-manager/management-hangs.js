@@ -404,6 +404,7 @@ const ManagementHangs = () => {
           <Card.Header className="d-flex justify-content-between">
             <div className="header-title mt-2">
               <TextField
+                placeholder="Tìm theo mã, tên hãng"
                 label="Tìm Tên Hãng"
                 onChange={handleSearchTatCaChange}
                 value={searchTatCa}
@@ -416,7 +417,7 @@ const ManagementHangs = () => {
                 inputProps={{
                   style: {
                     height: "23px",
-                    width: "200px",
+                    width: "300px",
                   },
                 }}
                 size="small"

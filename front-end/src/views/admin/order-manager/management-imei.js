@@ -2,12 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Empty, Table } from "antd";
 import {
-  Autocomplete,
-  Dialog,
-  DialogContent,
   FormControl,
   IconButton,
-  InputLabel,
   MenuItem,
   Pagination,
   Select,
@@ -16,16 +12,10 @@ import {
   Tooltip,
 } from "@mui/material";
 import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
-import { PlusOutlined } from "@ant-design/icons";
 import Card from "../../../components/Card";
 import axios from "axios";
-import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import Zoom from "@mui/material/Zoom";
-import {
-  Notistack,
-  StatusCommonProducts,
-  StatusCommonProductsNumber,
-} from "./enum";
+import { Notistack, StatusImei } from "./enum";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import LoadingIndicator from "../../../utilities/loading";
 import useCustomSnackbar from "../../../utilities/notistack";
@@ -125,6 +115,7 @@ const ManagementImei = () => {
       .put(`http://localhost:8080/api/imeis/${idImei}`)
       .then((response) => {
         getListImei();
+        console.log(response);
         handleOpenAlertVariant(
           "Đổi trạng thái thành công!!!",
           Notistack.SUCCESS
@@ -180,9 +171,9 @@ const ManagementImei = () => {
       title: "Trạng Thái",
       width: "15%",
       align: "center",
-      dataIndex: "trạngThai",
+      dataIndex: "trangThai",
       render: (type) =>
-        type === StatusCommonProducts.ACTIVE ? (
+        type === StatusImei.SOLD ? (
           <div
             className="rounded-pill mx-auto badge-success"
             style={{
@@ -192,10 +183,19 @@ const ManagementImei = () => {
             }}
           >
             <span className="text-white" style={{ fontSize: "14px" }}>
-              Hoạt động
+              Đã Bán
             </span>
           </div>
-        ) : type === StatusCommonProducts.IN_ACTIVE ? (
+        ) : type === StatusImei.NOT_SOLD ? (
+          <div
+            className="rounded-pill badge-danger mx-auto"
+            style={{ height: "35px", width: "140px", padding: "4px" }}
+          >
+            <span className="text-white" style={{ fontSize: "14px" }}>
+              Chưa Bán
+            </span>
+          </div>
+        ) : type === StatusImei.IN_ACTIVE ? (
           <div
             className="rounded-pill badge-danger mx-auto"
             style={{ height: "35px", width: "140px", padding: "4px" }}
@@ -221,10 +221,10 @@ const ManagementImei = () => {
             <Tooltip
               TransitionComponent={Zoom}
               title={
-                record.trangThai === StatusCommonProducts.ACTIVE
+                record.trangThai === StatusImei.NOT_SOLD
+                  ? "Chưa Bán"
+                  : record.trangThai === StatusImei.IN_ACTIVE
                   ? "Ngừng kích hoạt"
-                  : record.trangThai === StatusCommonProducts.IN_ACTIVE
-                  ? "Kích hoạt"
                   : ""
               }
             >
@@ -235,10 +235,10 @@ const ManagementImei = () => {
               >
                 <AssignmentOutlinedIcon
                   color={
-                    record.trangThai === StatusCommonProducts.IN_ACTIVE
+                    record.trangThai === StatusImei.IN_ACTIVE
                       ? "error"
-                      : record.trangThai === StatusCommonProducts.ACTIVE
-                      ? "success"
+                      : record.trangThai === StatusImei.NOT_SOLD
+                      ? "primary"
                       : "disabled"
                   }
                 />
@@ -342,17 +342,16 @@ const ManagementImei = () => {
                   open={openSelect}
                   onClose={handleCloseSelect}
                   onOpen={handleOpenSelect}
-                  defaultValue={5}
+                  value={searchTrangThai}
                   onChange={handleSearchTrangThaiChange}
                 >
                   <MenuItem className="" value={5}>
                     Tất cả
                   </MenuItem>
-                  <MenuItem value={StatusCommonProductsNumber.ACTIVE}>
-                    Hoạt động
-                  </MenuItem>
-                  <MenuItem value={StatusCommonProductsNumber.IN_ACTIVE}>
-                    Ngừng hoạt động
+                  <MenuItem value={StatusImei.NOT_SOLD}>Chưa Bán</MenuItem>
+                  <MenuItem value={StatusImei.SOLD}>Đã Bán</MenuItem>
+                  <MenuItem value={StatusImei.IN_ACTIVE}>
+                    Ngưng Hoạt Động
                   </MenuItem>
                 </Select>
               </FormControl>

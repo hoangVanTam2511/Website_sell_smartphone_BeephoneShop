@@ -27,6 +27,8 @@ const ThongKeDoanhThu = () => {
   const [searchMonth, setSearchMonth] = useState();
   const [searchYear, setSearchYear] = useState(dayjs());
   const currentYear = new Date().getFullYear();
+  const [searchNgayBatDau, setSearchNgayBatDau] = useState("");
+  const [searchNgayKetThuc, setSearchNgayKetThuc] = useState("");
   const daysInMonth = new Date(
     new Date().getFullYear(),
     new Date().getMonth() + 1,
@@ -178,15 +180,17 @@ const ThongKeDoanhThu = () => {
     setNumberOfDays(newValue);
   };
 
-  const handleSearchYear = (selectedDate) => {
-    if (dayjs.isDayjs(selectedDate)) {
-      setSearchYear(selectedDate.format("YYYY"));
-      console.log("Selected Date:", selectedDate.format("YYYY"));
-    } else {
-      console.error("Invalid date object:", selectedDate);
-    }
+  const handleSearchNgayBatDauChange = (selectedDate) => {
+    const formattedDate = selectedDate
+      ? dayjs(selectedDate).format("DD/MM/YYYY")
+      : "";
+    setSearchNgayBatDau(formattedDate);
   };
 
+  const handleSearchNgayKetThucChange = (selectedDate) => {
+    const value = selectedDate.format("DD/MM/YYYY");
+    setSearchNgayKetThuc(value);
+  };
   //thống kê trạng thái đơn hàng
   const chartContainer = useRef(null);
   const chartInstance = useRef(null);
@@ -323,7 +327,7 @@ const ThongKeDoanhThu = () => {
                   {/* <Col xs="auto">
                     <FontAwesomeIcon icon={faSackDollar} size="2xl" />
                   </Col> */}
-                  <h5>Thống kê doanh thu</h5>
+                  <h5>Doanh thu tháng này</h5>
                   <h5 style={{ color: "#2f80ed" }}>
                     {listDonHangAll.tongTien == null
                       ? "0 ₫"
@@ -334,7 +338,7 @@ const ThongKeDoanhThu = () => {
             </Col>
             <Col>
               <Card variant="outlined" style={{ padding: "20px" }}>
-                <h5>Thống kê đơn hàng</h5>
+                <h5>Doanh thu hôm nay</h5>
                 <h5 style={{ color: "#2f80ed" }}>
                   {listDonHangAll.soLuong == null ? 0 : listDonHangAll.soLuong}
                 </h5>
@@ -342,7 +346,7 @@ const ThongKeDoanhThu = () => {
             </Col>
             <Col>
               <Card variant="outlined" style={{ padding: "20px" }}>
-                <h5>Tổng sản phẩm bán được</h5>
+                <h5>Sản phẩm đã bán trong ngày</h5>
                 <h5 style={{ color: "#2f80ed" }}>
                   {listSanPham.soLuong == null ? 0 : listSanPham.soLuong} sản
                   phẩm
@@ -362,25 +366,52 @@ const ThongKeDoanhThu = () => {
           >
             <h5>Biểu đồ thống kê</h5>
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DemoContainer
-                  components={["DatePicker", "DatePicker", "DatePicker"]}
-                >
-                  <DatePicker
-                    value={searchYear}
-                    format="YYYY-MM-DD"
-                    onChange={handleSearchYear}
-                    slotProps={{ textField: { size: "small" } }}
-                    sx={{
-                      position: "relative",
-                      width: "50px",
-                      "& .MuiInputBase-root": {
-                        width: "85%",
-                      },
-                    }}
-                  />
-                </DemoContainer>
-              </LocalizationProvider>
+              <div className="d-flex">
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DemoContainer components={["DatePicker"]}>
+                    <DatePicker
+                      label="Ngày Bắt Đầu"
+                      value={
+                        searchNgayBatDau
+                          ? dayjs(searchNgayBatDau, "DD/MM/YYYY")
+                          : null
+                      }
+                      format="DD/MM/YYYY"
+                      onChange={handleSearchNgayBatDauChange}
+                      slotProps={{ textField: { size: "small" } }}
+                      sx={{
+                        position: "relative",
+                        width: "50px",
+                        "& .MuiInputBase-root": {
+                          width: "85%",
+                        },
+                      }}
+                    />
+                  </DemoContainer>
+                </LocalizationProvider>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DemoContainer components={["DatePicker"]}>
+                    <DatePicker
+                      label="Ngày Kết Thúc"
+                      value={
+                        searchNgayKetThuc
+                          ? dayjs(searchNgayKetThuc, "DD/MM/YYYY")
+                          : null
+                      }
+                      format="DD/MM/YYYY"
+                      onChange={handleSearchNgayKetThucChange}
+                      slotProps={{ textField: { size: "small" } }}
+                      sx={{
+                        position: "relative",
+                        width: "50px",
+                        "& .MuiInputBase-root": {
+                          width: "85%",
+                        },
+                      }}
+                    />
+                  </DemoContainer>
+                </LocalizationProvider>
+              </div>
             </div>
             <Col style={{ margin: "10px" }}>
               <div>
@@ -408,45 +439,76 @@ const ThongKeDoanhThu = () => {
               boxShadow: "0 0.1rem 0.3rem #00000010",
             }}
           >
-            <Col>
-              <h5>
-                <FontAwesomeIcon icon={faRankingStar} />
-                Top sản phẩm bán chạy
-                <hr />
-              </h5>
-              <Table
-                columns={columns}
-                dataSource={data}
-                onChange={onChange}
-                pagination={{
-                  // simple: true,
-                  pageSize: "3",
-                }}
-              />
-            </Col>
-            <Col>
-              <h5>
-                <FontAwesomeIcon icon={faRankingStar} />
-                Top sản phẩm bán chạy
-                <hr />
-              </h5>
-              <Table
-                columns={columns}
-                dataSource={data}
-                onChange={onChange}
-                pagination={{
-                  // simple: true,
-                  pageSize: "3",
-                }}
-              />
-            </Col>
+            <h5>
+              <FontAwesomeIcon icon={faRankingStar} />
+              Top sản phẩm bán chạy
+              <hr />
+            </h5>
+            <Table
+              columns={columns}
+              dataSource={data}
+              onChange={onChange}
+              pagination={{
+                // simple: true,
+                pageSize: "3",
+              }}
+            />
+          </Row>
+          <Row
+            className="mb-3 mt-3"
+            style={{
+              margin: "10px",
+              padding: "10px",
+              textAlign: "center",
+              backgroundColor: "#ffffff",
+              boxShadow: "0 0.1rem 0.3rem #00000010",
+            }}
+          >
+            <h5>
+              <FontAwesomeIcon icon={faRankingStar} />
+              Sản phẩm sắp hết hàng
+              <hr />
+            </h5>
+            <Table
+              columns={columns}
+              dataSource={data}
+              onChange={onChange}
+              pagination={{
+                // simple: true,
+                pageSize: "3",
+              }}
+            />
+          </Row>
+          <Row
+            className="mb-3 mt-3"
+            style={{
+              margin: "10px",
+              padding: "10px",
+              textAlign: "center",
+              backgroundColor: "#ffffff",
+              boxShadow: "0 0.1rem 0.3rem #00000010",
+            }}
+          >
+            <h5>
+              <FontAwesomeIcon icon={faRankingStar} />
+              Sản phẩm đổi trả
+              <hr />
+            </h5>
+            <Table
+              columns={columns}
+              dataSource={data}
+              onChange={onChange}
+              pagination={{
+                // simple: true,
+                pageSize: "3",
+              }}
+            />
           </Row>
           <Row
             className="mt-3"
             style={{
               margin: "10px",
               padding: "10px",
-              //   textAlign: "center",
               backgroundColor: "#ffffff",
               boxShadow: "0 0.1rem 0.3rem #00000010",
               justifyContent: "space-between", // Hoặc space-around

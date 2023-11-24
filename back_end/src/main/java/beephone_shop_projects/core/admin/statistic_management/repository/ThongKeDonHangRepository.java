@@ -13,19 +13,18 @@ import org.springframework.stereotype.Repository;
 public interface ThongKeDonHangRepository extends IHoaDonRepository {
 
     @Query(value = """
-          SELECT COUNT(id) AS soLuong, SUM(tong_tien) AS tongTien FROM hoa_don
-          WHERE (trang_thai != 0 AND trang_thai != 6 AND trang_thai != 5);
-                        """, nativeQuery = true)
+            SELECT COUNT(id) AS soLuong, SUM(tong_tien) AS tongTien FROM hoa_don
+            WHERE (trang_thai != 0 AND trang_thai != 6 AND trang_thai != 5);
+                          """, nativeQuery = true)
     ThongKeDonHangResponse getDonHangAll();
 
     @Query(value = """
-          SELECT COUNT(id) AS soLuong, SUM(tong_tien) AS tongTien FROM hoa_don
-          WHERE (trang_thai != 0 AND trang_thai != 6 AND trang_thai != 5) 
-          AND YEAR(created_at) = :#{#request.year} AND MONTH(created_at) = :#{#request.month}
-          GROUP BY YEAR(created_at), MONTH(created_at);
-                        """, nativeQuery = true)
+            SELECT COUNT(id) AS soLuong, SUM(tong_tien) AS tongTien FROM hoa_don
+            WHERE (trang_thai != 0 AND trang_thai != 6 AND trang_thai != 5) 
+            AND YEAR(created_at) = :#{#request.year} AND MONTH(created_at) = :#{#request.month}
+            GROUP BY YEAR(created_at), MONTH(created_at);
+                          """, nativeQuery = true)
     ThongKeDonHangResponse getDonHangAllTheoNam(FindByMonthAndYearRequest request);
-
 
 
 }

@@ -416,7 +416,7 @@ const ManagementChips = () => {
                 inputProps={{
                   style: {
                     height: "23px",
-                    width: "200px",
+                    width: "300px",
                   },
                 }}
                 size="small"
