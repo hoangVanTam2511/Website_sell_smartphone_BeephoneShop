@@ -1,5 +1,7 @@
 package beephone_shop_projects.core.admin.statistic_management.controller;
 
+import beephone_shop_projects.core.admin.statistic_management.model.request.ThongKeKhoangNgayDonHangRequest;
+import beephone_shop_projects.core.admin.statistic_management.model.request.ThongKeKhoangNgaySanPhamRequest;
 import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeSanPhamKhoangNgay;
 import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeSanPhamResponse;
 import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeSanPhamBanChayResponse;
@@ -33,13 +35,13 @@ public class ThongKeSanPhamController {
 
     //Hàm này lấy ra số lượng sản phẩm sắp hết hàng
     @GetMapping("/san-pham-sap-het-hang")
-    private List<ThongKeSanPhamSapHetHang> getSanPhamSapHetHang( @RequestParam(name = "chonTheo") String chonTheo ){
-        return thongKeSanPhamService.getSanPhamSapHetHang(chonTheo);
+    private List<ThongKeSanPhamSapHetHang> getSanPhamSapHetHang(){
+        return thongKeSanPhamService.getSanPhamSapHetHang();
     }
 
     //Hàm này để lấy ra số lượng sản phẩm đã bán được trong ngày
     @GetMapping("/san-pham-khoang-ngay")
-    private List<ThongKeSanPhamKhoangNgay> getSanPhamTheoKhoangNgay(@RequestParam(name = "date1") Date date1, @RequestParam(name = "date2") Date date2 ){
-        return thongKeSanPhamService.getSanPhamKhoangNgay(date1, date2);
+    private List<ThongKeSanPhamKhoangNgay> getSanPhamTheoKhoangNgay(final ThongKeKhoangNgaySanPhamRequest request){
+        return thongKeSanPhamService.getSanPhamKhoangNgay(request);
     }
 }

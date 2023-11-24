@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.admin.statistic_management.service.impl;
 
+import beephone_shop_projects.core.admin.statistic_management.model.request.ThongKeKhoangNgaySanPhamRequest;
 import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeSanPhamKhoangNgay;
 import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeSanPhamResponse;
 import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeSanPhamBanChayResponse;
@@ -29,13 +30,13 @@ public class ThongKeSanPhamServiceImpl implements ThongKeSanPhamService {
     }
 
     @Override
-    public List<ThongKeSanPhamSapHetHang> getSanPhamSapHetHang(String chonTheo) {
-        return thongKeSanPhamRepository.getSanPhamSapHetHang(chonTheo);
+    public List<ThongKeSanPhamSapHetHang> getSanPhamSapHetHang() {
+        return thongKeSanPhamRepository.getSanPhamSapHetHang();
     }
 
     @Override
-    public List<ThongKeSanPhamKhoangNgay> getSanPhamKhoangNgay(Date date1, Date date2) {
-        return thongKeSanPhamRepository.getSanPhamKhoangNgay(date1, date2);
+    public List<ThongKeSanPhamKhoangNgay> getSanPhamKhoangNgay(ThongKeKhoangNgaySanPhamRequest request) {
+        return thongKeSanPhamRepository.getSanPhamKhoangNgay(request);
     }
 
 
