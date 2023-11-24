@@ -60,17 +60,15 @@ public interface ProductDetailClientRepository extends ISanPhamChiTietRepository
     @Query(value = """
              SELECT sp.ten_san_pham,
              chip.ten_chip,
-             dsp.ten_dong_san_pham,
              hang.ten_hang, mh.loai_man_hinh, mh.kich_thuoc AS kich_thuoc_man_hinh,
              sac.loai_cong_sac, tn.loai_the_nho, pin.dung_luong as dung_luong_pin
              FROM san_pham AS sp
-             JOIN chip ON chip.id = sp.id_chip
-             JOIN dong_san_pham AS dsp ON dsp.id = sp.id_dong_san_pham
-             JOIN hang ON hang.id = sp.id_hang
-             JOIN man_hinh AS mh ON mh.id = sp.id_man_hinh
-             JOIN sac ON sac.id = sp.id_sac
-             JOIN the_nho AS tn ON tn.id = sp.id_the_nho
-             JOIN pin ON pin.id = sp.id_pin
+             LEFT JOIN chip ON chip.id = sp.id_chip
+             LEFT JOIN hang ON hang.id = sp.id_hang
+             LEFT JOIN man_hinh AS mh ON mh.id = sp.id_man_hinh
+             LEFT JOIN sac ON sac.id = sp.id_sac
+             LEFT JOIN the_nho AS tn ON tn.id = sp.id_the_nho
+             LEFT JOIN pin ON pin.id = sp.id_pin
              WHERE sp.id = :id_product
             """, nativeQuery = true)
     ProductResponce getProductByIdProduct(@Param("id_product") String id_product);

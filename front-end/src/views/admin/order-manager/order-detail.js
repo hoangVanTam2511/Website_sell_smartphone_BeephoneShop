@@ -49,7 +49,10 @@ import useCustomSnackbar from "../../../utilities/notistack";
 import { add } from "lodash";
 import { FaMoneyBillTransfer, FaMoneyCheckDollar } from "react-icons/fa6";
 import InputNumberAmount from "./input-number-amount-product";
+import { over } from 'stompjs'
+import SockJS from 'sockjs-client'
 
+var stompClient = null
 const OrderDetail = (props) => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -78,6 +81,26 @@ const OrderDetail = (props) => {
   const [customerWard, setCustomerWard] = useState("");
 
   const [openPayment, setOpenPayment] = useState(false);
+
+  //connnect
+  const connect = () => {
+    let Sock = new SockJS('http://localhost:8080/ws')
+    stompClient = over(Sock)
+    stompClient.connect({}, onConnected, onError)
+  }
+
+  const onConnected = () => {
+    stompClient.subscribe('/bill/bills', onMessageReceived);
+  }
+
+  const onMessageReceived = (payload)=>{
+    var payloadData = JSON.parse(payload.body);
+    alert(payloadData.name)
+  }
+
+  const onError = (err) => {
+    console.log(err)
+ }
 
   const handleCloseOpenPayment = () => {
     setOpenPayment(false);
@@ -327,6 +350,9 @@ const OrderDetail = (props) => {
   useEffect(() => {
     getOrderItemsById();
     getAllProducts();
+    if(stompClient ===  null){
+      connect()
+    }
   }, []);
 
   const handleRefund = async (imeis, total, note, fee, totalString) => {
@@ -392,6 +418,12 @@ const OrderDetail = (props) => {
         })
         .then((response) => {
           getOrderItemsById();
+          var test = {
+            name: 'test2' + Math.random(),
+          }
+          if (stompClient) {
+            stompClient.send('/app/bills', {}, JSON.stringify(test))
+          }
           setIsLoading(false);
           handleOpenAlertVariant("Xác nhận thành công", "success");
         });
@@ -424,6 +456,12 @@ const OrderDetail = (props) => {
           setOrder(order);
           setPaymentHistorys(order.paymentMethods);
           handleCloseOpenPayment();
+          var test = {
+            name: 'test3'
+          }
+          if (stompClient) {
+            stompClient.send('/app/bills', {}, JSON.stringify(test))
+          }
           handleOpenAlertVariant(
             "Xác nhận thanh toán thành công",
             Notistack.SUCCESS
@@ -856,6 +894,7 @@ const OrderDetail = (props) => {
       setStatus(status);
       setOpenCommon(true);
     }
+
   };
   const handleClickOpenDialogUpdateRecipientOrder = () => {
     setOpenDialogUpdateRecipientOrder(true);

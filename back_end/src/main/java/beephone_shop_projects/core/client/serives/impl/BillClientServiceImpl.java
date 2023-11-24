@@ -153,4 +153,20 @@ public class BillClientServiceImpl {
     public List<HoaDon> getHoaDonByIDKhachHang(String idKhachHang) {
         return billClientRepository.getHoaDonByIDKhachHang(idKhachHang);
     }
+
+    public HoaDon getHoaDonByIDHoaDon(String idHoaDon) throws Exception {
+        return billClientRepository.findById(idHoaDon).orElseThrow(()-> new Exception("Không tìm thấy hoá đơn"));
+    }
+
+    public HoaDon getHoaDonBySoDienThoaiVaMaHoaDon(String soDienThoai, String maHoaDon) throws Exception {
+        ArrayList<HoaDon> listHoaDon =  billClientRepository.getHoaDonByMaHoaDonVaSoDienThoai(soDienThoai, maHoaDon);
+        if(listHoaDon.isEmpty()){
+            throw new Exception("Không tìm thấy hoá đơn");
+        }
+        return listHoaDon.get(0);
+    }
+
+    public List<LichSuHoaDon> getLichSuHoaDon(String idHoaDon) {
+        return lichSuHoaDonRepository.getOrderHistoriesByOrderId(idHoaDon);
+    }
 }

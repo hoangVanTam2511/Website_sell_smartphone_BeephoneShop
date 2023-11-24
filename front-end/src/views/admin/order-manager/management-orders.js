@@ -18,6 +18,8 @@ import { OrderStatusString, OrderTypeString } from "./enum";
 import LoadingIndicator from '../../../utilities/loading';
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import moment from 'moment';
+import { over } from 'stompjs'
+import SockJS from 'sockjs-client'
 
 const ManagementOrders = () => {
   const navigate = useNavigate();
@@ -33,6 +35,28 @@ const ManagementOrders = () => {
   const [state, setState] = useState(searchParams.get('state'));
   const [type, setType] = useState(searchParams.get('type'));
   const [sort, setSort] = useState(searchParams.get('sort'));
+  const [changeOfRealtime, setChangeOfRealtime] = useState("");
+  var stompClient = null
+
+  //connnect
+  const connect = () => {
+    let Sock = new SockJS('http://localhost:8080/ws')
+    stompClient = over(Sock)
+    stompClient.connect({}, onConnected, onError)
+  }
+
+  const onConnected = () => {
+    stompClient.subscribe('/bill/bills', onMessageReceived);
+  }
+
+  const onMessageReceived = (payload)=>{
+    var data = JSON.parse(payload.body);
+    setChangeOfRealtime(data.name);
+  }
+
+  const onError = (err) => {
+    console.log(err)
+ }
 
 
   const findOrdersByMultipleCriteriaWithPagination = (page) => {
@@ -62,6 +86,9 @@ const ManagementOrders = () => {
 
   const isFirstRender = useRef(true);
   useEffect(() => {
+    if(stompClient ===  null){
+      connect()
+    }
     setIsLoading(true);
     if (isFirstRender.current) {
       isFirstRender.current = false;
@@ -69,7 +96,8 @@ const ManagementOrders = () => {
     } else {
       findOrdersByMultipleCriteriaWithPagination(currentPage);
     }
-  }, [fromDate, toDate, keyword, currentPage]);
+    
+  }, [fromDate, toDate, keyword, currentPage, changeOfRealtime]);
 
   // const isMounted = useRef(false);
   // useEffect(() => {
