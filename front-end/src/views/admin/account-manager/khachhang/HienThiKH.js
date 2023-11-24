@@ -1,4 +1,4 @@
-import { Form, Popconfirm, Table, Button, message } from "antd";
+import { Form, Popconfirm, Table, Button } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import Card from "../../../../components/Card";
 import moment from "moment";
@@ -26,9 +26,11 @@ import {
   faPenToSquare,
 } from "@fortawesome/free-solid-svg-icons";
 import ExcelExportHelper from "../khachhang/ExcelExportHelper";
-import { StatusAccountCus, StatusCusNumber } from "./enum";
+import { StatusCusNumber } from "./enum";
 import * as React from "react";
 import ModalAddKhachHang from "./ModalAddKhachHang";
+import { Notistack } from "../../order-manager/enum";
+import useCustomSnackbar from "../../../../utilities/notistack";
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -54,6 +56,7 @@ const HienThiKH = () => {
   };
 
   let [listKH, setListKH] = useState([]);
+  const { handleOpenAlertVariant } = useCustomSnackbar();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [searchText, setSearchText] = useState("");
@@ -91,7 +94,7 @@ const HienThiKH = () => {
       console.error("Error fetching employee data:", error);
     }
   };
-  const [targetPage, setTargetPage] = useState(1);
+  const [targetPage] = useState(1);
   const handleSearch = async () => {
     try {
       if (!searchText) {
@@ -178,7 +181,7 @@ const HienThiKH = () => {
       .put(apiURLKH + `/${id}/doi-tt`)
       .then((response) => {
         loadDataListRole(currentPage);
-        message.success("Đổi trạng thái thành công");
+        handleOpenAlertVariant("Đổi trạng thái thành công", Notistack.SUCCESS);
       })
       .catch((error) => {
         // Xử lý lỗi
@@ -541,7 +544,7 @@ const HienThiKH = () => {
           overflowX: "hidden", // Ngăn việc cuộn ngang
           "& .MuiDialog-paper": {
             width: "100%",
-            maxWidth: "75vw",
+            maxWidth: "84vw",
             maxHeight: "unset", // Loại bỏ giới hạn chiều cao nếu cần
           },
         }}

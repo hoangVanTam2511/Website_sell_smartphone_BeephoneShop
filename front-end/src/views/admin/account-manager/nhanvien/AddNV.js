@@ -1,8 +1,8 @@
-import { Button, Card, Modal, message } from "antd";
+import { Button, Card, Modal } from "antd";
 import React from "react";
 import { useState } from "react";
 import axios from "axios";
-import { apiURLKH, apiURLNV } from "../../../../service/api";
+import { apiURLNV } from "../../../../service/api";
 import TextField from "@mui/material/TextField";
 import "../../../../assets/scss/HienThiNV.scss";
 import { ToastContainer } from "react-toastify";
@@ -28,6 +28,8 @@ import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import * as dayjs from "dayjs";
+import { Notistack } from "../../order-manager/enum";
+import useCustomSnackbar from "../../../../utilities/notistack";
 const AddNV = () => {
   let [listNV, setListNV] = useState([]);
   let [hoVaTen, setTen] = useState("");
@@ -50,6 +52,7 @@ const AddNV = () => {
   const [cccdError, setCCCDError] = useState("");
   const [diaChiError, setDiaChiError] = useState("");
   const [sdtError, setSDTError] = useState("");
+  const { handleOpenAlertVariant } = useCustomSnackbar();
   const [diaChiList, setDiaChiList] = useState([
     {
       diaChi: "",
@@ -187,12 +190,18 @@ const AddNV = () => {
         !quanHuyen ||
         !tinhThanhPho
       ) {
-        message.error("Vui lòng điền đủ thông tin");
+        handleOpenAlertVariant(
+          "Vui lòng điền đủ thông tin trước khi lưu.",
+          Notistack.ERROR
+        );
         setIsConfirmVisible(false);
         return;
       }
       if (hoVaTenError || sdtError || emailError || cccdError || diaChiError) {
-        message.error("Vui lòng điền đúng thông tin trước khi lưu.");
+        handleOpenAlertVariant(
+          "Vui lòng điền đúng thông tin trước khi lưu.",
+          Notistack.ERROR
+        );
         setIsConfirmVisible(false);
         return;
       }
@@ -212,11 +221,9 @@ const AddNV = () => {
         canCuocCongDan: cccd,
       };
       setListNV([newNhanVienRespone, ...listNV]);
-      message.success("Thêm nhân viên thành công");
+      handleOpenAlertVariant("Thêm khách hàng thành công", Notistack.SUCCESS);
     } catch (error) {
-      // Xử lý lỗi
-      alert("Thêm khách hàng thất bại");
-      console.log(error);
+      handleOpenAlertVariant("Thêm thất bại", Notistack.ERROR);
     }
   };
   const addDiaChiList = (generatedMaKhachHang) => {
@@ -310,7 +317,7 @@ const AddNV = () => {
                   className="text-f"
                   style={{
                     marginBottom: "30px",
-                    width: "45%",
+                    width: "50%",
                   }}
                 >
                   {/* Ngày sinh */}
@@ -326,7 +333,7 @@ const AddNV = () => {
                           position: "relative",
 
                           "& .MuiInputBase-root": {
-                            width: "100%",
+                            width: "348px",
                           },
                         }}
                         slotProps={{
@@ -346,6 +353,8 @@ const AddNV = () => {
                   className="text-f"
                   style={{
                     marginBottom: "30px",
+                    width: "40%",
+                    marginLeft: "20px",
                   }}
                 >
                   {/* Giới tính */}
@@ -379,22 +388,6 @@ const AddNV = () => {
                 style={{ textAlign: "center", marginBottom: "30px" }}
               >
                 <TextField
-                  label="Email"
-                  value={email}
-                  // id="fullWidth"
-                  onChange={handleEmailChange}
-                  error={(formSubmitted && !email) || !!emailError}
-                  helperText={
-                    emailError || (formSubmitted && !email && "Email trống")
-                  }
-                  style={{ width: "100%" }}
-                />
-              </div>
-              <div
-                className="text-f"
-                style={{ textAlign: "center", marginBottom: "30px" }}
-              >
-                <TextField
                   label="Căn cước công dân"
                   value={cccd}
                   // id="fullWidth"
@@ -406,23 +399,47 @@ const AddNV = () => {
                   style={{ width: "100%" }}
                 />
               </div>
-              <div
-                className="text-f"
-                style={{ textAlign: "center", marginBottom: "30px" }}
-              >
-                <TextField
-                  label="Số điện thoại"
-                  id="fullWidth"
-                  value={soDienThoai}
-                  onChange={handleSDT}
-                  error={(formSubmitted && !soDienThoai) || !!sdtError} // Show error if form submitted and hoVaTen is empty
-                  helperText={
-                    sdtError ||
-                    (formSubmitted && !soDienThoai && "Số điện thoại trống")
-                  }
-                  style={{ width: "100%" }}
-                />
-              </div>
+              <Grid container justifyContent="space-between">
+                {/* Left column */}
+                <Grid item xs={5.8}>
+                  <div
+                    className="text-f"
+                    style={{ textAlign: "center", marginBottom: "30px" }}
+                  >
+                    <TextField
+                      label="Số điện thoại"
+                      id="fullWidth"
+                      value={soDienThoai}
+                      onChange={handleSDT}
+                      error={(formSubmitted && !soDienThoai) || !!sdtError} // Show error if form submitted and hoVaTen is empty
+                      helperText={
+                        sdtError ||
+                        (formSubmitted && !soDienThoai && "Số điện thoại trống")
+                      }
+                      style={{ width: "100%" }}
+                    />
+                  </div>
+                </Grid>
+                <Grid item xs={5.8}>
+                  <div
+                    className="text-f"
+                    style={{ textAlign: "center", marginBottom: "30px" }}
+                  >
+                    <TextField
+                      label="Email"
+                      value={email}
+                      // id="fullWidth"
+                      onChange={handleEmailChange}
+                      error={(formSubmitted && !email) || !!emailError}
+                      helperText={
+                        emailError || (formSubmitted && !email && "Email trống")
+                      }
+                      style={{ width: "100%" }}
+                    />
+                  </div>
+                </Grid>
+              </Grid>
+
               <div
                 className="text-f"
                 style={{ textAlign: "center", marginBottom: "30px" }}

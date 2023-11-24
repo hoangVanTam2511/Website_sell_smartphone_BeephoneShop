@@ -20,6 +20,8 @@ const AddressFormUpdate = ({
   const [selectedProvince, setSelectedProvince] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedWard, setSelectedWard] = useState("");
+  const [loadingDistricts, setLoadingDistricts] = useState(false);
+  const [loadingWards, setLoadingWards] = useState(false);
   useEffect(() => {
     fetchProvinces();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -103,6 +105,8 @@ const AddressFormUpdate = ({
   };
 
   const handleProvinceChange = (event) => {
+    setLoadingDistricts(true);
+    setLoadingWards(true);
     setSelectedProvince(event.target.value);
     setSelectedDistrict("");
     setSelectedWard("");
@@ -116,6 +120,7 @@ const AddressFormUpdate = ({
     onProvinceChange(event.target.value);
   };
   const handleDistrictChange = (value) => {
+    setLoadingWards(true);
     setSelectedDistrict(value.target.value);
     setSelectedWard("");
     fetchWards(value.target.value);
@@ -130,22 +135,22 @@ const AddressFormUpdate = ({
   };
 
   useEffect(() => {
-    if (selectedProvince) {
+    if (selectedProvince && !loadingDistricts) {
       const selectedProvinceName = provinces.find(
         (province) => province.ProvinceID === selectedProvince
       )?.ProvinceName;
       onProvinceChange(selectedProvinceName);
     }
-  }, [selectedProvince, onProvinceChange, provinces]);
+  }, [selectedProvince, onProvinceChange, provinces, loadingDistricts]);
 
   useEffect(() => {
-    if (selectedDistrict) {
+    if (selectedDistrict && !loadingWards) {
       const selectedDistrictName = districts.find(
         (district) => district.DistrictID === selectedDistrict
       )?.DistrictName;
       onDistrictChange(selectedDistrictName);
     }
-  }, [selectedDistrict, onDistrictChange, districts]);
+  }, [selectedDistrict, onDistrictChange, districts, loadingWards]);
 
   useEffect(() => {
     if (selectedWard) {
@@ -169,6 +174,7 @@ const AddressFormUpdate = ({
               formSubmitted && !selectedProvince ? "Vui lòng chọn" : ""
             }
             style={{ width: "100%" }}
+            disabled={loadingDistricts}
           >
             {provinces.map((province) => (
               <MenuItem key={province.ProvinceID} value={province.ProvinceID}>
@@ -188,6 +194,7 @@ const AddressFormUpdate = ({
               formSubmitted && !selectedDistrict ? "Vui lòng chọn" : ""
             }
             style={{ width: "100%" }}
+            disabled={loadingWards}
           >
             {districts.map((district) => (
               <MenuItem key={district.DistrictID} value={district.DistrictID}>

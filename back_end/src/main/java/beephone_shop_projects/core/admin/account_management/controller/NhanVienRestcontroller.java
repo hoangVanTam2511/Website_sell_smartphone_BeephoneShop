@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.admin.account_management.controller;
 
+import beephone_shop_projects.core.admin.account_management.model.request.AddNhanVienRequest;
 import beephone_shop_projects.core.admin.account_management.model.request.CreateNhanVienRequest;
 import beephone_shop_projects.core.admin.account_management.model.request.DiaChiNhanVienRequest;
 import beephone_shop_projects.core.admin.account_management.service.NhanVienService;
@@ -39,7 +40,7 @@ public class NhanVienRestcontroller {
         return new ResponsePage(accService.getAllNV(pageNo));
     }
     @PostMapping("add")
-    public ResponseObject<Account> add( @RequestBody CreateNhanVienRequest request) {
+    public ResponseObject<Account> add( @RequestBody AddNhanVienRequest request) {
         return new ResponseObject(accService.addNV(request));
     }
 

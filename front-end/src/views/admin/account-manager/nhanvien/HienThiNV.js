@@ -22,6 +22,8 @@ import {
   FormControl,
 } from "@mui/material";
 import { StatusAccountCus } from "../khachhang/enum";
+import { Notistack } from "../../order-manager/enum";
+import useCustomSnackbar from "../../../../utilities/notistack";
 
 //show
 const HienThiNV = () => {
@@ -29,6 +31,7 @@ const HienThiNV = () => {
   let [listNV, setListNV] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const { handleOpenAlertVariant } = useCustomSnackbar();
   const [
     targetPage,
     //  setTargetPage
@@ -144,7 +147,7 @@ const HienThiNV = () => {
       .put(apiURLNV + `/${id}/doi-tt`)
       .then((response) => {
         loadDataListRole(currentPage);
-        message.success("Đổi trạng thái thành công");
+        handleOpenAlertVariant("Đổi trạng thái thành công", Notistack.SUCCESS);
       })
       .catch((error) => {
         console.error("Đã xảy ra lỗi khi thay đổi trạng thái", error);

@@ -5,7 +5,7 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const ImageUploadComponent = ({ setAnhDaiDien, existingImageUrl, hoten }) => {
   const [imageUrl, setImageUrl] = useState(null);
-  const [imageSize, setImageSize] = useState({ width: 120, height: 120 });
+  const [imageSize, setImageSize] = useState({ width: 140, height: 140 });
 
   useEffect(() => {
     if (existingImageUrl) {
@@ -61,7 +61,7 @@ const ImageUploadComponent = ({ setAnhDaiDien, existingImageUrl, hoten }) => {
   };
   const calculateImageSize = (width, height) => {
     const aspectRatio = width / height;
-    const maxDimension = 120;
+    const maxDimension = 140;
 
     if (aspectRatio > 1) {
       return { width: maxDimension, height: maxDimension / aspectRatio };
@@ -81,8 +81,8 @@ const ImageUploadComponent = ({ setAnhDaiDien, existingImageUrl, hoten }) => {
       {/* Hiển thị ảnh đã chọn (nếu có) */}
       <div
         style={{
-          width: "120px",
-          height: "120px",
+          width: "140px",
+          height: "140px",
           borderRadius: "120%",
           border: "1px dashed #ccc",
           position: "relative",
@@ -95,8 +95,8 @@ const ImageUploadComponent = ({ setAnhDaiDien, existingImageUrl, hoten }) => {
             src={imageUrl}
             alt="Uploaded"
             style={{
-              width: "120%",
-              height: "120%",
+              width: "100%",
+              height: "100%",
               objectFit: "cover",
               borderRadius: "120%",
               ...imageSize,

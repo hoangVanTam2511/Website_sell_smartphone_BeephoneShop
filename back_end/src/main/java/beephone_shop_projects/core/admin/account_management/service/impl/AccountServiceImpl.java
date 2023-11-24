@@ -64,11 +64,6 @@ public class AccountServiceImpl implements AccountService {
     public Account updateAcc(CreateNhanVienRequest request, String id) {
         Optional<Account> khachHangOptional = accountRepository.findById(id);
         Date date = null;
-        try {
-            date = new SimpleDateFormat("dd/MM/yyyy").parse(request.getNgaySinh());
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
         khachHangOptional.get().setMa(request.getMa());
         khachHangOptional.get().setEmail(request.getEmail());
         khachHangOptional.get().setIdRole(roleRepository.findById(request.getIdRole()).get());

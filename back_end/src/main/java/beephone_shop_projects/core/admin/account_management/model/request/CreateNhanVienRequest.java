@@ -7,7 +7,10 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 @Getter
 @Setter
@@ -30,8 +33,10 @@ public class CreateNhanVienRequest {
     @NotNull(message = "Căn cước công dân trống")
     private String canCuocCongDan;
 
+
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
     @NotNull(message = "Ngày sinh trống")
-    private String ngaySinh;
+    private Date ngaySinh;
 
     private Boolean gioiTinh;
 

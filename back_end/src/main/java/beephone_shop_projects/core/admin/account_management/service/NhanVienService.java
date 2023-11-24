@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.admin.account_management.service;
 
+import beephone_shop_projects.core.admin.account_management.model.request.AddNhanVienRequest;
 import beephone_shop_projects.core.admin.account_management.model.request.CreateNhanVienRequest;
 import beephone_shop_projects.core.admin.account_management.model.request.SearchAccountRequest;
 import beephone_shop_projects.entity.Account;
@@ -16,7 +17,7 @@ public interface NhanVienService {
 
     List<Account> getAllNVienNoPage();
 
-    Account addNV(CreateNhanVienRequest request);
+    Account addNV(AddNhanVienRequest request);
 
     void doiTrangThai(String id);
 

@@ -1,4 +1,4 @@
-import { Button, Modal, Card, message } from "antd";
+import { Button, Modal } from "antd";
 import React from "react";
 import { useState } from "react";
 import axios from "axios";
@@ -14,7 +14,6 @@ import {
   Radio,
   RadioGroup,
 } from "@mui/material";
-import AddressForm from "./DiaChi";
 import ImageUploadComponent from "./Anh";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
@@ -23,6 +22,8 @@ import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import * as dayjs from "dayjs";
 import ModalAddDiaChiKhachHang from "./ModalAddDiaChiKhachHang";
+import { Notistack } from "../../order-manager/enum";
+import useCustomSnackbar from "../../../../utilities/notistack";
 const ModalAddKhachHang = ({ close }) => {
   let [listKH, setListKH] = useState([]);
   let [hoVaTen, setTen] = useState("");
@@ -38,6 +39,7 @@ const ModalAddKhachHang = ({ close }) => {
   let [soDienThoaiKhachHang, setSoDienThoaiKhachHang] = useState("");
   let [xaPhuong, setXaPhuong] = useState("");
   let [trangThaiKH, setTrangThaiKH] = useState(1);
+  const { handleOpenAlertVariant } = useCustomSnackbar();
   const [diaChiList, setDiaChiList] = useState([
     {
       diaChi: "",
@@ -66,7 +68,7 @@ const ModalAddKhachHang = ({ close }) => {
   };
   const handleHoVaTenChange = (e) => {
     const value = e.target.value;
-    const specialCharPattern = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+    const specialCharPattern = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]+/;
     const trimmedValue = value.replace(/\s/g, "");
     setTen(value);
     if (!value.trim()) {
@@ -83,7 +85,7 @@ const ModalAddKhachHang = ({ close }) => {
   };
   const handleHoVaTenKH = (e) => {
     const value = e.target.value;
-    const specialCharPattern = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+    const specialCharPattern = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+/;
     const trimmedValue = value.replace(/\s/g, "");
     setHoTenKH(value);
     if (!value.trim()) {
@@ -190,7 +192,10 @@ const ModalAddKhachHang = ({ close }) => {
         !diaChi ||
         !xaPhuong
       ) {
-        //   message.error("Vui lòng điền đủ thông tin");
+        handleOpenAlertVariant(
+          "Vui lòng điền đủ thông tin trước khi lưu",
+          Notistack.ERROR
+        );
         setShowConfirmModal(false);
         return;
       }
@@ -202,7 +207,10 @@ const ModalAddKhachHang = ({ close }) => {
         sdtkhError ||
         diaChiError
       ) {
-        //   message.error("Vui lòng điền đúng thông tin trước khi lưu.");
+        handleOpenAlertVariant(
+          "Vui lòng điền đúng thông tin trước khi lưu",
+          Notistack.ERROR
+        );
         setShowConfirmModal(false);
         return;
       }
@@ -229,13 +237,10 @@ const ModalAddKhachHang = ({ close }) => {
       };
 
       setListKH([newKhachHangResponse, ...listKH]);
-      // message.success({
-      //   content: "Thêm khách hàng thành công",
-      // });
+      handleOpenAlertVariant("Thêm thành công", Notistack.SUCCESS);
     } catch (error) {
       // Xử lý lỗi
-      alert("Thêm khách hàng thất bại");
-      console.log(error);
+      handleOpenAlertVariant("Lỗi khi thêm khách hàng", Notistack.ERROR);
     }
   };
 
@@ -287,7 +292,7 @@ const ModalAddKhachHang = ({ close }) => {
       </div>
       <Grid container justifyContent="space-between">
         {/* Left column */}
-        <Grid item xs={6.5}>
+        <Grid item xs={6.2}>
           <div
             style={{
               display: "flex",
@@ -303,7 +308,7 @@ const ModalAddKhachHang = ({ close }) => {
               color: "gray",
             }}
           >
-            <span
+            {/* <span
               style={{
                 color: "gray",
                 display: "block",
@@ -314,7 +319,7 @@ const ModalAddKhachHang = ({ close }) => {
               }}
             >
               Thông tin Khách Hàng
-            </span>
+            </span> */}
           </div>
           <div
             bordered={false}
@@ -484,7 +489,7 @@ const ModalAddKhachHang = ({ close }) => {
         </Grid>{" "}
         <Grid
           item
-          xs={5.4}
+          xs={5.6}
           style={{ borderLeft: "1px solid #e2e2e2", paddingLeft: "20px" }}
         >
           <div
@@ -502,7 +507,7 @@ const ModalAddKhachHang = ({ close }) => {
               color: "gray",
             }}
           >
-            <span
+            {/* <span
               style={{
                 color: "gray",
                 display: "block",
@@ -513,7 +518,7 @@ const ModalAddKhachHang = ({ close }) => {
               }}
             >
               Thông tin Địa Chỉ Mặc định
-            </span>
+            </span> */}
           </div>
           {/* <h4 style={{ color: "gray" }}>Địa chỉ mặc định</h4> */}
 

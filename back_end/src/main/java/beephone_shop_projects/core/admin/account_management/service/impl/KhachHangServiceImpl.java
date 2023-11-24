@@ -1,12 +1,15 @@
 package beephone_shop_projects.core.admin.account_management.service.impl;
 
+import beephone_shop_projects.core.admin.account_management.model.request.AddKhachHangRequest;
 import beephone_shop_projects.core.admin.account_management.model.request.CreateKhachHangRequest;
+import beephone_shop_projects.core.admin.account_management.model.request.FindAccountRequest;
 import beephone_shop_projects.core.admin.account_management.model.response.AccountResponse;
 import beephone_shop_projects.core.admin.account_management.repository.AccountRepository;
 import beephone_shop_projects.core.admin.account_management.repository.RoleRepository;
 import beephone_shop_projects.core.admin.account_management.service.KhachHangService;
 import beephone_shop_projects.entity.Account;
 import beephone_shop_projects.infrastructure.constant.StatusAccountCus;
+import beephone_shop_projects.infrastructure.constant.StatusDiscount;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,6 +26,7 @@ import java.util.*;
 public class KhachHangServiceImpl implements KhachHangService {
     @Autowired
     private AccountRepository accountRepository;
+
     @Autowired
     private RoleRepository roleRepository;
 
@@ -33,20 +37,36 @@ public class KhachHangServiceImpl implements KhachHangService {
     }
 
     @Override
-    public Account addKH(CreateKhachHangRequest request) {
-        Random random = new Random();
+    public Page<Account> getAll(FindAccountRequest search) {
+        if (search.getPageNo() == null) {
+            search.setPageNo(1);
+        }
+        if (search.getPageSize() == null) {
+            search.setPageSize(5);
+        }
+        if (search.getKeyword() == null) {
+            search.setKeyword("");
+        }
+        Pageable pageable = PageRequest.of(search.getPageNo()-1, search.getPageSize());
+        Page<Account> page = accountRepository.findAllKH(pageable, search);
+        return page;
+    }
 
-        String hoVaTen = request.getHoVaTen();
-        int number = random.nextInt(10000);
-        String code = String.format("KH%04d", number);
-        String hoVaTenWithoutSpaces = hoVaTen.replaceAll("\\s+", "");
+
+
+    @Override
+    public Account addKH(AddKhachHangRequest request) {
+        Random random = new Random();
         Date date = null;
         try {
             date = new SimpleDateFormat("dd/MM/yyyy").parse(request.getNgaySinh());
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
-
+        String hoVaTen = request.getHoVaTen();
+        int number = random.nextInt(10000);
+        String code = String.format("KH%04d", number);
+        String hoVaTenWithoutSpaces = hoVaTen.replaceAll("\\s+", "");
         String hoVaTenWithoutDiacritics = removeDiacritics(hoVaTenWithoutSpaces);
         String[] specialCharsArray = {"!", "@", "#", "$", "%", "^", "&", "*", "+", "-"};
         String specialChars = getRandomSpecialChars(specialCharsArray);
@@ -74,14 +94,6 @@ public class KhachHangServiceImpl implements KhachHangService {
     @Override
     public Account updateKH(CreateKhachHangRequest request, String id) {
         Optional<Account> optional = accountRepository.findById(id);
-        Date date = null;
-        try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-            dateFormat.setTimeZone(TimeZone.getTimeZone("UTC")); // Set the time zone to UTC
-            date = dateFormat.parse(String.valueOf(request.getNgaySinh()));
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
         if (optional.isPresent()) {
             optional.get().setId(id);
             optional.get().setMa(request.getMa());
@@ -89,7 +101,7 @@ public class KhachHangServiceImpl implements KhachHangService {
             optional.get().setEmail(request.getEmail());
             optional.get().setTrangThai(request.getTrangThai());
             optional.get().setIdRole(roleRepository.findByMa("role2"));
-            optional.get().setNgaySinh(date);
+            optional.get().setNgaySinh(request.getNgaySinh());
             optional.get().setAnhDaiDien(request.getAnhDaiDien());
             optional.get().setGioiTinh(request.getGioiTinh());
             optional.get().setHoVaTen(request.getHoVaTen());

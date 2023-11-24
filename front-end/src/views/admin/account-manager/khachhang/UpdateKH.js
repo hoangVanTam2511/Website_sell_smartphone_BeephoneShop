@@ -7,17 +7,13 @@ import {
   RadioGroup,
   TextField,
 } from "@mui/material";
-import { Button, Card, Modal, Tag, message } from "antd";
+import { Button, Card, Modal, Tag } from "antd";
 import { useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowLeft,
-  faFileCirclePlus,
   faFloppyDisk,
-  faMars,
-  faNoteSticky,
   faPlus,
-  faVenus,
 } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { apiURLKH } from "../../../../service/api";
@@ -25,15 +21,14 @@ import "react-toastify/dist/ReactToastify.css";
 import ImageUploadComponent from "./AnhUpdate";
 import AddressTable from "./HienThiDiaChi";
 import ModalAddDiaChiKhachHang from "./ModalAddDiaChiKhachHang";
-// import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-// import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-// import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-// import * as dayjs from "dayjs";
 import "./style.css";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import * as dayjs from "dayjs";
+import useCustomSnackbar from "../../../../utilities/notistack";
+import { Notistack } from "../../order-manager/enum";
+
 const UpdateKH = () => {
   const { id } = useParams();
   let [hoVaTen, setTen] = useState("");
@@ -54,6 +49,7 @@ const UpdateKH = () => {
   let [trangThaiKH, setTrangThaiKH] = useState(0); // Khởi tạo mặc định là 0
   let [anhDaiDien, setAnhDaiDien] = useState("");
   let [huy, setHuy] = useState(false);
+  const { handleOpenAlertVariant } = useCustomSnackbar();
   const [diaChiList, setDiaChiList] = useState([
     {
       diaChi: "",
@@ -218,12 +214,6 @@ const UpdateKH = () => {
     setAnhDaiDien(imageURL);
   };
 
-  const handleCheckboxChange = (e) => {
-    setTrangThaiKH(e.target.checked ? 1 : 0); // Nếu tích checkbox thì trangThaiKH là 1, ngược lại là 0
-  };
-  // const redirectToHienThiKH = () => {
-  //   window.location.href = "/update-khach-hang/" + id;
-  // };
   const redirectTable = () => {
     window.location.href = "/khach-hang/";
   };
@@ -262,12 +252,15 @@ const UpdateKH = () => {
       !quanHuyen ||
       !tinhThanhPho
     ) {
-      message.error("Chưa điền đủ thông tin");
+      handleOpenAlertVariant("Chưa điền đủ thông tin", Notistack.ERROR);
       setIsModalVisibleS(true);
       return;
     }
     if (hoTenkhError || sdtkhError || diaChiError) {
-      message.error("Vui lòng điền đúng thông tin trước khi lưu.");
+      handleOpenAlertVariant(
+        "Vui lòng điền đúng thông tin trước khi lưu.",
+        Notistack.ERROR
+      );
       setIsModalVisibleS(true);
       return;
     }
@@ -288,16 +281,13 @@ const UpdateKH = () => {
         };
         setDiaChiList([newKhachHangResponse, ...diaChiList]);
         setId(response.data.id);
-        message.success({
-          content: "Thêm địa chỉ thành công",
-        });
+        handleOpenAlertVariant("Thêm thành công", Notistack.SUCCESS);
         // redirectToHienThiKH();
         handleCloseModal();
         return;
       })
       .catch((error) => {
-        alert("Thêm thất bại");
-        console.log("hahah");
+        handleOpenAlertVariant("Thêm thất bại", Notistack.ERROR);
       });
   };
   //update diaChi
@@ -321,12 +311,18 @@ const UpdateKH = () => {
     setSubmitted(true);
     setFormSubmitted(true);
     if (!hoVaTen || !ngaySinh || !email || !soDienThoai) {
-      message.error("Vui lòng điền đủ thông tin trước khi lưu.");
+      handleOpenAlertVariant(
+        "Vui lòng điền đủ thông tin trước khi lưu.",
+        Notistack.ERROR
+      );
       setIsConfirmVisible(false);
       return;
     }
     if (hoVaTenError || sdtError || emailError) {
-      message.error("Vui lòng điền đúng thông tin trước khi lưu.");
+      handleOpenAlertVariant(
+        "Vui lòng điền đúng thông tin trước khi lưu.",
+        Notistack.ERROR
+      );
       setIsConfirmVisible(false);
       return;
     }
@@ -348,17 +344,20 @@ const UpdateKH = () => {
         .put(`${apiURLKH}/update/${id}`, updatedItem)
         .then((response) => {
           if (response.status === 200) {
-            message.success("Sửa thành công");
+            handleOpenAlertVariant("Sửa thành công", Notistack.SUCCESS);
             setIsConfirmVisible(false);
           } else {
-            message.error("Sửa thất bại");
-            setIsConfirmVisible(false);
+            handleOpenAlertVariant(
+              "Đã xảy ra lỗi, vui lòng liên hệ quản trị viên.",
+              Notistack.ERROR
+            );
           }
         })
         .catch((error) => {
           console.error("Failed to update customer information:", error);
-          message.error(
-            "An error occurred while updating customer information."
+          handleOpenAlertVariant(
+            "Đã xảy ra lỗi, vui lòng liên hệ quản trị viên.",
+            Notistack.ERROR
           );
         });
     } catch (errInfo) {
@@ -673,9 +672,6 @@ const UpdateKH = () => {
               <Modal
                 closable={false}
                 open={isModalVisibleS}
-                // onCancel={() => {
-                //   setIsModalVisibleS(false); // Close the modal when cancel is clicked
-                // }}
                 maskClosable={false}
                 footer={[
                   <React.Fragment key="modal-footer">
@@ -712,7 +708,7 @@ const UpdateKH = () => {
                 ]} // Hide default footer buttons
               >
                 <div>
-                  <h4 style={{ color: "gray" }}>Địa chỉ mới</h4>
+                  <h4 style={{ textAlign: "center" }}>THÊM ĐỊA CHỈ</h4>
                   <div
                     className="text-f"
                     style={{ marginBottom: "30px", marginTop: "25px" }}

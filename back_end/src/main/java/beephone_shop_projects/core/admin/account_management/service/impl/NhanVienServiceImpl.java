@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.admin.account_management.service.impl;
 
+import beephone_shop_projects.core.admin.account_management.model.request.AddNhanVienRequest;
 import beephone_shop_projects.core.admin.account_management.model.request.CreateNhanVienRequest;
 import beephone_shop_projects.core.admin.account_management.model.request.SearchAccountRequest;
 import beephone_shop_projects.core.admin.account_management.repository.AccountRepository;
@@ -53,22 +54,20 @@ public class NhanVienServiceImpl implements NhanVienService {
     }
 
     @Override
-    public Account addNV(CreateNhanVienRequest request) {
+    public Account addNV(AddNhanVienRequest request) {
         Random random = new Random();
         int number = random.nextInt(10000);
         String code = String.format("NV%04d", number);
+        String hoVaTen = request.getHoVaTen();
+
+        String hoVaTenWithoutSpaces = hoVaTen.replaceAll("\\s+", ""); // Loại bỏ khoảng trắng
+        String hoVaTenWithoutDiacritics = removeDiacritics(hoVaTenWithoutSpaces);
         Date date = null;
         try {
             date = new SimpleDateFormat("dd/MM/yyyy").parse(request.getNgaySinh());
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
-
-        String hoVaTen = request.getHoVaTen();
-
-        String hoVaTenWithoutSpaces = hoVaTen.replaceAll("\\s+", ""); // Loại bỏ khoảng trắng
-        String hoVaTenWithoutDiacritics = removeDiacritics(hoVaTenWithoutSpaces);
-
         String[] specialCharsArray = {"!", "@", "#", "$", "%", "^", "&", "*", "+", "-"};
         String specialChars = getRandomSpecialChars(specialCharsArray);
         String matKhau = hoVaTenWithoutDiacritics + specialChars + code;
@@ -96,14 +95,6 @@ public class NhanVienServiceImpl implements NhanVienService {
     @Override
     public Account updateNV(CreateNhanVienRequest request, String id) {
         Optional<Account> optional = accountRepository.findById(id);
-        Date date = null;
-        try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            dateFormat.setTimeZone(TimeZone.getTimeZone("UTC")); // Set the time zone to UTC
-            date = dateFormat.parse(String.valueOf(request.getNgaySinh()));
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
         if (optional.isPresent()) {
             optional.get().setMa(request.getMa());
             optional.get().setId(id);
@@ -111,7 +102,7 @@ public class NhanVienServiceImpl implements NhanVienService {
             optional.get().setTrangThai(request.getTrangThai());
             optional.get().setIdRole(roleRepository.findByMa("role1"));
             optional.get().setMatKhau(request.getMatKhau());
-            optional.get().setNgaySinh(date);
+            optional.get().setNgaySinh(request.getNgaySinh());
             optional.get().setAnhDaiDien(request.getAnhDaiDien());
             optional.get().setCanCuocCongDan(request.getCanCuocCongDan());
             optional.get().setGioiTinh(request.getGioiTinh());

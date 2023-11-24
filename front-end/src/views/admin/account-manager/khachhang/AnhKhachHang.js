@@ -1,18 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { Upload, message, Image, Tooltip } from "antd";
-
+import React, { useState } from "react";
+import { Upload, message, Image } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
-const ImageUploadComponent = ({ setAnhDaiDien, existingImageUrl, hoten }) => {
+const AnhKhachHang = ({ setAnhDaiDien, hoten }) => {
   const [imageUrl, setImageUrl] = useState(null);
-  const [imageSize, setImageSize] = useState({ width: 170, height: 170 });
-
-  useEffect(() => {
-    if (existingImageUrl) {
-      setImageUrl(existingImageUrl);
-    }
-  }, [existingImageUrl]);
+  const [imageSize, setImageSize] = useState({ width: 160, height: 160 });
 
   const handleChange = (info) => {
     if (info.file.status === "uploading") {
@@ -62,7 +55,7 @@ const ImageUploadComponent = ({ setAnhDaiDien, existingImageUrl, hoten }) => {
   };
   const calculateImageSize = (width, height) => {
     const aspectRatio = width / height;
-    const maxDimension = 120;
+    const maxDimension = 160;
 
     if (aspectRatio > 1) {
       return { width: maxDimension, height: maxDimension / aspectRatio };
@@ -74,7 +67,7 @@ const ImageUploadComponent = ({ setAnhDaiDien, existingImageUrl, hoten }) => {
     <div
       style={{
         width: "auto",
-        // height: "200px",
+        height: "200px",
         overflow: "hidden",
         position: "relative",
       }}
@@ -82,9 +75,9 @@ const ImageUploadComponent = ({ setAnhDaiDien, existingImageUrl, hoten }) => {
       {/* Hiển thị ảnh đã chọn (nếu có) */}
       <div
         style={{
-          width: "140px",
-          height: "140px",
-          borderRadius: "120%",
+          width: "160px",
+          height: "160px",
+          borderRadius: "50%",
           border: "1px dashed #ccc",
           position: "relative",
           overflow: "hidden",
@@ -96,17 +89,15 @@ const ImageUploadComponent = ({ setAnhDaiDien, existingImageUrl, hoten }) => {
             src={imageUrl}
             alt="Uploaded"
             style={{
-              width: "120%",
-              height: "120%",
+              width: "100%",
+              height: "100%",
               objectFit: "cover",
-              borderRadius: "120%",
+              borderRadius: "50%",
               ...imageSize,
             }}
             onLoad={(e) => {
               const imgElement = e.target;
-              setImageSize(
-                calculateImageSize(imgElement.width, imgElement.height)
-              );
+              setImageSize(calculateImageSize(imgElement));
             }}
           />
         ) : (
@@ -119,7 +110,6 @@ const ImageUploadComponent = ({ setAnhDaiDien, existingImageUrl, hoten }) => {
               alignItems: "center",
               fontSize: "36px",
               fontWeight: "bold",
-              color: "black",
             }}
           >
             {hoten ? hoten[0].toUpperCase() : ""}
@@ -133,7 +123,7 @@ const ImageUploadComponent = ({ setAnhDaiDien, existingImageUrl, hoten }) => {
               position: "absolute",
               bottom: 0,
               right: 0,
-              borderRadius: "120%",
+              borderRadius: "50%",
               width: "30px",
               height: "30px",
               display: "flex",
@@ -149,15 +139,13 @@ const ImageUploadComponent = ({ setAnhDaiDien, existingImageUrl, hoten }) => {
           </div>
         )}
       </div>
-
-      {/* Chọn ảnh từ máy tính cá nhân */}
       <div
         style={{
           position: "absolute",
           bottom: 0,
           right: 0,
           background: "#3a57e8",
-          borderRadius: "120%",
+          borderRadius: "100%",
           width: "30px",
           height: "30px",
           display: "flex",
@@ -167,7 +155,9 @@ const ImageUploadComponent = ({ setAnhDaiDien, existingImageUrl, hoten }) => {
           fontWeight: "bold",
           cursor: "pointer",
           zIndex: 1,
+          marginBottom: "32px",
           backgroundColor: "#4b69ff",
+          marginRight: "10px",
         }}
       >
         <Upload {...customUploadProps} onChange={handleChange}>
@@ -178,4 +168,4 @@ const ImageUploadComponent = ({ setAnhDaiDien, existingImageUrl, hoten }) => {
   );
 };
 
-export default ImageUploadComponent;
+export default AnhKhachHang;
