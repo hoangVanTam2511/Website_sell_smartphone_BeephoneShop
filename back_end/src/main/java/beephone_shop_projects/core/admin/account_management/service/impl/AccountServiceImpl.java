@@ -1,6 +1,6 @@
 package beephone_shop_projects.core.admin.account_management.service.impl;
 
-import beephone_shop_projects.core.admin.account_management.model.request.CreateAccountRequest;
+import beephone_shop_projects.core.admin.account_management.model.request.CreateNhanVienRequest;
 import beephone_shop_projects.core.admin.account_management.repository.AccountRepository;
 import beephone_shop_projects.core.admin.account_management.repository.DiaChiRepository;
 import beephone_shop_projects.core.admin.account_management.repository.RoleRepository;
@@ -34,7 +34,7 @@ public class AccountServiceImpl implements AccountService {
 
 
     @Override
-    public Account addAcc(@Valid CreateAccountRequest request) {
+    public Account addAcc(@Valid CreateNhanVienRequest request) {
         Random random = new Random();
         int number = random.nextInt(10000);
         String code = String.format("ACC%04d", number);
@@ -50,7 +50,6 @@ public class AccountServiceImpl implements AccountService {
                 .hoVaTen(request.getHoVaTen())
                 .ma(code).matKhau(request.getMatKhau())
                 .soDienThoai(request.getSoDienThoai())
-                .diaChi(request.getDiaChi())
                 .trangThai(request.getTrangThai()).build();
         return accountRepository.save(kh);
     }
@@ -62,17 +61,11 @@ public class AccountServiceImpl implements AccountService {
 
 
     @Override
-    public Account updateAcc(CreateAccountRequest request, String id) {
+    public Account updateAcc(CreateNhanVienRequest request, String id) {
         Optional<Account> khachHangOptional = accountRepository.findById(id);
         Date date = null;
-        try {
-            date = new SimpleDateFormat("dd/MM/yyyy").parse(request.getNgaySinh());
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
         khachHangOptional.get().setMa(request.getMa());
         khachHangOptional.get().setEmail(request.getEmail());
-        khachHangOptional.get().setDiaChi(request.getDiaChi());
         khachHangOptional.get().setIdRole(roleRepository.findById(request.getIdRole()).get());
         khachHangOptional.get().setMatKhau(request.getMatKhau());
         khachHangOptional.get().setNgaySinh(date);

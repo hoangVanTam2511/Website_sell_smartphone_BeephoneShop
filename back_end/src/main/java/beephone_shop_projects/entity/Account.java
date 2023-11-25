@@ -33,17 +33,9 @@ public class Account extends PrimaryEntity implements IsIdentified {
     @Temporal(TemporalType.DATE)
     private Date ngaySinh;
 
-    private String diaChi;
-
     private String matKhau;
 
     private String soDienThoai;
-
-    private String xaPhuong;
-
-    private String quanHuyen;
-
-    private String tinhThanhPho;
 
     private Boolean gioiTinh;
 

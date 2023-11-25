@@ -1,17 +1,16 @@
-
-.txt-danger{
+.txt-danger {
   color: #e5383b;
 }
-.badge-success{
+.badge-success {
   background-color: #09a129;
 }
-.badge-warning{
+.badge-warning {
   background-color: #ffd500;
 }
-.badge-primary{
+.badge-primary {
   background-color: #2f80ed;
 }
-.badge-danger{
+.badge-danger {
   background-color: #e5383b;
 }
 
@@ -37,31 +36,31 @@
   font-weight: 500;
 }
 .ant-btn-danger:hover {
-    background-color: #ee6055 !important;
-    color: white !important;
+  background-color: #ee6055 !important;
+  color: white !important;
   border: 1px solid #ee6055 !important;
   height: 40px;
   font-weight: 500;
 }
-.button-mui{
+.button-mui {
   border: 1px solid #2f80ed;
   background-color: #2f80ed;
   color: white;
   height: 40px;
   font-weight: 500;
 }
-.mui-select:hover{
+.mui-select:hover {
   background-color: #f8f8f8;
   transition: all 0.2s linear;
 }
-.mui-select{
+.mui-select {
   cursor: pointer;
   transition: all 0.2s linear;
   border-radius: 10px;
   padding: 0 8px 0 8px;
 }
-*{
-font-family: 'Roboto', sans-serif;
+* {
+  font-family: "Roboto", sans-serif;
   font-weight: 400;
 }
 .ant-table-thead .ant-table-cell {
@@ -70,14 +69,18 @@ font-family: 'Roboto', sans-serif;
 }
 
 .ant-table-row {
-    font-size: 16px !important;
-    height: 70px !important;
+  font-size: 16px !important;
+  height: 70px !important;
 }
 
 tr:hover {
-    background: #f0f0f0 !important;
+  background: #f0f0f0 !important;
 }
 
 .ant-table-tbody > tr.ant-table-row:hover > td {
-    background: #f0f0f0 !important;
+  background: #f0f0f0 !important;
+}
+.don-hang {
+  border: "1px solid #e2e2e2";
+  border-radius: "10px";
 }

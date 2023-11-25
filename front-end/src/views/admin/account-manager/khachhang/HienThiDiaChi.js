@@ -1,11 +1,13 @@
 /* eslint-disable eqeqeq */
 import React, { useState } from "react";
-import { Button, Checkbox, Col, Collapse, Modal, Row, message } from "antd";
+import { Button, Checkbox, Col, Collapse, Modal, Row } from "antd";
 import "../../../../assets/scss/edit-dia-chi.scss";
 import { apiURLKH } from "../../../../service/api";
 import axios from "axios";
 import AddressFormUpdate from "./DiaChiUpdate";
 import { TextField } from "@mui/material";
+import { Notistack } from "../../order-manager/enum";
+import useCustomSnackbar from "../../../../utilities/notistack";
 
 function AddressTable({ diaChiList, account, updateDiaChiList }) {
   const { Panel } = Collapse;
@@ -20,32 +22,39 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
   let [xaPhuong, setXaPhuong] = useState("");
   let [trangThaiKH, setTrangThaiKH] = useState(1);
   let [idKH, setIDKH] = useState("");
+  let [huy, setHuy] = useState(false);
+  const [detailValues, setDetailValues] = useState({
+    xaPhuong: diaChiList.xaPhuong,
+    tinhThanhPho: diaChiList.tinhThanhPho,
+    quanHuyen: diaChiList.quanHuyen,
+  });
   let [
     editing,
     // setEditing
   ] = useState(false);
+  const { handleOpenAlertVariant } = useCustomSnackbar();
   const [editingTrangThai, setEditingTrangThai] = useState(trangThaiKH == 1);
   const [showEditModals, setShowEditModals] = useState([
     Array(diaChiList.length).fill(false),
   ]);
   const openEditModal = (diaChiList) => {
     setHoTenKH(diaChiList.hoTenKH);
-    setTinhThanhPho(diaChiList.tinhThanhPho);
-    if (diaChiList.xaPhuong) {
-      setXaPhuong(diaChiList.xaPhuong);
-    }
-    if (diaChiList.quanHuyen) {
-      setQuanHuyen(diaChiList.quanHuyen);
-    } else {
-      setXaPhuong(xaPhuong);
-      setQuanHuyen(quanHuyen);
-    }
+    setQuanHuyen(diaChiList.quanHuyen || ""); // Set default if null or undefined
     setDiaChi(diaChiList.diaChi);
     setSoDienThoaiKhachHang(diaChiList.soDienThoaiKhachHang);
     setTrangThaiKH(diaChiList.trangThai);
-    setShowEditModal(true);
     setEditingTrangThai(diaChiList.trangThai == 1);
     setIDKH(diaChiList.id);
+
+    // Update the state for all three selects together
+    setDetailValues({
+      xaPhuong: diaChiList.xaPhuong || "", // Set default if null or undefined
+      tinhThanhPho: diaChiList.tinhThanhPho,
+      quanHuyen: diaChiList.quanHuyen || "", // Set default if null or undefined
+    });
+    setTinhThanhPho(detailValues.tinhThanhPho || "");
+    setXaPhuong(detailValues.xaPhuong || ""); // Set default if null or undefined
+
     setShowEditModals((prevModals) => {
       const updatedModals = [...prevModals];
       updatedModals[diaChiList.id] = true;
@@ -75,6 +84,8 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
       sethoTenKHError("Họ và tên phải có ít nhất 5 ký tự");
     } else if (/^\s+|\s+$/.test(value)) {
       sethoTenKHError("Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi");
+    } else if (huy) {
+      sethoTenKHError("");
     } else {
       sethoTenKHError("");
     }
@@ -87,6 +98,8 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
       setSDTKHError("Số điện thoại không được trống");
     } else if (!parn.test(value)) {
       setSDTKHError("Sai định dạng số điện thoại");
+    } else if (huy) {
+      setSDTKHError("");
     } else {
       setSDTKHError("");
     }
@@ -109,7 +122,7 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
       method: "DELETE",
     }).then((response) => {
       if (response.ok) {
-        message.success("Xóa thành công");
+        handleOpenAlertVariant("Xóa thành công", Notistack.SUCCESS);
         // Cập nhật diaChiList bằng cách gọi callback function
         const updatedDiaChiList = diaChiList.filter(
           (address) => address.id !== id
@@ -117,7 +130,7 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
         updateDiaChiList(updatedDiaChiList);
         setShowDeleteModal(false);
       } else {
-        message.error("Lỗi khi xóa địa chỉ");
+        handleOpenAlertVariant("Xảy ra lỗi khi thêm địa chỉ", Notistack.ERROR);
       }
     });
   };
@@ -125,6 +138,7 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
     setShowEditModal(false);
     setShowDeleteModal(false);
     setShowSetDefaultModal(false);
+    setHuy(true);
   };
   function sortAddressesByDefaultFirst(addresses) {
     const defaultAddresses = addresses.filter(
@@ -145,11 +159,13 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
   const handleCloseModal = () => {
     setShowEditModal(false);
     setFormSubmittedS(false);
+    setSubmittedS(false);
     setDiaChiError("");
     sethoTenKHError("");
     setSDTKHError("");
     setTinhThanhPho("");
     setXaPhuong("");
+    console.log(formSubmittedS);
   };
   const [showSetDefaultModal, setShowSetDefaultModal] = useState(false);
   const handleSaveChanges = async (id) => {
@@ -165,47 +181,51 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
       !quanHuyen ||
       !tinhThanhPho
     ) {
-      message.error("Vui lòng điền đủ thông tin");
+      handleOpenAlertVariant("Vui lòng điền đủ thông tin", Notistack.ERROR);
       setShowEditModal(true);
       return;
     }
     if (hoTenkhError || sdtkhError || diaChiError) {
-      message.error("Vui lòng điền đúng thông tin trước khi lưu.");
+      handleOpenAlertVariant(
+        "Vui lòng điền đúng thông tin trước khi lưu.",
+        Notistack.ERROR
+      );
       setShowEditModal(true);
       return;
-    } else {
-      try {
-        let updatedItem = {
-          diaChi: diaChi,
-          xaPhuong: xaPhuong,
-          quanHuyen: quanHuyen,
-          tinhThanhPho: tinhThanhPho,
-          soDienThoaiKhachHang: soDienThoaiKhachHang,
-          hoTenKH: hoTenKH,
-          account: account,
-        };
-        axios
-          .put(
-            `${apiURLKH}/dia-chi/update/${id}`, // Extract id from updatedData
-            updatedItem
-          )
-          .then((response) => {
-            if (response.status === 200) {
-              message.success("Cập nhật địa chỉ thành công");
-              // Cập nhật thông tin trong danh sách diaChiList
-              const updatedDiaChiList = diaChiList.map((address) =>
-                address.id == id ? { ...address, ...updatedItem } : address
-              );
-              updateDiaChiList(updatedDiaChiList);
-              setShowEditModal(false);
-            } else {
-              message.error("Sửa thất bại");
-            }
-          }); // Đóng modal sau khi cập nhật thành công
-      } catch (error) {
-        // Xử lý lỗi
-        message.error("Cập nhật địa chỉ thất bại");
-      }
+    }
+    setShowEditModal(false);
+    try {
+      let updatedItem = {
+        diaChi: diaChi,
+        xaPhuong: xaPhuong,
+        quanHuyen: quanHuyen,
+        tinhThanhPho: tinhThanhPho,
+        soDienThoaiKhachHang: soDienThoaiKhachHang,
+        hoTenKH: hoTenKH,
+        account: account,
+      };
+      axios
+        .put(
+          `${apiURLKH}/dia-chi/update/${id}`, // Extract id from updatedData
+          updatedItem
+        )
+        .then((response) => {
+          if (response.status === 200) {
+            handleOpenAlertVariant(
+              "Cập nhật địa chỉ thành công",
+              Notistack.SUCCESS
+            ); // Cập nhật thông tin trong danh sách diaChiList
+            const updatedDiaChiList = diaChiList.map((address) =>
+              address.id == id ? { ...address, ...updatedItem } : address
+            );
+            updateDiaChiList(updatedDiaChiList);
+          } else {
+            handleOpenAlertVariant("Cập nhật thất bại", Notistack.ERROR);
+          }
+        }); // Đóng modal sau khi cập nhật thành công
+    } catch (error) {
+      // Xử lý lỗi
+      handleOpenAlertVariant("Cập nhật thất bại", Notistack.ERROR);
     }
   };
   let isProcessing = false;
@@ -228,13 +248,22 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
           );
           updateDiaChiList(updatedDiaChiList);
           setShowSetDefaultModal(false);
-          message.success("Thiết lập địa chỉ mặc định thành công"); // Đóng modal sau khi cập nhật thành công
+          handleOpenAlertVariant(
+            "Thiết lập địa chỉ mặc định thành công",
+            Notistack.SUCCESS
+          );
         } else {
-          message.error("Lỗi khi thiết lập địa chỉ mặc định");
+          handleOpenAlertVariant(
+            "Lỗi khi thiết lập địa chỉ mặc định",
+            Notistack.ERROR
+          );
         }
       })
       .catch((error) => {
-        message.error("Lỗi khi thiết lập địa chỉ mặc định");
+        handleOpenAlertVariant(
+          "Lỗi khi thiết lập địa chỉ mặc định",
+          Notistack.ERROR
+        );
       })
       .finally(() => {
         isProcessing = false; // Đánh dấu rằng yêu cầu PUT đã hoàn thành
@@ -253,20 +282,39 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
     setXaPhuong(value);
   };
   const [openPanelKey, setOpenPanelKey] = useState(null);
+  const defaultAddressIndex = sortedDiaChiList.findIndex(
+    (diaChiList) => diaChiList.trangThai === 1
+  );
+  const defaultActiveKey =
+    defaultAddressIndex !== -1 ? `${defaultAddressIndex}` : null;
+
   return (
-    <div className="address-container">
+    <div>
       <Collapse
         accordion
         bordered={false}
         activeKey={openPanelKey}
-        defaultActiveKey={[openPanelKey]}
+        defaultActiveKey={[defaultActiveKey]}
         onChange={(key) => setOpenPanelKey(key)}
+        style={{
+          boxShadow: "white -1px 10px 8px",
+          marginBottom: "10px",
+          marginTop: "10px",
+        }}
       >
         {sortedDiaChiList.map((diaChiList, index) => (
           <Panel
             key={diaChiList.id}
             header={`Địa chỉ ${index + 1}`}
-            className="collapse-panel"
+            bordered={false}
+            // className="collapse-panel"
+            style={{
+              marginBottom: "10px",
+              borderRadius: "10px",
+              border: 0,
+              width: "100%",
+              backgroundColor: "white",
+            }}
           >
             <Row gutter={20}>
               <Col span={17}>
@@ -308,8 +356,8 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
                   </button>
                   {showEditModals[diaChiList.id] && (
                     <Modal
+                      closable={false}
                       open={showEditModal}
-                      onCancel={() => setShowEditModal(false)}
                       footer={[
                         <Button
                           key="cancel"
@@ -403,17 +451,19 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
                         </div>
                         <div style={{ marginBottom: "20px" }}>
                           <AddressFormUpdate
-                            // onDiaChiChange={handleDiaChiChange}
+                            showEditModal={showEditModal}
                             required={true}
                             submitted={submittedS}
                             onProvinceChange={handleProvinceChange}
                             onDistrictChange={handleDistrictChange}
                             onWardChange={handleWardChange}
-                            selectedTinhThanhPho={tinhThanhPho}
-                            selectedQuanHuyen={quanHuyen}
-                            selectedXaPhuong={xaPhuong}
+                            selectedTinhThanhPho={detailValues.tinhThanhPho}
+                            selectedQuanHuyen={detailValues.quanHuyen}
+                            selectedXaPhuong={detailValues.xaPhuong}
                             formSubmitted={formSubmittedS}
                             editing={editing}
+                            huy={huy}
+                            set={setHuy}
                           />
                         </div>
                         <Checkbox
@@ -468,7 +518,7 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
                   }}
                   onClick={() => setShowSetDefaultModal(true)}
                 >
-                  Thiết lập mặc định
+                  Đặt mặc định
                 </Button>
               </Col>
             </Row>

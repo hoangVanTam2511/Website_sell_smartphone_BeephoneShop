@@ -92,7 +92,8 @@ const Header = memo((props) => {
                   id="notification-drop"
                   data-bs-toggle="dropdown"
                 >
-                  <svg color="#8A92A6"
+                  <svg
+                    color="#8A92A6"
                     width="24"
                     viewBox="0 0 24 24"
                     fill="none"

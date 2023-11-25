@@ -28,5 +28,5 @@ public interface DiaChiRepository extends IDiaChiRepository {
                 SELECT  kh FROM DiaChi kh where kh.account.id=:account and kh.id=:id
             """)
     DiaChi getOneDiaChi(String id,String account);
-
+    DiaChi findByAccount_Id(String id);
 }
