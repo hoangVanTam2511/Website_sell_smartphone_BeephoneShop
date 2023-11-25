@@ -131,7 +131,7 @@ const AddVoucher = () => {
   };
 
   const redirectToHienThiVoucher = () => {
-    window.location.href = "/dashboard/voucher";
+    navigate("/dashboard/voucher");
   };
 
   const handleUpdateVoucher = (id) => {

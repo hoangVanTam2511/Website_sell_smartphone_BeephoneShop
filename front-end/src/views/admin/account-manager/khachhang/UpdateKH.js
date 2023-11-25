@@ -28,6 +28,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import * as dayjs from "dayjs";
 import useCustomSnackbar from "../../../../utilities/notistack";
 import { Notistack } from "../../order-manager/enum";
+import { useNavigate } from "react-router-dom";
 
 const UpdateKH = () => {
   const { id } = useParams();
@@ -50,6 +51,8 @@ const UpdateKH = () => {
   let [anhDaiDien, setAnhDaiDien] = useState("");
   let [huy, setHuy] = useState(false);
   const { handleOpenAlertVariant } = useCustomSnackbar();
+  var navigate = useNavigate();
+
   const [diaChiList, setDiaChiList] = useState([
     {
       diaChi: "",
@@ -215,7 +218,7 @@ const UpdateKH = () => {
   };
 
   const redirectTable = () => {
-    window.location.href = "/khach-hang/";
+    navigate("/khach-hang/");
   };
   const handleCloseModal = () => {
     setIsModalVisibleS(false);

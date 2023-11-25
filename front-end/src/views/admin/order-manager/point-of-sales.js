@@ -1275,7 +1275,7 @@ const PointOfSales = () => {
   };
 
   const handleRedirectPayment = (url) => {
-    window.location.href = url;
+    navigate(url);
   };
 
   const handleGetUrlRedirectPayment = async (type, total) => {

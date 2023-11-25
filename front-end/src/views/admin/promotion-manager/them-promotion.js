@@ -29,6 +29,7 @@ import { Notistack, TypeDiscountString } from "../order-manager/enum";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
 import LoadingIndicator from "../../../utilities/loading";
+import { useNavigate } from "react-router-dom";
 
 const AddKhuyenMai = () => {
   //add-khuyen-mai
@@ -63,9 +64,10 @@ const AddKhuyenMai = () => {
   const [openConfirm, setOpenConfirm] = useState(false);
   let successfulCount = 0;
   let successfulCount1 = 0;
+  const navigate = useNavigate();
 
   const redirectToHienThiKhuyenMai = () => {
-    window.location.href = "/khuyen-mai";
+    navigate("/khuyen-mai");
   };
 
   const handleOpenDialogConfirmAdd = () => {

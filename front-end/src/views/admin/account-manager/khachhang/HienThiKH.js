@@ -379,7 +379,7 @@ const HienThiKH = () => {
                   </span>
                 </Button>
               </div>
-              <Button
+              {/* <Button
                 onClick={handleClickOpen}
                 className="rounded-2 button-mui"
                 type="primary"
@@ -399,7 +399,7 @@ const HienThiKH = () => {
                 >
                   Thêm Khách Hàng
                 </span>
-              </Button>
+              </Button> */}
               <div className="mt-2 d-flex">
                 <div
                   className="ms-4 me-5 d-flex"

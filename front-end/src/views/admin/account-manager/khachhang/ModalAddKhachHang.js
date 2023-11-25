@@ -24,6 +24,7 @@ import * as dayjs from "dayjs";
 import ModalAddDiaChiKhachHang from "./ModalAddDiaChiKhachHang";
 import { Notistack } from "../../order-manager/enum";
 import useCustomSnackbar from "../../../../utilities/notistack";
+import { useNavigate } from "react-router-dom";
 const ModalAddKhachHang = ({ close }) => {
   let [listKH, setListKH] = useState([]);
   let [hoVaTen, setTen] = useState("");
@@ -40,6 +41,7 @@ const ModalAddKhachHang = ({ close }) => {
   let [xaPhuong, setXaPhuong] = useState("");
   let [trangThaiKH, setTrangThaiKH] = useState(1);
   const { handleOpenAlertVariant } = useCustomSnackbar();
+  var navigate = useNavigate();
   const [diaChiList, setDiaChiList] = useState([
     {
       diaChi: "",
@@ -149,7 +151,7 @@ const ModalAddKhachHang = ({ close }) => {
     }
   };
   const redirectToHienThiKH = (generatedMaKhachHang) => {
-    window.location.href = "/update-khach-hang/" + generatedMaKhachHang;
+    navigate("/update-khach-hang/" + generatedMaKhachHang);
   };
   const handleAddressChange = (result) => {
     setDiaChi(result);

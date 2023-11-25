@@ -25,6 +25,7 @@ import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { Notistack } from "../../order-manager/enum";
 import useCustomSnackbar from "../../../../utilities/notistack";
+import { useNavigate } from "react-router-dom";
 const UpdateNV = () => {
   const { id } = useParams();
   let [hoVaTen, setTen] = useState("");
@@ -72,6 +73,7 @@ const UpdateNV = () => {
   const [cccdError, setCCCDError] = useState("");
   const [diaChiError, setDiaChiError] = useState("");
   const [sdtError, setSDTError] = useState("");
+  const navigate = useNavigate();
 
   //call KH
   useEffect(() => {
@@ -286,7 +288,7 @@ const UpdateNV = () => {
     }
   };
   const redirectTable = () => {
-    window.location.href = "/nhan-vien/";
+    navigate("/nhan-vien/");
   };
   const showRetable = () => {
     redirectTable();

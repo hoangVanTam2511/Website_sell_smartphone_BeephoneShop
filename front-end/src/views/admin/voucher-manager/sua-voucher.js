@@ -34,6 +34,7 @@ import {
 import useCustomSnackbar from "../../../utilities/notistack";
 import LoadingIndicator from "../../../utilities/loading";
 import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
+import { useNavigate } from "react-router-dom";
 
 const UpdateVoucher = () => {
   const [voucher, setVoucher] = useState({});
@@ -56,9 +57,10 @@ const UpdateVoucher = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { handleOpenAlertVariant } = useCustomSnackbar();
   const [openConfirm, setOpenConfirm] = useState(false);
+  const navigate = useNavigate();
 
   const redirectToHienThiVoucher = () => {
-    window.location.href = "/dashboard/voucher";
+    navigate("/dashboard/voucher");
   };
 
   const handleOpenDialogConfirmUpdate = () => {

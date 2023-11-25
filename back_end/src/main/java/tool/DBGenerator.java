@@ -146,10 +146,10 @@ public class DBGenerator implements CommandLineRunner {
         admin.setGioiTinh(true);
         admin.setEmail("dung@gmail.com");
         admin.setSoDienThoai("0395561234");
-        admin.setDiaChi("Phú diễn");
-        admin.setXaPhuong("Phường phú diễn");
-        admin.setQuanHuyen("Quận Bắc Từ Liêm");
-        admin.setTinhThanhPho("Thành phố Hà Nội");
+//        admin.setDiaChi("Phú diễn");
+//        admin.setXaPhuong("Phường phú diễn");
+//        admin.setQuanHuyen("Quận Bắc Từ Liêm");
+//        admin.setTinhThanhPho("Thành phố Hà Nội");
         admin.setMatKhau("12345");
         admin.setTrangThai(StatusAccountCus.HOAT_DONG);
         admin.setIdRole(chuCuaHang);

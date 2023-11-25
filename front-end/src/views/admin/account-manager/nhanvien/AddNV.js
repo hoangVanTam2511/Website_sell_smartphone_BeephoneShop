@@ -18,6 +18,7 @@ import {
 import AddressForm from "./DiaChi";
 import ImageUploadComponent from "./Anh";
 import IDScan from "./QuetCanCuoc";
+import { useNavigate } from "react-router-dom";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -53,6 +54,7 @@ const AddNV = () => {
   const [diaChiError, setDiaChiError] = useState("");
   const [sdtError, setSDTError] = useState("");
   const { handleOpenAlertVariant } = useCustomSnackbar();
+  var navigate = useNavigate();
   const [diaChiList, setDiaChiList] = useState([
     {
       diaChi: "",
@@ -156,7 +158,7 @@ const AddNV = () => {
     setAnhDaiDien(imageURL);
   };
   const redirectToHienThiKH = (generatedMaKhachHang) => {
-    window.location.href = "/update-nhan-vien/" + generatedMaKhachHang;
+    navigate("/update-nhan-vien/" + generatedMaKhachHang);
   };
   const showConfirm = () => {
     setIsConfirmVisible(true);

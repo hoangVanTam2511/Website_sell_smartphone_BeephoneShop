@@ -99,10 +99,10 @@ public class BillClientServiceImpl {
         newOrder.setVoucher(orderRequest.getVoucher());
         newOrder.setLoaiHoaDon(OrderType.DELIVERY);
         newOrder.setGhiChu(orderRequest.getGhiChu());
-        newOrder.setDiaChiNguoiNhan(khachHang.getDiaChi());
-        newOrder.setXaPhuongNguoiNhan(khachHang.getXaPhuong());
-        newOrder.setQuanHuyenNguoiNhan(khachHang.getQuanHuyen());
-        newOrder.setTinhThanhPhoNguoiNhan(khachHang.getTinhThanhPho());
+        newOrder.setDiaChiNguoiNhan(khachHang.getDiaChiList().get(0).getDiaChi());
+        newOrder.setXaPhuongNguoiNhan(khachHang.getDiaChiList().get(0).getXaPhuong());
+        newOrder.setQuanHuyenNguoiNhan(khachHang.getDiaChiList().get(0).getQuanHuyen());
+        newOrder.setTinhThanhPhoNguoiNhan(khachHang.getDiaChiList().get(0).getTinhThanhPho());
         newOrder.setSoDienThoaiNguoiNhan(khachHang.getSoDienThoai());
         newOrder.setTenNguoiNhan(khachHang.getHoVaTen());
         newOrder.setTrangThai(OrderStatus.PENDING_CONFIRM);

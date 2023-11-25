@@ -24,6 +24,7 @@ import * as dayjs from "dayjs";
 import AnhKhachHang from "./AnhKhachHang";
 import useCustomSnackbar from "../../../../utilities/notistack";
 import { Notistack } from "../../order-manager/enum";
+import { useNavigate } from "react-router-dom";
 const AddKH = () => {
   const { handleOpenAlertVariant } = useCustomSnackbar();
   let [listKH, setListKH] = useState([]);
@@ -62,6 +63,7 @@ const AddKH = () => {
   const [sdtError, setSDTError] = useState("");
   const [sdtkhError, setSDTKHError] = useState("");
   const [hoTenKHErr, setHoTenKHErr] = useState("");
+  const navigate = useNavigate();
 
   const showConfirm = () => {
     setShowConfirmModal(true);
@@ -149,7 +151,7 @@ const AddKH = () => {
     }
   };
   const redirectToHienThiKH = (generatedMaKhachHang) => {
-    window.location.href = "/update-khach-hang/" + generatedMaKhachHang;
+    navigate("/update-khach-hang/" + generatedMaKhachHang);
   };
   const handleAddressChange = (result) => {
     setDiaChi(result);
