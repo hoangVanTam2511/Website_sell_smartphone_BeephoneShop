@@ -42,8 +42,9 @@ const Transaction = () => {
   const loadDataListTransaction = (page) => {
     const requestParams = {
       maHoaDon: searchTatCa,
+      page: page,
       hinhThucThanhToan: searchHinhThucThanhToan,
-      soTienThanhToan: searchTatCa,
+      //   soTienThanhToan: searchTatCa,
       loaiThanhToan: searchLoaiThanhToan,
       trangThai: searchTrangThai,
       ngayBatDau: searchNgayBatDau,
@@ -66,7 +67,7 @@ const Transaction = () => {
   };
 
   useEffect(() => {
-    loadDataListTransaction();
+    loadDataListTransaction(currentPage);
   }, [
     searchNgayBatDau,
     searchNgayKetThuc,
@@ -74,6 +75,8 @@ const Transaction = () => {
     searchLoaiThanhToan,
     searchTatCa,
     searchHinhThucThanhToan,
+    currentPage,
+    totalPages,
   ]);
 
   const handleCloseSelect2 = () => {

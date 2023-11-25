@@ -840,7 +840,7 @@ const AddKhuyenMai = () => {
               dataSource={listSanPham}
               rowKey="id"
               pagination={{
-                pageSize: 5,
+                pageSize: 4,
                 position: ["bottomCenter"],
               }}
             />

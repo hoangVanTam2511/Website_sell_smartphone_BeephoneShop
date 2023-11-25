@@ -15,7 +15,7 @@ public interface TransactionRepository extends IHinhThucThanhToanRepository {
             h.nguoiXacNhan AS nguoiXacNhan, h.hinhThucThanhToan AS hinhThucThanhToan, h.trangThai AS trangThai, h.createdAt AS ngayTao
             FROM HinhThucThanhToan h JOIN HoaDon hd ON h.hoaDon.id = hd.id WHERE 
             (:#{#request.maHoaDon} IS NULL OR :#{#request.maHoaDon} = '' OR hd.ma LIKE :#{'%' + #request.maHoaDon + '%'} )
-            OR (:#{#request.soTienThanhToan} IS NULL OR h.soTienThanhToan = :#{#request.soTienThanhToan} )
+            AND (:#{#request.soTienThanhToan} IS NULL OR h.soTienThanhToan = :#{#request.soTienThanhToan} )
             AND (:#{#request.hinhThucThanhToan} IS NULL OR :#{#request.hinhThucThanhToan} = 3 OR h.hinhThucThanhToan = :#{#request.hinhThucThanhToan} )
             AND (:#{#request.loaiThanhToan} IS NULL OR  :#{#request.loaiThanhToan} = 3 OR h.loaiThanhToan = :#{#request.loaiThanhToan} )
             AND (:#{#request.trangThai} IS NULL OR :#{#request.trangThai} = 6 OR h.trangThai = :#{#request.trangThai} )

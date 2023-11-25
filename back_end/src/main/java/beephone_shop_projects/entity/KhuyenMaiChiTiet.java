@@ -30,9 +30,9 @@ public class KhuyenMaiChiTiet extends AuditEntity implements Serializable {
 
     private BigDecimal donGiaSauKhuyenMai;
 
-//    @JsonIgnore
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "id_chi_tiet_san_pham", insertable = false, updatable = false)
-//    private SanPhamChiTiet idSanPham;
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_chi_tiet_san_pham", insertable = false, updatable = false)
+    private SanPhamChiTiet idSanPham;
 
 }

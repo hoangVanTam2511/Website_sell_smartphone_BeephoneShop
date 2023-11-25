@@ -4,6 +4,8 @@ import beephone_shop_projects.core.admin.statistic_management.model.request.Find
 import beephone_shop_projects.core.admin.statistic_management.model.request.ThongKeKhoangNgayDonHangRequest;
 import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeDonHangKhoangNgay;
 import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeDonHangResponse;
+import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeTocDoTangTruongCustom;
+import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeTrangThaiDonHang;
 import beephone_shop_projects.core.admin.statistic_management.service.ThongKeDonHangService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -47,6 +49,17 @@ public class ThongKeDonHangController {
     @GetMapping("/don-hang-khoang-ngay")
     private List<ThongKeDonHangKhoangNgay> getDonHangKhoangNgay(final ThongKeKhoangNgayDonHangRequest request){
         return thongKeDonHangService.getDonHangKhoangNgay(request);
+    }
+
+    @GetMapping("/toc-do-tang-truong")
+    private ThongKeTocDoTangTruongCustom getThongKeTocDoTangTruong(){
+        return thongKeDonHangService.getTocDoTangTruongCuaHang();
+    }
+
+    // Hàm này lấy ra số lượng và phần trăm theo từng trạng thái đơn hàng
+    @GetMapping("/trang-thai-don-hang")
+    public List<ThongKeTrangThaiDonHang> getAllTrangThaiDonHang(@RequestParam(name = "chonTheo") String chonTheo){
+        return thongKeDonHangService.getAllTrangThaiDonHang(chonTheo);
     }
 
 }
