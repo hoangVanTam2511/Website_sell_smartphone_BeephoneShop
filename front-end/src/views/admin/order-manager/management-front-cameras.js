@@ -396,7 +396,7 @@ const ManagementFrontCameras = () => {
           <Card.Header className="d-flex justify-content-between">
             <div className="header-title mt-2">
               <TextField
-                placeholder="Tìm theo mã, tên camera trước"
+                placeholder="Tìm theo mã, độ phân giải, tính năng camera trước"
                 label="Tìm camera trước"
                 onChange={handleSearchTatCaChange}
                 value={searchTatCa}
@@ -409,7 +409,7 @@ const ManagementFrontCameras = () => {
                 inputProps={{
                   style: {
                     height: "23px",
-                    width: "270px",
+                    width: "300px",
                   },
                 }}
                 size="small"

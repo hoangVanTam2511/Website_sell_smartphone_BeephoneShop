@@ -115,6 +115,7 @@ import ThongKe from "../views/admin/statics-manager/thong-ke";
 import PaymentSuccess from "../views/admin/order-manager/vnpay-payment-success";
 import ManagementImei from "../views/admin/order-manager/management-imei";
 import ThongKeDoanhThu from "../views/admin/statics-manager/thong-ke-doanh-thu";
+import Transaction from "../views/admin/transaction-manager/transaction";
 
 export const DefaultRouter = [
   {
@@ -404,12 +405,16 @@ export const DefaultRouter = [
         element: <PaymentSuccess />,
       },
       {
-        path: "dashboard/doanh-thu",
+        path: "dashboard/statistic",
         element: <ThongKeDoanhThu />,
       },
       {
         path: "dashboard/login",
         element: <ThongKeDoanhThu />,
+      },
+      {
+        path: "dashboard/transaction",
+        element: <Transaction />,
       },
       // {
       //   path: 'dashboard/add-product',
