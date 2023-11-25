@@ -1519,8 +1519,8 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
                         else if (isMissingImage) {
                           handleOpenAlertVariant("Vui lòng chọn đầy đủ ảnh cho các phiên bản theo màu sắc!", "warning");
                         }
-                        else{
-                        handleAddProduct();
+                        else {
+                          handleAddProduct();
                         }
                       }
                     }
