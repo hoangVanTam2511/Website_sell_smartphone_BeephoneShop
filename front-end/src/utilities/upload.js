@@ -1,7 +1,7 @@
 import React, { Component, useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Empty, Table } from "antd";
-import { Box, FormControl, IconButton, Select, InputLabel, MenuItem, Pagination, TextField, Tooltip, Checkbox, FormControlLabel, Autocomplete, InputAdornment, OutlinedInput, Dialog, DialogContent, DialogTitle, DialogActions, Slide, ListItemText, Rating, ImageListItemBar, } from "@mui/material";
+import { Box, FormControl, IconButton, Select, InputLabel, MenuItem, Pagination, TextField, Tooltip, Checkbox, FormControlLabel, Autocomplete, InputAdornment, OutlinedInput, Dialog, DialogContent, DialogTitle, DialogActions, Slide, ListItemText, Rating, ImageListItemBar, FormHelperText, } from "@mui/material";
 import Zoom from '@mui/material/Zoom';
 // import LoadingIndicator from '../../../utilities/loading';
 // import useCustomSnackbar from '../../../utilities/notistack';
@@ -34,6 +34,8 @@ function PreviewMultipleImages({ uniqueColors, getColorImage }) {
     inputRef.current.click();
   };
 
+  const [selectedColor, setSelectedColor] = useState("");
+
   const { handleOpenAlertVariant } = useCustomSnackbar();
   const [images, setImages] = useState([]);
   const [imageURLs, setImageURLs] = useState([]);
@@ -60,17 +62,14 @@ function PreviewMultipleImages({ uniqueColors, getColorImage }) {
     event.target.value = null;
   };
 
+
   const handleColorImageChange = (index, value, url, file) => {
-    console.log(file);
-    // if (colorImages.some((image) => image === value && value !== " ")) {
-    //   handleOpenAlertVariant("Màu sắc đã được chọn!", "warning");
-    // }
-    // else {
+    const prevColor = colorImages[index]; // Lưu giữ màu sắc trước đó
+    console.log(prevColor);
     const updatedColorImages = [...colorImages];
     updatedColorImages[index] = value;
     setColorImages(updatedColorImages);
-    getColorImage(value, url, file);
-    // }
+    getColorImage(value, url, file, prevColor);
   };
 
   const handleDeleteImage = (index, id) => {
@@ -144,7 +143,9 @@ function PreviewMultipleImages({ uniqueColors, getColorImage }) {
                                 <MenuItem value={" "}>Chọn màu sắc</MenuItem>
                                 {uniqueColors.map((c) => {
                                   return (
-                                    <MenuItem key={c.id} value={c.color.id}>
+                                    <MenuItem key={c.id} value={c.color.id}
+                                      disabled={colorImages[index] !== c.color.id && colorImages.includes(c.color.id)}
+                                    >
                                       {c.color.tenMauSac}
                                     </MenuItem>
                                   )

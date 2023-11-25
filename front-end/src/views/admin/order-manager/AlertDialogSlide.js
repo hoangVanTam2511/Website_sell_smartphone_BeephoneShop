@@ -126,9 +126,8 @@ export function OrderConfirmPayment(props) {
               sx={{ color: "black" }}
               id="alert-dialog-description"
             >
-              {`Bạn có chắc chắn muốn ${
-                delivery ? "đặt đơn hàng" : "thanh toán đơn hàng"
-              }`}{" "}
+              {`Bạn có chắc chắn muốn ${delivery ? "đặt đơn hàng" : "thanh toán đơn hàng"
+                }`}{" "}
               <span className="" style={{ fontWeight: "500" }}>
                 {" "}
                 {ma}
@@ -389,7 +388,7 @@ export function UpdateRecipientOrderDialog(props) {
           wardName
         );
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   return (
@@ -816,11 +815,11 @@ export function ProductsDialog(props) {
                       {item &&
                         item.sanPham &&
                         item.sanPham.tenSanPham +
-                          " " +
-                          item.ram.dungLuong +
-                          "/" +
-                          item.rom.dungLuong +
-                          "GB"}
+                        " " +
+                        item.ram.dungLuong +
+                        "/" +
+                        item.rom.dungLuong +
+                        "GB"}
                     </TableCell>
                     <TableCell
                       align="center"
@@ -841,9 +840,9 @@ export function ProductsDialog(props) {
                       <span style={{ color: "#dc1111" }}>
                         {item && item.donGia
                           ? item.donGia.toLocaleString("vi-VN", {
-                              style: "currency",
-                              currency: "VND",
-                            })
+                            style: "currency",
+                            currency: "VND",
+                          })
                           : ""}
                       </span>
                     </TableCell>
@@ -1976,8 +1975,8 @@ export function VouchersDialog(props) {
             discount === item.id
               ? "danger"
               : discount !== item.id
-              ? "primary"
-              : ""
+                ? "primary"
+                : ""
           }
           style={{
             height: "35px",
@@ -2051,114 +2050,112 @@ export function VouchersDialog(props) {
               <TableBody>
                 {filteredData.length > 0
                   ? filteredData.map((item, index) => (
-                      <TableRow
-                        key={index}
-                        sx={{
-                          "&:last-child td, &:last-child th": { border: 0 },
+                    <TableRow
+                      key={index}
+                      sx={{
+                        "&:last-child td, &:last-child th": { border: 0 },
+                      }}
+                    >
+                      <TableCell component="th" scope="row" align="center">
+                        {index + 1}
+                      </TableCell>
+                      <TableCell align="center" style={{ fontSize: "15px" }}>
+                        {item.ma}
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        style={{
+                          width: "",
+                          fontSize: "15px",
+                          color: "#dc1111",
                         }}
                       >
-                        <TableCell component="th" scope="row" align="center">
-                          {index + 1}
-                        </TableCell>
-                        <TableCell align="center" style={{ fontSize: "15px" }}>
-                          {item.ma}
-                        </TableCell>
-                        <TableCell
-                          align="center"
+                        {item.giaTriVoucher.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        style={{ width: "", fontSize: "15px" }}
+                      >
+                        {item.loaiVoucher === TypeDiscountNumber.VND
+                          ? "..."
+                          : item.giaTriToiDa}
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        style={{ width: "", fontSize: "15px" }}
+                      >
+                        {item.soLuong}
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        style={{
+                          width: "200px",
+                          fontSize: "15px",
+                          whiteSpace: "pre-line",
+                        }}
+                      >
+                        Áp dụng cho đơn tối thiểu
+                        <span className="" style={{}}>
+                          {" " +
+                            item.dieuKienApDung.toLocaleString("vi-VN", {
+                              style: "currency",
+                              currency: "VND",
+                            })}
+                        </span>
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        style={{ width: "", fontSize: "15px" }}
+                      >
+                        <div
+                          className="rounded-pill badge-primary"
                           style={{
-                            width: "",
-                            fontSize: "15px",
-                            color: "#dc1111",
+                            height: "35px",
+                            width: "auto",
+                            padding: "7.5px",
                           }}
                         >
-                          {item.giaTriVoucher.toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                          })}
-                        </TableCell>
-                        <TableCell
-                          align="center"
-                          style={{ width: "", fontSize: "15px" }}
-                        >
-                          {item.loaiVoucher === TypeDiscountNumber.VND
-                            ? "..."
-                            : item.giaTriToiDa}
-                        </TableCell>
-                        <TableCell
-                          align="center"
-                          style={{ width: "", fontSize: "15px" }}
-                        >
-                          {item.soLuong}
-                        </TableCell>
-                        <TableCell
-                          align="center"
-                          style={{
-                            width: "200px",
-                            fontSize: "15px",
-                            whiteSpace: "pre-line",
-                          }}
-                        >
-                          Áp dụng cho đơn tối thiểu
-                          <span className="" style={{}}>
-                            {" " +
-                              item.dieuKienApDung.toLocaleString("vi-VN", {
-                                style: "currency",
-                                currency: "VND",
-                              })}
+                          <span className="text-white p-2" style={{}}>
+                            {item.trangThai == 1 ? "Hoạt động" : ""}
                           </span>
-                        </TableCell>
-                        <TableCell
-                          align="center"
-                          style={{ width: "", fontSize: "15px" }}
-                        >
-                          <div
-                            className="rounded-pill badge-primary"
-                            style={{
-                              height: "35px",
-                              width: "auto",
-                              padding: "7.5px",
-                            }}
-                          >
-                            <span className="text-white p-2" style={{}}>
-                              {item.trangThai == 1 ? "Hoạt động" : ""}
-                            </span>
-                          </div>
-                        </TableCell>
-                        <TableCell
-                          align="center"
+                        </div>
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        style={{
+                          width: "200px",
+                          fontSize: "15px",
+                          whiteSpace: "pre-line",
+                        }}
+                      >
+                        <div
+                          className={`${item.dieuKienApDung <= total()
+                            ? "rounded-pill badge-success"
+                            : "rounded-pill badge-danger"
+                            }`}
                           style={{
-                            width: "200px",
-                            fontSize: "15px",
-                            whiteSpace: "pre-line",
+                            height: "35px",
+                            width: "auto",
+                            padding: "7.5px",
                           }}
                         >
-                          <div
-                            className={`${
-                              item.dieuKienApDung <= total()
-                                ? "rounded-pill badge-success"
-                                : "rounded-pill badge-danger"
-                            }`}
-                            style={{
-                              height: "35px",
-                              width: "auto",
-                              padding: "7.5px",
-                            }}
-                          >
-                            <span className="text-white p-2" style={{}}>
-                              <span>{`${
-                                item.dieuKienApDung <= total()
-                                  ? "Có thể áp dụng"
-                                  : "Không thể áp dụng"
+                          <span className="text-white p-2" style={{}}>
+                            <span>{`${item.dieuKienApDung <= total()
+                              ? "Có thể áp dụng"
+                              : "Không thể áp dụng"
                               }`}</span>
-                            </span>
-                          </div>
-                        </TableCell>
-                        <TableCell
-                          align="center"
-                          style={{ width: "" }}
-                        ></TableCell>
-                      </TableRow>
-                    ))
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        style={{ width: "" }}
+                      ></TableCell>
+                    </TableRow>
+                  ))
                   : ""}
               </TableBody>
             </Table>
@@ -2996,11 +2993,11 @@ export const ProductDetailsDialog = (props) => {
                   <span style={{ fontWeight: "500", fontSize: "25px" }}>
                     {productItem1 &&
                       productItem1.sanPham.tenSanPham +
-                        " " +
-                        productItem1.ram.dungLuong +
-                        "/" +
-                        productItem1.rom.dungLuong +
-                        "GB"}
+                      " " +
+                      productItem1.ram.dungLuong +
+                      "/" +
+                      productItem1.rom.dungLuong +
+                      "GB"}
                     <span
                       className="ms-2"
                       style={{ fontSize: "13.5px", color: "gray" }}
@@ -3046,9 +3043,9 @@ export const ProductDetailsDialog = (props) => {
                         defaultValue={
                           productItem &&
                           productItem.ram.dungLuong +
-                            "/" +
-                            productItem.rom.dungLuong +
-                            "GB"
+                          "/" +
+                          productItem.rom.dungLuong +
+                          "GB"
                         }
                         size="lg"
                         sx={{ gap: 1.7 }}
@@ -3077,11 +3074,11 @@ export const ProductDetailsDialog = (props) => {
                                         >
                                           {productItem &&
                                             productItem.sanPham.tenSanPham +
-                                              " " +
-                                              item.ram.dungLuong +
-                                              "/" +
-                                              item.rom.dungLuong +
-                                              "GB"}
+                                            " " +
+                                            item.ram.dungLuong +
+                                            "/" +
+                                            item.rom.dungLuong +
+                                            "GB"}
                                         </span>
                                       </div>
                                       <div className="text-center">
@@ -3419,7 +3416,7 @@ export const ModalImeiByProductItem = ({
                     className=""
                   />
                   <Button
-                    onClick={() => {}}
+                    onClick={() => { }}
                     className="rounded-2 ms-2 button-mui"
                     type="primary"
                     style={{ width: "100px", fontSize: "15px" }}
@@ -3451,95 +3448,95 @@ export const ModalImeiByProductItem = ({
                       <tbody>
                         {itemsOnCurrentPage.length
                           ? itemsOnCurrentPage.map((item, index) => (
-                              <>
-                                <tr
-                                  key={index}
-                                  style={{
-                                    cursor: "pointer",
-                                    pointerEvents:
-                                      item.trangThai ===
-                                        StatusImei.PENDING_DELIVERY ||
-                                      item.trangThai === StatusImei.IN_THE_CART
-                                        ? "none"
-                                        : "auto",
-                                    opacity:
-                                      item.trangThai ===
-                                        StatusImei.PENDING_DELIVERY ||
-                                      item.trangThai === StatusImei.IN_THE_CART
-                                        ? "0.5"
-                                        : "1",
-                                  }}
-                                  onClick={() => {
-                                    if (
-                                      selectedImei.length >= 4 &&
-                                      !selectedImei.includes(item)
-                                    ) {
-                                      handleOpenAlertVariant(
-                                        "Lựa chọn tối đa 4 số lượng sản phẩm!",
-                                        "warning"
-                                      );
-                                    } else if (!selectedImei.includes(item)) {
-                                      setSelectedImei((val) => [...val, item]);
-                                    } else {
-                                      setSelectedImei((val) =>
-                                        val.filter((text) => text !== item)
-                                      );
-                                    }
-                                  }}
-                                >
-                                  <td>
-                                    <Checkbox
-                                      color="primary"
-                                      checked={selectedImei.includes(item)}
-                                    />
-                                  </td>
-                                  <td className="text-center">{item.soImei}</td>
-
-                                  <td className="text-center">
-                                    {item.trangThai ===
+                            <>
+                              <tr
+                                key={index}
+                                style={{
+                                  cursor: "pointer",
+                                  pointerEvents:
+                                    item.trangThai ===
                                       StatusImei.PENDING_DELIVERY ||
+                                      item.trangThai === StatusImei.IN_THE_CART
+                                      ? "none"
+                                      : "auto",
+                                  opacity:
+                                    item.trangThai ===
+                                      StatusImei.PENDING_DELIVERY ||
+                                      item.trangThai === StatusImei.IN_THE_CART
+                                      ? "0.5"
+                                      : "1",
+                                }}
+                                onClick={() => {
+                                  if (
+                                    selectedImei.length >= 4 &&
+                                    !selectedImei.includes(item)
+                                  ) {
+                                    handleOpenAlertVariant(
+                                      "Lựa chọn tối đa 4 số lượng sản phẩm!",
+                                      "warning"
+                                    );
+                                  } else if (!selectedImei.includes(item)) {
+                                    setSelectedImei((val) => [...val, item]);
+                                  } else {
+                                    setSelectedImei((val) =>
+                                      val.filter((text) => text !== item)
+                                    );
+                                  }
+                                }}
+                              >
+                                <td>
+                                  <Checkbox
+                                    color="primary"
+                                    checked={selectedImei.includes(item)}
+                                  />
+                                </td>
+                                <td className="text-center">{item.soImei}</td>
+
+                                <td className="text-center">
+                                  {item.trangThai ===
+                                    StatusImei.PENDING_DELIVERY ||
                                     item.trangThai === StatusImei.NOT_SOLD ||
                                     item.trangThai ===
-                                      StatusImei.IN_THE_CART ? (
-                                      <div
-                                        className={
-                                          item.trangThai ===
+                                    StatusImei.IN_THE_CART ? (
+                                    <div
+                                      className={
+                                        item.trangThai ===
                                           StatusImei.PENDING_DELIVERY
-                                            ? "badge-primary rounded-pill mx-auto"
-                                            : "badge-success rounded-pill mx-auto"
-                                        }
+                                          ? "badge-primary rounded-pill mx-auto"
+                                          : "badge-success rounded-pill mx-auto"
+                                      }
+                                      style={{
+                                        height: "35px",
+                                        width: "115px",
+                                        padding: "4px",
+                                      }}
+                                    >
+                                      <span
+                                        className="text-white"
                                         style={{
-                                          height: "35px",
-                                          width: "115px",
-                                          padding: "4px",
+                                          fontSize: "14px",
+                                          fontWeight: "400",
                                         }}
                                       >
-                                        <span
-                                          className="text-white"
-                                          style={{
-                                            fontSize: "14px",
-                                            fontWeight: "400",
-                                          }}
-                                        >
-                                          {item.trangThai ===
+                                        {item.trangThai ===
                                           StatusImei.NOT_SOLD
-                                            ? "Chưa Bán"
-                                            : item.trangThai ===
-                                              StatusImei.IN_THE_CART
+                                          ? "Chưa Bán"
+                                          : item.trangThai ===
+                                            StatusImei.IN_THE_CART
                                             ? "Chưa Bán"
                                             : item.trangThai ===
                                               StatusImei.PENDING_DELIVERY
-                                            ? "Chờ Giao"
-                                            : ""}
-                                        </span>
-                                      </div>
-                                    ) : (
-                                      ""
-                                    )}
-                                  </td>
-                                </tr>
-                              </>
-                            ))
+                                              ? "Chờ Giao"
+                                              : ""}
+                                      </span>
+                                    </div>
+                                  ) : (
+                                    ""
+                                  )}
+                                </td>
+                              </tr>
+                            </>
+                          ))
                           : ""}
                       </tbody>
                     ) : null}
@@ -3582,9 +3579,9 @@ export const ModalImeiByProductItem = ({
                               action: ({ checked }) => ({
                                 sx: checked
                                   ? {
-                                      border: "1px solid",
-                                      borderColor: "#2f80ed",
-                                    }
+                                    border: "1px solid",
+                                    borderColor: "#2f80ed",
+                                  }
                                   : {},
                               }),
                             }}
@@ -3774,114 +3771,114 @@ export const ModalUpdateImeiByProductItem = ({
                     <tbody>
                       {itemsOnCurrentPage.length
                         ? itemsOnCurrentPage.map((item, index) => (
-                            <tr
-                              key={index}
-                              style={{
-                                cursor: "pointer",
-                                pointerEvents:
-                                  (item.trangThai ===
-                                    StatusImei.PENDING_DELIVERY ||
-                                    item.trangThai ===
-                                      StatusImei.IN_THE_CART) &&
-                                  !imeisChuaBan.some(
-                                    (selectedItem) =>
-                                      selectedItem.soImei === item.soImei
-                                  )
-                                    ? "none"
-                                    : "auto",
-                                opacity:
-                                  (item.trangThai ===
-                                    StatusImei.PENDING_DELIVERY ||
-                                    item.trangThai ===
-                                      StatusImei.IN_THE_CART) &&
-                                  !imeisChuaBan.some(
-                                    (selectedItem) =>
-                                      selectedItem.soImei === item.soImei
-                                  )
-                                    ? "0.5"
-                                    : "1",
-                              }}
-                              onClick={() => {
-                                if (
-                                  selectedImei.length >= 4 &&
-                                  !selectedImei.some(
-                                    (selectedItem) =>
-                                      selectedItem.soImei === item.soImei
-                                  )
-                                ) {
-                                  handleOpenAlertVariant(
-                                    "Lựa chọn tối đa 4 số lượng sản phẩm!",
-                                    "warning"
-                                  );
-                                } else if (
-                                  !selectedImei.some(
-                                    (selectedItem) =>
-                                      selectedItem.soImei === item.soImei
-                                  )
-                                ) {
-                                  setSelectedImei([...selectedImei, item]);
-                                } else {
-                                  setSelectedImei(
-                                    selectedImei.filter(
-                                      (selectedItem) =>
-                                        selectedItem.soImei !== item.soImei
-                                    )
-                                  );
-                                }
-                              }}
-                            >
-                              <td>
-                                <Checkbox
-                                  color="primary"
-                                  checked={selectedImei.some(
-                                    (selectedItem) =>
-                                      selectedItem.soImei === item.soImei
-                                  )}
-                                />
-                              </td>
-                              <td className="text-center">{item.soImei}</td>
-                              <td className="text-center">
-                                {item.trangThai ===
+                          <tr
+                            key={index}
+                            style={{
+                              cursor: "pointer",
+                              pointerEvents:
+                                (item.trangThai ===
                                   StatusImei.PENDING_DELIVERY ||
+                                  item.trangThai ===
+                                  StatusImei.IN_THE_CART) &&
+                                  !imeisChuaBan.some(
+                                    (selectedItem) =>
+                                      selectedItem.soImei === item.soImei
+                                  )
+                                  ? "none"
+                                  : "auto",
+                              opacity:
+                                (item.trangThai ===
+                                  StatusImei.PENDING_DELIVERY ||
+                                  item.trangThai ===
+                                  StatusImei.IN_THE_CART) &&
+                                  !imeisChuaBan.some(
+                                    (selectedItem) =>
+                                      selectedItem.soImei === item.soImei
+                                  )
+                                  ? "0.5"
+                                  : "1",
+                            }}
+                            onClick={() => {
+                              if (
+                                selectedImei.length >= 4 &&
+                                !selectedImei.some(
+                                  (selectedItem) =>
+                                    selectedItem.soImei === item.soImei
+                                )
+                              ) {
+                                handleOpenAlertVariant(
+                                  "Lựa chọn tối đa 4 số lượng sản phẩm!",
+                                  "warning"
+                                );
+                              } else if (
+                                !selectedImei.some(
+                                  (selectedItem) =>
+                                    selectedItem.soImei === item.soImei
+                                )
+                              ) {
+                                setSelectedImei([...selectedImei, item]);
+                              } else {
+                                setSelectedImei(
+                                  selectedImei.filter(
+                                    (selectedItem) =>
+                                      selectedItem.soImei !== item.soImei
+                                  )
+                                );
+                              }
+                            }}
+                          >
+                            <td>
+                              <Checkbox
+                                color="primary"
+                                checked={selectedImei.some(
+                                  (selectedItem) =>
+                                    selectedItem.soImei === item.soImei
+                                )}
+                              />
+                            </td>
+                            <td className="text-center">{item.soImei}</td>
+                            <td className="text-center">
+                              {item.trangThai ===
+                                StatusImei.PENDING_DELIVERY ||
                                 item.trangThai === StatusImei.NOT_SOLD ||
                                 item.trangThai === StatusImei.IN_THE_CART ? (
-                                  <div
-                                    className={
-                                      item.trangThai ===
+                                <div
+                                  className={
+                                    item.trangThai ===
                                       StatusImei.PENDING_DELIVERY
-                                        ? "badge-primary rounded-pill mx-auto"
-                                        : "badge-success rounded-pill mx-auto"
-                                    }
+                                      ? "badge-primary rounded-pill mx-auto"
+                                      : "badge-success rounded-pill mx-auto"
+                                  }
+                                  style={{
+                                    height: "35px",
+                                    width: "115px",
+                                    padding: "4px",
+                                  }}
+                                >
+                                  <span
+                                    className="text-white"
                                     style={{
-                                      height: "35px",
-                                      width: "115px",
-                                      padding: "4px",
+                                      fontSize: "14px",
+                                      fontWeight: "400",
                                     }}
                                   >
-                                    <span
-                                      className="text-white"
-                                      style={{
-                                        fontSize: "14px",
-                                        fontWeight: "400",
-                                      }}
-                                    >
-                                      {item.trangThai === StatusImei.NOT_SOLD
-                                        ? "Chưa Bán"
-                                        : item.trangThai ===
-                                          StatusImei.IN_THE_CART
+                                    {item.trangThai === StatusImei.NOT_SOLD
+                                      ? "Chưa Bán"
+                                      : item.trangThai ===
+                                        StatusImei.IN_THE_CART
                                         ? "Chưa Bán"
                                         : item.trangThai ===
                                           StatusImei.PENDING_DELIVERY
-                                        ? "Chờ Giao"
-                                        : ""}
-                                    </span>
-                                  </div>
-                                ) : (
-                                  ""
-                                )}
-                              </td>
-                            </tr>
-                          ))
+                                          ? "Chờ Giao"
+                                          : ""}
+                                  </span>
+                                </div>
+                              ) : (
+                                ""
+                              )}
+                            </td>
+                          </tr>
+                        ))
                         : ""}
                     </tbody>
                   </table>
@@ -3921,9 +3918,9 @@ export const ModalUpdateImeiByProductItem = ({
                               action: ({ checked }) => ({
                                 sx: checked
                                   ? {
-                                      border: "1px solid",
-                                      borderColor: "#2f80ed",
-                                    }
+                                    border: "1px solid",
+                                    borderColor: "#2f80ed",
+                                  }
                                   : {},
                               }),
                             }}
@@ -4334,11 +4331,11 @@ export function MultiplePaymentMethods({
                               action: ({ checked }) => ({
                                 sx: checked
                                   ? {
-                                      border: "1px solid",
-                                      borderColor: "#2f80ed",
-                                      // borderRadius: "10px",
-                                      // height: "40px",
-                                    }
+                                    border: "1px solid",
+                                    borderColor: "#2f80ed",
+                                    // borderRadius: "10px",
+                                    // height: "40px",
+                                  }
                                   : {},
                               }),
                             }}
@@ -4886,11 +4883,11 @@ export function MultiplePaymentMethodsDelivery({
                               action: ({ checked }) => ({
                                 sx: checked
                                   ? {
-                                      border: "1px solid",
-                                      borderColor: "#2f80ed",
-                                      // borderRadius: "10px",
-                                      // height: "40px",
-                                    }
+                                    border: "1px solid",
+                                    borderColor: "#2f80ed",
+                                    // borderRadius: "10px",
+                                    // height: "40px",
+                                  }
                                   : {},
                               }),
                             }}
@@ -4983,49 +4980,12 @@ export const ModalRefundProduct = ({
   imeis,
   refresh,
   refund,
-  img,
-  price,
-  name,
 }) => {
   const [selectedImei, setSelectedImei] = useState([]);
   const { handleOpenAlertVariant } = useCustomSnackbar();
 
   const [isAll, setIsAll] = useState(false);
 
-  const [priceFormat, setPriceFormat] = useState("");
-  const [priceValue, setPriceValue] = useState(0);
-  const [note, setNote] = useState("");
-  const handleChangePrice = (event) => {
-    const value = event.target.value;
-    let valueFinal;
-
-    const price = value.replace(/[^0-9]+/g, "");
-
-    valueFinal = value
-      .replace(/[^0-9]+/g, "")
-      .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    setPriceFormat(valueFinal);
-    setPriceValue(price);
-
-    // if (value == null || value == "") {
-    //   setCustomerPayment(0);
-    //   setCustomerPaymentFormat("");
-    // }
-    // else if (parseNumberPayment > 100000000000) {
-    //   setCustomerPayment(0);
-    //   setCustomerPaymentFormat("");
-    // }
-  };
-
-  const total = (price) => {
-    return selectedImei.length * price;
-  };
-  const totalString = () => {
-    return total(selectedImei.length * price).toLocaleString("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    });
-  };
   const handleAllCheckboxChange = (e) => {
     const checked = e.target.checked;
     setIsAll(checked);
@@ -5037,13 +4997,7 @@ export const ModalRefundProduct = ({
   };
 
   useEffect(() => {
-    // setCurrentPage(1);
-    // setSelectedImei(imeisChuaBan);
     setSelectedImei([]);
-    setPriceValue(0);
-    setPriceFormat("");
-    setNote("");
-    setIsAll(false);
   }, [refresh]);
 
   return (
@@ -5061,212 +5015,139 @@ export const ModalRefundProduct = ({
         <DialogContent className="">
           <div className="mt-2" style={{ width: "1000px" }}>
             <div className="container" style={{}}>
-              <div className="header-title d-flex justify-content-center">
+              <div className="header-title">
                 <div className="mt-1">
                   <span className="fs-4" style={{ fontWeight: "500" }}>
-                    Xác Nhận Trả Hàng
+                    Chọn Imei Cần Trả Hàng
                   </span>
                 </div>
               </div>
               <div className="mt-3 pt-2">
-                <div className="d-flex justify-content-between">
-                  <div className="d-flex ms-1">
-                    <div className="product-img">
-                      <img
-                        src={img}
-                        class=""
-                        alt=""
-                        style={{ width: "215px", height: "215px" }}
-                      />
-                    </div>
-                    <div className="product ms-3 text-start">
-                      <Tooltip
-                        TransitionComponent={Zoom}
-                        title="Xem sản phẩm"
-                        style={{ cursor: "pointer" }}
-                        placement="top-start"
-                      >
-                        <div className="product-name">
-                          <span
-                            className="underline-custom"
+                <div className="me-2" style={{}}>
+                  <table className="table" style={{ borderRadius: "10px" }}>
+                    <thead style={{ borderRadius: "10px" }}>
+                      <tr>
+                        <th scope="col">
+                          <Checkbox
+                            color="primary"
+                            checked={isAll}
+                            onChange={handleAllCheckboxChange}
+                          />
+                        </th>
+                        <th scope="col" className="text-center text-dark">
+                          Imei
+                        </th>
+                        <th scope="col" className="text-center text-dark">
+                          Trạng Thái
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {imeis.length
+                        ? imeis.map((item, index) => (
+                          <tr
+                            key={index}
                             style={{
-                              whiteSpace: "pre-line",
-                              fontSize: "17.5px",
-                              fontWeight: "500",
+                              cursor: "pointer",
+                            }}
+                            onClick={() => {
+                              if (
+                                !selectedImei.some(
+                                  (selectedItem) =>
+                                    selectedItem.soImei === item.soImei
+                                )
+                              ) {
+                                setSelectedImei([...selectedImei, item]);
+                              } else {
+                                setSelectedImei(
+                                  selectedImei.filter(
+                                    (selectedItem) =>
+                                      selectedItem.soImei !== item.soImei
+                                  )
+                                );
+                              }
                             }}
                           >
-                            {name}
-                          </span>
-                        </div>
-                      </Tooltip>
-                      <div className="mt-3">
-                        <span
-                          className="product-price txt-price"
-                          style={{ fontSize: "17.5px", fontWeight: "" }}
-                        >
-                          {price.toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                          }) || 0}
-                        </span>
-                      </div>
-                      <div className="mt-3">
-                        <span>Số lượng hoàn trả:</span>
-                        <span
-                          style={{ fontWeight: "", fontSize: "17px" }}
-                          className="ms-2"
-                        >
-                          {"x" + selectedImei.length}
-                        </span>
-                      </div>
-                      <div className="mt-3">
-                        {"Hoàn trả tổng cộng:"}
-                        <span
-                          className="product-price txt-price ms-2"
-                          style={{ fontSize: "17.5px", fontWeight: "" }}
-                        >
-                          {total(price).toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                          }) || 0}
-                        </span>
-                      </div>
-                      <div className="mt-3">
-                        <TextField
-                          label="Phụ phí"
-                          id="outlined-size-small"
-                          size="small"
-                          style={{ width: "150px" }}
-                          value={priceFormat}
-                          onChange={handleChangePrice}
-                        />
-                      </div>
-                    </div>
-                    <div></div>
-                  </div>
-
-                  <div className="me-2" style={{ width: "370px" }}>
-                    <table className="table" style={{ borderRadius: "10px" }}>
-                      <thead style={{ borderRadius: "10px" }}>
-                        <tr>
-                          <th scope="col">
-                            <Checkbox
-                              color="primary"
-                              checked={isAll}
-                              onChange={handleAllCheckboxChange}
-                            />
-                          </th>
-                          <th scope="col" className="text-center text-dark">
-                            Chọn Imei Cần Trả Hàng
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {imeis.length
-                          ? imeis.map((item, index) => (
-                              <tr
-                                key={index}
+                            <td>
+                              <Checkbox
+                                color="primary"
+                                checked={selectedImei.some(
+                                  (selectedItem) =>
+                                    selectedItem.soImei === item.soImei
+                                )}
+                              />
+                            </td>
+                            <td className="text-center">{item.soImei}</td>
+                            <td className="text-center">
+                              <div
+                                className={
+                                  "badge-success rounded-pill mx-auto"
+                                }
                                 style={{
-                                  cursor: "pointer",
-                                }}
-                                onClick={() => {
-                                  if (
-                                    !selectedImei.some(
-                                      (selectedItem) =>
-                                        selectedItem.soImei === item.soImei
-                                    )
-                                  ) {
-                                    setSelectedImei([...selectedImei, item]);
-                                  } else {
-                                    setSelectedImei(
-                                      selectedImei.filter(
-                                        (selectedItem) =>
-                                          selectedItem.soImei !== item.soImei
-                                      )
-                                    );
-                                  }
+                                  height: "35px",
+                                  width: "105px",
+                                  padding: "4px",
                                 }}
                               >
-                                <td>
-                                  <Checkbox
-                                    color="primary"
-                                    checked={selectedImei.some(
-                                      (selectedItem) =>
-                                        selectedItem.soImei === item.soImei
-                                    )}
-                                  />
-                                </td>
-                                <td className="text-center">{item.soImei}</td>
-                              </tr>
-                            ))
-                          : ""}
-                      </tbody>
-                    </table>
-                  </div>
+                                <span
+                                  className="text-white"
+                                  style={{
+                                    fontSize: "14px",
+                                    fontWeight: "400",
+                                  }}
+                                >
+                                  Đã Bán
+                                </span>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                        : ""}
+                    </tbody>
+                  </table>
                 </div>
-                <div className="mt-1 p-3">
-                  <TextField
-                    label="Mô tả"
-                    value={note}
-                    onChange={(e) => setNote(e.target.value)}
-                    multiline
-                    fullWidth
-                    maxRows={1}
-                    inputProps={{
-                      style: {
-                        paddingBottom: "70px",
-                      },
-                    }}
-                    size="medium"
-                    className="mt-2"
-                  />
-                </div>
-                <div className="d-flex justify-content-end mt-2 me-2">
-                  <Button
-                    onClick={() => {
-                      if (selectedImei.length === 0) {
-                        handleOpenAlertVariant(
-                          "Bạn chưa chọn IMEI cần trả!",
-                          "warning"
-                        );
-                      } else {
-                        refund(
-                          selectedImei,
-                          selectedImei.length * price,
-                          note,
-                          priceValue,
-                          totalString()
-                        );
-                      }
-                    }}
-                    className="rounded-2 button-mui me-2"
-                    type="primary"
-                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
-                  >
-                    <span
-                      className=""
-                      style={{ marginBottom: "2px", fontWeight: "500" }}
-                    >
-                      Xác Nhận
-                    </span>
-                  </Button>
-                  <Button
-                    onClick={() => {
+              </div>
+              <div className="d-flex justify-content-end mt-3 me-2">
+                <Button
+                  onClick={() => {
+                    if (selectedImei.length === 0) {
+                      handleOpenAlertVariant(
+                        "Bạn chưa chọn IMEI cần trả hàng!",
+                        "warning"
+                      );
+                    } else {
+                      refund(selectedImei
+                      );
                       close();
-                      // setSelectedImei([]);
-                    }}
-                    className="rounded-2"
-                    type="danger"
-                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                    }
+                  }}
+                  className="rounded-2 button-mui me-2"
+                  type="primary"
+                  style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                >
+                  <span
+                    className=""
+                    style={{ marginBottom: "2px", fontWeight: "500" }}
                   >
-                    <span
-                      className=""
-                      style={{ marginBottom: "2px", fontWeight: "500" }}
-                    >
-                      Hủy Bỏ
-                    </span>
-                  </Button>
-                </div>
+                    Xác Nhận
+                  </span>
+                </Button>
+                <Button
+                  onClick={() => {
+                    close();
+                    // setSelectedImei([]);
+                  }}
+                  className="rounded-2"
+                  type="danger"
+                  style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                >
+                  <span
+                    className=""
+                    style={{ marginBottom: "2px", fontWeight: "500" }}
+                  >
+                    Hủy Bỏ
+                  </span>
+                </Button>
               </div>
             </div>
           </div>
@@ -5276,3 +5157,160 @@ export const ModalRefundProduct = ({
     </>
   );
 };
+
+export function ConfirmChangeTypePhienBan(props) {
+  const { open, onClose, confirm } = props;
+
+  return (
+    <div className="rounded-pill">
+      <Dialog
+        TransitionComponent={Transition1}
+        open={open}
+        onClose={onClose}
+        aria-describedby="alert-dialog-slide-description1"
+        sx={{
+          height: "300px",
+          "& .MuiPaper-root": {
+            borderRadius: "15px",
+            marginTop: "150px",
+          },
+        }}
+      >
+        <div className="p-2" style={{}}>
+          <DialogTitle
+            sx={{ color: "#2f80ed", fontWeight: "500", fontSize: "18px" }}
+            id="alert-dialog-title"
+          >
+            {"Chuyển đổi tính năng thêm phiên bản"}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText
+              sx={{ color: "black" }}
+              id="alert-dialog-description"
+            >
+              Thông tin của các cấu hình hiện tại
+              sẽ không được lưu lại. Bạn có chắc chắn muốn chuyển sang tính năng này ?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={confirm}
+              className="rounded-2 me-1 button-mui"
+              type="primary"
+              style={{
+                height: "40px",
+                width: "auto",
+                fontSize: "16px",
+                marginBottom: "20px",
+              }}
+            >
+              <span
+                className="text-white"
+                style={{ fontWeight: "500", marginBottom: "2px" }}
+              >
+                Xác nhận
+              </span>
+            </Button>
+            <Button
+              onClick={onClose}
+              className="rounded-2 me-3 ant-btn-danger"
+              type="primary"
+              style={{
+                height: "40px",
+                width: "auto",
+                fontSize: "16px",
+                marginBottom: "20px",
+              }}
+            >
+              <span
+                className="text-white"
+                style={{ fontWeight: "500", marginBottom: "2px" }}
+              >
+                Hủy bỏ
+              </span>
+            </Button>
+          </DialogActions>
+        </div>
+      </Dialog>
+    </div>
+  );
+}
+
+export function ConfirmRefundOrder(props) {
+  const { open, onClose, confirm } = props;
+
+  return (
+    <div className="rounded-pill">
+      <Dialog
+        TransitionComponent={Transition1}
+        open={open}
+        onClose={onClose}
+        aria-describedby="alert-dialog-slide-description1"
+        sx={{
+          height: "300px",
+          "& .MuiPaper-root": {
+            borderRadius: "15px",
+            marginTop: "150px",
+          },
+        }}
+      >
+        <div className="p-2" style={{}}>
+          <DialogTitle
+            sx={{ color: "#e5383b", fontWeight: "500", fontSize: "18px" }}
+            id="alert-dialog-title"
+          >
+            {"Xác nhận trả hàng"}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText
+              sx={{ color: "black" }}
+              id="alert-dialog-description"
+            >
+              Bạn có chắc chắn muốn trả hàng ?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={confirm}
+              className="rounded-2 me-1 button-mui"
+              type="primary"
+              style={{
+                height: "40px",
+                width: "auto",
+                fontSize: "16px",
+                marginBottom: "20px",
+              }}
+            >
+              <span
+                className="text-white"
+                style={{ fontWeight: "500", marginBottom: "2px" }}
+              >
+                Xác nhận
+              </span>
+            </Button>
+            <Button
+              onClick={onClose}
+              className="rounded-2 me-3 ant-btn-danger"
+              type="primary"
+              style={{
+                height: "40px",
+                width: "auto",
+                fontSize: "16px",
+                marginBottom: "20px",
+              }}
+            >
+              <span
+                className="text-white"
+                style={{ fontWeight: "500", marginBottom: "2px" }}
+              >
+                Hủy bỏ
+              </span>
+            </Button>
+          </DialogActions>
+        </div>
+      </Dialog>
+    </div>
+  );
+}
+
+

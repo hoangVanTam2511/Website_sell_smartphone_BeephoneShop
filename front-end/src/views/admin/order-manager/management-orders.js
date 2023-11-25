@@ -175,7 +175,7 @@ const ManagementOrders = () => {
       title: "Mã Đơn Hàng",
       align: "center",
       key: "ma",
-      width: "15%",
+      width: "10%",
       dataIndex: "ma",
       render: (text, record) => (
         <span style={{ fontWeight: "500" }}>{record.ma}</span>
@@ -185,14 +185,14 @@ const ManagementOrders = () => {
       title: "Khách Hàng",
       align: "center",
       dataIndex: "tenNguoiNhan",
-      width: "15%",
+      width: "10%",
       render: (text, order) =>
         order.account === null && order.loaiHoaDon === OrderTypeString.AT_COUNTER ? (
           <div
             className="rounded-pill mx-auto"
             style={{
               height: "35px",
-              width: "92px",
+              width: "130px",
               padding: "4px",
               backgroundColor: "#e1e1e1",
             }}
@@ -201,7 +201,7 @@ const ManagementOrders = () => {
               className="text-dark mt-1"
               style={{ fontSize: "14px" }}
             >
-              Khách lẻ
+              Khách hàng lẻ
             </span>
           </div>
         ) : (
@@ -209,7 +209,6 @@ const ManagementOrders = () => {
             order.account.hoVaTen ? order.account.hoVaTen
             :
             order.tenNguoiNhan
-
         ),
     },
     {
@@ -339,7 +338,7 @@ const ManagementOrders = () => {
                     className="rounded-pill mx-auto badge-primary"
                     style={{
                       height: "35px",
-                      width: "125px",
+                      width: "115px",
                       padding: "4px",
                     }}
                   >
@@ -347,7 +346,7 @@ const ManagementOrders = () => {
                       className="text-white"
                       style={{ fontSize: "14px" }}
                     >
-                      Đã giao hàng
+                      Hoàn thành
                     </span>
                   </div>
                   : status == OrderStatusString.CANCELLED ?
@@ -371,7 +370,7 @@ const ManagementOrders = () => {
                         className="rounded-pill mx-auto badge-primary"
                         style={{
                           height: "35px",
-                          width: "135px",
+                          width: "115px",
                           padding: "4px",
                         }}
                       >
@@ -379,7 +378,7 @@ const ManagementOrders = () => {
                           className="text-white"
                           style={{ fontSize: "14px" }}
                         >
-                          Đã thanh toán
+                          Hoàn thành
                         </span>
                       </div> : ""
 

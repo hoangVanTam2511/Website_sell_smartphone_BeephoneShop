@@ -49,16 +49,15 @@ import useCustomSnackbar from "../../../utilities/notistack";
 import { add } from "lodash";
 import { FaMoneyBillTransfer, FaMoneyCheckDollar } from "react-icons/fa6";
 import InputNumberAmount from "./input-number-amount-product";
+import PrinterInvoice, { Print } from "./printer-invoice";
 
 const OrderDetail = (props) => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [alert, setAlert] = useState({});
 
   const [isOpen, setIsOpen] = useState(false);
   const [isRefund, setIsRefund] = useState(false);
-  const [isDone, setIsDone] = useState(false);
   const [order, setOrder] = useState({});
   const [orderHistories, setOrderHistories] = useState([]);
   const [status, setStatus] = useState();
@@ -126,6 +125,14 @@ const OrderDetail = (props) => {
   const handleCloseOpenModalRefund = () => {
     setOpenModalRefund(false);
   };
+
+  const totalAmountProduct = () => {
+    let totalAmount = 0;
+    orderItems && orderItems.map((item) => {
+      totalAmount += item.imeisDaBan.length;
+    })
+    return totalAmount;
+  }
 
   const filteredData =
     selectedImei &&
@@ -242,35 +249,36 @@ const OrderDetail = (props) => {
         setPaymentHistorys(sortPayments);
         // const sortOrderItems = data.paymentMethods && data.paymentMethods.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-        const sortOrderItems =
-          data &&
-          data.orderItems.flatMap((orderItem) => {
-            const imeisWithRefund = orderItem.imeisDaBan.filter(
-              (imei) => imei.trangThai === StatusImei.REFUND
-            );
-            if (imeisWithRefund.length > 0) {
-              const imeisWithoutRefund = orderItem.imeisDaBan.filter(
-                (imei) => imei.trangThai !== StatusImei.REFUND
-              );
-              const orderItemWithoutRefundImei = {
-                ...orderItem,
-                imeisDaBan: imeisWithoutRefund,
-                soLuong: imeisWithoutRefund.length,
-              };
-              const orderItemsWithRefundImei = imeisWithRefund.map((imei) => ({
-                ...orderItem,
-                imeisDaBan: [imei],
-                trangThai: StatusImei.REFUND,
-                soLuong: 1,
-              }));
-              return [orderItemWithoutRefundImei, ...orderItemsWithRefundImei];
-            }
-            return orderItem;
-          });
+        // const sortOrderItems =
+        //   data &&
+        //   data.orderItems.flatMap((orderItem) => {
+        //     const imeisWithRefund = orderItem.imeisDaBan.filter(
+        //       (imei) => imei.trangThai === StatusImei.REFUND
+        //     );
+        //     if (imeisWithRefund.length > 0) {
+        //       const imeisWithoutRefund = orderItem.imeisDaBan.filter(
+        //         (imei) => imei.trangThai !== StatusImei.REFUND
+        //       );
+        //       const orderItemWithoutRefundImei = {
+        //         ...orderItem,
+        //         imeisDaBan: imeisWithoutRefund,
+        //         soLuong: imeisWithoutRefund.length,
+        //       };
+        //       const orderItemsWithRefundImei = imeisWithRefund.map((imei) => ({
+        //         ...orderItem,
+        //         imeisDaBan: [imei],
+        //         trangThai: StatusImei.REFUND,
+        //         soLuong: 1,
+        //       }));
+        //       return [orderItemWithoutRefundImei, ...orderItemsWithRefundImei];
+        //     }
+        //     return orderItem;
+        //   });
+        //
+        // console.log(sortOrderItems.filter((item) => item.soLuong > 0));
 
-        console.log(sortOrderItems.filter((item) => item.soLuong > 0));
-
-        setOrderItems(sortOrderItems.filter((item) => item.soLuong > 0));
+        // setOrderItems(sortOrderItems.filter((item) => item.soLuong > 0));
+        setOrderItems(data.orderItems);
         // setOrderItemRefund(sortOrderItemRefund);
 
         const address =
@@ -281,12 +289,12 @@ const OrderDetail = (props) => {
         const getAddressDefault =
           address &&
           address.diaChi +
-            ", " +
-            address.xaPhuong +
-            ", " +
-            address.quanHuyen +
-            ", " +
-            address.tinhThanhPho;
+          ", " +
+          address.xaPhuong +
+          ", " +
+          address.quanHuyen +
+          ", " +
+          address.tinhThanhPho;
         setAddressDefault(getAddressDefault);
 
         if (data.loaiHoaDon === OrderTypeString.DELIVERY) {
@@ -564,7 +572,7 @@ const OrderDetail = (props) => {
     {
       title: "Ghi Chú",
       align: "center",
-      width: "35%",
+      width: "65%",
       dataIndex: "moTa",
       render: (text, record) => (
         <span style={{ fontWeight: "400", whiteSpace: "pre-line" }}>
@@ -598,10 +606,10 @@ const OrderDetail = (props) => {
       render: (type) =>
         type == 1 ? (
           <div
-            className="rounded-pill mx-auto badge-success"
+            className="rounded-pill mx-auto badge-primary"
             style={{
               height: "35px",
-              width: "110px",
+              width: "120px",
               padding: "4px",
             }}
           >
@@ -615,7 +623,7 @@ const OrderDetail = (props) => {
         ) : type == 0 ? (
           <div
             className="rounded-pill badge-primary mx-auto"
-            style={{ height: "35px", width: "110px", padding: "4px" }}
+            style={{ height: "35px", width: "120px", padding: "4px" }}
           >
             <span
               className="text-white"
@@ -639,7 +647,7 @@ const OrderDetail = (props) => {
             className="rounded-pill mx-auto badge-success"
             style={{
               height: "35px",
-              width: "120px",
+              width: "130px",
               padding: "4px",
             }}
           >
@@ -653,7 +661,7 @@ const OrderDetail = (props) => {
         ) : record.hinhThucThanhToan == 1 ? (
           <div
             className="rounded-pill badge-success mx-auto"
-            style={{ height: "35px", width: "90px", padding: "4px" }}
+            style={{ height: "35px", width: "120px", padding: "4px" }}
           >
             <span
               className="text-white"
@@ -677,7 +685,7 @@ const OrderDetail = (props) => {
             className="rounded-pill badge-primary mx-auto"
             style={{
               height: "35px",
-              width: "115px",
+              width: "130px",
               padding: "4px",
             }}
           >
@@ -695,11 +703,11 @@ const OrderDetail = (props) => {
     {
       title: "Thời Gian",
       align: "center",
-      width: "15%",
+      width: "10%",
       dataIndex: "createdAt",
       render: (text, record) => (
-        <span style={{ fontWeight: "normal" }}>
-          {format(new Date(record.createdAt), "HH:mm:ss - dd/MM/yyyy")}
+        <span style={{ fontWeight: "normal", whiteSpace: "pre-line" }}>
+          {format(new Date(record.createdAt), "HH:mm:ss, dd/MM/yyyy")}
         </span>
       ),
     },
@@ -713,6 +721,12 @@ const OrderDetail = (props) => {
           {record.hinhThucThanhToan === 0 ? record.ma : "..."}
         </span>
       ),
+    },
+    {
+      title: "Ghi chú",
+      align: "center",
+      width: "15%",
+      dataIndex: "ghiChu",
     },
     {
       title: "Người Xác Nhận",
@@ -749,7 +763,6 @@ const OrderDetail = (props) => {
   };
 
   const handleCloseDialogPayment = () => {
-    setIsDone(true);
     handleAddPayment();
     setOpenDialogPayment(false);
   };
@@ -905,20 +918,20 @@ const OrderDetail = (props) => {
                   item.loaiThaoTac == 0
                     ? FaRegFileAlt
                     : item.loaiThaoTac == 1
-                    ? FaMoneyCheckDollar
-                    : item.loaiThaoTac == 2
-                    ? FaBusinessTime
-                    : item.loaiThaoTac == 3
-                    ? FaTruck
-                    : item.loaiThaoTac == 4
-                    ? FaRegCalendarCheck
-                    : item.loaiThaoTac == 5
-                    ? FaRegCalendarTimes
-                    : item.loaiThaoTac == 6
-                    ? FaRegCalendarCheck
-                    : item.loaiThaoTac == 7
-                    ? FaMoneyBillTransfer
-                    : ""
+                      ? FaMoneyCheckDollar
+                      : item.loaiThaoTac == 2
+                        ? FaBusinessTime
+                        : item.loaiThaoTac == 3
+                          ? FaTruck
+                          : item.loaiThaoTac == 4
+                            ? FaRegCalendarCheck
+                            : item.loaiThaoTac == 5
+                              ? FaRegCalendarTimes
+                              : item.loaiThaoTac == 6
+                                ? FaRegCalendarCheck
+                                : item.loaiThaoTac == 7
+                                  ? FaMoneyBillTransfer
+                                  : ""
                 }
                 title={
                   <div className="mt-1">
@@ -935,20 +948,20 @@ const OrderDetail = (props) => {
                   item.loaiThaoTac == 0
                     ? "#09a129"
                     : item.loaiThaoTac == 1
-                    ? "#09a129"
-                    : item.loaiThaoTac == 2
-                    ? "#ffd500"
-                    : item.loaiThaoTac == 3
-                    ? "#09a129"
-                    : item.loaiThaoTac == 4
-                    ? "#09a129"
-                    : item.loaiThaoTac == 5
-                    ? "#e5383b"
-                    : item.loaiThaoTac == 6
-                    ? "#09a129"
-                    : item.loaiThaoTac == 7
-                    ? "#e5383b"
-                    : ""
+                      ? "#09a129"
+                      : item.loaiThaoTac == 2
+                        ? "#ffd500"
+                        : item.loaiThaoTac == 3
+                          ? "#09a129"
+                          : item.loaiThaoTac == 4
+                            ? "#09a129"
+                            : item.loaiThaoTac == 5
+                              ? "#e5383b"
+                              : item.loaiThaoTac == 6
+                                ? "#09a129"
+                                : item.loaiThaoTac == 7
+                                  ? "#e5383b"
+                                  : ""
                 }
               />
             ))}
@@ -962,7 +975,7 @@ const OrderDetail = (props) => {
       <div className="d-flex justify-content-between mt-2 p-3">
         <div className="d-flex order-info">
           {order.trangThai == OrderStatusString.PENDING_CONFIRM &&
-          order.loaiHoaDon == OrderTypeString.DELIVERY ? (
+            order.loaiHoaDon == OrderTypeString.DELIVERY ? (
             <div>
               <Button
                 onClick={() =>
@@ -990,7 +1003,7 @@ const OrderDetail = (props) => {
           ) : null}
           {(order.trangThai === OrderStatusString.PREPARING ||
             order.trangThai === OrderStatusString.CONFIRMED) &&
-          order.loaiHoaDon === OrderTypeString.DELIVERY ? (
+            order.loaiHoaDon === OrderTypeString.DELIVERY ? (
             <div>
               <Button
                 onClick={() =>
@@ -1017,7 +1030,7 @@ const OrderDetail = (props) => {
             </div>
           ) : null}
           {order.trangThai == OrderStatusString.CONFIRMED &&
-          order.loaiHoaDon == OrderTypeString.DELIVERY ? (
+            order.loaiHoaDon == OrderTypeString.DELIVERY ? (
             <div>
               <Button
                 onClick={() =>
@@ -1044,8 +1057,8 @@ const OrderDetail = (props) => {
             </div>
           ) : null}
           {order.tienKhachTra >= total &&
-          order.trangThai == OrderStatusString.DELIVERING &&
-          order.loaiHoaDon == OrderTypeString.DELIVERY ? (
+            order.trangThai == OrderStatusString.DELIVERING &&
+            order.loaiHoaDon == OrderTypeString.DELIVERY ? (
             <div>
               <Button
                 onClick={() =>
@@ -1074,10 +1087,10 @@ const OrderDetail = (props) => {
             ""
           )}
           {paymentHistorys &&
-          paymentHistorys.length <= 0 &&
-          order.trangThai != OrderStatusString.CANCELLED &&
-          order.trangThai != OrderStatusString.SUCCESS_DELIVERY &&
-          order.loaiHoaDon == OrderTypeString.DELIVERY ? (
+            paymentHistorys.length <= 0 &&
+            order.trangThai != OrderStatusString.CANCELLED &&
+            order.trangThai != OrderStatusString.SUCCESS_DELIVERY &&
+            order.loaiHoaDon == OrderTypeString.DELIVERY ? (
             <div className="">
               <Button
                 onClick={() => handleOpenDialogConfirmOrder(null, true)}
@@ -1102,24 +1115,8 @@ const OrderDetail = (props) => {
             ""
           )}
         </div>
-        <div>
-          <Button
-            onClick={() => console.log(isOrderValidDelivery ? "OK" : "NOT")}
-            className="rounded-2 me-2"
-            type="primary"
-            style={{
-              height: "40px",
-              width: "130px",
-              fontSize: "16px",
-            }}
-          >
-            <span
-              className="text-white"
-              style={{ fontWeight: "500", marginBottom: "2px" }}
-            >
-              IN HÓA ĐƠN
-            </span>
-          </Button>
+        <div className="d-flex">
+          <Print />
           <Button
             onClick={handleClickOpenDialogDetailOrderHistories}
             className="rounded-2"
@@ -1162,8 +1159,8 @@ const OrderDetail = (props) => {
             </div>
             <div className="">
               {order.trangThai === OrderStatusString.PENDING_CONFIRM ||
-              order.trangThai === OrderStatusString.CONFIRMED ||
-              order.trangThai === OrderStatusString.PREPARING ? (
+                order.trangThai === OrderStatusString.CONFIRMED ||
+                order.trangThai === OrderStatusString.PREPARING ? (
                 <Button
                   onClick={handleClickOpenDialogUpdateRecipientOrder}
                   className="rounded-2 ms-2"
@@ -1204,10 +1201,10 @@ const OrderDetail = (props) => {
               </div>
               <div className="ms-5 ps-5">
                 <div
-                  className="rounded-pill"
+                  className="rounded-pill text-center"
                   style={{
                     height: "35px",
-                    width: "auto",
+                    width: "140px",
                     padding: "5px",
                     backgroundColor: "#e1e1e1",
                   }}
@@ -1225,10 +1222,10 @@ const OrderDetail = (props) => {
               <div className="ms-5 ps-5">
                 {order.loaiHoaDon == OrderTypeString.DELIVERY ? (
                   <div
-                    className="rounded-pill badge-success"
+                    className="rounded-pill badge-success text-center"
                     style={{
                       height: "35px",
-                      width: "auto",
+                      width: "100px",
                       padding: "5px",
                     }}
                   >
@@ -1241,10 +1238,10 @@ const OrderDetail = (props) => {
                   </div>
                 ) : (
                   <div
-                    className="rounded-pill bg-primary"
+                    className="rounded-pill bg-primary text-center"
                     style={{
                       height: "35px",
-                      width: "auto",
+                      width: "90px",
                       padding: "5px",
                     }}
                   >
@@ -1265,10 +1262,10 @@ const OrderDetail = (props) => {
               <div className="ms-5 ps-5">
                 {order.trangThai == OrderStatusString.PENDING_CONFIRM ? (
                   <div
-                    className="rounded-pill badge-warning"
+                    className="rounded-pill badge-warning text-center"
                     style={{
                       height: "35px",
-                      width: "auto",
+                      width: "158px",
                       padding: "5px",
                     }}
                   >
@@ -1281,10 +1278,10 @@ const OrderDetail = (props) => {
                   </div>
                 ) : order.trangThai == OrderStatusString.CONFIRMED ? (
                   <div
-                    className="rounded-pill badge-success"
+                    className="rounded-pill badge-success text-center"
                     style={{
                       height: "35px",
-                      width: "auto",
+                      width: "115px",
                       padding: "5px",
                     }}
                   >
@@ -1297,10 +1294,10 @@ const OrderDetail = (props) => {
                   </div>
                 ) : order.trangThai == OrderStatusString.PREPARING ? (
                   <div
-                    className="rounded-pill mx-auto badge-warning"
+                    className="rounded-pill mx-auto badge-warning text-center"
                     style={{
                       height: "35px",
-                      width: "auto",
+                      width: "160px",
                       padding: "5px",
                     }}
                   >
@@ -1313,10 +1310,10 @@ const OrderDetail = (props) => {
                   </div>
                 ) : order.trangThai == OrderStatusString.DELIVERING ? (
                   <div
-                    className="rounded-pill badge-primary"
+                    className="rounded-pill badge-primary text-center"
                     style={{
                       height: "35px",
-                      width: "auto",
+                      width: "135px",
                       padding: "5px",
                     }}
                   >
@@ -1329,10 +1326,10 @@ const OrderDetail = (props) => {
                   </div>
                 ) : order.trangThai == OrderStatusString.SUCCESS_DELIVERY ? (
                   <div
-                    className="rounded-pill bg-primary"
+                    className="rounded-pill bg-primary text-center"
                     style={{
                       height: "35px",
-                      width: "auto",
+                      width: "110px",
                       padding: "5px",
                     }}
                   >
@@ -1340,15 +1337,15 @@ const OrderDetail = (props) => {
                       className="text-white p-2"
                       style={{ fontSize: "14px" }}
                     >
-                      Đã giao hàng
+                      Hoàn thành
                     </span>
                   </div>
                 ) : order.trangThai == OrderStatusString.CANCELLED ? (
                   <div
-                    className="rounded-pill badge-danger"
+                    className="rounded-pill badge-danger text-center"
                     style={{
                       height: "35px",
-                      width: "auto",
+                      width: "80px",
                       padding: "5px",
                     }}
                   >
@@ -1361,10 +1358,10 @@ const OrderDetail = (props) => {
                   </div>
                 ) : order.trangThai == OrderStatusString.HAD_PAID ? (
                   <div
-                    className="rounded-pill bg-primary"
+                    className="rounded-pill bg-primary text-center"
                     style={{
                       height: "35px",
-                      width: "auto",
+                      width: "110px",
                       padding: "5px",
                     }}
                   >
@@ -1372,7 +1369,7 @@ const OrderDetail = (props) => {
                       className="text-white p-2"
                       style={{ fontSize: "14px" }}
                     >
-                      Đã thanh toán
+                      Hoàn thành
                     </span>
                   </div>
                 ) : (
@@ -1390,10 +1387,10 @@ const OrderDetail = (props) => {
               </div>
               <div className="ms-5 ps-5">
                 <div
-                  className="rounded-pill"
+                  className="rounded-pill text-center"
                   style={{
                     height: "35px",
-                    width: "auto",
+                    width: "180px",
                     padding: "5px",
                     backgroundColor: "#e1e1e1",
                   }}
@@ -1469,16 +1466,16 @@ const OrderDetail = (props) => {
           <Col sm="6" className="ms-5">
             <div className="ms-4 mt-3 d-flex" style={{ height: "30px" }}>
               <div className="ms-2 mt-1" style={{ width: "140px" }}>
-                <span style={{ fontSize: "17px" }}>Tên Khách Hàng</span>
+                <span style={{ fontSize: "17px" }}>{order.loaiHoaDon === OrderTypeString.DELIVERY ? "Tên Người Nhận" : "Tên Khách Hàng"}</span>
               </div>
               <div className="ms-5 ps-5">
                 {order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
-                order.account === null ? (
+                  order.account === null ? (
                   <div
-                    className="rounded-pill"
+                    className="rounded-pill text-center"
                     style={{
                       height: "35px",
-                      width: "auto",
+                      width: "130px",
                       padding: "5px",
                       backgroundColor: "#e1e1e1",
                     }}
@@ -1506,13 +1503,13 @@ const OrderDetail = (props) => {
               <div className="ms-5 ps-5 mt-1">
                 <span className="text-dark" style={{ fontSize: "17px" }}>
                   {order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
-                  order.account === null
+                    order.account === null
                     ? "..."
                     : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
                       order.account &&
                       order.account.soDienThoai
-                    ? order.account.soDienThoai
-                    : order.soDienThoaiNguoiNhan}
+                      ? order.account.soDienThoai
+                      : order.soDienThoaiNguoiNhan}
                 </span>
               </div>
             </div>
@@ -1525,8 +1522,8 @@ const OrderDetail = (props) => {
                   {order.account === null
                     ? "..."
                     : order.account && order.account.email
-                    ? order.account.email
-                    : "..."}
+                      ? order.account.email
+                      : "..."}
                 </span>
               </div>
             </div>
@@ -1545,13 +1542,13 @@ const OrderDetail = (props) => {
               >
                 <span className="text-dark" style={{ fontSize: "17px" }}>
                   {order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
-                  order.account === null
+                    order.account === null
                     ? "..."
                     : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
                       order.account &&
                       order.account.diaChiList
-                    ? addressDefault
-                    : order.diaChiNguoiNhan +
+                      ? addressDefault
+                      : order.diaChiNguoiNhan +
                       ", " +
                       order.xaPhuongNguoiNhan +
                       ", " +
@@ -1622,7 +1619,7 @@ const OrderDetail = (props) => {
             </div>
             <div className="">
               {order.loaiHoaDon === OrderTypeString.DELIVERY &&
-              order.tienKhachTra < total ? (
+                order.tienKhachTra < total ? (
                 <Button
                   onClick={() => setOpenPayment(true)}
                   className="rounded-2 ms-2"
@@ -1779,9 +1776,9 @@ const OrderDetail = (props) => {
               >
                 {item && item.sanPhamChiTiet.donGia
                   ? item.sanPhamChiTiet.donGia.toLocaleString("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                    })
+                    style: "currency",
+                    currency: "VND",
+                  })
                   : ""}
               </span>
             </div>
@@ -1842,8 +1839,8 @@ const OrderDetail = (props) => {
         <div>
           <div className="button-container">
             {item.trangThai !== StatusImei.REFUND &&
-            (order.trangThai === OrderStatusString.HAD_PAID ||
-              order.trangThai === OrderStatusString.SUCCESS_DELIVERY) ? (
+              (order.trangThai === OrderStatusString.HAD_PAID ||
+                order.trangThai === OrderStatusString.SUCCESS_DELIVERY) ? (
               <Button
                 onClick={() => {
                   setOpenModalRefund(true);
@@ -1851,19 +1848,19 @@ const OrderDetail = (props) => {
                   setIdOrderItem(item.id);
                   setItemImg(
                     item &&
-                      item.sanPhamChiTiet &&
-                      item.sanPhamChiTiet.image &&
-                      item.sanPhamChiTiet.image.path
+                    item.sanPhamChiTiet &&
+                    item.sanPhamChiTiet.image &&
+                    item.sanPhamChiTiet.image.path
                   );
                   setItemName(
                     item.sanPhamChiTiet.sanPham.tenSanPham +
-                      "\u00A0" +
-                      item.sanPhamChiTiet.ram.dungLuong +
-                      "/" +
-                      item.sanPhamChiTiet.rom.dungLuong +
-                      "GB" +
-                      " " +
-                      `(${item.sanPhamChiTiet.mauSac.tenMauSac})`
+                    "\u00A0" +
+                    item.sanPhamChiTiet.ram.dungLuong +
+                    "/" +
+                    item.sanPhamChiTiet.rom.dungLuong +
+                    "GB" +
+                    " " +
+                    `(${item.sanPhamChiTiet.mauSac.tenMauSac})`
                   );
                   setItemPrice(item && item.sanPhamChiTiet.donGia);
                   setSelectedImeiRefresh([]);
@@ -2002,8 +1999,8 @@ const OrderDetail = (props) => {
             </div>
             <div className="">
               {order.trangThai === OrderStatusString.PENDING_CONFIRM ||
-              order.trangThai === OrderStatusString.CONFIRMED ||
-              order.trangThai === OrderStatusString.PREPARING ? (
+                order.trangThai === OrderStatusString.CONFIRMED ||
+                order.trangThai === OrderStatusString.PREPARING ? (
                 <Button
                   onClick={() => {
                     setOpenProducts(true);
@@ -2074,9 +2071,17 @@ const OrderDetail = (props) => {
             <div className="p-4">
               <div className="d-flex justify-content-between">
                 <span className="" style={{ fontSize: "16px", color: "" }}>
+                  Tổng số lượng
+                </span>
+                <span className="text-dark" style={{ fontSize: "17px", fontWeight: "500" }}>
+                  {totalAmountProduct()}
+                </span>
+              </div>
+              <div className="d-flex justify-content-between mt-3">
+                <span className="" style={{ fontSize: "16px", color: "" }}>
                   Tổng tiền hàng
                 </span>
-                <span className="text-dark" style={{ fontSize: "17px" }}>
+                <span className="text-dark" style={{ fontSize: "17px", fontWeight: "500" }}>
                   {order &&
                     order.tongTien &&
                     order.tongTien.toLocaleString("vi-VN", {
@@ -2087,9 +2092,9 @@ const OrderDetail = (props) => {
               </div>
               <div className="d-flex justify-content-between mt-3">
                 <span className="" style={{ fontSize: "16px", color: "" }}>
-                  Giảm giá
+                  Giảm giá hóa đơn
                 </span>
-                <span className="text-dark" style={{ fontSize: "17px" }}>
+                <span className="text-dark" style={{ fontSize: "17px", fontWeight: "500" }}>
                   {(order &&
                     order.voucher &&
                     order.voucher.giaTriVoucher &&
@@ -2097,7 +2102,7 @@ const OrderDetail = (props) => {
                       style: "currency",
                       currency: "VND",
                     })) ||
-                    "Không"}
+                    0}
                 </span>
               </div>
               {order.loaiHoaDon === OrderTypeString.AT_COUNTER ? (
@@ -2106,7 +2111,7 @@ const OrderDetail = (props) => {
                     <span className="" style={{ fontSize: "16px", color: "" }}>
                       Khách cần trả
                     </span>
-                    <span className="text-dark" style={{ fontSize: "17px" }}>
+                    <span className="text-dark" style={{ fontSize: "17px", fontWeight: "500" }}>
                       {total.toLocaleString("vi-VN", {
                         style: "currency",
                         currency: "VND",
@@ -2116,20 +2121,20 @@ const OrderDetail = (props) => {
                   <div className="d-flex justify-content-between mt-3">
                     <span
                       className=""
-                      style={{ fontSize: "16px", fontWeight: "500" }}
+                      style={{ fontSize: "16px" }}
                     >
-                      Khách thanh toán
+                      Khách đã trả
                     </span>
                     <span
-                      className="fw-bold"
-                      style={{ fontSize: "17px", color: "#dc1111" }}
+                      className="text-dark"
+                      style={{ fontSize: "17px", fontWeight: "500" }}
                     >
                       {order &&
                         order.tienKhachTra &&
                         order.tienKhachTra.toLocaleString("vi-VN", {
                           style: "currency",
                           currency: "VND",
-                        })}
+                        }) || 0}
                     </span>
                   </div>
                 </>
@@ -2139,7 +2144,7 @@ const OrderDetail = (props) => {
                     <span className="" style={{ fontSize: "16px", color: "" }}>
                       Phí vận chuyển
                     </span>
-                    <span className="text-dark" style={{ fontSize: "17px" }}>
+                    <span className="text-dark" style={{ fontSize: "17px", fontWeight: "500" }}>
                       {order &&
                         order.phiShip &&
                         order.phiShip.toLocaleString("vi-VN", {
@@ -2151,13 +2156,13 @@ const OrderDetail = (props) => {
                   <div className="d-flex justify-content-between mt-3">
                     <span
                       className="text-dark"
-                      style={{ fontSize: "16px", color: "", fontWeight: "500" }}
+                      style={{ fontSize: "16px", color: "" }}
                     >
-                      Tổng cộng
+                      Khách cần trả
                     </span>
                     <span
-                      className="fw-bold"
-                      style={{ fontSize: "17px", color: "#dc1111" }}
+                      className="text-dark"
+                      style={{ fontSize: "17px", fontWeight: "500" }}
                     >
                       {order &&
                         order.khachCanTra &&
@@ -2169,11 +2174,11 @@ const OrderDetail = (props) => {
                   </div>
                   <div className="d-flex justify-content-between mt-3">
                     <span className="" style={{ fontSize: "16px", color: "" }}>
-                      Khách thanh toán
+                      Khách đã trả
                     </span>
                     <span
-                      className="fw-bold"
-                      style={{ fontSize: "17px", color: "#2f80ed" }}
+                      className="text-dark"
+                      style={{ fontSize: "17px", fontWeight: "500" }}
                     >
                       {(order &&
                         order.tienKhachTra &&
@@ -2181,7 +2186,7 @@ const OrderDetail = (props) => {
                           style: "currency",
                           currency: "VND",
                         })) ||
-                        "Chưa thanh toán"}
+                        0}
                     </span>
                   </div>
                 </>
@@ -2191,7 +2196,7 @@ const OrderDetail = (props) => {
                   <span className="" style={{ fontSize: "16px", color: "" }}>
                     Tiền thừa trả khách
                   </span>
-                  <span className="text-dark" style={{ fontSize: "17px" }}>
+                  <span className="text-dark" style={{ fontSize: "17px", fontWeight: "500" }}>
                     {order &&
                       order.tienThua &&
                       order.tienThua.toLocaleString("vi-VN", {
@@ -2240,102 +2245,104 @@ const OrderDetail = (props) => {
 
   return (
     <>
-      <div className="wrap-timeline mt-4">
-        <div class="scroll-container mt-2">
-          <Card>
-            <Card.Body>
-              <TimeLine />
-            </Card.Body>
-          </Card>
+      <div className="wrap-container">
+        <div className="wrap-timeline mt-4">
+          <div class="scroll-container mt-2">
+            <Card>
+              <Card.Body>
+                <TimeLine />
+              </Card.Body>
+            </Card>
+          </div>
+          <ConfirmDialog
+            open={openCommon}
+            status={status}
+            confirmPreparing={handleConfirmPreparing}
+            confirmOrderInfo={handleConfirmOrderInfo}
+            confirmDelivery={handleConfirmDelivery}
+            confirmFinish={handleConfirmOrderFinish}
+            confirmCancel={handleConfirmOrderCancel}
+            onCloseNoAction={handleCloseNoActionCommon}
+          />
+          <ProcessOrder />
         </div>
-        <ConfirmDialog
-          open={openCommon}
-          status={status}
-          confirmPreparing={handleConfirmPreparing}
-          confirmOrderInfo={handleConfirmOrderInfo}
-          confirmDelivery={handleConfirmDelivery}
-          confirmFinish={handleConfirmOrderFinish}
-          confirmCancel={handleConfirmOrderCancel}
-          onCloseNoAction={handleCloseNoActionCommon}
+
+        <OrderInfo />
+        <PaymentHistories />
+        <OrderSummary />
+
+        <OrderHistoryDialog
+          columns={columnsTableOrderHistories}
+          open={openDialogDetailOrderHistories}
+          onClose={handleCloseDialogDetailOrderHistories}
+          dataSource={orderHistories}
         />
-        <ProcessOrder />
+        <PaymentDialog
+          open={openDialogPayment}
+          onClose={handleCloseDialogPayment}
+          onCloseNoAction={handleCloseNoActionDialogPayment}
+          addPayment={handleAddPayment}
+        />
+        <UpdateRecipientOrderDialog
+          open={openDialogUpdateRecipientOrder}
+          onClose={handleCloseDialogUpdateRecipientOrder}
+          onCloseNoAction={handleCloseNoActionDialogUpdateRecipientOrder}
+          name={customerName}
+          phone={customerPhone}
+          address={customerAddress}
+          province={customerProvince}
+          district={customerDistrict}
+          ward={customerWard}
+          note={customerNote}
+        />
+
+        <MultiplePaymentMethodsDelivery
+          open={openPayment}
+          close={handleCloseOpenPayment}
+          hoanTien={isRefund}
+          data={paymentHistorys}
+          khachCanTra={order.khachCanTra}
+          khachThanhToan={order.tienKhachTra}
+          canTraKhach={order.tienTraHang}
+          addPayment={handlePaymentOrder}
+        />
+
+        <ProductsDialog
+          onOpenImei={handleOpenModalImei}
+          onCloseImei={handleCloseOpenModalImei}
+          openImei={openModalImei}
+          isOpen={isOpen}
+          open={openProducts}
+          onClose={handleCloseOpenProducts}
+          data={products}
+          add={handleAddProductToCartOrder}
+        />
+
+        <ModalUpdateImeiByProductItem
+          open={openModalUpdateImei}
+          close={handleCloseOpenModalUpdateImei}
+          imeis={imeis}
+          imeisChuaBan={selectedImei}
+          refresh={selectedImeiRefresh}
+          update={handleUpdateAmountCartItemOrder}
+          delivery={true}
+          max={maxAmount}
+        />
+
+        <ModalRefundProduct
+          open={openModalRefund}
+          close={handleCloseOpenModalRefund}
+          imeis={filteredData}
+          refresh={selectedImeiRefresh}
+          img={itemImg}
+          price={itemPrice}
+          name={itemName}
+          refund={handleRefund}
+        />
+
+        {isLoading && <LoadingIndicator />}
+        <div className="mt-4"></div>
       </div>
-
-      <OrderInfo />
-      <PaymentHistories />
-      <OrderSummary />
-
-      <OrderHistoryDialog
-        columns={columnsTableOrderHistories}
-        open={openDialogDetailOrderHistories}
-        onClose={handleCloseDialogDetailOrderHistories}
-        dataSource={orderHistories}
-      />
-      <PaymentDialog
-        open={openDialogPayment}
-        onClose={handleCloseDialogPayment}
-        onCloseNoAction={handleCloseNoActionDialogPayment}
-        addPayment={handleAddPayment}
-      />
-      <UpdateRecipientOrderDialog
-        open={openDialogUpdateRecipientOrder}
-        onClose={handleCloseDialogUpdateRecipientOrder}
-        onCloseNoAction={handleCloseNoActionDialogUpdateRecipientOrder}
-        name={customerName}
-        phone={customerPhone}
-        address={customerAddress}
-        province={customerProvince}
-        district={customerDistrict}
-        ward={customerWard}
-        note={customerNote}
-      />
-
-      <MultiplePaymentMethodsDelivery
-        open={openPayment}
-        close={handleCloseOpenPayment}
-        hoanTien={isRefund}
-        data={paymentHistorys}
-        khachCanTra={order.khachCanTra}
-        khachThanhToan={order.tienKhachTra}
-        canTraKhach={order.tienTraHang}
-        addPayment={handlePaymentOrder}
-      />
-
-      <ProductsDialog
-        onOpenImei={handleOpenModalImei}
-        onCloseImei={handleCloseOpenModalImei}
-        openImei={openModalImei}
-        isOpen={isOpen}
-        open={openProducts}
-        onClose={handleCloseOpenProducts}
-        data={products}
-        add={handleAddProductToCartOrder}
-      />
-
-      <ModalUpdateImeiByProductItem
-        open={openModalUpdateImei}
-        close={handleCloseOpenModalUpdateImei}
-        imeis={imeis}
-        imeisChuaBan={selectedImei}
-        refresh={selectedImeiRefresh}
-        update={handleUpdateAmountCartItemOrder}
-        delivery={true}
-        max={maxAmount}
-      />
-
-      <ModalRefundProduct
-        open={openModalRefund}
-        close={handleCloseOpenModalRefund}
-        imeis={filteredData}
-        refresh={selectedImeiRefresh}
-        img={itemImg}
-        price={itemPrice}
-        name={itemName}
-        refund={handleRefund}
-      />
-
-      {isLoading && <LoadingIndicator />}
-      <div className="mt-4"></div>
     </>
   );
 };

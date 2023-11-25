@@ -325,7 +325,7 @@ const PointOfSales = () => {
           setCustomerPhoneShip(data && data.soDienThoaiNguoiNhan);
           getAllOrdersPending();
         });
-    } catch (error) {}
+    } catch (error) { }
   };
   const updateAddressShipOrder = async (address) => {
     const orderRequest = {
@@ -357,7 +357,7 @@ const PointOfSales = () => {
           setCustomerAddressShip(data && data.diaChiNguoiNhan);
           getAllOrdersPending();
         });
-    } catch (error) {}
+    } catch (error) { }
   };
   const updateNoteShipOrder = async (note) => {
     const orderRequest = {
@@ -389,7 +389,7 @@ const PointOfSales = () => {
           setCustomerNoteShip(data && data.ghiChu);
           getAllOrdersPending();
         });
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const updateTypeOrder = async (type) => {
@@ -518,7 +518,7 @@ const PointOfSales = () => {
           setCustomerNameShip(data && data.tenNguoiNhan);
           getAllOrdersPending();
         });
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const updateInfoShipOrder = async (
@@ -563,7 +563,7 @@ const PointOfSales = () => {
           setCustomerDistrictShip(data && data.quanHuyenNguoiNhan);
           getAllOrdersPending();
         });
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const getCustomerById = async (id) => {
@@ -728,17 +728,16 @@ const PointOfSales = () => {
         .then((response) => {
           setIsLoading(false);
           handleOpenAlertVariant(
-            `${
-              data.loaiHoaDon == OrderTypeString.DELIVERY
-                ? "Xác nhận đặt hàng thành công!"
-                : "Xác nhận thanh toán thành công!"
+            `${data.loaiHoaDon == OrderTypeString.DELIVERY
+              ? "Xác nhận đặt hàng thành công!"
+              : "Xác nhận thanh toán thành công!"
             }`,
             Notistack.SUCCESS
           );
           navigate(`/dashboard/order-detail/${order.ma}`);
           console.log(orderRequest);
         });
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const updateAccount = async (id) => {
@@ -774,14 +773,13 @@ const PointOfSales = () => {
           // setIsLoading(false);
           // handleOpenAlertVariant(message, Notistack.SUCCESS);
         });
-    } catch (error) {}
+    } catch (error) { }
   };
   const handleAddOrRemoveVoucher = async (idVoucher, loading, keep) => {
-    const message = `${
-      idVoucher === null
-        ? "Mã giảm giá đã được gỡ bỏ thành công!"
-        : "Áp dụng thành công mã giảm giá!"
-    }`;
+    const message = `${idVoucher === null
+      ? "Mã giảm giá đã được gỡ bỏ thành công!"
+      : "Áp dụng thành công mã giảm giá!"
+      }`;
     const orderRequest = {
       voucher: {
         id: idVoucher,
@@ -1119,19 +1117,19 @@ const PointOfSales = () => {
           (response &&
             response.data.data[0].voucher &&
             response.data.data[0].voucher.ma) ||
-            ""
+          ""
         );
         setIdVoucher(
           (response &&
             response.data.data[0].voucher &&
             response.data.data[0].voucher.id) ||
-            ""
+          ""
         );
         setDiscountValue(
           (response &&
             response.data.data[0].voucher &&
             response.data.data[0].voucher.giaTriVoucher) ||
-            0
+          0
         );
         console.log(order);
 
@@ -2259,9 +2257,9 @@ const PointOfSales = () => {
                                       onMouseDown={() => {
                                         handleConfirmBeforeDeleteOrderPendingHasProduct(
                                           item &&
-                                            item.cart &&
-                                            item.cart.cartItems &&
-                                            item.cart.cartItems.length,
+                                          item.cart &&
+                                          item.cart.cartItems &&
+                                          item.cart.cartItems.length,
                                           item.id
                                         );
                                         setItemMa(item.ma);
@@ -2925,15 +2923,14 @@ const PointOfSales = () => {
                   </div>
 
                   {customerPayment != handleCountTotalMoneyCustomerNeedPay() &&
-                  (delivery == true || delivery == false) &&
-                  paymentWhenReceive == false &&
-                  cartItems.length > 0 ? (
+                    (delivery == true || delivery == false) &&
+                    paymentWhenReceive == false &&
+                    cartItems.length > 0 ? (
                     <div
-                      className={`d-flex justify-content-between ${`${
-                        paymentWhenReceive == false && delivery == true
-                          ? "pt-4 mt-1"
-                          : "pt-3 mt-2"
-                      }`} ms-2`}
+                      className={`d-flex justify-content-between ${`${paymentWhenReceive == false && delivery == true
+                        ? "pt-4 mt-1"
+                        : "pt-3 mt-2"
+                        }`} ms-2`}
                       style={{ marginLeft: "1px" }}
                     >
                       <span
@@ -3229,7 +3226,7 @@ const PointOfSales = () => {
       <OrderPendingConfirmCloseDialog
         open={openOrderClose}
         onClose={handleCloseNoActionDialogOrderClose}
-        ma={itemMa && itemMa.substring(8)}
+        ma={itemMa && itemMa.substring(1)}
         deleteOrder={() => handleCloseDialogOrderClose(itemId)}
       />
       {isLoading && <LoadingIndicator />}

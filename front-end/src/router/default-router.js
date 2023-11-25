@@ -113,6 +113,9 @@ import ThongKe from "../views/admin/statics-manager/thong-ke";
 // import ManagementImage from "../views/admin/order-manager/management-image";
 import PaymentSuccess from "../views/admin/order-manager/vnpay-payment-success";
 import ManagementImei from "../views/admin/order-manager/management-imei";
+import { Print } from "../views/admin/order-manager/printer-invoice";
+import RefundOrder from "../views/admin/order-manager/refund-order";
+import RefundDetail from "../views/admin/order-manager/refund-details";
 
 export const DefaultRouter = [
   {
@@ -396,6 +399,18 @@ export const DefaultRouter = [
       {
         path: "dashboard/payment-success",
         element: <PaymentSuccess />,
+      },
+      {
+        path: "dashboard/invoice",
+        element: <Print />,
+      },
+      {
+        path: "dashboard/refund-order",
+        element: <RefundOrder />,
+      },
+      {
+        path: "dashboard/refund-order/:id",
+        element: <RefundDetail />,
       },
       // {
       //   path: 'dashboard/add-product',
