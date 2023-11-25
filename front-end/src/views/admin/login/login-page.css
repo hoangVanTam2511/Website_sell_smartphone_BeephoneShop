@@ -59,20 +59,20 @@
   form .inputbox .msg{
     font-size:.70em;
     margin-top:5px;
-    color:#f00;
+    color:#2f80ed;
   }
   
   
   form .inputbox label{
     position:absolute;
-    top:-10px;
+    top:-15px;
     left:8px;
     padding:5px 15px;
     width:auto;
     font-size:.75em;
     user-select:none;
     color:#eee;
-    background:#CC0202;
+    background:#2f80ed;
     border-radius:20px;
   }
   
@@ -84,7 +84,7 @@
     width:100%;
     font-size:1em;
     user-select:none;
-    outline:2px solid #CC0202;
+    outline:2px solid #2f80ed;
     border-radius:5px;
     background:#111;
     color:#fff;
@@ -106,7 +106,7 @@
     font-size:1em;
     text-transform:capitalize;
     color:#eee;
-    background:#CC0202;
+    background:#2f80ed;
     border-radius:5px;
     cursor:pointer;
   }
