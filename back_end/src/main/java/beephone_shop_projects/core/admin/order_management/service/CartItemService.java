@@ -2,6 +2,7 @@ package beephone_shop_projects.core.admin.order_management.service;
 
 import beephone_shop_projects.core.admin.order_management.model.request.CartItemRequest;
 import beephone_shop_projects.core.admin.order_management.model.request.OrderItemRequest;
+import beephone_shop_projects.core.admin.order_management.model.request.OrderItemsCustomRefundRequest;
 import beephone_shop_projects.core.admin.order_management.model.response.CartItemResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.OrderItemResponse;
 
@@ -19,6 +20,6 @@ public interface CartItemService extends GenericService<CartItemResponse, CartIt
 
   boolean removeCartItemOrderById(String id) throws Exception;
 
-  OrderItemResponse refundOrder(OrderItemRequest req) throws Exception;
+  OrderItemResponse refundOrder(OrderItemsCustomRefundRequest req) throws Exception;
 
 }

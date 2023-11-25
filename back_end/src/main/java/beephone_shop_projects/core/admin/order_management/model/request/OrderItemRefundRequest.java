@@ -12,9 +12,9 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class OrderItemRequest {
+public class OrderItemRefundRequest {
 
-  private Integer amount;
+  private Integer soLuong;
 
   private BigDecimal price;
 
@@ -26,15 +26,9 @@ public class OrderItemRequest {
 
   private String id;
 
-  private List<ImeiCustomRequest> imeis;
-
   private ImeiRefundCustomRequest imei;
 
-  private BigDecimal tongTienSauKhiGiam;
-
   private BigDecimal tongTien;
-
-  private String tongTienString;
 
   private String ghiChu;
 
