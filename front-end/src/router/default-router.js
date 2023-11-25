@@ -1,6 +1,7 @@
 import React from "react";
 import Index from "../views/index";
 import { ToastContainer } from "react-toastify";
+import { Navigate } from "react-router-dom";
 // san pham
 
 // chip
@@ -122,6 +123,10 @@ export const DefaultRouter = [
     children: [
       {
         path: "",
+        element: <Navigate to="/login" replace={true} />,
+      },
+      {
+        path: "/home",
         element: <Index />,
       },
       {
@@ -400,6 +405,10 @@ export const DefaultRouter = [
       },
       {
         path: "dashboard/doanh-thu",
+        element: <ThongKeDoanhThu />,
+      },
+      {
+        path: "dashboard/login",
         element: <ThongKeDoanhThu />,
       },
       // {
