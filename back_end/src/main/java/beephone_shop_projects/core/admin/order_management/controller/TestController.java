@@ -5,6 +5,7 @@ import beephone_shop_projects.core.admin.order_management.model.request.CartItem
 import beephone_shop_projects.core.admin.order_management.model.request.ImeiRequest;
 import beephone_shop_projects.core.admin.order_management.model.request.ImeisRequest;
 import beephone_shop_projects.core.admin.order_management.model.request.OrderItemRequest;
+import beephone_shop_projects.core.admin.order_management.model.request.OrderItemsCustomRefundRequest;
 import beephone_shop_projects.core.admin.order_management.model.response.CartItemResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.OrderItemResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.OrderResponse;
@@ -127,7 +128,7 @@ public class TestController {
   }
 
   @PutMapping("/carts/order/refund")
-  public ResponseObject refund(@RequestBody OrderItemRequest req) throws Exception {
+  public ResponseObject refund(@RequestBody OrderItemsCustomRefundRequest req) throws Exception {
     OrderItemResponse refundProduct = cartItemService.refundOrder(req);
     return new ResponseObject(refundProduct);
   }

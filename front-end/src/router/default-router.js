@@ -116,6 +116,9 @@ import PaymentSuccess from "../views/admin/order-manager/vnpay-payment-success";
 import ManagementImei from "../views/admin/order-manager/management-imei";
 import ThongKeDoanhThu from "../views/admin/statics-manager/thong-ke-doanh-thu";
 import Transaction from "../views/admin/transaction-manager/transaction";
+import { Print } from "../views/admin/order-manager/printer-invoice";
+import RefundOrder from "../views/admin/order-manager/refund-order";
+import RefundDetail from "../views/admin/order-manager/refund-details";
 
 export const DefaultRouter = [
   {
@@ -415,6 +418,18 @@ export const DefaultRouter = [
       {
         path: "dashboard/transaction",
         element: <Transaction />,
+      },
+      {
+        path: "dashboard/invoice",
+        element: <Print />,
+      },
+      {
+        path: "dashboard/refund-order",
+        element: <RefundOrder />,
+      },
+      {
+        path: "dashboard/refund-order/:id",
+        element: <RefundDetail />,
       },
       // {
       //   path: 'dashboard/add-product',

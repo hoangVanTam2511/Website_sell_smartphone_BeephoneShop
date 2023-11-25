@@ -122,7 +122,7 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
   public OrderResponse getOrderDetailsById(String id) {
     HoaDon order = hoaDonRepository.getOrderDetailsById(id);
     if (order == null) {
-      throw new RestApiException(Message.ORDER_NOT_EXIST);
+      throw new RestApiException("Không tìm thấy đơn hàng");
     }
     OrderResponse orderResponse = orderConverter.convertEntityToResponse(order);
     List<OrderHistoryResponse> orderHistories = lichSuHoaDonService.getOrderHistoriesByOrderId(id);

@@ -3,7 +3,7 @@ import * as React from "react";
 import { useEffect, useState, useRef } from "react";
 import { AiOutlinePlus } from "react-icons/ai";
 
-const TextFieldPrice = React.memo(({ update, ma, value }) => {
+const TextFieldPrice = React.memo(({ update, ma, value, confirm }) => {
   const [priceFormat, setPriceFormat] = useState(String(value)
     .replace(/[^0-9]+/g, "")
     .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
@@ -44,6 +44,8 @@ const TextFieldPrice = React.memo(({ update, ma, value }) => {
           updateData(e.target.value, ma)
         }}
         onChange={handleChangePrice}
+        // helperText={confirm && priceFormat.trim() === "" ? "Bạn chưa nhập đơn giá" : ""}
+        // error={confirm && priceFormat.trim() === ""}
       />
     </>
   )

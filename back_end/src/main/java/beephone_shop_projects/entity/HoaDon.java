@@ -62,6 +62,8 @@ public class HoaDon extends PrimaryEntity implements IsIdentified {
 
   private BigDecimal tienTraHang;
 
+  private String maQrCode;
+
   @Enumerated(EnumType.ORDINAL)
   private OrderType loaiHoaDon;
 

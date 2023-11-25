@@ -5,7 +5,9 @@ import beephone_shop_projects.core.admin.order_management.converter.OrderConvert
 import beephone_shop_projects.core.admin.order_management.converter.OrderItemConverter;
 import beephone_shop_projects.core.admin.order_management.model.request.CartItemRequest;
 import beephone_shop_projects.core.admin.order_management.model.request.ImeiCustomRequest;
+import beephone_shop_projects.core.admin.order_management.model.request.OrderItemRefundRequest;
 import beephone_shop_projects.core.admin.order_management.model.request.OrderItemRequest;
+import beephone_shop_projects.core.admin.order_management.model.request.OrderItemsCustomRefundRequest;
 import beephone_shop_projects.core.admin.order_management.model.response.CartItemResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.OrderItemResponse;
 import beephone_shop_projects.core.admin.order_management.repository.CartItemRepository;
@@ -550,55 +552,61 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
   }
 
   @Override
-  public OrderItemResponse refundOrder(OrderItemRequest req) throws Exception {
-    Optional<HoaDonChiTiet> findCartItemOrder = orderItemRepository.findById(req.getId());
-    HoaDon findOrderCurrent = orderRepository.findOneById(findCartItemOrder.get().getHoaDon().getId());
-    Optional<SanPhamChiTiet> findProductItem = sanPhamChiTietRepository.
-            findProductById(findCartItemOrder.get().getSanPhamChiTiet().getId());
+  public OrderItemResponse refundOrder(OrderItemsCustomRefundRequest req) throws Exception {
 
-    if (!findCartItemOrder.isPresent()) {
-      throw new RestApiException("Không tìm thấy sản phẩm này trong đơn hàng!");
-    }
-    if (!findProductItem.isPresent()) {
-      throw new RestApiException("Sản phẩm không tồn tại!");
-    }
-    if (findOrderCurrent == null) {
-      throw new RestApiException("Đơn hàng không tồn tại!");
-    }
+    for (OrderItemRefundRequest order : req.getOrderItemRefunds()) {
+      Optional<HoaDonChiTiet> findCartItemOrder = orderItemRepository.findById(order.getId());
+      HoaDon findOrderCurrent = orderRepository.findOneById(findCartItemOrder.get().getHoaDon().getId());
+      Optional<SanPhamChiTiet> findProductItem = sanPhamChiTietRepository.
+              findProductById(findCartItemOrder.get().getSanPhamChiTiet().getId());
 
-    Set<Imei> imeisProduct = findProductItem.get().getImeis();
-    for (ImeiCustomRequest imei : req.getImeis()) {
+      if (!findCartItemOrder.isPresent()) {
+        throw new RestApiException("Không tìm thấy sản phẩm này trong đơn hàng!");
+      }
+      if (!findProductItem.isPresent()) {
+        throw new RestApiException("Sản phẩm không tồn tại!");
+      }
+      if (findOrderCurrent == null) {
+        throw new RestApiException("Đơn hàng không tồn tại!");
+      }
+      System.out.println(order.getImei().getSoImei());
+      Set<Imei> imeisProduct = findProductItem.get().getImeis();
       imeisProduct.forEach((s) -> {
-        if (imei.getSoImei().equals(s.getSoImei())) {
+        if (order.getImei().getSoImei().equals(s.getSoImei())) {
           s.setTrangThai(StatusImei.NOT_SOLD);
         }
       });
       findCartItemOrder.get().getImeisDaBan().forEach((s) -> {
-        if (imei.getSoImei().equals(s.getSoImei())) {
+        if (order.getImei().getSoImei().equals(s.getSoImei())) {
           s.setTrangThai(StatusImei.REFUND);
         }
       });
-    }
 
-    findProductItem.get().setSoLuongTonKho(findProductItem.get().getSoLuongTonKho() +
-            req.getAmount());
-    sanPhamChiTietRepository.save(findProductItem.get());
+      findProductItem.get().setSoLuongTonKho(findProductItem.get().getSoLuongTonKho() +
+              order.getSoLuong());
+      sanPhamChiTietRepository.save(findProductItem.get());
 
-    if (findOrderCurrent.getKhachCanTra() != null) {
-      BigDecimal khachCanTraCurrent = findOrderCurrent.getKhachCanTra();
-      BigDecimal khachCanTra = khachCanTraCurrent.subtract(req.getTongTien().add(req.getPhuPhi()));
-      findOrderCurrent.setKhachCanTra(khachCanTra);
-      if (findOrderCurrent.getTienTraHang() != null){
+//      if (findOrderCurrent.getKhachCanTra() != null) {
+//        BigDecimal khachCanTraCurrent = findOrderCurrent.getKhachCanTra();
+//        BigDecimal khachCanTra = khachCanTraCurrent.subtract(req.getTongTien().add(req.getPhuPhi()));
+//        findOrderCurrent.setKhachCanTra(khachCanTra);
+      if (findOrderCurrent.getTienTraHang() != null) {
         findOrderCurrent.setTienTraHang(findOrderCurrent.getTienTraHang().add(req.getTongTien()));
 
-      }
-      else{
+      } else {
         findOrderCurrent.setTienTraHang((req.getTongTien()));
       }
+      if (findOrderCurrent.getTienTraKhach() != null) {
+        findOrderCurrent.setTienTraKhach(findOrderCurrent.getTienTraKhach().add(req.getTongTien()));
 
-//      findOrderCurrent.setTienTraKhach();
+      } else {
+        findOrderCurrent.setTienTraKhach((req.getTongTien()));
+      }
       orderRepository.save(findOrderCurrent);
-    }
+//
+////      findOrderCurrent.setTienTraKhach();
+//        orderRepository.save(findOrderCurrent);
+//      }
 
 //    if (findOrderCurrent.getTongTien() != null) {
 //      BigDecimal tongTienCurrent = findOrderCurrent.getTongTien();
@@ -615,21 +623,23 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
 ////      }
 //    }
 
-    SanPhamChiTiet getOptional = findProductItem.get();
+      SanPhamChiTiet getOptional = findProductItem.get();
 
-    LichSuHoaDon orderHistory = new LichSuHoaDon();
-    orderHistory.setHoaDon(findOrderCurrent);
-    orderHistory.setCreatedAt(new Date());
-    orderHistory.setThaoTac("Hoàn Trả");
-    orderHistory.setMoTa("Đã hoàn trả [" + req.getAmount() + "] sản phẩm [" +
-            getOptional.getSanPham().getTenSanPham() + "] phiên bản [" +
-            getOptional.getRam().getDungLuong() + "/" + getOptional.getRom().getDungLuong() + " - " +
-            getOptional.getMauSac().getTenMauSac() + "] với phụ phí [" + req.getPhuPhi() + "]. " + req.getGhiChu());
-    orderHistory.setLoaiThaoTac(7);
-    lichSuHoaDonRepository.save(orderHistory);
+      LichSuHoaDon orderHistory = new LichSuHoaDon();
+      orderHistory.setHoaDon(findOrderCurrent);
+      orderHistory.setCreatedAt(new Date());
+      orderHistory.setThaoTac("Hoàn Trả");
+      orderHistory.setMoTa("Đã hoàn trả [" + req.getAmount() + "] sản phẩm [" +
+              getOptional.getSanPham().getTenSanPham() + "] phiên bản [" +
+              getOptional.getRam().getDungLuong() + "/" + getOptional.getRom().getDungLuong() + " - " +
+              getOptional.getMauSac().getTenMauSac() + "] với phụ phí [" + req.getPhuPhi() + "]. " + req.getGhiChu());
+      orderHistory.setLoaiThaoTac(7);
+      lichSuHoaDonRepository.save(orderHistory);
 
 //    findCartItemOrder.get().setSoLuong(findProductItem.get().getSoLuongTonKho() - req.getAmount());
 //    orderItemRepository.save(findCartItemOrder.get());
+    }
+
 
     return null;
   }
