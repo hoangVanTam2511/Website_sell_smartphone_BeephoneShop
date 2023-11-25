@@ -99,7 +99,6 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay }) => {
 
   const onMessageReceived = (payload) => {
     var payloadData = JSON.parse(payload.body);
-    alert(payloadData.name);
   };
 
   const onError = (err) => {
