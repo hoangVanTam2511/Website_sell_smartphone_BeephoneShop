@@ -891,7 +891,7 @@ const CreateProduct = ({ }) => {
                       ))}
                     </Select>
                     {confirm && selectedCategory.length === 0 &&
-                      <FormHelperText>Chưa chọn danh mục!</FormHelperText>
+                      <FormHelperText>Bạn chưa chọn danh mục!</FormHelperText>
                     }
                   </FormControl>
                 </div>
@@ -923,7 +923,7 @@ const CreateProduct = ({ }) => {
                       })}
                     </Select>
                     {confirm && brand.trim() === "" &&
-                      <FormHelperText>Chưa chọn hãng!</FormHelperText>
+                      <FormHelperText>Bạn chưa chọn hãng!</FormHelperText>
                     }
                   </FormControl>
                 </div>
@@ -956,7 +956,7 @@ const CreateProduct = ({ }) => {
                       })}
                     </Select>
                     {confirm && chip.trim() === "" &&
-                      <FormHelperText>Chưa chọn chip!</FormHelperText>
+                      <FormHelperText>Bạn chưa chọn chip!</FormHelperText>
                     }
                   </FormControl>
                 </div>
@@ -991,7 +991,7 @@ const CreateProduct = ({ }) => {
                       })}
                     </Select>
                     {confirm && pin.trim() === "" &&
-                      <FormHelperText>Chưa chọn pin!</FormHelperText>
+                      <FormHelperText>Bạn chưa chọn pin!</FormHelperText>
                     }
                   </FormControl>
                 </div>
@@ -1024,7 +1024,7 @@ const CreateProduct = ({ }) => {
                       })}
                     </Select>
                     {confirm && congSac.trim() === "" &&
-                      <FormHelperText>Chưa chọn cổng sạc!</FormHelperText>
+                      <FormHelperText>Bạn chưa chọn cổng sạc!</FormHelperText>
                     }
                   </FormControl>
                 </div>
@@ -1051,7 +1051,7 @@ const CreateProduct = ({ }) => {
                         </>
                       }
                     >
-                      <MenuItem value={0}>Không</MenuItem>
+                      <MenuItem value={0}>Không có</MenuItem>
                       {listTheNho.map((item) => {
                         return (
                           <MenuItem key={item.id} value={item.id}>{item.loaiTheNho}</MenuItem>
@@ -1146,7 +1146,7 @@ const CreateProduct = ({ }) => {
                       ))}
                     </Select>
                     {confirm && selectedCameraSau.length === 0 &&
-                      <FormHelperText>Chưa chọn camera sau!</FormHelperText>
+                      <FormHelperText>Bạn chưa chọn camera sau!</FormHelperText>
                     }
                     {confirm && selectedCameraSau.length > 0 && mainCameraSau === "" &&
                       <FormHelperText>Camera sau chưa có camera chính!</FormHelperText>
@@ -1237,7 +1237,7 @@ const CreateProduct = ({ }) => {
                       ))}
                     </Select>
                     {confirm && selectedCameraTruoc.length === 0 &&
-                      <FormHelperText>Chưa chọn camera trước!</FormHelperText>
+                      <FormHelperText>Bạn chưa chọn camera trước!</FormHelperText>
                     }
                     {confirm && selectedCameraTruoc.length > 0 && mainCameraTruoc === "" &&
                       <FormHelperText>Camera trước chưa có camera chính!</FormHelperText>
@@ -1275,7 +1275,7 @@ const CreateProduct = ({ }) => {
                       })}
                     </Select>
                     {confirm && screen.trim() === "" &&
-                      <FormHelperText>Chưa chọn màn hình!</FormHelperText>
+                      <FormHelperText>Bạn chưa chọn màn hình!</FormHelperText>
                     }
                   </FormControl>
                 </div>
@@ -1314,7 +1314,7 @@ const CreateProduct = ({ }) => {
                       ))}
                     </Select>
                     {confirm && selectedSim.length === 0 &&
-                      <FormHelperText>Chưa chọn thẻ SIM!</FormHelperText>
+                      <FormHelperText>Bạn chưa chọn thẻ SIM!</FormHelperText>
                     }
                   </FormControl>
                 </div>
@@ -1412,7 +1412,7 @@ const CreateProduct = ({ }) => {
         cameraFront={camerasTruoc}
       />
       <CreatePin open={openPin} close={handleCloseOpenPin} getAll={getListPin} pins={listPin} />
-      <CreateCauHinh valid={handleValidation()} confirm={getConfirm} productName={productName} getProduct={product} getOverplay={getOverplay} />
+      <CreateCauHinh valid={handleValidation()} confirm={getConfirm} isConfirm={confirm} productName={productName} getProduct={product} getOverplay={getOverplay} />
       {isLoading && <LoadingIndicator />}
     </>
   )

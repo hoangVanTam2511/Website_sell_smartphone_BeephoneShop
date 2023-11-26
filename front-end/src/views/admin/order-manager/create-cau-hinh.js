@@ -3,6 +3,7 @@ import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Empty, Table } from "antd";
 import Link from '@mui/material/Link';
 import { Box, FormControl, IconButton, Select, InputLabel, MenuItem, Pagination, TextField, Tooltip, Checkbox, FormControlLabel, Autocomplete, InputAdornment, OutlinedInput, Dialog, DialogContent, DialogTitle, DialogActions, Slide, ListItemText, Rating, ImageListItemBar, } from "@mui/material";
+import Alert from "@mui/joy/Alert";
 import axios from "axios";
 import Zoom from '@mui/material/Zoom';
 import * as dayjs from "dayjs";
@@ -45,7 +46,7 @@ const MenuProps = {
   },
 };
 
-const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid }) => {
+const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, isConfirm }) => {
   const [openModalType, setOpenModalType] = useState(false);
   const handleCloseOpenModalType = () => {
     setOpenModalType(false);
@@ -313,7 +314,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
       handleOpenAlertVariant("Bạn cần chọn RAM trước!", "warning");
     }
     else if (list.length > selectedRam.length && !type) {
-      handleOpenAlertVariant("Số lượng ROM phải bé hơn hoặc bằng với số lượng RAM!", "warning");
+      handleOpenAlertVariant("Số lượng ROM chỉ cho phép bằng với số lượng RAM!", "warning");
     }
     else {
       if (!type) {
@@ -961,6 +962,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
                                 onClick={() => {
                                   if (valueColor.length === 0) {
                                     setValueColorFinal([]);
+                                    setCauHinhsFinal([]);
                                     setSelectColor(false);
                                     handleCloseSelectColor();
                                   }
@@ -1357,7 +1359,20 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
 */}
               </div>
               {cauHinhs && cauHinhs.length > 0 &&
-                <div className="mt-3 d-flex justify-content-end">
+                <div className="mt-3 d-flex justify-content-between">
+                  <div style={{ width: "42%" }} className="no-version">
+                    {isConfirm === true && cauHinhs.some((cauHinh) => {
+                      const foundFinalConfig = cauHinhsFinal.find((finalItem) => finalItem.id === cauHinh.id);
+                      return !foundFinalConfig;
+                    }) === true ?
+                      <BoxJoy >
+                        <Alert color="danger" variant="soft">
+                          Vui lòng chọn đầy đủ các thành phần cho các phiên bản khác nhau!
+                        </Alert>
+                      </BoxJoy>
+                      : null
+                    }
+                  </div>
                   <Button
                     onClick={handleDownloadSample}
                     className="rounded-2 button-mui me-1"
@@ -1392,18 +1407,38 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
                       sx={{ width: '100%', maxWidth: '100%', gap: 1.5 }}
                     >
                       <div className="d-flex justify-content-between">
-                        <span className="mt-1" style={{ fontWeight: "550", fontSize: "22px" }}>
-                          PHIÊN BẢN {' ' + (item.ram ? item.ram.dungLuong : "") + "/" + (item.rom ? item.rom.dungLuong : "") + "GB"}
-                        </span>
                         <div className="d-flex">
-                          <div className="me-2">
-                            <TextField
-                              label="Đơn giá chung"
-                              id="outlined-size-small"
-                              size="small"
-                              style={{ width: "150px" }}
-                            />
-                          </div>
+                          <span className="mt-1" style={{ fontWeight: "550", fontSize: "25.5px" }}>
+                            PHIÊN BẢN {' ' + (item.ram ? item.ram.dungLuong : "") + "/" + (item.rom ? item.rom.dungLuong : "") + "GB"}
+                          </span>
+                          <span className="ms-3">
+                            {isConfirm === true &&
+                              item.rom === null && cauHinhsFinal.some((finalItem) => finalItem.id === item.id) === false ?
+                              <BoxJoy sx={{ width: "100%" }}>
+                                <Alert color="danger" variant="soft">
+                                  Phiên bản này chưa có ROM và Màu sắc!
+                                </Alert>
+                              </BoxJoy>
+                              :
+                              isConfirm === true && item.rom === null ?
+                                <BoxJoy sx={{ width: "100%" }}>
+                                  <Alert color="danger" variant="soft">
+                                    Phiên bản này chưa có ROM!
+                                  </Alert>
+                                </BoxJoy>
+                                :
+                                isConfirm === true && cauHinhsFinal.some((finalItem) => finalItem.id === item.id) === false ?
+                                  <BoxJoy sx={{ width: "100%" }}>
+                                    <Alert color="danger" variant="soft">
+                                      Phiên bản này chưa có Màu sắc!
+                                    </Alert>
+                                  </BoxJoy>
+                                  :
+                                  null
+                            }
+                          </span>
+                        </div>
+                        <div className="d-flex">
                           <Button
                             onClick={() => {
                               handleOpenModalUpdate();
@@ -1421,6 +1456,25 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
                               style={{ marginBottom: "2px", fontWeight: "500" }}
                             >
                               Cập Nhật Màu Sắc
+                            </span>
+                          </Button>
+                          <Button
+                            onClick={() => {
+                              // handleOpenModalUpdate();
+                              // setDefaultRam(item.ram);
+                              // setDefaultRom(item.rom);
+                              // setSelectedColors(item.colors);
+                              // setSelectedId(item.id)
+                            }}
+                            className="rounded-2 button-mui me-2"
+                            type="primary"
+                            style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                          >
+                            <span
+                              className=""
+                              style={{ marginBottom: "2px", fontWeight: "500" }}
+                            >
+                              Chọn Đơn Giá Chung
                             </span>
                           </Button>
                           <Button
@@ -1500,28 +1554,20 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
                       window.scrollTo(0, 0);
                     }
                     else if (cauHinhs && cauHinhs.length > 0) {
+                      confirm(true);
                       const hasInvalidConfiguration = cauHinhs.some((cauHinh) => {
                         const foundFinalConfig = cauHinhsFinal.find((finalItem) => finalItem.id === cauHinh.id);
                         return !foundFinalConfig;
                       });
+                      const isMissingImage = cauHinhsFinal.some((cauHinh) => !cauHinh.file || !cauHinh.image);
                       if (hasInvalidConfiguration) {
-                        handleOpenAlertVariant("Vui lòng chọn đầy đủ các thành phần cho phiên bản!", "warning");
+                        window.scrollTo(0, 800);
                       }
-                      else if (cauHinhsFinal && cauHinhsFinal.length <= 0) {
-                        handleOpenAlertVariant("Vui lòng chọn đầy đủ các thành phần cho phiên bản!", "warning");
+                      else if (isMissingImage) {
+                        window.scrollTo(0, 700);
                       }
-                      else if (cauHinhsFinal && cauHinhsFinal.length > 0) {
-                        const isMissingConfigFinal = cauHinhsFinal.some((cauHinh) => !cauHinh.ram || !cauHinh.rom);
-                        const isMissingImage = cauHinhsFinal.some((cauHinh) => !cauHinh.file || !cauHinh.image);
-                        if (isMissingConfigFinal) {
-                          handleOpenAlertVariant("Vui lòng chọn đầy đủ các thành phần cho phiên bản!", "warning");
-                        }
-                        else if (isMissingImage) {
-                          handleOpenAlertVariant("Vui lòng chọn đầy đủ ảnh cho các phiên bản theo màu sắc!", "warning");
-                        }
-                        else {
-                          handleAddProduct();
-                        }
+                      else {
+                        handleAddProduct();
                       }
                     }
                   }}

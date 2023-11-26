@@ -5188,7 +5188,7 @@ export function ConfirmChangeTypePhienBan(props) {
               sx={{ color: "black" }}
               id="alert-dialog-description"
             >
-              Thông tin của các cấu hình hiện tại
+              Thông tin của các phiên bản hiện tại
               sẽ không được lưu lại. Bạn có chắc chắn muốn chuyển sang tính năng này ?
             </DialogContentText>
           </DialogContent>
