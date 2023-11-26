@@ -49,25 +49,29 @@ const RefundDetail = () => {
         // const filteredData = data.orderItems.filter((item) => item.soLuong > 0);
         // setOrderItems(filteredData);
 
-        const updatedOrderItems = data.orderItems.map(orderItem => {
-          const imeiRefundCount = orderItem.imeisDaBan.filter(imei => imei.trangThai === StatusImei.REFUND).length;
+        const updatedOrderItems = data.orderItems.map((orderItem) => {
+          const imeiRefundCount = orderItem.imeisDaBan.filter(
+            (imei) => imei.trangThai === StatusImei.REFUND
+          ).length;
           const newQuantity = orderItem.soLuong - imeiRefundCount;
 
           return {
             ...orderItem,
-            soLuong: newQuantity
+            soLuong: newQuantity,
           };
         });
 
         setOrderItems(updatedOrderItems);
 
         const orderRefunds = data.orderItems.reduce((acc, orderItem) => {
-          const imeiRefunds = orderItem.imeisDaBan.filter(imei => imei.trangThai === StatusImei.REFUND);
+          const imeiRefunds = orderItem.imeisDaBan.filter(
+            (imei) => imei.trangThai === StatusImei.REFUND
+          );
           if (imeiRefunds.length > 0) {
-            const refundObject = imeiRefunds.map(imeiRefund => ({
+            const refundObject = imeiRefunds.map((imeiRefund) => ({
               ...orderItem,
               soLuong: 1,
-              imei: imeiRefund
+              imei: imeiRefund,
             }));
             acc.push(...refundObject);
           }
@@ -75,7 +79,6 @@ const RefundDetail = () => {
         }, []);
 
         setOrderRefunds(orderRefunds);
-
 
         const tongTien = (data && data.tongTien) || 0;
         const discount =
@@ -87,8 +90,6 @@ const RefundDetail = () => {
         handleOpenAlertVariant("Không tìm thấy đơn hàng!", Notistack.ERROR);
       });
   };
-
-
 
   // const handleRedirectRefundOrderDetail = () => {
   //   navigate(`/dashboard/refund-order/${orderCode}`)
@@ -118,12 +119,12 @@ const RefundDetail = () => {
 
   const totalRefund = () => {
     let total = 0;
-    orderRefunds && orderRefunds.map((item) => {
-      total += item.donGia;
-    })
+    orderRefunds &&
+      orderRefunds.map((item) => {
+        total += item.donGia;
+      });
     return total;
-  }
-
+  };
 
   const columnsOrderItemsRefund = [
     {
@@ -179,14 +180,13 @@ const RefundDetail = () => {
               >
                 {item && item.sanPhamChiTiet.donGia
                   ? item.sanPhamChiTiet.donGia.toLocaleString("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  })
+                      style: "currency",
+                      currency: "VND",
+                    })
                   : ""}
               </span>
             </div>
-            <div className="mt-2 pt-1">
-            </div>
+            <div className="mt-2 pt-1"></div>
           </div>
         </div>
       ),
@@ -232,7 +232,7 @@ const RefundDetail = () => {
       render: (text, item) => (
         <div>
           <div className="button-container">
-            {item.imei.trangThai === StatusImei.REFUND ?
+            {item.imei.trangThai === StatusImei.REFUND ? (
               <Button
                 className="rounded-2 ant-btn-danger-light"
                 style={{ height: "38px", width: "130px", fontSize: "15px" }}
@@ -249,7 +249,7 @@ const RefundDetail = () => {
                   Đã Hoàn Trả
                 </span>
               </Button>
-              :
+            ) : (
               <Button
                 onClick={() => {
                   cancelRefund(item);
@@ -269,7 +269,7 @@ const RefundDetail = () => {
                   Hủy Trả Hàng
                 </span>
               </Button>
-            }
+            )}
           </div>
         </div>
       ),
@@ -330,23 +330,12 @@ const RefundDetail = () => {
               >
                 {item && item.sanPhamChiTiet.donGia
                   ? item.sanPhamChiTiet.donGia.toLocaleString("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  })
+                      style: "currency",
+                      currency: "VND",
+                    })
                   : ""}
               </span>
             </div>
-            {item.imeisDaBan &&
-              item.imeisDaBan.length <= 0 &&
-              item.imeisDaBan.length !== item.soLuong && (
-                <div className="mt-2 pt-1">
-                  <Box sx={{ width: "100%" }}>
-                    <Alert color="danger" variant="soft">
-                      Bạn cần chọn Imei cho sản phẩm trước khi giao hàng.
-                    </Alert>
-                  </Box>
-                </div>
-              )}
           </div>
         </div>
       ),
@@ -438,29 +427,7 @@ const RefundDetail = () => {
                 THÔNG TIN ĐƠN HÀNG
               </span>
             </div>
-            <div className="">
-              {order.trangThai === OrderStatusString.PENDING_CONFIRM ||
-                order.trangThai === OrderStatusString.CONFIRMED ||
-                order.trangThai === OrderStatusString.PREPARING ? (
-                <Button
-                  onClick={handleClickOpenDialogUpdateRecipientOrder}
-                  className="rounded-2 ms-2"
-                  type="primary"
-                  style={{
-                    height: "40px",
-                    fontSize: "16px",
-                    width: "100px",
-                  }}
-                >
-                  <span
-                    className=""
-                    style={{ fontWeight: "500", marginBottom: "2px" }}
-                  >
-                    Cập nhật
-                  </span>
-                </Button>
-              ) : null}
-            </div>
+            <div className=""></div>
           </div>
           <div
             className="ms-2 mt-2"
@@ -691,11 +658,15 @@ const RefundDetail = () => {
           <Col sm="6" className="ms-5">
             <div className="ms-4 mt-3 d-flex" style={{ height: "30px" }}>
               <div className="ms-2 mt-1" style={{ width: "140px" }}>
-                <span style={{ fontSize: "17px" }}>{order.loaiHoaDon === OrderTypeString.DELIVERY ? "Tên Người Nhận" : "Tên Khách Hàng"}</span>
+                <span style={{ fontSize: "17px" }}>
+                  {order.loaiHoaDon === OrderTypeString.DELIVERY
+                    ? "Tên Người Nhận"
+                    : "Tên Khách Hàng"}
+                </span>
               </div>
               <div className="ms-5 ps-5">
                 {order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
-                  order.account === null ? (
+                order.account === null ? (
                   <div
                     className="rounded-pill text-center"
                     style={{
@@ -728,13 +699,13 @@ const RefundDetail = () => {
               <div className="ms-5 ps-5 mt-1">
                 <span className="text-dark" style={{ fontSize: "17px" }}>
                   {order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
-                    order.account === null
+                  order.account === null
                     ? "..."
                     : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
                       order.account &&
                       order.account.soDienThoai
-                      ? order.account.soDienThoai
-                      : order.soDienThoaiNguoiNhan}
+                    ? order.account.soDienThoai
+                    : order.soDienThoaiNguoiNhan}
                 </span>
               </div>
             </div>
@@ -747,8 +718,8 @@ const RefundDetail = () => {
                   {order.account === null
                     ? "..."
                     : order.account && order.account.email
-                      ? order.account.email
-                      : "..."}
+                    ? order.account.email
+                    : "..."}
                 </span>
               </div>
             </div>
@@ -765,22 +736,7 @@ const RefundDetail = () => {
                 className="ms-5 ps-5 mt-1"
                 style={{ whiteSpace: "pre-line", flex: "1" }}
               >
-                <span className="text-dark" style={{ fontSize: "17px" }}>
-                  {order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
-                    order.account === null
-                    ? "..."
-                    : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
-                      order.account &&
-                      order.account.diaChiList
-                      ? addressDefault
-                      : order.diaChiNguoiNhan +
-                      ", " +
-                      order.xaPhuongNguoiNhan +
-                      ", " +
-                      order.quanHuyenNguoiNhan +
-                      ", " +
-                      order.tinhThanhPhoNguoiNhan}
-                </span>
+                <span className="text-dark" style={{ fontSize: "17px" }}></span>
               </div>
             </div>
           </Col>
@@ -789,80 +745,78 @@ const RefundDetail = () => {
     );
   };
 
-  const hasOrderWithoutStatus = orderRefunds.some(orderRefund => {
+  const hasOrderWithoutStatus = orderRefunds.some((orderRefund) => {
     const imeiValues = Object.values(orderRefund.imei);
-    return imeiValues.some(imei => imei.trangThai !== StatusImei.REFUND);
+    return imeiValues.some((imei) => imei.trangThai !== StatusImei.REFUND);
   });
 
   const ProductRefund = () => {
-
-    return (<>
-      <div className="wrap-order-summary mt-4 p-3">
-        <div className="">
-          <div className="d-flex justify-content-between">
-            <div className="ms-2" style={{ marginTop: "3px" }}>
-              <span className="" style={{ fontSize: "25px" }}>
-                TRẢ HÀNG
-              </span>
-            </div>
-            <div className="">
-              {(order.trangThai === OrderStatusString.SUCCESS_DELIVERY ||
-                order.trangThai === OrderStatusString.HAD_PAID) ? (
-                <Button
-                  onClick={() => {
-                    setOpenModalRefundOrder(true);
-                  }}
-                  className="rounded-2"
-                  type="primary"
-                  style={{ height: "40px", width: "170px", fontSize: "16px" }}
-                >
-                  <span
-                    className="text-white"
-                    style={{ marginBottom: "3px", fontWeight: "500" }}
+    return (
+      <>
+        <div className="wrap-order-summary mt-4 p-3">
+          <div className="">
+            <div className="d-flex justify-content-between">
+              <div className="ms-2" style={{ marginTop: "3px" }}>
+                <span className="" style={{ fontSize: "25px" }}>
+                  TRẢ HÀNG
+                </span>
+              </div>
+              <div className="">
+                {order.trangThai === OrderStatusString.SUCCESS_DELIVERY ||
+                order.trangThai === OrderStatusString.HAD_PAID ? (
+                  <Button
+                    onClick={() => {
+                      setOpenModalRefundOrder(true);
+                    }}
+                    className="rounded-2"
+                    type="primary"
+                    style={{ height: "40px", width: "170px", fontSize: "16px" }}
                   >
-                    Xác nhận trả hàng
-                  </span>
-                </Button>
-              ) : null}
-            </div>
-          </div>
-          <div
-            className="ms-2 mt-2"
-            style={{
-              borderBottom: "2px solid #C7C7C7",
-              width: "99.2%",
-              borderWidth: "2px",
-            }}
-          ></div>
-        </div>
-
-        <div
-          className="wrap-cart-order mx-auto"
-          style={{ height: "auto", width: "98%" }}
-        >
-          <Row className="">
-            <div className="">
-              <div className="mt-2" style={{ height: "auto" }}>
-                <Table
-                  className="table-cart"
-                  columns={columnsOrderItemsRefund}
-                  dataSource={orderRefunds}
-                  pagination={false}
-                  rowKey={"id"}
-                  key={"id"}
-                />
+                    <span
+                      className="text-white"
+                      style={{ marginBottom: "3px", fontWeight: "500" }}
+                    >
+                      Xác nhận trả hàng
+                    </span>
+                  </Button>
+                ) : null}
               </div>
             </div>
-          </Row>
+            <div
+              className="ms-2 mt-2"
+              style={{
+                borderBottom: "2px solid #C7C7C7",
+                width: "99.2%",
+                borderWidth: "2px",
+              }}
+            ></div>
+          </div>
+
+          <div
+            className="wrap-cart-order mx-auto"
+            style={{ height: "auto", width: "98%" }}
+          >
+            <Row className="">
+              <div className="">
+                <div className="mt-2" style={{ height: "auto" }}>
+                  <Table
+                    className="table-cart"
+                    columns={columnsOrderItemsRefund}
+                    dataSource={orderRefunds}
+                    pagination={false}
+                    rowKey={"id"}
+                    key={"id"}
+                  />
+                </div>
+              </div>
+            </Row>
+          </div>
         </div>
-
-      </div>
-    </>)
-
-  }
+      </>
+    );
+  };
 
   const ProductHadBuy = () => {
-
     return (
       <>
         <div className="wrap-order-summary mt-4 p-3">
@@ -871,13 +825,15 @@ const RefundDetail = () => {
               <div className="ms-2" style={{ marginTop: "3px" }}>
                 <span className="" style={{ fontSize: "25px" }}>
                   DANH SÁCH SẢN PHẨM ĐÃ{" "}
-                  {order.loaiHoaDon === OrderTypeString.AT_COUNTER ? "" : " ĐẶT "}{" "}
+                  {order.loaiHoaDon === OrderTypeString.AT_COUNTER
+                    ? ""
+                    : " ĐẶT "}{" "}
                   MUA
                 </span>
               </div>
               <div className="">
                 {order.trangThai === OrderStatusString.SUCCESS_DELIVERY ||
-                  order.trangThai === OrderStatusString.HAD_PAID ? (
+                order.trangThai === OrderStatusString.HAD_PAID ? (
                   <Button
                     onClick={() => {
                       // setOpenProducts(true);
@@ -927,12 +883,10 @@ const RefundDetail = () => {
               </div>
             </Row>
           </div>
-
         </div>
       </>
-
-    )
-  }
+    );
+  };
 
   const handleRefund = async () => {
     const request = {
@@ -964,40 +918,53 @@ const RefundDetail = () => {
       if (item.id === refundItem.id) {
         const updatedImeisDaBan = [...item.imeisDaBan, imei];
         const updatedSoLuong = item.soLuong + soLuong;
-        return { ...item, soLuong: updatedSoLuong, imeisDaBan: updatedImeisDaBan };
+        return {
+          ...item,
+          soLuong: updatedSoLuong,
+          imeisDaBan: updatedImeisDaBan,
+        };
       }
       return item;
     });
 
-    const updatedOrderRefunds = orderRefunds.filter((item) => item !== refundItem);
+    const updatedOrderRefunds = orderRefunds.filter(
+      (item) => item !== refundItem
+    );
 
     setOrderItems(updatedOrderItems);
     setOrderRefunds(updatedOrderRefunds);
-  }
+  };
   const getImeiSelected = (imeis) => {
     const updatedOrderItems = orderItems.map((item) => {
       if (item.id === orderItem.id) {
-        const updatedImeisDaBan = item.imeisDaBan.filter((imei) => !imeis.includes(imei));
+        const updatedImeisDaBan = item.imeisDaBan.filter(
+          (imei) => !imeis.includes(imei)
+        );
         const updatedSoLuong = item.soLuong - imeis.length;
-        return { ...item, soLuong: updatedSoLuong, imeisDaBan: updatedImeisDaBan };
+        return {
+          ...item,
+          soLuong: updatedSoLuong,
+          imeisDaBan: updatedImeisDaBan,
+        };
       }
       return item;
     });
 
     const filteredData = updatedOrderItems.filter((item) => item.soLuong > 0);
     setOrderItems(filteredData);
-    const ordersRefund = imeis && imeis.map((item) => {
-      return {
-        ...orderItem,
-        soLuong: 1,
-        imei: item,
-      }
-    })
+    const ordersRefund =
+      imeis &&
+      imeis.map((item) => {
+        return {
+          ...orderItem,
+          soLuong: 1,
+          imei: item,
+        };
+      });
     const updatedOrderRefunds = [...orderRefunds, ...ordersRefund];
     setOrderRefunds(updatedOrderRefunds);
     console.log(updatedOrderRefunds);
-
-  }
+  };
 
   return (
     <>
@@ -1009,13 +976,9 @@ const RefundDetail = () => {
         }}
       >
         <OrderInfo />
-        {orderItems && orderItems.length > 0 &&
-          <ProductHadBuy />
-        }
+        {orderItems && orderItems.length > 0 && <ProductHadBuy />}
 
-        {orderRefunds && orderRefunds.length > 0 &&
-          <ProductRefund />
-        }
+        {orderRefunds && orderRefunds.length > 0 && <ProductRefund />}
         <div className="d-flex mt-3">
           <div
             style={{
@@ -1025,13 +988,15 @@ const RefundDetail = () => {
             }}
             className="rounded-2 ms-auto wrap-total-money"
           >
-
             <div className="p-4">
               <div className="d-flex justify-content-between">
                 <span className="" style={{ fontSize: "16px", color: "" }}>
                   Số lượng hoàn trả
                 </span>
-                <span className="text-dark" style={{ fontSize: "17px", fontWeight: "500" }}>
+                <span
+                  className="text-dark"
+                  style={{ fontSize: "17px", fontWeight: "500" }}
+                >
                   {orderRefunds && orderRefunds.length}
                 </span>
               </div>
@@ -1039,7 +1004,10 @@ const RefundDetail = () => {
                 <span className="" style={{ fontSize: "16px", color: "" }}>
                   Tổng tiền trả hàng
                 </span>
-                <span className="text-dark" style={{ fontSize: "17px", fontWeight: "500" }}>
+                <span
+                  className="text-dark"
+                  style={{ fontSize: "17px", fontWeight: "500" }}
+                >
                   {totalRefund().toLocaleString("vi-VN", {
                     style: "currency",
                     currency: "VND",
@@ -1050,7 +1018,10 @@ const RefundDetail = () => {
                 <span className="" style={{ fontSize: "16px", color: "" }}>
                   Cần trả khách
                 </span>
-                <span className="text-dark" style={{ fontSize: "17px", fontWeight: "500" }}>
+                <span
+                  className="text-dark"
+                  style={{ fontSize: "17px", fontWeight: "500" }}
+                >
                   {totalRefund().toLocaleString("vi-VN", {
                     style: "currency",
                     currency: "VND",
@@ -1078,5 +1049,5 @@ const RefundDetail = () => {
       />
     </>
   );
-}
+};
 export default RefundDetail;

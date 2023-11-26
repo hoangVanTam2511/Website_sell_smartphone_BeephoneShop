@@ -43,11 +43,6 @@ const ThongKeDoanhThu = () => {
   const [searchNgayBatDau, setSearchNgayBatDau] = useState("");
   const [searchNgayKetThuc, setSearchNgayKetThuc] = useState("");
   const [tocDoTangTruong, setTocDoTangTruong] = useState([]);
-  const daysInMonth = new Date(
-    new Date().getFullYear(),
-    new Date().getMonth() + 1,
-    0
-  ).getDate();
 
   const thongKeTheoNgay = () => {
     axios
@@ -153,6 +148,27 @@ const ThongKeDoanhThu = () => {
 
   const [numberOfDays, setNumberOfDays] = useState(10);
   const [chartData, setChartData] = useState({});
+  const currentDate = new Date();
+
+  const daysInMonth = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth() + 1,
+    0
+  ).getDate();
+
+  const allDaysInMonth = Array.from(
+    { length: daysInMonth },
+    (_, index) => index + 1
+  );
+
+  const formattedDays = allDaysInMonth.map((day) => {
+    const formattedDay = day < 10 ? `0${day}` : `${day}`;
+    const formattedMonth =
+      currentDate.getMonth() + 1 < 10
+        ? `0${currentDate.getMonth() + 1}`
+        : `${currentDate.getMonth() + 1}`;
+    return `${currentDate.getFullYear()}-${formattedMonth}-${formattedDay}`;
+  });
 
   const fetchData = () => {
     const sanPhamPromise = axios.get(
@@ -175,29 +191,75 @@ const ThongKeDoanhThu = () => {
       }
     );
 
+    // Promise.all([sanPhamPromise, donHangPromise])
+    //   .then(([sanPhamResponse, donHangResponse]) => {
+    //     const sanPhamData = sanPhamResponse.data;
+    //     const donHangData = donHangResponse.data;
+
+    //     const combinedData = sanPhamData.map((sanPhamItem) => {
+    //       const matchingDonHangItem = donHangData.find(
+    //         (donHangItem) => donHangItem.ngayTao === sanPhamItem.ngayTao
+    //       );
+
+    //       return {
+    //         ngayTao: sanPhamItem.ngayTao,
+    //         soLuongSanPham: sanPhamItem.soLuong,
+    //         soLuongDonHang: matchingDonHangItem
+    //           ? matchingDonHangItem.soLuong
+    //           : 0,
+    //       };
+    //     });
+
+    //     const labels = combinedData.map((item) => item.ngayTao);
+    //     const dataSanPham = combinedData.map((item) => item.soLuongSanPham);
+    //     const dataDonHang = combinedData.map((item) => item.soLuongDonHang);
+
+    //     setChartData({
+    //       labels: labels,
+    //       datasets: [
+    //         {
+    //           label: "Số lượng đơn hàng",
+    //           data: dataDonHang,
+    //           backgroundColor: "#2f80ed",
+    //           borderColor: "#2f80ed",
+    //           borderWidth: 1,
+    //         },
+    //         {
+    //           label: "Sản phẩm",
+    //           data: dataSanPham,
+    //           backgroundColor: "#ff7b00",
+    //           borderColor: "#ff7b00",
+    //           borderWidth: 1,
+    //         },
+    //       ],
+    //     });
+    //   })
+    //   .catch((error) => {
+    //     // Xử lý lỗi nếu có
+    //   });
     Promise.all([sanPhamPromise, donHangPromise])
       .then(([sanPhamResponse, donHangResponse]) => {
         const sanPhamData = sanPhamResponse.data;
         const donHangData = donHangResponse.data;
 
-        const combinedData = sanPhamData.map((sanPhamItem) => {
-          const matchingDonHangItem = donHangData.find(
-            (donHangItem) => donHangItem.ngayTao === sanPhamItem.ngayTao
-          );
+        // Kết hợp dữ liệu của sanPhamData và donHangData
+        const combinedData = formattedDays.map((day) => {
+          const sanPhamItem = sanPhamData.find((item) => item.ngayTao === day);
+          const donHangItem = donHangData.find((item) => item.ngayTao === day);
 
           return {
-            ngayTao: sanPhamItem.ngayTao,
-            soLuongSanPham: sanPhamItem.soLuong,
-            soLuongDonHang: matchingDonHangItem
-              ? matchingDonHangItem.soLuong
-              : 0,
+            ngayTao: day,
+            soLuongSanPham: sanPhamItem ? sanPhamItem.soLuong : 0,
+            soLuongDonHang: donHangItem ? donHangItem.soLuong : 0,
           };
         });
 
+        // Tạo dữ liệu cho biểu đồ
         const labels = combinedData.map((item) => item.ngayTao);
         const dataSanPham = combinedData.map((item) => item.soLuongSanPham);
         const dataDonHang = combinedData.map((item) => item.soLuongDonHang);
 
+        // Cập nhật biểu đồ
         setChartData({
           labels: labels,
           datasets: [
@@ -307,17 +369,6 @@ const ThongKeDoanhThu = () => {
       chartInstance.current = new Chart(ctx, {
         type: "doughnut",
         data: {
-          // labels: [
-          //   "Đã thành công",
-          //   "Đã thanh toán",
-          //   "Xác nhận",
-          //   "Chờ xác nhận",
-          //   "Tạo hóa đơn",
-          //   "Trả hàng",
-          //   "Vận chuyển",
-          //   "Chờ vận chuyển",
-          //   "Đã hủy",
-          // ],
           labels: trangThaiDonHang.map((item) =>
             item.trangThai === 1
               ? "Đã xác nhận"
