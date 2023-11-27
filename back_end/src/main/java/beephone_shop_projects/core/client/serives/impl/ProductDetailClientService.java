@@ -8,6 +8,7 @@ import beephone_shop_projects.core.client.models.response.ProductResponce;
 import beephone_shop_projects.core.client.repositories.ProductClientRepository;
 import beephone_shop_projects.core.client.repositories.ProductDetailClientRepository;
 import beephone_shop_projects.entity.SanPham;
+import beephone_shop_projects.entity.SanPhamChiTiet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -83,5 +84,9 @@ public class ProductDetailClientService {
             }
         }
         return responses;
+    }
+
+    public ArrayList<SanPhamChiTiet> getListProductDetail(){
+        return (ArrayList<SanPhamChiTiet>) productDetailClientRepository.findAll();
     }
 }

@@ -68,4 +68,13 @@ public class ProductDetailClientRestController {
         return new ResponseEntity<>(productDetailService.searchByAllPosition(chiTietSanPhamRequest), HttpStatus.OK);
     }
 
+        @GetMapping("/get-product-detail")
+    public ResponseEntity<?> getProductDetail(){
+        try{
+            return new ResponseEntity<>(productDetailService.getListProductDetail(), HttpStatus.OK);
+        }catch (Exception ex){
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }
