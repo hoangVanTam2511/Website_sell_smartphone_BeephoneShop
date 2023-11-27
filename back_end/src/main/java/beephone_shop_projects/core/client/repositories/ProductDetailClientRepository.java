@@ -19,7 +19,7 @@ public interface ProductDetailClientRepository extends ISanPhamChiTietRepository
     @Query(value = """
                   SELECT
                   sp.id,
-                  anh.duong_dan,
+                  image.path AS duong_dan,
                   sp.ten_san_pham, 
                   IF(kmct.don_gia_sau_khuyen_mai is null ,0, kmct.don_gia_sau_khuyen_mai) AS don_gia_sau_khuyen_mai,
                   spct.don_gia, 
@@ -28,7 +28,7 @@ public interface ProductDetailClientRepository extends ISanPhamChiTietRepository
                   FROM san_pham sp
                   JOIN san_pham_chi_tiet spct ON spct.id_san_pham = sp.id
                   LEFT JOIN khuyen_mai_chi_tiet kmct ON kmct.id_chi_tiet_san_pham = spct.id
-                  LEFT JOIN anh ON anh.id = spct.id_image
+                  LEFT JOIN image ON image.id = spct.id_image
                   JOIN ram ON ram.id = spct.id_ram
                   JOIN rom ON rom.id = spct.id_rom
                    WHERE sp.id = :id_product
@@ -42,7 +42,7 @@ public interface ProductDetailClientRepository extends ISanPhamChiTietRepository
              spct.id,
              IF(kmct.don_gia_sau_khuyen_mai is null ,0, kmct.don_gia_sau_khuyen_mai) AS don_gia_sau_khuyen_mai,
              spct.don_gia,
-             anh.duong_dan,
+             image.path as duong_dan,
              ms.ten_mau_sac,
              ram.dung_luong as dung_luong_ram,
              rom.dung_luong as dung_luong_rom
@@ -51,7 +51,7 @@ public interface ProductDetailClientRepository extends ISanPhamChiTietRepository
              LEFT JOIN khuyen_mai_chi_tiet kmct ON kmct.id_chi_tiet_san_pham = spct.id
              JOIN ram ON ram.id = spct.id_ram
              JOIN rom ON rom.id = spct.id_rom
-             LEFT JOIN anh ON anh.id = spct.id_image
+             LEFT JOIN image ON image.id = spct.id_image
              JOIN mau_sac ms ON ms.id = spct.id_mau_sac
               WHERE sp.id = :id_product
              ORDER BY ram.dung_luong ASC, rom.dung_luong ASC
@@ -130,7 +130,7 @@ public interface ProductDetailClientRepository extends ISanPhamChiTietRepository
     @Query(value = """
                   SELECT
                   sp.id,
-                  anh.duong_dan,
+                  image.path AS duong_dan,
                   sp.ten_san_pham, 
                   IF(kmct.don_gia_sau_khuyen_mai is null ,0, kmct.don_gia_sau_khuyen_mai) AS don_gia_sau_khuyen_mai,
                   spct.don_gia, 
@@ -139,7 +139,7 @@ public interface ProductDetailClientRepository extends ISanPhamChiTietRepository
                   FROM san_pham sp
                   JOIN san_pham_chi_tiet spct ON spct.id_san_pham = sp.id
                   LEFT JOIN khuyen_mai_chi_tiet kmct ON kmct.id_chi_tiet_san_pham = spct.id
-                  LEFT JOIN anh ON anh.id = spct.id_image
+                  LEFT JOIN image ON image.id = spct.id_image
                   JOIN ram ON ram.id = spct.id_ram
                   JOIN rom ON rom.id = spct.id_rom
                    WHERE spct.id = :id_product_detail
