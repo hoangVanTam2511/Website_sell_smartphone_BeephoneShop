@@ -91,7 +91,7 @@ const ManagementChips = () => {
       });
   };
 
-  const [colorPages, setColorPages] = useState([]);
+  const [chipPages, setChipPages] = useState([]);
   const [pageShow, setPageShow] = useState(5);
   const [searchTatCa, setSearchTatCa] = useState("");
   const [searchTrangThai, setSearchTrangThai] = useState(5);
@@ -108,7 +108,7 @@ const ManagementChips = () => {
         },
       })
       .then((response) => {
-        setColorPages(response.data.data);
+        setChipPages(response.data.data);
         setTotalPages(response.data.totalPages);
         // setIsLoading(true);
       })
@@ -265,7 +265,7 @@ const ManagementChips = () => {
           className="table-container"
           columns={columns}
           rowKey="id"
-          dataSource={colorPages}
+          dataSource={chipPages}
           pagination={false}
           locale={{ emptyText: <Empty description="Không có dữ liệu" /> }}
         />
@@ -281,7 +281,7 @@ const ManagementChips = () => {
       width: "5%",
       render: (text, record, index) => (
         <span style={{ fontWeight: "400" }}>
-          {colorPages.indexOf(record) + 1}
+          {chipPages.indexOf(record) + 1}
         </span>
       ),
     },

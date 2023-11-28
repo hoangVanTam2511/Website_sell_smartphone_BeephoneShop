@@ -119,6 +119,7 @@ import Transaction from "../views/admin/transaction-manager/transaction";
 import { Print } from "../views/admin/order-manager/printer-invoice";
 import RefundOrder from "../views/admin/order-manager/refund-order";
 import RefundDetail from "../views/admin/order-manager/refund-details";
+import ManagementRanks from "../views/admin/rank-manager/management-rank";
 
 export const DefaultRouter = [
   {
@@ -430,6 +431,10 @@ export const DefaultRouter = [
       {
         path: "dashboard/refund-order/:id",
         element: <RefundDetail />,
+      },
+      {
+        path: "dashboard/rank",
+        element: <ManagementRanks />,
       },
       // {
       //   path: 'dashboard/add-product',

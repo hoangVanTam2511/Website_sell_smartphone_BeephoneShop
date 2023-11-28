@@ -1,5 +1,6 @@
-package beephone_shop_projects.core.admin.voucher_management.model.request;
+package beephone_shop_projects.core.admin.rank_management.model.request;
 
+import beephone_shop_projects.infrastructure.constant.StatusCommon;
 import beephone_shop_projects.infrastructure.constant.StatusDiscount;
 import beephone_shop_projects.infrastructure.constant.TypeDiscount;
 import jakarta.persistence.EnumType;
@@ -17,8 +18,21 @@ import java.util.Date;
 
 @Getter
 @Setter
-public class ChangeStatusVoucherRequest {
+public class UpdateRankRequest {
 
-    private StatusDiscount status;
+    private String ma;
 
+    @NotBlank(message = "Không để trống Tên !!!")
+    private String ten;
+
+    @NotNull(message = "Không để trống Điều Kiện Tối Thiểu")
+    private BigDecimal dieuKienToiThieu;
+
+    @NotNull
+    private BigDecimal dieuKienToiDa;
+
+    @NotNull(message = "Không để trống ưu đãi !!!")
+    private BigDecimal uuDai;
+
+    private StatusCommon status;
 }

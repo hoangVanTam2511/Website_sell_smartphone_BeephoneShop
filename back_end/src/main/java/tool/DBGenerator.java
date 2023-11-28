@@ -97,8 +97,47 @@ public class DBGenerator implements CommandLineRunner {
     @Autowired
     private IDanhMucRepository danhMucRepository;
 
+    @Autowired
+    private IRankRepository iRankRepository;
+
     @Override
     public void run(String... args) throws Exception {
+
+        XepHang xepHang = new XepHang();
+        xepHang.setMa("rank1");
+        xepHang.setTen("Bạc");
+        xepHang.setDieuKienToiThieu(new BigDecimal(3000000));
+        xepHang.setDieuKienToiDa(new BigDecimal(7000000));
+        xepHang.setUuDai(new BigDecimal(100000));
+        xepHang.setStatus(StatusCommon.ACTIVE);
+        xepHang.setId(iRankRepository.save(xepHang).getId());
+
+        XepHang xepHang1 = new XepHang();
+        xepHang1.setMa("rank11");
+        xepHang1.setTen("Vàng");
+        xepHang1.setDieuKienToiThieu(new BigDecimal(7000000));
+        xepHang1.setDieuKienToiDa(new BigDecimal(120000000));
+        xepHang1.setUuDai(new BigDecimal(200000));
+        xepHang1.setStatus(StatusCommon.ACTIVE);
+        xepHang1.setId(iRankRepository.save(xepHang1).getId());
+
+        XepHang xepHang2 = new XepHang();
+        xepHang2.setMa("rank12");
+        xepHang2.setTen("Kim Cương");
+        xepHang2.setDieuKienToiThieu(new BigDecimal(12000000));
+        xepHang2.setDieuKienToiDa(new BigDecimal(20000000));
+        xepHang2.setUuDai(new BigDecimal(5000000));
+        xepHang2.setStatus(StatusCommon.ACTIVE);
+        xepHang2.setId(iRankRepository.save(xepHang2).getId());
+
+        XepHang xepHang3 = new XepHang();
+        xepHang3.setMa("rank13");
+        xepHang3.setTen("Đồng");
+        xepHang3.setDieuKienToiThieu(new BigDecimal(100000));
+        xepHang3.setDieuKienToiDa(new BigDecimal(3000000));
+        xepHang3.setUuDai(new BigDecimal(500000));
+        xepHang3.setStatus(StatusCommon.ACTIVE);
+        xepHang3.setId(iRankRepository.save(xepHang3).getId());
 
         //Bảng Danh Mục
         DanhMuc danhMuc = new DanhMuc();
