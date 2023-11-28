@@ -27,19 +27,19 @@ import {
   FormControlLabel,
   Pagination,
 } from "@mui/material";
-import Checkbox from '@mui/joy/Checkbox';
+import Checkbox from "@mui/joy/Checkbox";
 import styleCss from "./style.css";
-import List from '@mui/joy/List';
-import ListItem from '@mui/joy/ListItem';
-import Done from '@mui/icons-material/Done';
-import { Checkbox as CheckboxJoy } from '@mui/joy';
+import List from "@mui/joy/List";
+import ListItem from "@mui/joy/ListItem";
+import Done from "@mui/icons-material/Done";
+import { Checkbox as CheckboxJoy } from "@mui/joy";
 // import { styled } from '@mui/material/styles';
 import { format } from "date-fns";
 import { styled } from "@mui/system";
 import Table from "@mui/material/Table";
 import { PlusOutlined } from "@ant-design/icons";
 import TableBody from "@mui/material/TableBody";
-import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteIcon from "@mui/icons-material/Delete";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
@@ -57,13 +57,19 @@ import Sheet from "@mui/joy/Sheet";
 import RemoveOutlinedIcon from "@mui/icons-material/RemoveOutlined";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import LoadingIndicator from "../../../utilities/loading.js";
-import { Notistack, OrderStatusString, StatusImei, TypeDiscountNumber, TypeDiscountString } from "./enum";
+import {
+  Notistack,
+  OrderStatusString,
+  StatusImei,
+  TypeDiscountNumber,
+  TypeDiscountString,
+} from "./enum";
 import { parseInt } from "lodash";
 import { useSnackbar } from "notistack";
 import useCustomSnackbar from "../../../utilities/notistack";
 import PriceSlider from "./rangePriceSlider";
 import InputNumberAmount from "./input-number-amount-product.js";
-import { FaTrashAlt } from "react-icons/fa";
+import { FaExternalLinkSquareAlt, FaTrashAlt } from "react-icons/fa";
 import { FaEye } from "react-icons/fa6";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -75,14 +81,23 @@ const Transition1 = React.forwardRef(function Transition(props, ref) {
 });
 
 export function OrderConfirmPayment(props) {
-  const { open, onCloseNoAction, ma, confirmPayment, delivery, total, paymentWhenReceive, khachCanTra } = props;
+  const {
+    open,
+    onCloseNoAction,
+    ma,
+    confirmPayment,
+    delivery,
+    total,
+    paymentWhenReceive,
+    khachCanTra,
+  } = props;
 
   const checkTotal = () => {
     if (total === 0) {
       return khachCanTra;
     }
     return total;
-  }
+  };
 
   return (
     <div className="rounded-pill">
@@ -104,26 +119,25 @@ export function OrderConfirmPayment(props) {
             sx={{ color: "#2f80ed", fontWeight: "500", fontSize: "18px" }}
             id="alert-dialog-title"
           >
-            {`Xác nhận ${delivery ? 'đặt hàng' : 'thanh toán đơn hàng'}`}
+            {`Xác nhận ${delivery ? "đặt hàng" : "thanh toán đơn hàng"}`}
           </DialogTitle>
           <DialogContent>
             <DialogContentText
               sx={{ color: "black" }}
               id="alert-dialog-description"
             >
-              {`Bạn có chắc chắn muốn ${delivery ? 'đặt đơn hàng' : 'thanh toán đơn hàng'}`}
-              {" "}
+              {`Bạn có chắc chắn muốn ${delivery ? "đặt đơn hàng" : "thanh toán đơn hàng"
+                }`}{" "}
               <span className="" style={{ fontWeight: "500" }}>
                 {" "}
                 {ma}
               </span>{" "}
-              với số tiền {paymentWhenReceive ? "chưa " : "đã "} nhận được là {" "}
+              với số tiền {paymentWhenReceive ? "chưa " : "đã "} nhận được là{" "}
               <span style={{ color: "#dc1111" }}>
                 {checkTotal().toLocaleString("vi-VN", {
                   style: "currency",
                   currency: "VND",
-                })
-                }
+                })}
               </span>
             </DialogContentText>
           </DialogContent>
@@ -297,7 +311,18 @@ export function UpdateRecipientOrderDialog(props) {
     setPersonName(typeof value === "string" ? value.split(",") : value);
   };
 
-  const { open, onClose, onCloseNoAction, name, phone, address, province, district, ward, note } = props;
+  const {
+    open,
+    onClose,
+    onCloseNoAction,
+    name,
+    phone,
+    address,
+    province,
+    district,
+    ward,
+    note,
+  } = props;
   const [customerName, setCustomerName] = useState(name);
   const [customerPhone, setCustomerPhone] = useState(phone);
   const [customerAddress, setCustomerAddress] = useState(address);
@@ -314,7 +339,7 @@ export function UpdateRecipientOrderDialog(props) {
     setCustomerProvince(province);
     setCustomerDistrict(district);
     setCustomerWard(ward);
-  }, [name, phone, address, province, district, ward, note])
+  }, [name, phone, address, province, district, ward, note]);
 
   const resetData = () => {
     setCustomerName(name);
@@ -324,19 +349,26 @@ export function UpdateRecipientOrderDialog(props) {
     setCustomerProvince(province);
     setCustomerDistrict(district);
     setCustomerWard(ward);
-  }
+  };
 
-  const getAllDistrictGhnByIdProvinceByCustomer = async (provinceId, districtName, wardName) => {
+  const getAllDistrictGhnByIdProvinceByCustomer = async (
+    provinceId,
+    districtName,
+    wardName
+  ) => {
     try {
-      const response = await axios.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district`, {
-        params: {
-          province_id: provinceId,
-        },
-        headers: {
-          token: tokenGhn,
-          Accept: 'application/json',
+      const response = await axios.get(
+        `https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district`,
+        {
+          params: {
+            province_id: provinceId,
+          },
+          headers: {
+            token: tokenGhn,
+            Accept: "application/json",
+          },
         }
-      });
+      );
 
       const data = response.data.data;
       setDistricts(data);
@@ -346,16 +378,18 @@ export function UpdateRecipientOrderDialog(props) {
         setSelectedDistrict("");
         setSelectedWard("");
         setWards([]);
+      } else {
+        const district = data.find(
+          (item) => item.DistrictName === districtName
+        );
+        await getAllWardGhnByIdDistrictByCustomer(
+          provinceId,
+          district.DistrictID,
+          wardName
+        );
       }
-      else {
-        const district = data.find((item) => item.DistrictName === districtName);
-        await getAllWardGhnByIdDistrictByCustomer(provinceId, district.DistrictID, wardName);
-      }
-
-    } catch (error) {
-    }
-  }
-
+    } catch (error) { }
+  };
 
   return (
     <div className="rounded-pill">
@@ -389,7 +423,7 @@ export function UpdateRecipientOrderDialog(props) {
                 },
               }}
               size="medium"
-              className="mt-1 custom"
+              className="mt-2 custom"
             />
           </div>
           <div>
@@ -520,7 +554,10 @@ export function UpdateRecipientOrderDialog(props) {
               </span>
             </Button>
             <Button
-              onClick={() => { onClose(); resetData() }}
+              onClick={() => {
+                onClose();
+                resetData();
+              }}
               className="rounded-2"
               type="danger"
               style={{ height: "40px", width: "90px", fontSize: "16px" }}
@@ -688,12 +725,12 @@ export function ProductsDialog(props) {
   const [openSelect9, setOpenSelect9] = useState(false);
 
   const [price, setPrice] = useState(0);
-  const [id, setId] = useState('');
+  const [id, setId] = useState("");
 
   const addProductToCart = (imeis) => {
     add(price, id, imeis);
   };
-  const filterdData = data.filter((item) => item.soLuongTonKho > 0)
+  const filterdData = data.filter((item) => item.soLuongTonKho > 0);
 
   const StyledTableHead = styled(TableHead)`
     & tr:hover th {
@@ -865,7 +902,7 @@ export function ProductsDialog(props) {
   const handleOpenModalImeiByProductItem = (item) => {
     onOpenImei();
     setImeis(item.imeis);
-  }
+  };
 
   const handleCloseSelect = () => {
     setOpenSelect(false);
@@ -943,7 +980,6 @@ export function ProductsDialog(props) {
     setOpenSelect9(true);
   };
 
-
   const [productItem, setProductItem] = useState();
   const [productItem1, setProductItem1] = useState();
   const [productItem2, setProductItem2] = useState();
@@ -979,9 +1015,7 @@ export function ProductsDialog(props) {
       setProductItem2(findColor);
     } else {
       const findColorCurrentIsStocking = data.find(
-        (i) =>
-          i.maCauHinh === item.maCauHinh &&
-          i.soLuongTonKho > 0
+        (i) => i.maCauHinh === item.maCauHinh && i.soLuongTonKho > 0
       );
       setProductItem2(findColorCurrentIsStocking);
       // Tìm vè giá be nhat ?? chưa làm
@@ -1004,10 +1038,9 @@ export function ProductsDialog(props) {
     setProductItem1(item); //ten va cau hinh, gia
     setProductItem2(item); // so luong va image
 
-
     const findDataAllByIdProduct = data.filter((d) => {
       return d.sanPham.id === item.sanPham.id;
-    })
+    });
     setProductItemAll(findDataAllByIdProduct);
 
     // const getProductItems = data.filter((item, index) => {
@@ -1020,10 +1053,14 @@ export function ProductsDialog(props) {
       data.reduce((acc, item) => {
         if (
           (!acc[item.maCauHinh] ||
-            (acc[item.maCauHinh].donGia > item.donGia && !acc[item.maCauHinh].isDuplicate)) && item.sanPham.id === getIdByItem) {
+            (acc[item.maCauHinh].donGia > item.donGia &&
+              !acc[item.maCauHinh].isDuplicate)) &&
+          item.sanPham.id === getIdByItem
+        ) {
           acc[item.maCauHinh] = item;
         } else if (
-          acc[item.maCauHinh] && acc[item.maCauHinh].isDuplicate &&
+          acc[item.maCauHinh] &&
+          acc[item.maCauHinh].isDuplicate &&
           acc[item.maCauHinh].donGia > item.donGia
         ) {
           acc[item.maCauHinh] = {
@@ -1213,7 +1250,7 @@ export function ProductsDialog(props) {
           </div>
         </DialogTitle>
         <DialogContent style={{ height: "600px" }}>
-          {isOpen === true ?
+          {isOpen === true ? (
             <>
               <div className="mt-1 pt-1 d-flex">
                 <TextField
@@ -1294,15 +1331,16 @@ export function ProductsDialog(props) {
                         setSelectedValues(e.target.value);
                       }}
                     >
-                      {selectedValues.length === 1 && selectedValues[0] == 0 && (
-                        <MenuItem
-                          className=""
-                          value={0}
-                          style={{ display: "none" }}
-                        >
-                          Chọn nhu cầu
-                        </MenuItem>
-                      )}
+                      {selectedValues.length === 1 &&
+                        selectedValues[0] == 0 && (
+                          <MenuItem
+                            className=""
+                            value={0}
+                            style={{ display: "none" }}
+                          >
+                            Chọn nhu cầu
+                          </MenuItem>
+                        )}
                       <MenuItem value={1}>Chơi game</MenuItem>
                       <MenuItem value={2}>Pin trâu</MenuItem>
                       <MenuItem value={3}>Chụp ảnh, quay phim</MenuItem>
@@ -1359,15 +1397,16 @@ export function ProductsDialog(props) {
                       }}
                       multiple
                     >
-                      {selectedValues1.length === 1 && selectedValues[0] == 0 && (
-                        <MenuItem
-                          className=""
-                          value={0}
-                          style={{ display: "none" }}
-                        >
-                          Chọn hãng
-                        </MenuItem>
-                      )}
+                      {selectedValues1.length === 1 &&
+                        selectedValues[0] == 0 && (
+                          <MenuItem
+                            className=""
+                            value={0}
+                            style={{ display: "none" }}
+                          >
+                            Chọn hãng
+                          </MenuItem>
+                        )}
                       <MenuItem value={1}>Iphone</MenuItem>
                       <MenuItem value={2}>Samsung</MenuItem>
                       <MenuItem value={3}>Oppo</MenuItem>
@@ -1425,15 +1464,16 @@ export function ProductsDialog(props) {
                         setSelectedValues2(e.target.value);
                       }}
                     >
-                      {selectedValues2.length === 1 && selectedValues[0] == 0 && (
-                        <MenuItem
-                          className=""
-                          value={0}
-                          style={{ display: "none" }}
-                        >
-                          Chọn loại
-                        </MenuItem>
-                      )}
+                      {selectedValues2.length === 1 &&
+                        selectedValues[0] == 0 && (
+                          <MenuItem
+                            className=""
+                            value={0}
+                            style={{ display: "none" }}
+                          >
+                            Chọn loại
+                          </MenuItem>
+                        )}
                       <MenuItem value={1}>Iphone</MenuItem>
                       <MenuItem value={2}>Android</MenuItem>
                     </SelectMui>
@@ -1485,15 +1525,16 @@ export function ProductsDialog(props) {
                       }}
                       multiple
                     >
-                      {selectedValues3.length === 1 && selectedValues[0] == 0 && (
-                        <MenuItem
-                          className=""
-                          value={0}
-                          style={{ display: "none" }}
-                        >
-                          Chọn chip
-                        </MenuItem>
-                      )}
+                      {selectedValues3.length === 1 &&
+                        selectedValues[0] == 0 && (
+                          <MenuItem
+                            className=""
+                            value={0}
+                            style={{ display: "none" }}
+                          >
+                            Chọn chip
+                          </MenuItem>
+                        )}
                       <MenuItem value={1}>Snapdragon</MenuItem>
                       <MenuItem value={2}>Apple A</MenuItem>
                       <MenuItem value={3}>Mediatek Helio</MenuItem>
@@ -1552,15 +1593,16 @@ export function ProductsDialog(props) {
                       }}
                       multiple
                     >
-                      {selectedValues5.length === 1 && selectedValues[0] == 0 && (
-                        <MenuItem
-                          className=""
-                          value={0}
-                          style={{ display: "none" }}
-                        >
-                          Chọn bộ nhớ
-                        </MenuItem>
-                      )}
+                      {selectedValues5.length === 1 &&
+                        selectedValues[0] == 0 && (
+                          <MenuItem
+                            className=""
+                            value={0}
+                            style={{ display: "none" }}
+                          >
+                            Chọn bộ nhớ
+                          </MenuItem>
+                        )}
                       <MenuItem value={1}>16GB</MenuItem>
                       <MenuItem value={2}>32GB</MenuItem>
                       <MenuItem value={3}>64GB</MenuItem>
@@ -1618,15 +1660,16 @@ export function ProductsDialog(props) {
                       }}
                       multiple
                     >
-                      {selectedValues6.length === 1 && selectedValues[0] == 0 && (
-                        <MenuItem
-                          className=""
-                          value={0}
-                          style={{ display: "none" }}
-                        >
-                          Chọn RAM
-                        </MenuItem>
-                      )}
+                      {selectedValues6.length === 1 &&
+                        selectedValues[0] == 0 && (
+                          <MenuItem
+                            className=""
+                            value={0}
+                            style={{ display: "none" }}
+                          >
+                            Chọn RAM
+                          </MenuItem>
+                        )}
                       <MenuItem value={1}>2GB</MenuItem>
                       <MenuItem value={2}>3GB</MenuItem>
                       <MenuItem value={3}>4GB</MenuItem>
@@ -1683,15 +1726,16 @@ export function ProductsDialog(props) {
                       }}
                       multiple
                     >
-                      {selectedValues7.length === 1 && selectedValues[0] == 0 && (
-                        <MenuItem
-                          className=""
-                          value={0}
-                          style={{ display: "none" }}
-                        >
-                          Chọn kích thước
-                        </MenuItem>
-                      )}
+                      {selectedValues7.length === 1 &&
+                        selectedValues[0] == 0 && (
+                          <MenuItem
+                            className=""
+                            value={0}
+                            style={{ display: "none" }}
+                          >
+                            Chọn kích thước
+                          </MenuItem>
+                        )}
                       <MenuItem value={1}>Dưới 6 inch</MenuItem>
                       <MenuItem value={2}>Trên 6 inch</MenuItem>
                     </SelectMui>
@@ -1744,15 +1788,16 @@ export function ProductsDialog(props) {
                       }}
                       multiple
                     >
-                      {selectedValues8.length === 1 && selectedValues[0] == 0 && (
-                        <MenuItem
-                          className=""
-                          value={0}
-                          style={{ display: "none" }}
-                        >
-                          Chọn tính năng
-                        </MenuItem>
-                      )}
+                      {selectedValues8.length === 1 &&
+                        selectedValues[0] == 0 && (
+                          <MenuItem
+                            className=""
+                            value={0}
+                            style={{ display: "none" }}
+                          >
+                            Chọn tính năng
+                          </MenuItem>
+                        )}
                       <MenuItem value={1}>Kháng nước, kháng bụi</MenuItem>
                       <MenuItem value={2}>Hỗ trợ 5G</MenuItem>
                       <MenuItem value={3}>Bảo mật vân tay</MenuItem>
@@ -1766,7 +1811,7 @@ export function ProductsDialog(props) {
                 <TableProduct />
               </div>
             </>
-            : null}
+          ) : null}
         </DialogContent>
 
         <DialogActions></DialogActions>
@@ -1839,23 +1884,19 @@ export function VouchersDialog(props) {
       title: "STT",
       width: "5%",
       align: "center",
-      render: (text, item) => (
-        <span>{data.indexOf(item) + 1}</span>
-      ),
+      render: (text, item) => <span>{data.indexOf(item) + 1}</span>,
     },
     {
       title: "Mã",
       align: "center",
       width: "15%",
-      render: (text, item) =>
-        <span>{item.ma}
-        </span>
+      render: (text, item) => <span>{item.ma}</span>,
     },
     {
       title: "Giá Trị",
       align: "center",
       width: "15%",
-      render: (text, item) =>
+      render: (text, item) => (
         <span
           align="center"
           style={{ width: "", fontSize: "15px", color: "#dc1111" }}
@@ -1865,30 +1906,31 @@ export function VouchersDialog(props) {
             currency: "VND",
           })}
         </span>
+      ),
     },
     {
       title: "Giảm Tối Đa",
       align: "center",
       width: "15%",
-      render: (text, item) =>
+      render: (text, item) => (
         <span>
-          {item.loaiVoucher === TypeDiscountNumber.VND ? "..." : item.giaTriToiDa}
+          {item.loaiVoucher === TypeDiscountNumber.VND
+            ? "..."
+            : item.giaTriToiDa}
         </span>
+      ),
     },
     {
       title: "Số Lượng",
       align: "center",
       width: "15%",
-      render: (text, item) =>
-        <span>
-          {item.soLuong}
-        </span>
+      render: (text, item) => <span>{item.soLuong}</span>,
     },
     {
       title: "Điều Kiện Áp Dụng",
       align: "center",
       width: "25%",
-      render: (text, item) =>
+      render: (text, item) => (
         <span
           align="center"
           style={{
@@ -1906,28 +1948,27 @@ export function VouchersDialog(props) {
               })}
           </span>
         </span>
+      ),
     },
     {
       title: "Thời gian",
       align: "center",
       width: "15%",
-      render: (text, item) =>
+      render: (text, item) => (
         <span style={{ fontWeight: "normal" }}>
           {format(new Date(item.ngayBatDau), "dd/MM/yyyy")} {" - "}
           {format(new Date(item.ngayKetThuc), "dd/MM/yyyy")}
         </span>
+      ),
     },
     {
       title: "Thao Tác",
       align: "center",
       width: "15%",
-      render: (text, item) =>
+      render: (text, item) => (
         <Button
           onClick={() =>
-            handleAddOrRemoveVoucherToOrder(
-              item.id,
-              item.dieuKienApDung
-            )
+            handleAddOrRemoveVoucherToOrder(item.id, item.dieuKienApDung)
           }
           className="rounded-2"
           type={
@@ -1944,14 +1985,13 @@ export function VouchersDialog(props) {
           }}
         >
           <span
-            className={
-              discount === item.id ? "text-white" : "text-white"
-            }
+            className={discount === item.id ? "text-white" : "text-white"}
             style={{ fontWeight: "500", marginBottom: "3px" }}
           >
             {discount === item.id ? "Bỏ áp dụng" : "Áp dụng"}{" "}
           </span>
         </Button>
+      ),
     },
   ];
 
@@ -2008,103 +2048,115 @@ export function VouchersDialog(props) {
                 </TableRow>
               </StyledTableHead>
               <TableBody>
-                {filteredData.length > 0 ? (filteredData.map((item, index) => (
-                  <TableRow
-                    key={index}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  >
-                    <TableCell component="th" scope="row" align="center">
-                      {index + 1}
-                    </TableCell>
-                    <TableCell align="center" style={{ fontSize: "15px" }}>
-                      {item.ma}
-                    </TableCell>
-                    <TableCell
-                      align="center"
-                      style={{ width: "", fontSize: "15px", color: "#dc1111" }}
-                    >
-                      {item.giaTriVoucher.toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })}
-                    </TableCell>
-                    <TableCell
-                      align="center"
-                      style={{ width: "", fontSize: "15px" }}
-                    >
-                      {item.loaiVoucher === TypeDiscountNumber.VND ? "..." : item.giaTriToiDa}
-                    </TableCell>
-                    <TableCell
-                      align="center"
-                      style={{ width: "", fontSize: "15px" }}
-                    >
-                      {item.soLuong}
-                    </TableCell>
-                    <TableCell
-                      align="center"
-                      style={{
-                        width: "200px",
-                        fontSize: "15px",
-                        whiteSpace: "pre-line",
+                {filteredData.length > 0
+                  ? filteredData.map((item, index) => (
+                    <TableRow
+                      key={index}
+                      sx={{
+                        "&:last-child td, &:last-child th": { border: 0 },
                       }}
                     >
-                      Áp dụng cho đơn tối thiểu
-                      <span className="" style={{}}>
-                        {" " +
-                          item.dieuKienApDung.toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                          })}
-                      </span>
-                    </TableCell>
-                    <TableCell
-                      align="center"
-                      style={{ width: "", fontSize: "15px" }}
-                    >
-                      <div
-                        className="rounded-pill badge-primary"
+                      <TableCell component="th" scope="row" align="center">
+                        {index + 1}
+                      </TableCell>
+                      <TableCell align="center" style={{ fontSize: "15px" }}>
+                        {item.ma}
+                      </TableCell>
+                      <TableCell
+                        align="center"
                         style={{
-                          height: "35px",
-                          width: "auto",
-                          padding: "7.5px",
+                          width: "",
+                          fontSize: "15px",
+                          color: "#dc1111",
                         }}
                       >
-                        <span className="text-white p-2" style={{}}>
-                          {item.trangThai == 1 ? "Hoạt động" : ""}
-                        </span>
-                      </div>
-                    </TableCell>
-                    <TableCell
-                      align="center"
-                      style={{
-                        width: "200px",
-                        fontSize: "15px",
-                        whiteSpace: "pre-line",
-                      }}
-                    >
-                      <div
-                        className={`${item.dieuKienApDung <= total()
-                          ? "rounded-pill badge-success"
-                          : "rounded-pill badge-danger"
-                          }`}
+                        {item.giaTriVoucher.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        style={{ width: "", fontSize: "15px" }}
+                      >
+                        {item.loaiVoucher === TypeDiscountNumber.VND
+                          ? "..."
+                          : item.giaTriToiDa}
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        style={{ width: "", fontSize: "15px" }}
+                      >
+                        {item.soLuong}
+                      </TableCell>
+                      <TableCell
+                        align="center"
                         style={{
-                          height: "35px",
-                          width: "auto",
-                          padding: "7.5px",
+                          width: "200px",
+                          fontSize: "15px",
+                          whiteSpace: "pre-line",
                         }}
                       >
-                        <span className="text-white p-2" style={{}}>
-                          <span>{`${item.dieuKienApDung <= total()
-                            ? "Có thể áp dụng"
-                            : "Không thể áp dụng"
-                            }`}</span>
+                        Áp dụng cho đơn tối thiểu
+                        <span className="" style={{}}>
+                          {" " +
+                            item.dieuKienApDung.toLocaleString("vi-VN", {
+                              style: "currency",
+                              currency: "VND",
+                            })}
                         </span>
-                      </div>
-                    </TableCell>
-                    <TableCell align="center" style={{ width: "" }}>
-                    </TableCell>
-                  </TableRow>
-                ))) : ""}
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        style={{ width: "", fontSize: "15px" }}
+                      >
+                        <div
+                          className="rounded-pill badge-primary"
+                          style={{
+                            height: "35px",
+                            width: "auto",
+                            padding: "7.5px",
+                          }}
+                        >
+                          <span className="text-white p-2" style={{}}>
+                            {item.trangThai == 1 ? "Hoạt động" : ""}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        style={{
+                          width: "200px",
+                          fontSize: "15px",
+                          whiteSpace: "pre-line",
+                        }}
+                      >
+                        <div
+                          className={`${item.dieuKienApDung <= total()
+                            ? "rounded-pill badge-success"
+                            : "rounded-pill badge-danger"
+                            }`}
+                          style={{
+                            height: "35px",
+                            width: "auto",
+                            padding: "7.5px",
+                          }}
+                        >
+                          <span className="text-white p-2" style={{}}>
+                            <span>{`${item.dieuKienApDung <= total()
+                              ? "Có thể áp dụng"
+                              : "Không thể áp dụng"
+                              }`}</span>
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        style={{ width: "" }}
+                      ></TableCell>
+                    </TableRow>
+                  ))
+                  : ""}
               </TableBody>
             </Table>
           </StyledTableContainer>
@@ -2129,7 +2181,10 @@ export function VouchersDialog(props) {
         <DialogTitle id="alert-dialog-title">
           <div className="d-flex justify-content-between mt-1">
             <div>
-              <span className="text-dark" style={{ fontSize: "22px", fontWeight: "500" }}>
+              <span
+                className="text-dark"
+                style={{ fontSize: "22px", fontWeight: "500" }}
+              >
                 Chọn Voucher
               </span>
             </div>
@@ -2172,11 +2227,13 @@ export function VouchersDialog(props) {
           </div>
           <div className="mt-4">
             <TableAntd
-              className='table-container'
+              className="table-container"
               columns={columns}
               dataSource={data}
               pagination={false}
-              rowClassName={record => total() < record.dieuKienApDung && "disabled-row"}
+              rowClassName={(record) =>
+                total() < record.dieuKienApDung && "disabled-row"
+              }
               rowKey={"id"}
               key={"id"}
               locale={{ emptyText: <Empty /> }}
@@ -2195,8 +2252,7 @@ export function CustomersDialog(props) {
   const handleSelectCustomer = (id) => {
     if (idCus === id) {
       add(null);
-    }
-    else {
+    } else {
       add(id);
     }
   };
@@ -2205,68 +2261,57 @@ export function CustomersDialog(props) {
       title: "STT",
       width: "5%",
       align: "center",
-      render: (text, item) => (
-        <span>{data.indexOf(item) + 1}</span>
-      ),
+      render: (text, item) => <span>{data.indexOf(item) + 1}</span>,
     },
     {
       title: "Avatar",
       align: "center",
       width: "10%",
-      render: (text, item) =>
+      render: (text, item) => (
         <div className="d-flex justify-content-center" style={{}}>
           <Avatar src="https://ecdn.game4v.com/g4v-content/uploads/2021/02/ava-1.png" />
         </div>
+      ),
     },
     {
       title: "Mã Khách Hàng",
       align: "center",
       width: "15%",
-      render: (text, item) =>
-        <span>{item.ma}
-        </span>
+      render: (text, item) => <span>{item.ma}</span>,
     },
     {
       title: "Tên Khách Hàng",
       align: "center",
       width: "15%",
-      render: (text, item) =>
-        <span>{item.hoVaTen}
-        </span>
+      render: (text, item) => <span>{item.hoVaTen}</span>,
     },
     {
       title: "Email",
       align: "center",
       width: "15%",
-      render: (text, item) =>
-
-        <span>
-          {item.email}
-        </span>
+      render: (text, item) => <span>{item.email}</span>,
     },
     {
       title: "Số Điện Thoại",
       align: "center",
       width: "15%",
-      render: (text, item) =>
-        <span>
-          {item.soDienThoai}
-        </span>
+      render: (text, item) => <span>{item.soDienThoai}</span>,
     },
     {
       title: "Ngày Tạo",
       align: "center",
       width: "15%",
-      render: (text, item) =>
+      render: (text, item) => (
         <span style={{ fontWeight: "normal" }}>
           {format(new Date(), "HH:mm:ss - dd/MM/yyyy")}
         </span>
+      ),
     },
     {
       title: "Thao Tác",
       align: "center",
       width: "15%",
-      render: (text, item) =>
+      render: (text, item) => (
         <div>
           <Button
             onClick={() => handleSelectCustomer(item.id)}
@@ -2279,9 +2324,7 @@ export function CustomersDialog(props) {
             }}
           >
             <span
-              className=
-              {"text-white"}
-
+              className={"text-white"}
               style={{ fontWeight: "500", marginBottom: "3px" }}
             >
               {idCus === item.id ? "Bỏ chọn" : "Chọn"}
@@ -2298,15 +2341,14 @@ export function CustomersDialog(props) {
             }}
           >
             <span
-              className=
-              {"text-dark"}
-
+              className={"text-dark"}
               style={{ fontWeight: "500", marginBottom: "3px" }}
             >
               Cập nhật
             </span>
           </Button>
         </div>
+      ),
     },
   ];
 
@@ -2327,14 +2369,17 @@ export function CustomersDialog(props) {
         <DialogTitle id="alert-dialog-title">
           <div className="d-flex justify-content-between mt-1">
             <div>
-              <span className="text-dark" style={{ fontSize: "22px", fontWeight: "500" }}>
+              <span
+                className="text-dark"
+                style={{ fontSize: "22px", fontWeight: "500" }}
+              >
                 Chọn Khách Hàng
               </span>
             </div>
           </div>
         </DialogTitle>
         <DialogContent style={{ height: "600px" }}>
-          {isOpen === true ?
+          {isOpen === true ? (
             <>
               <div className="mt-2 d-flex justify-content-between">
                 <div>
@@ -2378,7 +2423,8 @@ export function CustomersDialog(props) {
                     type="primary"
                     style={{ height: "40px", width: "165px", fontSize: "15px" }}
                   >
-                    <PlusOutlined className="ms-1"
+                    <PlusOutlined
+                      className="ms-1"
                       style={{
                         position: "absolute",
                         bottom: "12.5px",
@@ -2396,7 +2442,7 @@ export function CustomersDialog(props) {
               </div>
               <div className="mt-4">
                 <TableAntd
-                  className='table-container'
+                  className="table-container"
                   columns={columns}
                   dataSource={data}
                   pagination={false}
@@ -2406,8 +2452,7 @@ export function CustomersDialog(props) {
                 />
               </div>
             </>
-
-            : null}
+          ) : null}
         </DialogContent>
         <DialogActions></DialogActions>
       </Dialog>
@@ -2427,31 +2472,25 @@ export function AddressDialog(props) {
       width: "5%",
       align: "center",
       showSorterTooltip: false,
-      render: (text, item) => (
-        <span>{data.indexOf(item) + 1}</span>
-      ),
+      render: (text, item) => <span>{data.indexOf(item) + 1}</span>,
     },
     {
       title: "Họ Và Tên",
       align: "center",
       width: "10%",
-      render: (text, item) =>
-        <span>{item.hoTenKH}
-        </span>
+      render: (text, item) => <span>{item.hoTenKH}</span>,
     },
     {
       title: "Số Điện Thoại",
       align: "center",
       width: "15%",
-      render: (text, item) =>
-        <span>{item.soDienThoaiKhachHang}
-        </span>
+      render: (text, item) => <span>{item.soDienThoaiKhachHang}</span>,
     },
     {
       title: "Địa Chỉ",
       align: "center",
       width: "40%",
-      render: (text, item) =>
+      render: (text, item) => (
         <span
           align="center"
           style={{
@@ -2460,17 +2499,24 @@ export function AddressDialog(props) {
             whiteSpace: "pre-line",
           }}
         >
-          {item.tinhThanhPho + ", " + item.quanHuyen + ", " + item.xaPhuong + ", " + item.diaChi}
+          {item.tinhThanhPho +
+            ", " +
+            item.quanHuyen +
+            ", " +
+            item.xaPhuong +
+            ", " +
+            item.diaChi}
           <span style={{ color: "red" }}>
             {item.trangThai === 1 ? " (Mặc định)" : ""}
           </span>
         </span>
+      ),
     },
     {
       title: "Thao Tác",
       align: "center",
       width: "15%",
-      render: (text, item) =>
+      render: (text, item) => (
         <div>
           <Button
             onClick={() => handleSelectAddress(item)}
@@ -2483,9 +2529,7 @@ export function AddressDialog(props) {
             }}
           >
             <span
-              className=
-              {"text-white"}
-
+              className={"text-white"}
               style={{ fontWeight: "500", marginBottom: "2px" }}
             >
               Chọn
@@ -2502,18 +2546,16 @@ export function AddressDialog(props) {
             }}
           >
             <span
-              className=
-              {"text-dark"}
-
+              className={"text-dark"}
               style={{ fontWeight: "500", marginBottom: "2px" }}
             >
               {"Cập nhật"}
             </span>
           </Button>
         </div>
+      ),
     },
   ];
-
 
   return (
     <div className="rounded-pill">
@@ -2532,14 +2574,17 @@ export function AddressDialog(props) {
         <DialogTitle id="alert-dialog-title">
           <div className="d-flex justify-content-between mt-1">
             <div>
-              <span className="text-dark" style={{ fontSize: "22px", fontWeight: "500" }}>
+              <span
+                className="text-dark"
+                style={{ fontSize: "22px", fontWeight: "500" }}
+              >
                 Chọn Địa Chỉ Giao Hàng
               </span>
             </div>
           </div>
         </DialogTitle>
         <DialogContent style={{ height: "600px" }}>
-          {isOpen === true ?
+          {isOpen === true ? (
             <>
               <div className="mt-2 d-flex justify-content-between">
                 <div>
@@ -2583,7 +2628,8 @@ export function AddressDialog(props) {
                     type="primary"
                     style={{ height: "40px", width: "175px", fontSize: "15px" }}
                   >
-                    <PlusOutlined className="ms-1"
+                    <PlusOutlined
+                      className="ms-1"
                       style={{
                         position: "absolute",
                         bottom: "12.5px",
@@ -2601,7 +2647,7 @@ export function AddressDialog(props) {
               </div>
               <div className="mt-4">
                 <TableAntd
-                  className='table-container'
+                  className="table-container"
                   columns={columns}
                   dataSource={data}
                   pagination={false}
@@ -2611,14 +2657,13 @@ export function AddressDialog(props) {
                 />
               </div>
             </>
-            : null}
+          ) : null}
         </DialogContent>
         <DialogActions></DialogActions>
       </Dialog>
     </div>
   );
 }
-
 
 export function OrderHistoryDialog(props) {
   const { columns, open, onClose, dataSource } = props;
@@ -2888,7 +2933,7 @@ export const ProductDetailsDialog = (props) => {
     changeProductItem,
     changeProductImage,
     dataAll,
-    getAmount
+    getAmount,
   } = props;
 
   const addProductItemsToCart = (productPrice, productId) => {
@@ -2896,13 +2941,10 @@ export const ProductDetailsDialog = (props) => {
   };
 
   const handleChangeCauHinh = (id) => {
-    console.log(dataAll)
+    console.log(dataAll);
     const item = getProductItems.find((item) => item.id === id);
     if (item) {
-      changeProductItem(
-        item,
-        productItem2 && productItem2.mauSac.tenMauSac
-      );
+      changeProductItem(item, productItem2 && productItem2.mauSac.tenMauSac);
     }
   };
 
@@ -2920,18 +2962,18 @@ export const ProductDetailsDialog = (props) => {
 
   const isAllProductsZeroQuantity = (maCauHinh) => {
     let isNotStocking = false;
-    const configurationProducts = dataAll.filter((item) => item.maCauHinh === maCauHinh);
+    const configurationProducts = dataAll.filter(
+      (item) => item.maCauHinh === maCauHinh
+    );
     configurationProducts.map((item) => {
       if (item.soLuongTonKho <= 0) {
         isNotStocking = true;
-      }
-      else {
+      } else {
         isNotStocking = false;
       }
-    })
+    });
     return isNotStocking;
-  }
-
+  };
 
   return (
     <div className="rounded-pill">
@@ -2943,7 +2985,7 @@ export const ProductDetailsDialog = (props) => {
         maxWidth="xxl"
         maxHeight="xxl"
       >
-        {isOpen === true ?
+        {isOpen === true ? (
           <DialogContent>
             <>
               <div className="" style={{ width: "auto", height: "500px" }}>
@@ -2959,8 +3001,7 @@ export const ProductDetailsDialog = (props) => {
                     <span
                       className="ms-2"
                       style={{ fontSize: "13.5px", color: "gray" }}
-                    >
-                    </span>
+                    ></span>
                   </span>
                   <Tooltip title="Đóng" TransitionComponent={Zoom}>
                     <IconButton size="small" onClick={onCloseNoAction}>
@@ -2981,8 +3022,11 @@ export const ProductDetailsDialog = (props) => {
                     <img
                       className="mt-4 pt-4"
                       style={{ width: "370px", height: "380px" }}
-                      src={productItem2 && productItem2.image && productItem2.image.path}
-
+                      src={
+                        productItem2 &&
+                        productItem2.image &&
+                        productItem2.image.path
+                      }
                       alt=""
                     />
                   </div>
@@ -3040,10 +3084,13 @@ export const ProductDetailsDialog = (props) => {
                                       <div className="text-center">
                                         <span style={{ fontSize: "14px" }}>
                                           {item &&
-                                            item.donGia.toLocaleString("vi-VN", {
-                                              style: "currency",
-                                              currency: "VND",
-                                            })}
+                                            item.donGia.toLocaleString(
+                                              "vi-VN",
+                                              {
+                                                style: "currency",
+                                                currency: "VND",
+                                              }
+                                            )}
                                         </span>
                                       </div>
                                     </div>
@@ -3053,7 +3100,9 @@ export const ProductDetailsDialog = (props) => {
                                 onClick={() => handleSetKey()}
                                 overlay
                                 disableIcon
-                                disabled={isAllProductsZeroQuantity(item.maCauHinh)}
+                                disabled={isAllProductsZeroQuantity(
+                                  item.maCauHinh
+                                )}
                                 value={
                                   item.ram.dungLuong +
                                   "/" +
@@ -3068,8 +3117,11 @@ export const ProductDetailsDialog = (props) => {
                                       color: checked
                                         ? "text.primary"
                                         : "text.secondary",
-                                      opacity:
-                                        isAllProductsZeroQuantity(item.maCauHinh) ? "0.5" : "1",
+                                      opacity: isAllProductsZeroQuantity(
+                                        item.maCauHinh
+                                      )
+                                        ? "0.5"
+                                        : "1",
                                     },
                                   }),
                                   action: ({ checked }) => ({
@@ -3124,13 +3176,14 @@ export const ProductDetailsDialog = (props) => {
                                             height: "40px",
                                             marginTop: "4px",
                                           }}
-                                          src={
-                                            item.image && item.image.path
-                                          }
+                                          src={item.image && item.image.path}
                                           alt=""
                                         />
                                       </div>
-                                      <div className="" style={{ marginTop: "" }}>
+                                      <div
+                                        className=""
+                                        style={{ marginTop: "" }}
+                                      >
                                         <span
                                           className="p-2"
                                           style={{
@@ -3141,16 +3194,22 @@ export const ProductDetailsDialog = (props) => {
                                         >
                                           {item.mauSac.tenMauSac}
                                         </span>
-                                        <div className="" style={{ marginTop: "" }}>
+                                        <div
+                                          className=""
+                                          style={{ marginTop: "" }}
+                                        >
                                           <span
                                             className="p-2"
                                             style={{ fontSize: "13px" }}
                                           >
                                             {item &&
-                                              item.donGia.toLocaleString("vi-VN", {
-                                                style: "currency",
-                                                currency: "VND",
-                                              })}
+                                              item.donGia.toLocaleString(
+                                                "vi-VN",
+                                                {
+                                                  style: "currency",
+                                                  currency: "VND",
+                                                }
+                                              )}
                                           </span>
                                         </div>
                                       </div>
@@ -3159,7 +3218,9 @@ export const ProductDetailsDialog = (props) => {
                                 }
                                 onChange={() => handleChangeMauSac(item.id)}
                                 overlay
-                                disabled={item.soLuongTonKho <= 0 ? true : false}
+                                disabled={
+                                  item.soLuongTonKho <= 0 ? true : false
+                                }
                                 disableIcon
                                 value={item.mauSac.tenMauSac}
                                 slotProps={{
@@ -3278,16 +3339,27 @@ export const ProductDetailsDialog = (props) => {
               </div>
             </>
           </DialogContent>
-          : null}
+        ) : null}
       </Dialog>
     </div>
   );
 };
-export const ModalImeiByProductItem = ({ open, close, imeis, addProduct, isOpen }) => {
+export const ModalImeiByProductItem = ({
+  open,
+  close,
+  imeis,
+  addProduct,
+  isOpen,
+}) => {
   const [selectedImei, setSelectedImei] = useState([]);
   const { handleOpenAlertVariant } = useCustomSnackbar();
 
-  const filteredData = imeis.filter((item) => item.trangThai === StatusImei.NOT_SOLD || item.trangThai === StatusImei.IN_THE_CART);
+  const filteredData = imeis.filter(
+    (item) =>
+      item.trangThai === StatusImei.NOT_SOLD ||
+      item.trangThai === StatusImei.IN_THE_CART ||
+      item.trangThai === StatusImei.PENDING_DELIVERY
+  );
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
@@ -3301,8 +3373,7 @@ export const ModalImeiByProductItem = ({ open, close, imeis, addProduct, isOpen 
   useEffect(() => {
     setCurrentPage(1);
     setSelectedImei([]);
-  }, [imeis])
-
+  }, [imeis]);
 
   return (
     <>
@@ -3310,7 +3381,10 @@ export const ModalImeiByProductItem = ({ open, close, imeis, addProduct, isOpen 
         open={open}
         TransitionComponent={Transition}
         keepMounted
-        onClose={() => { close(); setSelectedImei([]) }}
+        onClose={() => {
+          close();
+          setSelectedImei([]);
+        }}
         maxWidth="xxl"
         maxHeight="xxl"
       >
@@ -3342,8 +3416,7 @@ export const ModalImeiByProductItem = ({ open, close, imeis, addProduct, isOpen 
                     className=""
                   />
                   <Button
-                    onClick={() => {
-                    }}
+                    onClick={() => { }}
                     className="rounded-2 ms-2 button-mui"
                     type="primary"
                     style={{ width: "100px", fontSize: "15px" }}
@@ -3363,80 +3436,122 @@ export const ModalImeiByProductItem = ({ open, close, imeis, addProduct, isOpen 
                     <thead style={{ borderRadius: "10px" }}>
                       <tr>
                         <th scope="col"></th>
-                        <th scope="col" className="text-center text-dark">Mã Imei</th>
-                        <th scope="col" className="text-center text-dark">Trạng Thái</th>
+                        <th scope="col" className="text-center text-dark">
+                          Mã Imei
+                        </th>
+                        <th scope="col" className="text-center text-dark">
+                          Trạng Thái
+                        </th>
                       </tr>
                     </thead>
-                    {isOpen === true ?
+                    {isOpen === true ? (
                       <tbody>
-                        {
-                          itemsOnCurrentPage.length
-                            ?
-                            itemsOnCurrentPage.map((item, index) => (
-                              <>
-                                <tr key={index} style={{
+                        {itemsOnCurrentPage.length
+                          ? itemsOnCurrentPage.map((item, index) => (
+                            <>
+                              <tr
+                                key={index}
+                                style={{
                                   cursor: "pointer",
-                                  pointerEvents: item.trangThai === StatusImei.IN_THE_CART ? "none" : "auto",
-                                  opacity: item.trangThai === StatusImei.IN_THE_CART ? "0.5" : "1"
+                                  pointerEvents:
+                                    item.trangThai ===
+                                      StatusImei.PENDING_DELIVERY ||
+                                      item.trangThai === StatusImei.IN_THE_CART
+                                      ? "none"
+                                      : "auto",
+                                  opacity:
+                                    item.trangThai ===
+                                      StatusImei.PENDING_DELIVERY ||
+                                      item.trangThai === StatusImei.IN_THE_CART
+                                      ? "0.5"
+                                      : "1",
                                 }}
-                                  onClick={() => {
-                                    if (selectedImei.length >= 4 && !selectedImei.includes(item)) {
-                                      handleOpenAlertVariant("Lựa chọn tối đa 4 số lượng sản phẩm!", "warning");
-                                    }
-                                    else if (!selectedImei.includes(item)) {
-                                      setSelectedImei((val) => [...val, item]);
-                                    }
-                                    else {
-                                      setSelectedImei((val) => val.filter((text) => text !== item));
-                                    }
+                                onClick={() => {
+                                  if (
+                                    selectedImei.length >= 4 &&
+                                    !selectedImei.includes(item)
+                                  ) {
+                                    handleOpenAlertVariant(
+                                      "Lựa chọn tối đa 4 số lượng sản phẩm!",
+                                      "warning"
+                                    );
+                                  } else if (!selectedImei.includes(item)) {
+                                    setSelectedImei((val) => [...val, item]);
+                                  } else {
+                                    setSelectedImei((val) =>
+                                      val.filter((text) => text !== item)
+                                    );
                                   }
-                                  }
-                                >
-                                  <th>
-                                    <Checkbox color="primary" checked={selectedImei.includes(item)} />
-                                  </th>
-                                  <td className="text-center">{item.soImei}</td>
+                                }}
+                              >
+                                <td>
+                                  <Checkbox
+                                    color="primary"
+                                    checked={selectedImei.includes(item)}
+                                  />
+                                </td>
+                                <td className="text-center">{item.soImei}</td>
 
-                                  <td className="text-center">
-                                    {
-                                      item.trangThai === StatusImei.NOT_SOLD || item.trangThai === StatusImei.IN_THE_CART ? (
-                                        <div
-                                          className="rounded-pill badge-success mx-auto"
-                                          style={{
-                                            height: "35px",
-                                            width: "115px",
-                                            padding: "4px",
-                                          }}
-                                        >
-                                          <span
-                                            className="text-white"
-                                            style={{ fontSize: "14px", fontWeight: "400" }}
-                                          >
-                                            {item.trangThai === StatusImei.NOT_SOLD ? "Chưa Bán" : item.trangThai === StatusImei.IN_THE_CART ? "Chưa Bán" : ""}
-                                          </span>
-                                        </div>
-                                      ) :
-                                        ""
-                                    }
-                                  </td>
-                                </tr>
-                              </>
-                            ))
-                            :
-                            ""
-                        }
+                                <td className="text-center">
+                                  {item.trangThai ===
+                                    StatusImei.PENDING_DELIVERY ||
+                                    item.trangThai === StatusImei.NOT_SOLD ||
+                                    item.trangThai ===
+                                    StatusImei.IN_THE_CART ? (
+                                    <div
+                                      className={
+                                        item.trangThai ===
+                                          StatusImei.PENDING_DELIVERY
+                                          ? "badge-primary rounded-pill mx-auto"
+                                          : "badge-success rounded-pill mx-auto"
+                                      }
+                                      style={{
+                                        height: "35px",
+                                        width: "115px",
+                                        padding: "4px",
+                                      }}
+                                    >
+                                      <span
+                                        className="text-white"
+                                        style={{
+                                          fontSize: "14px",
+                                          fontWeight: "400",
+                                        }}
+                                      >
+                                        {item.trangThai ===
+                                          StatusImei.NOT_SOLD
+                                          ? "Chưa Bán"
+                                          : item.trangThai ===
+                                            StatusImei.IN_THE_CART
+                                            ? "Chưa Bán"
+                                            : item.trangThai ===
+                                              StatusImei.PENDING_DELIVERY
+                                              ? "Chờ Giao"
+                                              : ""}
+                                      </span>
+                                    </div>
+                                  ) : (
+                                    ""
+                                  )}
+                                </td>
+                              </tr>
+                            </>
+                          ))
+                          : ""}
                       </tbody>
-                      : null}
+                    ) : null}
                   </table>
                 </div>
-                {isOpen === true ?
+                {isOpen === true ? (
                   <div className="d-flex justify-content-center mt-3">
-                    <Pagination color="primary"
-                      page={parseInt(currentPage)} count={totalPages}
+                    <Pagination
+                      color="primary"
+                      page={parseInt(currentPage)}
+                      count={totalPages}
                       onChange={(event, page) => setCurrentPage(page)}
                     />
                   </div>
-                  : null}
+                ) : null}
                 <div className="mt-3">
                   <span className="fs-4 fw-bold">Imei Đã Chọn</span>
                 </div>
@@ -3446,61 +3561,70 @@ export const ModalImeiByProductItem = ({ open, close, imeis, addProduct, isOpen 
                       orientation="horizontal"
                       wrap
                       sx={{
-                        "maxHeight": "50px",
-                        '--List-gap': '15px',
-                        '--ListItem-radius': '5px',
-                        '--ListItem-gap': '4px',
+                        maxHeight: "50px",
+                        "--List-gap": "15px",
+                        "--ListItem-radius": "5px",
+                        "--ListItem-gap": "4px",
                       }}
                     >
-                      {selectedImei
-                        .map((item, index) => (
-                          <ListItem key={item.id}>
-                            <Done
-                              fontSize="md"
-                              color="primary"
-                              sx={{ ml: -0.5, zIndex: 2, pointerEvents: 'none' }}
-                            />
-                            <CheckboxJoy
-                              slotProps={{
-                                action: ({ checked }) => ({
-                                  sx: checked
-                                    ? {
-                                      border: '1px solid',
-                                      borderColor: '#2f80ed',
-                                    }
-                                    : {},
-                                }),
-                              }}
-                              overlay
-                              disableIcon
-                              checked={selectedImei.includes(item)}
-                              variant={selectedImei.includes(item) ? 'soft' : 'outlined'}
-                              onChange={(event) => {
-                                if (event.target.checked) {
-                                  setSelectedImei((val) => [...val, item]);
-                                } else {
-                                  setSelectedImei((val) => val.filter((text) => text !== item));
-                                }
-                              }}
-                              label={item.soImei}
-                            />
-                          </ListItem>
-                        ))}
+                      {selectedImei.map((item, index) => (
+                        <ListItem key={item.id}>
+                          <Done
+                            fontSize="md"
+                            color="primary"
+                            sx={{ ml: -0.5, zIndex: 2, pointerEvents: "none" }}
+                          />
+                          <CheckboxJoy
+                            slotProps={{
+                              action: ({ checked }) => ({
+                                sx: checked
+                                  ? {
+                                    border: "1px solid",
+                                    borderColor: "#2f80ed",
+                                  }
+                                  : {},
+                              }),
+                            }}
+                            overlay
+                            disableIcon
+                            checked={selectedImei.includes(item)}
+                            variant={
+                              selectedImei.includes(item) ? "soft" : "outlined"
+                            }
+                            onChange={(event) => {
+                              if (event.target.checked) {
+                                setSelectedImei((val) => [...val, item]);
+                              } else {
+                                setSelectedImei((val) =>
+                                  val.filter((text) => text !== item)
+                                );
+                              }
+                            }}
+                            label={item.soImei}
+                          />
+                        </ListItem>
+                      ))}
                     </List>
                   </div>
                   <div className="d-flex">
                     <Button
                       onClick={() => {
                         if (selectedImei.length === 0) {
-                          handleOpenAlertVariant("Bạn chưa chọn IMEI!", "warning");
-                        }
-                        else {
+                          handleOpenAlertVariant(
+                            "Bạn chưa chọn IMEI!",
+                            "warning"
+                          );
+                        } else {
                           addProduct(selectedImei);
                         }
                       }}
                       className="rounded-2 button-mui me-2"
                       type="primary"
-                      style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                      style={{
+                        height: "40px",
+                        width: "auto",
+                        fontSize: "15px",
+                      }}
                     >
                       <span
                         className=""
@@ -3516,7 +3640,11 @@ export const ModalImeiByProductItem = ({ open, close, imeis, addProduct, isOpen 
                       }}
                       className="rounded-2"
                       type="danger"
-                      style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                      style={{
+                        height: "40px",
+                        width: "auto",
+                        fontSize: "15px",
+                      }}
                     >
                       <span
                         className=""
@@ -3534,13 +3662,26 @@ export const ModalImeiByProductItem = ({ open, close, imeis, addProduct, isOpen 
         <div className="mt-3"></div>
       </Dialog>
     </>
-  )
-}
-export const ModalUpdateImeiByProductItem = ({ open, close, imeis, imeisChuaBan, refresh, update }) => {
+  );
+};
+export const ModalUpdateImeiByProductItem = ({
+  open,
+  close,
+  imeis,
+  imeisChuaBan,
+  refresh,
+  update,
+  max,
+}) => {
   const [selectedImei, setSelectedImei] = useState(imeisChuaBan);
   const { handleOpenAlertVariant } = useCustomSnackbar();
 
-  const filteredData = imeis.filter((item) => item.trangThai === StatusImei.NOT_SOLD || item.trangThai === StatusImei.IN_THE_CART);
+  const filteredData = imeis.filter(
+    (item) =>
+      item.trangThai === StatusImei.NOT_SOLD ||
+      item.trangThai === StatusImei.IN_THE_CART ||
+      item.trangThai === StatusImei.PENDING_DELIVERY
+  );
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
@@ -3554,7 +3695,7 @@ export const ModalUpdateImeiByProductItem = ({ open, close, imeis, imeisChuaBan,
   useEffect(() => {
     setCurrentPage(1);
     setSelectedImei(imeisChuaBan);
-  }, [refresh])
+  }, [refresh]);
 
   return (
     <>
@@ -3562,7 +3703,9 @@ export const ModalUpdateImeiByProductItem = ({ open, close, imeis, imeisChuaBan,
         open={open}
         TransitionComponent={Transition}
         keepMounted
-        onClose={() => { close();/*  setSelectedImei([])  */ }}
+        onClose={() => {
+          close(); /*  setSelectedImei([])  */
+        }}
         maxWidth="xxl"
         maxHeight="xxl"
       >
@@ -3615,70 +3758,136 @@ export const ModalUpdateImeiByProductItem = ({ open, close, imeis, imeisChuaBan,
                 <div className="">
                   <table className="table" style={{ borderRadius: "10px" }}>
                     <thead style={{ borderRadius: "10px" }}>
-                      <tr >
+                      <tr>
                         <th scope="col"></th>
-                        <th scope="col" className="text-center text-dark">Mã Imei</th>
-                        <th scope="col" className="text-center text-dark">Trạng Thái</th>
+                        <th scope="col" className="text-center text-dark">
+                          Mã Imei
+                        </th>
+                        <th scope="col" className="text-center text-dark">
+                          Trạng Thái
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
-                      {
-                        itemsOnCurrentPage.length
-                          ? itemsOnCurrentPage
-                            .map((item, index) => (
-                              <tr
-                                key={index}
-                                style={{
-                                  cursor: "pointer",
-                                  pointerEvents: item.trangThai === StatusImei.IN_THE_CART && !imeisChuaBan.some(selectedItem => selectedItem.soImei === item.soImei) ? "none" : "auto",
-                                  opacity: item.trangThai === StatusImei.IN_THE_CART && !imeisChuaBan.some(selectedItem => selectedItem.soImei === item.soImei) ? "0.5" : "1"
-                                }}
-                                onClick={() => {
-                                  if (selectedImei.length >= 4 && !selectedImei.some(selectedItem => selectedItem.soImei === item.soImei)) {
-                                    handleOpenAlertVariant("Lựa chọn tối đa 4 số lượng sản phẩm!", "warning");
-                                  } else if (!selectedImei.some(selectedItem => selectedItem.soImei === item.soImei)) {
-                                    setSelectedImei([...selectedImei, item]);
-                                  } else {
-                                    setSelectedImei(selectedImei.filter(selectedItem => selectedItem.soImei !== item.soImei));
+                      {itemsOnCurrentPage.length
+                        ? itemsOnCurrentPage.map((item, index) => (
+                          <tr
+                            key={index}
+                            style={{
+                              cursor: "pointer",
+                              pointerEvents:
+                                (item.trangThai ===
+                                  StatusImei.PENDING_DELIVERY ||
+                                  item.trangThai ===
+                                  StatusImei.IN_THE_CART) &&
+                                  !imeisChuaBan.some(
+                                    (selectedItem) =>
+                                      selectedItem.soImei === item.soImei
+                                  )
+                                  ? "none"
+                                  : "auto",
+                              opacity:
+                                (item.trangThai ===
+                                  StatusImei.PENDING_DELIVERY ||
+                                  item.trangThai ===
+                                  StatusImei.IN_THE_CART) &&
+                                  !imeisChuaBan.some(
+                                    (selectedItem) =>
+                                      selectedItem.soImei === item.soImei
+                                  )
+                                  ? "0.5"
+                                  : "1",
+                            }}
+                            onClick={() => {
+                              if (
+                                selectedImei.length >= 4 &&
+                                !selectedImei.some(
+                                  (selectedItem) =>
+                                    selectedItem.soImei === item.soImei
+                                )
+                              ) {
+                                handleOpenAlertVariant(
+                                  "Lựa chọn tối đa 4 số lượng sản phẩm!",
+                                  "warning"
+                                );
+                              } else if (
+                                !selectedImei.some(
+                                  (selectedItem) =>
+                                    selectedItem.soImei === item.soImei
+                                )
+                              ) {
+                                setSelectedImei([...selectedImei, item]);
+                              } else {
+                                setSelectedImei(
+                                  selectedImei.filter(
+                                    (selectedItem) =>
+                                      selectedItem.soImei !== item.soImei
+                                  )
+                                );
+                              }
+                            }}
+                          >
+                            <td>
+                              <Checkbox
+                                color="primary"
+                                checked={selectedImei.some(
+                                  (selectedItem) =>
+                                    selectedItem.soImei === item.soImei
+                                )}
+                              />
+                            </td>
+                            <td className="text-center">{item.soImei}</td>
+                            <td className="text-center">
+                              {item.trangThai ===
+                                StatusImei.PENDING_DELIVERY ||
+                                item.trangThai === StatusImei.NOT_SOLD ||
+                                item.trangThai === StatusImei.IN_THE_CART ? (
+                                <div
+                                  className={
+                                    item.trangThai ===
+                                      StatusImei.PENDING_DELIVERY
+                                      ? "badge-primary rounded-pill mx-auto"
+                                      : "badge-success rounded-pill mx-auto"
                                   }
-                                }}
-                              >
-                                <th>
-                                  <Checkbox color="primary" checked={selectedImei.some(selectedItem => selectedItem.soImei === item.soImei)} />
-                                </th>
-                                <td className="text-center">{item.soImei}</td>
-                                <td className="text-center">
-                                  {
-                                    item.trangThai === StatusImei.NOT_SOLD || item.trangThai === StatusImei.IN_THE_CART ? (
-                                      <div
-                                        className="rounded-pill badge-success mx-auto"
-                                        style={{
-                                          height: "35px",
-                                          width: "115px",
-                                          padding: "4px",
-                                        }}
-                                      >
-                                        <span
-                                          className="text-white"
-                                          style={{ fontSize: "14px", fontWeight: "400" }}
-                                        >
-                                          {item.trangThai === StatusImei.NOT_SOLD ? "Chưa Bán" : item.trangThai === StatusImei.IN_THE_CART ? "Chưa Bán" : ""}
-                                        </span>
-                                      </div>
-                                    ) :
-                                      ""
-                                  }
-                                </td>
-                              </tr>
-                            ))
-                          : ""
-                      }
+                                  style={{
+                                    height: "35px",
+                                    width: "115px",
+                                    padding: "4px",
+                                  }}
+                                >
+                                  <span
+                                    className="text-white"
+                                    style={{
+                                      fontSize: "14px",
+                                      fontWeight: "400",
+                                    }}
+                                  >
+                                    {item.trangThai === StatusImei.NOT_SOLD
+                                      ? "Chưa Bán"
+                                      : item.trangThai ===
+                                        StatusImei.IN_THE_CART
+                                        ? "Chưa Bán"
+                                        : item.trangThai ===
+                                          StatusImei.PENDING_DELIVERY
+                                          ? "Chờ Giao"
+                                          : ""}
+                                  </span>
+                                </div>
+                              ) : (
+                                ""
+                              )}
+                            </td>
+                          </tr>
+                        ))
+                        : ""}
                     </tbody>
                   </table>
                 </div>
                 <div className="d-flex justify-content-center mt-3">
-                  <Pagination color="primary"
-                    page={parseInt(currentPage)} count={totalPages}
+                  <Pagination
+                    color="primary"
+                    page={parseInt(currentPage)}
+                    count={totalPages}
                     onChange={(event, page) => setCurrentPage(page)}
                   />
                 </div>
@@ -3691,61 +3900,70 @@ export const ModalUpdateImeiByProductItem = ({ open, close, imeis, imeisChuaBan,
                       orientation="horizontal"
                       wrap
                       sx={{
-                        "maxHeight": "50px",
-                        '--List-gap': '15px',
-                        '--ListItem-radius': '5px',
-                        '--ListItem-gap': '4px',
+                        maxHeight: "50px",
+                        "--List-gap": "15px",
+                        "--ListItem-radius": "5px",
+                        "--ListItem-gap": "4px",
                       }}
                     >
-                      {selectedImei
-                        .map((item, index) => (
-                          <ListItem key={index}>
-                            <Done
-                              fontSize="md"
-                              color="primary"
-                              sx={{ ml: -0.5, zIndex: 2, pointerEvents: 'none' }}
-                            />
-                            <CheckboxJoy
-                              slotProps={{
-                                action: ({ checked }) => ({
-                                  sx: checked
-                                    ? {
-                                      border: '1px solid',
-                                      borderColor: '#2f80ed',
-                                    }
-                                    : {},
-                                }),
-                              }}
-                              overlay
-                              disableIcon
-                              checked={selectedImei.includes(item)}
-                              variant={selectedImei.includes(item) ? 'soft' : 'outlined'}
-                              onChange={(event) => {
-                                if (event.target.checked) {
-                                  setSelectedImei((val) => [...val, item]);
-                                } else {
-                                  setSelectedImei((val) => val.filter((text) => text !== item));
-                                }
-                              }}
-                              label={item.soImei}
-                            />
-                          </ListItem>
-                        ))}
+                      {selectedImei.map((item, index) => (
+                        <ListItem key={index}>
+                          <Done
+                            fontSize="md"
+                            color="primary"
+                            sx={{ ml: -0.5, zIndex: 2, pointerEvents: "none" }}
+                          />
+                          <CheckboxJoy
+                            slotProps={{
+                              action: ({ checked }) => ({
+                                sx: checked
+                                  ? {
+                                    border: "1px solid",
+                                    borderColor: "#2f80ed",
+                                  }
+                                  : {},
+                              }),
+                            }}
+                            overlay
+                            disableIcon
+                            checked={selectedImei.includes(item)}
+                            variant={
+                              selectedImei.includes(item) ? "soft" : "outlined"
+                            }
+                            onChange={(event) => {
+                              if (event.target.checked) {
+                                setSelectedImei((val) => [...val, item]);
+                              } else {
+                                setSelectedImei((val) =>
+                                  val.filter((text) => text !== item)
+                                );
+                              }
+                            }}
+                            label={item.soImei}
+                          />
+                        </ListItem>
+                      ))}
                     </List>
                   </div>
                   <div className="d-flex">
                     <Button
                       onClick={() => {
                         if (selectedImei.length === 0) {
-                          handleOpenAlertVariant("Bạn chưa chọn IMEI!", "warning");
-                        }
-                        else {
+                          handleOpenAlertVariant(
+                            "Bạn chưa chọn IMEI!",
+                            "warning"
+                          );
+                        } else {
                           update(selectedImei);
                         }
                       }}
                       className="rounded-2 button-mui me-2"
                       type="primary"
-                      style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                      style={{
+                        height: "40px",
+                        width: "auto",
+                        fontSize: "15px",
+                      }}
                     >
                       <span
                         className=""
@@ -3761,7 +3979,11 @@ export const ModalUpdateImeiByProductItem = ({ open, close, imeis, imeisChuaBan,
                       }}
                       className="rounded-2"
                       type="danger"
-                      style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                      style={{
+                        height: "40px",
+                        width: "auto",
+                        fontSize: "15px",
+                      }}
                     >
                       <span
                         className=""
@@ -3779,11 +4001,21 @@ export const ModalUpdateImeiByProductItem = ({ open, close, imeis, imeisChuaBan,
         <div className="mt-3"></div>
       </Dialog>
     </>
-  )
-}
+  );
+};
 
-export function MultiplePaymentMethods({ open, close, data, khachCanTra, khachThanhToan, handleOpenPayment,
-  handleCloseOpenPayment, addPayment, openPayment, deletePayment }) {
+export function MultiplePaymentMethods({
+  open,
+  close,
+  data,
+  khachCanTra,
+  khachThanhToan,
+  handleOpenPayment,
+  handleCloseOpenPayment,
+  addPayment,
+  openPayment,
+  deletePayment,
+}) {
   const { handleOpenAlertVariant } = useCustomSnackbar();
   const [payments, setPayments] = useState(data);
 
@@ -3791,23 +4023,37 @@ export function MultiplePaymentMethods({ open, close, data, khachCanTra, khachTh
     setPayments(data);
   }, [data]);
 
-  const sortPayments = data && payments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  const sortPayments =
+    data &&
+    payments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-  const [selectedPayment, setSelectedPayment] = useState(["Tiền mặt", "Chuyển khoản thường", "Ví VNPAY"]);
+  const [selectedPayment, setSelectedPayment] = useState([
+    "Tiền mặt",
+    "Chuyển khoản thường",
+    "Ví VNPAY",
+  ]);
   const [paymentCurrent, setPaymentCurrent] = useState("Tiền mặt");
 
   const handleRedirectPaymentView = (url) => {
-    window.open(url, '_blank');
+    window.open(url, "_blank");
   };
 
   const columns = [
     {
-      title: "Mã Giao Dịch",
+      title: "Số Tiền",
       align: "center",
-      width: "15%",
-      render: (text, item) =>
-        <span style={{ fontWeight: "500" }}>{item.hinhThucThanhToan === 1 || item.hinhThucThanhToan === 2 ? "..." : item.ma}
+      dataIndex: "soTienThanhToan",
+      width: "20%",
+      render: (text, record) => (
+        <span className="txt-danger" style={{ fontSize: "17px" }}>
+          {record &&
+            record.soTienThanhToan &&
+            record.soTienThanhToan.toLocaleString("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            })}
         </span>
+      ),
     },
     {
       title: "Phương Thức Thanh Toán",
@@ -3885,21 +4131,14 @@ export function MultiplePaymentMethods({ open, close, data, khachCanTra, khachTh
       ),
     },
     {
-      title: "Số Tiền",
+      title: "Mã Giao Dịch",
       align: "center",
-      dataIndex: "soTienThanhToan",
       width: "15%",
-      render: (text, record) => (
-        <span
-          className="txt-danger"
-          style={{ fontSize: "17px" }}
-        >
-          {record &&
-            record.soTienThanhToan &&
-            record.soTienThanhToan.toLocaleString("vi-VN", {
-              style: "currency",
-              currency: "VND",
-            })}
+      render: (text, item) => (
+        <span style={{ fontWeight: "500" }}>
+          {item.hinhThucThanhToan === 1 || item.hinhThucThanhToan === 2
+            ? "..."
+            : item.ma}
         </span>
       ),
     },
@@ -3909,23 +4148,31 @@ export function MultiplePaymentMethods({ open, close, data, khachCanTra, khachTh
       width: "15%",
       render: (text, record) => (
         <>
-          {record.hinhThucThanhToan === 1 || record.hinhThucThanhToan === 2 ?
+          {record.hinhThucThanhToan === 1 || record.hinhThucThanhToan === 2 ? (
             <Tooltip title="Xóa" TransitionComponent={Zoom}>
-              <IconButton className='' style={{ height: "40px" }} onClick={() => deletePayment(record.id)}
+              <IconButton
+                className=""
+                style={{ height: "40px" }}
+                onClick={() => deletePayment(record.id)}
               >
                 <FaTrashAlt color="#e5383b" />
               </IconButton>
             </Tooltip>
-            :
+          ) : (
             <Tooltip title="Xem lịch sử" TransitionComponent={Zoom}>
-              <IconButton className='' style={{ height: "40px" }} onClick={() =>
-                handleRedirectPaymentView(`https://sandbox.vnpayment.vn/merchantv2/Transaction/PaymentDetail/${record.ma}.htm`)
-              }
+              <IconButton
+                className=""
+                style={{ height: "40px" }}
+                onClick={() =>
+                  handleRedirectPaymentView(
+                    `https://sandbox.vnpayment.vn/merchantv2/Transaction/PaymentDetail/${record.ma}.htm`
+                  )
+                }
               >
-                <FaEye color="#2f80ed" />
+                <FaExternalLinkSquareAlt color="#2f80ed" />
               </IconButton>
             </Tooltip>
-          }
+          )}
         </>
       ),
     },
@@ -3933,31 +4180,27 @@ export function MultiplePaymentMethods({ open, close, data, khachCanTra, khachTh
 
   const paymentBank = () => {
     addPayment(paymentCurrent, customerPayment);
-  }
+  };
 
   const [customerPayment, setCustomerPayment] = useState(0);
   const [customerPaymentFormat, setCustomerPaymentFormat] = useState("");
-
 
   useEffect(() => {
     const chuaThanhToan = khachCanTra - khachThanhToan;
     if (chuaThanhToan <= 0) {
       setCustomerPaymentFormat("0");
       setCustomerPayment(0);
-    }
-    else {
+    } else {
       let valueFinal;
       valueFinal = String(chuaThanhToan)
         .replace(/[^0-9]+/g, "")
         .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
       setCustomerPaymentFormat(valueFinal);
       setCustomerPayment(chuaThanhToan);
-
     }
-  }, [payments, khachThanhToan, khachCanTra])
+  }, [payments, khachThanhToan, khachCanTra]);
 
   const handleCustomerPayment = (event) => {
-
     const value = event.target.value;
     const parseNumberPayment = parseFloat(value.replace(/[^0-9.-]+/g, ""));
     let valueFinal;
@@ -3971,12 +4214,11 @@ export function MultiplePaymentMethods({ open, close, data, khachCanTra, khachTh
     if (value == null || value == "") {
       setCustomerPayment(0);
       setCustomerPaymentFormat("");
-    }
-    else if (parseNumberPayment > 1000000000000) {
+    } else if (parseNumberPayment > 1000000000000) {
       setCustomerPayment(0);
       setCustomerPaymentFormat("");
     }
-  }
+  };
 
   return (
     <>
@@ -3984,12 +4226,17 @@ export function MultiplePaymentMethods({ open, close, data, khachCanTra, khachTh
         open={open}
         TransitionComponent={Transition}
         keepMounted
-        onClose={() => { close(); }}
+        onClose={() => {
+          close();
+        }}
         maxWidth="xxl"
         maxHeight="xxl"
       >
         <DialogContent className="">
-          <div className="mt-2" style={{ width: "950px", height: "auto", minHeight: "500px" }}>
+          <div
+            className="mt-2"
+            style={{ width: "950px", height: "auto", minHeight: "500px" }}
+          >
             <div className="container" style={{}}>
               <div className="d-flex justify-content-between">
                 <span style={{ fontWeight: "500", fontSize: "24px" }}>
@@ -4001,100 +4248,138 @@ export function MultiplePaymentMethods({ open, close, data, khachCanTra, khachTh
                   </IconButton>
                 </Tooltip>
               </div>
-              <div className='d-flex justify-content-between mt-4 pt-2' style={{ marginLeft: "1px" }}>
-                <span className='text-dark' style={{ fontSize: "20px", fontWeight: "500" }}>Khách cần trả
+              <div
+                className="d-flex justify-content-between mt-4 pt-2"
+                style={{ marginLeft: "1px" }}
+              >
+                <span
+                  className="text-dark"
+                  style={{ fontSize: "20px", fontWeight: "500" }}
+                >
+                  Khách cần trả
                 </span>
                 <span
                   className=""
-                  style={{ fontSize: "20px", color: "#dc1111", fontWeight: "500" }}
+                  style={{
+                    fontSize: "20px",
+                    color: "#dc1111",
+                    fontWeight: "500",
+                  }}
                 >
-                  {khachCanTra && khachCanTra.toLocaleString("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  }) || "0 ₫"}
+                  {(khachCanTra &&
+                    khachCanTra.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })) ||
+                    "0 ₫"}
                 </span>
               </div>
-              <div className='d-flex justify-content-between mt-4' style={{ marginLeft: "1px" }}>
-                <span className='text-dark' style={{ fontSize: "20px", fontWeight: "500", marginTop: "10px" }}>Nhập số tiền
+              <div
+                className="d-flex justify-content-between mt-4"
+                style={{ marginLeft: "1px" }}
+              >
+                <span
+                  className="text-dark"
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "500",
+                    marginTop: "10px",
+                  }}
+                >
+                  Nhập số tiền
                 </span>
                 <div className="d-flex">
-                  <TextField className='me-3'
+                  <TextField
+                    className="me-3"
                     onChange={handleCustomerPayment}
                     value={customerPaymentFormat}
                     InputProps={{
-                      style: { fontSize: '19px' },
+                      style: { fontSize: "19px" },
                     }}
                     variant="standard"
-                    sx={{ width: "155px", fontSize: "17.5px" }} />
-                  <div className="" style={{ marginTop: "1px", marginRight: "13px" }}>
+                    sx={{ width: "155px", fontSize: "17.5px" }}
+                  />
+                  <div
+                    className=""
+                    style={{ marginTop: "1px", marginRight: "13px" }}
+                  >
                     <List
                       orientation="horizontal"
                       wrap
                       sx={{
-                        "maxHeight": "50px",
-                        '--List-gap': '15px',
-                        '--ListItem-radius': '10px',
-                        '--ListItem-gap': '4px',
+                        maxHeight: "50px",
+                        "--List-gap": "15px",
+                        "--ListItem-radius": "10px",
+                        "--ListItem-gap": "4px",
                       }}
                     >
-                      {selectedPayment
-                        .map((item, index) => (
-                          <ListItem key={index}>
-                            {paymentCurrent === item &&
-                              <Done
-                                fontSize="md"
-                                color="primary"
-                                sx={{ ml: -0.5, zIndex: 2, pointerEvents: 'none' }}
-                              />
-                            }
-                            <CheckboxJoy
-                              slotProps={{
-                                action: ({ checked }) => ({
-                                  sx: checked
-                                    ? {
-                                      border: '1px solid',
-                                      borderColor: '#2f80ed',
-                                      // borderRadius: "10px",
-                                      // height: "40px",
-                                    }
-                                    : {},
-                                }),
+                      {selectedPayment.map((item, index) => (
+                        <ListItem key={index}>
+                          {paymentCurrent === item && (
+                            <Done
+                              fontSize="md"
+                              color="primary"
+                              sx={{
+                                ml: -0.5,
+                                zIndex: 2,
+                                pointerEvents: "none",
                               }}
-                              overlay
-                              disableIcon
-                              checked={paymentCurrent === item}
-                              variant={'outlined'}
-                              onChange={() => {
-                                if (paymentCurrent === item) {
-                                  setPaymentCurrent(item);
-                                } else {
-                                  setPaymentCurrent(item);
-                                }
-                              }}
-                              label={item}
                             />
-                          </ListItem>
-                        ))}
+                          )}
+                          <CheckboxJoy
+                            slotProps={{
+                              action: ({ checked }) => ({
+                                sx: checked
+                                  ? {
+                                    border: "1px solid",
+                                    borderColor: "#2f80ed",
+                                    // borderRadius: "10px",
+                                    // height: "40px",
+                                  }
+                                  : {},
+                              }),
+                            }}
+                            overlay
+                            disableIcon
+                            checked={paymentCurrent === item}
+                            variant={"outlined"}
+                            onChange={() => {
+                              if (paymentCurrent === item) {
+                                setPaymentCurrent(item);
+                              } else {
+                                setPaymentCurrent(item);
+                              }
+                            }}
+                            label={item}
+                          />
+                        </ListItem>
+                      ))}
                     </List>
                   </div>
                   <Button
                     onClick={() => {
                       if (paymentCurrent === null) {
-                        handleOpenAlertVariant("Bạn chưa chọn hình thức thanh toán!", Notistack.ERROR);
-                      }
-                      else if (customerPayment === 0) {
-                        handleOpenAlertVariant("Số tiền không hợp lệ!", Notistack.ERROR);
-                      }
-                      else if (paymentCurrent === "Ví VNPAY") {
+                        handleOpenAlertVariant(
+                          "Bạn chưa chọn hình thức thanh toán!",
+                          Notistack.ERROR
+                        );
+                      } else if (customerPayment === 0) {
+                        handleOpenAlertVariant(
+                          "Số tiền không hợp lệ!",
+                          Notistack.ERROR
+                        );
+                      } else if (paymentCurrent === "Ví VNPAY") {
                         handleOpenPayment();
-                      }
-                      else {
+                      } else {
                         addPayment(paymentCurrent, customerPayment);
                       }
-
                     }}
                     className="rounded-2 ant-btn-light"
-                    style={{ height: "37.5px", width: "auto", fontSize: "15px", }}
+                    style={{
+                      height: "37.5px",
+                      width: "auto",
+                      fontSize: "15px",
+                    }}
                   >
                     <span
                       className=""
@@ -4107,7 +4392,7 @@ export function MultiplePaymentMethods({ open, close, data, khachCanTra, khachTh
               </div>
               <div className="mx-auto mt-3 pt-2" style={{ minHeight: "200px" }}>
                 <TableAntd
-                  className='table-container'
+                  className="table-container"
                   columns={columns}
                   dataSource={sortPayments}
                   pagination={false}
@@ -4116,17 +4401,30 @@ export function MultiplePaymentMethods({ open, close, data, khachCanTra, khachTh
                   locale={{ emptyText: <Empty /> }}
                 />
               </div>
-              <div className='d-flex justify-content-between mt-4 pt-2' style={{ marginLeft: "1px" }}>
-                <span className='text-dark' style={{ fontSize: "20px", fontWeight: "500" }}>Khách thanh toán
+              <div
+                className="d-flex justify-content-between mt-4 pt-2"
+                style={{ marginLeft: "1px" }}
+              >
+                <span
+                  className="text-dark"
+                  style={{ fontSize: "20px", fontWeight: "500" }}
+                >
+                  Khách đã thanh toán
                 </span>
                 <span
                   className=""
-                  style={{ fontSize: "20px", color: "#2f80ed", fontWeight: "500" }}
+                  style={{
+                    fontSize: "20px",
+                    color: "#2f80ed",
+                    fontWeight: "500",
+                  }}
                 >
-                  {khachThanhToan && khachThanhToan.toLocaleString("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  }) || "0 ₫"}
+                  {(khachThanhToan &&
+                    khachThanhToan.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })) ||
+                    "0 ₫"}
                 </span>
               </div>
               <div className="mt-4 d-flex justify-content-end">
@@ -4136,7 +4434,7 @@ export function MultiplePaymentMethods({ open, close, data, khachCanTra, khachTh
                   }}
                   type="primary"
                   className="rounded-2"
-                  style={{ height: "40px", width: "110px", fontSize: "15px", }}
+                  style={{ height: "40px", width: "110px", fontSize: "15px" }}
                 >
                   <span
                     className=""
@@ -4151,11 +4449,13 @@ export function MultiplePaymentMethods({ open, close, data, khachCanTra, khachTh
           <div className="mt-3"></div>
         </DialogContent>
       </Dialog>
-      <PaymentVnPayConfirmDialog open={openPayment} onClose={handleCloseOpenPayment}
+      <PaymentVnPayConfirmDialog
+        open={openPayment}
+        onClose={handleCloseOpenPayment}
         payment={paymentBank}
       />
     </>
-  )
+  );
 }
 export function PaymentVnPayConfirmDialog(props) {
   const { open, onClose, payment } = props;
@@ -4184,17 +4484,22 @@ export function PaymentVnPayConfirmDialog(props) {
           >
             {"Xác nhận chuyển hướng đến trang thanh toán"}
           </DialogTitle>
-          <DialogContent >
+          <DialogContent>
             <DialogContentText
               sx={{ color: "black" }}
               id="alert-dialog-description"
             >
-              Bạn có chắc chắn muốn chuyển hướng đến trang thanh toán bằng hình thức
-              <span style={{ fontWeight: "500", color: "#2f80ed" }}>{" Chuyển khoản"}</span> {" hoặc "}
-              <span style={{ fontWeight: "500", color: "#2f80ed" }}>{"Thẻ"}</span>
-              {" "} qua ví điện tử
-              <span style={{ fontWeight: "500" }}>{" VNPAY "}</span>
-              ?
+              Bạn có chắc chắn muốn chuyển hướng đến trang thanh toán bằng hình
+              thức
+              <span style={{ fontWeight: "500", color: "#2f80ed" }}>
+                {" Chuyển khoản"}
+              </span>{" "}
+              {" hoặc "}
+              <span style={{ fontWeight: "500", color: "#2f80ed" }}>
+                {"Thẻ"}
+              </span>{" "}
+              qua ví điện tử
+              <span style={{ fontWeight: "500" }}>{" VNPAY "}</span>?
             </DialogContentText>
           </DialogContent>
           <DialogActions>
@@ -4254,9 +4559,11 @@ export const ModalPaymentHistories = ({ open, close, data }) => {
       title: "Mã Giao Dịch",
       align: "center",
       width: "15%",
-      render: (text, item) =>
-        <span style={{ fontWeight: "500" }}>{item.ma === null || item.ma === "" ? "..." : item.ma}
+      render: (text, item) => (
+        <span style={{ fontWeight: "500" }}>
+          {item.ma === null || item.ma === "" ? "..." : item.ma}
         </span>
+      ),
     },
     {
       title: "Phương Thức Thanh Toán",
@@ -4339,10 +4646,7 @@ export const ModalPaymentHistories = ({ open, close, data }) => {
       dataIndex: "soTienThanhToan",
       width: "15%",
       render: (text, record) => (
-        <span
-          className="txt-danger"
-          style={{ fontSize: "17px" }}
-        >
+        <span className="txt-danger" style={{ fontSize: "17px" }}>
           {record &&
             record.soTienThanhToan &&
             record.soTienThanhToan.toLocaleString("vi-VN", {
@@ -4360,17 +4664,22 @@ export const ModalPaymentHistories = ({ open, close, data }) => {
         open={open}
         TransitionComponent={Transition}
         keepMounted
-        onClose={() => { close(); }}
+        onClose={() => {
+          close();
+        }}
         maxWidth="xxl"
         maxHeight="xxl"
         sx={{ marginBottom: "170px" }}
       >
         <DialogContent className="">
-          <div className="mt-2" style={{ width: "950px", height: "auto", maxHeight: "200px" }}>
+          <div
+            className="mt-2"
+            style={{ width: "950px", height: "auto", maxHeight: "200px" }}
+          >
             <div className="container" style={{}}>
               <div className="mx-auto mt-3 pt-2">
                 <TableAntd
-                  className='table-container'
+                  className="table-container"
                   columns={columns}
                   dataSource={payments}
                   pagination={false}
@@ -4385,10 +4694,19 @@ export const ModalPaymentHistories = ({ open, close, data }) => {
         <div className="mt-3"></div>
       </Dialog>
     </>
-  )
-}
-export function MultiplePaymentMethodsDelivery({ open, close, data, khachCanTra, khachThanhToan, handleOpenPayment,
-  handleCloseOpenPayment, addPayment, openPayment, deletePayment }) {
+  );
+};
+export function MultiplePaymentMethodsDelivery({
+  open,
+  close,
+  data,
+  khachCanTra,
+  khachThanhToan,
+  addPayment,
+  hoanTien,
+  canTraKhach,
+  tienThua,
+}) {
   const { handleOpenAlertVariant } = useCustomSnackbar();
   const [payments, setPayments] = useState(data);
 
@@ -4396,173 +4714,40 @@ export function MultiplePaymentMethodsDelivery({ open, close, data, khachCanTra,
     setPayments(data);
   }, [data]);
 
-  const sortPayments = data && payments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-  const [selectedPayment, setSelectedPayment] = useState(["Tiền mặt", "Chuyển khoản thường", "Ví VNPAY"]);
+  const [selectedPayment, setSelectedPayment] = useState([
+    "Tiền mặt",
+    "Chuyển khoản",
+  ]);
   const [paymentCurrent, setPaymentCurrent] = useState("Tiền mặt");
-
-  const handleRedirectPaymentView = (url) => {
-    window.open(url, '_blank');
-  };
-
-  const columns = [
-    {
-      title: "Mã Giao Dịch",
-      align: "center",
-      width: "15%",
-      render: (text, item) =>
-        <span style={{ fontWeight: "500" }}>{item.hinhThucThanhToan === 1 || item.hinhThucThanhToan === 2 ? "..." : item.ma}
-        </span>
-    },
-    {
-      title: "Phương Thức Thanh Toán",
-      align: "center",
-      width: "15%",
-      dataIndex: "hinhThucThanhToan",
-      render: (text, record) =>
-        record.hinhThucThanhToan == 0 || record.hinhThucThanhToan === 2 ? (
-          <div
-            className="rounded-pill mx-auto badge-success"
-            style={{
-              height: "35px",
-              width: "120px",
-              padding: "4px",
-            }}
-          >
-            <span
-              className="text-white"
-              style={{ fontSize: "14px", fontWeight: "400" }}
-            >
-              Chuyển khoản
-            </span>
-          </div>
-        ) : record.hinhThucThanhToan == 1 ? (
-          <div
-            className="rounded-pill badge-success mx-auto"
-            style={{ height: "35px", width: "90px", padding: "4px" }}
-          >
-            <span
-              className="text-white"
-              style={{ fontSize: "14px", fontWeight: "400" }}
-            >
-              Tiền mặt
-            </span>
-          </div>
-        ) : (
-          ""
-        ),
-    },
-    {
-      title: "Trạng Thái",
-      align: "center",
-      width: "10%",
-      dataIndex: "trangThai",
-      render: (status) =>
-        status == 1 ? (
-          <div
-            className="rounded-pill badge-primary mx-auto"
-            style={{
-              height: "35px",
-              width: "115px",
-              padding: "4px",
-            }}
-          >
-            <span
-              className="text-white"
-              style={{ fontSize: "14px", fontWeight: "400" }}
-            >
-              Thành công
-            </span>
-          </div>
-        ) : (
-          ""
-        ),
-    },
-    {
-      title: "Thời Gian",
-      align: "center",
-      width: "10%",
-      dataIndex: "createdAt",
-      render: (text, record) => (
-        <span style={{ fontWeight: "normal" }}>
-          {format(new Date(record.createdAt), "HH:mm:ss, dd/MM/yyyy")}
-        </span>
-      ),
-    },
-    {
-      title: "Số Tiền",
-      align: "center",
-      dataIndex: "soTienThanhToan",
-      width: "15%",
-      render: (text, record) => (
-        <span
-          className="txt-danger"
-          style={{ fontSize: "17px" }}
-        >
-          {record &&
-            record.soTienThanhToan &&
-            record.soTienThanhToan.toLocaleString("vi-VN", {
-              style: "currency",
-              currency: "VND",
-            })}
-        </span>
-      ),
-    },
-    {
-      title: "Thao Tác",
-      align: "center",
-      width: "15%",
-      render: (text, record) => (
-        <>
-          {record.hinhThucThanhToan === 1 || record.hinhThucThanhToan === 2 ?
-            <Tooltip title="Xóa" TransitionComponent={Zoom}>
-              <IconButton className='' style={{ height: "40px" }} onClick={() => deletePayment(record.id)}
-              >
-                <FaTrashAlt color="#e5383b" />
-              </IconButton>
-            </Tooltip>
-            :
-            <Tooltip title="Xem lịch sử" TransitionComponent={Zoom}>
-              <IconButton className='' style={{ height: "40px" }} onClick={() =>
-                handleRedirectPaymentView(`https://sandbox.vnpayment.vn/merchantv2/Transaction/PaymentDetail/${record.ma}.htm`)
-              }
-              >
-                <FaEye color="#2f80ed" />
-              </IconButton>
-            </Tooltip>
-          }
-        </>
-      ),
-    },
-  ];
-
-  const paymentBank = () => {
-    addPayment(paymentCurrent, customerPayment);
-  }
 
   const [customerPayment, setCustomerPayment] = useState(0);
   const [customerPaymentFormat, setCustomerPaymentFormat] = useState("");
 
-
   useEffect(() => {
-    const chuaThanhToan = khachCanTra - khachThanhToan;
-    if (chuaThanhToan <= 0) {
-      setCustomerPaymentFormat("0");
-      setCustomerPayment(0);
-    }
-    else {
+    if (hoanTien) {
       let valueFinal;
-      valueFinal = String(chuaThanhToan)
+      valueFinal = String(canTraKhach)
         .replace(/[^0-9]+/g, "")
         .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
       setCustomerPaymentFormat(valueFinal);
-      setCustomerPayment(chuaThanhToan);
-
+      setCustomerPayment(canTraKhach);
+    } else {
+      const chuaThanhToan = khachCanTra - khachThanhToan;
+      if (chuaThanhToan <= 0) {
+        setCustomerPaymentFormat("0");
+        setCustomerPayment(0);
+      } else {
+        let valueFinal;
+        valueFinal = String(chuaThanhToan)
+          .replace(/[^0-9]+/g, "")
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        setCustomerPaymentFormat(valueFinal);
+        setCustomerPayment(chuaThanhToan);
+      }
     }
-  }, [payments, khachThanhToan, khachCanTra])
+  }, [payments, khachThanhToan, khachCanTra, hoanTien, canTraKhach]);
 
   const handleCustomerPayment = (event) => {
-
     const value = event.target.value;
     const parseNumberPayment = parseFloat(value.replace(/[^0-9.-]+/g, ""));
     let valueFinal;
@@ -4576,12 +4761,18 @@ export function MultiplePaymentMethodsDelivery({ open, close, data, khachCanTra,
     if (value == null || value == "") {
       setCustomerPayment(0);
       setCustomerPaymentFormat("");
-    }
-    else if (parseNumberPayment > 1000000000000) {
+    } else if (parseNumberPayment > 1000000000000) {
       setCustomerPayment(0);
       setCustomerPaymentFormat("");
     }
-  }
+  };
+
+  const checkHoanTien = () => {
+    if (hoanTien === true) {
+      return canTraKhach && canTraKhach;
+    }
+    return khachCanTra && khachCanTra;
+  };
 
   return (
     <>
@@ -4589,12 +4780,18 @@ export function MultiplePaymentMethodsDelivery({ open, close, data, khachCanTra,
         open={open}
         TransitionComponent={Transition}
         keepMounted
-        onClose={() => { close(); }}
+        onClose={() => {
+          close();
+        }}
         maxWidth="xxl"
         maxHeight="xxl"
+        sx={{ marginBottom: "100px" }}
       >
         <DialogContent className="">
-          <div className="mt-2" style={{ width: "950px", height: "auto", minHeight: "500px" }}>
+          <div
+            className="mt-2"
+            style={{ width: "950px", height: "auto", minHeight: "300px" }}
+          >
             <div className="container" style={{}}>
               <div className="d-flex justify-content-between">
                 <span style={{ fontWeight: "500", fontSize: "24px" }}>
@@ -4606,159 +4803,514 @@ export function MultiplePaymentMethodsDelivery({ open, close, data, khachCanTra,
                   </IconButton>
                 </Tooltip>
               </div>
-              <div className='d-flex justify-content-between mt-4 pt-2' style={{ marginLeft: "1px" }}>
-                <span className='text-dark' style={{ fontSize: "20px", fontWeight: "500" }}>Khách cần trả
+              <div
+                className="d-flex justify-content-between mt-4 pt-2"
+                style={{ marginLeft: "1px" }}
+              >
+                <span
+                  className="text-dark"
+                  style={{ fontSize: "20px", fontWeight: "500" }}
+                >
+                  Khách cần trả
                 </span>
                 <span
                   className=""
-                  style={{ fontSize: "20px", color: "#dc1111", fontWeight: "500" }}
+                  style={{
+                    fontSize: "20px",
+                    color: "#dc1111",
+                    fontWeight: "500",
+                  }}
                 >
-                  {khachCanTra && khachCanTra.toLocaleString("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  }) || "0 ₫"}
+                  {(khachCanTra &&
+                    khachCanTra.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })) ||
+                    "0 ₫"}
                 </span>
               </div>
-              <div className='d-flex justify-content-between mt-4' style={{ marginLeft: "1px" }}>
-                <span className='text-dark' style={{ fontSize: "20px", fontWeight: "500", marginTop: "10px" }}>Nhập số tiền
+              <div
+                className="d-flex justify-content-between mt-4"
+                style={{ marginLeft: "1px" }}
+              >
+                <span
+                  className="text-dark"
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "500",
+                    marginTop: "10px",
+                  }}
+                >
+                  Nhập số tiền
                 </span>
                 <div className="d-flex">
-                  <TextField className='me-3'
+                  <TextField
+                    className="me-3"
                     onChange={handleCustomerPayment}
                     value={customerPaymentFormat}
                     InputProps={{
-                      style: { fontSize: '19px' },
+                      style: { fontSize: "19px" },
                     }}
                     variant="standard"
-                    sx={{ width: "155px", fontSize: "17.5px" }} />
-                  <div className="" style={{ marginTop: "1px", marginRight: "13px" }}>
+                    sx={{ width: "155px", fontSize: "17.5px" }}
+                  />
+                  <div className="" style={{ marginTop: "1px" }}>
                     <List
                       orientation="horizontal"
                       wrap
                       sx={{
-                        "maxHeight": "50px",
-                        '--List-gap': '15px',
-                        '--ListItem-radius': '10px',
-                        '--ListItem-gap': '4px',
+                        maxHeight: "50px",
+                        "--List-gap": "15px",
+                        "--ListItem-radius": "10px",
+                        "--ListItem-gap": "4px",
                       }}
                     >
-                      {selectedPayment
-                        .map((item, index) => (
-                          <ListItem key={index}>
-                            {paymentCurrent === item &&
-                              <Done
-                                fontSize="md"
-                                color="primary"
-                                sx={{ ml: -0.5, zIndex: 2, pointerEvents: 'none' }}
-                              />
-                            }
-                            <CheckboxJoy
-                              slotProps={{
-                                action: ({ checked }) => ({
-                                  sx: checked
-                                    ? {
-                                      border: '1px solid',
-                                      borderColor: '#2f80ed',
-                                      // borderRadius: "10px",
-                                      // height: "40px",
-                                    }
-                                    : {},
-                                }),
+                      {selectedPayment.map((item, index) => (
+                        <ListItem key={index}>
+                          {paymentCurrent === item && (
+                            <Done
+                              fontSize="md"
+                              color="primary"
+                              sx={{
+                                ml: -0.5,
+                                zIndex: 2,
+                                pointerEvents: "none",
                               }}
-                              overlay
-                              disableIcon
-                              checked={paymentCurrent === item}
-                              variant={'outlined'}
-                              onChange={() => {
-                                if (paymentCurrent === item) {
-                                  setPaymentCurrent(item);
-                                } else {
-                                  setPaymentCurrent(item);
-                                }
-                              }}
-                              label={item}
                             />
-                          </ListItem>
-                        ))}
+                          )}
+                          <CheckboxJoy
+                            slotProps={{
+                              action: ({ checked }) => ({
+                                sx: checked
+                                  ? {
+                                    border: "1px solid",
+                                    borderColor: "#2f80ed",
+                                    // borderRadius: "10px",
+                                    // height: "40px",
+                                  }
+                                  : {},
+                              }),
+                            }}
+                            overlay
+                            disableIcon
+                            checked={paymentCurrent === item}
+                            variant={"outlined"}
+                            onChange={() => {
+                              if (paymentCurrent === item) {
+                                setPaymentCurrent(item);
+                              } else {
+                                setPaymentCurrent(item);
+                              }
+                            }}
+                            label={item}
+                          />
+                        </ListItem>
+                      ))}
                     </List>
                   </div>
-                  <Button
-                    onClick={() => {
-                      if (paymentCurrent === null) {
-                        handleOpenAlertVariant("Bạn chưa chọn hình thức thanh toán!", Notistack.ERROR);
-                      }
-                      else if (customerPayment === 0) {
-                        handleOpenAlertVariant("Số tiền không hợp lệ!", Notistack.ERROR);
-                      }
-                      else if (paymentCurrent === "Ví VNPAY") {
-                        handleOpenPayment();
-                      }
-                      else {
-                        addPayment(paymentCurrent, customerPayment);
-                      }
-
-                    }}
-                    className="rounded-2 ant-btn-light"
-                    style={{ height: "37.5px", width: "auto", fontSize: "15px", }}
-                  >
-                    <span
-                      className=""
-                      style={{ marginBottom: "2px", fontWeight: "500" }}
-                    >
-                      Xác Nhận
-                    </span>
-                  </Button>
                 </div>
               </div>
-              <div className="mx-auto mt-3 pt-2" style={{ minHeight: "200px" }}>
-                <TableAntd
-                  className='table-container'
-                  columns={columns}
-                  dataSource={sortPayments}
-                  pagination={false}
-                  rowKey={"id"}
-                  key={"id"}
-                  locale={{ emptyText: <Empty /> }}
-                />
-              </div>
-              <div className='d-flex justify-content-between mt-4 pt-2' style={{ marginLeft: "1px" }}>
-                <span className='text-dark' style={{ fontSize: "20px", fontWeight: "500" }}>Khách thanh toán
+              <div
+                className="d-flex justify-content-between mt-4 pt-2"
+                style={{ marginLeft: "1px" }}
+              >
+                <span
+                  className="text-dark"
+                  style={{ fontSize: "20px", fontWeight: "500" }}
+                >
+                  Khách đã thanh toán
                 </span>
                 <span
                   className=""
-                  style={{ fontSize: "20px", color: "#2f80ed", fontWeight: "500" }}
+                  style={{
+                    fontSize: "20px",
+                    color: "#2f80ed",
+                    fontWeight: "500",
+                  }}
                 >
-                  {khachThanhToan && khachThanhToan.toLocaleString("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  }) || "0 ₫"}
+                  {(khachThanhToan &&
+                    khachThanhToan.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })) ||
+                    "0 ₫"}
                 </span>
               </div>
               <div className="mt-4 d-flex justify-content-end">
                 <Button
                   onClick={() => {
-                    close();
+                    if (paymentCurrent === null) {
+                      handleOpenAlertVariant(
+                        "Bạn chưa chọn hình thức thanh toán!",
+                        Notistack.ERROR
+                      );
+                    } else if (customerPayment === 0) {
+                      handleOpenAlertVariant(
+                        "Số tiền không hợp lệ!",
+                        Notistack.ERROR
+                      );
+                    } else {
+                      addPayment(paymentCurrent, customerPayment);
+                    }
                   }}
+                  className="rounded-2 button-mui"
                   type="primary"
-                  className="rounded-2"
-                  style={{ height: "40px", width: "110px", fontSize: "15px", }}
+                  style={{ height: "40px", width: "auto", fontSize: "15px" }}
                 >
                   <span
                     className=""
                     style={{ marginBottom: "2px", fontWeight: "500" }}
                   >
-                    Xong
+                    Xác Nhận
                   </span>
                 </Button>
               </div>
             </div>
           </div>
-          <div className="mt-3"></div>
+          <div className="mt-2"></div>
         </DialogContent>
       </Dialog>
-      <PaymentVnPayConfirmDialog open={openPayment} onClose={handleCloseOpenPayment}
-        payment={paymentBank}
-      />
     </>
-  )
+  );
 }
+
+export const ModalRefundProduct = ({
+  open,
+  close,
+  imeis,
+  refresh,
+  refund,
+}) => {
+  const [selectedImei, setSelectedImei] = useState([]);
+  const { handleOpenAlertVariant } = useCustomSnackbar();
+
+  const [isAll, setIsAll] = useState(false);
+
+  const handleAllCheckboxChange = (e) => {
+    const checked = e.target.checked;
+    setIsAll(checked);
+    if (checked) {
+      setSelectedImei(imeis);
+    } else {
+      setSelectedImei([]);
+    }
+  };
+
+  useEffect(() => {
+    setSelectedImei([]);
+  }, [refresh]);
+
+  return (
+    <>
+      <Dialog
+        open={open}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={() => {
+          close(); /*  setSelectedImei([])  */
+        }}
+        maxWidth="xxl"
+        maxHeight="xxl"
+      >
+        <DialogContent className="">
+          <div className="mt-2" style={{ width: "1000px" }}>
+            <div className="container" style={{}}>
+              <div className="header-title">
+                <div className="mt-1">
+                  <span className="fs-4" style={{ fontWeight: "500" }}>
+                    Chọn Imei Cần Trả Hàng
+                  </span>
+                </div>
+              </div>
+              <div className="mt-3 pt-2">
+                <div className="me-2" style={{}}>
+                  <table className="table" style={{ borderRadius: "10px" }}>
+                    <thead style={{ borderRadius: "10px" }}>
+                      <tr>
+                        <th scope="col">
+                          <Checkbox
+                            color="primary"
+                            checked={isAll}
+                            onChange={handleAllCheckboxChange}
+                          />
+                        </th>
+                        <th scope="col" className="text-center text-dark">
+                          Imei
+                        </th>
+                        <th scope="col" className="text-center text-dark">
+                          Trạng Thái
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {imeis.length
+                        ? imeis.map((item, index) => (
+                          <tr
+                            key={index}
+                            style={{
+                              cursor: "pointer",
+                            }}
+                            onClick={() => {
+                              if (
+                                !selectedImei.some(
+                                  (selectedItem) =>
+                                    selectedItem.soImei === item.soImei
+                                )
+                              ) {
+                                setSelectedImei([...selectedImei, item]);
+                              } else {
+                                setSelectedImei(
+                                  selectedImei.filter(
+                                    (selectedItem) =>
+                                      selectedItem.soImei !== item.soImei
+                                  )
+                                );
+                              }
+                            }}
+                          >
+                            <td>
+                              <Checkbox
+                                color="primary"
+                                checked={selectedImei.some(
+                                  (selectedItem) =>
+                                    selectedItem.soImei === item.soImei
+                                )}
+                              />
+                            </td>
+                            <td className="text-center">{item.soImei}</td>
+                            <td className="text-center">
+                              <div
+                                className={
+                                  "badge-success rounded-pill mx-auto"
+                                }
+                                style={{
+                                  height: "35px",
+                                  width: "105px",
+                                  padding: "4px",
+                                }}
+                              >
+                                <span
+                                  className="text-white"
+                                  style={{
+                                    fontSize: "14px",
+                                    fontWeight: "400",
+                                  }}
+                                >
+                                  Đã Bán
+                                </span>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                        : ""}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div className="d-flex justify-content-end mt-3 me-2">
+                <Button
+                  onClick={() => {
+                    if (selectedImei.length === 0) {
+                      handleOpenAlertVariant(
+                        "Bạn chưa chọn IMEI cần trả hàng!",
+                        "warning"
+                      );
+                    } else {
+                      refund(selectedImei
+                      );
+                      close();
+                    }
+                  }}
+                  className="rounded-2 button-mui me-2"
+                  type="primary"
+                  style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                >
+                  <span
+                    className=""
+                    style={{ marginBottom: "2px", fontWeight: "500" }}
+                  >
+                    Xác Nhận
+                  </span>
+                </Button>
+                <Button
+                  onClick={() => {
+                    close();
+                    // setSelectedImei([]);
+                  }}
+                  className="rounded-2"
+                  type="danger"
+                  style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                >
+                  <span
+                    className=""
+                    style={{ marginBottom: "2px", fontWeight: "500" }}
+                  >
+                    Hủy Bỏ
+                  </span>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+        <div className="mt-2"></div>
+      </Dialog>
+    </>
+  );
+};
+
+export function ConfirmChangeTypePhienBan(props) {
+  const { open, onClose, confirm } = props;
+
+  return (
+    <div className="rounded-pill">
+      <Dialog
+        TransitionComponent={Transition1}
+        open={open}
+        onClose={onClose}
+        aria-describedby="alert-dialog-slide-description1"
+        sx={{
+          height: "300px",
+          "& .MuiPaper-root": {
+            borderRadius: "15px",
+            marginTop: "150px",
+          },
+        }}
+      >
+        <div className="p-2" style={{}}>
+          <DialogTitle
+            sx={{ color: "#2f80ed", fontWeight: "500", fontSize: "18px" }}
+            id="alert-dialog-title"
+          >
+            {"Chuyển đổi tính năng thêm phiên bản"}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText
+              sx={{ color: "black" }}
+              id="alert-dialog-description"
+            >
+              Thông tin của các cấu hình hiện tại
+              sẽ không được lưu lại. Bạn có chắc chắn muốn chuyển sang tính năng này ?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={confirm}
+              className="rounded-2 me-1 button-mui"
+              type="primary"
+              style={{
+                height: "40px",
+                width: "auto",
+                fontSize: "16px",
+                marginBottom: "20px",
+              }}
+            >
+              <span
+                className="text-white"
+                style={{ fontWeight: "500", marginBottom: "2px" }}
+              >
+                Xác nhận
+              </span>
+            </Button>
+            <Button
+              onClick={onClose}
+              className="rounded-2 me-3 ant-btn-danger"
+              type="primary"
+              style={{
+                height: "40px",
+                width: "auto",
+                fontSize: "16px",
+                marginBottom: "20px",
+              }}
+            >
+              <span
+                className="text-white"
+                style={{ fontWeight: "500", marginBottom: "2px" }}
+              >
+                Hủy bỏ
+              </span>
+            </Button>
+          </DialogActions>
+        </div>
+      </Dialog>
+    </div>
+  );
+}
+
+export function ConfirmRefundOrder(props) {
+  const { open, onClose, confirm } = props;
+
+  return (
+    <div className="rounded-pill">
+      <Dialog
+        TransitionComponent={Transition1}
+        open={open}
+        onClose={onClose}
+        aria-describedby="alert-dialog-slide-description1"
+        sx={{
+          height: "300px",
+          "& .MuiPaper-root": {
+            borderRadius: "15px",
+            marginTop: "150px",
+          },
+        }}
+      >
+        <div className="p-2" style={{}}>
+          <DialogTitle
+            sx={{ color: "#e5383b", fontWeight: "500", fontSize: "18px" }}
+            id="alert-dialog-title"
+          >
+            {"Xác nhận trả hàng"}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText
+              sx={{ color: "black" }}
+              id="alert-dialog-description"
+            >
+              Bạn có chắc chắn muốn trả hàng ?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={confirm}
+              className="rounded-2 me-1 button-mui"
+              type="primary"
+              style={{
+                height: "40px",
+                width: "auto",
+                fontSize: "16px",
+                marginBottom: "20px",
+              }}
+            >
+              <span
+                className="text-white"
+                style={{ fontWeight: "500", marginBottom: "2px" }}
+              >
+                Xác nhận
+              </span>
+            </Button>
+            <Button
+              onClick={onClose}
+              className="rounded-2 me-3 ant-btn-danger"
+              type="primary"
+              style={{
+                height: "40px",
+                width: "auto",
+                fontSize: "16px",
+                marginBottom: "20px",
+              }}
+            >
+              <span
+                className="text-white"
+                style={{ fontWeight: "500", marginBottom: "2px" }}
+              >
+                Hủy bỏ
+              </span>
+            </Button>
+          </DialogActions>
+        </div>
+      </Dialog>
+    </div>
+  );
+}
+
+

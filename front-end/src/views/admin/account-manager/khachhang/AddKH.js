@@ -1,4 +1,4 @@
-import { Button, Modal, Card, message } from "antd";
+import { Button, Modal, Card } from "antd";
 import React from "react";
 import { useState } from "react";
 import axios from "axios";
@@ -15,14 +15,18 @@ import {
   RadioGroup,
 } from "@mui/material";
 import AddressForm from "./DiaChi";
-import ImageUploadComponent from "./Anh";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import * as dayjs from "dayjs";
+import AnhKhachHang from "./AnhKhachHang";
+import useCustomSnackbar from "../../../../utilities/notistack";
+import { Notistack } from "../../order-manager/enum";
+import { useNavigate } from "react-router-dom";
 const AddKH = () => {
+  const { handleOpenAlertVariant } = useCustomSnackbar();
   let [listKH, setListKH] = useState([]);
   let [hoVaTen, setTen] = useState("");
   let [ngaySinh, setNgaySinh] = useState("");
@@ -59,6 +63,7 @@ const AddKH = () => {
   const [sdtError, setSDTError] = useState("");
   const [sdtkhError, setSDTKHError] = useState("");
   const [hoTenKHErr, setHoTenKHErr] = useState("");
+  const navigate = useNavigate();
 
   const showConfirm = () => {
     setShowConfirmModal(true);
@@ -146,7 +151,7 @@ const AddKH = () => {
     }
   };
   const redirectToHienThiKH = (generatedMaKhachHang) => {
-    window.location.href = "/update-khach-hang/" + generatedMaKhachHang;
+    navigate("/update-khach-hang/" + generatedMaKhachHang);
   };
   const handleAddressChange = (result) => {
     setDiaChi(result);
@@ -177,7 +182,7 @@ const AddKH = () => {
         ngaySinh: ngaySinh,
         soDienThoai: soDienThoai,
         gioiTinh: gioiTinh,
-        diaChiList: [], // Bạn có thể để trống danh sách địa chỉ ở đây
+        diaChiList: [],
         email: email,
         anhDaiDien: anhDaiDien,
       };
@@ -189,7 +194,10 @@ const AddKH = () => {
         !diaChi ||
         !xaPhuong
       ) {
-        message.error("Vui lòng điền đủ thông tin");
+        handleOpenAlertVariant(
+          "Vui lòng điền đủ thông tin trước khi lưu.",
+          Notistack.ERROR
+        );
         setShowConfirmModal(false);
         return;
       }
@@ -201,7 +209,10 @@ const AddKH = () => {
         sdtkhError ||
         diaChiError
       ) {
-        message.error("Vui lòng điền đúng thông tin trước khi lưu.");
+        handleOpenAlertVariant(
+          "Vui lòng điền đúng thông tin trước khi lưu.",
+          Notistack.ERROR
+        );
         setShowConfirmModal(false);
         return;
       }
@@ -228,9 +239,7 @@ const AddKH = () => {
       };
 
       setListKH([newKhachHangResponse, ...listKH]);
-      message.success({
-        content: "Thêm khách hàng thành công",
-      });
+      handleOpenAlertVariant("Thêm thành công", Notistack.SUCCESS);
     } catch (error) {
       // Xử lý lỗi
       alert("Thêm khách hàng thất bại");
@@ -300,7 +309,7 @@ const AddKH = () => {
                     width: "100%",
                   }}
                 >
-                  <ImageUploadComponent
+                  <AnhKhachHang
                     setAnhDaiDien={handleAnhDaiDienChange}
                     hoten={hoVaTen}
                   />

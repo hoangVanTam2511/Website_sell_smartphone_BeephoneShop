@@ -75,8 +75,8 @@ const ModalUpdateCauHinh = ({ open, close, updateData, defaultRam, defaultRom, i
   const handleOpenSelectColor = () => {
     setOpenSelectColor(true);
   };
-  const uniqueConfigurations = cauHinhs.filter((item, index) => {
-    if (item.colors.length > 0) {
+  const uniqueConfigurations = cauHinhs && cauHinhs.filter((item, index) => {
+    if (item.colors && item.colors.length > 0) {
       const currentColors = item.colors.map((color) => color.tenMauSac);
       for (let i = 0; i < index; i++) {
         const prevColors = cauHinhs[i].colors.map((color) => color.tenMauSac);
@@ -242,8 +242,9 @@ const ModalUpdateCauHinh = ({ open, close, updateData, defaultRam, defaultRom, i
         <DialogContent className="">
           <div style={{ width: "600px", height: "auto" }}>
             <div className="text-center mt-1" style={{}}>
-              <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>CẬP NHẬT CẤU HÌNH</span>
+              <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>CẬP NHẬT MÀU SẮC</span>
             </div>
+            {/*
             <div className="d-flex mt-4">
               <div className="" style={{ width: "100%" }}>
                 <FormControl fullWidth>
@@ -298,6 +299,7 @@ const ModalUpdateCauHinh = ({ open, close, updateData, defaultRam, defaultRom, i
                 </FormControl>
               </div>
             </div>
+*/}
             <div className="mx-auto mt-3" style={{ width: "100%" }}>
               <FormControl fullWidth>
                 <Select className="custom"
@@ -509,7 +511,7 @@ const ModalUpdateCauHinh = ({ open, close, updateData, defaultRam, defaultRom, i
                             ></div>
                           </div>
                           <div className="ms-1">
-                            <h5 className="mt-3">Màu Sắc Của Các Cấu Hình Hiện Tại</h5>
+                            <h5 className="mt-3">Màu Sắc Của Các Phiên Bản Hiện Tại</h5>
                           </div>
                           <div className="mt-3 ms-1">
                             <div className="" style={{ width: "99.5%" }}>
@@ -640,28 +642,28 @@ const ModalUpdateCauHinh = ({ open, close, updateData, defaultRam, defaultRom, i
           <div className="mt-4 text-end">
             <Button
               onClick={() => {
-                if (!selectedRam) {
-                  handleOpenAlertVariant("Bạn chưa chọn RAM!", "warning");
-                }
-                else if (!selectedRom) {
-                  handleOpenAlertVariant("Bạn chưa chọn ROM!", "warning");
-                }
-                else if (selectedRam.dungLuong === defaultRam.dungLuong &&
-                  selectedRom.dungLuong === defaultRom.dungLuong) {
-                  update(selectedId, defaultRam, defaultRom, valueColorFinalSelected);
-                  close();
-                  handleOpenAlertVariant("Cập nhật cấu hình thành công!", Notistack.SUCCESS);
-                }
-                else if (
-                  cauHinhs.some((d) => d.ram.dungLuong === selectedRam.dungLuong && d.rom.dungLuong === selectedRom.dungLuong)
-                ) {
-                  handleOpenAlertVariant(`Cấu hình đã tồn tại!`, "warning");
-                }
-                else {
-                  update(selectedId, selectedRam, selectedRom, valueColorFinalSelected);
-                  close();
-                  handleOpenAlertVariant("Cập nhật cấu hình thành công!", Notistack.SUCCESS);
-                }
+                // if (!selectedRam) {
+                //   handleOpenAlertVariant("Bạn chưa chọn RAM!", "warning");
+                // }
+                // else if (!selectedRom) {
+                //   handleOpenAlertVariant("Bạn chưa chọn ROM!", "warning");
+                // }
+                // else if (selectedRam.dungLuong === defaultRam.dungLuong &&
+                //   selectedRom.dungLuong === defaultRom.dungLuong) {
+                //   update(selectedId, defaultRam, defaultRom, valueColorFinalSelected);
+                //   close();
+                //   handleOpenAlertVariant("Cập nhật cấu hình thành công!", Notistack.SUCCESS);
+                // }
+                // else if (
+                //   cauHinhs.some((d) => d.ram.dungLuong === selectedRam.dungLuong && d.rom.dungLuong === selectedRom.dungLuong)
+                // ) {
+                //   handleOpenAlertVariant(`Cấu hình đã tồn tại!`, "warning");
+                // }
+                // else {
+                update(selectedId, selectedRam, selectedRom, valueColorFinalSelected);
+                close();
+                handleOpenAlertVariant("Cập nhật màu sắc thành công!", Notistack.SUCCESS);
+                // }
               }}
               className="rounded-2 button-mui"
               type="primary"

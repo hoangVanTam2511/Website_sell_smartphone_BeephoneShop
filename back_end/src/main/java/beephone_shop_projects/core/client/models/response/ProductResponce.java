@@ -22,9 +22,6 @@ public interface ProductResponce {
     @Value("#{target.kich_thuoc_man_hinh}")
     String getKichThuocManHinh();
 
-    @Value("#{target.ten_dong_san_pham}")
-    String getTenDongSanPham();
-
     @Value("#{target.loai_the_nho}")
     String getLoaiTheNho();
 

@@ -43,7 +43,7 @@ const ManagementColors = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchTatCa, setSearchTatCa] = useState("");
-  const [searchTrangThai, setSearchTrangThai] = useState("");
+  const [searchTrangThai, setSearchTrangThai] = useState(5);
   const [open, setOpen] = React.useState(false);
   const [open1, setOpen1] = React.useState(false);
   const [colorCode, setColorCode] = useState("");
@@ -144,7 +144,10 @@ const ManagementColors = () => {
   const handleRefreshData = () => {
     setSearchTatCa("");
     setPageShow(5);
-    setSearchTrangThai("");
+    setSearchTrangThai(5);
+    if (searchTrangThai === 5) {
+      setSearchParams("");
+    }
     getListProductSearchAndPage(currentPage);
   };
 
@@ -369,7 +372,8 @@ const ManagementColors = () => {
           <Card.Header className="d-flex justify-content-between">
             <div className="header-title mt-2">
               <TextField
-                label="Tìm Màu Sắc"
+                placeholder="Tìm theo mã, tên màu sắc"
+                label="Tìm màu sắc"
                 onChange={handleSearchTatCaChange}
                 value={searchTatCa}
                 InputLabelProps={{
@@ -381,7 +385,7 @@ const ManagementColors = () => {
                 inputProps={{
                   style: {
                     height: "23px",
-                    width: "200px",
+                    width: "300px",
                   },
                 }}
                 size="small"
@@ -452,7 +456,7 @@ const ManagementColors = () => {
                     open={openSelect}
                     onClose={handleCloseSelect}
                     onOpen={handleOpenSelect}
-                    defaultValue={5}
+                    value={searchTrangThai}
                     onChange={handleSearchTrangThaiChange}
                   >
                     <MenuItem className="" value={5}>

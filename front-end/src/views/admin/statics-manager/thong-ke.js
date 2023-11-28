@@ -79,75 +79,6 @@ const ThongKe = () => {
     getSanPhamTop5();
   }, []);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       // Lấy dữ liệu cho tất cả các tháng trong năm
-  //       const dataPromises = Array.from({ length: 12 }, (_, index) => {
-  //         const month = index + 1; // Tháng bắt đầu từ 1
-  //         return axios.get(`http://localhost:8080/thong-ke/don-hang-year`, {
-  //           params: {
-  //             month,
-  //             year: searchYear, // Đổi năm tùy ý
-  //           },
-  //         });
-  //       });
-
-  //       const dataList = await Promise.all(dataPromises);
-
-  //       // Xử lý dữ liệu để lấy số lượng đơn hàng của từng tháng
-  //       const donHangTheoNamData = dataList.map(
-  //         (response) => response.data.soLuong
-  //       );
-
-  //       // Tạo biểu đồ
-  //       const ctx = document.getElementById("mixedChart");
-  //       const mixedChart = new Chart(ctx, {
-  //         type: "bar",
-  //         data: {
-  //           datasets: [
-  //             {
-  //               type: "bar",
-  //               label: "Số lượng đơn hàng",
-  //               data: donHangTheoNamData,
-  //               backgroundColor: "#2f80ed",
-  //               borderColor: "#2f80ed",
-  //               borderWidth: 1,
-  //               width: "150px",
-  //             },
-  //           ],
-  //           labels: [
-  //             "January",
-  //             "February",
-  //             "March",
-  //             "April",
-  //             "May",
-  //             "June",
-  //             "July",
-  //             "August",
-  //             "September",
-  //             "October",
-  //             "November",
-  //             "December",
-  //           ],
-  //         },
-  //         options: {},
-  //       });
-  //     } catch (error) {
-  //       console.error("Error fetching data", error);
-  //     }
-  //   };
-
-  //   fetchData();
-
-  //   // Cleanup khi component unmount (nếu cần)
-  //   return () => {
-  //     const ctx = document.getElementById("mixedChart");
-  //     const mixedChart = new Chart(ctx);
-  //     mixedChart.destroy();
-  //   };
-  // }, []);
-
   const convertToVND = (number) => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
@@ -324,7 +255,7 @@ const ThongKe = () => {
             }}
           >
             <h5>
-              <FontAwesomeIcon icon="fa-solid fa-ranking-star" />
+              <FontAwesomeIcon icon={faRankingStar} />
               Top 3 sản phẩm bán chạy
               <hr />
             </h5>

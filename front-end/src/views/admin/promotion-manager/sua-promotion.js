@@ -13,7 +13,7 @@ import { apiURLKhuyenMai } from "../../../service/api";
 import TextField from "@mui/material/TextField";
 import "../../../assets/scss/HienThiNV.scss";
 import { InputAdornment } from "@mui/material";
-import { useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -72,11 +72,12 @@ const SuaKhuyenMai = () => {
   const [open, setOpen] = React.useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
+  const navigate = useNavigate();
   let successfulCount = 0;
   let successfulCount1 = 0;
 
   const redirectToHienThiKhuyenMai = () => {
-    window.location.href = "/khuyen-mai";
+    navigate("/khuyen-mai");
   };
 
   const handleOpenDialogConfirmAdd = () => {

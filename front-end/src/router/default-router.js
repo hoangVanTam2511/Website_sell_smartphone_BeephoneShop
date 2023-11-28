@@ -1,6 +1,7 @@
 import React from "react";
 import Index from "../views/index";
 import { ToastContainer } from "react-toastify";
+import { Navigate } from "react-router-dom";
 // san pham
 
 // chip
@@ -112,6 +113,13 @@ import CreateDanhMuc from "../views/admin/order-manager/create-danh-muc";
 import ThongKe from "../views/admin/statics-manager/thong-ke";
 // import ManagementImage from "../views/admin/order-manager/management-image";
 import PaymentSuccess from "../views/admin/order-manager/vnpay-payment-success";
+import ManagementImei from "../views/admin/order-manager/management-imei";
+import ThongKeDoanhThu from "../views/admin/statics-manager/thong-ke-doanh-thu";
+import Transaction from "../views/admin/transaction-manager/transaction";
+import { Print } from "../views/admin/order-manager/printer-invoice";
+import RefundOrder from "../views/admin/order-manager/refund-order";
+import RefundDetail from "../views/admin/order-manager/refund-details";
+import ManagementRanks from "../views/admin/rank-manager/management-rank";
 
 export const DefaultRouter = [
   {
@@ -120,6 +128,10 @@ export const DefaultRouter = [
     children: [
       {
         path: "",
+        element: <Navigate to="/login" replace={true} />,
+      },
+      {
+        path: "/home",
         element: <Index />,
       },
       {
@@ -369,6 +381,14 @@ export const DefaultRouter = [
         element: <ManagementTheNhos />,
       },
       {
+        path: "dashboard/imeis",
+        element: <ManagementImei />,
+      },
+      // {
+      //   path: "dashboard/image",
+      //   element: <ManagementImage />,
+      // },
+      {
         path: "dashboard/the-nhos/create",
         element: <CreateTheNho />,
       },
@@ -377,12 +397,44 @@ export const DefaultRouter = [
         element: <CreateProduct />,
       },
       {
+        path: "dashboard/payment-success",
+        element: <PaymentSuccess />,
+      },
+      {
         path: "dashboard/thong-ke",
         element: <ThongKe />,
       },
       {
         path: "dashboard/payment-success",
         element: <PaymentSuccess />,
+      },
+      {
+        path: "dashboard/statistic",
+        element: <ThongKeDoanhThu />,
+      },
+      {
+        path: "dashboard/login",
+        element: <ThongKeDoanhThu />,
+      },
+      {
+        path: "dashboard/transaction",
+        element: <Transaction />,
+      },
+      {
+        path: "dashboard/invoice",
+        element: <Print />,
+      },
+      {
+        path: "dashboard/refund-order",
+        element: <RefundOrder />,
+      },
+      {
+        path: "dashboard/refund-order/:id",
+        element: <RefundDetail />,
+      },
+      {
+        path: "dashboard/rank",
+        element: <ManagementRanks />,
       },
       // {
       //   path: 'dashboard/add-product',

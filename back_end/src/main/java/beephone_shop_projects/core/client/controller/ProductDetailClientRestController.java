@@ -24,6 +24,15 @@ public class ProductDetailClientRestController {
         }
     }
 
+    @GetMapping("/get-products-best-seller")
+    public ResponseEntity<?> getListProductBestSeller() {
+        try {
+            return new ResponseEntity<>(productDetailService.getProductBestSeller(), HttpStatus.OK);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @GetMapping("/get-config/{id}")
     public ResponseEntity<?> getConfigOfIdProduct(@PathVariable("id") String id) {
         try {

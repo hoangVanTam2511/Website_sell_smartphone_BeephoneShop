@@ -43,7 +43,7 @@ const ManagementDanhMuc = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchTatCa, setSearchTatCa] = useState("");
-  const [searchTrangThai, setSearchTrangThai] = useState("");
+  const [searchTrangThai, setSearchTrangThai] = useState(5);
   const [open, setOpen] = React.useState(false);
   const [open1, setOpen1] = React.useState(false);
   const [danhMucCode, setDanhMucCode] = useState("");
@@ -53,6 +53,7 @@ const ManagementDanhMuc = () => {
   const [openConfirm, setOpenConfirm] = useState(false);
   const { handleOpenAlertVariant } = useCustomSnackbar();
   const [currentPage, setCurrentPage] = useState(1);
+  const [pageShow, setPageShow] = useState(5);
   const [openSelect, setOpenSelect] = useState(false);
 
   const getListDanhMuc = () => {
@@ -74,6 +75,7 @@ const ManagementDanhMuc = () => {
         params: {
           keyword: searchTatCa,
           currentPage: page,
+          pageSize: pageShow,
           status: ConvertStatusProductsNumberToString(searchTrangThai),
         },
       })
@@ -118,10 +120,35 @@ const ManagementDanhMuc = () => {
     setCurrentPage(1);
   };
 
+  const handleShowPageVoucher = (event) => {
+    const selectedValue = event.target.value;
+    setPageShow(parseInt(selectedValue));
+    setCurrentPage(1);
+  };
+
+  const [openSelect3, setOpenSelect3] = useState(false);
+  const handleCloseSelect3 = () => {
+    setOpenSelect3(false);
+  };
+
+  const handleOpenSelect3 = () => {
+    setOpenSelect3(true);
+  };
+
   const handleSearchTatCaChange = (event) => {
     const searchTatCaInput = event.target.value;
     setSearchTatCa(searchTatCaInput);
     setCurrentPage(1);
+  };
+
+  const handleRefreshData = () => {
+    setSearchTatCa("");
+    setPageShow(5);
+    setSearchTrangThai(5);
+    if (searchTrangThai === 5) {
+      setSearchParams("");
+    }
+    getListDanhMucSearchAndPage(currentPage);
   };
 
   const handleClickOpen1 = (id) => {
@@ -135,7 +162,7 @@ const ManagementDanhMuc = () => {
 
   useEffect(() => {
     getListDanhMucSearchAndPage(currentPage);
-  }, [searchTatCa, searchTrangThai, currentPage, totalPages]);
+  }, [searchTatCa, searchTrangThai, currentPage, totalPages, pageShow]);
 
   useEffect(() => {
     getListDanhMuc();
@@ -345,7 +372,8 @@ const ManagementDanhMuc = () => {
           <Card.Header className="d-flex justify-content-between">
             <div className="header-title mt-2">
               <TextField
-                label="Tìm Danh Mục"
+                placeholder="Tìm theo mã, tên danh mục"
+                label="Tìm danh mục"
                 onChange={handleSearchTatCaChange}
                 value={searchTatCa}
                 InputLabelProps={{
@@ -357,14 +385,14 @@ const ManagementDanhMuc = () => {
                 inputProps={{
                   style: {
                     height: "23px",
-                    width: "200px",
+                    width: "300px",
                   },
                 }}
                 size="small"
                 className=""
               />
               <Button
-                // onClick={handleRefreshData}
+                onClick={() => handleRefreshData()}
                 className="rounded-2 ms-2"
                 type="warning"
                 style={{ width: "100px", fontSize: "15px" }}
@@ -426,7 +454,7 @@ const ManagementDanhMuc = () => {
                     open={openSelect}
                     onClose={handleCloseSelect}
                     onOpen={handleOpenSelect}
-                    defaultValue={5}
+                    value={searchTrangThai}
                     onChange={handleSearchTrangThaiChange}
                   >
                     <MenuItem className="" value={5}>
@@ -440,7 +468,68 @@ const ManagementDanhMuc = () => {
                     </MenuItem>
                   </Select>
                 </FormControl>
+
+                <div
+                  className="d-flex"
+                  style={{
+                    height: "40px",
+                    position: "relative",
+                    cursor: "pointer",
+                  }}
+                >
+                  <div
+                    onClick={handleOpenSelect3}
+                    className=""
+                    style={{ marginTop: "7px" }}
+                  >
+                    <span
+                      className="ms-2 ps-1"
+                      style={{ fontSize: "15px", fontWeight: "450" }}
+                    >
+                      Hiển Thị:{" "}
+                    </span>
+                  </div>
+                  <FormControl
+                    sx={{
+                      minWidth: 50,
+                    }}
+                    size="small"
+                  >
+                    <Select
+                      MenuProps={{
+                        PaperProps: {
+                          style: {
+                            borderRadius: "7px",
+                          },
+                        },
+                      }}
+                      IconComponent={KeyboardArrowDownOutlinedIcon}
+                      sx={{
+                        "& .MuiOutlinedInput-notchedOutline": {
+                          border: "none !important",
+                        },
+                        "& .MuiSelect-select": {
+                          color: "#2f80ed",
+                          fontWeight: "500",
+                        },
+                      }}
+                      open={openSelect3}
+                      onClose={handleCloseSelect3}
+                      onOpen={handleOpenSelect3}
+                      value={pageShow}
+                      onChange={handleShowPageVoucher}
+                    >
+                      <MenuItem className="" value={5}>
+                        Mặc định
+                      </MenuItem>
+                      <MenuItem value={10}>10</MenuItem>
+                      <MenuItem value={20}>20</MenuItem>
+                      <MenuItem value={50}>50</MenuItem>
+                    </Select>
+                  </FormControl>
+                </div>
               </div>
+
               <Button
                 onClick={handleClickOpen}
                 className="rounded-2 button-mui"

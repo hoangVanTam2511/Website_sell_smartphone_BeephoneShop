@@ -21,6 +21,4 @@ public class ChangeStatusVoucherRequest {
 
     private StatusDiscount status;
 
-    private String lyDoHuy;
-
 }

@@ -83,7 +83,7 @@ const ManagementHangs = () => {
   const [productPages, setProductPages] = useState([]);
   const [pageShow, setPageShow] = useState(5);
   const [searchTatCa, setSearchTatCa] = useState("");
-  const [searchTrangThai, setSearchTrangThai] = useState("");
+  const [searchTrangThai, setSearchTrangThai] = useState(5);
 
   const getListProductSearchAndPage = (page) => {
     // setIsLoading(false);
@@ -134,7 +134,10 @@ const ManagementHangs = () => {
   const handleRefreshData = () => {
     setSearchTatCa("");
     setPageShow(5);
-    setSearchTrangThai("");
+    setSearchTrangThai(5);
+    if (searchTrangThai === 5) {
+      setSearchParams("");
+    }
     getListProductSearchAndPage(currentPage);
   };
 
@@ -364,7 +367,7 @@ const ManagementHangs = () => {
     axios
       .put(`http://localhost:8080/api/brands`, obj)
       .then((response) => {
-        getListHang();
+        getListProductSearchAndPage();
         handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
         setOpen1(false);
       })
@@ -377,7 +380,7 @@ const ManagementHangs = () => {
     axios
       .put(`http://localhost:8080/api/brands/${idHang}`)
       .then((response) => {
-        getListHang();
+        getListProductSearchAndPage();
         handleOpenAlertVariant(
           "Đổi trạng thái thành công!!!",
           Notistack.SUCCESS
@@ -401,7 +404,8 @@ const ManagementHangs = () => {
           <Card.Header className="d-flex justify-content-between">
             <div className="header-title mt-2">
               <TextField
-                label="Tìm Hãng"
+                placeholder="Tìm theo mã, tên hãng"
+                label="Tìm Tên Hãng"
                 onChange={handleSearchTatCaChange}
                 value={searchTatCa}
                 InputLabelProps={{
@@ -413,7 +417,7 @@ const ManagementHangs = () => {
                 inputProps={{
                   style: {
                     height: "23px",
-                    width: "200px",
+                    width: "300px",
                   },
                 }}
                 size="small"
@@ -484,7 +488,7 @@ const ManagementHangs = () => {
                     open={openSelect}
                     onClose={handleCloseSelect}
                     onOpen={handleOpenSelect}
-                    defaultValue={5}
+                    value={searchTrangThai}
                     onChange={handleSearchTrangThaiChange}
                   >
                     <MenuItem className="" value={5}>

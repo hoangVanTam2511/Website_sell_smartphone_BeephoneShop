@@ -21,7 +21,7 @@ import LoadingIndicator from '../../../utilities/loading';
 import useCustomSnackbar from '../../../utilities/notistack';
 import { Notistack, SimMultiple } from "./enum";
 import { MdOutlineAddToPhotos } from "react-icons/md";
-import { Box as BoxJoy } from '@mui/joy';
+import { Box as BoxJoy, getListDividerUtilityClass } from '@mui/joy';
 import { Button as ButtonJoy } from '@mui/joy';
 import { Card as CardJoy } from '@mui/joy';
 import { Checkbox as CheckboxJoy } from '@mui/joy';
@@ -41,6 +41,10 @@ import CreateCauHinh from "./create-cau-hinh";
 import generateRandomCode from "../../../utilities/genCode";
 import { connectStorageEmulator } from "firebase/storage";
 import useFormItemStatus from "antd/es/form/hooks/useFormItemStatus";
+import CreateDanhMuc from "./create-danh-muc";
+import CreateCameraSau from "./create-camera-sau";
+import CreateCameraTruoc from "./create-camera-truoc";
+import { brown } from "@mui/material/colors";
 // import Sketch from '@uiw/react-color-sketch';
 
 const ITEM_HEIGHT = 130;
@@ -60,6 +64,24 @@ const CreateProduct = ({ }) => {
   const getOverplay = (value) => {
     isOverplay = value;
   }
+
+  const [confirm, setConfirm] = useState(false);
+
+  const getConfirm = (value) => {
+    setConfirm(value);
+  }
+
+  const [categorys, setCategorys] = useState([]);
+  const getListDanhMuc = () => {
+    axios
+      .get(`http://localhost:8080/api/danh-mucs`)
+      .then((response) => {
+        setCategorys(response.data.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
   const [openHang, setOpenHang] = useState(false);
   const [listHang, setListHang] = useState([]);
   const handleCloseOpenHang = () => {
@@ -157,6 +179,10 @@ const CreateProduct = ({ }) => {
       });
   };
 
+  const [openDanhMuc, setOpenDanhMuc] = useState(false);
+  const handleCloseOpenDanhMuc = () => {
+    setOpenDanhMuc(false);
+  }
   const [openTheSim, setOpenTheSim] = useState(false);
   const [listTheSim, setListTheSim] = useState([]);
   const handleCloseOpenTheSim = () => {
@@ -175,6 +201,9 @@ const CreateProduct = ({ }) => {
 
 
   useEffect(() => {
+    getListCameraTruoc();
+    getListCameraSau();
+    getListDanhMuc()
     getListTheSim();
     getListManHinh();
     getListTheNho();
@@ -358,114 +387,152 @@ const CreateProduct = ({ }) => {
   const [colorName, setColorName] = useState([
     "White Smoke", "Black"
   ]);
-  const [camerasTruoc, setCamerasTruoc] = useState([
-    {
-      id: 1,
-      doPhanGiai: 20,
-    },
-    {
-      id: 22,
-      doPhanGiai: 20,
-    },
-    {
-      id: 2,
-      doPhanGiai: 128,
-    },
-    {
-      id: 3,
-      doPhanGiai: 108,
-    },
-    {
-      id: 4,
-      doPhanGiai: 48,
-    },
-    {
-      id: 5,
-      doPhanGiai: 20,
-    },
-    {
-      id: 6,
-      doPhanGiai: 12,
-    },
-    {
-      id: 7,
-      doPhanGiai: 5,
-    },
-  ]);
-  const [camerasSau, setCamerasSau] = useState([
-    {
-      id: 1,
-      doPhanGiai: 20,
-    },
-    {
-      id: 22,
-      doPhanGiai: 20,
-    },
-    {
-      id: 2,
-      doPhanGiai: 128,
-    },
-    {
-      id: 3,
-      doPhanGiai: 108,
-    },
-    {
-      id: 4,
-      doPhanGiai: 48,
-    },
-    {
-      id: 5,
-      doPhanGiai: 20,
-    },
-    {
-      id: 6,
-      doPhanGiai: 12,
-    },
-    {
-      id: 7,
-      doPhanGiai: 5,
-    },
-  ]);
+  // const [camerasTruoc, setCamerasTruoc] = useState([
+  //   {
+  //     id: 1,
+  //     doPhanGiai: 20,
+  //   },
+  //   {
+  //     id: 22,
+  //     doPhanGiai: 20,
+  //   },
+  //   {
+  //     id: 2,
+  //     doPhanGiai: 128,
+  //   },
+  //   {
+  //     id: 3,
+  //     doPhanGiai: 108,
+  //   },
+  //   {
+  //     id: 4,
+  //     doPhanGiai: 48,
+  //   },
+  //   {
+  //     id: 5,
+  //     doPhanGiai: 20,
+  //   },
+  //   {
+  //     id: 6,
+  //     doPhanGiai: 12,
+  //   },
+  //   {
+  //     id: 7,
+  //     doPhanGiai: 5,
+  //   },
+  // ]);
+  // const [camerasSau, setCamerasSau] = useState([
+  //   {
+  //     id: 1,
+  //     doPhanGiai: 20,
+  //   },
+  //   {
+  //     id: 22,
+  //     doPhanGiai: 20,
+  //   },
+  //   {
+  //     id: 2,
+  //     doPhanGiai: 128,
+  //   },
+  //   {
+  //     id: 3,
+  //     doPhanGiai: 108,
+  //   },
+  //   {
+  //     id: 4,
+  //     doPhanGiai: 48,
+  //   },
+  //   {
+  //     id: 5,
+  //     doPhanGiai: 20,
+  //   },
+  //   {
+  //     id: 6,
+  //     doPhanGiai: 12,
+  //   },
+  //   {
+  //     id: 7,
+  //     doPhanGiai: 5,
+  //   },
+  // ]);
+  //
+  // const [sims, setSims] = useState([
+  //   {
+  //     id: 1,
+  //     loaiTheSim: "1 Nano SIM",
+  //     multipleSim: 1,
+  //   },
+  //   {
+  //     id: 2,
+  //     loaiTheSim: "2 Nano SIM",
+  //     multipleSim: 2,
+  //   },
+  //   {
+  //     id: 3,
+  //     loaiTheSim: "1 eSIM",
+  //     multipleSim: 1,
+  //   },
+  // ]);
+  // const [categorys, setCategorys] = useState([
+  //   {
+  //     id: 1,
+  //     content: "Chơi Game, Cấu Hình Cao",
+  //   },
+  //   {
+  //     id: 2,
+  //     content: "Pin Trâu",
+  //   },
+  //   {
+  //     id: 3,
+  //     content: "Livestream",
+  //   },
+  //   {
+  //     id: 4,
+  //     content: "Chụp Ảnh, Quay Phim",
+  //   },
+  //   {
+  //     id: 5,
+  //     content: "Mỏng nhẹ",
+  //   },
+  // ]);
+  //
+  //
 
-  const [sims, setSims] = useState([
-    {
-      id: 1,
-      loaiTheSim: "1 Nano SIM",
-      multipleSim: 1,
-    },
-    {
-      id: 2,
-      loaiTheSim: "2 Nano SIM",
-      multipleSim: 2,
-    },
-    {
-      id: 3,
-      loaiTheSim: "1 eSIM",
-      multipleSim: 1,
-    },
-  ]);
-  const [categorys, setCategorys] = useState([
-    {
-      id: 1,
-      content: "Chơi Game, Cấu Hình Cao",
-    },
-    {
-      id: 2,
-      content: "Pin Trâu",
-    },
-    {
-      id: 3,
-      content: "Livestream",
-    },
-    {
-      id: 4,
-      content: "Chụp Ảnh, Quay Phim",
-    },
-    {
-      id: 5,
-      content: "Mỏng nhẹ",
-    },
-  ]);
+  const [camerasSau, setCamerasSau] = useState([]);
+  const [camerasTruoc, setCamerasTruoc] = useState([]);
+  const getListCameraTruoc = () => {
+    axios
+      .get(`http://localhost:8080/api/camera-fronts`)
+      .then((response) => {
+        setCamerasTruoc(response.data.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+  const getListCameraSau = () => {
+    axios
+      .get(`http://localhost:8080/api/camera-rears`)
+      .then((response) => {
+        setCamerasSau(response.data.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+
+  const [openCameraSau, setOpenCameraSau] = useState(false);
+  const [openCameraTruoc, setOpenCameraTruoc] = useState(false);
+
+
+  const handleCloseOpenCameraTruoc = () => {
+    setOpenCameraTruoc(false);
+  }
+
+  const handleCloseOpenCameraSau = () => {
+    setOpenCameraSau(false);
+  }
 
 
   const [selectedCameraSau, setSelectedCameraSau] = React.useState([]);
@@ -521,6 +588,7 @@ const CreateProduct = ({ }) => {
 
   };
 
+  const [mainCameraTruoc, setMainCameraTruoc] = useState("");
   const handleToggleRatingCameraTruoc = (cameraId) => {
     setRatingsCameraTruoc((prevRatings) => {
       const updatedRatings = { ...prevRatings };
@@ -529,12 +597,20 @@ const CreateProduct = ({ }) => {
           updatedRatings[key] = false;
         }
       });
-      return {
-        ...updatedRatings,
-        [cameraId]: !prevRatings[cameraId],
-      };
+      const newRating = !prevRatings[cameraId];
+      updatedRatings[cameraId] = newRating;
+      const trueCameraId = Object.keys(updatedRatings).find((key) => updatedRatings[key] === true);
+      setMainCameraTruoc(trueCameraId || "");
+
+      return updatedRatings;
+      // return {
+      //   ...updatedRatings,
+      //   [cameraId]: !prevRatings[cameraId],
+      // };
     });
   };
+
+  const [mainCameraSau, setMainCameraSau] = useState("");
 
   const handleToggleRatingCameraSau = (cameraId) => {
     setRatingsCameraSau((prevRatings) => {
@@ -544,12 +620,19 @@ const CreateProduct = ({ }) => {
           updatedRatings[key] = false;
         }
       });
-      return {
-        ...updatedRatings,
-        [cameraId]: !prevRatings[cameraId],
-      };
+      const newRating = !prevRatings[cameraId];
+      updatedRatings[cameraId] = newRating;
+      const trueCameraId = Object.keys(updatedRatings).find((key) => updatedRatings[key] === true);
+      setMainCameraSau(trueCameraId || "");
+
+      return updatedRatings;
+      // return {
+      //   ...updatedRatings,
+      //   [cameraId]: !prevRatings[cameraId],
+      // };
     });
   };
+
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -604,13 +687,13 @@ const CreateProduct = ({ }) => {
   const [status, setStatus] = React.useState();
   const [brand, setBrand] = React.useState('');
   const [brandName, setBrandName] = React.useState('');
-  const [opera, setOpera] = React.useState('');
+  const [opera, setOpera] = React.useState();
   const [chip, setChip] = React.useState('');
   const [screen, setScreen] = React.useState('');
   const [pin, setPin] = React.useState('');
   const [congSac, setCongSac] = React.useState('');
   const [theSim, setTheSim] = React.useState('');
-  const [theNho, setTheNho] = React.useState('');
+  const [theNho, setTheNho] = React.useState();
   const handleChangeTheSim = (event) => {
     setTheSim(event.target.value);
   };
@@ -664,7 +747,7 @@ const CreateProduct = ({ }) => {
     const request = {
       ma: generateRandomId(),
       tenSanPham: productName,
-      operatingType: opera,
+      operatingType: (opera === "" || opera === null || opera === undefined) ? 0 : 1,
       theSimDienThoais: convertTheSims,
       congSac: {
         id: congSac,
@@ -692,6 +775,49 @@ const CreateProduct = ({ }) => {
 
 
 
+  const handleValidation = () => {
+    let isValid = true;
+    if (productName.trim() === "") {
+      isValid = false;
+    }
+    if (selectedCategory.length === 0) {
+      isValid = false;
+    }
+    if (selectedSim.length === 0) {
+      isValid = false;
+    }
+    if (selectedCameraTruoc.length === 0) {
+      isValid = false;
+    }
+    if (mainCameraTruoc === "") {
+      isValid = false;
+    }
+    if (mainCameraSau === "") {
+      isValid = false;
+    }
+    if (selectedCameraSau.length === 0) {
+      isValid = false;
+    }
+    if (brand.trim() === "") {
+      isValid = false;
+    }
+    if (chip.trim() === "") {
+      isValid = false;
+    }
+    if (pin.trim() === "") {
+      isValid = false;
+    }
+    if (congSac.trim() === "") {
+      isValid = false;
+    }
+    if (screen.trim() === "") {
+      isValid = false;
+    }
+    return isValid;
+  }
+
+
+
   return (
     <>
       {/*
@@ -706,7 +832,7 @@ const CreateProduct = ({ }) => {
               </div>
 */}
       <div style={{ pointerEvents: isOverplay === true ? "none" : "auto" }}>
-        <div className={"mt-4"} style={{ backgroundColor: "#ffffff", boxShadow: "0 0.1rem 0.3rem #00000010", height: "735px" }}>
+        <div className={"mt-4"} style={{ backgroundColor: "#ffffff", boxShadow: "0 0.1rem 0.3rem #00000010", height: confirm && !handleValidation() ? "800px" : "735px" }}>
           <div className="container" style={{}}>
             <div className="mx-auto" style={{ maxWidth: "70%" }}>
               <div className="text-center pt-4" style={{}}>
@@ -720,8 +846,8 @@ const CreateProduct = ({ }) => {
                   inputValue={productName}
                   onInputChange={handleOnInputChangeProductName}
                   renderInput={(params) => <TextField
-                    //           helperText={productName.trim() === "" ? "Bạn chưa nhập tên sản phẩm" : ""}
-                    // error={productName === null || productName.trim() === ""}
+                    helperText={confirm && productName.trim() === "" ? "Bạn chưa nhập tên sản phẩm" : ""}
+                    error={confirm && productName.trim() === ""}
                     {...params}
                     label="Tên Sản Phẩm" />}
                 />
@@ -731,7 +857,7 @@ const CreateProduct = ({ }) => {
               </div>
               <div className="mt-4 d-flex">
                 <div className="" style={{ width: "100%" }}>
-                  <FormControl fullWidth sx={{ width: 262 }}>
+                  <FormControl fullWidth sx={{ width: 262 }} error={confirm && selectedCategory.length === 0}>
                     <InputLabel id="demo-simple-select-label">Danh Mục</InputLabel>
                     <Select className="custom"
                       labelId="demo-simple-select-label"
@@ -744,7 +870,7 @@ const CreateProduct = ({ }) => {
                         <>
                           <InputAdornment style={{ marginRight: "15px" }} position="end">
                             <Tooltip title="Thêm danh mục" TransitionComponent={Zoom}>
-                              <IconButton /* onClick={() => setOpen(true)} */ size="small">
+                              <IconButton onClick={() => setOpenDanhMuc(true)} size="small">
                                 <AiOutlinePlus className='text-dark' />
                               </IconButton>
                             </Tooltip>
@@ -754,20 +880,23 @@ const CreateProduct = ({ }) => {
                       }
                       renderValue={(selected) => selected.map(id => {
                         const category = categorys.find(c => c.id === id);
-                        return category ? category.content : '';
+                        return category ? category.tenDanhMuc : '';
                       }).join(', ')}
                     >
                       {categorys.map((c) => (
                         <MenuItem key={c.id} value={c.id}>
                           <Checkbox checked={selectedCategory.indexOf(c.id) > -1} />
-                          <ListItemText primary={c.content} />
+                          <ListItemText primary={c.tenDanhMuc} />
                         </MenuItem>
                       ))}
                     </Select>
+                    {confirm && selectedCategory.length === 0 &&
+                      <FormHelperText>Chưa chọn danh mục!</FormHelperText>
+                    }
                   </FormControl>
                 </div>
                 <div className="ms-3" style={{ width: "100%" }}>
-                  <FormControl fullWidth>
+                  <FormControl fullWidth error={confirm && brand.trim() === ""}>
                     <InputLabel id="demo-simple-select-label">Hãng</InputLabel>
                     <Select className="custom"
                       labelId="demo-simple-select-label"
@@ -793,10 +922,13 @@ const CreateProduct = ({ }) => {
                         )
                       })}
                     </Select>
+                    {confirm && brand.trim() === "" &&
+                      <FormHelperText>Chưa chọn hãng!</FormHelperText>
+                    }
                   </FormControl>
                 </div>
                 <div className="ms-3" style={{ width: "100%" }}>
-                  <FormControl fullWidth>
+                  <FormControl fullWidth error={confirm && chip.trim() === ""}>
                     <InputLabel id="demo-simple-select-label">Chip</InputLabel>
                     <Select className="custom"
                       labelId="demo-simple-select-label"
@@ -823,12 +955,15 @@ const CreateProduct = ({ }) => {
                         )
                       })}
                     </Select>
+                    {confirm && chip.trim() === "" &&
+                      <FormHelperText>Chưa chọn chip!</FormHelperText>
+                    }
                   </FormControl>
                 </div>
               </div>
               <div className="mt-4 d-flex">
                 <div className="" style={{ width: "100%" }}>
-                  <FormControl fullWidth>
+                  <FormControl fullWidth error={confirm && pin.trim() === ""}>
                     <InputLabel id="demo-simple-select-label">Pin</InputLabel>
                     <Select className="custom"
                       labelId="demo-simple-select-label"
@@ -855,10 +990,13 @@ const CreateProduct = ({ }) => {
                         )
                       })}
                     </Select>
+                    {confirm && pin.trim() === "" &&
+                      <FormHelperText>Chưa chọn pin!</FormHelperText>
+                    }
                   </FormControl>
                 </div>
                 <div className="ms-3" style={{ width: "100%" }}>
-                  <FormControl fullWidth>
+                  <FormControl fullWidth error={confirm && congSac.trim() === ""}>
                     <InputLabel id="demo-simple-select-label">Cổng Sạc</InputLabel>
                     <Select className="custom"
                       labelId="demo-simple-select-label"
@@ -885,6 +1023,9 @@ const CreateProduct = ({ }) => {
                         )
                       })}
                     </Select>
+                    {confirm && congSac.trim() === "" &&
+                      <FormHelperText>Chưa chọn cổng sạc!</FormHelperText>
+                    }
                   </FormControl>
                 </div>
                 <div className="ms-3" style={{ width: "100%" }}>
@@ -910,7 +1051,7 @@ const CreateProduct = ({ }) => {
                         </>
                       }
                     >
-                      <MenuItem value={"None"}>Không</MenuItem>
+                      <MenuItem value={0}>Không</MenuItem>
                       {listTheNho.map((item) => {
                         return (
                           <MenuItem key={item.id} value={item.id}>{item.loaiTheNho}</MenuItem>
@@ -922,7 +1063,7 @@ const CreateProduct = ({ }) => {
               </div>
               <div className="mt-4 d-flex">
                 <div className="" style={{ width: "100%" }}>
-                  <FormControl fullWidth sx={{ width: 402 }}>
+                  <FormControl fullWidth sx={{ width: 402 }} error={(confirm && selectedCameraSau.length === 0) || (confirm && selectedCameraSau.length !== 0 && mainCameraSau === "")}>
                     <InputLabel id="demo-simple-select-label">Camera Sau</InputLabel>
                     <Select className="custom"
                       labelId="demo-simple-select-label"
@@ -967,7 +1108,7 @@ const CreateProduct = ({ }) => {
                         <>
                           <InputAdornment style={{ marginRight: "15px" }} position="end">
                             <Tooltip title="Thêm camera sau" TransitionComponent={Zoom}>
-                              <IconButton /* onClick={() => setOpen(true)} */ size="small">
+                              <IconButton onClick={() => setOpenCameraSau(true)} size="small">
                                 <AiOutlinePlus className='text-dark' />
                               </IconButton>
                             </Tooltip>
@@ -979,7 +1120,7 @@ const CreateProduct = ({ }) => {
                       {listSortCameraSau.map((c) => (
                         <MenuItem key={c.id} value={c.id}>
                           <Checkbox checked={selectedCameraSau.indexOf(c.id) > -1} />
-                          <ListItemText primary={c.doPhanGiai + "MP"} />
+                          <ListItemText primary={c.doPhanGiai + "MP " + `(${c.cameraType})`} />
                           {selectedCameraSau.indexOf(c.id) > -1 ?
                             <>
                               <Tooltip
@@ -1004,10 +1145,16 @@ const CreateProduct = ({ }) => {
                         </MenuItem>
                       ))}
                     </Select>
+                    {confirm && selectedCameraSau.length === 0 &&
+                      <FormHelperText>Chưa chọn camera sau!</FormHelperText>
+                    }
+                    {confirm && selectedCameraSau.length > 0 && mainCameraSau === "" &&
+                      <FormHelperText>Camera sau chưa có camera chính!</FormHelperText>
+                    }
                   </FormControl>
                 </div>
                 <div className="ms-3" style={{ width: "100%" }}>
-                  <FormControl fullWidth sx={{ width: 402 }}>
+                  <FormControl fullWidth sx={{ width: 402 }} error={(confirm && selectedCameraTruoc.length === 0) || (confirm && selectedCameraTruoc.length !== 0 && mainCameraTruoc === "")}>
                     <InputLabel id="demo-simple-select-label">Camera Trước</InputLabel>
                     <Select className="custom"
                       labelId="demo-simple-select-label"
@@ -1052,7 +1199,7 @@ const CreateProduct = ({ }) => {
                         <>
                           <InputAdornment style={{ marginRight: "15px" }} position="end">
                             <Tooltip title="Thêm camera sau" TransitionComponent={Zoom}>
-                              <IconButton /* onClick={() => setOpen(true)} */ size="small">
+                              <IconButton onClick={() => setOpenCameraTruoc(true)} size="small">
                                 <AiOutlinePlus className='text-dark' />
                               </IconButton>
                             </Tooltip>
@@ -1064,7 +1211,7 @@ const CreateProduct = ({ }) => {
                       {listSortCameraTruoc.map((c) => (
                         <MenuItem key={c.id} value={c.id}>
                           <Checkbox checked={selectedCameraTruoc.indexOf(c.id) > -1} />
-                          <ListItemText primary={c.doPhanGiai + "MP"} />
+                          <ListItemText primary={c.doPhanGiai + "MP " + `(${c.cameraType})`} />
                           {selectedCameraTruoc.indexOf(c.id) > -1 ?
                             <>
                               <Tooltip
@@ -1089,12 +1236,18 @@ const CreateProduct = ({ }) => {
                         </MenuItem>
                       ))}
                     </Select>
+                    {confirm && selectedCameraTruoc.length === 0 &&
+                      <FormHelperText>Chưa chọn camera trước!</FormHelperText>
+                    }
+                    {confirm && selectedCameraTruoc.length > 0 && mainCameraTruoc === "" &&
+                      <FormHelperText>Camera trước chưa có camera chính!</FormHelperText>
+                    }
                   </FormControl>
                 </div>
               </div>
               <div className="mt-4 d-flex">
                 <div className="" style={{ width: "100%" }}>
-                  <FormControl fullWidth sx={{ width: 402 }}>
+                  <FormControl fullWidth sx={{ width: 402 }} error={confirm && screen.trim() === ""}>
                     <InputLabel id="demo-simple-select-label">Màn Hình</InputLabel>
                     <Select className="custom"
                       labelId="demo-simple-select-label"
@@ -1121,10 +1274,13 @@ const CreateProduct = ({ }) => {
                         )
                       })}
                     </Select>
+                    {confirm && screen.trim() === "" &&
+                      <FormHelperText>Chưa chọn màn hình!</FormHelperText>
+                    }
                   </FormControl>
                 </div>
                 <div className="ms-3" style={{ width: "100%" }}>
-                  <FormControl fullWidth sx={{ width: 402 }}>
+                  <FormControl fullWidth sx={{ width: 402 }} error={confirm && selectedSim.length === 0}>
                     <InputLabel id="demo-simple-select-label">Thẻ SIM</InputLabel>
                     <Select className="custom"
                       labelId="demo-simple-select-label"
@@ -1157,6 +1313,9 @@ const CreateProduct = ({ }) => {
                         </MenuItem>
                       ))}
                     </Select>
+                    {confirm && selectedSim.length === 0 &&
+                      <FormHelperText>Chưa chọn thẻ SIM!</FormHelperText>
+                    }
                   </FormControl>
                 </div>
               </div>
@@ -1170,6 +1329,7 @@ const CreateProduct = ({ }) => {
                       value={opera}
                       label="Hệ Điều Hành"
                       onChange={handleChangeOpera}
+                      defaultValue={0}
                     >
                       <MenuItem value={0}>Android</MenuItem>
                       <MenuItem value={1}>IOS</MenuItem>
@@ -1233,8 +1393,26 @@ const CreateProduct = ({ }) => {
         getAll={getListTheSim}
         sims={listTheSim}
       />
+      <CreateDanhMuc
+        open={openDanhMuc}
+        close={handleCloseOpenDanhMuc}
+        getAll={getListDanhMuc}
+        danhMucs={categorys}
+      />
+      <CreateCameraSau
+        open={openCameraSau}
+        close={handleCloseOpenCameraSau}
+        getAll={getListCameraSau}
+        cameraRear={camerasSau}
+      />
+      <CreateCameraTruoc
+        open={openCameraTruoc}
+        close={handleCloseOpenCameraTruoc}
+        getAll={getListCameraTruoc}
+        cameraFront={camerasTruoc}
+      />
       <CreatePin open={openPin} close={handleCloseOpenPin} getAll={getListPin} pins={listPin} />
-      <CreateCauHinh productName={productName} getProduct={product} getOverplay={getOverplay} />
+      <CreateCauHinh valid={handleValidation()} confirm={getConfirm} productName={productName} getProduct={product} getOverplay={getOverplay} />
       {isLoading && <LoadingIndicator />}
     </>
   )

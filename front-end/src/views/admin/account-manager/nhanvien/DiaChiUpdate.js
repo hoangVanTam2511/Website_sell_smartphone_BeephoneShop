@@ -22,6 +22,7 @@ const AddressFormUpdate = ({
 
   useEffect(() => {
     fetchProvinces();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -76,16 +77,19 @@ const AddressFormUpdate = ({
   };
 
   const fetchDistricts = (provinceCode) => {
-    callAPI(host + "p/" + provinceCode + "?depth=2")
-      .then((data) => {
-        if (data && data.districts) {
-          setDistricts(data.districts);
-          setSelectedDistrict("");
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching districts:", error);
-      });
+    if (provinceCode) {
+      // Kiểm tra nếu provinceCode không phải là undefined
+      callAPI(host + "p/" + provinceCode + "?depth=2")
+        .then((data) => {
+          if (data && data.districts) {
+            setDistricts(data.districts);
+            setSelectedDistrict("");
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching districts:", error);
+        });
+    }
   };
 
   const fetchWards = (districtCode) => {
@@ -100,7 +104,8 @@ const AddressFormUpdate = ({
   };
 
   const handleProvinceChange = (event) => {
-    setSelectedProvince(event.target.value);
+    const selectedProvinceValue = event.target.value || ""; // Đảm bảo giá trị không bao giờ là null hoặc undefined
+    setSelectedProvince(selectedProvinceValue);
     setSelectedDistrict("");
     setSelectedWard("");
     if (selectedProvince) {
@@ -109,22 +114,26 @@ const AddressFormUpdate = ({
     }
     setDistricts([]);
     setWards([]);
-    fetchDistricts(event.target.value);
-    onProvinceChange(event.target.value);
+    fetchDistricts(selectedProvinceValue);
+    onProvinceChange(selectedProvinceValue);
   };
 
   const handleDistrictChange = (value) => {
-    setSelectedDistrict(value.target.value);
+    const selectedDistrictValue = value.target.value || ""; // Đảm bảo giá trị không bao giờ là null hoặc undefined
+
+    setSelectedDistrict(selectedDistrictValue);
     setSelectedWard("");
-    fetchWards(value.target.value);
-    onDistrictChange(value.target.value);
+    fetchWards(selectedDistrictValue);
+    onDistrictChange(selectedDistrictValue);
     onWardChange("");
     setWards([]);
   };
 
   const handleWardChange = (value) => {
-    setSelectedWard(value.target.value);
-    onWardChange(value.target.value);
+    const selectedWardValue = value.target.value || ""; // Đảm bảo giá trị không bao giờ là null hoặc undefined
+
+    setSelectedWard(selectedWardValue);
+    onWardChange(selectedWardValue);
   };
   useEffect(() => {
     if (selectedProvince) {
@@ -159,7 +168,7 @@ const AddressFormUpdate = ({
           <TextField
             select
             label="Chọn Tỉnh/Thành phố"
-            value={selectedProvince}
+            value={selectedProvince || ""}
             onChange={handleProvinceChange}
             error={formSubmitted && !selectedProvince}
             helperText={
@@ -178,7 +187,7 @@ const AddressFormUpdate = ({
           <TextField
             select
             label="Chọn Quận/Huyện"
-            value={selectedDistrict}
+            value={selectedDistrict || ""}
             onChange={handleDistrictChange}
             error={formSubmitted && !selectedDistrict}
             helperText={
@@ -197,7 +206,7 @@ const AddressFormUpdate = ({
           <TextField
             select
             label="Chọn Phường/Xã"
-            value={selectedWard}
+            value={selectedWard || ""}
             onChange={handleWardChange}
             error={formSubmitted && !selectedWard}
             helperText={formSubmitted && !selectedWard ? "Vui lòng chọn" : ""}

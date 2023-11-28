@@ -26,7 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping(ApiConstants.ApiSystems.API_PRODUCT_URI)
 @CrossOrigin(origins = "http://localhost:3000")
-public class ProductController {
+public class  ProductController {
 
   @Autowired
   private ImageServiceImpl imageService;

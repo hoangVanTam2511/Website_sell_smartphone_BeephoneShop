@@ -62,12 +62,10 @@ const ManagementSims = () => {
       .get(apiURLSimCard + "/all")
       .then((response) => {
         setSims(response.data.data);
-        // setTotalPages(response.data.totalPages);
-        // setIsLoading(false);
+        setTotalPages(response.data.totalPages);
       })
       .catch((error) => {
         console.error(error);
-        // setIsLoading(false);
       });
   };
 
@@ -125,7 +123,10 @@ const ManagementSims = () => {
   const handleRefreshData = () => {
     setSearchTatCa("");
     setPageShow(5);
-    setSearchTrangThai("");
+    setSearchTrangThai(5);
+    if (searchTrangThai === 5) {
+      setSearchParams("");
+    }
     getListProductSearchAndPage(currentPage);
   };
 
@@ -156,7 +157,7 @@ const ManagementSims = () => {
   };
 
   useEffect(() => {
-    loadDataList();
+    loadDataList(currentPage);
   }, []);
   const [open, setOpen] = React.useState(false);
   const handleClickOpen = () => {
@@ -418,6 +419,7 @@ const ManagementSims = () => {
           <Card.Header className="d-flex justify-content-between">
             <div className="header-title mt-2">
               <TextField
+                placeholder="Tìm theo mã, loại thẻ sim"
                 label="Tìm Thẻ SIM"
                 onChange={handleSearchTatCaChange}
                 value={searchTatCa}
@@ -430,7 +432,7 @@ const ManagementSims = () => {
                 inputProps={{
                   style: {
                     height: "23px",
-                    width: "200px",
+                    width: "300px",
                   },
                 }}
                 size="small"
@@ -501,7 +503,7 @@ const ManagementSims = () => {
                     open={openSelect}
                     onClose={handleCloseSelect}
                     onOpen={handleOpenSelect}
-                    defaultValue={5}
+                    value={5}
                     onChange={handleSearchTrangThaiChange}
                   >
                     <MenuItem className="" value={5}>

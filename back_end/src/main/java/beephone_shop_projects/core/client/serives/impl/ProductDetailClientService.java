@@ -2,6 +2,7 @@ package beephone_shop_projects.core.client.serives.impl;
 
 import beephone_shop_projects.core.client.models.request.SearchProductDetailClient;
 import beephone_shop_projects.core.client.models.response.ConfigResponce;
+import beephone_shop_projects.core.client.models.response.ProductBestSeller;
 import beephone_shop_projects.core.client.models.response.ProductDetailResponce;
 import beephone_shop_projects.core.client.models.response.ProductResponce;
 import beephone_shop_projects.core.client.repositories.ProductClientRepository;
@@ -72,4 +73,15 @@ public class ProductDetailClientService {
         return productDetailClientRepository.getMinPriceOfProductDetail();
     }
 
+    public ArrayList<ProductDetailResponce> getProductBestSeller() {
+        ArrayList<ProductBestSeller> products = (ArrayList<ProductBestSeller>) productDetailClientRepository.getProductSeller();
+
+        ArrayList<ProductDetailResponce> responses = new ArrayList<>();
+        for (ProductBestSeller product : products) {
+            if(productDetailClientRepository.getProductDetailByIDProductDetail(product.getIdChiTietSanPham()) != null) {
+                responses.add(productDetailClientRepository.getProductDetailByIDProductDetail(product.getIdChiTietSanPham()));
+            }
+        }
+        return responses;
+    }
 }

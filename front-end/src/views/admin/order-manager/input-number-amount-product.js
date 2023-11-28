@@ -3,13 +3,10 @@ import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import { useEffect, useState } from "react";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { Notistack } from "./enum";
-const InputNumberAmount = ({ getAmount, cartItems, item }) => {
+const InputNumberAmount = ({ /* getAmount */ }) => {
 
   const { handleOpenAlertVariant } = useCustomSnackbar();
   const [amount, setAmount] = useState(1);
-  // const handleChangeAmount = (e) => {
-  //   setAmount(e.target.value);
-  // };
 
   const handleIncrement = () => {
     if (amount >= 4) {
@@ -23,9 +20,9 @@ const InputNumberAmount = ({ getAmount, cartItems, item }) => {
     setAmount((amount) => amount - 1);
   }
 
-  useEffect(() => {
-    getAmount(amount);
-  }, [amount])
+  // useEffect(() => {
+  //   getAmount(amount);
+  // }, [amount])
 
   return (
     <>

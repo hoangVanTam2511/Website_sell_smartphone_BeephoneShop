@@ -32,4 +32,31 @@ public class BillClientController {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
+    @GetMapping("/get-bill")
+    public ResponseEntity<?> getBill(@RequestParam("id_bill") String idBill) {
+        try{
+            return new ResponseEntity<>(billClientService.getHoaDonByIDHoaDon(idBill), HttpStatus.OK);
+        }catch (Exception ex){
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/get-bill-detail")
+    public ResponseEntity<?> getBillByPhoneAndCode(@RequestParam("phone") String phone, @RequestParam("code") String code) {
+        try{
+            return new ResponseEntity<>(billClientService.getHoaDonBySoDienThoaiVaMaHoaDon(phone, code), HttpStatus.OK);
+        }catch (Exception ex){
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/get-order-history")
+    public ResponseEntity<?> getHistoryOrder(@RequestParam("id_bill") String idHoaDon) {
+        try{
+            return new ResponseEntity<>(billClientService.getLichSuHoaDon(idHoaDon), HttpStatus.OK);
+        }catch (Exception ex){
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 }

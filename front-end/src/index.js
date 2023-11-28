@@ -10,13 +10,12 @@ import { Provider } from "react-redux";
 //reducer
 import { store } from "./store";
 
-import { IndexRouters } from "./router";
 import { SimpleRouter } from "./router/simple-router";
 import { DefaultRouter } from "./router/default-router";
 import { SnackbarProvider } from "notistack";
 
 const router = createBrowserRouter(
-  [...DefaultRouter, ...IndexRouters, ...SimpleRouter],
+  [...DefaultRouter, ...SimpleRouter],
   { basename: process.env.PUBLIC_URL }
 );
 

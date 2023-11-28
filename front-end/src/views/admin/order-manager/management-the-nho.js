@@ -136,7 +136,10 @@ const ManagementTheNhos = () => {
   const handleRefreshData = () => {
     setSearchTatCa("");
     setPageShow(5);
-    setSearchTrangThai("");
+    setSearchTrangThai(5);
+    if (searchTrangThai === 5) {
+      setSearchParams("");
+    }
     getListProductSearchAndPage(currentPage);
   };
 
@@ -391,7 +394,7 @@ const ManagementTheNhos = () => {
     axios
       .put(`http://localhost:8080/api/the-nhos`, obj)
       .then((response) => {
-        getListTheNho();
+        getListProductSearchAndPage();
         handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
         setOpen1(false);
       })
@@ -404,7 +407,7 @@ const ManagementTheNhos = () => {
     axios
       .put(`http://localhost:8080/api/the-nhos/${idTheNho}`)
       .then((response) => {
-        getListTheNho();
+        getListProductSearchAndPage();
         handleOpenAlertVariant(
           "Đổi trạng thái thành công!!!",
           Notistack.SUCCESS
@@ -428,6 +431,7 @@ const ManagementTheNhos = () => {
           <Card.Header className="d-flex justify-content-between">
             <div className="header-title mt-2">
               <TextField
+                placeholder="Tìm theo mã, loại thẻ nhớ, dung lượng tối đa"
                 label="Tìm Thẻ Nhớ"
                 onChange={handleSearchTatCaChange}
                 value={searchTatCa}
@@ -440,7 +444,7 @@ const ManagementTheNhos = () => {
                 inputProps={{
                   style: {
                     height: "23px",
-                    width: "200px",
+                    width: "300px",
                   },
                 }}
                 size="small"
@@ -511,7 +515,7 @@ const ManagementTheNhos = () => {
                     open={openSelect}
                     onClose={handleCloseSelect}
                     onOpen={handleOpenSelect}
-                    defaultValue={5}
+                    value={pageShow}
                     onChange={handleSearchTrangThaiChange}
                   >
                     <MenuItem className="" value={5}>

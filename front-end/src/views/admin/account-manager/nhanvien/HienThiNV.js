@@ -22,7 +22,8 @@ import {
   FormControl,
 } from "@mui/material";
 import { StatusAccountCus } from "../khachhang/enum";
-// import { ExcelExportHelper } from "./ExcelExportHelper";
+import { Notistack } from "../../order-manager/enum";
+import useCustomSnackbar from "../../../../utilities/notistack";
 
 //show
 const HienThiNV = () => {
@@ -30,6 +31,7 @@ const HienThiNV = () => {
   let [listNV, setListNV] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const { handleOpenAlertVariant } = useCustomSnackbar();
   const [
     targetPage,
     //  setTargetPage
@@ -145,7 +147,7 @@ const HienThiNV = () => {
       .put(apiURLNV + `/${id}/doi-tt`)
       .then((response) => {
         loadDataListRole(currentPage);
-        message.success("Đổi trạng thái thành công");
+        handleOpenAlertVariant("Đổi trạng thái thành công", Notistack.SUCCESS);
       })
       .catch((error) => {
         console.error("Đã xảy ra lỗi khi thay đổi trạng thái", error);
@@ -204,21 +206,21 @@ const HienThiNV = () => {
       editable: true,
       align: "center",
     },
-    {
-      title: "Địa chỉ",
-      width: "10%",
-      editable: true,
-      align: "center",
-      ellipsis: true,
-      render: (text, record) => {
-        return (
-          <span>
-            {record.diaChi} {record.xaPhuong}
-            {record.quanHuyen} {record.tinhThanhPho}
-          </span>
-        );
-      },
-    },
+    // {
+    //   title: "Địa chỉ",
+    //   width: "10%",
+    //   editable: true,
+    //   align: "center",
+    //   ellipsis: true,
+    //   render: (text, record) => {
+    //     return (
+    //       <span>
+    //         {record.diaChiList[0].diaChi} {record.diaChiList[0].xaPhuong}
+    //         {record.diaChiList[0].quanHuyen} {record.diaChiList[0].tinhThanhPho}
+    //       </span>
+    //     );
+    //   },
+    // },
 
     {
       title: "Trạng thái",
@@ -474,16 +476,6 @@ const HienThiNV = () => {
                       </span>
                     </Button>
                   </Link>
-
-                  {/* <Button
-                    // onClick={handleCreateNewOrderPending}
-                    className="rounded-2 button-mui"
-                    type="primary"
-                    style={{ height: "40px", width: "auto", fontSize: "15px", marginRight: 15 }}
-                  >
-                    <ExcelExportHelper />
-                  </Button> */}
-                  
 
                   <Button
                     // onClick={handleCreateNewOrderPending}

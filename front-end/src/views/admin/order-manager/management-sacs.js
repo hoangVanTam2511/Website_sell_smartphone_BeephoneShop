@@ -64,12 +64,15 @@ const ManagementCongSacs = () => {
   const [productPages, setProductPages] = useState([]);
   const [pageShow, setPageShow] = useState(5);
   const [searchTatCa, setSearchTatCa] = useState("");
-  const [searchTrangThai, setSearchTrangThai] = useState("");
+  const [searchTrangThai, setSearchTrangThai] = useState(5);
 
   const handleRefreshData = () => {
     setSearchTatCa("");
     setPageShow(5);
-    setSearchTrangThai("");
+    setSearchTrangThai(5);
+    if (searchTrangThai === 5) {
+      setSearchParams("");
+    }
     getListProductSearchAndPage(currentPage);
   };
 
@@ -381,6 +384,7 @@ const ManagementCongSacs = () => {
           <Card.Header className="d-flex justify-content-between">
             <div className="header-title mt-2">
               <TextField
+                placeholder="Tìm theo mã, loại cổng sạc"
                 label="Tìm Sạc"
                 onChange={handleSearchTatCaChange}
                 value={searchTatCa}
@@ -393,7 +397,7 @@ const ManagementCongSacs = () => {
                 inputProps={{
                   style: {
                     height: "23px",
-                    width: "200px",
+                    width: "300px",
                   },
                 }}
                 size="small"
@@ -464,7 +468,7 @@ const ManagementCongSacs = () => {
                     open={openSelect}
                     onClose={handleCloseSelect}
                     onOpen={handleOpenSelect}
-                    defaultValue={5}
+                    value={searchTrangThai}
                     onChange={handleSearchTrangThaiChange}
                   >
                     <MenuItem className="" value={5}>

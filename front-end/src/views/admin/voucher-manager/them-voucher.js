@@ -131,7 +131,7 @@ const AddVoucher = () => {
   };
 
   const redirectToHienThiVoucher = () => {
-    window.location.href = "/dashboard/voucher";
+    navigate("/dashboard/voucher");
   };
 
   const handleUpdateVoucher = (id) => {
@@ -251,25 +251,25 @@ const AddVoucher = () => {
     handleOpenDialogConfirmAdd();
   };
 
-  const handleChangeToggleButtonDiscount = (event, newAlignment) => {
-    var oldAligment = event.target.value;
+  // const handleChangeToggleButtonDiscount = (event, newAlignment) => {
+  //   var oldAligment = event.target.value;
 
-    if (newAlignment != null) {
-      setSeclectDiscount(newAlignment);
-      setValue2(null);
-    }
+  //   if (newAlignment != null) {
+  //     setSeclectDiscount(newAlignment);
+  //     setValue2(null);
+  //   }
 
-    if (newAlignment == null) {
-      setSeclectDiscount(oldAligment);
-    }
-    handleReset();
-  };
+  //   if (newAlignment == null) {
+  //     setSeclectDiscount(oldAligment);
+  //   }
+  //   handleReset();
+  // };
 
-  const handleReset = () => {
-    setValue("");
-    setValueToiDa("");
-    setValueToiThieu("");
-  };
+  // const handleReset = () => {
+  //   setValue("");
+  //   setValueToiDa("");
+  //   setValueToiThieu("");
+  // };
 
   return (
     <>
@@ -318,7 +318,7 @@ const AddVoucher = () => {
                 value={ma}
                 id="fullWidth"
                 onInput={handleInputCodeVoucher}
-                style={{ width: "245px" }}
+                style={{ width: "380px" }}
                 inputProps={{
                   maxLength: 15, // Giới hạn tối đa 10 ký tự
                 }}
@@ -333,34 +333,12 @@ const AddVoucher = () => {
                 value={soLuong}
                 id="fullWidth"
                 onChange={handleInputNumberVoucher}
-                style={{ width: "245px" }}
+                style={{ width: "380px" }}
                 inputProps={{
                   maxLength: 10, // Giới hạn tối đa 10 ký tự
                 }}
                 error={validationMsg.soLuong !== undefined}
                 helperText={validationMsg.soLuong}
-              />
-            </div>
-            <div className="ms-4">
-              {" "}
-              <TextField
-                className="custom"
-                label="Điều kiện áp dụng"
-                value={value1}
-                onChange={handleChange1}
-                id="outlined-end-adornment"
-                InputProps={{
-                  inputMode: "numeric",
-                  endAdornment: (
-                    <InputAdornment position="end">VND</InputAdornment>
-                  ),
-                }}
-                style={{ width: "245px" }}
-                inputProps={{
-                  maxLength: 20,
-                }}
-                error={validationMsg.value1 !== undefined}
-                helperText={validationMsg.value1}
               />
             </div>
           </div>
@@ -373,7 +351,7 @@ const AddVoucher = () => {
               marginTop: "15px",
             }}
           >
-            <div>
+            {/* <div>
               <RadioGroup
                 className="custom"
                 orientation="horizontal"
@@ -433,8 +411,8 @@ const AddVoucher = () => {
                   )
                 )}
               </RadioGroup>
-            </div>
-            <div className="ms-4">
+            </div> */}
+            <div>
               <TextField
                 className="custom"
                 label="Giá Trị Voucher"
@@ -454,7 +432,7 @@ const AddVoucher = () => {
                   ),
                 }}
                 style={{
-                  width: "317px",
+                  width: "380px",
                 }}
                 inputProps={{
                   maxLength: 20,
@@ -464,6 +442,28 @@ const AddVoucher = () => {
               />
             </div>
             <div className="ms-4">
+              {" "}
+              <TextField
+                className="custom"
+                label="Điều kiện áp dụng"
+                value={value1}
+                onChange={handleChange1}
+                id="outlined-end-adornment"
+                InputProps={{
+                  inputMode: "numeric",
+                  endAdornment: (
+                    <InputAdornment position="end">VND</InputAdornment>
+                  ),
+                }}
+                style={{ width: "380px" }}
+                inputProps={{
+                  maxLength: 20,
+                }}
+                error={validationMsg.value1 !== undefined}
+                helperText={validationMsg.value1}
+              />
+            </div>
+            {/* <div className="ms-4">
               <TextField
                 className="custom"
                 label="Giá Trị Tối Đa"
@@ -488,7 +488,7 @@ const AddVoucher = () => {
                 error={validationMsg.valueToiDa !== undefined}
                 helperText={validationMsg.valueToiDa}
               />
-            </div>
+            </div> */}
           </div>
           <div
             className="d-flex"

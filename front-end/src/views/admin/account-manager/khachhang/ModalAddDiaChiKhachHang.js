@@ -129,7 +129,7 @@ const ModalAddDiaChiKhachHang = ({
 
   return (
     <>
-      <Grid container spacing={3.3}>
+      <Grid container spacing={1.5} justifyContent="space-between">
         <Grid item xs={4}>
           <TextField
             select

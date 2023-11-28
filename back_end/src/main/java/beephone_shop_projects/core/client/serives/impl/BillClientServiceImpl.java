@@ -99,15 +99,17 @@ public class BillClientServiceImpl {
         newOrder.setVoucher(orderRequest.getVoucher());
         newOrder.setLoaiHoaDon(OrderType.DELIVERY);
         newOrder.setGhiChu(orderRequest.getGhiChu());
-        newOrder.setDiaChiNguoiNhan(khachHang.getDiaChi());
-        newOrder.setXaPhuongNguoiNhan(khachHang.getXaPhuong());
-        newOrder.setQuanHuyenNguoiNhan(khachHang.getQuanHuyen());
-        newOrder.setTinhThanhPhoNguoiNhan(khachHang.getTinhThanhPho());
+        newOrder.setDiaChiNguoiNhan(khachHang.getDiaChiList().get(0).getDiaChi());
+        newOrder.setXaPhuongNguoiNhan(khachHang.getDiaChiList().get(0).getXaPhuong());
+        newOrder.setQuanHuyenNguoiNhan(khachHang.getDiaChiList().get(0).getQuanHuyen());
+        newOrder.setTinhThanhPhoNguoiNhan(khachHang.getDiaChiList().get(0).getTinhThanhPho());
         newOrder.setSoDienThoaiNguoiNhan(khachHang.getSoDienThoai());
         newOrder.setTenNguoiNhan(khachHang.getHoVaTen());
         newOrder.setTrangThai(OrderStatus.PENDING_CONFIRM);
         newOrder.setTongTien(orderRequest.getTongTien());
         newOrder.setTongTienSauKhiGiam(orderRequest.getTongTienSauKhiGiam());
+        newOrder.setKhachCanTra(orderRequest.getTienKhachTra());
+        newOrder.setPhiShip(new BigDecimal(25600));
         newOrder.setCreatedAt(new Date());
         newOrder.setTongTien(orderRequest.getTongTien());
         HoaDon createdOrder = hoaDonRepository.save(newOrder);
@@ -150,5 +152,21 @@ public class BillClientServiceImpl {
 
     public List<HoaDon> getHoaDonByIDKhachHang(String idKhachHang) {
         return billClientRepository.getHoaDonByIDKhachHang(idKhachHang);
+    }
+
+    public HoaDon getHoaDonByIDHoaDon(String idHoaDon) throws Exception {
+        return billClientRepository.findById(idHoaDon).orElseThrow(()-> new Exception("Không tìm thấy hoá đơn"));
+    }
+
+    public HoaDon getHoaDonBySoDienThoaiVaMaHoaDon(String soDienThoai, String maHoaDon) throws Exception {
+        ArrayList<HoaDon> listHoaDon =  billClientRepository.getHoaDonByMaHoaDonVaSoDienThoai(soDienThoai, maHoaDon);
+        if(listHoaDon.isEmpty()){
+            throw new Exception("Không tìm thấy hoá đơn");
+        }
+        return listHoaDon.get(0);
+    }
+
+    public List<LichSuHoaDon> getLichSuHoaDon(String idHoaDon) {
+        return lichSuHoaDonRepository.getOrderHistoriesByOrderId(idHoaDon);
     }
 }

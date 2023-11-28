@@ -2,7 +2,7 @@ package beephone_shop_projects.core.admin.statistic_management.model.response;
 
 import org.springframework.beans.factory.annotation.Value;
 
-import java.util.Date;
+import java.math.BigDecimal;
 
 public interface ThongKeSanPhamSapHetHang {
 
@@ -18,6 +18,15 @@ public interface ThongKeSanPhamSapHetHang {
     @Value("#{target.so_luong}")
     Integer getSoLuong();
 
-//    @Value("#{target.ngay_tao}")
-//    Date getNgayTao();
+    @Value("#{target.don_gia}")
+    BigDecimal getDonGia();
+
+    @Value("#{target.dung_luong_ram}")
+    Integer getDungLuongRam();
+
+    @Value("#{target.dung_luong_rom}")
+    Integer getDungLuongRom();
+
+    @Value("#{target.ten_mau_sac}")
+    String getTenMauSac();
 }

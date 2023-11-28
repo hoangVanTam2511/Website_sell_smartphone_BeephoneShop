@@ -2,16 +2,15 @@ package beephone_shop_projects.core.admin.account_management.model.request;
 
 
 import beephone_shop_projects.infrastructure.constant.StatusAccountCus;
-import beephone_shop_projects.infrastructure.constant.StatusDiscount;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -40,8 +39,9 @@ public class CreateKhachHangRequest {
     @Pattern(regexp = "^[a-zA-Z0-9._-]+@gmail\\.com$", message = "Email sai định dạng hoặc không phải là Gmail")
     private String email;
 
-    @NotBlank(message = "Ngày sinh trống")
-    private String ngaySinh;
+    @NotNull(message = "Ngày sinh trống")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date ngaySinh;
 
     private String matKhau;
     @NotBlank(message = "Số điện thoại trống")

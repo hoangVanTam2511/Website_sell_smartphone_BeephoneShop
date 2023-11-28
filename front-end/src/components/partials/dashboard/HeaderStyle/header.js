@@ -33,6 +33,8 @@ import * as SettingSelector from "../../../../store/setting/selectors";
 const Header = memo((props) => {
   const navbarHide = useSelector(SettingSelector.navbar_show); // array
   const headerNavbar = useSelector(SettingSelector.header_navbar);
+  const user = useSelector(state => state.user.user)
+
   useEffect(() => {
     // navbarstylemode
     if (headerNavbar === "navs-sticky" || headerNavbar === "nav-glass") {
@@ -90,7 +92,8 @@ const Header = memo((props) => {
                   id="notification-drop"
                   data-bs-toggle="dropdown"
                 >
-                  <svg color="#8A92A6"
+                  <svg
+                    color="#8A92A6"
                     width="24"
                     viewBox="0 0 24 24"
                     fill="none"
@@ -153,13 +156,13 @@ const Header = memo((props) => {
                   aria-expanded="false"
                 >
                   <img
-                    src={avatars1}
+                    src={user === undefined || user.ma === "" ? '' : user.anhDaiDien}
                     alt="User-Profile"
                     className="theme-color-default-img img-fluid avatar avatar-50 avatar-rounded"
                   />
                   <div className="caption ms-3 d-none d-md-block ">
-                    <h6 className="mb-0 caption-title">Administrators</h6>
-                    <p className="mb-0 caption-sub-title">Manage</p>
+                    <h6 className="mb-0 caption-title">{user === undefined || user.ma === "" ? '' : user.hoVaTen}</h6>
+                    <p className="mb-0 caption-sub-title">{user === undefined || user.ma === "" ? '' : user.idRole.ten}</p>
                   </div>
                 </Dropdown.Toggle>
                 <Dropdown.Menu

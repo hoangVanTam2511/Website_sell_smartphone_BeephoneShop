@@ -1,13 +1,12 @@
-import { Form, Table, Button, Popconfirm } from "antd";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { Form, Table, Button } from "antd";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import { Link, useSearchParams } from "react-router-dom";
 import { apiURLVoucher } from "../../../service/api";
-import "../voucher-manager/style.css";
+// import "../voucher-manager/style.css";
 import dayjs from "dayjs"; // Import thư viện Day.js
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -19,11 +18,6 @@ import {
   TextField,
   Zoom,
   Menu,
-  Dialog,
-  Slide,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
@@ -32,7 +26,7 @@ import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import { PlusOutlined } from "@ant-design/icons";
 import Card from "../../../components/Card";
-import style from "./style.css";
+// import style from "./style.css";
 import { parseInt } from "lodash";
 import LoadingIndicator from "../../../utilities/loading";
 import {
@@ -93,6 +87,7 @@ const HienThiVoucher = () => {
         setListVoucher(response.data.data);
         setTotalPages(response.data.totalPages);
         setIsLoading(true);
+        console.log(response.data.data);
       })
       .catch((error) => {
         handleOpenAlertVariant(
@@ -378,28 +373,28 @@ const HienThiVoucher = () => {
         );
       },
     },
-    {
-      title: "Giá Trị Tối Đa",
-      dataIndex: "giaTriToiDa",
-      width: "10%",
-      align: "center",
-      render: (value, record) => {
-        let formattedValue = value;
-        if (record.loaiVoucher === TypeDiscountString.VND) {
-          formattedValue = "...";
-        } else if (record.loaiVoucher === TypeDiscountString.PERCENT) {
-          formattedValue = record.giaTriToiDa.toLocaleString("vi-VN", {
-            style: "currency",
-            currency: "VND",
-          });
-        }
-        return (
-          <span className="txt-danger" style={{ fontWeight: "400" }}>
-            {formattedValue}
-          </span>
-        );
-      },
-    },
+    // {
+    //   title: "Giá Trị Tối Đa",
+    //   dataIndex: "giaTriToiDa",
+    //   width: "10%",
+    //   align: "center",
+    //   render: (value, record) => {
+    //     let formattedValue = value;
+    //     if (record.loaiVoucher === TypeDiscountString.VND) {
+    //       formattedValue = "...";
+    //     } else if (record.loaiVoucher === TypeDiscountString.PERCENT) {
+    //       formattedValue = record.giaTriToiDa.toLocaleString("vi-VN", {
+    //         style: "currency",
+    //         currency: "VND",
+    //       });
+    //     }
+    //     return (
+    //       <span className="txt-danger" style={{ fontWeight: "400" }}>
+    //         {formattedValue}
+    //       </span>
+    //     );
+    //   },
+    // },
     {
       title: "Điều kiện",
       dataIndex: "dieuKienApDung",
@@ -836,6 +831,7 @@ const HienThiVoucher = () => {
           <Card.Header className="">
             <div className="header-title mt-2">
               <TextField
+                placeholder="Tìm theo mã, giá trị, số lượng voucher"
                 label="Tìm voucher"
                 value={searchTatCa}
                 onChange={handleSearchTatCaChange}
@@ -848,7 +844,7 @@ const HienThiVoucher = () => {
                 inputProps={{
                   style: {
                     height: "23px",
-                    width: "190px",
+                    width: "280px",
                   },
                 }}
                 size="small"
@@ -1033,7 +1029,7 @@ const HienThiVoucher = () => {
                   </Select>
                 </FormControl>
               </div>
-              <div
+              {/* <div
                 className="d-flex"
                 style={{
                   height: "40px",
@@ -1094,7 +1090,7 @@ const HienThiVoucher = () => {
                     </MenuItem>
                   </Select>
                 </FormControl>
-              </div>
+              </div> */}
               <div
                 className="d-flex"
                 style={{

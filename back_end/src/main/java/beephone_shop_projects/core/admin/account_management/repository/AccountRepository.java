@@ -2,7 +2,6 @@ package beephone_shop_projects.core.admin.account_management.repository;
 
 import beephone_shop_projects.core.admin.account_management.model.request.SearchAccountRequest;
 import beephone_shop_projects.core.admin.account_management.model.response.AccountResponse;
-import beephone_shop_projects.core.admin.voucher_management.model.request.FindVoucherRequest;
 import beephone_shop_projects.entity.Account;
 import beephone_shop_projects.infrastructure.constant.StatusAccountCus;
 import beephone_shop_projects.repository.IAccountRepository;
@@ -19,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface AccountRepository extends IAccountRepository {
+public interface AccountRepository extends IAccountRepository, CustomKhachHangRepository {
     @Query(value = """
                 SELECT  ac FROM Account ac
                 WHERE :#{#req.hoVaTen} IS NULL 
@@ -83,10 +82,6 @@ public interface AccountRepository extends IAccountRepository {
                         OR ac.hoVaTen LIKE CONCAT('%', :tenKH, '%')
                         OR ac.ma LIKE CONCAT('%', :tenKH, '%')
                         OR ac.email LIKE CONCAT('%', :tenKH, '%')
-                        OR ac.diaChi LIKE CONCAT('%', :tenKH, '%')
-                        OR ac.xaPhuong LIKE CONCAT('%', :tenKH, '%')
-                        OR ac.tinhThanhPho LIKE CONCAT('%', :tenKH, '%')
-                        OR ac.quanHuyen LIKE CONCAT('%', :tenKH, '%')
                         OR ac.soDienThoai LIKE CONCAT('%', :tenKH, '%')
                         OR CAST(ac.ngaySinh AS string) LIKE CONCAT('%', :tenKH, '%')
                         ) AND ac.idRole.ma='role1'

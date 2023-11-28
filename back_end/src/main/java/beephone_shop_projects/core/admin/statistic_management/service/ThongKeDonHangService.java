@@ -4,6 +4,7 @@ import beephone_shop_projects.core.admin.statistic_management.model.request.Find
 import beephone_shop_projects.core.admin.statistic_management.model.request.ThongKeKhoangNgayDonHangRequest;
 import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeDonHangKhoangNgay;
 import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeDonHangResponse;
+import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeTocDoTangTruongCustom;
 import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeTrangThaiDonHang;
 
 import java.util.List;
@@ -21,7 +22,9 @@ public interface ThongKeDonHangService {
 
     List<ThongKeDonHangKhoangNgay> getDonHangKhoangNgay(ThongKeKhoangNgayDonHangRequest request);
 
-    List<ThongKeTrangThaiDonHang> getAllTrangThaiDonHang();
+    ThongKeTocDoTangTruongCustom getTocDoTangTruongCuaHang();
+
+    List<ThongKeTrangThaiDonHang> getAllTrangThaiDonHang(String chonTheo);
 
 
 
