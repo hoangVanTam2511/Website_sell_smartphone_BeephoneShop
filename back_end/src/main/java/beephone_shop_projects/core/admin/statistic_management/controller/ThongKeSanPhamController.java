@@ -23,25 +23,25 @@ public class ThongKeSanPhamController {
 
     // Hàm này lấy ra tổng sản phẩm bán được hàng tháng
     @GetMapping("/san-pham")
-    private ThongKeSanPhamResponse getSanPham(){
+    public ThongKeSanPhamResponse getSanPham(){
         return thongKeSanPhamService.xemSanPham();
     }
 
     // Hàm này lấy ra số lượng những sản phẩm bán chạy
     @GetMapping("/san-pham-ban-chay")
-    private List<ThongKeSanPhamBanChayResponse> getSanPhamBanChay( @RequestParam(name = "chonTheo") String chonTheo){
+    public List<ThongKeSanPhamBanChayResponse> getSanPhamBanChay( @RequestParam(name = "chonTheo") String chonTheo){
         return thongKeSanPhamService.getSanPhamBanChay(chonTheo);
     }
 
     //Hàm này lấy ra số lượng sản phẩm sắp hết hàng
     @GetMapping("/san-pham-sap-het-hang")
-    private List<ThongKeSanPhamSapHetHang> getSanPhamSapHetHang(){
+    public List<ThongKeSanPhamSapHetHang> getSanPhamSapHetHang(){
         return thongKeSanPhamService.getSanPhamSapHetHang();
     }
 
     //Hàm này để lấy ra số lượng sản phẩm đã bán được trong ngày
     @GetMapping("/san-pham-khoang-ngay")
-    private List<ThongKeSanPhamKhoangNgay> getSanPhamTheoKhoangNgay(final ThongKeKhoangNgaySanPhamRequest request){
+    public List<ThongKeSanPhamKhoangNgay> getSanPhamTheoKhoangNgay(final ThongKeKhoangNgaySanPhamRequest request){
         return thongKeSanPhamService.getSanPhamKhoangNgay(request);
     }
 }

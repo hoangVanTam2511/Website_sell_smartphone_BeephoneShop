@@ -4,6 +4,7 @@ import beephone_shop_projects.core.admin.statistic_management.model.request.Find
 import beephone_shop_projects.core.admin.statistic_management.model.request.ThongKeKhoangNgayDonHangRequest;
 import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeDonHangKhoangNgay;
 import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeDonHangResponse;
+import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeTrangThaiDonHang;
 import beephone_shop_projects.core.admin.statistic_management.repository.ThongKeDonHangRepository;
 import beephone_shop_projects.core.admin.statistic_management.service.ThongKeDonHangService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,11 @@ public class ThongKeDonHangServiceImpl implements ThongKeDonHangService {
     @Override
     public List<ThongKeDonHangKhoangNgay> getDonHangKhoangNgay(ThongKeKhoangNgayDonHangRequest request) {
         return thongKeDonHangRepository.getDonHangKhoangNgay(request);
+    }
+
+    @Override
+    public List<ThongKeTrangThaiDonHang> getAllTrangThaiDonHang() {
+        return thongKeDonHangRepository.getAllTrangThaiDonHang();
     }
 
 

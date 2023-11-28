@@ -4,6 +4,7 @@ import beephone_shop_projects.core.admin.statistic_management.model.request.Find
 import beephone_shop_projects.core.admin.statistic_management.model.request.ThongKeKhoangNgayDonHangRequest;
 import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeDonHangKhoangNgay;
 import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeDonHangResponse;
+import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeTrangThaiDonHang;
 import beephone_shop_projects.repository.IHoaDonRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -53,6 +54,16 @@ public interface ThongKeDonHangRepository extends IHoaDonRepository {
         ORDER BY DATE(created_at) ASC
         """, nativeQuery = true)
     List<ThongKeDonHangKhoangNgay> getDonHangKhoangNgay(@Param("request") ThongKeKhoangNgayDonHangRequest request);
+
+    @Query(value = """
+                SELECT
+                trang_thai,
+                COUNT(trang_thai) AS so_luong,
+                ROUND((COUNT(trang_thai) / (SELECT COUNT(trang_thai) FROM hoa_don)) * 100, 2) AS phan_tram
+            FROM hoa_don
+            GROUP BY trang_thai;
+            """, nativeQuery = true)
+    List<ThongKeTrangThaiDonHang> getAllTrangThaiDonHang();
 
 
 
