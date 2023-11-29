@@ -40,8 +40,8 @@ public class RankRestController {
     }
 
     @PutMapping("/deleteTrangThaiRank/{id}")
-    public ResponseObject deleteTrangThaiRank(@PathVariable("id") String id, @RequestBody UpdateRankRequest request) {
-        return new ResponseObject(rankService.doiTrangThai(request, id));
+    public ResponseObject deleteTrangThaiRank(@PathVariable("id") String id) {
+        return new ResponseObject(rankService.doiTrangThai(id));
     }
 
     @GetMapping("/ranks")

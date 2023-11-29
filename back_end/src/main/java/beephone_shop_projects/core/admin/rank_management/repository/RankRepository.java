@@ -10,17 +10,17 @@ import org.springframework.data.repository.query.Param;
 
 public interface RankRepository extends IRankRepository {
 
-    @Query("""
+    @Query(value = """
             SELECT r.id AS id, r.ma AS ma, r.ten AS ten,
-            r.status AS status, r.dieuKienToiThieu AS dieuKienToiThieu, r.dieuKienToiDa AS dieuKienToiDa, r.uuDai AS uuDai
-            FROM XepHang r WHERE (:#{#request.ma} IS NULL OR :#{#request.ma} = '' OR r.ma LIKE :#{'%' + #request.ma + '%'} )
+            r.status AS status, r.dieu_kien_toi_thieu AS dieuKienToiThieu, r.dieu_kien_toi_da AS dieuKienToiDa, r.uu_dai AS uuDai
+            FROM xep_hang r WHERE (:#{#request.ma} IS NULL OR :#{#request.ma} = '' OR r.ma LIKE :#{'%' + #request.ma + '%'} )
             AND (:#{#request.ten} IS NULL OR :#{#request.ten} = '' OR r.ten LIKE :#{'%' + #request.ten + '%'} )
-            AND (:#{#request.dieuKienToiThieu} IS NULL OR :#{#request.dieuKienToiThieu} = '' OR r.dieuKienToiThieu = :#{#request.dieuKienToiThieu} )
-            AND (:#{#request.dieuKienToiDa} IS NULL OR :#{#request.dieuKienToiDa} = '' OR r.dieuKienToiDa = :#{#request.dieuKienToiDa} )
-            AND (:#{#request.uuDai} IS NULL OR :#{#request.uuDai} = '' OR r.uuDai = :#{ #request.uuDai} )
+            AND (:#{#request.dieuKienToiThieu} IS NULL OR :#{#request.dieuKienToiThieu} = '' OR r.dieu_kien_toi_thieu = :#{#request.dieuKienToiThieu} )
+            AND (:#{#request.dieuKienToiDa} IS NULL OR :#{#request.dieuKienToiDa} = '' OR r.dieu_kien_toi_da = :#{#request.dieuKienToiDa} )
+            AND (:#{#request.uuDai} IS NULL OR :#{#request.uuDai} = '' OR r.uu_dai = :#{ #request.uuDai} )
             AND (:#{#request.status} IS NULL OR :#{#request.status} = 6 OR r.status = :#{#request.status} )
-            ORDER BY r.createdAt DESC 
-                     """)
+            ORDER BY r.created_at DESC 
+                     """,nativeQuery = true)
     Page<RankResponse> getAll(Pageable pageable, @Param("request") FindRankRequest request);
 
     @Query(value = """
@@ -29,7 +29,7 @@ public interface RankRepository extends IRankRepository {
                   v.dieu_kien_toi_da as dieuKienToiDa,
                   v.uu_dai as uuDai,
                   v.status as status 
-                  FROM xepHang v WHERE v.ma = ?1
+                  FROM xep_hang v WHERE v.id = ?1
             """, nativeQuery = true)
     RankResponse getOneRank(String ma);
 

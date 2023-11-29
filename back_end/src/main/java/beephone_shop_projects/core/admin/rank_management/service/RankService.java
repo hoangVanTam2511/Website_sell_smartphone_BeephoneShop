@@ -18,7 +18,7 @@ public interface RankService {
 
     XepHang updateRank(@Valid UpdateRankRequest request, String ma);
 
-    XepHang doiTrangThai(UpdateRankRequest request, String id);
+    XepHang doiTrangThai(String id);
 
     Page<RankResponse> getAll(Integer pageNo, FindRankRequest request);
 

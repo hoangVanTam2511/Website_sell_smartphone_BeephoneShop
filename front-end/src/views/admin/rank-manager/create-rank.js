@@ -31,9 +31,9 @@ const CreateRank = ({ open, close, getAll, ranks }) => {
   const [dieuKienToiDa, setDieuKienToiDa] = React.useState(0);
   const [dieuKienToiThieu, setDieuKienToiThieu] = React.useState(0);
   const [uuDai, setUuDai] = React.useState(0);
-  const [value, setValue] = React.useState();
-  const [value1, setValue1] = React.useState();
-  const [value2, setValue2] = React.useState();
+  const [value, setValue] = React.useState("");
+  const [value1, setValue1] = React.useState("");
+  const [value2, setValue2] = React.useState("");
 
   const { handleOpenAlertVariant } = useCustomSnackbar();
 
@@ -59,9 +59,9 @@ const CreateRank = ({ open, close, getAll, ranks }) => {
   };
 
   const handleReset = () => {
-    setValue1(null);
-    setValue2(null);
-    setValue(null);
+    setValue1("");
+    setValue2("");
+    setValue("");
     setStatus(StatusCommonProductsNumber.ACTIVE);
     setTenRank("");
   };
@@ -91,13 +91,17 @@ const CreateRank = ({ open, close, getAll, ranks }) => {
     setDieuKienToiThieu(numericValue);
   };
   const handleChangeUuDaiRank = (event, value) => {
-    const inputValue = event.target.value;
-    const numericValue = parseFloat(inputValue.replace(/[^0-9.-]+/g, ""));
-    const formattedValue = inputValue
-      .replace(/[^0-9]+/g, "")
-      .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    setValue(formattedValue);
-    setUuDai(numericValue);
+    let inputValue = event.target.value;
+    // Loại bỏ các ký tự không phải số
+    inputValue = inputValue.replace(/\D/g, "");
+    // Xử lý giới hạn giá trị từ 1 đến 100
+    if (isNaN(inputValue) || inputValue < 1) {
+      inputValue = "0";
+    } else if (inputValue > 100) {
+      inputValue = "100";
+    }
+    setValue(inputValue);
+    setUuDai(inputValue);
   };
 
   const uniqueRank = ranks
@@ -191,7 +195,7 @@ const CreateRank = ({ open, close, getAll, ranks }) => {
                     InputProps={{
                       inputMode: "numeric",
                       endAdornment: (
-                        <InputAdornment position="end">VND</InputAdornment>
+                        <InputAdornment position="end">%</InputAdornment>
                       ),
                     }}
                   />

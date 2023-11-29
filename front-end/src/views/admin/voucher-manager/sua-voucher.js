@@ -167,37 +167,37 @@ const UpdateVoucher = () => {
     setDieuKienApDung(numericValue);
   };
 
-  const handleChangeGiaTriToiDa = (event) => {
-    const inputValue = event.target.value;
-    if (selectDiscount === TypeDiscountString.VND) {
-      setGiaTriToiDa(null);
-      setValueToiDa(null);
-    }
-    const numericValue = parseFloat(inputValue.replace(/[^0-9.-]+/g, ""));
-    const formattedValue = inputValue
-      .replace(/[^0-9]+/g, "")
-      .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    setValueToiDa(formattedValue);
-    setGiaTriToiDa(numericValue);
-  };
+  // const handleChangeGiaTriToiDa = (event) => {
+  //   const inputValue = event.target.value;
+  //   if (selectDiscount === TypeDiscountString.VND) {
+  //     setGiaTriToiDa(null);
+  //     setValueToiDa(null);
+  //   }
+  //   const numericValue = parseFloat(inputValue.replace(/[^0-9.-]+/g, ""));
+  //   const formattedValue = inputValue
+  //     .replace(/[^0-9]+/g, "")
+  //     .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  //   setValueToiDa(formattedValue);
+  //   setGiaTriToiDa(numericValue);
+  // };
 
-  const handleChangeToggleButtonDiscount = (event) => {
-    const newAlignment = event.target.value;
-    handleReset();
-    if (newAlignment != null) {
-      setSelectDiscount(newAlignment);
-    }
+  // const handleChangeToggleButtonDiscount = (event) => {
+  //   const newAlignment = event.target.value;
+  //   handleReset();
+  //   if (newAlignment != null) {
+  //     setSelectDiscount(newAlignment);
+  //   }
 
-    if (newAlignment == null) {
-      setSelectDiscount(null);
-    }
-    handleReset();
-  };
+  //   if (newAlignment == null) {
+  //     setSelectDiscount(null);
+  //   }
+  //   handleReset();
+  // };
 
-  const handleReset = () => {
-    setValue("");
-    setValueToiDa("");
-  };
+  // const handleReset = () => {
+  //   setValue("");
+  //   setValueToiDa("");
+  // };
 
   const convertTien = (value1, value, valueToiDa) => {
     const numericValue = parseFloat(String(value1).replace(/[^0-9.-]+/g, ""));

@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import java.math.BigDecimal;
 
 public interface RankResponse {
+
     @Value("#{target.id}")
     String getId();
 

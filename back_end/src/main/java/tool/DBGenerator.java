@@ -108,7 +108,7 @@ public class DBGenerator implements CommandLineRunner {
         xepHang.setTen("Bạc");
         xepHang.setDieuKienToiThieu(new BigDecimal(3000000));
         xepHang.setDieuKienToiDa(new BigDecimal(7000000));
-        xepHang.setUuDai(new BigDecimal(100000));
+        xepHang.setUuDai(new BigDecimal(30));
         xepHang.setStatus(StatusCommon.ACTIVE);
         xepHang.setId(iRankRepository.save(xepHang).getId());
 
@@ -117,7 +117,7 @@ public class DBGenerator implements CommandLineRunner {
         xepHang1.setTen("Vàng");
         xepHang1.setDieuKienToiThieu(new BigDecimal(7000000));
         xepHang1.setDieuKienToiDa(new BigDecimal(120000000));
-        xepHang1.setUuDai(new BigDecimal(200000));
+        xepHang1.setUuDai(new BigDecimal(3));
         xepHang1.setStatus(StatusCommon.ACTIVE);
         xepHang1.setId(iRankRepository.save(xepHang1).getId());
 
@@ -126,7 +126,7 @@ public class DBGenerator implements CommandLineRunner {
         xepHang2.setTen("Kim Cương");
         xepHang2.setDieuKienToiThieu(new BigDecimal(12000000));
         xepHang2.setDieuKienToiDa(new BigDecimal(20000000));
-        xepHang2.setUuDai(new BigDecimal(5000000));
+        xepHang2.setUuDai(new BigDecimal(2));
         xepHang2.setStatus(StatusCommon.ACTIVE);
         xepHang2.setId(iRankRepository.save(xepHang2).getId());
 
@@ -135,7 +135,7 @@ public class DBGenerator implements CommandLineRunner {
         xepHang3.setTen("Đồng");
         xepHang3.setDieuKienToiThieu(new BigDecimal(100000));
         xepHang3.setDieuKienToiDa(new BigDecimal(3000000));
-        xepHang3.setUuDai(new BigDecimal(500000));
+        xepHang3.setUuDai(new BigDecimal(1));
         xepHang3.setStatus(StatusCommon.ACTIVE);
         xepHang3.setId(iRankRepository.save(xepHang3).getId());
 
@@ -170,47 +170,59 @@ public class DBGenerator implements CommandLineRunner {
         nhanVien.setTen("Nhân Viên");
         nhanVien.setId(roleRepository.save(nhanVien).getId());
 
-        Role chuCuaHang = new Role();
-        chuCuaHang.setMa("role2");
-        chuCuaHang.setTen("Khách Hàng");
-        chuCuaHang.setId(roleRepository.save(chuCuaHang).getId());
+        Role khachHang = new Role();
+        khachHang.setMa("role2");
+        khachHang.setTen("Khách Hàng");
+        khachHang.setId(roleRepository.save(khachHang).getId());
+
+        Role admin = new Role();
+        admin.setMa("role3");
+        admin.setTen("Admin");
+        admin.setId(roleRepository.save(admin).getId());
 //
         //Bảng Account
-        Account admin = new Account();
-        admin.setMa("Account1");
-        admin.setHoVaTen("Nguyễn Phùng Dũng");
-        admin.setAnhDaiDien("https://www.hellokpop.com/wp-content/uploads/2019/09/jung-hae-in-esquire-sg-jan-2019-cover-interview-body4-e1568440568417.jpg");
-        admin.setCanCuocCongDan("0191231002");
-        admin.setNgaySinh(new Date());
-        admin.setGioiTinh(true);
-        admin.setEmail("dung@gmail.com");
-        admin.setSoDienThoai("0395561234");
-//        admin.setDiaChi("Phú diễn");
-//        admin.setXaPhuong("Phường phú diễn");
-//        admin.setQuanHuyen("Quận Bắc Từ Liêm");
-//        admin.setTinhThanhPho("Thành phố Hà Nội");
-        admin.setMatKhau("12345");
-        admin.setTrangThai(StatusAccountCus.HOAT_DONG);
-        admin.setIdRole(chuCuaHang);
-        admin.setId(accountRepository.save(admin).getId());
-//
-//        Account accountNhanVien = new Account();
-//        accountNhanVien.setMa("Account2");
-//        accountNhanVien.setHoVaTen("Trần Quang Hà");
-//        accountNhanVien.setAnhDaiDien("https://i.pinimg.com/736x/c8/44/25/c84425742604c8e5b1d827a7b40cfa1c.jpg");
-//        accountNhanVien.setCanCuocCongDan("0191231002");
-//        accountNhanVien.setNgaySinh(new Date());
-//        accountNhanVien.setGioiTinh(true);
-//        accountNhanVien.setEmail("hatq@gmail.com");
-//        accountNhanVien.setSoDienThoai("0913010291");
-//        accountNhanVien.setDiaChi("Kiều mai");
-//        accountNhanVien.setXaPhuong("Phường Đại Mỗ");
-//        accountNhanVien.setQuanHuyen("Quận Nam Từ Liêm");
-//        accountNhanVien.setTinhThanhPho("Thành phố Hà Nội");
-//        accountNhanVien.setMatKhau("12345");
-//        accountNhanVien.setTrangThai(StatusAccountCus.LAM_VIEC);
-//        accountNhanVien.setIdRole(nhanVien);
-//        accountNhanVien.setId(accountRepository.save(accountNhanVien).getId());
+        Account khachHang1 = new Account();
+        khachHang1.setMa("Account1");
+        khachHang1.setHoVaTen("Nguyễn Phùng Dũng");
+        khachHang1.setAnhDaiDien("https://www.hellokpop.com/wp-content/uploads/2019/09/jung-hae-in-esquire-sg-jan-2019-cover-interview-body4-e1568440568417.jpg");
+        khachHang1.setCanCuocCongDan("019123109202");
+        khachHang1.setNgaySinh(new Date());
+        khachHang1.setGioiTinh(true);
+        khachHang1.setEmail("dung@gmail.com");
+        khachHang1.setSoDienThoai("0395561234");
+        khachHang1.setMatKhau("12345");
+        khachHang1.setTrangThai(StatusAccountCus.HOAT_DONG);
+        khachHang1.setIdRole(khachHang);
+        khachHang1.setId(accountRepository.save(khachHang1).getId());
+
+        Account accountNhanVien = new Account();
+        accountNhanVien.setMa("Account2");
+        accountNhanVien.setHoVaTen("Trần Quang Hà");
+        accountNhanVien.setAnhDaiDien("https://cdn.statically.io/img/cellphones.com.vn/sforum/wp-content/uploads/2018/11/3-8.png?quality=80&f=auto");
+        accountNhanVien.setCanCuocCongDan("0191231002");
+        accountNhanVien.setNgaySinh(new Date());
+        accountNhanVien.setGioiTinh(true);
+        accountNhanVien.setEmail("hatq@gmail.com");
+        accountNhanVien.setSoDienThoai("0913010291");
+        accountNhanVien.setMatKhau("12345");
+        accountNhanVien.setTrangThai(StatusAccountCus.LAM_VIEC);
+        accountNhanVien.setIdRole(nhanVien);
+        accountNhanVien.setId(accountRepository.save(accountNhanVien).getId());
+
+
+        Account accountAdmin = new Account();
+        accountAdmin.setMa("Account23");
+        accountAdmin.setHoVaTen("Lê Thị Vân Anh");
+        accountAdmin.setAnhDaiDien("https://static-images.vnncdn.net/files/publish/2022/9/3/bien-vo-cuc-thai-binh-346.jpeg");
+        accountAdmin.setCanCuocCongDan("0191299002");
+        accountAdmin.setNgaySinh(new Date());
+        accountAdmin.setGioiTinh(false);
+        accountAdmin.setEmail("anhltv@gmail.com");
+        accountAdmin.setSoDienThoai("0912310291");
+        accountAdmin.setMatKhau("12345");
+        accountAdmin.setTrangThai(StatusAccountCus.LAM_VIEC);
+        accountAdmin.setIdRole(admin);
+        accountAdmin.setId(accountRepository.save(accountAdmin).getId());
 
         //Bảng Camera Trước
         CameraTruoc cameraTruoc = new CameraTruoc();
@@ -482,7 +494,7 @@ public class DBGenerator implements CommandLineRunner {
         diaChi.setXaPhuong("Phường Cổ Nhuế 1");
         diaChi.setQuanHuyen("Quận Bắc Từ Liêm");
         diaChi.setTinhThanhPho("Hà Nội");
-        diaChi.setAccount(admin);
+        diaChi.setAccount(khachHang1);
         diaChi.setId(diaChiRepository.save(diaChi).getId());
 
         DiaChi diaChi1 = new DiaChi();
@@ -492,7 +504,7 @@ public class DBGenerator implements CommandLineRunner {
         diaChi1.setXaPhuong("Phường Mỹ Đình 1");
         diaChi1.setQuanHuyen("Quận Nam Từ Liêm");
         diaChi1.setTinhThanhPho("Hà Nội");
-        diaChi1.setAccount(admin);
+        diaChi1.setAccount(accountAdmin);
         diaChi1.setId(diaChiRepository.save(diaChi1).getId());
 
         DiaChi diaChi2 = new DiaChi();
@@ -502,7 +514,7 @@ public class DBGenerator implements CommandLineRunner {
         diaChi2.setXaPhuong("Phường Thượng Đình");
         diaChi2.setQuanHuyen("Quận Thanh Xuân");
         diaChi2.setTinhThanhPho("Hà Nội");
-        diaChi2.setAccount(admin);
+        diaChi2.setAccount(accountNhanVien);
         diaChi2.setId(diaChiRepository.save(diaChi2).getId());
 //
 //        //Bảng Dòng Sản Phẩm

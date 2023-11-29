@@ -59,7 +59,7 @@ public class RankServiceImpl implements RankService {
                 .dieuKienToiThieu(request.getDieuKienToiThieu())
                 .dieuKienToiDa(request.getDieuKienToiDa())
                 .uuDai(request.getUuDai())
-                .status(StatusCommon.ACTIVE)
+                .status(request.getStatus())
                 .build();
         return rankRepository.save(xepHang);
 
@@ -75,6 +75,7 @@ public class RankServiceImpl implements RankService {
             xepHang.setDieuKienToiThieu(request.getDieuKienToiThieu());
             xepHang.setDieuKienToiDa(request.getDieuKienToiDa());
             xepHang.setUuDai(request.getUuDai());
+            xepHang.setStatus(request.getStatus());
             return rankRepository.save(xepHang);
         }
 
@@ -83,7 +84,7 @@ public class RankServiceImpl implements RankService {
 
 
     @Override
-    public XepHang doiTrangThai(UpdateRankRequest request, String id) {
+    public XepHang doiTrangThai(String id) {
         XepHang xepHang = rankRepository.findById(id).get();
         if (xepHang.getStatus() == StatusCommon.ACTIVE) {
             xepHang.setStatus(StatusCommon.IN_ACTIVE);
@@ -96,7 +97,10 @@ public class RankServiceImpl implements RankService {
 
     @Override
     public Page<RankResponse> getAll(Integer pageNo, FindRankRequest request) {
-        Pageable pageable = PageRequest.of(pageNo - 1, 5);
+        if (request.getPageSize() == null){
+            request.setPageSize(5);
+        }
+        Pageable pageable = PageRequest.of(pageNo - 1, request.getPageSize());
         return rankRepository.getAll(pageable, request);
     }
 
