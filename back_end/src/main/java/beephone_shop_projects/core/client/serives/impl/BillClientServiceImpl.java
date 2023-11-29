@@ -79,9 +79,9 @@ public class BillClientServiceImpl {
     private CartDetailClientRepository cartDetailClientRepository;
 
     public HoaDon createBillClient(BillClientRequest orderRequest) throws Exception {
-        Account khachHang = orderRequest.getIdKhachHang();
+        Account khachHang = accountClientRepository.findById(orderRequest.getIdKhachHang()).get();
 
-        if(orderRequest.getIdKhachHang().getMa() == "" || orderRequest.getIdKhachHang().getMa() == null){
+        if(khachHang.getMa().isEmpty()){
             Random random = new Random();
             int number = random.nextInt(10000);
             String code = String.format("KH%04d", number);
@@ -99,12 +99,12 @@ public class BillClientServiceImpl {
         newOrder.setVoucher(orderRequest.getVoucher());
         newOrder.setLoaiHoaDon(OrderType.DELIVERY);
         newOrder.setGhiChu(orderRequest.getGhiChu());
-        newOrder.setDiaChiNguoiNhan(khachHang.getDiaChiList().get(0).getDiaChi());
-        newOrder.setXaPhuongNguoiNhan(khachHang.getDiaChiList().get(0).getXaPhuong());
-        newOrder.setQuanHuyenNguoiNhan(khachHang.getDiaChiList().get(0).getQuanHuyen());
-        newOrder.setTinhThanhPhoNguoiNhan(khachHang.getDiaChiList().get(0).getTinhThanhPho());
-        newOrder.setSoDienThoaiNguoiNhan(khachHang.getSoDienThoai());
-        newOrder.setTenNguoiNhan(khachHang.getHoVaTen());
+        newOrder.setDiaChiNguoiNhan(orderRequest.getDiaChiNguoiNhan());
+        newOrder.setXaPhuongNguoiNhan(orderRequest.getXaPhuongNguoiNhan());
+        newOrder.setQuanHuyenNguoiNhan(orderRequest.getQuanHuyenNguoiNhan());
+        newOrder.setTinhThanhPhoNguoiNhan(orderRequest.getTinhThanhPhoNguoiNhan());
+        newOrder.setSoDienThoaiNguoiNhan(orderRequest.getSoDienThoaiNguoiNhan());
+        newOrder.setTenNguoiNhan(orderRequest.getTenNguoiNhan());
         newOrder.setTrangThai(OrderStatus.PENDING_CONFIRM);
         newOrder.setTongTien(orderRequest.getTongTien());
         newOrder.setTongTienSauKhiGiam(orderRequest.getTongTienSauKhiGiam());
