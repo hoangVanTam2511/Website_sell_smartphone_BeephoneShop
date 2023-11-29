@@ -43,8 +43,9 @@ public class ProductDetailClientService {
                 chiTietSanPhamRequest.getDonGiaMax() == null ? "1000000000000" : "" + chiTietSanPhamRequest.getDonGiaMax(),
                 chiTietSanPhamRequest.getChip() == null ? "%%" : "%" + chiTietSanPhamRequest.getChip() + "%",
                 chiTietSanPhamRequest.getManHinh() == null ? "%%" : "%" + chiTietSanPhamRequest.getManHinh() + "%",
-                chiTietSanPhamRequest.getTanSoQuet() == null ? "%%" : "%" + chiTietSanPhamRequest.getTanSoQuet() + "%"
-        );;
+                chiTietSanPhamRequest.getTanSoQuet() == null ? "%%" : "%" + chiTietSanPhamRequest.getTanSoQuet() + "%",
+                chiTietSanPhamRequest.getTenSanPham() == null ? "%%" : "%" + chiTietSanPhamRequest.getTenSanPham() + "%"
+        );
 
         ArrayList<ProductDetailResponce> responses = new ArrayList<>();
         for (String idProduct : idProducts) {

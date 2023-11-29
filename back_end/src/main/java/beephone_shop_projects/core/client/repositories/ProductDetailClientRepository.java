@@ -100,6 +100,7 @@ public interface ProductDetailClientRepository extends ISanPhamChiTietRepository
                          AND a.don_gia BETWEEN :donGiaMin and :donGiaMax
                          AND n.ten_chip LIKE :chip
                          AND o.kich_thuoc LIKE :manHinh
+                         AND m.ten_san_pham LIKE :ten_san_pham
                          GROUP BY m.id,m.ten_san_pham,
                           c.ten_hang,
                           n.ten_chip,
@@ -114,7 +115,8 @@ public interface ProductDetailClientRepository extends ISanPhamChiTietRepository
                                           @Param("donGiaMax") String donGiaMax,
                                           @Param("chip") String chip,
                                           @Param("manHinh") String manHinh,
-                                          @Param("tan_so_quet") String tanSoQuet
+                                          @Param("tan_so_quet") String tanSoQuet,
+                                          @Param("ten_san_pham") String tenSanPham
     );
 
     @Query(value = """

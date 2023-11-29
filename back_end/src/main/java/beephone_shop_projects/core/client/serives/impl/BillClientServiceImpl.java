@@ -1,20 +1,11 @@
 package beephone_shop_projects.core.client.serives.impl;
 
-import beephone_shop_projects.core.admin.order_management.converter.AccountConverter;
 import beephone_shop_projects.core.admin.order_management.converter.OrderConverter;
-import beephone_shop_projects.core.admin.order_management.converter.ProductItemConverter;
 import beephone_shop_projects.core.admin.order_management.converter.VoucherConverter;
-import beephone_shop_projects.core.admin.order_management.model.request.CartRequest;
-import beephone_shop_projects.core.admin.order_management.model.request.OrderRequest;
-import beephone_shop_projects.core.admin.order_management.model.request.SearchFilterOrderDto;
-import beephone_shop_projects.core.admin.order_management.model.response.CartItemResponse;
-import beephone_shop_projects.core.admin.order_management.model.response.OrderResponse;
 import beephone_shop_projects.core.admin.order_management.repository.OrderItemRepository;
-import beephone_shop_projects.core.admin.order_management.repository.impl.CartRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.repository.impl.HinhThucThanhToanRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.repository.impl.LichSuHoaDonRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.repository.impl.OrderRepositoryImpl;
-import beephone_shop_projects.core.admin.order_management.service.impl.CartServiceImpl;
 import beephone_shop_projects.core.admin.order_management.service.impl.LichSuHoaDonServiceImpl;
 import beephone_shop_projects.core.client.models.request.BillClientRequest;
 import beephone_shop_projects.core.client.models.request.BillDetailClientRequest;
@@ -22,12 +13,8 @@ import beephone_shop_projects.core.client.repositories.*;
 import beephone_shop_projects.entity.*;
 import beephone_shop_projects.infrastructure.constant.OrderStatus;
 import beephone_shop_projects.infrastructure.constant.OrderType;
-import beephone_shop_projects.infrastructure.exeption.rest.RestApiException;
+import beephone_shop_projects.utils.RandomCodeGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -90,9 +77,7 @@ public class BillClientServiceImpl {
             accountClientRepository.save(khachHang);
         }
 
-        Random random = new Random();
-        int number = random.nextInt(1000000);
-        String code = String.format("HD%04d", number);
+        String code =  RandomCodeGenerator.generateRandomNumber();
         HoaDon newOrder = new HoaDon();
         newOrder.setMa(code);
         newOrder.setAccount(khachHang);
