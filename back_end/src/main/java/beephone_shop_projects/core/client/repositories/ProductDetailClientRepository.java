@@ -1,9 +1,6 @@
 package beephone_shop_projects.core.client.repositories;
 
-import beephone_shop_projects.core.client.models.response.ConfigResponce;
-import beephone_shop_projects.core.client.models.response.ProductBestSeller;
-import beephone_shop_projects.core.client.models.response.ProductDetailResponce;
-import beephone_shop_projects.core.client.models.response.ProductResponce;
+import beephone_shop_projects.core.client.models.response.*;
 import beephone_shop_projects.repository.ISanPhamChiTietRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -129,7 +126,7 @@ public interface ProductDetailClientRepository extends ISanPhamChiTietRepository
 
     @Query(value = """
                   SELECT
-                  sp.id,
+                  sp.id,    
                   image.path AS duong_dan,
                   sp.ten_san_pham, 
                   IF(kmct.don_gia_sau_khuyen_mai is null ,0, kmct.don_gia_sau_khuyen_mai) AS don_gia_sau_khuyen_mai,
@@ -148,4 +145,12 @@ public interface ProductDetailClientRepository extends ISanPhamChiTietRepository
             """, nativeQuery = true)
     ProductDetailResponce getProductDetailByIDProductDetail(@Param("id_product_detail") String idProductDetail);
 
+    @Query(value = """
+         SELECT image.path as url, ms.ten_mau_sac from san_pham_chi_tiet spct
+         JOIN san_pham sp ON sp.id = spct.id_san_pham
+        JOIN mau_sac ms ON ms.id = spct.id_mau_sac
+        JOIN image ON image.id = spct.id_image
+         where sp.id  = :id_product
+        """, nativeQuery = true)
+    ArrayList<ImageResponce> getImagesByIDProductDetails(@Param("id_product") String idProduct);
 }

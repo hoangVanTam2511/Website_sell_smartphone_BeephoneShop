@@ -1,10 +1,7 @@
 package beephone_shop_projects.core.client.serives.impl;
 
 import beephone_shop_projects.core.client.models.request.SearchProductDetailClient;
-import beephone_shop_projects.core.client.models.response.ConfigResponce;
-import beephone_shop_projects.core.client.models.response.ProductBestSeller;
-import beephone_shop_projects.core.client.models.response.ProductDetailResponce;
-import beephone_shop_projects.core.client.models.response.ProductResponce;
+import beephone_shop_projects.core.client.models.response.*;
 import beephone_shop_projects.core.client.repositories.ProductClientRepository;
 import beephone_shop_projects.core.client.repositories.ProductDetailClientRepository;
 import beephone_shop_projects.entity.SanPham;
@@ -88,5 +85,9 @@ public class ProductDetailClientService {
 
     public ArrayList<SanPhamChiTiet> getListProductDetail(){
         return (ArrayList<SanPhamChiTiet>) productDetailClientRepository.findAll();
+    }
+
+    public ArrayList<ImageResponce> getImagesByIDProductDetail(String idProductDetail){
+        return productDetailClientRepository.getImagesByIDProductDetails(idProductDetail);
     }
 }
