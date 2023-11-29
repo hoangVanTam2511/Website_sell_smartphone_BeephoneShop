@@ -13,7 +13,7 @@ import { apiURLKhuyenMai } from "../../../service/api";
 import TextField from "@mui/material/TextField";
 import "../../../assets/scss/HienThiNV.scss";
 import { InputAdornment } from "@mui/material";
-import { Navigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -72,11 +72,12 @@ const SuaKhuyenMai = () => {
   const [open, setOpen] = React.useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
+  const navigate = useNavigate();
   let successfulCount = 0;
   let successfulCount1 = 0;
 
   const redirectToHienThiKhuyenMai = () => {
-    Navigate("/khuyen-mai");
+    navigate("/khuyen-mai");
   };
 
   const handleOpenDialogConfirmAdd = () => {
@@ -225,6 +226,7 @@ const SuaKhuyenMai = () => {
         });
         setSelectedRowKeys(uniqueSelectedRowKeys);
         setSelectedRowKeys1(listIdSanPhamChiTiet);
+        setIdSanPhamChiTiet(listIdSanPhamChiTiet);
       })
       .catch((error) => {
         handleOpenAlertVariant(
@@ -272,9 +274,15 @@ const SuaKhuyenMai = () => {
         idCheckboxdelete.forEach((idSP) => {
           deleteKhuyenMaiChiTiet(id, idSP);
         });
+        idSanPhamChiTiet.forEach((idSP) => {
+          updateKhuyenMaiChiTiet(id, idSP);
+        });
         selectedProductDetails.forEach((idSanPhamChiTiet) => {
           successfulCount++;
           addKhuyenMaiChiTiet(id, idSanPhamChiTiet);
+        });
+        idSanPhamChiTiet.forEach((idSP) => {
+          updateSanPhamChiTiet(idSP);
         });
         handleOpenAlertVariant("Cập nhật thành công.", Notistack.SUCCESS);
         setTimeout(() => {
@@ -302,6 +310,33 @@ const SuaKhuyenMai = () => {
       })
       .catch((error) => {
         console.log("Xóa thất bại");
+      });
+  };
+
+  const updateKhuyenMaiChiTiet = (khuyenMaiID, idSP) => {
+    axios
+      .put(
+        "http://localhost:8080/khuyen-mai-chi-tiet/update-don-gia/" +
+          khuyenMaiID +
+          "/" +
+          idSP
+      )
+      .then((response) => {
+        console.log("Update thành công");
+      })
+      .catch((error) => {
+        console.log("Update thất bại");
+      });
+  };
+
+  const updateSanPhamChiTiet = (idSP) => {
+    axios
+      .put("http://localhost:8080/khuyen-mai-chi-tiet/update-san-pham/" + idSP)
+      .then((response) => {
+        console.log("Update thành công");
+      })
+      .catch((error) => {
+        console.log("Update thất bại");
       });
   };
 
@@ -497,7 +532,7 @@ const SuaKhuyenMai = () => {
       title: "Ảnh",
       dataIndex: "duongDan",
       key: "duongDan",
-      width: "10%",
+      width: "15%",
       align: "center",
       render: (text, record) => (
         <Badge
@@ -510,9 +545,9 @@ const SuaKhuyenMai = () => {
             <img
               src={record.duongDan}
               alt="Ảnh"
-              style={{ width: "100px", height: "100px" }}
+              style={{ width: "130px", height: "130px" }}
             />
-            {record.giaTriKhuyenMai !== null && (
+            {/* {record.giaTriKhuyenMai !== null && (
               <div
                 style={{
                   position: "absolute",
@@ -527,7 +562,7 @@ const SuaKhuyenMai = () => {
                   icon={faBookmark}
                   style={{
                     fontSize: "2.7em",
-                    color: record.giaTriKhuyenMai > 50 ? "red" : "#ffcc00",
+                    color: record.giaTriKhuyenMai > 5000000 ? "red" : "#ffcc00",
                     zIndex: 1,
                     position: "relative",
                   }}
@@ -545,8 +580,55 @@ const SuaKhuyenMai = () => {
                 >
                   <strong>
                     Giảm
-                    <br /> {record.giaTriKhuyenMai}%
+                    <br /> {record.giaTriKhuyenMai}đ
                   </strong>
+                </span>
+              </div>
+            )} */}
+
+            {record.giaTriKhuyenMai !== null && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
+              >
+                <span
+                  style={{
+                    position: "absolute",
+                    top: "43%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    fontSize: "11px",
+                    color:
+                      record.giaTriKhuyenMai > 10000000 ? "white" : "black",
+                    zIndex: 2,
+                  }}
+                >
+                  <div
+                    className="category"
+                    style={{
+                      backgroundColor:
+                        record.giaTriKhuyenMai > 10000000 ? "red" : "#ffcc00",
+                      position: "relative",
+                      top: "1px",
+                      borderTopLeftRadius: `8px`,
+                      borderTopRightRadius: `20px`,
+                      borderBottomRightRadius: `20px`,
+                      fontWeight: "600",
+                      opacity: 1, // Change opacity to 1 to make it visible
+                      padding: "4px 8px", // Add padding for better visibility
+                      marginLeft: "100px",
+                      marginTop: "25px",
+                    }}
+                  >
+                    Giảm{" "}
+                    {numeral(record.giaTriKhuyenMai).format("0,0 VND") + " ₫"}
+                  </div>
                 </span>
               </div>
             )}
@@ -572,14 +654,6 @@ const SuaKhuyenMai = () => {
         );
       },
     },
-    // {
-    //   title: "Màu Sắc ",
-    //   dataIndex: "tenMauSac",
-    //   key: "tenMauSac",
-    //   width: "10%",
-    //   editable: true,
-    //   align: "center",
-    // },
     {
       title: "Đơn giá ",
       dataIndex: "donGia",
@@ -603,22 +677,22 @@ const SuaKhuyenMai = () => {
       align: "center",
       render: (_, record) => {
         let formattedValue;
+        const numericValue2 = parseFloat(value?.replace(/[^0-9.-]+/g, ""));
         if (record.giaTriKhuyenMai === null) {
-          formattedValue = value;
+          formattedValue = numeral(numericValue2).format("0,0 VND") + " ₫";
         } else {
-          if (value === "0") {
-            formattedValue = record.giaTriKhuyenMai;
-          } else if (record.tong === null) {
-            formattedValue = Math.round(
-              (0 + parseInt(value)) / (record.size + 1)
-            );
+          if (value === "0" || value === "" || value == null) {
+            formattedValue =
+              numeral(record.giaTriKhuyenMai).format("0,0 VND") + " ₫";
           } else {
+            const total = record.tong === null ? 0 : record.tong;
             formattedValue = Math.round(
-              (record.tong + parseInt(value)) / (record.size + 1)
+              (total + parseInt(numericValue2)) / (record.size + 1)
             );
+            formattedValue = numeral(formattedValue).format("0,0 VND") + " ₫";
           }
         }
-        return <span>{formattedValue + " %"}</span>;
+        return <span>{formattedValue}</span>;
       },
     },
 
@@ -631,26 +705,22 @@ const SuaKhuyenMai = () => {
       align: "center",
       whiteSpace: "pre-line",
       render: (_, record) => {
-        let formattedValue;
+        const numericValue2 = parseFloat(value?.replace(/[^0-9.-]+/g, ""));
+        let formattedValue = record.donGia;
+        const validNumericValue2 = isNaN(numericValue2) ? 0 : numericValue2;
         if (record.giaTriKhuyenMai === null) {
-          formattedValue = value;
+          formattedValue = record.donGia - validNumericValue2;
         } else {
-          if (value === "0") {
-            formattedValue = record.giaTriKhuyenMai;
-          } else if (record.tong === null) {
-            formattedValue = Math.round(
-              (0 + parseInt(value)) / (record.size + 1)
-            );
+          if (value === "0" || value === "" || value == null) {
+            formattedValue = record.donGia - record.giaTriKhuyenMai;
           } else {
-            formattedValue = Math.round(
-              (record.tong + parseInt(value)) / (record.size + 1)
-            );
+            const total = record.tong === null ? 0 : record.tong;
+            formattedValue =
+              record.donGia -
+              Math.round((total + numericValue2) / (record.size + 1));
           }
         }
-        let giaTriKhuyenMai = record.donGia;
-        giaTriKhuyenMai =
-          record.donGia - (record.donGia * formattedValue) / 100;
-        return <span>{numeral(giaTriKhuyenMai).format("0,0 VND") + " ₫"}</span>;
+        return <span>{numeral(formattedValue).format("0,0 VND") + " ₫"}</span>;
       },
     },
   ];

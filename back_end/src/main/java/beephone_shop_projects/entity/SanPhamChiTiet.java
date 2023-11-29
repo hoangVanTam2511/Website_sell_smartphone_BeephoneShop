@@ -34,6 +34,10 @@ public class SanPhamChiTiet extends PrimaryEntity implements Serializable {
 
   private Integer soLuongTonKho;
 
+  private BigDecimal giaTriKhuyenMai;
+
+  private BigDecimal donGiaSauKhuyenMai;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_san_pham")
   private SanPham sanPham;

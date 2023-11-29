@@ -2,10 +2,7 @@ package beephone_shop_projects.core.admin.statistic_management.repository;
 
 import beephone_shop_projects.core.admin.statistic_management.model.request.ThongKeKhoangNgayDonHangRequest;
 import beephone_shop_projects.core.admin.statistic_management.model.request.ThongKeKhoangNgaySanPhamRequest;
-import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeSanPhamKhoangNgay;
-import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeSanPhamResponse;
-import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeSanPhamBanChayResponse;
-import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeSanPhamSapHetHang;
+import beephone_shop_projects.core.admin.statistic_management.model.response.*;
 import beephone_shop_projects.repository.ISanPhamChiTietRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -119,6 +116,8 @@ public interface ThongKeSanPhamRepository extends ISanPhamChiTietRepository {
             GROUP BY YEAR(hd.created_at), MONTH(hd.created_at)
                            """, nativeQuery = true)
     ThongKeSanPhamResponse getSanPhamLastMonth();
+
+
 
 
 }

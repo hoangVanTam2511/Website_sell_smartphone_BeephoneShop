@@ -26,6 +26,8 @@ public class ProductCustomResponse {
 
   private List<SimCardPhoneResponse> theSims;
 
+  private List<CategoryPhoneResponse> danhMucs;
+
   private ChargingPortResponse congSac;
 
   private String moTa;

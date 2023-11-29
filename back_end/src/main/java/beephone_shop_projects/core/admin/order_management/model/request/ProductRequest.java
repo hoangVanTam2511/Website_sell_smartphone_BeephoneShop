@@ -28,7 +28,7 @@ public class ProductRequest {
 
   private List<TheSim> theSimDienThoais;
 
-  private List<DanhMuc> danhMucs;
+  private List<DanhMuc> danhMucDienThoais;
 
   private List<CameraSauDienThoai> cameraSauDienThoais;
 
@@ -42,9 +42,9 @@ public class ProductRequest {
 
   private Chip chip;
 
-  private TheNho theNho;
-
   private ManHinh manHinh;
+
+  private TheNho theNho;
 
   private Pin pin;
 

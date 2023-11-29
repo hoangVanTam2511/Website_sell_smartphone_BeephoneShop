@@ -46,6 +46,7 @@ const ManagementProducts = () => {
       .then((response) => {
         setProducts(response.data.data);
         setIsLoading(false);
+        console.log(response.data.data);
       })
       .catch((error) => {
         console.error(error);
@@ -76,6 +77,7 @@ const ManagementProducts = () => {
     );
   };
 
+
   const columns = [
     {
       title: "STT",
@@ -87,13 +89,32 @@ const ManagementProducts = () => {
       ),
     },
     {
+      title: "Ảnh",
+      align: "center",
+      width: "15%",
+      render: (text, item) => (
+        <div className="product-img">
+          <img
+            src={
+              item &&
+              item.productItems && item.productItems[0] &&
+              item.productItems[0].image && item.productItems[0].image.path
+            }
+            class=""
+            alt=""
+            style={{ width: "145px", height: "150px" }}
+          />
+        </div>
+      ),
+    },
+    {
       title: "Mã Sản Phẩm",
       align: "center",
       key: "ma",
       width: "15%",
       dataIndex: "ma",
       render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>{record.ma}</span>
+        <span style={{ fontWeight: "400" }}>{"SP00000" + products.indexOf(record) + 1}</span>
       ),
     },
     {
@@ -122,22 +143,6 @@ const ManagementProducts = () => {
       dataIndex: "hang",
       render: (text, record) => (
         <span style={{ fontWeight: "400" }}>{record.operatingType}</span>
-      ),
-    },
-    {
-      title: "CPU",
-      align: "center",
-      width: "15%",
-      render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>{record.chip.tenChip}</span>
-      ),
-    },
-    {
-      title: "Màn Hình",
-      align: "center",
-      width: "15%",
-      render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>{record.manHinh.kichThuoc + `"`}</span>
       ),
     },
     {
@@ -186,15 +191,38 @@ const ManagementProducts = () => {
       render: (text, record) => (
         <>
           <div className="button-container">
-            <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
-              <IconButton size="" onClick={() => {
+            <Button
+              onClick={() => {
+                navigate(`/dashboard/update-product/${item.id}`)
+              }}
+              className="rounded-2 button-mui"
+              type="primary"
+              style={{ width: "92px", fontSize: "14px" }}
+            >
+              <span
+                className=""
+                style={{ fontWeight: "500", marginBottom: "3px" }}
+              >
+                Cập Nhật
+              </span>
+            </Button>
+            <Button
+              className="rounded-2 ms-2 ant-btn-warning"
+              onClick={() => {
                 setProductItems(record.productItems)
                 setProductName(record.tenSanPham);
                 setOpenProductItems(true);
-              }}>
-                <FaPencilAlt color="#2f80ed" />
-              </IconButton>
-            </Tooltip>
+              }}
+              type="primary"
+              style={{ width: "92px", fontSize: "14px" }}
+            >
+              <span
+                className=""
+                style={{ fontWeight: "500", marginBottom: "3px" }}
+              >
+                Chi tiết
+              </span>
+            </Button>
           </div>
         </>
       ),

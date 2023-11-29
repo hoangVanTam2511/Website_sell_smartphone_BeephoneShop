@@ -11,6 +11,6 @@ public class CameraRearPhoneResponse {
 
   private Boolean isCameraMain;
 
-  private CameraRearResponse cameraTruoc;
+  private CameraRearResponse cameraSau;
 
 }

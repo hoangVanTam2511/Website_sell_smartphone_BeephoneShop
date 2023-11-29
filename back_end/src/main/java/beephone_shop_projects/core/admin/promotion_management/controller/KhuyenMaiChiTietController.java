@@ -27,4 +27,14 @@ public class KhuyenMaiChiTietController {
         khuyenMaiChiTietService.updateDelected(id, idSP);
     }
 
+    @PutMapping("/khuyen-mai-chi-tiet/update-don-gia/{id}/{idSP}")
+    public void updateKhuyenMaiChiTietDonGia(@PathVariable("id") String id,@PathVariable("idSP") String idSP) {
+        khuyenMaiChiTietService.updateKhuyenMaiChiTiet(id, idSP);
+    }
+
+    @PutMapping("/khuyen-mai-chi-tiet/update-san-pham/{id}")
+    public void updateKhuyenMaiChiTietDonGia(@PathVariable("id") String id) {
+        khuyenMaiChiTietService.updateSanPhamChiTiet(id);
+    }
+
 }

@@ -44,8 +44,8 @@ const TextFieldPrice = React.memo(({ update, ma, value, confirm }) => {
           updateData(e.target.value, ma)
         }}
         onChange={handleChangePrice}
-        // helperText={confirm && priceFormat.trim() === "" ? "Bạn chưa nhập đơn giá" : ""}
-        // error={confirm && priceFormat.trim() === ""}
+        helperText={confirm === true && priceFormat.trim() === "" ? "Bạn chưa nhập đơn giá" : ""}
+        error={confirm === true && priceFormat.trim() === ""}
       />
     </>
   )

@@ -473,7 +473,7 @@ const AddVoucher = () => {
                 InputProps={{
                   inputMode: "numeric",
                   endAdornment: (
-                    <InputAdornment position="end">VND</InputAdornment>
+                    <InputAdornment position="end">đ</InputAdornment>
                   ),
                 }}
                 disabled={

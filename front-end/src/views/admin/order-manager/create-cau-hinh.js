@@ -3,6 +3,7 @@ import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Empty, Table } from "antd";
 import Link from '@mui/material/Link';
 import { Box, FormControl, IconButton, Select, InputLabel, MenuItem, Pagination, TextField, Tooltip, Checkbox, FormControlLabel, Autocomplete, InputAdornment, OutlinedInput, Dialog, DialogContent, DialogTitle, DialogActions, Slide, ListItemText, Rating, ImageListItemBar, } from "@mui/material";
+import Alert from "@mui/joy/Alert";
 import axios from "axios";
 import Zoom from '@mui/material/Zoom';
 import * as dayjs from "dayjs";
@@ -31,7 +32,9 @@ import { ImportExcelImei } from "./import-imei-by";
 import CreateRom from "./create-rom";
 import CreateRam from "./create-ram";
 import Sheet from "@mui/joy/Sheet";
-import { ConfirmChangeTypePhienBan } from "./AlertDialogSlide";
+import { ConfirmAddProduct, ConfirmChangeTypePhienBan } from "./AlertDialogSlide";
+import ModalChonDonGiaChung from "./modal-don-gia-chung";
+import CreateMauSac from "./create-mau-sac";
 
 const ITEM_HEIGHT = 130;
 const ITEM_PADDING_TOP = 8;
@@ -45,7 +48,15 @@ const MenuProps = {
   },
 };
 
-const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid }) => {
+const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, isConfirm }) => {
+
+  const [validImage, setValidImage] = useState(true);
+  const [refreshPrice, setRefreshPrice] = useState([]);
+
+  const getValidImage = (valid) => {
+    setValidImage(valid);
+  }
+
   const [openModalType, setOpenModalType] = useState(false);
   const handleCloseOpenModalType = () => {
     setOpenModalType(false);
@@ -109,6 +120,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
 
   }, [])
 
+
   const [imeis, setImeis] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingInside, setIsLoadingInside] = useState(false);
@@ -149,12 +161,40 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
   const [selectedColors, setSelectedColors] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
   const [openModalUpdate, setOpenModalUpdate] = useState(false);
+  const [openModalConfirmAddProduct, setOpenModalConfirmAddProduct] = useState(false);
+  const [openModalUpdatePrice, setOpenModalUpdatePrice] = useState(false);
+  const handleOpenModalUpdatePrice = () => {
+    setOpenModalUpdatePrice(true);
+  }
+  const handleCloseOpenModalUpdatePrice = () => {
+    setOpenModalUpdatePrice(false);
+  }
+  const handleCloseOpenModalConfirmAddProduct = () => {
+    setOpenModalConfirmAddProduct(false);
+  }
   const handleOpenModalUpdate = () => {
     setOpenModalUpdate(true);
   }
 
   const handleCloseModalUpdate = () => {
     setOpenModalUpdate(false);
+  }
+
+  const [itemId, setItemId] = useState("");
+
+  const updatePriceCommon = (donGia) => {
+    const updatedCauHinhsFinal = cauHinhsFinal.map((item) => {
+      if (item.id === itemId) {
+        return { ...item, donGia: donGia };
+      }
+      return item;
+    })
+    setCauHinhsFinal(updatedCauHinhsFinal);
+  }
+
+  const [openMauSac, setOpenMauSac] = React.useState(false);
+  const handleCloseOpenMauSac = () => {
+    setOpenMauSac(false);
   }
 
   const [openRom, setOpenRom] = React.useState(false);
@@ -197,6 +237,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
           };
 
           updatedCauHinhs.push(cauHinhMoi);
+
           const objectsTachRa = cauHinhMoi.colors.flatMap((color) => {
             return {
               ...cauHinhMoi,
@@ -207,7 +248,22 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
               ma: generateRandomId(),
             };
           });
-          setCauHinhsFinal((prev) => [...prev, ...objectsTachRa]);
+
+          const updatedObjectsTachRa = objectsTachRa.map((object) => {
+            const matchingCauHinhFinal = cauHinhsFinal.find((cauHinhFinal) => cauHinhFinal.color.id === object.color.id);
+            if (matchingCauHinhFinal) {
+              return {
+                ...object,
+                image: matchingCauHinhFinal.image,
+                file: matchingCauHinhFinal.file,
+              };
+            }
+            return object;
+          });
+
+          console.log(updatedObjectsTachRa);
+
+          setCauHinhsFinal((prev) => [...prev, ...updatedObjectsTachRa]);
         }
       });
 
@@ -217,7 +273,6 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
       if (list.length === 0) {
         setSelectedRom([]);
       }
-
 
       if (selectedRom.length === 0) {
         const updatedCauHinhs = cauHinhs && cauHinhs.filter((cauHinh) => list.includes(cauHinh.ram.id));
@@ -246,7 +301,19 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
                 ma: generateRandomId(),
               };
             });
-            setCauHinhsFinal((prev) => [...prev, ...objectsTachRa]);
+            const updatedObjectsTachRa = objectsTachRa.map((object) => {
+              const matchingCauHinhFinal = cauHinhsFinal.find((cauHinhFinal) => cauHinhFinal.color.id === object.color.id);
+              if (matchingCauHinhFinal) {
+                return {
+                  ...object,
+                  image: matchingCauHinhFinal.image,
+                  file: matchingCauHinhFinal.file,
+                };
+              }
+              return object;
+            });
+            console.log(updatedObjectsTachRa);
+            setCauHinhsFinal((prev) => [...prev, ...updatedObjectsTachRa]);
           }
         });
 
@@ -288,7 +355,6 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
                 ...existingCauHinhFinal,
               };
             } else {
-              // Create new configuration in CauHinhsFinal
               return {
                 ...cauHinh,
                 color: color,
@@ -301,7 +367,19 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
           })
         );
 
-        setCauHinhsFinal(updatedCauHinhsFinal);
+        const updatedObjectsTachRa = updatedCauHinhsFinal.map((object) => {
+          const matchingCauHinhFinal = cauHinhsFinal.find((cauHinhFinal) => cauHinhFinal.color.id === object.color.id);
+          if (matchingCauHinhFinal) {
+            return {
+              ...object,
+              image: matchingCauHinhFinal.image,
+              file: matchingCauHinhFinal.file,
+            };
+          }
+          return object;
+        });
+        console.log(updatedObjectsTachRa);
+        setCauHinhsFinal(updatedObjectsTachRa);
       }
 
     }
@@ -313,7 +391,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
       handleOpenAlertVariant("Bạn cần chọn RAM trước!", "warning");
     }
     else if (list.length > selectedRam.length && !type) {
-      handleOpenAlertVariant("Số lượng ROM phải bé hơn hoặc bằng với số lượng RAM!", "warning");
+      handleOpenAlertVariant("Số lượng ROM chỉ cho phép bằng với số lượng RAM!", "warning");
     }
     else {
       if (!type) {
@@ -410,8 +488,19 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
               }
             })
           );
-
-          setCauHinhsFinal(updatedCauHinhsFinal);
+          const updatedObjectsTachRa = updatedCauHinhsFinal.map((object) => {
+            const matchingCauHinhFinal = cauHinhsFinal.find((cauHinhFinal) => cauHinhFinal.color.id === object.color.id);
+            if (matchingCauHinhFinal) {
+              return {
+                ...object,
+                image: matchingCauHinhFinal.image,
+                file: matchingCauHinhFinal.file,
+              };
+            }
+            return object;
+          });
+          console.log(updatedObjectsTachRa);
+          setCauHinhsFinal(updatedObjectsTachRa);
         }
       }
     }
@@ -478,15 +567,14 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
       }
       return item;
     })
-    updateDatas.sort((a, b) => {
-      if (a.ram.dungLuong !== b.ram.dungLuong) {
-        return a.ram.dungLuong - b.ram.dungLuong;
-      } else {
-        return a.rom.dungLuong - b.rom.dungLuong;
-      }
-    });
+    // updateDatas.sort((a, b) => {
+    //   if (a.ram.dungLuong !== b.ram.dungLuong) {
+    //     return a.ram.dungLuong - b.ram.dungLuong;
+    //   } else {
+    //     return a.rom.dungLuong - b.rom.dungLuong;
+    //   }
+    // });
     setCauHinhs(updateDatas);
-
 
     const updatedCauHinhsFinal = [...cauHinhsFinal];
 
@@ -531,7 +619,19 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
             };
             updatedCauHinhsFinal.push(newObj);
           }
-          setCauHinhsFinal(updatedCauHinhsFinal);
+
+          const updatedObjectsTachRa = updatedCauHinhsFinal.map((object) => {
+            const matchingCauHinhFinal = cauHinhsFinal.find((cauHinhFinal) => cauHinhFinal.color.id === object.color.id);
+            if (matchingCauHinhFinal) {
+              return {
+                ...object,
+                image: matchingCauHinhFinal.image,
+                file: matchingCauHinhFinal.file,
+              };
+            }
+            return object;
+          });
+          setCauHinhsFinal(updatedObjectsTachRa);
 
         });
       }
@@ -630,7 +730,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
       width: "15%",
       render: (text, record, index) => {
         return (
-          <TextFieldPrice confirm={confirm} update={updatePrice} ma={record.ma} value={cauHinhsFinal.find(item => item.ma === record.ma)?.donGia} />
+          <TextFieldPrice confirm={isConfirm} update={updatePrice} ma={record.ma} value={cauHinhsFinal.find(item => item.ma === record.ma)?.donGia} />
         );
       },
     },
@@ -704,6 +804,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
   const [selectKey, setSelectKey] = useState(0);
 
   const handleAddProduct = async () => {
+    handleCloseOpenModalConfirmAddProduct();
     setIsLoadingInside(true);
     getOverplay(true);
     const storeItem = localStorage.getItem('cauHinhsFinal');
@@ -717,7 +818,10 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
           "Content-Type": "application/json",
         }
       })
-      await addFiles(request.product.ma);
+      const isMissingImage = cauHinhsFinal.some((cauHinh) => !cauHinh.image);
+      if (!isMissingImage) {
+        await addFiles(request.product.ma);
+      }
       handleOpenAlertVariant("Thêm sản phẩm thành công!", Notistack.SUCCESS);
       setIsLoadingInside(false);
       getOverplay(false);
@@ -764,11 +868,25 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
     }
   }
 
+  const handleDeleteImage = (colorId) => {
+    const updateDatas = cauHinhsFinal.map((item) => {
+      if (item.color.id === colorId) {
+        return { ...item, image: null, file: null };
+      }
+      return item;
+    })
+    setCauHinhsFinal(updateDatas);
+    console.log(updateDatas);
+  }
+
   const addImageToProductItem = (colorId, url, file, prevColor) => {
     if (colorId !== " ") {
       const updateDatas = cauHinhsFinal.map((item) => {
         if (item.color.id === colorId) {
           return { ...item, image: url, file: file };
+        }
+        if (item.color.id === prevColor) {
+          return { ...item, image: null, file: null };
         }
         return item;
       })
@@ -784,7 +902,6 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
       })
       setCauHinhsFinal(updateDatas);
       console.log(updateDatas);
-
     }
   }
 
@@ -910,18 +1027,17 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
                 </div>
                 <div className="mx-auto ms-3" style={{ width: "100%" }}>
                   <FormControl fullWidth sx={{ width: 355 }}>
-                    <InputLabel id="demo-simple-select-label">Chọn Màu Sắc</InputLabel>
+                    <InputLabel id="demo-simple-select-label">Chọn Màu Sắc Chung</InputLabel>
                     <Select className="custom"
-                      MenuProps={{ autoFocus: false }}
+                      MenuProps={{ autoFocus: false, disablePortal: true }}
                       onOpen={handleOpenSelectColor}
                       open={openSelectColor}
                       labelId="demo-simple-select-label"
-                      input={<OutlinedInput label="Chọn Màu Sắc" />}
                       id="demo-simple-select"
                       value={0}
-                      label="Chọn Màu Sắc"
+                      label="Chọn Màu Sắc Chung"
                     >
-                      <MenuItem style={{ display: "none" }} value={0}>{selectColor ? joinedColors : "Chọn Màu Sắc"}</MenuItem>
+                      <MenuItem style={{ display: "none" }} value={0}>{selectColor ? joinedColors : "Chọn Màu Sắc Chung"}</MenuItem>
                       <MenuItem value={1}
                         disableRipple
                         style={{ backgroundColor: "transparent", display: "block", cursor: "auto", width: "1098px" }}
@@ -929,7 +1045,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
                         <div style={{ height: cauHinhs.length > 0 ? "583px" : "455px" }}>
                           <div className="d-flex justify-content-between">
                             <div className="d-flex" style={{}}>
-                              <TextFieldSearchColors getColor={getKeyword} defaultValue={keyword} />
+                              <TextFieldSearchColors onOpen={() => setOpenMauSac(true)} getColor={getKeyword} defaultValue={keyword} />
                               <Button
                                 className="rounded-2 button-mui ms-2"
                                 type="primary"
@@ -961,12 +1077,17 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
                                 onClick={() => {
                                   if (valueColor.length === 0) {
                                     setValueColorFinal([]);
+                                    setCauHinhsFinal([]);
                                     setSelectColor(false);
                                     handleCloseSelectColor();
                                   }
                                   else {
+                                    const convertColorIds = valueColor.map((item) => {
+                                      const foundColor = listColor.find((color) => color.id === item);
+                                      return foundColor ? foundColor : null;
+                                    });
                                     const updatedCauHinhsFinal = cauHinhs && cauHinhs.map((cauHinh) => {
-                                      const objectsTachRa = valueColor.flatMap((color) => ({
+                                      const objectsTachRa = convertColorIds.flatMap((color) => ({
                                         ...cauHinh,
                                         color: color,
                                         soLuongTonKho: 0,
@@ -979,17 +1100,28 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
                                     });
 
                                     const objectsTachRaMerged = updatedCauHinhsFinal.flat();
-                                    setCauHinhsFinal(objectsTachRaMerged);
+                                    const updatedObjectsTachRa = objectsTachRaMerged.map((object) => {
+                                      const matchingCauHinhFinal = cauHinhsFinal.find((cauHinhFinal) => cauHinhFinal.color.id === object.color.id);
+                                      if (matchingCauHinhFinal) {
+                                        return {
+                                          ...object,
+                                          image: matchingCauHinhFinal.image,
+                                          file: matchingCauHinhFinal.file,
+                                        };
+                                      }
+                                      return object;
+                                    });
+                                    setCauHinhsFinal(updatedObjectsTachRa);
 
                                     const updatedCauHinhs = cauHinhs && cauHinhs.map((cauHinh) => ({
                                       ...cauHinh,
-                                      colors: valueColor,
+                                      colors: convertColorIds,
                                     }));
 
                                     setCauHinhs(updatedCauHinhs);
 
                                     setSelectColor(true);
-                                    setValueColorFinal(valueColor);
+                                    setValueColorFinal(convertColorIds);
                                     handleCloseSelectColor();
                                   }
                                 }}
@@ -1007,7 +1139,10 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
                               <Button
                                 onClick={() => {
                                   handleCloseSelectColor();
-                                  setValueColor(valueColorFinal);
+                                  const convertColorIds = valueColorFinal.map((item) => {
+                                    return item.id;
+                                  });
+                                  setValueColor(convertColorIds);
                                 }}
                                 className="rounded-2"
                                 type="danger"
@@ -1038,7 +1173,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
                                 {filterColors
                                   .map((item, index) => (
                                     <ListItem key={item.id}>
-                                      <CheckboxJoy
+                                      <CheckboxJoy key={item}
                                         slotProps={{
                                           action: ({ checked }) => ({
                                             sx: checked
@@ -1051,13 +1186,13 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
                                         }}
                                         overlay
                                         disableIcon
-                                        checked={valueColor.includes(item)}
-                                        variant={valueColor.includes(item) ? 'soft' : 'outlined'}
+                                        checked={valueColor.some((color) => color === item.id)}
+                                        variant={valueColor.some((color) => color === item.id) ? 'soft' : 'outlined'}
                                         onChange={(event) => {
                                           if (event.target.checked) {
-                                            setValueColor((val) => [...val, item]);
+                                            setValueColor((val) => [...val, item.id]);
                                           } else {
-                                            setValueColor((val) => val.filter((text) => text !== item));
+                                            setValueColor((val) => val.filter((text) => text !== item.id));
                                           }
                                         }}
                                         label={item.tenMauSac}
@@ -1090,13 +1225,13 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
                               >
                                 {valueColor
                                   .map((item, index) => (
-                                    <ListItem key={item.id}>
+                                    <ListItem key={index}>
                                       <Done
                                         fontSize="md"
                                         color="primary"
                                         sx={{ ml: -0.5, zIndex: 2, pointerEvents: 'none' }}
                                       />
-                                      <CheckboxJoy
+                                      <CheckboxJoy key={index}
                                         slotProps={{
                                           action: ({ checked }) => ({
                                             sx: checked
@@ -1109,8 +1244,8 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
                                         }}
                                         overlay
                                         disableIcon
-                                        checked={valueColor.includes(item)}
-                                        variant={valueColor.includes(item) ? 'soft' : 'outlined'}
+                                        checked={valueColor.some((color) => color === item)}
+                                        variant={valueColor.some((color) => color === item) ? 'soft' : 'outlined'}
                                         onChange={(event) => {
                                           if (event.target.checked) {
                                             setValueColor((val) => [...val, item]);
@@ -1118,7 +1253,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
                                             setValueColor((val) => val.filter((text) => text !== item));
                                           }
                                         }}
-                                        label={item.tenMauSac}
+                                        label={listColor.find((color) => color.id === item)?.tenMauSac || null}
                                       />
                                     </ListItem>
                                   ))}
@@ -1219,7 +1354,10 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
                                                   handleOpenAlertVariant("Bạn chưa chọn màu sắc!", "warning");
                                                 }
                                                 else {
-                                                  setValueColor(listColorCurrent && listColorCurrent.colors);
+                                                  const convertColorIds = listColorCurrent.colors.map((item) => {
+                                                    return item.id;
+                                                  });
+                                                  setValueColor(convertColorIds && convertColorIds);
                                                   setListColorCurrent(null);
                                                   handleOpenAlertVariant("Chọn màu sắc thành công!", Notistack.SUCCESS);
                                                   handleCloseListColorCurrent();
@@ -1357,7 +1495,20 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
 */}
               </div>
               {cauHinhs && cauHinhs.length > 0 &&
-                <div className="mt-3 d-flex justify-content-end">
+                <div className="mt-3 d-flex justify-content-between">
+                  <div style={{ width: "42%" }} className="no-version">
+                    {isConfirm === true && (cauHinhs.some((cauHinh) => {
+                      const foundFinalConfig = cauHinhsFinal.find((finalItem) => finalItem.id === cauHinh.id);
+                      return !foundFinalConfig;
+                    }) === true || cauHinhsFinal.some((cauHinh) => !cauHinh.ram || !cauHinh.rom) === true) ?
+                      <BoxJoy >
+                        <Alert color="danger" variant="soft">
+                          Vui lòng chọn đầy đủ các thành phần cho các phiên bản khác nhau!
+                        </Alert>
+                      </BoxJoy>
+                      : null
+                    }
+                  </div>
                   <Button
                     onClick={handleDownloadSample}
                     className="rounded-2 button-mui me-1"
@@ -1386,24 +1537,49 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
               return (
                 <>
                   <div className={"mt-3 mx-auto"} style={{ width: "95%" }}>
-                    <CardJoy
+                    <CardJoy color={
+                      isConfirm === true && (cauHinhsFinal.some((finalItem) => finalItem.id === item.id) === false
+                        || item.rom === null) ?
+                        "danger"
+                        : "neutral"
+                    }
                       orientation={'vertical'}
                       variant="outlined"
                       sx={{ width: '100%', maxWidth: '100%', gap: 1.5 }}
                     >
                       <div className="d-flex justify-content-between">
-                        <span className="mt-1" style={{ fontWeight: "550", fontSize: "22px" }}>
-                          PHIÊN BẢN {' ' + (item.ram ? item.ram.dungLuong : "") + "/" + (item.rom ? item.rom.dungLuong : "") + "GB"}
-                        </span>
                         <div className="d-flex">
-                          <div className="me-2">
-                            <TextField
-                              label="Đơn giá chung"
-                              id="outlined-size-small"
-                              size="small"
-                              style={{ width: "150px" }}
-                            />
-                          </div>
+                          <span className="mt-1 text-dark" style={{ fontWeight: "550", fontSize: "25.5px" }}>
+                            PHIÊN BẢN {' ' + (item.ram ? item.ram.dungLuong : "") + "/" + (item.rom ? item.rom.dungLuong : "") + "GB"}
+                          </span>
+                          <span className="ms-3">
+                            {isConfirm === true &&
+                              item.rom === null && cauHinhsFinal.some((finalItem) => finalItem.id === item.id) === false ?
+                              <BoxJoy sx={{ width: "100%" }}>
+                                <Alert color="danger" variant="soft">
+                                  Phiên bản này chưa có ROM và Màu sắc!
+                                </Alert>
+                              </BoxJoy>
+                              :
+                              isConfirm === true && item.rom === null ?
+                                <BoxJoy sx={{ width: "100%" }}>
+                                  <Alert color="danger" variant="soft">
+                                    Phiên bản này chưa có ROM!
+                                  </Alert>
+                                </BoxJoy>
+                                :
+                                isConfirm === true && cauHinhsFinal.some((finalItem) => finalItem.id === item.id) === false ?
+                                  <BoxJoy sx={{ width: "100%" }}>
+                                    <Alert color="danger" variant="soft">
+                                      Phiên bản này chưa có Màu sắc!
+                                    </Alert>
+                                  </BoxJoy>
+                                  :
+                                  null
+                            }
+                          </span>
+                        </div>
+                        <div className="d-flex">
                           <Button
                             onClick={() => {
                               handleOpenModalUpdate();
@@ -1423,6 +1599,25 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
                               Cập Nhật Màu Sắc
                             </span>
                           </Button>
+                          {cauHinhsFinal.some((finalItem) => finalItem.id === item.id) === true &&
+                            <Button
+                              onClick={() => {
+                                handleOpenModalUpdatePrice();
+                                setItemId(item.id);
+                                setRefreshPrice([]);
+                              }}
+                              className="rounded-2 button-mui me-2"
+                              type="primary"
+                              style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                            >
+                              <span
+                                className=""
+                                style={{ marginBottom: "2px", fontWeight: "500" }}
+                              >
+                                Chọn Đơn Giá Chung
+                              </span>
+                            </Button>
+                          }
                           <Button
                             onClick={() => {
                               const newCauHinhs = cauHinhs && cauHinhs.filter((cauHinh) => cauHinh.id !== item.id);
@@ -1500,28 +1695,24 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
                       window.scrollTo(0, 0);
                     }
                     else if (cauHinhs && cauHinhs.length > 0) {
+                      confirm(true);
                       const hasInvalidConfiguration = cauHinhs.some((cauHinh) => {
                         const foundFinalConfig = cauHinhsFinal.find((finalItem) => finalItem.id === cauHinh.id);
                         return !foundFinalConfig;
                       });
-                      if (hasInvalidConfiguration) {
-                        handleOpenAlertVariant("Vui lòng chọn đầy đủ các thành phần cho phiên bản!", "warning");
+                      const isMissingConfig = cauHinhsFinal.some((cauHinh) => !cauHinh.ram || !cauHinh.rom);
+                      const isMissingPrice = cauHinhsFinal.some((cauHinh) => !cauHinh.donGia);
+                      if (hasInvalidConfiguration || isMissingConfig) {
+                        window.scrollTo(0, 800);
                       }
-                      else if (cauHinhsFinal && cauHinhsFinal.length <= 0) {
-                        handleOpenAlertVariant("Vui lòng chọn đầy đủ các thành phần cho phiên bản!", "warning");
+                      else if (isMissingPrice) {
+                        handleOpenAlertVariant("Vui lòng nhập đơn giá cho sản phẩm!", "warning")
                       }
-                      else if (cauHinhsFinal && cauHinhsFinal.length > 0) {
-                        const isMissingConfigFinal = cauHinhsFinal.some((cauHinh) => !cauHinh.ram || !cauHinh.rom);
-                        const isMissingImage = cauHinhsFinal.some((cauHinh) => !cauHinh.file || !cauHinh.image);
-                        if (isMissingConfigFinal) {
-                          handleOpenAlertVariant("Vui lòng chọn đầy đủ các thành phần cho phiên bản!", "warning");
-                        }
-                        else if (isMissingImage) {
-                          handleOpenAlertVariant("Vui lòng chọn đầy đủ ảnh cho các phiên bản theo màu sắc!", "warning");
-                        }
-                        else {
-                          handleAddProduct();
-                        }
+                      else if (!validImage) {
+                        window.scrollTo(0, document.body.scrollHeight);
+                      }
+                      else {
+                        setOpenModalConfirmAddProduct(true);
                       }
                     }
                   }}
@@ -1551,7 +1742,11 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
               <div className="text-center pt-4" style={{}}>
                 <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>ẢNH</span>
               </div>
-              <ImageUpload uniqueColors={uniqueCauHinhsFinal} getColorImage={addImageToProductItem}
+              <ImageUpload uniqueColors={uniqueCauHinhsFinal}
+                getColorImage={addImageToProductItem}
+                confirm={isConfirm}
+                deleteImg={handleDeleteImage}
+                getValidImage={getValidImage}
               />
             </div>
             <div style={{ height: "25px" }}></div>
@@ -1576,6 +1771,27 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid })
         close={handleCloseOpenRom}
         getAll={getListRom}
         roms={listRom}
+      />
+
+      <CreateMauSac
+        open={openMauSac}
+        close={handleCloseOpenMauSac}
+        getAll={getListColor}
+        colors={listColor}
+      />
+
+      <ModalChonDonGiaChung
+        open={openModalUpdatePrice}
+        close={handleCloseOpenModalUpdatePrice}
+        update={updatePriceCommon}
+        refresh={refreshPrice}
+      />
+
+      <ConfirmAddProduct
+        open={openModalConfirmAddProduct}
+        confirm={handleAddProduct}
+        onClose={handleCloseOpenModalConfirmAddProduct}
+        name={getProduct.tenSanPham}
       />
 
       <ConfirmChangeTypePhienBan open={openModalType} onClose={handleCloseOpenModalType}

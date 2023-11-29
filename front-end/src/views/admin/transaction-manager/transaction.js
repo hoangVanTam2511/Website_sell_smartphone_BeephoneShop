@@ -44,7 +44,7 @@ const Transaction = () => {
       maHoaDon: searchTatCa,
       page: page,
       hinhThucThanhToan: searchHinhThucThanhToan,
-      //   soTienThanhToan: searchTatCa,
+      soTienThanhToan: searchTatCa,
       loaiThanhToan: searchLoaiThanhToan,
       trangThai: searchTrangThai,
       ngayBatDau: searchNgayBatDau,
