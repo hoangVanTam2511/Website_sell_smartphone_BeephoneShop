@@ -2,7 +2,7 @@ import { Autocomplete, IconButton, InputAdornment, TextField, Tooltip, Zoom } fr
 import { useEffect, useState } from "react";
 import { AiOutlinePlus } from "react-icons/ai";
 
-const TextFieldSearchColors = ({ getColor, defaultValue }) => {
+const TextFieldSearchColors = ({ getColor, defaultValue, onOpen }) => {
   const [color, setColor] = useState(defaultValue);
 
   const handleChangeColor = (event) => {
@@ -38,7 +38,7 @@ const TextFieldSearchColors = ({ getColor, defaultValue }) => {
           endAdornment:
             <InputAdornment position="end">
               <Tooltip title="Thêm màu sắc" TransitionComponent={Zoom}>
-                <IconButton /* onClick={() => setOpen(true)} */ size="small">
+                <IconButton onClick={() => onOpen()} size="small">
                   <AiOutlinePlus className='text-dark' />
                 </IconButton>
               </Tooltip>

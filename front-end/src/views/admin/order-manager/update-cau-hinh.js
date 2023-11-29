@@ -48,7 +48,7 @@ const MenuProps = {
   },
 };
 
-const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, isConfirm }) => {
+const UpdateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, isConfirm, getSelectedRam, getSelectedRom }) => {
 
   const [validImage, setValidImage] = useState(true);
   const [refreshPrice, setRefreshPrice] = useState([]);
@@ -213,6 +213,18 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
 
   const [selectedRam, setSelectedRam] = useState([]);
   const [selectedRom, setSelectedRom] = useState([]);
+
+  // const isFirstRender = useRef(true);
+  // useEffect(() => {
+  //   if (isFirstRender.current) {
+  //     isFirstRender.current = false;
+  //     setSelectedRam(getSelectedRam);
+  //   }
+  // }, [getSelectedRam]);
+  useEffect(() => {
+    setSelectedRam(getSelectedRam);
+    setSelectedRom(getSelectedRom);
+  }, [getSelectedRam, getSelectedRom])
 
   const handleChangeSelectedRam = (event) => {
     const list = event.target.value;
@@ -904,6 +916,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
       console.log(updateDatas);
     }
   }
+
 
   return (
     <>
@@ -1803,8 +1816,9 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
           setSelectedRom([]);
         }}
 
+
       />
     </>
   )
 }
-export default CreateCauHinh;
+export default UpdateCauHinh;

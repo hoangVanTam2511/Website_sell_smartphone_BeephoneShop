@@ -5,12 +5,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CameraRearPhoneResponse {
+public class CategoryPhoneResponse {
 
   private String id;
 
-  private Boolean isCameraMain;
+  private CategoryResponse danhMuc;
 
-  private CameraRearResponse cameraSau;
 
 }

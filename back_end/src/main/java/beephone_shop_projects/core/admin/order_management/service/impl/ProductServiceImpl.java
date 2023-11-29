@@ -12,11 +12,23 @@ import beephone_shop_projects.core.admin.order_management.model.request.ProductR
 import beephone_shop_projects.core.admin.order_management.model.response.product_response.ProductCustomResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.product_response.ProductItemCustomResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.product_response.ProductResponse;
+import beephone_shop_projects.core.admin.order_management.repository.CameraSauDienThoaiRepository;
+import beephone_shop_projects.core.admin.order_management.repository.CameraSauRepository;
+import beephone_shop_projects.core.admin.order_management.repository.CameraTruocDienThoaiRepository;
+import beephone_shop_projects.core.admin.order_management.repository.CameraTruocRepository;
+import beephone_shop_projects.core.admin.order_management.repository.DanhMucDienThoaiRepository;
+import beephone_shop_projects.core.admin.order_management.repository.impl.DanhMucDienThoaiRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.repository.impl.ImeiRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.repository.impl.ProductItemRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.repository.impl.ProductRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.repository.impl.TheSimDienThoaiRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.service.ProductService;
+import beephone_shop_projects.entity.CameraSau;
+import beephone_shop_projects.entity.CameraSauDienThoai;
+import beephone_shop_projects.entity.CameraTruoc;
+import beephone_shop_projects.entity.CameraTruocDienThoai;
+import beephone_shop_projects.entity.DanhMuc;
+import beephone_shop_projects.entity.DanhMucDienThoai;
 import beephone_shop_projects.entity.Imei;
 import beephone_shop_projects.entity.SanPham;
 import beephone_shop_projects.entity.SanPhamChiTiet;
@@ -28,6 +40,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductServiceImpl extends AbstractServiceImpl<SanPham, ProductResponse, ProductRequest, String> implements ProductService {
@@ -37,6 +50,21 @@ public class ProductServiceImpl extends AbstractServiceImpl<SanPham, ProductResp
 
   @Autowired
   private TheSimDienThoaiRepositoryImpl theSimDienThoaiRepository;
+
+  @Autowired
+  private DanhMucDienThoaiRepositoryImpl danhMucDienThoaiRepository;
+
+  @Autowired
+  private CameraSauDienThoaiRepository cameraSauDienThoaiRepository;
+
+  @Autowired
+  private CameraTruocDienThoaiRepository cameraTruocDienThoaiRepository;
+
+  @Autowired
+  private CameraSauRepository cameraSauRepository;
+
+  @Autowired
+  private CameraTruocRepository cameraTruocRepository;
 
   @Autowired
   private ProductRepositoryImpl productRepositoryImpl;
@@ -83,6 +111,41 @@ public class ProductServiceImpl extends AbstractServiceImpl<SanPham, ProductResp
           theSimDienThoai.setTheSim(t);
           theSimDienThoai.setSanPham(productConverter.convertResponseToEntity(createdProduct));
           theSimDienThoaiRepository.save(theSimDienThoai);
+        }
+      }
+
+      if (getProduct.getDanhMucDienThoais() != null) {
+        for (DanhMuc d : getProduct.getDanhMucDienThoais()) {
+          DanhMucDienThoai danhMucDienThoai = new DanhMucDienThoai();
+          danhMucDienThoai.setDanhMuc(d);
+          danhMucDienThoai.setSanPham(productConverter.convertResponseToEntity(createdProduct));
+          danhMucDienThoaiRepository.save(danhMucDienThoai);
+        }
+      }
+
+      if (getProduct.getCameraSauDienThoais() != null) {
+        for (CameraSauDienThoai c : getProduct.getCameraSauDienThoais()) {
+          Optional<CameraSau> findCamera = cameraSauRepository.findById(c.getId());
+          if (findCamera.isPresent()) {
+            CameraSauDienThoai cameraSauDienThoai = new CameraSauDienThoai();
+            cameraSauDienThoai.setCameraSau(findCamera.get());
+            cameraSauDienThoai.setIsCameraMain(c.getIsCameraMain());
+            cameraSauDienThoai.setSanPham(productConverter.convertResponseToEntity(createdProduct));
+            cameraSauDienThoaiRepository.save(cameraSauDienThoai);
+          }
+        }
+      }
+
+      if (getProduct.getCameraTruocDienThoais() != null) {
+        for (CameraTruocDienThoai c : getProduct.getCameraTruocDienThoais()) {
+          Optional<CameraTruoc> findCamera = cameraTruocRepository.findById(c.getId());
+          if (findCamera.isPresent()) {
+            CameraTruocDienThoai cameraTruocDienThoai = new CameraTruocDienThoai();
+            cameraTruocDienThoai.setCameraTruoc(findCamera.get());
+            cameraTruocDienThoai.setIsCameraMain(c.getIsCameraMain());
+            cameraTruocDienThoai.setSanPham(productConverter.convertResponseToEntity(createdProduct));
+            cameraTruocDienThoaiRepository.save(cameraTruocDienThoai);
+          }
         }
       }
 
