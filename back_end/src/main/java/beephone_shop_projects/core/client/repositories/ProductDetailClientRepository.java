@@ -150,9 +150,9 @@ public interface ProductDetailClientRepository extends ISanPhamChiTietRepository
     @Query(value = """
          SELECT image.path as url, ms.ten_mau_sac from san_pham_chi_tiet spct
          JOIN san_pham sp ON sp.id = spct.id_san_pham
-        JOIN mau_sac ms ON ms.id = spct.id_mau_sac
-        JOIN image ON image.id = spct.id_image
-         where sp.id  = :id_product
+         JOIN mau_sac ms ON ms.id = spct.id_mau_sac
+         JOIN image ON image.id = spct.id_image
+         WHERE sp.id  = :id_product
         """, nativeQuery = true)
     ArrayList<ImageResponce> getImagesByIDProductDetails(@Param("id_product") String idProduct);
 }
