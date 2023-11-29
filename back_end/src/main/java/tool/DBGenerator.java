@@ -223,14 +223,14 @@ public class DBGenerator implements CommandLineRunner {
         CameraTruoc cameraTruoc1 = new CameraTruoc();
         cameraTruoc1.setMa("camera2");
         cameraTruoc1.setDoPhanGiai(1);
-        cameraTruoc.setCameraType(CameraType.MARCO_CAMERA);
+        cameraTruoc1.setCameraType(CameraType.MARCO_CAMERA);
         cameraTruoc1.setStatus(StatusCommon.ACTIVE);
         cameraTruoc1.setId(cameraTruocRepository.save(cameraTruoc1).getId());
 
         CameraTruoc cameraTruoc2 = new CameraTruoc();
         cameraTruoc2.setMa("camera3");
         cameraTruoc2.setDoPhanGiai(5);
-        cameraTruoc.setCameraType(CameraType.TELEPHOTO_CAMERA);
+        cameraTruoc2.setCameraType(CameraType.TELEPHOTO_CAMERA);
         cameraTruoc2.setStatus(StatusCommon.ACTIVE);
         cameraTruoc2.setId(cameraTruocRepository.save(cameraTruoc2).getId());
 
@@ -238,41 +238,41 @@ public class DBGenerator implements CommandLineRunner {
         cameraTruoc3.setMa("camera4");
         cameraTruoc3.setDoPhanGiai(8);
         cameraTruoc3.setStatus(StatusCommon.ACTIVE);
-        cameraTruoc.setCameraType(CameraType.STANDARD_CAMERA);
+        cameraTruoc3.setCameraType(CameraType.STANDARD_CAMERA);
         cameraTruoc3.setId(cameraTruocRepository.save(cameraTruoc3).getId());
 
         CameraTruoc cameraTruoc4 = new CameraTruoc();
         cameraTruoc4.setMa("camera5");
         cameraTruoc4.setDoPhanGiai(12);
         cameraTruoc4.setStatus(StatusCommon.ACTIVE);
-        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
+        cameraTruoc4.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
         cameraTruoc4.setId(cameraTruocRepository.save(cameraTruoc4).getId());
 
         CameraTruoc cameraTruoc5 = new CameraTruoc();
         cameraTruoc5.setMa("camera6");
         cameraTruoc5.setDoPhanGiai(16);
-        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
+        cameraTruoc5.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
         cameraTruoc5.setStatus(StatusCommon.ACTIVE);
         cameraTruoc5.setId(cameraTruocRepository.save(cameraTruoc5).getId());
 
         CameraTruoc cameraTruoc6 = new CameraTruoc();
         cameraTruoc6.setMa("camera7");
         cameraTruoc6.setDoPhanGiai(24);
-        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
+        cameraTruoc6.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
         cameraTruoc6.setStatus(StatusCommon.ACTIVE);
         cameraTruoc6.setId(cameraTruocRepository.save(cameraTruoc6).getId());
 
         CameraTruoc cameraTruoc7 = new CameraTruoc();
         cameraTruoc7.setMa("camera8");
         cameraTruoc7.setDoPhanGiai(32);
-        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
+        cameraTruoc7.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
         cameraTruoc7.setStatus(StatusCommon.ACTIVE);
         cameraTruoc7.setId(cameraTruocRepository.save(cameraTruoc7).getId());
 
         CameraTruoc cameraTruoc8 = new CameraTruoc();
         cameraTruoc8.setMa("camera9");
         cameraTruoc8.setDoPhanGiai(48);
-        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
+        cameraTruoc8.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
         cameraTruoc8.setStatus(StatusCommon.ACTIVE);
         cameraTruoc8.setId(cameraTruocRepository.save(cameraTruoc8).getId());
 
@@ -280,28 +280,28 @@ public class DBGenerator implements CommandLineRunner {
         CameraSau cameraSau = new CameraSau();
         cameraSau.setMa("camera1");
         cameraSau.setDoPhanGiai(60);
-        cameraTruoc.setCameraType(CameraType.STANDARD_CAMERA);
+        cameraSau.setCameraType(CameraType.STANDARD_CAMERA);
         cameraSau.setStatus(StatusCommon.ACTIVE);
         cameraSau.setId(cameraSauRepository.save(cameraSau).getId());
 
         CameraSau cameraSau1 = new CameraSau();
         cameraSau1.setMa("camera2");
         cameraSau1.setDoPhanGiai(1);
-        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
+        cameraSau1.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
         cameraSau1.setStatus(StatusCommon.ACTIVE);
         cameraSau1.setId(cameraSauRepository.save(cameraSau1).getId());
 
         CameraSau cameraSau2 = new CameraSau();
         cameraSau2.setMa("camera3");
         cameraSau2.setDoPhanGiai(5);
-        cameraTruoc.setCameraType(CameraType.TELEPHOTO_CAMERA);
+        cameraSau2.setCameraType(CameraType.TELEPHOTO_CAMERA);
         cameraSau2.setStatus(StatusCommon.ACTIVE);
         cameraSau2.setId(cameraSauRepository.save(cameraSau2).getId());
 
         CameraSau cameraSau3 = new CameraSau();
         cameraSau3.setMa("camera4");
         cameraSau3.setDoPhanGiai(8);
-        cameraTruoc.setCameraType(CameraType.DEPTH_CAMERA);
+        cameraSau3.setCameraType(CameraType.DEPTH_CAMERA);
         cameraSau3.setStatus(StatusCommon.ACTIVE);
         cameraSau3.setId(cameraSauRepository.save(cameraSau3).getId());
 
@@ -309,47 +309,48 @@ public class DBGenerator implements CommandLineRunner {
         cameraSau4.setMa("camera5");
         cameraSau4.setDoPhanGiai(12);
         cameraSau4.setStatus(StatusCommon.ACTIVE);
+        cameraSau4.setCameraType(CameraType.DEPTH_CAMERA);
         cameraSau4.setId(cameraSauRepository.save(cameraSau4).getId());
 
         CameraSau cameraSau5 = new CameraSau();
         cameraSau5.setMa("camera6");
         cameraSau5.setDoPhanGiai(16);
-        cameraTruoc.setCameraType(CameraType.PERISCOPE_TELEPHOTO_CAMERA);
+        cameraSau5.setCameraType(CameraType.PERISCOPE_TELEPHOTO_CAMERA);
         cameraSau5.setStatus(StatusCommon.ACTIVE);
         cameraSau5.setId(cameraSauRepository.save(cameraSau5).getId());
 
         CameraSau cameraSau6 = new CameraSau();
         cameraSau6.setMa("camera7");
         cameraSau6.setDoPhanGiai(24);
-        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
+        cameraSau6.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
         cameraSau6.setStatus(StatusCommon.ACTIVE);
         cameraSau6.setId(cameraSauRepository.save(cameraSau6).getId());
 
         CameraSau cameraSau7 = new CameraSau();
         cameraSau7.setMa("camera8");
         cameraSau7.setDoPhanGiai(32);
-        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
+        cameraSau7.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
         cameraSau7.setStatus(StatusCommon.ACTIVE);
         cameraSau7.setId(cameraSauRepository.save(cameraSau7).getId());
 
         CameraSau cameraSau8 = new CameraSau();
         cameraSau8.setMa("camera9");
         cameraSau8.setDoPhanGiai(48);
-        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
+        cameraSau8.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
         cameraSau8.setStatus(StatusCommon.ACTIVE);
         cameraSau8.setId(cameraSauRepository.save(cameraSau8).getId());
 
         CameraSau cameraSau9 = new CameraSau();
         cameraSau9.setMa("camera10");
         cameraSau9.setDoPhanGiai(64);
-        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
+        cameraSau9.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
         cameraSau9.setStatus(StatusCommon.ACTIVE);
         cameraSau9.setId(cameraSauRepository.save(cameraSau9).getId());
 
         CameraSau cameraSau10 = new CameraSau();
         cameraSau10.setMa("camera11");
         cameraSau10.setDoPhanGiai(108);
-        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
+        cameraSau10.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
         cameraSau10.setStatus(StatusCommon.ACTIVE);
         cameraSau10.setId(cameraSauRepository.save(cameraSau10).getId());
 
