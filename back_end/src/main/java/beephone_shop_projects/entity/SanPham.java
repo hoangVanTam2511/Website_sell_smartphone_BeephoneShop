@@ -39,6 +39,9 @@ public class SanPham extends PrimaryEntity implements IsIdentified {
   @OneToMany(mappedBy = "sanPham")
   private Set<TheSimDienThoai> theSims;
 
+  @OneToMany(mappedBy = "sanPham")
+  private Set<DanhMucDienThoai> danhMucs;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_sac")
   private CongSac congSac;
@@ -73,11 +76,11 @@ public class SanPham extends PrimaryEntity implements IsIdentified {
   @JoinColumn(name = "id_pin")
   private Pin pin;
 
-//  @OneToMany(mappedBy = "sanPham")
-//  private List<CameraTruocDienThoai> cameraTruocs;
-//
-//  @OneToMany(mappedBy = "sanPham")
-//  private List<CameraSauDienThoai> cameraSaus;
+  @OneToMany(mappedBy = "sanPham")
+  private Set<CameraTruocDienThoai> cameraTruocs;
+
+  @OneToMany(mappedBy = "sanPham")
+  private Set<CameraSauDienThoai> cameraSaus;
 
   @JsonIgnore
   @OneToMany(mappedBy = "sanPham")
