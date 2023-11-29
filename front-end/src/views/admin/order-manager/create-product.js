@@ -693,7 +693,7 @@ const CreateProduct = ({ }) => {
   const [pin, setPin] = React.useState('');
   const [congSac, setCongSac] = React.useState('');
   const [theSim, setTheSim] = React.useState('');
-  const [theNho, setTheNho] = React.useState();
+  const [theNho, setTheNho] = React.useState('');
   const handleChangeTheSim = (event) => {
     setTheSim(event.target.value);
   };
@@ -731,6 +731,23 @@ const CreateProduct = ({ }) => {
     setOpera(event.target.value);
   };
 
+  const convertCameraTruocs = selectedCameraTruoc.map((item) => {
+    if (item === mainCameraTruoc) {
+      return { id: item, isCameraMain: true };
+    }
+    return { id: item };
+  });
+  const convertCameraSaus = selectedCameraSau.map((item) => {
+    if (item === mainCameraSau) {
+      return { id: item, isCameraMain: true };
+    }
+    return { id: item };
+  });
+
+  const convertDanhMucs = selectedCategory.map((item) => {
+    return { id: item };
+  });
+
   const convertTheSims = selectedSim.map((item) => {
     return { id: item };
   });
@@ -749,6 +766,9 @@ const CreateProduct = ({ }) => {
       tenSanPham: productName,
       operatingType: (opera === "" || opera === null || opera === undefined) ? 0 : 1,
       theSimDienThoais: convertTheSims,
+      danhMucDienThoais: convertDanhMucs,
+      cameraSauDienThoais: convertCameraSaus,
+      cameraTruocDienThoais: convertCameraTruocs,
       congSac: {
         id: congSac,
       },
@@ -1029,7 +1049,7 @@ const CreateProduct = ({ }) => {
                   </FormControl>
                 </div>
                 <div className="ms-3" style={{ width: "100%" }}>
-                  <FormControl fullWidth>
+                  <FormControl fullWidth error={confirm && theNho.trim() === ""}>
                     <InputLabel id="demo-simple-select-label">Thẻ Nhớ</InputLabel>
                     <Select className="custom"
                       labelId="demo-simple-select-label"
@@ -1037,7 +1057,6 @@ const CreateProduct = ({ }) => {
                       value={theNho}
                       label="Thẻ Nhớ"
                       onChange={handleChangeTheNho}
-                      defaultValue={0}
                       endAdornment={
                         <>
                           <InputAdornment style={{ marginRight: "15px" }} position="end">
@@ -1051,13 +1070,16 @@ const CreateProduct = ({ }) => {
                         </>
                       }
                     >
-                      <MenuItem value={0}>Không có</MenuItem>
+                      <MenuItem value={"None"}>Không có</MenuItem>
                       {listTheNho.map((item) => {
                         return (
                           <MenuItem key={item.id} value={item.id}>{item.loaiTheNho}</MenuItem>
                         )
                       })}
                     </Select>
+                    {confirm && theNho.trim() === "" &&
+                      <FormHelperText>Bạn chưa chọn thẻ nhớ!</FormHelperText>
+                    }
                   </FormControl>
                 </div>
               </div>

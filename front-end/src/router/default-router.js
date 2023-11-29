@@ -119,6 +119,7 @@ import Transaction from "../views/admin/transaction-manager/transaction";
 import { Print } from "../views/admin/order-manager/printer-invoice";
 import RefundOrder from "../views/admin/order-manager/refund-order";
 import RefundDetail from "../views/admin/order-manager/refund-details";
+import UpdateProduct from "../views/admin/order-manager/update-product";
 
 export const DefaultRouter = [
   {
@@ -394,6 +395,10 @@ export const DefaultRouter = [
       {
         path: "dashboard/create-product",
         element: <CreateProduct />,
+      },
+      {
+        path: "dashboard/update-product/:id",
+        element: <UpdateProduct />,
       },
       {
         path: "dashboard/payment-success",
