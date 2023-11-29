@@ -19,6 +19,7 @@ public interface RankRepository extends IRankRepository {
             AND (:#{#request.dieuKienToiDa} IS NULL OR :#{#request.dieuKienToiDa} = '' OR r.dieuKienToiDa = :#{#request.dieuKienToiDa} )
             AND (:#{#request.uuDai} IS NULL OR :#{#request.uuDai} = '' OR r.uuDai = :#{ #request.uuDai} )
             AND (:#{#request.status} IS NULL OR :#{#request.status} = 6 OR r.status = :#{#request.status} )
+            ORDER BY r.createdAt DESC 
                      """)
     Page<RankResponse> getAll(Pageable pageable, @Param("request") FindRankRequest request);
 

@@ -11,6 +11,7 @@ import {
   Slide,
   Dialog,
   Select,
+  InputAdornment,
 } from "@mui/material";
 import axios from "axios";
 import LoadingIndicator from "../../../utilities/loading";
@@ -27,9 +28,12 @@ const CreateRank = ({ open, close, getAll, ranks }) => {
   const [isLoading, setIsLoading] = React.useState(false);
   const [status, setStatus] = React.useState(StatusCommonProductsNumber.ACTIVE);
   const [tenRank, setTenRank] = React.useState("");
-  const [dieuKienToiDa, setDieuKienToiDa] = React.useState("");
-  const [dieuKienToiThieu, setDieuKienToiThieu] = React.useState("");
-  const [uuDai, setUuDai] = React.useState("");
+  const [dieuKienToiDa, setDieuKienToiDa] = React.useState(0);
+  const [dieuKienToiThieu, setDieuKienToiThieu] = React.useState(0);
+  const [uuDai, setUuDai] = React.useState(0);
+  const [value, setValue] = React.useState();
+  const [value1, setValue1] = React.useState();
+  const [value2, setValue2] = React.useState();
 
   const { handleOpenAlertVariant } = useCustomSnackbar();
 
@@ -54,7 +58,10 @@ const CreateRank = ({ open, close, getAll, ranks }) => {
       });
   };
 
-  const handleReset = (event) => {
+  const handleReset = () => {
+    setValue1(null);
+    setValue2(null);
+    setValue(null);
     setStatus(StatusCommonProductsNumber.ACTIVE);
     setTenRank("");
   };
@@ -66,17 +73,35 @@ const CreateRank = ({ open, close, getAll, ranks }) => {
     setTenRank(value);
   };
   const handleChangeDieuKienToiDaRank = (event, value) => {
-    setDieuKienToiDa(value);
+    const inputValue = event.target.value;
+    const numericValue = parseFloat(inputValue.replace(/[^0-9.-]+/g, ""));
+    const formattedValue = inputValue
+      .replace(/[^0-9]+/g, "")
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    setValue2(formattedValue);
+    setDieuKienToiDa(numericValue);
   };
   const handleChangeDieuKienToiThieuRank = (event, value) => {
-    setDieuKienToiThieu(value);
+    const inputValue = event.target.value;
+    const numericValue = parseFloat(inputValue.replace(/[^0-9.-]+/g, ""));
+    const formattedValue = inputValue
+      .replace(/[^0-9]+/g, "")
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    setValue1(formattedValue);
+    setDieuKienToiThieu(numericValue);
   };
   const handleChangeUuDaiRank = (event, value) => {
-    setUuDai(value);
+    const inputValue = event.target.value;
+    const numericValue = parseFloat(inputValue.replace(/[^0-9.-]+/g, ""));
+    const formattedValue = inputValue
+      .replace(/[^0-9]+/g, "")
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    setValue(formattedValue);
+    setUuDai(numericValue);
   };
 
   const uniqueRank = ranks
-    .map((option) => option.tenRank)
+    .map((option) => option.ten)
     .filter((value, index, self) => {
       return self.indexOf(value) === index;
     });
@@ -121,45 +146,54 @@ const CreateRank = ({ open, close, getAll, ranks }) => {
                   />
                 </div>
                 <div className="mt-3">
-                  <Autocomplete
+                  <TextField
                     fullWidth
                     className="custom"
-                    id="free-solo-demo"
-                    freeSolo
-                    inputValue={dieuKienToiThieu}
-                    onInputChange={handleChangeDieuKienToiThieuRank}
-                    options={uniqueRank}
-                    renderInput={(params) => (
-                      <TextField {...params} label="Điều kiện tối thiểu" />
-                    )}
+                    id="outlined-end-adornment"
+                    label="Điều kiện tối thiểu"
+                    // freeSolo
+                    value={value1}
+                    onChange={handleChangeDieuKienToiThieuRank}
+                    InputProps={{
+                      inputMode: "numeric",
+                      endAdornment: (
+                        <InputAdornment position="end">VND</InputAdornment>
+                      ),
+                    }}
                   />
                 </div>
                 <div className="mt-3">
-                  <Autocomplete
+                  <TextField
                     fullWidth
+                    label="Điều kiện tối đa"
                     className="custom"
-                    id="free-solo-demo"
-                    freeSolo
-                    inputValue={dieuKienToiDa}
-                    onInputChange={handleChangeDieuKienToiDaRank}
-                    options={uniqueRank}
-                    renderInput={(params) => (
-                      <TextField {...params} label="Điều kiện tối đa" />
-                    )}
+                    id="outlined-end-adornment"
+                    // freeSolo
+                    value={value2}
+                    onChange={handleChangeDieuKienToiDaRank}
+                    InputProps={{
+                      inputMode: "numeric",
+                      endAdornment: (
+                        <InputAdornment position="end">VND</InputAdornment>
+                      ),
+                    }}
                   />
                 </div>
                 <div className="mt-3">
-                  <Autocomplete
+                  <TextField
                     fullWidth
+                    label="Ưu Đãi"
                     className="custom"
-                    id="free-solo-demo"
-                    freeSolo
-                    inputValue={uuDai}
-                    onInputChange={handleChangeUuDaiRank}
-                    options={uniqueRank}
-                    renderInput={(params) => (
-                      <TextField {...params} label="Ưu Đãi" />
-                    )}
+                    id="outlined-end-adornment"
+                    // freeSolo
+                    value={value}
+                    onChange={handleChangeUuDaiRank}
+                    InputProps={{
+                      inputMode: "numeric",
+                      endAdornment: (
+                        <InputAdornment position="end">VND</InputAdornment>
+                      ),
+                    }}
                   />
                 </div>
                 <div className="mt-3">

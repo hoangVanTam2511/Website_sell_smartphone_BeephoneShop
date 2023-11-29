@@ -57,29 +57,28 @@ const ManagementRanks = () => {
   const [currentPage, setCurrentPage] = useState(
     searchParams.get("currentPage") || 1
   );
+  const [rankPages, setRankPages] = useState([]);
+  const [pageShow, setPageShow] = useState(5);
+  const [searchTatCa, setSearchTatCa] = useState("");
+  const [searchTrangThai, setSearchTrangThai] = useState(5);
 
-  const getListRank = (page) => {
+  const getListRank = () => {
     axios
       .get(`http://localhost:8080/rank/ranks`)
       .then((response) => {
         setListRank(response.data.data);
-        setTotalPages(response.data.totalPages);
+        console.log("Gọi sau khi add");
       })
       .catch((error) => {
         console.error(error);
       });
   };
 
-  const [rankPages, setRankPages] = useState([]);
-  const [pageShow, setPageShow] = useState(5);
-  const [searchTatCa, setSearchTatCa] = useState("");
-  const [searchTrangThai, setSearchTrangThai] = useState(5);
-
   const getListProductSearchAndPage = (page) => {
     axios
-      .get(`http://localhost:8080/rank/ranks`, {
+      .get(`http://localhost:8080/rank/ranksPage`, {
         params: {
-          currentPage: page,
+          page: page,
           pageSize: pageShow,
           status: ConvertStatusProductsNumberToString(searchTrangThai),
         },
@@ -92,6 +91,10 @@ const ManagementRanks = () => {
         console.error(error);
       });
   };
+
+  useEffect(() => {
+    getListRank();
+  }, []);
 
   const [openSelect, setOpenSelect] = useState(false);
   const handleOpenSelect = () => {
@@ -189,10 +192,6 @@ const ManagementRanks = () => {
   const handleClose1 = () => {
     setOpen1(false);
   };
-
-  useEffect(() => {
-    getListRank();
-  }, []);
 
   const [open, setOpen] = React.useState(false);
   const handleClickOpen = () => {
@@ -629,7 +628,7 @@ const ManagementRanks = () => {
       <CreateRank
         open={open}
         close={handleClose}
-        getAll={getListRank}
+        getAll={getListProductSearchAndPage}
         ranks={listRank}
       />
 

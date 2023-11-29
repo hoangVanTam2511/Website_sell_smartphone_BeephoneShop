@@ -8,6 +8,8 @@ import beephone_shop_projects.entity.XepHang;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 public interface RankService {
 
     RankResponse getOne(String id);
@@ -19,5 +21,7 @@ public interface RankService {
     XepHang doiTrangThai(UpdateRankRequest request, String id);
 
     Page<RankResponse> getAll(Integer pageNo, FindRankRequest request);
+
+    List<XepHang> findAll();
 
 }

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.security.SecureRandom;
+import java.util.List;
 
 @Service
 @Validated
@@ -97,6 +98,11 @@ public class RankServiceImpl implements RankService {
     public Page<RankResponse> getAll(Integer pageNo, FindRankRequest request) {
         Pageable pageable = PageRequest.of(pageNo - 1, 5);
         return rankRepository.getAll(pageable, request);
+    }
+
+    @Override
+    public List<XepHang> findAll() {
+        return rankRepository.findAll();
     }
 
 }

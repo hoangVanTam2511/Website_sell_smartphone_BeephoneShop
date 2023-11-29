@@ -45,7 +45,12 @@ public class RankRestController {
     }
 
     @GetMapping("/ranks")
-    public ResponsePage hienThiRank(@RequestParam(name = "page", defaultValue = "1") Integer pageNo,
+    public ResponseObject hienThiRank() {
+        return new ResponseObject(rankService.findAll());
+    }
+
+    @GetMapping("/ranksPage")
+    public ResponsePage hienThiRankPage(@RequestParam(name = "page", defaultValue = "1") Integer pageNo,
                                     final FindRankRequest request) {
         return new ResponsePage(rankService.getAll(pageNo, request));
     }
