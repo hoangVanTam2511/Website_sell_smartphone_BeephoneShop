@@ -43,7 +43,7 @@ public class CartDetailServiceImpl {
 
         if (gioHangChiTiet != null) {
             if(type.equalsIgnoreCase("plus")){
-                if(gioHangChiTiet.getSoLuong()  == 5){
+                if(gioHangChiTiet.getSoLuong()  == 4){
                     throw new RuntimeException("Không thể bán vượt quá số lượng cho phép");
                 }
                 gioHangChiTiet.setSoLuong(gioHangChiTiet.getSoLuong() + 1);
