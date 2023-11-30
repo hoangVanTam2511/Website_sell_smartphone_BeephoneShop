@@ -68,7 +68,7 @@ public class BillClientServiceImpl {
     public HoaDon createBillClient(BillClientRequest orderRequest) throws Exception {
         Account khachHang = accountClientRepository.findById(orderRequest.getIdKhachHang()).get();
 
-        if(khachHang.getMa().isEmpty()){
+        if(khachHang.getMa() == "" || khachHang.getMa() == null){
             Random random = new Random();
             int number = random.nextInt(10000);
             String code = String.format("KH%04d", number);
