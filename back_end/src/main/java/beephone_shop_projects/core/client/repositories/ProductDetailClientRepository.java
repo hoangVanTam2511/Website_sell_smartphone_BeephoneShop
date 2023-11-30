@@ -39,6 +39,7 @@ public interface ProductDetailClientRepository extends ISanPhamChiTietRepository
              spct.id,
              IF(kmct.don_gia_sau_khuyen_mai is null ,0, kmct.don_gia_sau_khuyen_mai) AS don_gia_sau_khuyen_mai,
              spct.don_gia,
+             spct.so_luong_ton_kho,
              image.path as duong_dan,
              ms.ten_mau_sac,
              ram.dung_luong as dung_luong_ram,
