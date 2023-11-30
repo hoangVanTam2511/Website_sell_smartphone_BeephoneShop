@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "antd";
 import {
@@ -28,6 +28,38 @@ const CreateTheNho = ({ open, close, getAll, theNhos }) => {
   const [loaiTheNho, setLoaiTheNho] = React.useState("");
   const [dungLuongToiDa, setDungLuongToiDa] = React.useState("");
   const [status, setStatus] = React.useState(StatusCommonProductsNumber.ACTIVE);
+
+  const [validationMsg, setValidationMsg] = useState({});
+
+  const validationAll = () => {
+    const msg = {};
+
+    if (!loaiTheNho.trim("")) {
+      msg.loaiTheNho = "Loại thẻ nhớ không được trống.";
+    }
+
+    if (dungLuongToiDa < 1) {
+      msg.dungLuongToiDa = "Dung lượng tối đa không được nhỏ hơn 1 GB.";
+    }
+
+    if (dungLuongToiDa > 300000) {
+      msg.dungLuongToiDa = "Dung lượng tối đa không được lớn hơn 300.000 GB.";
+    }
+
+    if (!dungLuongToiDa.trim("")) {
+      msg.dungLuongToiDa = "Dung lượng tối đa không được trống.";
+    }
+
+    setValidationMsg(msg);
+    if (Object.keys(msg).length > 0) return false;
+    return true;
+  };
+
+  const handleSubmit = () => {
+    const isValid = validationAll();
+    if (!isValid) return;
+    addTheNho();
+  };
 
   const addTheNho = () => {
     let obj = {
@@ -113,7 +145,12 @@ const CreateTheNho = ({ open, close, getAll, theNhos }) => {
                     onInputChange={handleChangeLoaiTheNho}
                     options={uniqueLoaiTheNho}
                     renderInput={(params) => (
-                      <TextField {...params} label="Loại Thẻ Nhớ" />
+                      <TextField
+                        {...params}
+                        label="Loại Thẻ Nhớ"
+                        error={validationMsg.loaiTheNho !== undefined}
+                        helperText={validationMsg.loaiTheNho}
+                      />
                     )}
                   />
                 </div>
@@ -132,11 +169,11 @@ const CreateTheNho = ({ open, close, getAll, theNhos }) => {
                         {...params}
                         InputProps={{
                           ...params.InputProps,
-                          startAdornment: (
+                          endAdornment: (
                             <>
                               <InputAdornment
                                 style={{ marginLeft: "5px" }}
-                                position="start"
+                                position="end"
                               >
                                 GB
                               </InputAdornment>
@@ -145,6 +182,8 @@ const CreateTheNho = ({ open, close, getAll, theNhos }) => {
                           ),
                         }}
                         label="Dung Lượng Tối Đa"
+                        error={validationMsg.dungLuongToiDa !== undefined}
+                        helperText={validationMsg.dungLuongToiDa}
                       />
                     )}
                   />
@@ -176,7 +215,7 @@ const CreateTheNho = ({ open, close, getAll, theNhos }) => {
                 </div>
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
-                    onClick={() => addTheNho()}
+                    onClick={() => handleSubmit()}
                     className="rounded-2 button-mui"
                     type="primary"
                     style={{ height: "40px", width: "auto", fontSize: "15px" }}

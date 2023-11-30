@@ -291,6 +291,7 @@ const ManagementRoms = () => {
 
   const handleClose1 = () => {
     setOpen1(false);
+    setValidationMsg({});
   };
 
   const uniqueDungLuong = listRom
@@ -308,6 +309,34 @@ const ManagementRoms = () => {
   };
 
   const { handleOpenAlertVariant } = useCustomSnackbar();
+
+  const [validationMsg, setValidationMsg] = useState({});
+
+  const validationAll = () => {
+    const msg = {};
+
+    if (!dungLuong.trim("")) {
+      msg.dungLuong = "Kích thước rom không được trống.";
+    }
+
+    if (dungLuong < 1) {
+      msg.dungLuong = "Kích thước ram không được nhỏ hơn 1 GB.";
+    }
+
+    if (dungLuong > 3000) {
+      msg.dungLuong = "Kích thước ram không được lớn hơn 3000 GB.";
+    }
+
+    setValidationMsg(msg);
+    if (Object.keys(msg).length > 0) return false;
+    return true;
+  };
+
+  const handleSubmit = () => {
+    const isValid = validationAll();
+    if (!isValid) return;
+    updateRom();
+  };
 
   const updateRom = () => {
     let obj = {
@@ -533,11 +562,11 @@ const ManagementRoms = () => {
                         {...params}
                         InputProps={{
                           ...params.InputProps,
-                          startAdornment: (
+                          endAdornment: (
                             <>
                               <InputAdornment
                                 style={{ marginLeft: "5px" }}
-                                position="start"
+                                position="end"
                               >
                                 GB
                               </InputAdornment>
@@ -546,6 +575,8 @@ const ManagementRoms = () => {
                           ),
                         }}
                         label="Dung Lượng ROM"
+                        error={validationMsg.dungLuong !== undefined}
+                        helperText={validationMsg.dungLuong}
                       />
                     )}
                   />
@@ -575,7 +606,7 @@ const ManagementRoms = () => {
                 </div>
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
-                    onClick={() => updateRom()}
+                    onClick={() => handleSubmit()}
                     className="rounded-2 button-mui"
                     type="primary"
                     style={{ height: "40px", width: "auto", fontSize: "15px" }}

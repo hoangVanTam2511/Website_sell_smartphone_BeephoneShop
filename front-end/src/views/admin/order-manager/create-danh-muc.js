@@ -12,19 +12,6 @@ import {
   DialogContent,
   Slide,
 } from "@mui/material";
-// import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-// import { PlusOutlined } from "@ant-design/icons";
-// import Card from "../../../components/Card";
-// import { format } from "date-fns";
-// import axios from "axios";
-// import { parseInt, random } from "lodash";
-// import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-// import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-// import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-// import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-// import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
-// import Zoom from "@mui/material/Zoom";
-// import * as dayjs from "dayjs";
 import LoadingIndicator from "../../../utilities/loading";
 import generateRandomCode from "../../../utilities/randomCode";
 import useCustomSnackbar from "../../../utilities/notistack";
@@ -41,6 +28,26 @@ const CreateDanhMuc = ({ open, close, getAll, danhMucs }) => {
   const [status, setStatus] = React.useState(StatusCommonProductsNumber.ACTIVE);
   const [tenDanhMuc, setTenDanhMuc] = React.useState("");
   const { handleOpenAlertVariant } = useCustomSnackbar();
+
+  const [validationMsg, setValidationMsg] = useState({});
+
+  const validationAll = () => {
+    const msg = {};
+
+    if (!tenDanhMuc.trim("")) {
+      msg.tenDanhMuc = "Tên danh mục không được trống.";
+    }
+
+    setValidationMsg(msg);
+    if (Object.keys(msg).length > 0) return false;
+    return true;
+  };
+
+  const handleSubmit = () => {
+    const isValid = validationAll();
+    if (!isValid) return;
+    addDanhMuc();
+  };
 
   const addDanhMuc = () => {
     let obj = {
@@ -114,7 +121,12 @@ const CreateDanhMuc = ({ open, close, getAll, danhMucs }) => {
                     onInputChange={handleChangeDanhMuc}
                     options={uniqueDanhMuc}
                     renderInput={(params) => (
-                      <TextField {...params} label="Tên Danh Mục" />
+                      <TextField
+                        {...params}
+                        label="Tên Danh Mục"
+                        error={validationMsg.tenDanhMuc !== undefined}
+                        helperText={validationMsg.tenDanhMuc}
+                      />
                     )}
                   />
                 </div>
@@ -143,7 +155,7 @@ const CreateDanhMuc = ({ open, close, getAll, danhMucs }) => {
                 </div>
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
-                    onClick={() => addDanhMuc()}
+                    onClick={() => handleSubmit()}
                     className="rounded-2 button-mui"
                     type="primary"
                     style={{ height: "40px", width: "auto", fontSize: "15px" }}

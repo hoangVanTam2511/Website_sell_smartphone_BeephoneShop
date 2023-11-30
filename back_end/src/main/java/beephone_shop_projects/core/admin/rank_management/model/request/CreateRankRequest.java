@@ -17,7 +17,7 @@ public class CreateRankRequest {
     @Length(max = 10)
     private String ma;
 
-    private StatusCommon trangThai;
+    private StatusCommon status;
 
     @NotBlank
     @Length(max = 255)

@@ -1,46 +1,18 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "antd";
 import {
-  Link,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from "react-router-dom";
-import { Button, Empty, Table } from "antd";
-import {
-  Box,
   FormControl,
-  IconButton,
   Select,
   InputLabel,
   MenuItem,
-  Pagination,
   TextField,
-  Tooltip,
-  Checkbox,
-  FormControlLabel,
   Autocomplete,
-  InputAdornment,
-  OutlinedInput,
   Dialog,
   DialogContent,
-  DialogTitle,
-  DialogActions,
   Slide,
-  ListItemText,
 } from "@mui/material";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import { PlusOutlined } from "@ant-design/icons";
-import Card from "../../../components/Card";
-import { format } from "date-fns";
 import axios from "axios";
-import { parseInt } from "lodash";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
-import Zoom from "@mui/material/Zoom";
-import * as dayjs from "dayjs";
 import LoadingIndicator from "../../../utilities/loading";
 import generateRandomCode from "../../../utilities/randomCode";
 import useCustomSnackbar from "../../../utilities/notistack";
@@ -56,6 +28,26 @@ const CreateHang = ({ open, close, getAll, hangs }) => {
   const [tenHang, setTenHang] = React.useState("");
   const [status, setStatus] = React.useState(StatusCommonProductsNumber.ACTIVE);
   const { handleOpenAlertVariant } = useCustomSnackbar();
+
+  const [validationMsg, setValidationMsg] = useState({});
+
+  const validationAll = () => {
+    const msg = {};
+
+    if (!tenHang.trim("")) {
+      msg.tenHang = "Tên hãng không được trống.";
+    }
+
+    setValidationMsg(msg);
+    if (Object.keys(msg).length > 0) return false;
+    return true;
+  };
+
+  const handleSubmit = () => {
+    const isValid = validationAll();
+    if (!isValid) return;
+    addHang();
+  };
 
   const addHang = () => {
     let obj = {
@@ -129,7 +121,12 @@ const CreateHang = ({ open, close, getAll, hangs }) => {
                     onInputChange={handleChangeHang}
                     options={uniqueHang}
                     renderInput={(params) => (
-                      <TextField {...params} label="Tên Hãng" />
+                      <TextField
+                        {...params}
+                        label="Tên Hãng"
+                        error={validationMsg.tenHang !== undefined}
+                        helperText={validationMsg.tenHang}
+                      />
                     )}
                   />
                 </div>
@@ -158,7 +155,7 @@ const CreateHang = ({ open, close, getAll, hangs }) => {
                 </div>
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
-                    onClick={() => addHang()}
+                    onClick={() => handleSubmit()}
                     className="rounded-2 button-mui"
                     type="primary"
                     style={{ height: "40px", width: "auto", fontSize: "15px" }}

@@ -135,17 +135,17 @@ public class VoucherServiceImpl implements VoucherService {
         } else if (request.getMa().length() < 10 || request.getMa().length() > 15) {
             throw new RestApiException("Mã voucher phải đủ 10 ký tự !!!");
         }
-//        StatusDiscount status = StatusDiscount.CHUA_DIEN_RA;
-//        Date dateTime = new Date();
-//        if (request.getNgayBatDau().after(dateTime) && request.getNgayKetThuc().before(dateTime)) {
-//            status = StatusDiscount.HOAT_DONG;
-//        }
-//        if (request.getNgayBatDau().before(dateTime)) {
-//            status = StatusDiscount.NGUNG_HOAT_DONG;
-//        }
-//        if (request.getNgayKetThuc().after(dateTime)) {
-//            status = StatusDiscount.CHUA_DIEN_RA;
-//        }
+        StatusDiscount status = StatusDiscount.CHUA_DIEN_RA;
+        Date dateTime = new Date();
+        if (request.getNgayBatDau().after(dateTime) && request.getNgayKetThuc().before(dateTime)) {
+            status = StatusDiscount.HOAT_DONG;
+        }
+        if (request.getNgayBatDau().before(dateTime)) {
+            status = StatusDiscount.NGUNG_HOAT_DONG;
+        }
+        if (request.getNgayKetThuc().after(dateTime)) {
+            status = StatusDiscount.CHUA_DIEN_RA;
+        }
         if (voucher.getTrangThai() == StatusDiscount.HOAT_DONG) {
             throw new RestApiException("Không thể sửa khi chưa tạm dừng voucher");
         } else if (voucher.getTrangThai() == StatusDiscount.DA_HUY) {
@@ -161,7 +161,7 @@ public class VoucherServiceImpl implements VoucherService {
                 voucher.setNgayBatDau(request.getNgayBatDau());
                 voucher.setNgayKetThuc(request.getNgayKetThuc());
                 voucher.setGiaTriVoucher(request.getGiaTriVoucher());
-//                voucher.setTrangThai(status);
+                voucher.setTrangThai(status);
                 return voucherRepository.save(voucher);
             }
         }
@@ -181,11 +181,7 @@ public class VoucherServiceImpl implements VoucherService {
     @Override
     public Voucher doiTrangThai(ChangeStatusVoucherRequest request, String id) {
         Voucher voucher = voucherRepository.findById(id).get();
-//        if (request.getStatus().equals(StatusDiscount.DA_HUY) && request.getLyDoHuy().isBlank()) {
-//            throw new RestApiException("Vui lòng nhập lý do hủy phiếu giảm giá");
-//        } else {
         if (voucher != null) {
-//                voucher.setLyDoHuy(request.getLyDoHuy());
             voucher.setTrangThai(request.getStatus());
         }
         return voucherRepository.save(voucher);

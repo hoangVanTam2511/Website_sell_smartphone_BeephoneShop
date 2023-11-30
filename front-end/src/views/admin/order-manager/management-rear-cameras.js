@@ -325,6 +325,7 @@ const ManagementRearCameras = () => {
 
   const handleClose1 = () => {
     setOpen1(false);
+    setValidationMsg({});
   };
 
   const uniqueCamera = cameraRears
@@ -346,6 +347,26 @@ const ManagementRearCameras = () => {
   };
 
   const { handleOpenAlertVariant } = useCustomSnackbar();
+
+  const [validationMsg, setValidationMsg] = useState({});
+
+  const validationAll = () => {
+    const msg = {};
+
+    if (!doPhanGiai.trim("")) {
+      msg.doPhanGiai = "Độ phân giải không được trống.";
+    }
+
+    setValidationMsg(msg);
+    if (Object.keys(msg).length > 0) return false;
+    return true;
+  };
+
+  const handleSubmit = () => {
+    const isValid = validationAll();
+    if (!isValid) return;
+    updateCamera();
+  };
 
   const updateCamera = () => {
     let obj = {
@@ -429,7 +450,7 @@ const ManagementRearCameras = () => {
               </Button>
             </div>
             <div
-              className="d-flex"
+              className="d-flex mt-2"
               style={{ alignItems: "center", justifyContent: "center" }}
             >
               <div
@@ -632,7 +653,12 @@ const ManagementRearCameras = () => {
                     onInputChange={handleChangeDoPhanGiai}
                     options={uniqueCamera}
                     renderInput={(params) => (
-                      <TextField {...params} label="Độ Phân Giải" />
+                      <TextField
+                        {...params}
+                        label="Độ Phân Giải"
+                        error={validationMsg.doPhanGiai !== undefined}
+                        helperText={validationMsg.doPhanGiai}
+                      />
                     )}
                   />
                 </div>
@@ -698,7 +724,7 @@ const ManagementRearCameras = () => {
                 </div>
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
-                    onClick={() => updateCamera()}
+                    onClick={() => handleSubmit()}
                     className="rounded-2 button-mui"
                     type="primary"
                     style={{ height: "40px", width: "auto", fontSize: "15px" }}

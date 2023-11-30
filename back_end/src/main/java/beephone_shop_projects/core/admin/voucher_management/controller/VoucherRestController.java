@@ -28,6 +28,7 @@ import java.math.BigDecimal;
 @RequestMapping("/voucher")
 @CrossOrigin("*")
 public class VoucherRestController {
+
     @Autowired
     private VoucherService voucherService;
 

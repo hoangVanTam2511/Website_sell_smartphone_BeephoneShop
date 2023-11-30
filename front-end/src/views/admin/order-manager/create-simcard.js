@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 // import {
 //   useNavigate,
 
@@ -56,12 +56,33 @@ const CreateSimCard = ({ open, close, getAll, sims }) => {
   const handleChangeLoai = (event, value) => {
     setLoaiTheSim(value);
   };
+
+  const [validationMsg, setValidationMsg] = useState({});
+
+  const validationAll = () => {
+    const msg = {};
+
+    if (!loaiTheSim.trim("")) {
+      msg.loaiTheSim = "Loại thẻ sim không được trống.";
+    }
+
+    setValidationMsg(msg);
+    if (Object.keys(msg).length > 0) return false;
+    return true;
+  };
+
+  const handleSubmit = () => {
+    const isValid = validationAll();
+    if (!isValid) return;
+    addTheSim();
+  };
+
   const addTheSim = () => {
     let simObjects = [];
     if (checkedSingleSim && checkedDualSim) {
       // Nếu cả hai loại SIM được chọn, tạo hai đối tượng và thêm vào danh sách
       const simObject1 = {
-        ma: "TS" + generateRandomCode(),
+        ma: generateRandomCode(),
         loaiTheSim: loaiTheSim,
         status: status,
         simMultiple: SimMultiple.SINGLE_SIM,
@@ -147,7 +168,12 @@ const CreateSimCard = ({ open, close, getAll, sims }) => {
                     inputValue={loaiTheSim}
                     onInputChange={handleChangeLoai}
                     renderInput={(params) => (
-                      <TextField {...params} label="Loại Thẻ SIM" />
+                      <TextField
+                        {...params}
+                        label="Loại Thẻ SIM"
+                        error={validationMsg.loaiTheSim !== undefined}
+                        helperText={validationMsg.loaiTheSim}
+                      />
                     )}
                   />
                 </div>
@@ -200,7 +226,7 @@ const CreateSimCard = ({ open, close, getAll, sims }) => {
                 </div>
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
-                    onClick={() => addTheSim()}
+                    onClick={() => handleSubmit()}
                     className="rounded-2 button-mui"
                     type="primary"
                     style={{ height: "40px", width: "auto", fontSize: "15px" }}

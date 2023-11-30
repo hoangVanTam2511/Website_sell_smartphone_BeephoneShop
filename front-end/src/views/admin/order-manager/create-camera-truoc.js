@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "antd";
 import {
@@ -30,7 +30,9 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const CreateCameraTruoc = ({ open, close, getAll, cameraFront }) => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = React.useState(false);
-  const [cameraType, setCameraType] = React.useState("");
+  const [cameraType, setCameraType] = React.useState(
+    TypeCameraNumber.STANDARD_CAMERA
+  );
   const [doPhanGiai, setDoPhanGiai] = React.useState("");
   const [status, setStatus] = React.useState(StatusCommonProductsNumber.ACTIVE);
   const { handleOpenAlertVariant } = useCustomSnackbar();
@@ -45,6 +47,26 @@ const CreateCameraTruoc = ({ open, close, getAll, cameraFront }) => {
 
   const handleChangeCameraType = (event) => {
     setCameraType(event.target.value);
+  };
+
+  const [validationMsg, setValidationMsg] = useState({});
+
+  const validationAll = () => {
+    const msg = {};
+
+    if (!doPhanGiai.trim("")) {
+      msg.doPhanGiai = "Độ phân giải không được trống.";
+    }
+
+    setValidationMsg(msg);
+    if (Object.keys(msg).length > 0) return false;
+    return true;
+  };
+
+  const handleSubmit = () => {
+    const isValid = validationAll();
+    if (!isValid) return;
+    addCameraFront();
   };
 
   const addCameraFront = () => {
@@ -118,11 +140,11 @@ const CreateCameraTruoc = ({ open, close, getAll, cameraFront }) => {
                         {...params}
                         InputProps={{
                           ...params.InputProps,
-                          startAdornment: (
+                          endAdornment: (
                             <>
                               <InputAdornment
                                 style={{ marginLeft: "5px" }}
-                                position="start"
+                                position="end"
                               >
                                 <span className="">Megapixel</span>
                               </InputAdornment>
@@ -131,6 +153,8 @@ const CreateCameraTruoc = ({ open, close, getAll, cameraFront }) => {
                           ),
                         }}
                         label="Độ Phân Giải"
+                        error={validationMsg.doPhanGiai !== undefined}
+                        helperText={validationMsg.doPhanGiai}
                       />
                     )}
                   />
@@ -201,7 +225,7 @@ const CreateCameraTruoc = ({ open, close, getAll, cameraFront }) => {
                 </div>
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
-                    onClick={() => addCameraFront()}
+                    onClick={() => handleSubmit()}
                     className="rounded-2 button-mui"
                     type="primary"
                     style={{ height: "40px", width: "auto", fontSize: "15px" }}

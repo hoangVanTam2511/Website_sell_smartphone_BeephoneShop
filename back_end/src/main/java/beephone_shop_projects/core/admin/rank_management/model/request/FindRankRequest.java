@@ -21,8 +21,10 @@ public class FindRankRequest {
 
     private BigDecimal uuDai;
 
-    private StatusCommon status;
+    private Integer status;
 
     private String sortType;
+
+    private Integer pageSize;
 
 }
