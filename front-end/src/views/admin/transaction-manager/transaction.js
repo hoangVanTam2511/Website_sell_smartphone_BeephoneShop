@@ -291,6 +291,19 @@ const Transaction = () => {
                 Tiền Mặt
               </span>
             </div>
+          ) : record.hinhThucThanhToan === 2 ? (
+            <div
+              className="rounded-pill mx-auto badge-primary"
+              style={{
+                height: "35px",
+                width: "120px",
+                padding: "4px",
+              }}
+            >
+              <span className="text-white p-2" style={{ fontSize: "14px" }}>
+                CK Thường
+              </span>
+            </div>
           ) : record.hinhThucThanhToan === 0 ? (
             <div
               className="rounded-pill mx-auto badge-primary"
@@ -301,7 +314,7 @@ const Transaction = () => {
               }}
             >
               <span className="text-white p-2" style={{ fontSize: "14px" }}>
-                Chuyển Khoản
+                CK VNPay
               </span>
             </div>
           ) : (
@@ -592,7 +605,7 @@ const Transaction = () => {
                     className="ms-2 ps-1"
                     style={{ fontSize: "15px", fontWeight: "450" }}
                   >
-                    Phương Thức Thanh Toán:{" "}
+                    Hình Thức Thanh Toán:{" "}
                   </span>
                 </div>
                 <FormControl
@@ -628,7 +641,8 @@ const Transaction = () => {
                     <MenuItem className="" value={3}>
                       Mặc Định
                     </MenuItem>
-                    <MenuItem value={0}>Chuyển Khoản</MenuItem>
+                    <MenuItem value={0}>Chuyển Khoản VN Pay</MenuItem>
+                    <MenuItem value={2}>Chuyển Khoản Thường</MenuItem>
                     <MenuItem value={1}>Tiền Mặt</MenuItem>
                   </Select>
                 </FormControl>
