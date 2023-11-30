@@ -158,6 +158,7 @@ const ManagementColors = () => {
 
   const handleClose1 = () => {
     setOpen1(false);
+    setValidationMsg({});
   };
 
   useEffect(() => {
@@ -326,6 +327,26 @@ const ManagementColors = () => {
       ),
     },
   ];
+
+  const [validationMsg, setValidationMsg] = useState({});
+
+  const validationAll = () => {
+    const msg = {};
+
+    if (!colorName.trim("")) {
+      msg.colorName = "Tên màu sắc không được trống.";
+    }
+
+    setValidationMsg(msg);
+    if (Object.keys(msg).length > 0) return false;
+    return true;
+  };
+
+  const handleSubmit = () => {
+    const isValid = validationAll();
+    if (!isValid) return;
+    updateColor();
+  };
 
   const updateColor = () => {
     let obj = {
@@ -609,7 +630,12 @@ const ManagementColors = () => {
                     onInputChange={handleChangeColor}
                     options={uniqueTenMauSac}
                     renderInput={(params) => (
-                      <TextField {...params} label="Tên Màu Sắc" />
+                      <TextField
+                        {...params}
+                        label="Tên Màu Sắc"
+                        error={validationMsg.colorName !== undefined}
+                        helperText={validationMsg.colorName}
+                      />
                     )}
                   />
                 </div>
@@ -639,7 +665,7 @@ const ManagementColors = () => {
 
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
-                    onClick={() => updateColor()}
+                    onClick={() => handleSubmit()}
                     className="rounded-2 button-mui"
                     type="primary"
                     style={{ height: "40px", width: "auto", fontSize: "15px" }}

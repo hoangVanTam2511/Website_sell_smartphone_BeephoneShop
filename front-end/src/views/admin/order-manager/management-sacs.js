@@ -320,6 +320,7 @@ const ManagementCongSacs = () => {
 
   const handleClose1 = () => {
     setOpen1(false);
+    setValidationMsg({});
   };
 
   const uniqueSac = congSacs
@@ -337,6 +338,26 @@ const ManagementCongSacs = () => {
   };
 
   const { handleOpenAlertVariant } = useCustomSnackbar();
+
+  const [validationMsg, setValidationMsg] = useState({});
+
+  const validationAll = () => {
+    const msg = {};
+
+    if (!loaiCongSac.trim("")) {
+      msg.loaiCongSac = "Loại cổng sạc không được trống.";
+    }
+
+    setValidationMsg(msg);
+    if (Object.keys(msg).length > 0) return false;
+    return true;
+  };
+
+  const handleSubmit = () => {
+    const isValid = validationAll();
+    if (!isValid) return;
+    updateSac();
+  };
 
   const updateSac = () => {
     let obj = {
@@ -621,7 +642,12 @@ const ManagementCongSacs = () => {
                     onInputChange={handleChangeLoaiCongSac}
                     options={uniqueSac}
                     renderInput={(params) => (
-                      <TextField {...params} label="Tên Sạc" />
+                      <TextField
+                        {...params}
+                        label="Tên Sạc"
+                        error={validationMsg.loaiCongSac !== undefined}
+                        helperText={validationMsg.loaiCongSac}
+                      />
                     )}
                   />
                 </div>
@@ -650,7 +676,7 @@ const ManagementCongSacs = () => {
                 </div>
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
-                    onClick={() => updateSac()}
+                    onClick={() => handleSubmit()}
                     className="rounded-2 button-mui"
                     type="primary"
                     style={{ height: "40px", width: "auto", fontSize: "15px" }}

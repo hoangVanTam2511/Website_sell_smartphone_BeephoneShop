@@ -28,7 +28,12 @@ import Zoom from "@mui/material/Zoom";
 import * as dayjs from "dayjs";
 import LoadingIndicator from "../../../utilities/loading";
 import generateRandomCode from "../../../utilities/randomCode";
-import { StatusCommonProducts, StatusCommonProductsNumber } from "./enum";
+import {
+  Notistack,
+  StatusCommonProducts,
+  StatusCommonProductsNumber,
+} from "./enum";
+import useCustomSnackbar from "../../../utilities/notistack";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -68,6 +73,14 @@ const CreateRam = ({ open, close, getAll, rams }) => {
       msg.kichThuoc = "Kích thước ram không được trống.";
     }
 
+    if (kichThuoc < 1) {
+      msg.kichThuoc = "Kích thước ram không được nhỏ hơn 1 GB.";
+    }
+
+    if (kichThuoc > 3000) {
+      msg.kichThuoc = "Kích thước ram không được lớn hơn 3000 GB.";
+    }
+
     setValidationMsg(msg);
     if (Object.keys(msg).length > 0) return false;
     return true;
@@ -78,6 +91,8 @@ const CreateRam = ({ open, close, getAll, rams }) => {
     if (!isValid) return;
     addRams();
   };
+
+  const { handleOpenAlertVariant } = useCustomSnackbar();
 
   const addRams = () => {
     let obj = {
@@ -91,9 +106,10 @@ const CreateRam = ({ open, close, getAll, rams }) => {
         close();
         getAll();
         handleReset();
+        handleOpenAlertVariant("Thêm thành công!", Notistack.SUCCESS);
       })
       .catch((error) => {
-        alert("add thất bại");
+        handleOpenAlertVariant("Thêm thất bại!", Notistack.ERROR);
       });
   };
 

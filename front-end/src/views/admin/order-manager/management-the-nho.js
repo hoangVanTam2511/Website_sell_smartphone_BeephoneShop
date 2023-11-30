@@ -355,6 +355,7 @@ const ManagementTheNhos = () => {
 
   const handleClose1 = () => {
     setOpen1(false);
+    setValidationMsg({});
   };
 
   const uniqueTheNho = listTheNho
@@ -383,6 +384,38 @@ const ManagementTheNhos = () => {
 
   const { handleOpenAlertVariant } = useCustomSnackbar();
 
+  const [validationMsg, setValidationMsg] = useState({});
+
+  const validationAll = () => {
+    const msg = {};
+
+    if (!dungLuongToiDa.trim("")) {
+      msg.dungLuongToiDa = "Dung lượng thẻ nhớ không được trống.";
+    }
+
+    if (dungLuongToiDa < 1) {
+      msg.dungLuongToiDa = "Dung lượng tối đa không được nhỏ hơn 1 GB.";
+    }
+
+    if (dungLuongToiDa > 300000) {
+      msg.dungLuongToiDa = "Dung lượng tối đa không được lớn hơn 300.000 GB.";
+    }
+
+    if (!loaiTheNho.trim("")) {
+      msg.loaiTheNho = "Loại thẻ nhớ không được trống.";
+    }
+
+    setValidationMsg(msg);
+    if (Object.keys(msg).length > 0) return false;
+    return true;
+  };
+
+  const handleSubmit = () => {
+    const isValid = validationAll();
+    if (!isValid) return;
+    updateTheNho();
+  };
+
   const updateTheNho = () => {
     let obj = {
       id: idTheNho,
@@ -394,7 +427,7 @@ const ManagementTheNhos = () => {
     axios
       .put(`http://localhost:8080/api/the-nhos`, obj)
       .then((response) => {
-        getListProductSearchAndPage();
+        getListProductSearchAndPage(currentPage);
         handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
         setOpen1(false);
       })
@@ -668,7 +701,12 @@ const ManagementTheNhos = () => {
                     onInputChange={handleChangeLoaiTheNho}
                     options={uniqueTheNho}
                     renderInput={(params) => (
-                      <TextField {...params} label="Loại Thẻ Nhớ" />
+                      <TextField
+                        {...params}
+                        label="Loại Thẻ Nhớ"
+                        error={validationMsg.loaiTheNho !== undefined}
+                        helperText={validationMsg.loaiTheNho}
+                      />
                     )}
                   />
                 </div>
@@ -686,11 +724,11 @@ const ManagementTheNhos = () => {
                         {...params}
                         InputProps={{
                           ...params.InputProps,
-                          startAdornment: (
+                          endAdornment: (
                             <>
                               <InputAdornment
                                 style={{ marginLeft: "5px" }}
-                                position="start"
+                                position="end"
                               >
                                 GB
                               </InputAdornment>
@@ -699,6 +737,8 @@ const ManagementTheNhos = () => {
                           ),
                         }}
                         label="Dung Lượng Tối Đa"
+                        error={validationMsg.dungLuongToiDa !== undefined}
+                        helperText={validationMsg.dungLuongToiDa}
                       />
                     )}
                   />
@@ -728,7 +768,7 @@ const ManagementTheNhos = () => {
                 </div>
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
-                    onClick={() => updateTheNho()}
+                    onClick={() => handleSubmit()}
                     className="rounded-2 button-mui"
                     type="primary"
                     style={{ height: "40px", width: "auto", fontSize: "15px" }}

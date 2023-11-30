@@ -422,6 +422,7 @@ const ManagementScreens = () => {
 
   const handleClose1 = () => {
     setOpen1(false);
+    // setValidationMsg({});
   };
 
   const uniqueManHinh = productPages

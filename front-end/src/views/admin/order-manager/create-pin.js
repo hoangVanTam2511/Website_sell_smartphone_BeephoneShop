@@ -74,6 +74,14 @@ const CreatePin = ({ open, close, getAll, pins }) => {
       msg.dungLuong = "Dung lượng pin không được trống.";
     }
 
+    if (dungLuong < 1) {
+      msg.dungLuong = "Dung lượng pin không được nhỏ hơn 1 mAh.";
+    }
+
+    if (dungLuong > 100000) {
+      msg.dungLuong = "Dung lượng pin không được lớn hơn 100.000 mAh.";
+    }
+
     setValidationMsg(msg);
     if (Object.keys(msg).length > 0) return false;
     return true;

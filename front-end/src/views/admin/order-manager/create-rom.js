@@ -56,6 +56,14 @@ const CreateRom = ({ open, close, getAll, roms }) => {
       msg.kichThuoc = "Kích thước rom không được trống.";
     }
 
+    if (kichThuoc < 1) {
+      msg.kichThuoc = "Kích thước rom không được nhỏ hơn 1 GB.";
+    }
+
+    if (kichThuoc > 3000) {
+      msg.kichThuoc = "Kích thước rom không được lớn hơn 3000 GB.";
+    }
+
     setValidationMsg(msg);
     if (Object.keys(msg).length > 0) return false;
     return true;

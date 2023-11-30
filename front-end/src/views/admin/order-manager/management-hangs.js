@@ -339,6 +339,7 @@ const ManagementHangs = () => {
 
   const handleClose1 = () => {
     setOpen1(false);
+    setValidationMsg({});
   };
 
   const uniqueHang = listHang
@@ -356,6 +357,26 @@ const ManagementHangs = () => {
   };
 
   const { handleOpenAlertVariant } = useCustomSnackbar();
+
+  const [validationMsg, setValidationMsg] = useState({});
+
+  const validationAll = () => {
+    const msg = {};
+
+    if (!tenHang.trim("")) {
+      msg.tenHang = "Tên hãng không được trống.";
+    }
+
+    setValidationMsg(msg);
+    if (Object.keys(msg).length > 0) return false;
+    return true;
+  };
+
+  const handleSubmit = () => {
+    const isValid = validationAll();
+    if (!isValid) return;
+    updateHang();
+  };
 
   const updateHang = () => {
     let obj = {
@@ -641,7 +662,12 @@ const ManagementHangs = () => {
                     onInputChange={handleChangeTenHang}
                     options={uniqueHang}
                     renderInput={(params) => (
-                      <TextField {...params} label="Tên Hãng" />
+                      <TextField
+                        {...params}
+                        label="Tên Hãng"
+                        error={validationMsg.tenHang !== undefined}
+                        helperText={validationMsg.tenHang}
+                      />
                     )}
                   />
                 </div>
@@ -670,7 +696,7 @@ const ManagementHangs = () => {
                 </div>
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
-                    onClick={() => updateHang()}
+                    onClick={() => handleSubmit()}
                     className="rounded-2 button-mui"
                     type="primary"
                     style={{ height: "40px", width: "auto", fontSize: "15px" }}
