@@ -353,6 +353,7 @@ const ManagementSims = () => {
 
   const handleClose1 = () => {
     setOpen1(false);
+    setValidationMsg({});
   };
 
   const uniqueTheSim = productPages
@@ -370,6 +371,26 @@ const ManagementSims = () => {
   };
 
   const { handleOpenAlertVariant } = useCustomSnackbar();
+
+  const [validationMsg, setValidationMsg] = useState({});
+
+  const validationAll = () => {
+    const msg = {};
+
+    if (!loaiTheSim.trim("")) {
+      msg.loaiTheSim = "Loại thẻ sim không được trống.";
+    }
+
+    setValidationMsg(msg);
+    if (Object.keys(msg).length > 0) return false;
+    return true;
+  };
+
+  const handleSubmit = () => {
+    const isValid = validationAll();
+    if (!isValid) return;
+    updateTheSim();
+  };
 
   const updateTheSim = () => {
     let obj = {
@@ -453,7 +474,7 @@ const ManagementSims = () => {
               </Button>
             </div>
             <div
-              className="d-flex"
+              className="d-flex mt-2"
               style={{ alignItems: "center", justifyContent: "center" }}
             >
               <div
@@ -656,7 +677,12 @@ const ManagementSims = () => {
                     onInputChange={handleChangeLoaiTheSim}
                     options={uniqueTheSim}
                     renderInput={(params) => (
-                      <TextField {...params} label="Loại Thẻ Sim" />
+                      <TextField
+                        {...params}
+                        label="Loại Thẻ Sim"
+                        error={validationMsg.loaiTheSim !== undefined}
+                        helperText={validationMsg.loaiTheSim}
+                      />
                     )}
                   />
                 </div>
@@ -685,7 +711,7 @@ const ManagementSims = () => {
                 </div>
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
-                    onClick={() => updateTheSim()}
+                    onClick={() => handleSubmit()}
                     className="rounded-2 button-mui"
                     type="primary"
                     style={{ height: "40px", width: "auto", fontSize: "15px" }}

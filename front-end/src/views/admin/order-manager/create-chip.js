@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Empty, Table } from "antd";
 import {
@@ -28,6 +28,26 @@ const CreateChip = ({ open, close, getAll, chips }) => {
   const [status, setStatus] = React.useState(StatusCommonProductsNumber.ACTIVE);
   const [tenChip, setTenChip] = React.useState("");
   const { handleOpenAlertVariant } = useCustomSnackbar();
+
+  const [validationMsg, setValidationMsg] = useState({});
+
+  const validationAll = () => {
+    const msg = {};
+
+    if (!tenChip.trim("")) {
+      msg.tenChip = "Tên chip không được trống.";
+    }
+
+    setValidationMsg(msg);
+    if (Object.keys(msg).length > 0) return false;
+    return true;
+  };
+
+  const handleSubmit = () => {
+    const isValid = validationAll();
+    if (!isValid) return;
+    addChip();
+  };
 
   const addChip = () => {
     let obj = {
@@ -101,7 +121,12 @@ const CreateChip = ({ open, close, getAll, chips }) => {
                     onInputChange={handleChangeChip}
                     options={uniqueChip}
                     renderInput={(params) => (
-                      <TextField {...params} label="Tên Chip" />
+                      <TextField
+                        {...params}
+                        label="Tên Chip"
+                        error={validationMsg.tenChip !== undefined}
+                        helperText={validationMsg.tenChip}
+                      />
                     )}
                   />
                 </div>
@@ -130,7 +155,7 @@ const CreateChip = ({ open, close, getAll, chips }) => {
                 </div>
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
-                    onClick={() => addChip()}
+                    onClick={() => handleSubmit()}
                     className="rounded-2 button-mui"
                     type="primary"
                     style={{ height: "40px", width: "auto", fontSize: "15px" }}

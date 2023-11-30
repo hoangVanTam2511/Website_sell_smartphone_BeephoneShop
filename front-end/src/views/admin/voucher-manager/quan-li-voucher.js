@@ -67,6 +67,7 @@ const HienThiVoucher = () => {
   const [open, setOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [checkStatus, setCheckStatus] = useState("");
 
   const loadDataListVoucher = (page) => {
     setIsLoading(false);
@@ -651,6 +652,7 @@ const HienThiVoucher = () => {
                   handleClickChangeStatus(event);
                   setId(record.id);
                   setMa(record.ma);
+                  setCheckStatus(record.trangThai);
                 }}
               >
                 <AssignmentOutlinedIcon
@@ -793,6 +795,13 @@ const HienThiVoucher = () => {
       >
         <MenuItem
           // selected={}
+          disabled={
+            checkStatus === StatusDiscount.HOAT_DONG
+              ? true
+              : checkStatus === StatusDiscount.CHUA_DIEN_RA
+              ? true
+              : false
+          }
           onClick={() => {
             handleOpenDialogConfirmUpdate();
             setSelectedStatus(5);
@@ -802,6 +811,7 @@ const HienThiVoucher = () => {
           Kích Hoạt
         </MenuItem>
         <MenuItem
+          disabled={checkStatus === StatusDiscount.TAM_DUNG ? true : false}
           onClick={() => {
             handleOpenDialogConfirmUpdate();
             setSelectedStatus(StatusDiscount.TAM_DUNG);
@@ -811,6 +821,7 @@ const HienThiVoucher = () => {
           Tạm Dừng
         </MenuItem>
         <MenuItem
+          disabled={checkStatus === StatusDiscount.DA_HUY ? true : false}
           onClick={() => {
             handleOpenDialogConfirmUpdate();
             setSelectedStatus(StatusDiscount.DA_HUY);

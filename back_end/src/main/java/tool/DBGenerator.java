@@ -108,7 +108,7 @@ public class DBGenerator implements CommandLineRunner {
         xepHang.setTen("Bạc");
         xepHang.setDieuKienToiThieu(new BigDecimal(3000000));
         xepHang.setDieuKienToiDa(new BigDecimal(7000000));
-        xepHang.setUuDai(new BigDecimal(100000));
+        xepHang.setUuDai(new BigDecimal(30));
         xepHang.setStatus(StatusCommon.ACTIVE);
         xepHang.setId(iRankRepository.save(xepHang).getId());
 
@@ -117,7 +117,7 @@ public class DBGenerator implements CommandLineRunner {
         xepHang1.setTen("Vàng");
         xepHang1.setDieuKienToiThieu(new BigDecimal(7000000));
         xepHang1.setDieuKienToiDa(new BigDecimal(120000000));
-        xepHang1.setUuDai(new BigDecimal(200000));
+        xepHang1.setUuDai(new BigDecimal(3));
         xepHang1.setStatus(StatusCommon.ACTIVE);
         xepHang1.setId(iRankRepository.save(xepHang1).getId());
 
@@ -126,7 +126,7 @@ public class DBGenerator implements CommandLineRunner {
         xepHang2.setTen("Kim Cương");
         xepHang2.setDieuKienToiThieu(new BigDecimal(12000000));
         xepHang2.setDieuKienToiDa(new BigDecimal(20000000));
-        xepHang2.setUuDai(new BigDecimal(5000000));
+        xepHang2.setUuDai(new BigDecimal(2));
         xepHang2.setStatus(StatusCommon.ACTIVE);
         xepHang2.setId(iRankRepository.save(xepHang2).getId());
 
@@ -135,7 +135,7 @@ public class DBGenerator implements CommandLineRunner {
         xepHang3.setTen("Đồng");
         xepHang3.setDieuKienToiThieu(new BigDecimal(100000));
         xepHang3.setDieuKienToiDa(new BigDecimal(3000000));
-        xepHang3.setUuDai(new BigDecimal(500000));
+        xepHang3.setUuDai(new BigDecimal(1));
         xepHang3.setStatus(StatusCommon.ACTIVE);
         xepHang3.setId(iRankRepository.save(xepHang3).getId());
 
@@ -170,47 +170,59 @@ public class DBGenerator implements CommandLineRunner {
         nhanVien.setTen("Nhân Viên");
         nhanVien.setId(roleRepository.save(nhanVien).getId());
 
-        Role chuCuaHang = new Role();
-        chuCuaHang.setMa("role2");
-        chuCuaHang.setTen("Khách Hàng");
-        chuCuaHang.setId(roleRepository.save(chuCuaHang).getId());
+        Role khachHang = new Role();
+        khachHang.setMa("role2");
+        khachHang.setTen("Khách Hàng");
+        khachHang.setId(roleRepository.save(khachHang).getId());
+
+        Role admin = new Role();
+        admin.setMa("role3");
+        admin.setTen("Admin");
+        admin.setId(roleRepository.save(admin).getId());
 //
         //Bảng Account
-        Account admin = new Account();
-        admin.setMa("Account1");
-        admin.setHoVaTen("Nguyễn Phùng Dũng");
-        admin.setAnhDaiDien("https://www.hellokpop.com/wp-content/uploads/2019/09/jung-hae-in-esquire-sg-jan-2019-cover-interview-body4-e1568440568417.jpg");
-        admin.setCanCuocCongDan("0191231002");
-        admin.setNgaySinh(new Date());
-        admin.setGioiTinh(true);
-        admin.setEmail("dung@gmail.com");
-        admin.setSoDienThoai("0395561234");
-//        admin.setDiaChi("Phú diễn");
-//        admin.setXaPhuong("Phường phú diễn");
-//        admin.setQuanHuyen("Quận Bắc Từ Liêm");
-//        admin.setTinhThanhPho("Thành phố Hà Nội");
-        admin.setMatKhau("12345");
-        admin.setTrangThai(StatusAccountCus.HOAT_DONG);
-        admin.setIdRole(chuCuaHang);
-        admin.setId(accountRepository.save(admin).getId());
-//
-//        Account accountNhanVien = new Account();
-//        accountNhanVien.setMa("Account2");
-//        accountNhanVien.setHoVaTen("Trần Quang Hà");
-//        accountNhanVien.setAnhDaiDien("https://i.pinimg.com/736x/c8/44/25/c84425742604c8e5b1d827a7b40cfa1c.jpg");
-//        accountNhanVien.setCanCuocCongDan("0191231002");
-//        accountNhanVien.setNgaySinh(new Date());
-//        accountNhanVien.setGioiTinh(true);
-//        accountNhanVien.setEmail("hatq@gmail.com");
-//        accountNhanVien.setSoDienThoai("0913010291");
-//        accountNhanVien.setDiaChi("Kiều mai");
-//        accountNhanVien.setXaPhuong("Phường Đại Mỗ");
-//        accountNhanVien.setQuanHuyen("Quận Nam Từ Liêm");
-//        accountNhanVien.setTinhThanhPho("Thành phố Hà Nội");
-//        accountNhanVien.setMatKhau("12345");
-//        accountNhanVien.setTrangThai(StatusAccountCus.LAM_VIEC);
-//        accountNhanVien.setIdRole(nhanVien);
-//        accountNhanVien.setId(accountRepository.save(accountNhanVien).getId());
+        Account khachHang1 = new Account();
+        khachHang1.setMa("Account1");
+        khachHang1.setHoVaTen("Nguyễn Phùng Dũng");
+        khachHang1.setAnhDaiDien("https://www.hellokpop.com/wp-content/uploads/2019/09/jung-hae-in-esquire-sg-jan-2019-cover-interview-body4-e1568440568417.jpg");
+        khachHang1.setCanCuocCongDan("019123109202");
+        khachHang1.setNgaySinh(new Date());
+        khachHang1.setGioiTinh(true);
+        khachHang1.setEmail("dung@gmail.com");
+        khachHang1.setSoDienThoai("0395561234");
+        khachHang1.setMatKhau("12345");
+        khachHang1.setTrangThai(StatusAccountCus.HOAT_DONG);
+        khachHang1.setIdRole(khachHang);
+        khachHang1.setId(accountRepository.save(khachHang1).getId());
+
+        Account accountNhanVien = new Account();
+        accountNhanVien.setMa("Account2");
+        accountNhanVien.setHoVaTen("Trần Quang Hà");
+        accountNhanVien.setAnhDaiDien("https://cdn.statically.io/img/cellphones.com.vn/sforum/wp-content/uploads/2018/11/3-8.png?quality=80&f=auto");
+        accountNhanVien.setCanCuocCongDan("0191231002");
+        accountNhanVien.setNgaySinh(new Date());
+        accountNhanVien.setGioiTinh(true);
+        accountNhanVien.setEmail("hatq@gmail.com");
+        accountNhanVien.setSoDienThoai("0913010291");
+        accountNhanVien.setMatKhau("12345");
+        accountNhanVien.setTrangThai(StatusAccountCus.LAM_VIEC);
+        accountNhanVien.setIdRole(nhanVien);
+        accountNhanVien.setId(accountRepository.save(accountNhanVien).getId());
+
+
+        Account accountAdmin = new Account();
+        accountAdmin.setMa("Account23");
+        accountAdmin.setHoVaTen("Lê Thị Vân Anh");
+        accountAdmin.setAnhDaiDien("https://static-images.vnncdn.net/files/publish/2022/9/3/bien-vo-cuc-thai-binh-346.jpeg");
+        accountAdmin.setCanCuocCongDan("0191299002");
+        accountAdmin.setNgaySinh(new Date());
+        accountAdmin.setGioiTinh(false);
+        accountAdmin.setEmail("anhltv@gmail.com");
+        accountAdmin.setSoDienThoai("0912310291");
+        accountAdmin.setMatKhau("12345");
+        accountAdmin.setTrangThai(StatusAccountCus.LAM_VIEC);
+        accountAdmin.setIdRole(admin);
+        accountAdmin.setId(accountRepository.save(accountAdmin).getId());
 
         //Bảng Camera Trước
         CameraTruoc cameraTruoc = new CameraTruoc();
@@ -223,14 +235,14 @@ public class DBGenerator implements CommandLineRunner {
         CameraTruoc cameraTruoc1 = new CameraTruoc();
         cameraTruoc1.setMa("camera2");
         cameraTruoc1.setDoPhanGiai(1);
-        cameraTruoc.setCameraType(CameraType.MARCO_CAMERA);
+        cameraTruoc1.setCameraType(CameraType.MARCO_CAMERA);
         cameraTruoc1.setStatus(StatusCommon.ACTIVE);
         cameraTruoc1.setId(cameraTruocRepository.save(cameraTruoc1).getId());
 
         CameraTruoc cameraTruoc2 = new CameraTruoc();
         cameraTruoc2.setMa("camera3");
         cameraTruoc2.setDoPhanGiai(5);
-        cameraTruoc.setCameraType(CameraType.TELEPHOTO_CAMERA);
+        cameraTruoc2.setCameraType(CameraType.TELEPHOTO_CAMERA);
         cameraTruoc2.setStatus(StatusCommon.ACTIVE);
         cameraTruoc2.setId(cameraTruocRepository.save(cameraTruoc2).getId());
 
@@ -238,41 +250,41 @@ public class DBGenerator implements CommandLineRunner {
         cameraTruoc3.setMa("camera4");
         cameraTruoc3.setDoPhanGiai(8);
         cameraTruoc3.setStatus(StatusCommon.ACTIVE);
-        cameraTruoc.setCameraType(CameraType.STANDARD_CAMERA);
+        cameraTruoc3.setCameraType(CameraType.STANDARD_CAMERA);
         cameraTruoc3.setId(cameraTruocRepository.save(cameraTruoc3).getId());
 
         CameraTruoc cameraTruoc4 = new CameraTruoc();
         cameraTruoc4.setMa("camera5");
         cameraTruoc4.setDoPhanGiai(12);
         cameraTruoc4.setStatus(StatusCommon.ACTIVE);
-        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
+        cameraTruoc4.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
         cameraTruoc4.setId(cameraTruocRepository.save(cameraTruoc4).getId());
 
         CameraTruoc cameraTruoc5 = new CameraTruoc();
         cameraTruoc5.setMa("camera6");
         cameraTruoc5.setDoPhanGiai(16);
-        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
+        cameraTruoc5.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
         cameraTruoc5.setStatus(StatusCommon.ACTIVE);
         cameraTruoc5.setId(cameraTruocRepository.save(cameraTruoc5).getId());
 
         CameraTruoc cameraTruoc6 = new CameraTruoc();
         cameraTruoc6.setMa("camera7");
         cameraTruoc6.setDoPhanGiai(24);
-        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
+        cameraTruoc6.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
         cameraTruoc6.setStatus(StatusCommon.ACTIVE);
         cameraTruoc6.setId(cameraTruocRepository.save(cameraTruoc6).getId());
 
         CameraTruoc cameraTruoc7 = new CameraTruoc();
         cameraTruoc7.setMa("camera8");
         cameraTruoc7.setDoPhanGiai(32);
-        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
+        cameraTruoc7.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
         cameraTruoc7.setStatus(StatusCommon.ACTIVE);
         cameraTruoc7.setId(cameraTruocRepository.save(cameraTruoc7).getId());
 
         CameraTruoc cameraTruoc8 = new CameraTruoc();
         cameraTruoc8.setMa("camera9");
         cameraTruoc8.setDoPhanGiai(48);
-        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
+        cameraTruoc8.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
         cameraTruoc8.setStatus(StatusCommon.ACTIVE);
         cameraTruoc8.setId(cameraTruocRepository.save(cameraTruoc8).getId());
 
@@ -280,28 +292,28 @@ public class DBGenerator implements CommandLineRunner {
         CameraSau cameraSau = new CameraSau();
         cameraSau.setMa("camera1");
         cameraSau.setDoPhanGiai(60);
-        cameraTruoc.setCameraType(CameraType.STANDARD_CAMERA);
+        cameraSau.setCameraType(CameraType.STANDARD_CAMERA);
         cameraSau.setStatus(StatusCommon.ACTIVE);
         cameraSau.setId(cameraSauRepository.save(cameraSau).getId());
 
         CameraSau cameraSau1 = new CameraSau();
         cameraSau1.setMa("camera2");
         cameraSau1.setDoPhanGiai(1);
-        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
+        cameraSau1.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
         cameraSau1.setStatus(StatusCommon.ACTIVE);
         cameraSau1.setId(cameraSauRepository.save(cameraSau1).getId());
 
         CameraSau cameraSau2 = new CameraSau();
         cameraSau2.setMa("camera3");
         cameraSau2.setDoPhanGiai(5);
-        cameraTruoc.setCameraType(CameraType.TELEPHOTO_CAMERA);
+        cameraSau2.setCameraType(CameraType.TELEPHOTO_CAMERA);
         cameraSau2.setStatus(StatusCommon.ACTIVE);
         cameraSau2.setId(cameraSauRepository.save(cameraSau2).getId());
 
         CameraSau cameraSau3 = new CameraSau();
         cameraSau3.setMa("camera4");
         cameraSau3.setDoPhanGiai(8);
-        cameraTruoc.setCameraType(CameraType.DEPTH_CAMERA);
+        cameraSau3.setCameraType(CameraType.DEPTH_CAMERA);
         cameraSau3.setStatus(StatusCommon.ACTIVE);
         cameraSau3.setId(cameraSauRepository.save(cameraSau3).getId());
 
@@ -309,47 +321,48 @@ public class DBGenerator implements CommandLineRunner {
         cameraSau4.setMa("camera5");
         cameraSau4.setDoPhanGiai(12);
         cameraSau4.setStatus(StatusCommon.ACTIVE);
+        cameraSau4.setCameraType(CameraType.DEPTH_CAMERA);
         cameraSau4.setId(cameraSauRepository.save(cameraSau4).getId());
 
         CameraSau cameraSau5 = new CameraSau();
         cameraSau5.setMa("camera6");
         cameraSau5.setDoPhanGiai(16);
-        cameraTruoc.setCameraType(CameraType.PERISCOPE_TELEPHOTO_CAMERA);
+        cameraSau5.setCameraType(CameraType.PERISCOPE_TELEPHOTO_CAMERA);
         cameraSau5.setStatus(StatusCommon.ACTIVE);
         cameraSau5.setId(cameraSauRepository.save(cameraSau5).getId());
 
         CameraSau cameraSau6 = new CameraSau();
         cameraSau6.setMa("camera7");
         cameraSau6.setDoPhanGiai(24);
-        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
+        cameraSau6.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
         cameraSau6.setStatus(StatusCommon.ACTIVE);
         cameraSau6.setId(cameraSauRepository.save(cameraSau6).getId());
 
         CameraSau cameraSau7 = new CameraSau();
         cameraSau7.setMa("camera8");
         cameraSau7.setDoPhanGiai(32);
-        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
+        cameraSau7.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
         cameraSau7.setStatus(StatusCommon.ACTIVE);
         cameraSau7.setId(cameraSauRepository.save(cameraSau7).getId());
 
         CameraSau cameraSau8 = new CameraSau();
         cameraSau8.setMa("camera9");
         cameraSau8.setDoPhanGiai(48);
-        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
+        cameraSau8.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
         cameraSau8.setStatus(StatusCommon.ACTIVE);
         cameraSau8.setId(cameraSauRepository.save(cameraSau8).getId());
 
         CameraSau cameraSau9 = new CameraSau();
         cameraSau9.setMa("camera10");
         cameraSau9.setDoPhanGiai(64);
-        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
+        cameraSau9.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
         cameraSau9.setStatus(StatusCommon.ACTIVE);
         cameraSau9.setId(cameraSauRepository.save(cameraSau9).getId());
 
         CameraSau cameraSau10 = new CameraSau();
         cameraSau10.setMa("camera11");
         cameraSau10.setDoPhanGiai(108);
-        cameraTruoc.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
+        cameraSau10.setCameraType(CameraType.ULTRA_WIDE_CAMERA);
         cameraSau10.setStatus(StatusCommon.ACTIVE);
         cameraSau10.setId(cameraSauRepository.save(cameraSau10).getId());
 
@@ -481,7 +494,7 @@ public class DBGenerator implements CommandLineRunner {
         diaChi.setXaPhuong("Phường Cổ Nhuế 1");
         diaChi.setQuanHuyen("Quận Bắc Từ Liêm");
         diaChi.setTinhThanhPho("Hà Nội");
-        diaChi.setAccount(admin);
+        diaChi.setAccount(khachHang1);
         diaChi.setId(diaChiRepository.save(diaChi).getId());
 
         DiaChi diaChi1 = new DiaChi();
@@ -491,7 +504,7 @@ public class DBGenerator implements CommandLineRunner {
         diaChi1.setXaPhuong("Phường Mỹ Đình 1");
         diaChi1.setQuanHuyen("Quận Nam Từ Liêm");
         diaChi1.setTinhThanhPho("Hà Nội");
-        diaChi1.setAccount(admin);
+        diaChi1.setAccount(accountAdmin);
         diaChi1.setId(diaChiRepository.save(diaChi1).getId());
 
         DiaChi diaChi2 = new DiaChi();
@@ -501,7 +514,7 @@ public class DBGenerator implements CommandLineRunner {
         diaChi2.setXaPhuong("Phường Thượng Đình");
         diaChi2.setQuanHuyen("Quận Thanh Xuân");
         diaChi2.setTinhThanhPho("Hà Nội");
-        diaChi2.setAccount(admin);
+        diaChi2.setAccount(accountNhanVien);
         diaChi2.setId(diaChiRepository.save(diaChi2).getId());
 //
 //        //Bảng Dòng Sản Phẩm

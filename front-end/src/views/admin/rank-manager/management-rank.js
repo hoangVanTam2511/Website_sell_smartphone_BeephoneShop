@@ -32,6 +32,7 @@ import {
   StatusCommonProductsNumber,
 } from "../order-manager/enum";
 import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
+import { InputAdornment } from "@mui/material";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -47,41 +48,42 @@ const ManagementRanks = () => {
   const [keyword, setKeyword] = useState(searchParams.get("keyword"));
   const [idRank, setIdRank] = React.useState("");
   const [maRank, setMaRank] = React.useState("");
-  const [status, setStatus] = React.useState("");
-  const [ten, setTen] = React.useState("");
-  const [giaTriGiam, setGiaTriGiam] = React.useState("");
-  const [dieuKienDatDuoc, setDieuKienDatDuoc] = React.useState("");
-  const [openConfirm, setOpenConfirm] = useState(false);
+  const [status, setStatus] = React.useState(StatusCommonProductsNumber.ACTIVE);
+  const [tenRank, setTenRank] = React.useState("");
+  const [dieuKienToiDa, setDieuKienToiDa] = React.useState(0);
+  const [dieuKienToiThieu, setDieuKienToiThieu] = React.useState(0);
+  const [uuDai, setUuDai] = React.useState(0);
+  const [value, setValue] = React.useState("");
+  const [value1, setValue1] = React.useState("");
+  const [value2, setValue2] = React.useState("");
   const [open1, setOpen1] = React.useState(false);
   const { handleOpenAlertVariant } = useCustomSnackbar();
   const [currentPage, setCurrentPage] = useState(
     searchParams.get("currentPage") || 1
   );
+  const [rankPages, setRankPages] = useState([]);
+  const [pageShow, setPageShow] = useState(5);
+  const [searchTatCa, setSearchTatCa] = useState("");
+  const [searchTrangThai, setSearchTrangThai] = useState(6);
 
-  const getListRank = (page) => {
+  const getListRank = () => {
     axios
       .get(`http://localhost:8080/rank/ranks`)
       .then((response) => {
         setListRank(response.data.data);
-        setTotalPages(response.data.totalPages);
       })
       .catch((error) => {
         console.error(error);
       });
   };
 
-  const [rankPages, setRankPages] = useState([]);
-  const [pageShow, setPageShow] = useState(5);
-  const [searchTatCa, setSearchTatCa] = useState("");
-  const [searchTrangThai, setSearchTrangThai] = useState(5);
-
   const getListProductSearchAndPage = (page) => {
     axios
-      .get(`http://localhost:8080/rank/ranks`, {
+      .get(`http://localhost:8080/rank/ranksPage`, {
         params: {
-          currentPage: page,
+          page: page,
           pageSize: pageShow,
-          status: ConvertStatusProductsNumberToString(searchTrangThai),
+          status: searchTrangThai,
         },
       })
       .then((response) => {
@@ -92,6 +94,10 @@ const ManagementRanks = () => {
         console.error(error);
       });
   };
+
+  useEffect(() => {
+    getListRank();
+  }, []);
 
   const [openSelect, setOpenSelect] = useState(false);
   const handleOpenSelect = () => {
@@ -120,8 +126,8 @@ const ManagementRanks = () => {
   const handleRefreshData = () => {
     setSearchTatCa("");
     setPageShow(5);
-    setSearchTrangThai(5);
-    if (searchTrangThai === 5) {
+    setSearchTrangThai(6);
+    if (searchTrangThai === 6) {
       setSearchParams("");
     }
     getListProductSearchAndPage(currentPage);
@@ -155,22 +161,27 @@ const ManagementRanks = () => {
 
   const detailRank = async (idRank) => {
     await axios
-      .get(`http://localhost:8080/rank/ranks/${idRank}`)
+      .get(`http://localhost:8080/rank/get-by-id/${idRank}`)
       .then((response) => {
         setMaRank(response.data.data.ma);
-        setTen(response.data.data.ten);
+        setTenRank(response.data.data.ten);
         setStatus(response.data.data.status);
-        setGiaTriGiam(response.data.data.giaTriGiam);
-        setDieuKienDatDuoc(response.data.data.dieuKienDatDuoc);
+        setValue2(response.data.data.dieuKienToiDa);
+        setValue1(response.data.data.dieuKienToiThieu);
+        setValue(response.data.data.uuDai);
+        convertTien(
+          response.data.data.dieuKienToiThieu,
+          response.data.data.dieuKienToiDa
+        );
       })
       .catch((error) => {});
   };
 
   const doiTrangThaiRank = (idRank) => {
     axios
-      .put(`http://localhost:8080/rank/ranks/${idRank}`)
+      .put(`http://localhost:8080/rank/deleteTrangThaiRank/${idRank}`)
       .then((response) => {
-        getListRank();
+        getListProductSearchAndPage();
         handleOpenAlertVariant(
           "Đổi trạng thái thành công!!!",
           Notistack.SUCCESS
@@ -190,10 +201,6 @@ const ManagementRanks = () => {
     setOpen1(false);
   };
 
-  useEffect(() => {
-    getListRank();
-  }, []);
-
   const [open, setOpen] = React.useState(false);
   const handleClickOpen = () => {
     setOpen(true);
@@ -207,15 +214,16 @@ const ManagementRanks = () => {
     let obj = {
       id: idRank,
       ma: maRank,
-      ten: ten,
+      ten: tenRank,
       status: status,
-      giaTriGiam: giaTriGiam,
-      dieuKienDatDuoc: dieuKienDatDuoc,
+      dieuKienToiDa: dieuKienToiDa,
+      dieuKienToiThieu: dieuKienToiThieu,
+      uuDai: value,
     };
     axios
-      .put(`http://localhost:8080/rank/ranks`, obj)
+      .put(`http://localhost:8080/rank/updateRank/${idRank}`, obj)
       .then((response) => {
-        getListRank();
+        getListProductSearchAndPage(currentPage);
         handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
         setOpen1(false);
       })
@@ -224,18 +232,65 @@ const ManagementRanks = () => {
       });
   };
 
+  const handleChangeStatus = (event) => {
+    setStatus(event.target.value);
+  };
+  const handleChangeTenRank = (event, value) => {
+    setTenRank(value);
+  };
+  const handleChangeDieuKienToiDaRank = (event, value) => {
+    const inputValue = event.target.value;
+    const numericValue = parseFloat(inputValue.replace(/[^0-9.-]+/g, ""));
+    const formattedValue = inputValue
+      .replace(/[^0-9]+/g, "")
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    setValue2(formattedValue);
+    setDieuKienToiDa(numericValue);
+  };
+  const handleChangeDieuKienToiThieuRank = (event, value) => {
+    const inputValue = event.target.value;
+    const numericValue = parseFloat(inputValue.replace(/[^0-9.-]+/g, ""));
+    const formattedValue = inputValue
+      .replace(/[^0-9]+/g, "")
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    setValue1(formattedValue);
+    setDieuKienToiThieu(numericValue);
+  };
+  const handleChangeUuDaiRank = (event, value) => {
+    let inputValue = event.target.value;
+    // Loại bỏ các ký tự không phải số
+    inputValue = inputValue.replace(/\D/g, "");
+    // Xử lý giới hạn giá trị từ 1 đến 100
+    if (isNaN(inputValue) || inputValue < 1) {
+      inputValue = "0";
+    } else if (inputValue > 100) {
+      inputValue = "100";
+    }
+    setValue(inputValue);
+    setUuDai(inputValue);
+  };
+
+  const convertTien = (value1, value2) => {
+    const numericValue = parseFloat(String(value1).replace(/[^0-9.-]+/g, ""));
+    const fomarttedDieuKien = String(value1)
+      .replace(/[^0-9]+/g, "")
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    setValue1(fomarttedDieuKien);
+    setDieuKienToiThieu(numericValue);
+
+    const numericValue2 = parseFloat(String(value2).replace(/[^0-9.-]+/g, ""));
+    const formattedValue2 = String(value2)
+      .replace(/[^0-9]+/g, "")
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    setValue2(formattedValue2);
+    setDieuKienToiDa(numericValue2);
+  };
+
   const uniqueRank = listRank
     .map((option) => option.ten)
     .filter((value, index, self) => {
       return self.indexOf(value) === index;
     });
-
-  const handleChangeStatus = (event) => {
-    setStatus(event.target.value);
-  };
-  const handleChangeRank = (event, value) => {
-    setTen(value);
-  };
 
   const OrderTable = () => {
     return (
@@ -320,12 +375,8 @@ const ManagementRanks = () => {
       width: "15%",
       render: (text, record) => (
         <span style={{ fontWeight: "400" }}>
-          {record &&
-            record.uuDai &&
-            record.uuDai.toLocaleString("vi-VN", {
-              style: "currency",
-              currency: "VND",
-            })}{" "}
+          {record.uuDai}
+          {" %"}
         </span>
       ),
     },
@@ -386,9 +437,9 @@ const ManagementRanks = () => {
               <Tooltip
                 TransitionComponent={Zoom}
                 title={
-                  record.status === StatusCommonProducts.ACTIVE
+                  record.status === StatusCommonProductsNumber.ACTIVE
                     ? "Ngừng kích hoạt"
-                    : record.status === StatusCommonProducts.IN_ACTIVE
+                    : record.status === StatusCommonProductsNumber.IN_ACTIVE
                     ? "Kích hoạt"
                     : ""
                 }
@@ -400,9 +451,9 @@ const ManagementRanks = () => {
                 >
                   <AssignmentOutlinedIcon
                     color={
-                      record.status === StatusCommonProducts.IN_ACTIVE
+                      record.status === StatusCommonProductsNumber.IN_ACTIVE
                         ? "error"
-                        : record.status === StatusCommonProducts.ACTIVE
+                        : record.status === StatusCommonProductsNumber.ACTIVE
                         ? "success"
                         : "disabled"
                     }
@@ -516,15 +567,9 @@ const ManagementRanks = () => {
                     value={searchTrangThai}
                     onChange={handleSearchTrangThaiChange}
                   >
-                    <MenuItem className="" value={5}>
-                      Tất cả
-                    </MenuItem>
-                    <MenuItem value={StatusCommonProductsNumber.ACTIVE}>
-                      Hoạt động
-                    </MenuItem>
-                    <MenuItem value={StatusCommonProductsNumber.IN_ACTIVE}>
-                      Ngừng hoạt động
-                    </MenuItem>
+                    <MenuItem value={6}>Tất cả</MenuItem>
+                    <MenuItem value={0}>Hoạt động</MenuItem>
+                    <MenuItem value={1}>Ngừng hoạt động</MenuItem>
                   </Select>
                 </FormControl>
               </div>
@@ -629,7 +674,7 @@ const ManagementRanks = () => {
       <CreateRank
         open={open}
         close={handleClose}
-        getAll={getListRank}
+        getAll={getListProductSearchAndPage}
         ranks={listRank}
       />
 
@@ -641,7 +686,7 @@ const ManagementRanks = () => {
         maxWidth="md"
         maxHeight="md"
         sx={{
-          marginBottom: "170px",
+          marginBottom: "40px",
         }}
       >
         <DialogContent>
@@ -652,7 +697,7 @@ const ManagementRanks = () => {
                   className=""
                   style={{ fontWeight: "550", fontSize: "29px" }}
                 >
-                  SỬA CHIP
+                  SỬA RANK
                 </span>
               </div>
               <div className="mx-auto mt-3 pt-2">
@@ -662,15 +707,66 @@ const ManagementRanks = () => {
                     className="custom"
                     id="free-solo-demo"
                     freeSolo
-                    inputValue={ten}
-                    onInputChange={handleChangeRank}
+                    inputValue={tenRank}
+                    onInputChange={handleChangeTenRank}
                     options={uniqueRank}
                     renderInput={(params) => (
                       <TextField {...params} label="Tên Rank" />
                     )}
                   />
                 </div>
-                <div className="mt-3" style={{}}>
+                <div className="mt-3">
+                  <TextField
+                    fullWidth
+                    className="custom"
+                    id="outlined-end-adornment"
+                    label="Điều kiện tối thiểu"
+                    // freeSolo
+                    value={value1}
+                    onChange={handleChangeDieuKienToiThieuRank}
+                    InputProps={{
+                      inputMode: "numeric",
+                      endAdornment: (
+                        <InputAdornment position="end">VND</InputAdornment>
+                      ),
+                    }}
+                  />
+                </div>
+                <div className="mt-3">
+                  <TextField
+                    fullWidth
+                    label="Điều kiện tối đa"
+                    className="custom"
+                    id="outlined-end-adornment"
+                    // freeSolo
+                    value={value2}
+                    onChange={handleChangeDieuKienToiDaRank}
+                    InputProps={{
+                      inputMode: "numeric",
+                      endAdornment: (
+                        <InputAdornment position="end">VND</InputAdornment>
+                      ),
+                    }}
+                  />
+                </div>
+                <div className="mt-3">
+                  <TextField
+                    fullWidth
+                    label="Ưu Đãi"
+                    className="custom"
+                    id="outlined-end-adornment"
+                    // freeSolo
+                    value={value}
+                    onChange={handleChangeUuDaiRank}
+                    InputProps={{
+                      inputMode: "numeric",
+                      endAdornment: (
+                        <InputAdornment position="end">%</InputAdornment>
+                      ),
+                    }}
+                  />
+                </div>
+                <div className="mt-3">
                   <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">
                       Trạng Thái
@@ -682,12 +778,12 @@ const ManagementRanks = () => {
                       value={status}
                       label="Trạng Thái"
                       onChange={handleChangeStatus}
-                      // defaultValue={StatusCommonProductsNumber.ACTIVE}
+                      defaultValue={StatusCommonProductsNumber.ACTIVE}
                     >
-                      <MenuItem value={StatusCommonProducts.ACTIVE}>
+                      <MenuItem value={StatusCommonProductsNumber.ACTIVE}>
                         Hoạt Động
                       </MenuItem>
-                      <MenuItem value={StatusCommonProducts.IN_ACTIVE}>
+                      <MenuItem value={StatusCommonProductsNumber.IN_ACTIVE}>
                         Ngừng Hoạt Động
                       </MenuItem>
                     </Select>
@@ -711,7 +807,6 @@ const ManagementRanks = () => {
               </div>
             </div>
           </div>
-          {/* {isLoading && <LoadingIndicator />} */}
         </DialogContent>
         <div className="mt-3"></div>
       </Dialog>

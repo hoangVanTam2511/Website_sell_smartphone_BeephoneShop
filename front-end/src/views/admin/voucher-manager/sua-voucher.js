@@ -167,37 +167,37 @@ const UpdateVoucher = () => {
     setDieuKienApDung(numericValue);
   };
 
-  const handleChangeGiaTriToiDa = (event) => {
-    const inputValue = event.target.value;
-    if (selectDiscount === TypeDiscountString.VND) {
-      setGiaTriToiDa(null);
-      setValueToiDa(null);
-    }
-    const numericValue = parseFloat(inputValue.replace(/[^0-9.-]+/g, ""));
-    const formattedValue = inputValue
-      .replace(/[^0-9]+/g, "")
-      .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    setValueToiDa(formattedValue);
-    setGiaTriToiDa(numericValue);
-  };
+  // const handleChangeGiaTriToiDa = (event) => {
+  //   const inputValue = event.target.value;
+  //   if (selectDiscount === TypeDiscountString.VND) {
+  //     setGiaTriToiDa(null);
+  //     setValueToiDa(null);
+  //   }
+  //   const numericValue = parseFloat(inputValue.replace(/[^0-9.-]+/g, ""));
+  //   const formattedValue = inputValue
+  //     .replace(/[^0-9]+/g, "")
+  //     .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  //   setValueToiDa(formattedValue);
+  //   setGiaTriToiDa(numericValue);
+  // };
 
-  const handleChangeToggleButtonDiscount = (event) => {
-    const newAlignment = event.target.value;
-    handleReset();
-    if (newAlignment != null) {
-      setSelectDiscount(newAlignment);
-    }
+  // const handleChangeToggleButtonDiscount = (event) => {
+  //   const newAlignment = event.target.value;
+  //   handleReset();
+  //   if (newAlignment != null) {
+  //     setSelectDiscount(newAlignment);
+  //   }
 
-    if (newAlignment == null) {
-      setSelectDiscount(null);
-    }
-    handleReset();
-  };
+  //   if (newAlignment == null) {
+  //     setSelectDiscount(null);
+  //   }
+  //   handleReset();
+  // };
 
-  const handleReset = () => {
-    setValue("");
-    setValueToiDa("");
-  };
+  // const handleReset = () => {
+  //   setValue("");
+  //   setValueToiDa("");
+  // };
 
   const convertTien = (value1, value, valueToiDa) => {
     const numericValue = parseFloat(String(value1).replace(/[^0-9.-]+/g, ""));
@@ -625,15 +625,25 @@ const UpdateVoucher = () => {
           </div>
         </div>
         <div>
-          {status === StatusDiscountNumber.HOAT_DONG && (
+          {status === StatusDiscountNumber.HOAT_DONG ? (
             <Alert
               severity="warning"
               className="mx-auto"
               style={{ maxWidth: "65%" }}
             >
-              Không thể sửa khi voucher đang hoạt động, hãy đổi trạng thái thành
+              Không thể sửa khi voucher ĐANG HOẠT ĐỘNG, hãy đổi trạng thái thành
               tạm dừng!
             </Alert>
+          ) : status === StatusDiscountNumber.DA_HUY ? (
+            <Alert
+              severity="warning"
+              className="mx-auto"
+              style={{ maxWidth: "65%" }}
+            >
+              Không thể sửa khi voucher ĐÃ HỦY!
+            </Alert>
+          ) : (
+            ""
           )}
         </div>
         <div className="btn-accept-update mt-3">
@@ -641,7 +651,13 @@ const UpdateVoucher = () => {
             className="rounded-2 button-mui"
             type="primary"
             style={{ height: "40px", width: "auto", fontSize: "15px" }}
-            disabled={status === StatusDiscountNumber.HOAT_DONG}
+            disabled={
+              status === StatusDiscountNumber.HOAT_DONG
+                ? true
+                : status === StatusDiscountNumber.DA_HUY
+                ? true
+                : false
+            }
             onClick={() => {
               handleSubmit();
             }}

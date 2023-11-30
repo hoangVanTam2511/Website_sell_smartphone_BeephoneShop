@@ -158,6 +158,7 @@ const ManagementDanhMuc = () => {
 
   const handleClose1 = () => {
     setOpen1(false);
+    setValidationMsg({});
   };
 
   useEffect(() => {
@@ -326,6 +327,26 @@ const ManagementDanhMuc = () => {
       ),
     },
   ];
+
+  const [validationMsg, setValidationMsg] = useState({});
+
+  const validationAll = () => {
+    const msg = {};
+
+    if (!danhMucName.trim("")) {
+      msg.danhMucName = "Tên danh mục không được trống.";
+    }
+
+    setValidationMsg(msg);
+    if (Object.keys(msg).length > 0) return false;
+    return true;
+  };
+
+  const handleSubmit = () => {
+    const isValid = validationAll();
+    if (!isValid) return;
+    updateDanhMuc();
+  };
 
   const updateDanhMuc = () => {
     let obj = {
@@ -606,7 +627,12 @@ const ManagementDanhMuc = () => {
                     onInputChange={handleChangeDanhMuc}
                     options={uniqueTenDanhMuc}
                     renderInput={(params) => (
-                      <TextField {...params} label="Tên Danh Mục" />
+                      <TextField
+                        {...params}
+                        label="Tên Danh Mục"
+                        error={validationMsg.danhMucName !== undefined}
+                        helperText={validationMsg.danhMucName}
+                      />
                     )}
                   />
                 </div>
@@ -635,7 +661,7 @@ const ManagementDanhMuc = () => {
                 </div>
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
-                    onClick={() => updateDanhMuc()}
+                    onClick={() => handleSubmit()}
                     className="rounded-2 button-mui"
                     type="primary"
                     style={{ height: "40px", width: "auto", fontSize: "15px" }}

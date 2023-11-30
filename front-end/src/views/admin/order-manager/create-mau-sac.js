@@ -1,46 +1,17 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
-  Link,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from "react-router-dom";
-import { Empty, Table } from "antd";
-import {
-  Box,
   FormControl,
-  IconButton,
   Select,
   InputLabel,
   MenuItem,
-  Pagination,
   TextField,
-  Tooltip,
-  Checkbox,
-  FormControlLabel,
   Autocomplete,
-  InputAdornment,
-  OutlinedInput,
   Dialog,
   DialogContent,
-  DialogTitle,
-  DialogActions,
   Slide,
-  ListItemText,
 } from "@mui/material";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import { PlusOutlined } from "@ant-design/icons";
-import Card from "../../../components/Card";
-import { format } from "date-fns";
 import axios from "axios";
-import { parseInt } from "lodash";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
-import Zoom from "@mui/material/Zoom";
-import * as dayjs from "dayjs";
 import LoadingIndicator from "../../../utilities/loading";
 import generateRandomCode from "../../../utilities/randomCode";
 import { Button } from "@mui/joy";
@@ -62,30 +33,24 @@ const CreateMauSac = ({ open, close, getAll, colors }) => {
   const [key, setKey] = useState(1);
   const { handleOpenAlertVariant } = useCustomSnackbar();
 
-  const handleOpenDialogConfirmAdd = () => {
-    setOpenConfirm(true);
+  const [validationMsg, setValidationMsg] = useState({});
+
+  const validationAll = () => {
+    const msg = {};
+
+    if (!colorName.trim("")) {
+      msg.colorName = "Tên màu sắc không được trống.";
+    }
+
+    setValidationMsg(msg);
+    if (Object.keys(msg).length > 0) return false;
+    return true;
   };
 
-  const handleCloseDialogConfirmAdd = () => {
-    setOpenConfirm(false);
-  };
-
-  const Header = () => {
-    return (
-      <>
-        <span style={{ fontWeight: "bold" }}>Xác nhận thêm màu sắc</span>
-      </>
-    );
-  };
-  const Title = () => {
-    return (
-      <>
-        <span>
-          Bạn có chắc chắc muốn thêm màu{" "}
-          <span style={{ color: "red" }}>"{colorName}"</span> không ?
-        </span>
-      </>
-    );
+  const handleSubmit = () => {
+    const isValid = validationAll();
+    if (!isValid) return;
+    addColor();
   };
 
   const addColor = () => {
@@ -161,7 +126,12 @@ const CreateMauSac = ({ open, close, getAll, colors }) => {
                     onInputChange={handleChangeColor}
                     options={uniqueTenMauSac}
                     renderInput={(params) => (
-                      <TextField {...params} label="Tên Màu Sắc" />
+                      <TextField
+                        {...params}
+                        label="Tên Màu Sắc"
+                        error={validationMsg.colorName !== undefined}
+                        helperText={validationMsg.colorName}
+                      />
                     )}
                   />
                 </div>
@@ -191,7 +161,7 @@ const CreateMauSac = ({ open, close, getAll, colors }) => {
                 </div>
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
-                    onClick={() => addColor()}
+                    onClick={() => handleSubmit()}
                     className="rounded-2 button-mui"
                     type="primary"
                     style={{ height: "40px", width: "auto", fontSize: "15px" }}

@@ -211,6 +211,7 @@ const ManagementChips = () => {
 
   const handleClose1 = () => {
     setOpen1(false);
+    setValidationMsg({});
   };
 
   useEffect(() => {
@@ -224,6 +225,26 @@ const ManagementChips = () => {
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const [validationMsg, setValidationMsg] = useState({});
+
+  const validationAll = () => {
+    const msg = {};
+
+    if (!tenChip.trim("")) {
+      msg.tenChip = "Tên chip không được trống.";
+    }
+
+    setValidationMsg(msg);
+    if (Object.keys(msg).length > 0) return false;
+    return true;
+  };
+
+  const handleSubmit = () => {
+    const isValid = validationAll();
+    if (!isValid) return;
+    updateChip();
   };
 
   const updateChip = () => {
@@ -437,7 +458,7 @@ const ManagementChips = () => {
               </Button>
             </div>
             <div
-              className="d-flex"
+              className="d-flex mt-2"
               style={{ alignItems: "center", justifyContent: "center" }}
             >
               <div
@@ -640,7 +661,12 @@ const ManagementChips = () => {
                     onInputChange={handleChangeChip}
                     options={uniqueChip}
                     renderInput={(params) => (
-                      <TextField {...params} label="Tên Chip" />
+                      <TextField
+                        {...params}
+                        label="Tên Chip"
+                        error={validationMsg.tenChip !== undefined}
+                        helperText={validationMsg.tenChip}
+                      />
                     )}
                   />
                 </div>
@@ -669,7 +695,7 @@ const ManagementChips = () => {
                 </div>
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
-                    onClick={() => updateChip()}
+                    onClick={() => handleSubmit()}
                     className="rounded-2 button-mui"
                     type="primary"
                     style={{ height: "40px", width: "auto", fontSize: "15px" }}

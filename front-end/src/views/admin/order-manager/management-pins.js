@@ -303,6 +303,7 @@ const ManagementPins = () => {
 
   const handleClose1 = () => {
     setOpen1(false);
+    setValidationMsg({});
   };
 
   const uniquePin = pins
@@ -330,6 +331,38 @@ const ManagementPins = () => {
   };
 
   const { handleOpenAlertVariant } = useCustomSnackbar();
+
+  const [validationMsg, setValidationMsg] = useState({});
+
+  const validationAll = () => {
+    const msg = {};
+
+    if (!loaiPin.trim("")) {
+      msg.loaiPin = "Loại pin không được trống.";
+    }
+
+    if (!dungLuong.trim("")) {
+      msg.dungLuong = "Dung lượng pin không được trống.";
+    }
+
+    if (dungLuong < 1) {
+      msg.dungLuong = "Dung lượng pin không được nhỏ hơn 1 mAh.";
+    }
+
+    if (dungLuong > 100000) {
+      msg.dungLuong = "Dung lượng pin không được lớn hơn 100.000 mAh.";
+    }
+
+    setValidationMsg(msg);
+    if (Object.keys(msg).length > 0) return false;
+    return true;
+  };
+
+  const handleSubmit = () => {
+    const isValid = validationAll();
+    if (!isValid) return;
+    updatePin();
+  };
 
   const updatePin = () => {
     let obj = {
@@ -553,7 +586,12 @@ const ManagementPins = () => {
                     onInputChange={handleChangeLoaiPin}
                     options={uniquePin}
                     renderInput={(params) => (
-                      <TextField {...params} label="Tên Pin" />
+                      <TextField
+                        {...params}
+                        label="Tên Pin"
+                        error={validationMsg.loaiPin !== undefined}
+                        helperText={validationMsg.loaiPin}
+                      />
                     )}
                   />
                 </div>
@@ -571,11 +609,11 @@ const ManagementPins = () => {
                         {...params}
                         InputProps={{
                           ...params.InputProps,
-                          startAdornment: (
+                          endAdornment: (
                             <>
                               <InputAdornment
                                 style={{ marginLeft: "5px" }}
-                                position="start"
+                                position="end"
                               >
                                 mAh
                               </InputAdornment>
@@ -584,6 +622,8 @@ const ManagementPins = () => {
                           ),
                         }}
                         label="Dung Lượng PIN"
+                        error={validationMsg.dungLuong !== undefined}
+                        helperText={validationMsg.dungLuong}
                       />
                     )}
                   />
@@ -613,7 +653,7 @@ const ManagementPins = () => {
                 </div>
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
-                    onClick={() => updatePin()}
+                    onClick={() => handleSubmit()}
                     className="rounded-2 button-mui"
                     type="primary"
                     style={{ height: "40px", width: "auto", fontSize: "15px" }}

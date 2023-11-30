@@ -422,6 +422,7 @@ const ManagementScreens = () => {
 
   const handleClose1 = () => {
     setOpen1(false);
+    // setValidationMsg({});
   };
 
   const uniqueManHinh = productPages
@@ -568,7 +569,7 @@ const ManagementScreens = () => {
               </Button>
             </div>
             <div
-              className="d-flex"
+              className="d-flex mt-2"
               style={{ alignItems: "center", justifyContent: "center" }}
             >
               <div

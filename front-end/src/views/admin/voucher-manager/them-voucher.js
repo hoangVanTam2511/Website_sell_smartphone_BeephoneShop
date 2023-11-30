@@ -120,15 +120,15 @@ const AddVoucher = () => {
     setDieuKienApDungConvert(numericValue);
   };
 
-  const handleChangeGiaTriToiDa = (event) => {
-    const inputValue = event.target.value;
-    const numericValue = parseFloat(inputValue.replace(/[^0-9.-]+/g, ""));
-    const formattedValue = inputValue
-      .replace(/[^0-9]+/g, "")
-      .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    setValueToiDa(formattedValue);
-    setGiaTriToiDa(numericValue);
-  };
+  // const handleChangeGiaTriToiDa = (event) => {
+  //   const inputValue = event.target.value;
+  //   const numericValue = parseFloat(inputValue.replace(/[^0-9.-]+/g, ""));
+  //   const formattedValue = inputValue
+  //     .replace(/[^0-9]+/g, "")
+  //     .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  //   setValueToiDa(formattedValue);
+  //   setGiaTriToiDa(numericValue);
+  // };
 
   const redirectToHienThiVoucher = () => {
     navigate("/dashboard/voucher");

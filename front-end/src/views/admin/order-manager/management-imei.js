@@ -188,10 +188,10 @@ const ManagementImei = () => {
           </div>
         ) : type === StatusImei.NOT_SOLD ? (
           <div
-            className="rounded-pill badge-danger mx-auto"
+            className="rounded-pill badge-warning mx-auto"
             style={{ height: "35px", width: "140px", padding: "4px" }}
           >
-            <span className="text-white" style={{ fontSize: "14px" }}>
+            <span className="" style={{ fontSize: "14px" }}>
               Chưa Bán
             </span>
           </div>
