@@ -1,9 +1,6 @@
 package beephone_shop_projects.core.client.repositories;
 
-import beephone_shop_projects.core.client.models.response.ConfigResponce;
-import beephone_shop_projects.core.client.models.response.ProductBestSeller;
-import beephone_shop_projects.core.client.models.response.ProductDetailResponce;
-import beephone_shop_projects.core.client.models.response.ProductResponce;
+import beephone_shop_projects.core.client.models.response.*;
 import beephone_shop_projects.repository.ISanPhamChiTietRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,7 +16,7 @@ public interface ProductDetailClientRepository extends ISanPhamChiTietRepository
     @Query(value = """
                   SELECT
                   sp.id,
-                  anh.duong_dan,
+                  image.path AS duong_dan,
                   sp.ten_san_pham, 
                   IF(kmct.don_gia_sau_khuyen_mai is null ,0, kmct.don_gia_sau_khuyen_mai) AS don_gia_sau_khuyen_mai,
                   spct.don_gia, 
@@ -28,7 +25,7 @@ public interface ProductDetailClientRepository extends ISanPhamChiTietRepository
                   FROM san_pham sp
                   JOIN san_pham_chi_tiet spct ON spct.id_san_pham = sp.id
                   LEFT JOIN khuyen_mai_chi_tiet kmct ON kmct.id_chi_tiet_san_pham = spct.id
-                  LEFT JOIN anh ON anh.id = spct.id_image
+                  LEFT JOIN image ON image.id = spct.id_image
                   JOIN ram ON ram.id = spct.id_ram
                   JOIN rom ON rom.id = spct.id_rom
                    WHERE sp.id = :id_product
@@ -42,7 +39,8 @@ public interface ProductDetailClientRepository extends ISanPhamChiTietRepository
              spct.id,
              IF(kmct.don_gia_sau_khuyen_mai is null ,0, kmct.don_gia_sau_khuyen_mai) AS don_gia_sau_khuyen_mai,
              spct.don_gia,
-             anh.duong_dan,
+             spct.so_luong_ton_kho,
+             image.path as duong_dan,
              ms.ten_mau_sac,
              ram.dung_luong as dung_luong_ram,
              rom.dung_luong as dung_luong_rom
@@ -51,7 +49,7 @@ public interface ProductDetailClientRepository extends ISanPhamChiTietRepository
              LEFT JOIN khuyen_mai_chi_tiet kmct ON kmct.id_chi_tiet_san_pham = spct.id
              JOIN ram ON ram.id = spct.id_ram
              JOIN rom ON rom.id = spct.id_rom
-             LEFT JOIN anh ON anh.id = spct.id_image
+             LEFT JOIN image ON image.id = spct.id_image
              JOIN mau_sac ms ON ms.id = spct.id_mau_sac
               WHERE sp.id = :id_product
              ORDER BY ram.dung_luong ASC, rom.dung_luong ASC
@@ -103,6 +101,7 @@ public interface ProductDetailClientRepository extends ISanPhamChiTietRepository
                          AND a.don_gia BETWEEN :donGiaMin and :donGiaMax
                          AND n.ten_chip LIKE :chip
                          AND o.kich_thuoc LIKE :manHinh
+                         AND m.ten_san_pham LIKE :ten_san_pham
                          GROUP BY m.id,m.ten_san_pham,
                           c.ten_hang,
                           n.ten_chip,
@@ -117,7 +116,8 @@ public interface ProductDetailClientRepository extends ISanPhamChiTietRepository
                                           @Param("donGiaMax") String donGiaMax,
                                           @Param("chip") String chip,
                                           @Param("manHinh") String manHinh,
-                                          @Param("tan_so_quet") String tanSoQuet
+                                          @Param("tan_so_quet") String tanSoQuet,
+                                          @Param("ten_san_pham") String tenSanPham
     );
 
     @Query(value = """
@@ -129,8 +129,8 @@ public interface ProductDetailClientRepository extends ISanPhamChiTietRepository
 
     @Query(value = """
                   SELECT
-                  sp.id,
-                  anh.duong_dan,
+                  sp.id,    
+                  image.path AS duong_dan,
                   sp.ten_san_pham, 
                   IF(kmct.don_gia_sau_khuyen_mai is null ,0, kmct.don_gia_sau_khuyen_mai) AS don_gia_sau_khuyen_mai,
                   spct.don_gia, 
@@ -139,7 +139,7 @@ public interface ProductDetailClientRepository extends ISanPhamChiTietRepository
                   FROM san_pham sp
                   JOIN san_pham_chi_tiet spct ON spct.id_san_pham = sp.id
                   LEFT JOIN khuyen_mai_chi_tiet kmct ON kmct.id_chi_tiet_san_pham = spct.id
-                  LEFT JOIN anh ON anh.id = spct.id_image
+                  LEFT JOIN image ON image.id = spct.id_image
                   JOIN ram ON ram.id = spct.id_ram
                   JOIN rom ON rom.id = spct.id_rom
                    WHERE spct.id = :id_product_detail
@@ -148,4 +148,12 @@ public interface ProductDetailClientRepository extends ISanPhamChiTietRepository
             """, nativeQuery = true)
     ProductDetailResponce getProductDetailByIDProductDetail(@Param("id_product_detail") String idProductDetail);
 
+    @Query(value = """
+         SELECT image.path as url, ms.ten_mau_sac from san_pham_chi_tiet spct
+         JOIN san_pham sp ON sp.id = spct.id_san_pham
+         JOIN mau_sac ms ON ms.id = spct.id_mau_sac
+         JOIN image ON image.id = spct.id_image
+         WHERE sp.id  = :id_product
+        """, nativeQuery = true)
+    ArrayList<ImageResponce> getImagesByIDProductDetails(@Param("id_product") String idProduct);
 }

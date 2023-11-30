@@ -38,4 +38,7 @@ public interface CartDetailResponce {
 
     @Value("#{target.so_luong_sap_mua}")
     Integer getSoLuongSapMua();
+
+    @Value("#{target.duong_dan}")
+    String getDuongDan();
 }

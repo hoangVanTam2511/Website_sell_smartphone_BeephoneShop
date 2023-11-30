@@ -3,6 +3,7 @@ package beephone_shop_projects.core.admin.order_management.service.impl;
 import beephone_shop_projects.core.admin.order_management.converter.CartItemConverter;
 import beephone_shop_projects.core.admin.order_management.converter.OrderConverter;
 import beephone_shop_projects.core.admin.order_management.converter.OrderItemConverter;
+import beephone_shop_projects.core.admin.order_management.converter.ProductItemConverter;
 import beephone_shop_projects.core.admin.order_management.model.request.CartItemRequest;
 import beephone_shop_projects.core.admin.order_management.model.request.ImeiCustomRequest;
 import beephone_shop_projects.core.admin.order_management.model.request.OrderItemRefundRequest;
@@ -10,9 +11,11 @@ import beephone_shop_projects.core.admin.order_management.model.request.OrderIte
 import beephone_shop_projects.core.admin.order_management.model.request.OrderItemsCustomRefundRequest;
 import beephone_shop_projects.core.admin.order_management.model.response.CartItemResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.OrderItemResponse;
+import beephone_shop_projects.core.admin.order_management.repository.CartItemCustomRepository;
 import beephone_shop_projects.core.admin.order_management.repository.CartItemRepository;
 import beephone_shop_projects.core.admin.order_management.repository.HinhThucThanhToanRepository;
 import beephone_shop_projects.core.admin.order_management.repository.ImeiChuaBanCustomRepository;
+import beephone_shop_projects.core.admin.order_management.repository.ImeiCustomRepository;
 import beephone_shop_projects.core.admin.order_management.repository.ImeiDaBanCustomRepository;
 import beephone_shop_projects.core.admin.order_management.repository.LichSuHoaDonRepository;
 import beephone_shop_projects.core.admin.order_management.repository.OrderItemRepository;
@@ -50,6 +53,9 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
   private CartItemRepositoryImpl cartItemRepository;
 
   @Autowired
+  private CartItemCustomRepository cartItemCustomRepository;
+
+  @Autowired
   private ProductDetailRepository sanPhamChiTietRepository;
 
   @Autowired
@@ -83,7 +89,13 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
   private LichSuHoaDonRepository lichSuHoaDonRepository;
 
   @Autowired
+  private ProductItemConverter productItemConverter;
+
+  @Autowired
   private HinhThucThanhToanRepository hinhThucThanhToanRepository;
+
+  @Autowired
+  private ImeiCustomRepository imeiCustomRepository;
 
   public CartItemServiceImpl(CartItemRepository repo, CartItemConverter converter) {
     super(repo, converter);
@@ -162,6 +174,66 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
         imeiChuaBan.setGioHangChiTiet(createdCartItem);
         imeiChuaBanCustomRepository.save(imeiChuaBan);
       }
+
+      return cartItemConverter.convertEntityToResponse(createdCartItem);
+    }
+
+  }
+
+  @Override
+  public CartItemResponse addProductItemToCartByScanner(CartItemRequest req) throws Exception {
+    GioHang findCartCurrent = cartRepository.findOneById(req.getCart().getId());
+    Optional<Imei> findImei = imeiCustomRepository.findImeiBySoImei(req.getImei());
+    if (findCartCurrent == null) {
+      throw new RestApiException("Không tìm thấy giỏ hàng hiện tại!");
+    }
+
+    if (!findImei.isPresent()) {
+      throw new RestApiException("Imei không tồn tại!");
+    }
+    Optional<GioHangChiTiet> findProductItemCurrentInCart = cartItemCustomRepository.
+            findCartItemAlready(findImei.get().getSanPhamChiTiet().getId(), findCartCurrent.getId());
+
+    if (findProductItemCurrentInCart.isPresent()) {
+      List<ImeiChuaBan> imeisInCart = findProductItemCurrentInCart.get().getImeisChuaBan();
+      for (ImeiChuaBan imeiChuaBan : imeisInCart){
+        if (imeiChuaBan.getSoImei().equals(req.getImei())){
+          throw new RestApiException("Imei đang được chọn trong giỏ hàng!");
+        }
+      }
+      GioHangChiTiet getProductItemInCartCurrent = findProductItemCurrentInCart.get();
+      getProductItemInCartCurrent.setSoLuong(getProductItemInCartCurrent
+              .getSoLuong() + req.getAmount());
+//        findProductItem.get().setSoLuongTonKho(findProductItem.get().getSoLuongTonKho() - req.getAmount());
+//        sanPhamChiTietRepository.save(findProductItem.get());
+      GioHangChiTiet updatedCartItem = cartItemRepository.save(getProductItemInCartCurrent);
+
+      findImei.get().setTrangThai(StatusImei.IN_THE_CART);
+      imeiRepository.save(findImei.get());
+
+      ImeiChuaBan imeiChuaBan = new ImeiChuaBan();
+      imeiChuaBan.setSoImei(req.getImei());
+      imeiChuaBan.setTrangThai(StatusImei.IN_THE_CART);
+      imeiChuaBan.setGioHangChiTiet(updatedCartItem);
+      imeiChuaBanCustomRepository.save(imeiChuaBan);
+      return cartItemConverter.convertEntityToResponse(updatedCartItem);
+    } else {
+      GioHangChiTiet cartItem = new GioHangChiTiet();
+      cartItem.setSoLuong(req.getAmount());
+      cartItem.setSanPhamChiTiet(findImei.get().getSanPhamChiTiet());
+      cartItem.setGioHang(findCartCurrent);
+      cartItem.setDonGia(findImei.get().getSanPhamChiTiet().getDonGia());
+//      findProductItem.get().setSoLuongTonKho(findProductItem.get().getSoLuongTonKho() - req.getAmount());
+//      sanPhamChiTietRepository.save(findProductItem.get());
+      GioHangChiTiet createdCartItem = cartItemRepository.save(cartItem);
+
+      findImei.get().setTrangThai(StatusImei.IN_THE_CART);
+      imeiRepository.save(findImei.get());
+      ImeiChuaBan imeiChuaBan = new ImeiChuaBan();
+      imeiChuaBan.setSoImei(req.getImei());
+      imeiChuaBan.setTrangThai(StatusImei.IN_THE_CART);
+      imeiChuaBan.setGioHangChiTiet(createdCartItem);
+      imeiChuaBanCustomRepository.save(imeiChuaBan);
 
       return cartItemConverter.convertEntityToResponse(createdCartItem);
     }

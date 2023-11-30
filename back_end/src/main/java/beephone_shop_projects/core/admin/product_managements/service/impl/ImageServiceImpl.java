@@ -42,7 +42,7 @@ public class ImageServiceImpl extends AbstractServiceImpl<Image, ImageResponse, 
 
   @Override
   public void uploadImage(MultipartFile[] files, String ma) throws Exception {
-    List<SanPhamChiTiet> products = productItemRepository.getProductsById(ma);
+    List<SanPhamChiTiet> products = productItemRepository.getProductsByMa(ma);
     Map<String, SanPhamChiTiet> productMap = new ConcurrentHashMap<>();
     for (SanPhamChiTiet product : products) {
       productMap.put(product.getMa(), product);

@@ -53,10 +53,12 @@ public interface CartDetailClientRepository extends IGioHangChiTietRepository {
             ram.dung_luong AS dung_luong_ram,
             rom.dung_luong AS dung_luong_rom,   
             ghct.so_luong AS so_luong_sap_mua,
+            image.path AS duong_dan,
             IF(kmct.don_gia_sau_khuyen_mai is null ,0, kmct.don_gia_sau_khuyen_mai) AS don_gia_sau_khuyen_mai
             FROM gio_hang_chi_tiet ghct
             JOIN gio_hang gh ON gh.id = ghct.id_gio_hang
             JOIN san_pham_chi_tiet spct ON spct.id = ghct.id_chi_tiet_san_pham
+            LEFT JOIN image ON image.id = spct.id_image
             JOIN san_pham sp ON sp.id = spct.id_san_pham
             LEFT JOIN khuyen_mai_chi_tiet kmct ON kmct.id_chi_tiet_san_pham = spct.id
             JOIN mau_sac ms ON ms.id = spct.id_mau_sac

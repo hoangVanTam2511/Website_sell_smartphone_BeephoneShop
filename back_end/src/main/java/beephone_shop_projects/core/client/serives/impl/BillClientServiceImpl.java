@@ -1,20 +1,11 @@
 package beephone_shop_projects.core.client.serives.impl;
 
-import beephone_shop_projects.core.admin.order_management.converter.AccountConverter;
 import beephone_shop_projects.core.admin.order_management.converter.OrderConverter;
-import beephone_shop_projects.core.admin.order_management.converter.ProductItemConverter;
 import beephone_shop_projects.core.admin.order_management.converter.VoucherConverter;
-import beephone_shop_projects.core.admin.order_management.model.request.CartRequest;
-import beephone_shop_projects.core.admin.order_management.model.request.OrderRequest;
-import beephone_shop_projects.core.admin.order_management.model.request.SearchFilterOrderDto;
-import beephone_shop_projects.core.admin.order_management.model.response.CartItemResponse;
-import beephone_shop_projects.core.admin.order_management.model.response.OrderResponse;
 import beephone_shop_projects.core.admin.order_management.repository.OrderItemRepository;
-import beephone_shop_projects.core.admin.order_management.repository.impl.CartRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.repository.impl.HinhThucThanhToanRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.repository.impl.LichSuHoaDonRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.repository.impl.OrderRepositoryImpl;
-import beephone_shop_projects.core.admin.order_management.service.impl.CartServiceImpl;
 import beephone_shop_projects.core.admin.order_management.service.impl.LichSuHoaDonServiceImpl;
 import beephone_shop_projects.core.client.models.request.BillClientRequest;
 import beephone_shop_projects.core.client.models.request.BillDetailClientRequest;
@@ -22,12 +13,8 @@ import beephone_shop_projects.core.client.repositories.*;
 import beephone_shop_projects.entity.*;
 import beephone_shop_projects.infrastructure.constant.OrderStatus;
 import beephone_shop_projects.infrastructure.constant.OrderType;
-import beephone_shop_projects.infrastructure.exeption.rest.RestApiException;
+import beephone_shop_projects.utils.RandomCodeGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -79,9 +66,9 @@ public class BillClientServiceImpl {
     private CartDetailClientRepository cartDetailClientRepository;
 
     public HoaDon createBillClient(BillClientRequest orderRequest) throws Exception {
-        Account khachHang = orderRequest.getIdKhachHang();
+        Account khachHang = accountClientRepository.findById(orderRequest.getIdKhachHang()).get();
 
-        if(orderRequest.getIdKhachHang().getMa() == "" || orderRequest.getIdKhachHang().getMa() == null){
+        if(khachHang.getMa() == "" || khachHang.getMa() == null){
             Random random = new Random();
             int number = random.nextInt(10000);
             String code = String.format("KH%04d", number);
@@ -90,21 +77,19 @@ public class BillClientServiceImpl {
             accountClientRepository.save(khachHang);
         }
 
-        Random random = new Random();
-        int number = random.nextInt(1000000);
-        String code = String.format("HD%04d", number);
+        String code =  RandomCodeGenerator.generateRandomNumber();
         HoaDon newOrder = new HoaDon();
         newOrder.setMa(code);
         newOrder.setAccount(khachHang);
         newOrder.setVoucher(orderRequest.getVoucher());
         newOrder.setLoaiHoaDon(OrderType.DELIVERY);
         newOrder.setGhiChu(orderRequest.getGhiChu());
-        newOrder.setDiaChiNguoiNhan(khachHang.getDiaChiList().get(0).getDiaChi());
-        newOrder.setXaPhuongNguoiNhan(khachHang.getDiaChiList().get(0).getXaPhuong());
-        newOrder.setQuanHuyenNguoiNhan(khachHang.getDiaChiList().get(0).getQuanHuyen());
-        newOrder.setTinhThanhPhoNguoiNhan(khachHang.getDiaChiList().get(0).getTinhThanhPho());
-        newOrder.setSoDienThoaiNguoiNhan(khachHang.getSoDienThoai());
-        newOrder.setTenNguoiNhan(khachHang.getHoVaTen());
+        newOrder.setDiaChiNguoiNhan(orderRequest.getDiaChiNguoiNhan());
+        newOrder.setXaPhuongNguoiNhan(orderRequest.getXaPhuongNguoiNhan());
+        newOrder.setQuanHuyenNguoiNhan(orderRequest.getQuanHuyenNguoiNhan());
+        newOrder.setTinhThanhPhoNguoiNhan(orderRequest.getTinhThanhPhoNguoiNhan());
+        newOrder.setSoDienThoaiNguoiNhan(orderRequest.getSoDienThoaiNguoiNhan());
+        newOrder.setTenNguoiNhan(orderRequest.getTenNguoiNhan());
         newOrder.setTrangThai(OrderStatus.PENDING_CONFIRM);
         newOrder.setTongTien(orderRequest.getTongTien());
         newOrder.setTongTienSauKhiGiam(orderRequest.getTongTienSauKhiGiam());

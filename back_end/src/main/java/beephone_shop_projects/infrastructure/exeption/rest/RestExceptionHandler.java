@@ -17,21 +17,21 @@ import java.util.stream.Collectors;
 public final class RestExceptionHandler extends
         BeePhoneProjectExceptionRestHandler<ConstraintViolationException> {
 
-  // Bad Request
-//  @ExceptionHandler(RestApiException.class)
-//  public ResponseEntity<?> handlerRestApiExceptionGlobal(RestApiException restApiException) {
-//    ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST,
-//            restApiException.getMessage(), null);
-//    return new ResponseEntity<>(apiError, org.springframework.http.HttpStatus.BAD_REQUEST);
-//  }
-//
-//  // Exception common
-//  @ExceptionHandler(RuntimeException.class)
-//  public ResponseEntity<?> handlerExceptionGlobal(RuntimeException runtimeException) {
-//    ApiError apiError = new ApiError(HttpStatus.SERVER_ERROR_COMMON,
-//            Message.SERVER_ERROR_COMMON, null, Message.SERVER_ERROR_COMMON);
-//    return new ResponseEntity<>(apiError, org.springframework.http.HttpStatus.BAD_REQUEST);
-//  }
+//   Bad Request
+  @ExceptionHandler(RestApiException.class)
+  public ResponseEntity<?> handlerRestApiExceptionGlobal(RestApiException restApiException) {
+    ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST,
+            restApiException.getMessage(), null);
+    return new ResponseEntity<>(apiError, org.springframework.http.HttpStatus.BAD_REQUEST);
+  }
+
+  // Exception common
+  @ExceptionHandler(RuntimeException.class)
+  public ResponseEntity<?> handlerExceptionGlobal(RuntimeException runtimeException) {
+    ApiError apiError = new ApiError(HttpStatus.SERVER_ERROR_COMMON,
+            Message.SERVER_ERROR_COMMON, null, Message.SERVER_ERROR_COMMON);
+    return new ResponseEntity<>(apiError, org.springframework.http.HttpStatus.BAD_REQUEST);
+  }
 
   @Override
   protected Object wrapApi(ConstraintViolationException ex) {

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/client/product-detail")
-@CrossOrigin(origins = "http://localhost:3001")
+@CrossOrigin("*")
 public class ProductDetailClientRestController {
 
     @Autowired
@@ -66,6 +66,24 @@ public class ProductDetailClientRestController {
                                               @RequestBody(required = false) SearchProductDetailClient chiTietSanPhamRequest) {
         Object httpStatus;
         return new ResponseEntity<>(productDetailService.searchByAllPosition(chiTietSanPhamRequest), HttpStatus.OK);
+    }
+
+    @GetMapping("/get-product-detail")
+    public ResponseEntity<?> getProductDetail(){
+        try{
+            return new ResponseEntity<>(productDetailService.getListProductDetail(), HttpStatus.OK);
+        }catch (Exception ex){
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/get-images/{id}")
+    public ResponseEntity<?> getImages(@PathVariable("id") String idProduct){
+        try{
+            return new ResponseEntity<>(productDetailService.getImagesByIDProductDetail(idProduct), HttpStatus.OK);
+        }catch (Exception ex){
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
 }

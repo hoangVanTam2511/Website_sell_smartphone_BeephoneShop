@@ -35,6 +35,8 @@ import Sheet from "@mui/joy/Sheet";
 import { ConfirmAddProduct, ConfirmChangeTypePhienBan } from "./AlertDialogSlide";
 import ModalChonDonGiaChung from "./modal-don-gia-chung";
 import CreateMauSac from "./create-mau-sac";
+import Barcode from 'react-barcode';
+import html2canvas from 'html2canvas';
 
 const ITEM_HEIGHT = 130;
 const ITEM_PADDING_TOP = 8;
@@ -49,6 +51,7 @@ const MenuProps = {
 };
 
 const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, isConfirm }) => {
+
 
   const [validImage, setValidImage] = useState(true);
   const [refreshPrice, setRefreshPrice] = useState([]);
@@ -804,6 +807,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
   const [selectKey, setSelectKey] = useState(0);
 
   const handleAddProduct = async () => {
+    // convertBarcodeToImage();
     handleCloseOpenModalConfirmAddProduct();
     setIsLoadingInside(true);
     getOverplay(true);
@@ -904,6 +908,76 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
       console.log(updateDatas);
     }
   }
+
+  const [barcodeImages, setBarcodeImages] = useState([]);
+  const [imeiTest, setImeiTest] = useState(["012930129310293", "736457346573467", "989898989898"]);
+
+  let imeiObjects = []; // Khởi tạo biến imeiObjects1 ở bên ngoài
+
+  if (cauHinhsFinal) {
+    imeiObjects = cauHinhsFinal.reduce((acc, item) => {
+      if (item && item.imeis && item.imeis.length > 0) {
+        const imeis = item.imeis.map((imei) => {
+          return {
+            imei: imei.imei,
+          };
+        });
+        return acc.concat(imeis);
+      } else {
+        return acc;
+      }
+    }, []);
+  }
+
+  const convertBarcodeToImage = () => {
+  if (cauHinhsFinal && imeiObjects) {
+    imeiObjects.forEach((item) => {
+      cauHinhsFinal.forEach((cauHinh) => {
+        if (cauHinh.imeis && cauHinh.imeis.length > 0) {
+          const imeiIndex = cauHinh.imeis.findIndex((imei) => imei.imei === item.imei);
+          if (imeiIndex !== -1) {
+            const barcodeElement = document.getElementById(item.imei);
+            html2canvas(barcodeElement).then(canvas => {
+              const image = canvas.toDataURL('image/png');
+              cauHinh.imeis[imeiIndex].barcode = image;
+              setBarcodeImages(images => [...images, { imei: item.imei, image: image }]);
+              setCauHinhsFinal([...cauHinhsFinal]);
+              console.log(cauHinhsFinal);
+            });
+          }
+        }
+      });
+    });
+  }
+};
+
+
+
+  const BarcodeScanner = () => {
+    return (
+      <div >
+        <div id="barcode" style={{
+        }}>
+          {imeiObjects && imeiObjects.map((item) => {
+            return (
+              <div id={item.imei}>
+                <Barcode
+                  value={item.imei}
+                  background="#ffffff"
+                  lineColor="#000000"
+                />
+              </div>
+            )
+          })}
+        </div>
+        <button onClick={convertBarcodeToImage}>Chuyển đổi thành ảnh</button>
+        {barcodeImages.map((item, index) => (
+          <img key={index} src={item.image} alt={`Barcode ${index}`} />
+        ))}
+      </div>
+    );
+  }
+
 
   return (
     <>
@@ -1794,6 +1868,8 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
         name={getProduct.tenSanPham}
       />
 
+      <BarcodeScanner />
+
       <ConfirmChangeTypePhienBan open={openModalType} onClose={handleCloseOpenModalType}
         confirm={() => {
           setType((type) => !type); handleCloseOpenModalType();
@@ -1802,6 +1878,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
           setSelectedRam([]);
           setSelectedRom([]);
         }}
+
 
       />
     </>

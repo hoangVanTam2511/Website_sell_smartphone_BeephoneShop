@@ -14,6 +14,8 @@ import java.util.List;
 @NoArgsConstructor
 public class CartItemRequest {
 
+  private String imei;
+
   private Integer amount;
 
   private BigDecimal price;

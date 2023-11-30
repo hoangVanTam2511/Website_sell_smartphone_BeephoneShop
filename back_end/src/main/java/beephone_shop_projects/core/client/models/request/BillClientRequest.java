@@ -17,7 +17,7 @@ public class BillClientRequest {
 
     private BigDecimal tienThua;
 
-    private Account idKhachHang;
+    private String idKhachHang;
 
     private BigDecimal tongTienSauKhiGiam;
 
@@ -34,6 +34,12 @@ public class BillClientRequest {
     private String tenNguoiNhan;
 
     private String diaChiNguoiNhan;
+
+    private String tinhThanhPhoNguoiNhan;
+
+    private String quanHuyenNguoiNhan;
+
+    private String xaPhuongNguoiNhan;
 
     private Boolean isPayment;
 
