@@ -186,6 +186,16 @@ const PointOfSales = () => {
   const [customerAddressList, setCustomerAddressList] = useState([]);
   const [isShow, setIsShow] = useState(false);
 
+  const [openScanner, setOpenScanner] = useState(false);
+
+  const handleOpenScanner = () => {
+    setOpenScanner(true);
+  }
+
+  const handleCloseOpenScanner = () => {
+    setOpenScanner(false);
+  }
+
   const [selectedValuePaymentMethod, setSelectedValuePaymentMethod] =
     useState("Tiền mặt");
   const handleRadioChange = (event) => {
@@ -1273,7 +1283,7 @@ const PointOfSales = () => {
   };
 
   const handleRedirectPayment = (url) => {
-    navigate(url);
+    window.location.href = url;
   };
 
   const handleGetUrlRedirectPayment = async (type, total) => {
@@ -1975,6 +1985,38 @@ const PointOfSales = () => {
     // }
   };
 
+  const addCartItemsToCartByScanner = async (imei) => {
+    setIsLoading(true);
+    const data = {
+      amount: 1,
+      cart: {
+        id: cartId,
+      },
+      imei: imei,
+    };
+    try {
+      await axios.put(`http://localhost:8080/api/carts/scanner`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      await getAllOrdersPending();
+      await getCartItems();
+      handleCloseOpenScanner();
+      handleOpenAlertVariant(
+        "Thêm vào giỏ hàng thành công ",
+        Notistack.SUCCESS
+      );
+      setIsLoading(false);
+      setIsOpen(false);
+    } catch (error) {
+      handleOpenAlertVariant(error.response.data.message, "warning");
+      handleCloseOpenScanner();
+      setIsLoading(false);
+      // setIsOpen(false);
+    }
+  };
+
   const addCartItemsToCart = async (cartItems) => {
     setIsLoading(true);
     const data = {
@@ -2340,6 +2382,10 @@ const PointOfSales = () => {
                   {/*
                    */}
                   <TabItem
+                    scanner={addCartItemsToCartByScanner}
+                    openScanner={openScanner}
+                    closeScanner={handleCloseOpenScanner}
+                    onOpenScanner={handleOpenScanner}
                     openUpdateImei={openModalUpdateImei}
                     onOpenUpdateImei={handleOpenModalUpdateImei}
                     onCloseUpdateImei={handleCloseOpenModalUpdateImei}

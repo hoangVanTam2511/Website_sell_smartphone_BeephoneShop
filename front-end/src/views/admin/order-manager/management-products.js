@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Empty, Table } from "antd";
 import { Box, FormControl, IconButton, MenuItem, Pagination, Select, TextField, Tooltip, } from "@mui/material";
@@ -20,6 +20,8 @@ import { FaPencilAlt } from "react-icons/fa";
 import ManagementProductItems from "./management-product-items";
 import { FaDownload, FaEye, FaUpload } from "react-icons/fa6";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
+import Barcode from 'react-barcode';
+import html2canvas from 'html2canvas';
 
 const ManagementProducts = () => {
   const navigate = useNavigate();
@@ -93,18 +95,20 @@ const ManagementProducts = () => {
       align: "center",
       width: "15%",
       render: (text, item) => (
-        <div className="product-img">
-          <img
-            src={
-              item &&
-              item.productItems && item.productItems[0] &&
-              item.productItems[0].image && item.productItems[0].image.path
-            }
-            class=""
-            alt=""
-            style={{ width: "145px", height: "150px" }}
-          />
-        </div>
+        <>
+          <div style={{ position: "relative" }}>
+            <img
+              src={
+                item &&
+                item.productItems && item.productItems[0] &&
+                item.productItems[0].image && item.productItems[0].image.path
+              }
+              class=""
+              alt=""
+              style={{ width: "145px", height: "150px" }}
+            />
+          </div>
+        </>
       ),
     },
     {
@@ -193,7 +197,7 @@ const ManagementProducts = () => {
           <div className="button-container">
             <Button
               onClick={() => {
-                navigate(`/dashboard/update-product/${item.id}`)
+                navigate(`/dashboard/update-product/${record.id}`);
               }}
               className="rounded-2 button-mui"
               type="primary"
@@ -209,9 +213,7 @@ const ManagementProducts = () => {
             <Button
               className="rounded-2 ms-2 ant-btn-warning"
               onClick={() => {
-                setProductItems(record.productItems)
-                setProductName(record.tenSanPham);
-                setOpenProductItems(true);
+                navigate(`/dashboard/products/${record.id}`);
               }}
               type="primary"
               style={{ width: "92px", fontSize: "14px" }}
@@ -228,6 +230,9 @@ const ManagementProducts = () => {
       ),
     },
   ];
+
+
+
   return (
     <>
       <div className="mt-4" style={{ backgroundColor: "#ffffff", boxShadow: "0 0.1rem 0.3rem #00000010" }}>
@@ -824,7 +829,6 @@ const ManagementProducts = () => {
           <div className="mt-4"></div>
         </Card>
       </div>
-      <ManagementProductItems open={openProductItems} close={handleCloseOpenProductItems} productItems={productItems} productName={productName} />
       {isLoading && <LoadingIndicator />}
     </>
   )

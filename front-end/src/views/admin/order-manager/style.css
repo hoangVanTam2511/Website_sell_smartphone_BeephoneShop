@@ -11,6 +11,9 @@
 	.qrcode-none  {
     		visibility: hidden;
 	}
+  /* #barcode{ */
+  /*   display: none; */
+  /* } */
   .wrap-printer{
     display: none;
   }
@@ -19,6 +22,12 @@
 	.qrcode-none  {
     		visibility: hidden;
 	}
+}
+#barcode{
+clip-path: inset(0 100% 0 0);
+}
+.barcode1{
+clip-path: inset(0 100% 0 0);
 }
 .disabled-row {
   opacity: 0.6;
