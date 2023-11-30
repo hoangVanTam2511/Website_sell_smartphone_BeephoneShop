@@ -25,6 +25,8 @@ public class ProductItemResponse {
 
   private BigDecimal donGia;
 
+  private BigDecimal donGiaSauKhuyenMai;
+
   private ColorResponse mauSac;
 
   private ImageResponse image;

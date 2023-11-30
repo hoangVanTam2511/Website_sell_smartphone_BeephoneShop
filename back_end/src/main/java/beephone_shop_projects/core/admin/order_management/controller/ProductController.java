@@ -57,6 +57,11 @@ public class ProductController {
     return new ResponseObject(productItemCustomRepository.getProducts().stream().map(s -> modelMapper.map(s, ProductItemResponse.class)));
   }
 
+  @GetMapping("/product-items/{id}")
+  public ResponseObject getProductsItemByIdProduct(@PathVariable String id) {
+    return new ResponseObject(productItemCustomRepository.getProductsById(id).stream().map(s -> modelMapper.map(s, ProductItemResponse.class)));
+  }
+
   @GetMapping
   public ResponseObject home111() {
     return new ResponseObject(productRepository.findAll().stream().map(s -> modelMapper.map(s, ProductCustomResponse.class)));
