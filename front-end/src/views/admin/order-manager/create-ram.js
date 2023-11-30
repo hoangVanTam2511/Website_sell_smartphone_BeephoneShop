@@ -1,32 +1,17 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "antd";
 import {
-  Link,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from "react-router-dom";
-import { Button, Empty, Table } from "antd";
-import {
-  Box,
   FormControl,
-  IconButton,
   Select,
-  InputLabel,
   MenuItem,
-  Pagination,
   TextField,
-  Tooltip,
-  Checkbox,
-  FormControlLabel,
   Autocomplete,
   InputAdornment,
-  OutlinedInput,
   Dialog,
   DialogContent,
-  DialogTitle,
-  DialogActions,
   Slide,
-  ListItemText,
+  InputLabel,
 } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { PlusOutlined } from "@ant-design/icons";
@@ -72,6 +57,26 @@ const CreateRam = ({ open, close, getAll, rams }) => {
   const handleReset = (event) => {
     setStatus(StatusCommonProductsNumber.ACTIVE);
     setKichThuoc("");
+  };
+
+  const [validationMsg, setValidationMsg] = useState({});
+
+  const validationAll = () => {
+    const msg = {};
+
+    if (!kichThuoc.trim("")) {
+      msg.kichThuoc = "Kích thước ram không được trống.";
+    }
+
+    setValidationMsg(msg);
+    if (Object.keys(msg).length > 0) return false;
+    return true;
+  };
+
+  const handleSubmit = () => {
+    const isValid = validationAll();
+    if (!isValid) return;
+    addRams();
   };
 
   const addRams = () => {
@@ -131,11 +136,11 @@ const CreateRam = ({ open, close, getAll, rams }) => {
                         {...params}
                         InputProps={{
                           ...params.InputProps,
-                          startAdornment: (
+                          endAdornment: (
                             <>
                               <InputAdornment
                                 style={{ marginLeft: "5px" }}
-                                position="start"
+                                position="end"
                               >
                                 GB
                               </InputAdornment>
@@ -144,6 +149,8 @@ const CreateRam = ({ open, close, getAll, rams }) => {
                           ),
                         }}
                         label="Kích thước RAM"
+                        error={validationMsg.kichThuoc !== undefined}
+                        helperText={validationMsg.kichThuoc}
                       />
                     )}
                   />
@@ -173,7 +180,7 @@ const CreateRam = ({ open, close, getAll, rams }) => {
                 </div>
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
-                    onClick={() => addRams()}
+                    onClick={() => handleSubmit()}
                     className="rounded-2 button-mui"
                     type="primary"
                     style={{ height: "40px", width: "auto", fontSize: "15px" }}

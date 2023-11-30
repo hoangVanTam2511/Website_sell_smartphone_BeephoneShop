@@ -1,46 +1,18 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "antd";
 import {
-  Link,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from "react-router-dom";
-import { Button, Empty, Table } from "antd";
-import {
-  Box,
   FormControl,
-  IconButton,
   Select,
   InputLabel,
   MenuItem,
-  Pagination,
   TextField,
-  Tooltip,
-  Checkbox,
-  FormControlLabel,
   Autocomplete,
-  InputAdornment,
-  OutlinedInput,
   Dialog,
   DialogContent,
-  DialogTitle,
-  DialogActions,
   Slide,
-  ListItemText,
 } from "@mui/material";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import { PlusOutlined } from "@ant-design/icons";
-import Card from "../../../components/Card";
-import { format } from "date-fns";
 import axios from "axios";
-import { parseInt } from "lodash";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
-import Zoom from "@mui/material/Zoom";
-import * as dayjs from "dayjs";
 import LoadingIndicator from "../../../utilities/loading";
 import generateRandomCode from "../../../utilities/randomCode";
 import { StatusCommonProductsNumber } from "./enum";
@@ -66,6 +38,26 @@ const CreateSac = ({ open, close, getAll, sacs }) => {
   const handleReset = (event) => {
     setStatus(StatusCommonProductsNumber.ACTIVE);
     setLoaiCongSac("");
+  };
+
+  const [validationMsg, setValidationMsg] = useState({});
+
+  const validationAll = () => {
+    const msg = {};
+
+    if (!loaiCongSac.trim("")) {
+      msg.loaiCongSac = "Loại cổng sạc không được trống.";
+    }
+
+    setValidationMsg(msg);
+    if (Object.keys(msg).length > 0) return false;
+    return true;
+  };
+
+  const handleSubmit = () => {
+    const isValid = validationAll();
+    if (!isValid) return;
+    addChargers();
   };
 
   const addChargers = () => {
@@ -127,7 +119,12 @@ const CreateSac = ({ open, close, getAll, sacs }) => {
                     onInputChange={handleChangeCongSac}
                     options={uniqueCongSac}
                     renderInput={(params) => (
-                      <TextField {...params} label="Cổng Sạc" />
+                      <TextField
+                        {...params}
+                        label="Cổng Sạc"
+                        error={validationMsg.loaiCongSac !== undefined}
+                        helperText={validationMsg.loaiCongSac}
+                      />
                     )}
                   />
                 </div>
@@ -156,7 +153,7 @@ const CreateSac = ({ open, close, getAll, sacs }) => {
                 </div>
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
-                    onClick={() => addChargers()}
+                    onClick={() => handleSubmit()}
                     className="rounded-2 button-mui"
                     type="primary"
                     style={{ height: "40px", width: "auto", fontSize: "15px" }}

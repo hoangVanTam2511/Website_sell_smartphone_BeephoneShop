@@ -1,50 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "antd";
 import {
-  Link,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from "react-router-dom";
-import { Button, Empty, Table } from "antd";
-import {
-  Box,
   FormControl,
-  IconButton,
   Select,
   InputLabel,
   MenuItem,
-  Pagination,
   TextField,
-  Tooltip,
-  Checkbox,
-  FormControlLabel,
   Autocomplete,
   InputAdornment,
-  OutlinedInput,
   Dialog,
   DialogContent,
-  DialogTitle,
-  DialogActions,
   Slide,
-  ListItemText,
-  Rating,
 } from "@mui/material";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import { PlusOutlined } from "@ant-design/icons";
-import Card from "../../../components/Card";
-import { format } from "date-fns";
 import axios from "axios";
-import { parseInt } from "lodash";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
-import Zoom from "@mui/material/Zoom";
-import * as dayjs from "dayjs";
 import LoadingIndicator from "../../../utilities/loading";
-import CloseIcon from "@mui/icons-material/Close";
-import { ClearIcon } from "@mui/x-date-pickers";
 import generateRandomCode from "../../../utilities/randomCode";
 import {
   Notistack,
@@ -60,7 +30,9 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const CreateCameraSau = ({ open, close, getAll, cameraRear }) => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = React.useState(false);
-  const [cameraType, setCameraType] = React.useState("");
+  const [cameraType, setCameraType] = React.useState(
+    TypeCameraNumber.STANDARD_CAMERA
+  );
   const [doPhanGiai, setDoPhanGiai] = React.useState("");
   const [status, setStatus] = React.useState(StatusCommonProductsNumber.ACTIVE);
   const { handleOpenAlertVariant } = useCustomSnackbar();
@@ -75,6 +47,26 @@ const CreateCameraSau = ({ open, close, getAll, cameraRear }) => {
 
   const handleChangeCameraType = (event) => {
     setCameraType(event.target.value);
+  };
+
+  const [validationMsg, setValidationMsg] = useState({});
+
+  const validationAll = () => {
+    const msg = {};
+
+    if (!doPhanGiai.trim("")) {
+      msg.doPhanGiai = "Độ phân giải không được trống.";
+    }
+
+    setValidationMsg(msg);
+    if (Object.keys(msg).length > 0) return false;
+    return true;
+  };
+
+  const handleSubmit = () => {
+    const isValid = validationAll();
+    if (!isValid) return;
+    addCameraRear();
   };
 
   const addCameraRear = () => {
@@ -148,11 +140,11 @@ const CreateCameraSau = ({ open, close, getAll, cameraRear }) => {
                         {...params}
                         InputProps={{
                           ...params.InputProps,
-                          startAdornment: (
+                          endAdornment: (
                             <>
                               <InputAdornment
                                 style={{ marginLeft: "5px" }}
-                                position="start"
+                                position="end"
                               >
                                 <span className="">Megapixel</span>
                               </InputAdornment>
@@ -161,12 +153,14 @@ const CreateCameraSau = ({ open, close, getAll, cameraRear }) => {
                           ),
                         }}
                         label="Độ Phân Giải"
+                        error={validationMsg.doPhanGiai !== undefined}
+                        helperText={validationMsg.doPhanGiai}
                       />
                     )}
                   />
                 </div>
 
-                <div className="mt-3" style={{}}>
+                <div className="mt-3">
                   <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">
                       Tính Năng
@@ -231,7 +225,7 @@ const CreateCameraSau = ({ open, close, getAll, cameraRear }) => {
                 </div>
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
-                    onClick={() => addCameraRear()}
+                    onClick={() => handleSubmit()}
                     className="rounded-2 button-mui"
                     type="primary"
                     style={{ height: "40px", width: "auto", fontSize: "15px" }}

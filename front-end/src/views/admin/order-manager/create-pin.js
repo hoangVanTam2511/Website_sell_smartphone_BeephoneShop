@@ -1,42 +1,19 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "antd";
 import {
-  Link,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from "react-router-dom";
-import { Button, Empty, Table } from "antd";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import {
-  Box,
   FormControl,
-  IconButton,
-  Select,
   InputLabel,
   MenuItem,
-  Pagination,
   TextField,
-  Tooltip,
-  Checkbox,
-  FormControlLabel,
   Autocomplete,
   InputAdornment,
   Dialog,
   DialogContent,
   Slide,
+  Select,
 } from "@mui/material";
-import { PlusOutlined } from "@ant-design/icons";
-import Card from "../../../components/Card";
-import { format } from "date-fns";
 import axios from "axios";
-import { parseInt } from "lodash";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
-import Zoom from "@mui/material/Zoom";
-import * as dayjs from "dayjs";
 import LoadingIndicator from "../../../utilities/loading";
 import generateRandomCode from "../../../utilities/randomCode";
 import useCustomSnackbar from "../../../utilities/notistack";
@@ -82,6 +59,30 @@ const CreatePin = ({ open, close, getAll, pins }) => {
     setStatus(StatusCommonProductsNumber.ACTIVE);
     setLoaiPin("");
     setDungLuong("");
+  };
+
+  const [validationMsg, setValidationMsg] = useState({});
+
+  const validationAll = () => {
+    const msg = {};
+
+    if (!loaiPin.trim("")) {
+      msg.loaiPin = "Loại pin không được trống.";
+    }
+
+    if (!dungLuong.trim("")) {
+      msg.dungLuong = "Dung lượng pin không được trống.";
+    }
+
+    setValidationMsg(msg);
+    if (Object.keys(msg).length > 0) return false;
+    return true;
+  };
+
+  const handleSubmit = () => {
+    const isValid = validationAll();
+    if (!isValid) return;
+    addPins();
   };
 
   const addPins = () => {
@@ -141,6 +142,8 @@ const CreatePin = ({ open, close, getAll, pins }) => {
                     renderInput={(params) => (
                       <TextField {...params} label="Loại PIN" />
                     )}
+                    error={loaiPin.tenHang !== undefined}
+                    helperText={validationMsg.loaiPin}
                   />
                 </div>
                 <div className="mt-3">
@@ -157,11 +160,11 @@ const CreatePin = ({ open, close, getAll, pins }) => {
                         {...params}
                         InputProps={{
                           ...params.InputProps,
-                          startAdornment: (
+                          endAdornment: (
                             <>
                               <InputAdornment
                                 style={{ marginLeft: "5px" }}
-                                position="start"
+                                position="end"
                               >
                                 mAh
                               </InputAdornment>
@@ -170,6 +173,8 @@ const CreatePin = ({ open, close, getAll, pins }) => {
                           ),
                         }}
                         label="Dung Lượng PIN"
+                        error={validationMsg.dungLuong !== undefined}
+                        helperText={validationMsg.dungLuong}
                       />
                     )}
                   />
@@ -199,7 +204,7 @@ const CreatePin = ({ open, close, getAll, pins }) => {
                 </div>
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
-                    onClick={() => addPins()}
+                    onClick={() => handleSubmit()}
                     className="rounded-2 button-mui"
                     type="primary"
                     style={{ height: "40px", width: "auto", fontSize: "15px" }}

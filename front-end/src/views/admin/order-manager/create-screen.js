@@ -92,6 +92,38 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
     setKichThuoc("");
   };
 
+  const [validationMsg, setValidationMsg] = useState({});
+
+  const validationAll = () => {
+    const msg = {};
+
+    if (!loaiManHinh.trim("")) {
+      msg.loaiManHinh = "Loại màn hình không được trống.";
+    }
+
+    if (!doPhanGiai.trim("")) {
+      msg.doPhanGiai = "Độ phân giải không được trống.";
+    }
+
+    if (!tanSoQuet.trim("")) {
+      msg.tanSoQuet = "Tần số quét không được trống.";
+    }
+
+    if (!kichThuoc.trim("")) {
+      msg.kichThuoc = "Kích thước màn hình không được trống.";
+    }
+
+    setValidationMsg(msg);
+    if (Object.keys(msg).length > 0) return false;
+    return true;
+  };
+
+  const handleSubmit = () => {
+    const isValid = validationAll();
+    if (!isValid) return;
+    addManHinh();
+  };
+
   const addDoPhanGiai = () => {
     setFormSubmitDPG(true);
     let obj = {
@@ -121,6 +153,7 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
         alert("Thêm thất bại");
       });
   };
+
   const addManHinh = () => {
     setFormSubmitMH(true);
     let obj = {
@@ -204,7 +237,12 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
                     options={uniqueLoaiManHinh}
                     onInputChange={handleLoaiManHinh}
                     renderInput={(params) => (
-                      <TextField {...params} label="Loại Màn Hình" />
+                      <TextField
+                        {...params}
+                        label="Loại Màn Hình"
+                        error={validationMsg.loaiManHinh !== undefined} // Áp dụng trạng thái lỗi
+                        helperText={validationMsg.loaiManHinh}
+                      />
                     )}
                   />
                 </div>
@@ -219,6 +257,7 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
                       id="demo-simple-select"
                       value={doPhanGiai}
                       label="Độ Phân Giải"
+                      error={validationMsg.doPhanGiai !== undefined}
                       onChange={handleChangeDoPhanGiai}
                       endAdornment={
                         <>
@@ -249,6 +288,15 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
                       ))}
                     </Select>
                   </FormControl>
+                  <span
+                    style={{
+                      color: "red",
+                      fontSize: "12px",
+                      paddingLeft: "15px",
+                    }}
+                  >
+                    {validationMsg.doPhanGiai}
+                  </span>
                 </div>
                 <div className="mt-3">
                   <Autocomplete
@@ -264,11 +312,11 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
                         {...params}
                         InputProps={{
                           ...params.InputProps,
-                          startAdornment: (
+                          endAdornment: (
                             <>
                               <InputAdornment
                                 style={{ marginLeft: "5px" }}
-                                position="start"
+                                position="end"
                               >
                                 Hz
                               </InputAdornment>
@@ -277,6 +325,8 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
                           ),
                         }}
                         label="Tần Số Quét"
+                        error={validationMsg.tanSoQuet !== undefined}
+                        helperText={validationMsg.tanSoQuet}
                       />
                     )}
                   />
@@ -295,11 +345,11 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
                         {...params}
                         InputProps={{
                           ...params.InputProps,
-                          startAdornment: (
+                          endAdornment: (
                             <>
                               <InputAdornment
                                 style={{ marginLeft: "5px" }}
-                                position="start"
+                                position="end"
                               >
                                 inches
                               </InputAdornment>
@@ -308,6 +358,8 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
                           ),
                         }}
                         label="Màn Hình Rộng"
+                        error={validationMsg.kichThuoc !== undefined}
+                        helperText={validationMsg.kichThuoc}
                       />
                     )}
                   />
@@ -338,7 +390,7 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
                     onClick={() => {
-                      addManHinh();
+                      handleSubmit();
                     }}
                     className="rounded-2 button-mui"
                     type="primary"
