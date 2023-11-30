@@ -27,8 +27,8 @@ const ThongKeDoanhThu = () => {
   const [listSanPham, setListSanPham] = useState([]);
   const [listSanPhambanChay, setListSanPhamBanChay] = useState([]);
   const [listSanPhamSapHet, setListSanPhamSapHet] = useState([]);
-  const [loaiBoLoc, setLoaiBoLoc] = useState("ngay");
-  const [loaiBoLocTDTT, setLoaiBoLocTDTT] = useState("ngay");
+  const [loaiBoLoc, setLoaiBoLoc] = useState("thang");
+  const [loaiBoLocTDTT, setLoaiBoLocTDTT] = useState("thang");
 
   const [trangThaiDonHang, setTrangThaiDonHang] = useState([]);
   const [listSoLuongDonHangTheoNam, setListSoLuongDonHang] = useState([]);
@@ -170,7 +170,7 @@ const ThongKeDoanhThu = () => {
     return `${currentDate.getFullYear()}-${formattedMonth}-${formattedDay}`;
   });
 
-  const fetchData = () => {
+  const fetchData = (numberOfDays) => {
     const sanPhamPromise = axios.get(
       `http://localhost:8080/thong-ke/san-pham-khoang-ngay`,
       {
@@ -190,57 +190,17 @@ const ThongKeDoanhThu = () => {
         },
       }
     );
-
-    // Promise.all([sanPhamPromise, donHangPromise])
-    //   .then(([sanPhamResponse, donHangResponse]) => {
-    //     const sanPhamData = sanPhamResponse.data;
-    //     const donHangData = donHangResponse.data;
-
-    //     const combinedData = sanPhamData.map((sanPhamItem) => {
-    //       const matchingDonHangItem = donHangData.find(
-    //         (donHangItem) => donHangItem.ngayTao === sanPhamItem.ngayTao
-    //       );
-
-    //       return {
-    //         ngayTao: sanPhamItem.ngayTao,
-    //         soLuongSanPham: sanPhamItem.soLuong,
-    //         soLuongDonHang: matchingDonHangItem
-    //           ? matchingDonHangItem.soLuong
-    //           : 0,
-    //       };
-    //     });
-
-    //     const labels = combinedData.map((item) => item.ngayTao);
-    //     const dataSanPham = combinedData.map((item) => item.soLuongSanPham);
-    //     const dataDonHang = combinedData.map((item) => item.soLuongDonHang);
-
-    //     setChartData({
-    //       labels: labels,
-    //       datasets: [
-    //         {
-    //           label: "Số lượng đơn hàng",
-    //           data: dataDonHang,
-    //           backgroundColor: "#2f80ed",
-    //           borderColor: "#2f80ed",
-    //           borderWidth: 1,
-    //         },
-    //         {
-    //           label: "Sản phẩm",
-    //           data: dataSanPham,
-    //           backgroundColor: "#ff7b00",
-    //           borderColor: "#ff7b00",
-    //           borderWidth: 1,
-    //         },
-    //       ],
-    //     });
-    //   })
-    //   .catch((error) => {
-    //     // Xử lý lỗi nếu có
-    //   });
     Promise.all([sanPhamPromise, donHangPromise])
       .then(([sanPhamResponse, donHangResponse]) => {
         const sanPhamData = sanPhamResponse.data;
         const donHangData = donHangResponse.data;
+
+        const availableDays = [
+          ...new Set([
+            ...sanPhamData.map((item) => item.ngayTao),
+            ...donHangData.map((item) => item.ngayTao),
+          ]),
+        ];
 
         // Kết hợp dữ liệu của sanPhamData và donHangData
         const combinedData = formattedDays.map((day) => {
@@ -259,20 +219,29 @@ const ThongKeDoanhThu = () => {
         const dataSanPham = combinedData.map((item) => item.soLuongSanPham);
         const dataDonHang = combinedData.map((item) => item.soLuongDonHang);
 
+        const truncatedData = combinedData.slice(-numberOfDays);
+        const truncatedLabels = labels.slice(-numberOfDays);
+        const truncatedDataSanPham = dataSanPham.slice(-numberOfDays);
+        const truncatedDataDonHang = dataDonHang.slice(-numberOfDays);
+
+        const filteredData = combinedData.filter((item) =>
+          availableDays.includes(item.ngayTao)
+        );
+
         // Cập nhật biểu đồ
         setChartData({
-          labels: labels,
+          labels: truncatedLabels,
           datasets: [
             {
               label: "Số lượng đơn hàng",
-              data: dataDonHang,
+              data: truncatedDataDonHang,
               backgroundColor: "#2f80ed",
               borderColor: "#2f80ed",
               borderWidth: 1,
             },
             {
               label: "Sản phẩm",
-              data: dataSanPham,
+              data: truncatedDataSanPham,
               backgroundColor: "#ff7b00",
               borderColor: "#ff7b00",
               borderWidth: 1,
@@ -318,22 +287,24 @@ const ThongKeDoanhThu = () => {
 
   const handleSliderChange = (event, newValue) => {
     setNumberOfDays(newValue);
+    fetchData(newValue);
   };
 
-  const handleSearchNgayBatDauChange = (selectedDate) => {
-    const formattedDate = selectedDate
-      ? dayjs(selectedDate).format("DD/MM/YYYY")
-      : "";
-    setSearchNgayBatDau(formattedDate);
+  const handleSearchNgayBatDauChange = (date) => {
+    setSearchNgayBatDau(dayjs(date).format("DD/MM/YYYY"));
   };
 
-  const handleSearchNgayKetThucChange = (selectedDate) => {
-    const value = selectedDate.format("DD/MM/YYYY");
-    setSearchNgayKetThuc(value);
+  const handleSearchNgayKetThucChange = (date) => {
+    setSearchNgayKetThuc(dayjs(date).format("DD/MM/YYYY"));
   };
   //thống kê trạng thái đơn hàng
   const chartContainer = useRef(null);
   const chartInstance = useRef(null);
+
+  const handleReset = () => {
+    setSearchNgayBatDau(null);
+    setSearchNgayKetThuc(null);
+  };
 
   useEffect(() => {
     const getTrangThaiDonHang = () => {
@@ -623,7 +594,7 @@ const ThongKeDoanhThu = () => {
           >
             <h5>Biểu đồ thống kê</h5>
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
-              <div className="d-flex">
+              <div className="d-flex mt-2">
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DemoContainer components={["DatePicker"]}>
                     <DatePicker
@@ -668,6 +639,19 @@ const ThongKeDoanhThu = () => {
                     />
                   </DemoContainer>
                 </LocalizationProvider>
+                <div style={{ paddingTop: "7px" }}>
+                  <Button
+                    onClick={() => {
+                      handleReset();
+                    }}
+                    type="warning"
+                    style={{ width: "100px", fontSize: "15px" }}
+                  >
+                    <span className="text-dark" style={{ fontWeight: "500" }}>
+                      Làm Mới
+                    </span>
+                  </Button>
+                </div>
               </div>
             </div>
             <Col style={{ margin: "10px" }}>
