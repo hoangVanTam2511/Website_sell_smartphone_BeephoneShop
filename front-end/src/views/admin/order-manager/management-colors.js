@@ -427,7 +427,7 @@ const ManagementColors = () => {
               </Button>
             </div>
             <div
-              className="d-flex"
+              className="d-flex mt-2"
               style={{ alignItems: "center", justifyContent: "center" }}
             >
               <div
