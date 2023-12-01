@@ -78,15 +78,15 @@ public interface AccountRepository extends IAccountRepository, CustomKhachHangRe
 
     @Query(value = """
                 SELECT  ac FROM Account ac
-                WHERE (:tenKH IS NULL
-                        OR ac.hoVaTen LIKE CONCAT('%', :tenKH, '%')
-                        OR ac.ma LIKE CONCAT('%', :tenKH, '%')
-                        OR ac.email LIKE CONCAT('%', :tenKH, '%')
-                        OR ac.soDienThoai LIKE CONCAT('%', :tenKH, '%')
-                        OR CAST(ac.ngaySinh AS string) LIKE CONCAT('%', :tenKH, '%')
-                        ) AND ac.idRole.ma='role1'
+                                WHERE (:tenKH IS NULL
+                                        OR ac.hoVaTen LIKE CONCAT('%', :tenKH, '%')
+                                        OR ac.ma LIKE CONCAT('%', :tenKH, '%')
+                                        OR ac.email LIKE CONCAT('%', :tenKH, '%')
+                                        OR ac.soDienThoai LIKE CONCAT('%', :tenKH, '%')
+                                        OR CAST(ac.ngaySinh AS string) LIKE CONCAT('%', :tenKH, '%')
+                                        ) AND  (:trangThai  IS null OR :trangThai = 0 OR ac.trangThai= :trangThai)  AND ac.idRole.ma='role1'
             """)
-    Page<Account> searchAllNV(@RequestParam("tenKH") Optional<String> tenKH, Pageable pageable);
+    Page<Account> searchAllNV(@RequestParam("tenKH") Optional<String> tenKH,@RequestParam("trangThai")Integer trangThai, Pageable pageable);
     @Query(value = "SELECT a.ma AS ma, a.id, a.email, a.ho_va_ten, a.trang_thai, a.mat_khau, a.so_dien_thoai, a.ngay_sinh, a.id_role\n" +
             "FROM account a INNER JOIN role r ON r.id = a.id_role \n" +
             "WHERE (:tenKH IS NULL OR a.ho_va_ten LIKE CONCAT('%', :tenKH, '%')\n" +

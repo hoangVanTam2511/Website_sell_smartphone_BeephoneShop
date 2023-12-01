@@ -21,7 +21,7 @@ import {
   Pagination,
   FormControl,
 } from "@mui/material";
-import { StatusAccountCus } from "../khachhang/enum";
+import { StatusAccountCus, StatusCusNumber } from "../khachhang/enum";
 import { Notistack } from "../../order-manager/enum";
 import useCustomSnackbar from "../../../../utilities/notistack";
 
@@ -32,90 +32,85 @@ const HienThiNV = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const { handleOpenAlertVariant } = useCustomSnackbar();
-  const [
-    targetPage,
-    //  setTargetPage
-  ] = useState(1);
+  const [targetPage, setTargetPage] = useState(1);
   const [searchText, setSearchText] = useState("");
-  const handleSearch = async () => {
+  const [filterStatus, setFilterStatus] = useState(0);
+  const handleSearch = async (page = currentPage) => {
     try {
       if (!searchText) {
-        // Nếu searchText bị xóa và bạn muốn tìm trang khác, đặt currentPage thành targetPage
         setCurrentPage(targetPage);
-        loadDataListRole(targetPage); // Tải danh sách từ trang targetPage
+        loadDataListRole(targetPage);
         return;
       }
       const response = await axios.get(apiURLNV + "/search-all", {
         params: {
           tenKH: searchText,
-          page: currentPage,
+          page: page,
+          trangThai: filterStatus,
         },
       });
+      if (searchText && response.data.data.length === 0 && page !== 1) {
+        setCurrentPage(1); // Chuyển về trang 1
+        return;
+      }
       setListNV(response.data.data);
-      setCurrentPage(targetPage);
       setTotalPages(response.data.totalPages);
     } catch (error) {
       console.log("Error searching accounts:", error);
     }
   };
   useEffect(() => {
-    // Gọi hàm tìm kiếm khi searchText thay đổi
-    if (searchText) {
-      handleSearch();
-    }
-    if (!searchText) {
-      loadDataListRole(currentPage); // Gọi hàm để tải danh sách ban đầu khi searchText bị xóa
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchText, currentPage]);
-  const [filterStatus, setFilterStatus] = useState(0);
-
-  const handleFilter = (status) => {
-    setFilterStatus(status);
-    // setCurrentPage(1); // Set the current page to 1 when the filter changes
-  };
-  useEffect(() => {
-    if (filterStatus === 0) {
-      loadDataListRole(currentPage);
-      setSearchText("");
-    }
-    fetchEmployeeList(currentPage);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterStatus, currentPage]);
-  const fetchEmployeeList = async (currentPage) => {
-    try {
-      const response = await axios.get(apiURLNV + "/filter", {
-        params: {
-          trangThai: filterStatus,
-          page: currentPage,
-        },
-      });
-      setListNV(response.data.content);
-      setTotalPages(response.data.totalPages);
-      setCurrentPage(targetPage);
-    } catch (error) {
-      console.error("Error fetching employee data:", error);
-    }
-  };
-  useEffect(() => {
-    loadDataListRole(currentPage);
-  }, [currentPage]);
+    loadDataListRole(1); // Nếu không có searchText, tải danh sách ban đầu cho trang hiện tại
+  }, [searchText]);
   // load
   const loadDataListRole = (currentPage) => {
     axios
-      .get(apiURLNV + "/hien-thi?page=" + currentPage)
+      .get(
+        apiURLNV +
+          "/search-all?page=" +
+          currentPage +
+          "&tenKH=" +
+          searchText +
+          "&trangThai=" +
+          filterStatus
+      )
       .then((response) => {
         setListNV(response.data.data);
         setTotalPages(response.data.totalPages);
       })
       .catch(() => {});
   };
+
+  const handleFilter = (status) => {
+    setFilterStatus(status);
+    setCurrentPage(currentPage); // Set the current page to 1 when the filter changes
+  };
+
+  useEffect(() => {
+    loadDataListRole(1);
+    console.log(123123123123);
+  }, [filterStatus]);
+  // const fetchEmployeeList = async (currentPage) => {
+  //   try {
+  //     const response = await axios.get(apiURLNV + "/filter", {
+  //       params: {
+  //         trangThai: filterStatus,
+  //         page: currentPage,
+  //       },
+  //     });
+  //     setListNV(response.data.content);
+  //     setTotalPages(response.data.totalPages);
+  //   } catch (error) {
+  //     console.error("Error fetching employee data:", error);
+  //   }
+  // };
+  useEffect(() => {
+    loadDataListRole(currentPage);
+  }, [currentPage]);
   const [keySelect, setKeySelect] = useState(0);
   const handleReset = () => {
-    loadDataListRole(currentPage);
+    loadDataListRole(1);
     setSearchText("");
-    setCurrentPage(1);
-    handleFilter(0);
     setKeySelect(keySelect + 1);
   };
   const navigate = useNavigate();
@@ -206,22 +201,6 @@ const HienThiNV = () => {
       editable: true,
       align: "center",
     },
-    // {
-    //   title: "Địa chỉ",
-    //   width: "10%",
-    //   editable: true,
-    //   align: "center",
-    //   ellipsis: true,
-    //   render: (text, record) => {
-    //     return (
-    //       <span>
-    //         {record.diaChiList[0].diaChi} {record.diaChiList[0].xaPhuong}
-    //         {record.diaChiList[0].quanHuyen} {record.diaChiList[0].tinhThanhPho}
-    //       </span>
-    //     );
-    //   },
-    // },
-
     {
       title: "Trạng thái",
       dataIndex: "trangThai",
@@ -443,10 +422,10 @@ const HienThiNV = () => {
                         <MenuItem className="" value={0}>
                           Tất cả
                         </MenuItem>
-                        <MenuItem value={StatusAccountCus.LAM_VIEC}>
+                        <MenuItem value={StatusCusNumber.LAM_VIEC}>
                           Làm việc
                         </MenuItem>
-                        <MenuItem value={StatusAccountCus.DA_NGHI}>
+                        <MenuItem value={StatusCusNumber.DA_NGHI}>
                           Đã nghỉ
                         </MenuItem>
                       </SelectMui>

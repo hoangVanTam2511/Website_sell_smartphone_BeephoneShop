@@ -39,8 +39,9 @@ public class NhanVienRestcontroller {
     public ResponsePage<Account> hienThi(@RequestParam(name = "page", defaultValue = "0") Integer pageNo) {
         return new ResponsePage(accService.getAllNV(pageNo));
     }
+
     @PostMapping("add")
-    public ResponseObject<Account> add( @RequestBody AddNhanVienRequest request) {
+    public ResponseObject<Account> add(@RequestBody AddNhanVienRequest request) {
         return new ResponseObject(accService.addNV(request));
     }
 
@@ -57,11 +58,13 @@ public class NhanVienRestcontroller {
 
     @GetMapping("search-all")
     public ResponsePage<Account> searchAll(@RequestParam("tenKH") String hoVaTen,
-                                   @RequestParam(name = "page", defaultValue = "0") Integer pageNo) {
+                                           @RequestParam(name = "page", defaultValue = "0") Integer pageNo,
+                                           @RequestParam("trangThai") String trangThai) {
         Optional<String> opTen = Optional.ofNullable(hoVaTen);
-        return new ResponsePage(accService.search(opTen, pageNo)) ;
+        return new ResponsePage(accService.search(opTen, Integer.valueOf(trangThai), pageNo));
     }
-//    @GetMapping("search-all")
+
+    //    @GetMapping("search-all")
 //    public ResponsePage<Account> hienThi(@ModelAttribute SearchAccountRequest request) {
 //        return new ResponsePage(accService.getAll(request));
 //    }
@@ -70,6 +73,7 @@ public class NhanVienRestcontroller {
                                       @RequestParam(name = "page", defaultValue = "0") Integer pageNo) {
         return accService.filterTrangThai(trangThai, pageNo);
     }
+
     @GetMapping("hien-thi-theo/{id}")
     public Account getOne(@PathVariable("id") UUID id) {
         return accService.getOne(id);

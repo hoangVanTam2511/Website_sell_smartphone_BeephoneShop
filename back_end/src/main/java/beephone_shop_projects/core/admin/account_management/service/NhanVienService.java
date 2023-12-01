@@ -23,7 +23,7 @@ public interface NhanVienService {
 
     Account updateNV(CreateNhanVienRequest request, String id);
 
-    Page<Account> search(Optional<String> tenSearch, Integer pageNo);
+    Page<Account> search(Optional<String> tenSearch,Integer acc, Integer pageNo);
 
     Account getOne(UUID id);
 
