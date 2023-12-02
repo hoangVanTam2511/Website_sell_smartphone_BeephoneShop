@@ -46,6 +46,12 @@ public class OrderResponse {
 
   private OrderStatus trangThai;
 
+  private String hoVaTen;
+
+  private String soDienThoai;
+
+  private String email;
+
   private String tenNguoiNhan;
 
   private String soDienThoaiNguoiNhan;
@@ -53,6 +59,8 @@ public class OrderResponse {
   private String diaChiNguoiNhan;
 
   private Date createdAt;
+
+  private String maQrCode;
 
   private Date updatedAt;
 

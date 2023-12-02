@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { read, utils, writeFile } from 'xlsx';
 import * as XLSX from 'xlsx';
 import axios from 'axios';
@@ -12,7 +12,7 @@ import useCustomSnackbar from "../../../utilities/notistack";
 import { Notistack, StatusImei } from "./enum";
 import LoadingIndicator from "../../../utilities/loading";
 
-export const ImportExcelImei = ({ get, ma }) => {
+export const ImportExcelImei = ({ get, ma, listImeiCurrent, listImeiCurrentSheet }) => {
   const getImeis = (listImei) => {
     get(listImei, ma);
   }
@@ -22,7 +22,7 @@ export const ImportExcelImei = ({ get, ma }) => {
   const handleUploadClick = () => {
     inputRef.current.click();
   };
-  const [imeis, setImeis] = useState([]);
+  // const [listImei, setListImei] = useState([]);
 
   const handleImport = ($event) => {
     setIsLoading(true);
@@ -53,7 +53,19 @@ export const ImportExcelImei = ({ get, ma }) => {
               }
               if (duplicateSet.has(cellValue)) {
                 setIsLoading(false);
-                handleOpenAlertVariant("IMEI không được trùng lặp!", Notistack.ERROR);
+                handleOpenAlertVariant("Import thất bại, IMEI trong sheet không được trùng lặp!", Notistack.ERROR);
+                $event.target.value = null;
+                return; // Kết thúc hàm nếu có giá trị trùng lặp
+              }
+              if (listImeiCurrent.some((item) => item.soImei.toString() === cellValue.toString())) {
+                setIsLoading(false);
+                handleOpenAlertVariant("Import thất bại, IMEI đã tồn tại trong hệ thống!", Notistack.ERROR);
+                $event.target.value = null;
+                return; // Kết thúc hàm nếu có giá trị trùng lặp
+              }
+              if (listImeiCurrentSheet.some((item) => item.imei === cellValue)) {
+                setIsLoading(false);
+                handleOpenAlertVariant("Import thất bại, đã có IMEI được import trước đó!", Notistack.ERROR);
                 $event.target.value = null;
                 return; // Kết thúc hàm nếu có giá trị trùng lặp
               }
@@ -68,6 +80,7 @@ export const ImportExcelImei = ({ get, ma }) => {
             //   return; // Kết thúc hàm nếu có giá trị trùng lặp
             // }
           }
+          console.log(listImeiCurrent);
           getImeis(imeis);
           setIsLoading(false);
           handleOpenAlertVariant("Import IMEI thành công!", Notistack.SUCCESS);

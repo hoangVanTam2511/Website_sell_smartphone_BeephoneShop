@@ -1,39 +1,59 @@
 import { Button, Table } from 'antd';
 import React, { useRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
-const PrintBillAtTheCounter = React.forwardRef((props, ref, data) => {
+import { format } from "date-fns";
+const PrintBillAtTheCounter = React.forwardRef((props, ref) => {
 
-  const total = 2000000;
+  const createdAt = props.data.createdAt instanceof Date ? props.data.createdAt : new Date();
+
+  const orderItems = props.data.orderItems ? props.data.orderItems : [];
+
+  const account = props.data.account ? props.data.account : null;
+
+  const tongTien = props.data.tongTien ? props.data.tongTien : 0;
+  const phiShip = props.data.phiShip ? props.data.phiShip : 0;
+  const discount = props.data && props.data.voucher && props.data.voucher.giaTriVoucher || 0;
+  const khachPhaiTra = tongTien - discount + phiShip;
+  const tienKhachDua = props.data.tienKhachTra || 0;
+  const tienThua = props.data.tienThua || 0;
+
+  const total = (price, amount) => {
+    return price * amount;
+  }
 
   return (
     <div className='wrap-printer p-3' style={{}} ref={ref}>
-      <div className='mt-5 wrap-header-bill d-flex'>
-        <div className='mt-1'>
-          <img className='ms-3 logo' style={{ width: "309px", height: "82px" }} src="https://res.cloudinary.com/dj9e1otbm/image/upload/v1700643568/oeojgihz3v9gtovoijjg.png" alt="" />
-        </div>
-        <div className='address mt-2 ms-3 pt-1'>
-          <span style={{ fontWeight: "500" }}>
-            Địa chỉ: {" "}
-          </span>
-          SN 12, Ngõ 40 Kiều Mai, Bắc Từ Liêm, Hà Nội
-          <div className='phone mt-1'>
-            <span style={{ fontWeight: "500" }}>
-              Điện thoại: {" "}
-            </span>
-            0978.774.487
+      <div className='mt-5 wrap-header-bill d-flex justify-content-between'>
+        <div>
+          <div className='ms-3'>
+            <img className='' style={{ width: "330px", height: "82px" }} src="https://res.cloudinary.com/dj9e1otbm/image/upload/v1700643568/oeojgihz3v9gtovoijjg.png" alt="" />
           </div>
-          <div className='email mt-1'>
+        </div>
+        <div>
+          <div className='address mt-2 ms-3 pt-1'>
             <span style={{ fontWeight: "500" }}>
-              Email: {" "}
+              Địa chỉ: {" "}
             </span>
-            beephoneshop2023@gmail.com
+            Cao đẳng FPT Polytechnic, Bắc Từ Liêm, Hà Nội
+            <div className='phone mt-1'>
+              <span style={{ fontWeight: "500" }}>
+                Điện thoại: {" "}
+              </span>
+              0978774487
+            </div>
+            <div className='email mt-1'>
+              <span style={{ fontWeight: "500" }}>
+                Email: {" "}
+              </span>
+              beephoneshop2023@gmail.com
+            </div>
           </div>
         </div>
       </div>
 
       <div className='d-flex justify-content-between' style={{}}>
         <div className='qrcode mt-4 ms-1' style={{}}>
-          <img src="https://printplace.files.wordpress.com/2012/02/sample.png" style={{ width: "100px", height: "100px" }} alt="" />
+          <img src={props.data.maQrCode} style={{ width: "100px", height: "100px" }} alt="" />
         </div>
         <div className='header-center text-center'>
           <div className='header-main mt-4'>
@@ -43,10 +63,10 @@ const PrintBillAtTheCounter = React.forwardRef((props, ref, data) => {
             <span style={{ fontWeight: "500" }}>
               Mã hóa đơn: {" "}
             </span>
-            HD0000001
+            {props.data.ma}
           </div>
           <div className='code mt-1'>
-            Ngày 21 tháng 11 năm 2023
+            Ngày {format(new Date(createdAt), "dd")} tháng {format(new Date(createdAt), "MM")} năm {format(new Date(createdAt), "yyyy")}
           </div>
         </div>
         <div className='qrcode-none mt-4' style={{ backgroundColor: "transparent" }}>
@@ -76,19 +96,13 @@ const PrintBillAtTheCounter = React.forwardRef((props, ref, data) => {
           <span style={{ fontWeight: "500" }}>
             Khách hàng: {" "}
           </span>
-          0978.774.487
+          {props.data.tenNguoiNhan}
         </div>
         <div className='phone mt-1'>
           <span style={{ fontWeight: "500" }}>
             SĐT: {" "}
           </span>
-          0978.774.487
-        </div>
-        <div className='email mt-1'>
-          <span style={{ fontWeight: "500" }}>
-            Địa chỉ: {" "}
-          </span>
-          beephoneshop2023@gmail.com
+          {props.data.soDienThoaiNguoiNhan}
         </div>
       </div>
 
@@ -104,24 +118,34 @@ const PrintBillAtTheCounter = React.forwardRef((props, ref, data) => {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td align='center'>1</td>
-              <td align="center">Iphone 14 Pro Max Chính Hãng 256GB BLUE</td>
-              <td align="center">20</td>
-              <td align="center">500,000,000</td>
-              <td align="center">500,000,000</td>
-            </tr>
+            {orderItems.map((item, index) => {
+              return (
+                <tr>
+                  <td align='center'>{index + 1}</td>
+                  <td align="center">{item.sanPhamChiTiet.sanPham.tenSanPham + " " + item.sanPhamChiTiet.ram.dungLuong + "/" + item.sanPhamChiTiet.rom.dungLuong + "GB " + item.sanPhamChiTiet.mauSac.tenMauSac}</td>
+                  <td align="center">{item.soLuong}</td>
+                  <td align="center">{item.donGia.toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND"
+                  })}</td>
+                  <td align="center">{total(item.donGia, item.soLuong).toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND"
+                  })}</td>
+                </tr>
+              )
+            })}
           </tbody>
         </table>
       </div>
 
       <div className='d-flex justify-content-end'>
-        <div className="d-flex justify-content-between mt-3">
-          <span className="" style={{ fontSize: "15px", color: "", width: "250px", fontWeight: "500" }}>
+        <div className="d-flex  mt-3">
+          <span className="me-5 pe-5" style={{ fontSize: "15px", color: "", fontWeight: "500" }}>
             Tổng tiền hàng:
           </span>
-          <span className="text-dark" style={{ fontSize: "15px", fontWeight: "500" }}>
-            {total.toLocaleString("vi-VN", {
+          <span className="text-dark" style={{ fontSize: "15px", fontWeight: "500", width: "100px" }}>
+            {props.data.tongTien && props.data.tongTien.toLocaleString("vi-VN", {
               style: "currency",
               currency: "VND",
             }) || 0}
@@ -129,12 +153,12 @@ const PrintBillAtTheCounter = React.forwardRef((props, ref, data) => {
         </div>
       </div>
       <div className='d-flex justify-content-end'>
-        <div className="d-flex justify-content-between mt-1">
-          <span className="" style={{ fontSize: "15px", color: "", width: "250px", fontWeight: "500" }}>
+        <div className="d-flex  mt-1">
+          <span className="me-5 pe-5" style={{ fontSize: "15px", color: "", fontWeight: "500" }}>
             Chiết khấu:
           </span>
-          <span className="text-dark" style={{ fontSize: "15px", fontWeight: "500" }}>
-            {total.toLocaleString("vi-VN", {
+          <span className="text-dark" style={{ fontSize: "15px", fontWeight: "500", width: "100px" }}>
+            {discount.toLocaleString("vi-VN", {
               style: "currency",
               currency: "VND",
             }) || 0}
@@ -142,12 +166,12 @@ const PrintBillAtTheCounter = React.forwardRef((props, ref, data) => {
         </div>
       </div>
       <div className='d-flex justify-content-end'>
-        <div className="d-flex justify-content-between mt-1">
-          <span className="" style={{ fontSize: "15px", color: "", width: "250px", fontWeight: "500" }}>
+        <div className="d-flex mt-1">
+          <span className="me-5 pe-5" style={{ fontSize: "15px", color: "", fontWeight: "500" }}>
             Khách phải trả:
           </span>
-          <span className="text-dark" style={{ fontSize: "15px", fontWeight: "500" }}>
-            {total.toLocaleString("vi-VN", {
+          <span className="text-dark" style={{ fontSize: "15px", width: "100px", fontWeight: "500" }}>
+            {khachPhaiTra.toLocaleString("vi-VN", {
               style: "currency",
               currency: "VND",
             }) || 0}
@@ -156,11 +180,11 @@ const PrintBillAtTheCounter = React.forwardRef((props, ref, data) => {
       </div>
       <div className='d-flex justify-content-end'>
         <div className="d-flex justify-content-between mt-1">
-          <span className="" style={{ fontSize: "15px", color: "", width: "250px", fontWeight: "500" }}>
+          <span className="me-5 pe-5" style={{ fontSize: "15px", color: "", fontWeight: "500" }}>
             Tiền khách đưa:
           </span>
-          <span className="text-dark" style={{ fontSize: "15px", fontWeight: "500" }}>
-            {total.toLocaleString("vi-VN", {
+          <span className="text-dark" style={{ fontSize: "15px", fontWeight: "500", width: "100px" }}>
+            {tienKhachDua.toLocaleString("vi-VN", {
               style: "currency",
               currency: "VND",
             }) || 0}
@@ -168,12 +192,12 @@ const PrintBillAtTheCounter = React.forwardRef((props, ref, data) => {
         </div>
       </div>
       <div className='d-flex justify-content-end'>
-        <div className="d-flex justify-content-between mt-1">
-          <span className="" style={{ fontSize: "15px", color: "", width: "250px", fontWeight: "500" }}>
+        <div className="d-flex mt-1">
+          <span className="me-5 pe-5" style={{ fontSize: "15px", color: "", fontWeight: "500" }}>
             Tiền trả lại:
           </span>
-          <span className="text-dark" style={{ fontSize: "15px", fontWeight: "500" }}>
-            {total.toLocaleString("vi-VN", {
+          <span className="text-dark" style={{ fontSize: "15px", fontWeight: "500", width: "100px" }}>
+            {tienThua.toLocaleString("vi-VN", {
               style: "currency",
               currency: "VND",
             }) || 0}
@@ -197,7 +221,7 @@ export const Print = ({ data }) => {
 
   return (
     <div className=''>
-      <PrintBillAtTheCounter ref={componentRef} />
+      <PrintBillAtTheCounter ref={componentRef} data={data} />
       <Button
         onClick={handlePrint}
         className="rounded-2 me-2"
@@ -219,10 +243,58 @@ export const Print = ({ data }) => {
   );
 }
 
+export const PrintDelivery = ({ data }) => {
+  const componentRef = useRef();
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+  });
+
+  return (
+    <div className=''>
+      <PrintBillDelivery ref={componentRef} data={data} />
+      <Button
+        onClick={handlePrint}
+        className="rounded-2 me-2"
+        type="primary"
+        style={{
+          height: "40px",
+          width: "185px",
+          fontSize: "16px",
+        }}
+      >
+        <span
+          className="text-white"
+          style={{ fontWeight: "500", marginBottom: "2px" }}
+        >
+          IN PHIẾU GIAO HÀNG
+        </span>
+      </Button>
+    </div>
+  );
+}
+
 const PrintBillDelivery = React.forwardRef((props, ref, data) => {
 
-  const total = 2000000;
+  const createdAt = props.data.createdAt instanceof Date ? props.data.createdAt : new Date();
 
+  const orderItems = props.data.orderItems ? props.data.orderItems : [];
+
+  const totalAmount = () => {
+    let total = 0;
+    orderItems.map((item) => {
+      total += item.soLuong;
+    })
+    return total;
+  }
+
+  const khachCanTra = props.data.khachCanTra ? props.data.khachCanTra : 0;
+  const khachDaTra = props.data.tienKhachTra ? props.data.tienKhachTra : 0;
+
+  const totalBill = khachCanTra - khachDaTra;
+
+  const total = (price, amount) => {
+    return price * amount;
+  }
 
   return (
     <div className='wrap-printer-delivery p-3' style={{}} ref={ref}>
@@ -237,7 +309,7 @@ const PrintBillDelivery = React.forwardRef((props, ref, data) => {
       ></div>
       <div className='d-flex justify-content-between mt-1' style={{}}>
         <div className='qrcode ms-1 mt-2' style={{}}>
-          <img src="https://printplace.files.wordpress.com/2012/02/sample.png" style={{ width: "100px", height: "100px" }} alt="" />
+          <img src={props.data.maQrCode} style={{ width: "100px", height: "100px" }} alt="" />
         </div>
         <div className='header-center text-center'>
           <div className='header-main mt-2'>
@@ -247,10 +319,10 @@ const PrintBillDelivery = React.forwardRef((props, ref, data) => {
             <span style={{ fontWeight: "500" }}>
               Mã hóa đơn: {" "}
             </span>
-            HD0000001
+            {props.data.ma}
           </div>
           <div className='code mt-1'>
-            Ngày 21 tháng 11 năm 2023
+            Ngày {format(new Date(createdAt), "dd")} tháng {format(new Date(createdAt), "MM")} năm {format(new Date(createdAt), "yyyy")}
           </div>
         </div>
         <div className='qrcode-none mt-4' style={{ backgroundColor: "transparent" }}>
@@ -275,7 +347,7 @@ const PrintBillDelivery = React.forwardRef((props, ref, data) => {
             Người gửi: {"  "}
           </span>
           <span className='ms-2' style={{ fontWeight: "500" }}>
-            BEEPHONE SHOP - 0978.774.487
+            BEEPHONE SHOP - 0978774487
           </span>
           <div className='email mt-1'>
             SN 12, Ngõ 40 Kiều Mai, Bắc Từ Liêm, Hà Nội
@@ -286,10 +358,10 @@ const PrintBillDelivery = React.forwardRef((props, ref, data) => {
             Người nhận: {"  "}
           </span>
           <span className='ms-2' style={{ fontWeight: "500" }}>
-            BEEPHONE SHOP - 0978.774.487
+            {props.data.tenNguoiNhan} - {props.data.soDienThoaiNguoiNhan}
           </span>
           <div className='email mt-1'>
-            SN 12, Ngõ 40 Kiều Mai, Bắc Từ Liêm, Hà Nội
+            {props.data.diaChiNguoiNhan + ","} {props.data.xaPhuongNguoiNhan + ","} {props.data.quanHuyenNguoiNhan + ","} {props.data.tinhThanhPhoNguoiNhan}
           </div>
         </div>
       </div>
@@ -306,13 +378,23 @@ const PrintBillDelivery = React.forwardRef((props, ref, data) => {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td align='center'>1</td>
-              <td align="center">Iphone 14 Pro Max Chính Hãng 256GB BLUE</td>
-              <td align="center">20</td>
-              <td align="center">500,000,000</td>
-              <td align="center">500,000,000</td>
-            </tr>
+            {orderItems.map((item, index) => {
+              return (
+                <tr>
+                  <td align='center'>{index + 1}</td>
+                  <td align="center">{item.sanPhamChiTiet.sanPham.tenSanPham + " " + item.sanPhamChiTiet.ram.dungLuong + "/" + item.sanPhamChiTiet.rom.dungLuong + "GB " + item.sanPhamChiTiet.mauSac.tenMauSac}</td>
+                  <td align="center">{item.soLuong}</td>
+                  <td align="center">{item.donGia.toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND"
+                  })}</td>
+                  <td align="center">{total(item.donGia, item.soLuong).toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND"
+                  })}</td>
+                </tr>
+              )
+            })}
           </tbody>
         </table>
       </div>
@@ -322,7 +404,7 @@ const PrintBillDelivery = React.forwardRef((props, ref, data) => {
           Tổng số sản phẩm:
         </span>
         <span className='ms-1' style={{}}>
-          1
+          {totalAmount()}
         </span>
       </div>
       <div className='ms-3'>
@@ -330,7 +412,7 @@ const PrintBillDelivery = React.forwardRef((props, ref, data) => {
           Ghi chú:
         </span>
         <span className='ms-2' style={{}}>
-          Không cho xem hàng
+          {props.data.ghiChu}
         </span>
       </div>
 
@@ -340,262 +422,13 @@ const PrintBillDelivery = React.forwardRef((props, ref, data) => {
             Tổng thu người nhận:
           </span>
           <span className="text-dark" style={{ fontSize: "25px", fontWeight: "500" }}>
-            {total.toLocaleString("vi-VN", {
+            {totalBill.toLocaleString("vi-VN", {
               style: "currency",
               currency: "VND",
             }) || 0}
           </span>
         </div>
       </div>
-
-    </div >
-  );
-})
-
-const SendEmailOrder = React.forwardRef(() => {
-
-  const total = 2000000;
-
-  return (
-    <div className='send-main mx-auto' style={{ width: "80%" }}>
-      <div className='wrap-header-bill text-center'>
-        <div className=''>
-          <img className='logo' style={{ width: "330px", height: "82px" }} src="https://res.cloudinary.com/dj9e1otbm/image/upload/v1700643568/oeojgihz3v9gtovoijjg.png" alt="" />
-        </div>
-      </div>
-      <div className='text-center mt-1'>
-        <span style={{ fontWeight: "500", fontSize: "25px", color: "#2f80ed" }}>Cảm ơn quý khách đã đặt hàng tại BEEPHONESHOP!</span>
-      </div>
-
-      <div className='mt-4'>
-        <span style={{ fontSize: "20px" }}>
-          Xin chào <span className='' style={{ fontWeight: "500" }}>Thúy Hằng</span>
-        </span>
-      </div>
-      <div className='mt-2'>
-        <span>
-          <span style={{ fontWeight: "500" }}>
-            BEEPHONESHOP {" "}
-          </span>
-          đã nhận được yêu cầu đặt hàng của bạn và đang trong quá trình xử lý. Bạn
-          sẽ nhận được thông báo tiếp theo khi đơn hàng đã sẵn sàng được giao.
-        </span>
-        <div className='text-center'>
-          <a href="">
-            <button
-              className="view-order-state mt-3 me-4"
-            >
-              <span
-                class=""
-                style={{ fontSize: "17.5px", fontWeight: "450" }}
-              >
-                TÌNH TRẠNG ĐƠN HÀNG
-              </span>
-            </button>
-          </a>
-        </div>
-      </div>
-
-      <div className='mt-4'>
-        <table className='table-info-order' border="1" cellpadding="5" cellspacing="10">
-          <thead>
-            <tr className=''>
-              <th colSpan="2" class="col-info p-2">Thông tin đơn hàng</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr className=''>
-              <td className='p-2' style={{ width: "50%" }}>
-                <div className='phone'>
-                  <span style={{ fontWeight: "500" }}>
-                    Mã đơn hàng: {" "}
-                  </span>
-                  <span className='ms-1' style={{ fontWeight: "500" }}>
-                    #200392032093
-                  </span>
-                </div>
-                <div className='phone mt-1'>
-                  <span style={{ fontWeight: "500" }}>
-                    Ngày đặt hàng: {" "}
-                  </span>
-                  <span className='ms-1' style={{}}>
-                    200392032093
-                  </span>
-                </div>
-                <div className='phone mt-1'>
-                  <span style={{ fontWeight: "500" }}>
-                    Phương thức thanh toán: {" "}
-                  </span>
-                  <span className='ms-1' style={{}}>
-                    Thanh toán khi nhận hàng
-                  </span>
-                </div>
-                <div className='phone mt-1'>
-                  <span style={{ fontWeight: "500" }}>
-                    Phương thức vận chuyển: {" "}
-                  </span>
-                  <span className='ms-1' style={{}}>
-                    Giao hàng nhanh
-                  </span>
-                </div>
-              </td>
-              <td style={{ width: "50%" }} className="p-2" >
-                <div className='phone'>
-                  <span style={{ fontWeight: "500" }}>
-                    Họ và tên: {" "}
-                  </span>
-                  <span className='ms-1' style={{}}>
-                    Trần Quang Hà
-                  </span>
-                </div>
-                <div className='phone mt-1'>
-                  <span style={{ fontWeight: "500" }}>
-                    Số điện thoại: {" "}
-                  </span>
-                  <span className='ms-1' style={{}}>
-                    09018239831
-                  </span>
-                </div>
-                <div className='phone mt-1'>
-                  <span style={{ fontWeight: "500" }}>
-                    Email: {" "}
-                  </span>
-                  <span className='ms-1' style={{}}>
-                    haog@gmail.com
-                  </span>
-                </div>
-                <div className='phone mt-1'>
-                  <span style={{ fontWeight: "500" }}>
-                    Trạng thái đơn hàng: {" "}
-                  </span>
-                  <span className='ms-1' style={{}}>
-                    Chờ xác nhận
-                  </span>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div className='mt-4'>
-        <table className='table-info-order' border="1" cellpadding="5" cellspacing="10">
-          <thead>
-            <tr className=''>
-              <th colSpan="2" class="col-info p-2">Địa chỉ nhận hàng</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr className=''>
-              <td className='p-2' style={{}}>
-                Trần Quang Hà - 09787444387 - SN 12 Ngõ 40 Phú Kiều, Kiều mai, bắc từ Liêm Hà nỘi
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div className='mt-4'>
-        <table className='table-info-order' border="1" cellpadding="5" cellspacing="10">
-          <thead>
-            <tr className=''>
-              <th style={{ textAlign: "center" }} class="col-info p-2">Sản phẩm</th>
-              <th style={{ textAlign: "center" }} class="col-info p-2">Số lượng</th>
-              <th style={{ textAlign: "center" }} class="col-info p-2">Đơn giá</th>
-              <th style={{ textAlign: "center" }} class="col-info p-2">Thành tiền</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr className=''>
-              <td className='p-4' style={{ textAlign: "center" }}>
-                <div className="d-flex">
-                  <div className="product-img">
-                    <img
-                      src={
-                        "https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/v/_/v_ng_20.png"
-                      }
-                      class=""
-                      alt=""
-                      style={{ width: "125px", height: "125px" }}
-                    />
-                  </div>
-                  <div className="product ms-3 text-start" title='Xem sản phẩm'>
-                    <div classNamountme="product-name" style={{ cursor: "pointer" }}>
-                      <span
-                        className="underline-custom"
-                        style={{
-                          whiteSpace: "pre-line",
-                          fontSize: "20px",
-                          fontWeight: "500",
-                        }}
-                      >
-                        Iphone 14 Pro Max 256GB BLUE
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </td>
-              <td className='p-4' style={{ textAlign: "center", width: "15%" }}>
-                1
-              </td>
-              <td className='p-4' style={{ textAlign: "center" }}>
-                500,000,000
-              </td>
-              <td className='p-4' style={{ textAlign: "center" }}>
-                500,000,000
-              </td>
-            </tr>
-            <tr className=''>
-              <td className='p-2' colSpan="3" style={{ textAlign: "end", fontWeight: "500" }}>
-                Tổng tiền hàng:
-              </td>
-              <td className='p-2' colSpan="1" style={{ textAlign: "center" }}>
-                500,000,000
-              </td>
-            </tr>
-            <tr className=''>
-              <td className='p-2' colSpan="3" style={{ textAlign: "end", fontWeight: "500" }}>
-                Giảm giá:
-              </td>
-              <td className='p-2' colSpan="1" style={{ textAlign: "center" }}>
-                50,000
-              </td>
-            </tr>
-            <tr className=''>
-              <td className='p-2' colSpan="3" style={{ textAlign: "end", fontWeight: "500" }}>
-                Phí vận chuyển:
-              </td>
-              <td className='p-2' colSpan="1" style={{ textAlign: "center" }}>
-                50,000
-              </td>
-            </tr>
-            <tr className=''>
-              <td className='p-2' colSpan="3" style={{ textAlign: "end", fontWeight: "500" }}>
-                Tổng cần thanh toán:
-              </td>
-              <td className='p-2' colSpan="1" style={{ textAlign: "center" }}>
-                50,000,000
-              </td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div className='mt-3 text-center'>
-          <span>
-            Nếu bạn có bất kì câu hỏi nào, hoặc cần hỗ trợ về đơn hàng. Vui lòng liên hệ với chúng tôi qua Hotline:
-            <span className='underline-custom ms-1' style={{ cursor: "pointer" }}>
-              0978774487 {" "}
-            </span>
-            hoặc Email:
-            <span className='underline-custom ms-1' style={{ cursor: "pointer" }}>
-              beephoneshop@gmail.vn
-            </span>!
-
-          </span>
-        </div>
-
-      </div>
-
 
     </div >
   );

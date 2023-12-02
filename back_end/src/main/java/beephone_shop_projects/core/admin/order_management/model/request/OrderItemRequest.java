@@ -28,7 +28,7 @@ public class OrderItemRequest {
 
   private List<ImeiCustomRequest> imeis;
 
-  private ImeiRefundCustomRequest imei;
+  private String imei;
 
   private BigDecimal tongTienSauKhiGiam;
 

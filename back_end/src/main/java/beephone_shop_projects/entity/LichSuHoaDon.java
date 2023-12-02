@@ -32,4 +32,9 @@ public class LichSuHoaDon extends PrimaryEntity implements IsIdentified {
   @JoinColumn(name = "hoa_don_id")
   private HoaDon hoaDon;
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_khach_hang")
+  private Account account;
+
+
 }

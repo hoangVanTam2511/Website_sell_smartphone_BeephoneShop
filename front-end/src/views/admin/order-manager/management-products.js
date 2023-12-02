@@ -105,7 +105,7 @@ const ManagementProducts = () => {
               }
               class=""
               alt=""
-              style={{ width: "145px", height: "150px" }}
+              style={{ width: "125px", height: "125px" }}
             />
           </div>
         </>
@@ -190,41 +190,28 @@ const ManagementProducts = () => {
     {
       title: "Thao Tác",
       align: "center",
-      width: "15%",
+      width: "20%",
       dataIndex: "ma",
       render: (text, record) => (
         <>
           <div className="button-container">
-            <Button
-              onClick={() => {
+            <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
+              <IconButton size="" className="me-2" onClick={() => {
                 navigate(`/dashboard/update-product/${record.id}`);
               }}
-              className="rounded-2 button-mui"
-              type="primary"
-              style={{ width: "92px", fontSize: "14px" }}
-            >
-              <span
-                className=""
-                style={{ fontWeight: "500", marginBottom: "3px" }}
               >
-                Cập Nhật
-              </span>
-            </Button>
-            <Button
-              className="rounded-2 ms-2 ant-btn-warning"
-              onClick={() => {
-                navigate(`/dashboard/products/${record.id}`);
-              }}
-              type="primary"
-              style={{ width: "92px", fontSize: "14px" }}
-            >
-              <span
-                className=""
-                style={{ fontWeight: "500", marginBottom: "3px" }}
+                <FaPencilAlt color="#2f80ed" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Chi tiết" TransitionComponent={Zoom}>
+              <IconButton size="" className=""
+                onClick={() => {
+                  navigate(`/dashboard/products/${record.id}`);
+                }}
               >
-                Chi tiết
-              </span>
-            </Button>
+                <FaEye color="#2f80ed" />
+              </IconButton>
+            </Tooltip>
           </div>
         </>
       ),
@@ -240,7 +227,7 @@ const ManagementProducts = () => {
           <Card.Header className="d-flex justify-content-between">
             <div className="header-title mt-2">
               <TextField
-                label="Tìm Sản Phẩm"
+                label="Tìm Sản Phẩm Theo Mã Hoặc Tên"
                 // onChange={handleGetValueFromInputTextField}
                 // value={keyword}
                 InputLabelProps={{
@@ -252,7 +239,7 @@ const ManagementProducts = () => {
                 inputProps={{
                   style: {
                     height: "23px",
-                    width: "250px",
+                    width: "300px",
                   },
                 }}
                 size="small"
@@ -294,6 +281,7 @@ const ManagementProducts = () => {
                   Import IMEI
                 </span>
               </Button>
+              {/*
               <Button
                 // onClick={handleUploadClick}
                 className="rounded-2 button-mui me-2"
@@ -315,6 +303,7 @@ const ManagementProducts = () => {
                   Export Excel
                 </span>
               </Button>
+*/}
               <Button
                 // onClick={handleUploadClick}
                 className="rounded-2 button-mui me-2"
@@ -333,7 +322,7 @@ const ManagementProducts = () => {
                   className=""
                   style={{ marginBottom: "2px", fontWeight: "500", marginLeft: "21px" }}
                 >
-                  Tải Mẫu
+                  Tải Mẫu Import IMEI
                 </span>
               </Button>
               <Button

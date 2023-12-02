@@ -16,7 +16,6 @@ import beephone_shop_projects.core.admin.order_management.repository.CameraSauDi
 import beephone_shop_projects.core.admin.order_management.repository.CameraSauRepository;
 import beephone_shop_projects.core.admin.order_management.repository.CameraTruocDienThoaiRepository;
 import beephone_shop_projects.core.admin.order_management.repository.CameraTruocRepository;
-import beephone_shop_projects.core.admin.order_management.repository.DanhMucDienThoaiRepository;
 import beephone_shop_projects.core.admin.order_management.repository.impl.DanhMucDienThoaiRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.repository.impl.ImeiRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.repository.impl.ProductItemRepositoryImpl;
@@ -34,6 +33,8 @@ import beephone_shop_projects.entity.SanPham;
 import beephone_shop_projects.entity.SanPhamChiTiet;
 import beephone_shop_projects.entity.TheSim;
 import beephone_shop_projects.entity.TheSimDienThoai;
+import beephone_shop_projects.utils.BarcodeGenerator;
+import com.google.zxing.BarcodeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -86,6 +87,9 @@ public class ProductServiceImpl extends AbstractServiceImpl<SanPham, ProductResp
 
   @Autowired
   private ImeiRepositoryImpl imeiRepositoryImpl;
+
+  @Autowired
+  private BarcodeGenerator barcodeGenerator;
 
   public ProductServiceImpl(ProductRepositoryImpl repo, ProductConverter converter) {
     super(repo, converter);
@@ -166,9 +170,10 @@ public class ProductServiceImpl extends AbstractServiceImpl<SanPham, ProductResp
 
           if (item.getImeis() != null) {
             for (ProductItemImeiRequest imei : item.getImeis()) {
+              String uri = barcodeGenerator.generateBarcodeImageBase64Url(imei.getImei(), BarcodeFormat.CODE_128);
               Imei productImei = new Imei();
               productImei.setSoImei(imei.getImei());
-              productImei.setBarcode(imei.getBarcode());
+              productImei.setBarcode(uri);
               productImei.setCreatedAt(imei.getCreatedAt());
               productImei.setSanPhamChiTiet(createdProductItem);
               productImei.setTrangThai(imei.getTrangThai());

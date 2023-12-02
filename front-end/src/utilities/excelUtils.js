@@ -2,10 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { read, utils, writeFile } from 'xlsx';
 import LoadingIndicator from './loading.js';
 import axios from 'axios';
-import { Dialog, DialogContent, IconButton, Slide, TextField, Tooltip, Zoom } from "@mui/material";
+import { Dialog, DialogContent, IconButton, Pagination, Slide, TextField, Tooltip, Zoom } from "@mui/material";
 import { Button, Empty, Table } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import { FaTrashAlt } from "react-icons/fa";
+import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import { FaDownload } from "react-icons/fa6";
 import { FaUpload } from "react-icons/fa6";
 import useCustomSnackbar from "./notistack.js";
@@ -14,7 +14,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const ImportAndExportExcelImei = ({ open, close, imeis, productName }) => {
+const ImportAndExportExcelImei = ({ open, close, imeis, productName, view }) => {
   // const getImeis = () => {
   //   get(imeis);
   // }
@@ -24,6 +24,20 @@ const ImportAndExportExcelImei = ({ open, close, imeis, productName }) => {
   const handleUploadClick = () => {
     inputRef.current.click();
   };
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+  const totalItems = imeis.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = currentPage * itemsPerPage;
+  const itemsOnCurrentPage = imeis.slice(startIndex, endIndex);
+
+  // useEffect(() => {
+  //   setCurrentPage(1);
+  //   setSelectedImei(imeisChuaBan);
+  // }, [refresh]);
   // const [imeis, setImeis] = useState(listImei);
   //
   // useEffect(() => {
@@ -121,7 +135,7 @@ const ImportAndExportExcelImei = ({ open, close, imeis, productName }) => {
           className="table-container"
           columns={columns}
           rowKey="id"
-          dataSource={imeis}
+          dataSource={itemsOnCurrentPage}
           pagination={false}
           locale={{ emptyText: <Empty description="Không có dữ liệu" /> }}
         />
@@ -144,34 +158,43 @@ const ImportAndExportExcelImei = ({ open, close, imeis, productName }) => {
     {
       title: "IMEI",
       align: "center",
-      key: "ma",
-      width: "30%",
-      dataIndex: "ma",
+      width: "15%",
       render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>{record.imei}</span>
+        <span style={{ fontWeight: "400" }}>{!view ? record.soImei : record.imei}</span>
       ),
     },
     {
-      title: "Ngày tạo",
+      title: "Trạng thái",
       align: "center",
-      key: "ma",
       width: "15%",
-      dataIndex: "ma",
       render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>
-          {format(new Date(record.createdAt), "HH:mm:ss - dd/MM/yyyy")}
-        </span>
+        <span style={{ fontWeight: "400" }}>{record.trangThai}</span>
+      ),
+    },
+    {
+      title: "Barcode",
+      align: "center",
+      width: "15%",
+      hide: view ? true : false,
+      render: (text, record) => (
+        <img src={record.barcode} style={{ width: "200px", height: "50px" }} alt="" />
       ),
     },
     {
       title: "Thao Tác",
       align: "center",
       width: "15%",
-      dataIndex: "ma",
       render: (text, record) => (
         <>
           <div className="d-flex justify-content-center">
             <div className="button-container">
+              <Tooltip title="Cập Nhật" TransitionComponent={Zoom}>
+                <IconButton size="" className="me-2" onClick={() => {
+
+                }}>
+                  <FaPencilAlt color="#2f80ed" />
+                </IconButton>
+              </Tooltip>
               <Tooltip title="Xóa" TransitionComponent={Zoom}>
                 <IconButton size="" onClick={() => {
 
@@ -184,7 +207,7 @@ const ImportAndExportExcelImei = ({ open, close, imeis, productName }) => {
         </>
       ),
     },
-  ];
+  ].filter((item) => !item.hide);
 
   return (
     <>
@@ -202,13 +225,13 @@ const ImportAndExportExcelImei = ({ open, close, imeis, productName }) => {
             <div className="container" style={{}}>
               <div className="text-center" style={{}}>
                 <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>
-                  {productName + " IMEIS"}
+                  {"Danh sách IMEI của " + productName}
                 </span>
               </div>
-              <div className="d-flex mt-3 justify-content-between">
+              <div className="d-flex mt-4 justify-content-between">
                 <div className="header-title">
                   <TextField
-                    label="Tìm IMEI"
+                    label="Tìm kiếm IMEI"
                     // onChange={handleGetValueFromInputTextField}
                     // value={keyword}
                     InputLabelProps={{
@@ -241,76 +264,90 @@ const ImportAndExportExcelImei = ({ open, close, imeis, productName }) => {
                   </Button>
                 </div>
                 <div className="mt-2">
-                  <Button
-                    onClick={handleUploadClick}
-                    className="rounded-2 button-mui me-2"
-                    type="primary"
-                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
-                  >
-                    <FaUpload
-                      className="ms-1"
-                      style={{
-                        position: "absolute",
-                        bottom: "13.5px",
-                        left: "10px",
-                      }}
-                    />
-                    <span
-                      className="ms-3 ps-1"
-                      style={{ marginBottom: "3px", fontWeight: "500" }}
+                  {view &&
+                    <Button
+                      onClick={handleUploadClick}
+                      className="rounded-2 button-mui me-2"
+                      type="primary"
+                      style={{ height: "40px", width: "auto", fontSize: "15px" }}
                     >
-                      Import Excel
+                      <FaUpload
+                        className="ms-1"
+                        style={{
+                          position: "absolute",
+                          bottom: "13.5px",
+                          left: "10px",
+                        }}
+                      />
+                      <span
+                        className="ms-3 ps-1"
+                        style={{ marginBottom: "3px", fontWeight: "500" }}
+                      >
+                        Import Excel
 
-                      <input style={{ display: "none" }} ref={inputRef} type="file" name="file" className="custom-file-input" id="inputGroupFile" required onChange={handleImport}
-                        accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
-                    </span>
-                  </Button>
-                  <Button
-                    onClick={handleExport}
-                    className="rounded-2 button-mui me-2"
-                    type="primary"
-                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
-                  >
-                    <FaDownload
-                      className="ms-1"
-                      style={{
-                        position: "absolute",
-                        bottom: "13.5px",
-                        left: "10px",
-                      }}
-                    />
-                    <span
-                      className="ms-3 ps-1"
-                      style={{ marginBottom: "3px", fontWeight: "500" }}
+                        <input style={{ display: "none" }} ref={inputRef} type="file" name="file" className="custom-file-input" id="inputGroupFile" required onChange={handleImport}
+                          accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
+                      </span>
+                    </Button>
+                  }
+                  {!view &&
+                    <Button
+                      onClick={handleExport}
+                      className="rounded-2 button-mui me-2"
+                      type="primary"
+                      style={{ height: "40px", width: "auto", fontSize: "15px" }}
                     >
-                      Export Excel
-                    </span>
-                  </Button>
-                  <Button
-                    onClick={handleDownloadSample}
-                    className="rounded-2 button-mui"
-                    type="primary"
-                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
-                  >
-                    <FaDownload
-                      className="ms-1"
-                      style={{
-                        position: "absolute",
-                        bottom: "13.5px",
-                        left: "10px",
-                      }}
-                    />
-                    <span
-                      className="ms-3 ps-1"
-                      style={{ marginBottom: "3px", fontWeight: "500" }}
+                      <FaDownload
+                        className="ms-1"
+                        style={{
+                          position: "absolute",
+                          bottom: "13.5px",
+                          left: "10px",
+                        }}
+                      />
+                      <span
+                        className="ms-3 ps-1"
+                        style={{ marginBottom: "3px", fontWeight: "500" }}
+                      >
+                        Export Excel
+                      </span>
+                    </Button>
+                  }
+                  {view &&
+                    <Button
+                      onClick={handleDownloadSample}
+                      className="rounded-2 button-mui"
+                      type="primary"
+                      style={{ height: "40px", width: "auto", fontSize: "15px" }}
                     >
-                      Tải Mẫu
-                    </span>
-                  </Button>
+                      <FaDownload
+                        className="ms-1"
+                        style={{
+                          position: "absolute",
+                          bottom: "13.5px",
+                          left: "10px",
+                        }}
+                      />
+                      <span
+                        className="ms-3 ps-1"
+                        style={{ marginBottom: "3px", fontWeight: "500" }}
+                      >
+                        Tải Mẫu
+                      </span>
+                    </Button>
+                  }
                 </div>
               </div>
               <div className="mx-auto mt-3">
                 <TableImei />
+              </div>
+              <div className="d-flex justify-content-center mt-3">
+                <Pagination
+                  color="primary"
+                  page={parseInt(currentPage)}
+                  count={totalPages}
+                  onChange={(event, page) => setCurrentPage(page)}
+                />
               </div>
             </div>
           </div>

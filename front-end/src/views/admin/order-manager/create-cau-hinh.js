@@ -51,6 +51,7 @@ const MenuProps = {
 };
 
 const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, isConfirm }) => {
+  const [isLoading, setIsLoading] = useState(false);
 
 
   const [validImage, setValidImage] = useState(true);
@@ -116,7 +117,23 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
       });
   };
 
+  const [listImeiCurrent, setListImeiCurrent] = useState([]);
+
+  const getAllImei = () => {
+    axios
+      .get(`http://localhost:8080/api/imeis/all`, {
+      })
+      .then((response) => {
+        setListImeiCurrent(response.data.data);
+        console.log(response.data.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
   useEffect(() => {
+    getAllImei();
     getListColor();
     getListRam();
     getListRom();
@@ -125,7 +142,6 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
 
 
   const [imeis, setImeis] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [isLoadingInside, setIsLoadingInside] = useState(false);
   const handleDownloadSample = () => {
     setIsLoading(true);
@@ -745,7 +761,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
       render: (text, record) => (
         <div className="d-flex justify-content-center">
           <div className="button-container">
-            <ImportExcelImei ma={record.ma} get={getImeisFromImport} />
+            <ImportExcelImei ma={record.ma} get={getImeisFromImport} listImeiCurrent={listImeiCurrent} listImeiCurrentSheet={cauHinhsFinal && imeiObjects} />
             <Tooltip title="Xóa" TransitionComponent={Zoom}>
               <IconButton
                 onClick={() => {
@@ -807,7 +823,6 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
   const [selectKey, setSelectKey] = useState(0);
 
   const handleAddProduct = async () => {
-    // convertBarcodeToImage();
     handleCloseOpenModalConfirmAddProduct();
     setIsLoadingInside(true);
     getOverplay(true);
@@ -929,27 +944,17 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
     }, []);
   }
 
-  const convertBarcodeToImage = () => {
-  if (cauHinhsFinal && imeiObjects) {
-    imeiObjects.forEach((item) => {
-      cauHinhsFinal.forEach((cauHinh) => {
-        if (cauHinh.imeis && cauHinh.imeis.length > 0) {
-          const imeiIndex = cauHinh.imeis.findIndex((imei) => imei.imei === item.imei);
-          if (imeiIndex !== -1) {
-            const barcodeElement = document.getElementById(item.imei);
-            html2canvas(barcodeElement).then(canvas => {
-              const image = canvas.toDataURL('image/png');
-              cauHinh.imeis[imeiIndex].barcode = image;
-              setBarcodeImages(images => [...images, { imei: item.imei, image: image }]);
-              setCauHinhsFinal([...cauHinhsFinal]);
-              console.log(cauHinhsFinal);
-            });
-          }
-        }
-      });
-    });
-  }
-};
+  // const convertBarcodeToImage = () => {
+  //   if (cauHinhsFinal && imeiObjects) {
+  //     imeiObjects.forEach((item) => {
+  //       const barcodeElement = document.getElementById(item.imei);
+  //       html2canvas(barcodeElement).then(canvas => {
+  //         const image = canvas.toDataURL('image/png');
+  //         setBarcodeImages(images => [...images, { imei: item.imei, image: image }]);
+  //       });
+  //     });
+  //   }
+  // };
 
 
 
@@ -1832,7 +1837,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
         defaultRam={defaultRam} defaultRom={defaultRom} colorsHadSelect={selectedColors} list={cauHinhs}
         rams={listRam} roms={listRom} updateData={updateData} listColor={listColor} listFinal={cauHinhsFinal}
       />
-      <ImportAndExportExcelImei open={openModalImel} close={handleCloseModalImei} imeis={imeis} productName={productName} />
+      <ImportAndExportExcelImei open={openModalImel} close={handleCloseModalImei} imeis={imeis} productName={productName} view={true}/>
 
       <CreateRam
         open={openRam}
@@ -1868,8 +1873,6 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
         name={getProduct.tenSanPham}
       />
 
-      <BarcodeScanner />
-
       <ConfirmChangeTypePhienBan open={openModalType} onClose={handleCloseOpenModalType}
         confirm={() => {
           setType((type) => !type); handleCloseOpenModalType();
@@ -1881,6 +1884,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
 
 
       />
+      {isLoading && <LoadingIndicator />}
     </>
   )
 }

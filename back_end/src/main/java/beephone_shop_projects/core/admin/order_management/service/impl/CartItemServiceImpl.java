@@ -191,16 +191,22 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
     if (!findImei.isPresent()) {
       throw new RestApiException("Imei không tồn tại!");
     }
+
+    if (findImei.get().getTrangThai().equals(StatusImei.IN_THE_CART)) {
+      throw new RestApiException("Imei đang được chọn trong giỏ hàng!");
+    } else if (!findImei.get().getTrangThai().equals(StatusImei.NOT_SOLD)) {
+      throw new RestApiException("Imei không khả dụng!");
+    }
+
     Optional<GioHangChiTiet> findProductItemCurrentInCart = cartItemCustomRepository.
             findCartItemAlready(findImei.get().getSanPhamChiTiet().getId(), findCartCurrent.getId());
 
     if (findProductItemCurrentInCart.isPresent()) {
-      List<ImeiChuaBan> imeisInCart = findProductItemCurrentInCart.get().getImeisChuaBan();
-      for (ImeiChuaBan imeiChuaBan : imeisInCart){
-        if (imeiChuaBan.getSoImei().equals(req.getImei())){
-          throw new RestApiException("Imei đang được chọn trong giỏ hàng!");
-        }
-      }
+//      List<ImeiChuaBan> imeisInCart = findProductItemCurrentInCart.get().getImeisChuaBan();
+//      for (ImeiChuaBan imeiChuaBan : imeisInCart){
+//        if (imeiChuaBan.getSoImei().equals(req.getImei())){
+//        }
+//      }
       GioHangChiTiet getProductItemInCartCurrent = findProductItemCurrentInCart.get();
       getProductItemInCartCurrent.setSoLuong(getProductItemInCartCurrent
               .getSoLuong() + req.getAmount());
@@ -463,6 +469,113 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
   }
 
   @Override
+  public OrderItemResponse addProductItemToCartOrderByScanner(OrderItemRequest req) throws Exception {
+    HoaDon findOrderCurrent = orderRepository.findOneById(req.getOrder().getId());
+    Optional<Imei> findImei = imeiCustomRepository.findImeiBySoImei(req.getImei());
+    if (findOrderCurrent == null) {
+      throw new RestApiException("Không tìm thấy đơn hàng!");
+    }
+    if (!findImei.isPresent()) {
+      throw new RestApiException("Imei không tồn tại!");
+    }
+    if (!findImei.get().getTrangThai().equals(StatusImei.NOT_SOLD)
+            && !findImei.get().getTrangThai().equals(StatusImei.PENDING_DELIVERY)) {
+      throw new RestApiException("Imei không khả dụng!");
+    }
+
+    int totalAmount = 0;
+    for (HoaDonChiTiet orderItem : findOrderCurrent.getOrderItems()) {
+      totalAmount += orderItem.getSoLuong();
+    }
+
+    if (totalAmount + req.getAmount() > 4) {
+      throw new RestApiException("Lựa chọn tối đa 4 số lượng sản phẩm!");
+    }
+
+    SanPhamChiTiet sanPhamChiTiet = findImei.get().getSanPhamChiTiet();
+
+    Optional<HoaDonChiTiet> findProductItemCurrentInCartOrder = orderItemRepository.
+            findProductAlreadyExistInCartItemOrder(findImei.get().getSanPhamChiTiet().getId(), req.getOrder().getId());
+
+    if (findProductItemCurrentInCartOrder.isPresent()) {
+      List<ImeiDaBan> imeisInCart = findProductItemCurrentInCartOrder.get().getImeisDaBan();
+      for (ImeiDaBan imeiDaBan : imeisInCart) {
+        if (imeiDaBan.getSoImei().equals(req.getImei())) {
+          throw new RestApiException("Imei đang được chọn trong đơn hàng!");
+        }
+      }
+      HoaDonChiTiet getProductItemInCartOrderCurrent = findProductItemCurrentInCartOrder.get();
+      getProductItemInCartOrderCurrent.setSoLuong(getProductItemInCartOrderCurrent
+              .getSoLuong() + req.getAmount());
+//      findProductItem.get().setSoLuongTonKho(findProductItem.get().getSoLuongTonKho() - req.getAmount());
+//      sanPhamChiTietRepository.save(findProductItem.get());
+      HoaDonChiTiet updatedCartItemOrder = orderItemRepository.save(getProductItemInCartOrderCurrent);
+      findImei.get().setTrangThai(StatusImei.PENDING_DELIVERY);
+      imeiRepository.save(findImei.get());
+
+      ImeiDaBan imeiDaBan = new ImeiDaBan();
+      imeiDaBan.setSoImei(req.getImei());
+      imeiDaBan.setTrangThai(StatusImei.PENDING_DELIVERY);
+      imeiDaBan.setHoaDonChiTiet(updatedCartItemOrder);
+      imeiDaBanCustomRepository.save(imeiDaBan);
+
+      if (findOrderCurrent.getTongTien() != null) {
+        BigDecimal tongTienCurrent = findOrderCurrent.getTongTien();
+        BigDecimal amount = new BigDecimal(req.getAmount());
+        findOrderCurrent.setTongTien(tongTienCurrent.add(sanPhamChiTiet.getDonGia().multiply(amount)));
+
+        if (findOrderCurrent.getKhachCanTra() != null) {
+          BigDecimal khachCanTraCurrent = findOrderCurrent.getKhachCanTra();
+          findOrderCurrent.setKhachCanTra(khachCanTraCurrent.add(sanPhamChiTiet.getDonGia().multiply(amount)));
+        }
+
+        if (findOrderCurrent.getTongTienSauKhiGiam() != null) {
+          BigDecimal tongTienSauKhiGiamCurrent = findOrderCurrent.getTongTienSauKhiGiam();
+          findOrderCurrent.setTongTienSauKhiGiam(tongTienSauKhiGiamCurrent.add(sanPhamChiTiet.getDonGia().multiply(amount)));
+        }
+        orderRepository.save(findOrderCurrent);
+      }
+      return orderItemConverter.convertEntityToResponse(updatedCartItemOrder);
+
+    } else {
+      HoaDonChiTiet orderItem = new HoaDonChiTiet();
+      orderItem.setSoLuong(req.getAmount());
+      orderItem.setSanPhamChiTiet(findImei.get().getSanPhamChiTiet());
+      orderItem.setHoaDon(findOrderCurrent);
+      orderItem.setDonGia(findImei.get().getSanPhamChiTiet().getDonGia());
+//      findProductItem.get().setSoLuongTonKho(findProductItem.get().getSoLuongTonKho() - req.getAmount());
+//      sanPhamChiTietRepository.save(findProductItem.get());
+      HoaDonChiTiet createdOrderItem = orderItemRepository.save(orderItem);
+      findImei.get().setTrangThai(StatusImei.PENDING_DELIVERY);
+      imeiRepository.save(findImei.get());
+
+      ImeiDaBan imeiDaBan = new ImeiDaBan();
+      imeiDaBan.setSoImei(req.getImei());
+      imeiDaBan.setTrangThai(StatusImei.PENDING_DELIVERY);
+      imeiDaBan.setHoaDonChiTiet(createdOrderItem);
+      imeiDaBanCustomRepository.save(imeiDaBan);
+
+      if (findOrderCurrent.getTongTien() != null) {
+        BigDecimal tongTienCurrent = findOrderCurrent.getTongTien();
+        BigDecimal amount = new BigDecimal(req.getAmount());
+        findOrderCurrent.setTongTien(tongTienCurrent.add(sanPhamChiTiet.getDonGia().multiply(amount)));
+
+        if (findOrderCurrent.getKhachCanTra() != null) {
+          BigDecimal khachCanTraCurrent = findOrderCurrent.getKhachCanTra();
+          findOrderCurrent.setKhachCanTra(khachCanTraCurrent.add(sanPhamChiTiet.getDonGia().multiply(amount)));
+        }
+
+        if (findOrderCurrent.getTongTienSauKhiGiam() != null) {
+          BigDecimal tongTienSauKhiGiamCurrent = findOrderCurrent.getTongTienSauKhiGiam();
+          findOrderCurrent.setTongTienSauKhiGiam(tongTienSauKhiGiamCurrent.add(sanPhamChiTiet.getDonGia().multiply(amount)));
+        }
+        orderRepository.save(findOrderCurrent);
+      }
+      return orderItemConverter.convertEntityToResponse(createdOrderItem);
+    }
+  }
+
+  @Override
   public OrderItemResponse updateAmountItemInCartOrder(OrderItemRequest req) throws Exception {
     HoaDon findOrderCurrent = orderRepository.findOneById(req.getOrder().getId());
     Optional<HoaDonChiTiet> findCartItemOrder = orderItemRepository.findById(req.getId());
@@ -633,7 +746,7 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
               findProductById(findCartItemOrder.get().getSanPhamChiTiet().getId());
 
       if (!findCartItemOrder.isPresent()) {
-        throw new RestApiException("Không tìm thấy sản phẩm này trong đơn hàng!");
+        throw new RestApiException("Sản phẩm không tồn tại trong đơn hàng!");
       }
       if (!findProductItem.isPresent()) {
         throw new RestApiException("Sản phẩm không tồn tại!");
@@ -641,7 +754,6 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
       if (findOrderCurrent == null) {
         throw new RestApiException("Đơn hàng không tồn tại!");
       }
-      System.out.println(order.getImei().getSoImei());
       Set<Imei> imeisProduct = findProductItem.get().getImeis();
       imeisProduct.forEach((s) -> {
         if (order.getImei().getSoImei().equals(s.getSoImei())) {
@@ -711,8 +823,6 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
 //    findCartItemOrder.get().setSoLuong(findProductItem.get().getSoLuongTonKho() - req.getAmount());
 //    orderItemRepository.save(findCartItemOrder.get());
     }
-
-
     return null;
   }
 }
