@@ -20,6 +20,8 @@ public interface CartItemService extends GenericService<CartItemResponse, CartIt
 
   OrderItemResponse addProductItemToCartOrder(OrderItemRequest req) throws Exception;
 
+  OrderItemResponse addProductItemToCartOrderByScanner(OrderItemRequest req) throws Exception;
+
   boolean removeCartItemOrderById(String id) throws Exception;
 
   OrderItemResponse refundOrder(OrderItemsCustomRefundRequest req) throws Exception;

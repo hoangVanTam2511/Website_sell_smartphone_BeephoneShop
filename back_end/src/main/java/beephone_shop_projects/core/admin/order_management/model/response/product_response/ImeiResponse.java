@@ -20,7 +20,7 @@ public class ImeiResponse {
 
 //  private Date createdAt;
 //
-//  private String barcode;
+  private String barcode;
 
   private StatusImei trangThai;
 
