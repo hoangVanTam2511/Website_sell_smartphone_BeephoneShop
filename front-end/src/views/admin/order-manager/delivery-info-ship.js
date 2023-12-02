@@ -164,7 +164,6 @@ const DeliveryShipInfo = ({
     )
   }
 
-
   const getAllDistrictGhnByIdProvinceByCustomer = async (provinceId, districtName, wardName) => {
     try {
       const response = await axios.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district`, {

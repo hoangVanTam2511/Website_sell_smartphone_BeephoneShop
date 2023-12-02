@@ -66,21 +66,16 @@ public class BillClientServiceImpl {
     private CartDetailClientRepository cartDetailClientRepository;
 
     public HoaDon createBillClient(BillClientRequest orderRequest) throws Exception {
-        Account khachHang = accountClientRepository.findById(orderRequest.getIdKhachHang()).get();
 
-        if(khachHang.getMa() == "" || khachHang.getMa() == null){
-            Random random = new Random();
-            int number = random.nextInt(10000);
-            String code = String.format("KH%04d", number);
-
-            khachHang.setMa(code);
-            accountClientRepository.save(khachHang);
+        Account khachHang = null;
+        if(!orderRequest.getIdKhachHang().isEmpty()){
+            khachHang= accountClientRepository.findById(orderRequest.getIdKhachHang()).get();
         }
 
         String code =  RandomCodeGenerator.generateRandomNumber();
         HoaDon newOrder = new HoaDon();
         newOrder.setMa(code);
-        newOrder.setAccount(khachHang);
+        newOrder.setAccount(orderRequest.getIdKhachHang().isEmpty() ? null : khachHang);
         newOrder.setVoucher(orderRequest.getVoucher());
         newOrder.setLoaiHoaDon(OrderType.DELIVERY);
         newOrder.setGhiChu(orderRequest.getGhiChu());
@@ -94,9 +89,10 @@ public class BillClientServiceImpl {
         newOrder.setTongTien(orderRequest.getTongTien());
         newOrder.setTongTienSauKhiGiam(orderRequest.getTongTienSauKhiGiam());
         newOrder.setKhachCanTra(orderRequest.getTienKhachTra());
-        newOrder.setPhiShip(new BigDecimal(25600));
+        newOrder.setPhiShip(orderRequest.getPhiShip());
         newOrder.setCreatedAt(new Date());
         newOrder.setTongTien(orderRequest.getTongTien());
+        newOrder.setNgayMongMuonNhan(new Date(orderRequest.getNgayNhanHang()));
         HoaDon createdOrder = hoaDonRepository.save(newOrder);
 
         LichSuHoaDon orderHistory = new LichSuHoaDon();
@@ -122,8 +118,11 @@ public class BillClientServiceImpl {
     }
 
     public String createBillDetail(BillDetailClientRequest bd) throws Exception {
-        GioHang gioHang = cartClientRepository.getGioHangByIDKhachHang(bd.getIdKhachHang());
-        cartDetailClientRepository.deleteCartDetailByIdGioHangAndIdCTSP(gioHang.getId(), bd.getIdSanPhamChiTiet());
+        if(!bd.getIdKhachHang().isEmpty()){
+            GioHang gioHang = cartClientRepository.getGioHangByIDKhachHang(bd.getIdKhachHang());
+            cartDetailClientRepository.deleteCartDetailByIdGioHangAndIdCTSP(gioHang.getId(), bd.getIdSanPhamChiTiet());
+        }
+
         HoaDon bill = billClientRepository.findById(bd.getIdHoaDon()).get();
         HoaDonChiTiet orderItem = new HoaDonChiTiet();
         orderItem.setHoaDon(bill);

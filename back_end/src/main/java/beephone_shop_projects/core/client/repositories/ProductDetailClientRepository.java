@@ -18,13 +18,12 @@ public interface ProductDetailClientRepository extends ISanPhamChiTietRepository
                   sp.id,
                   image.path AS duong_dan,
                   sp.ten_san_pham, 
-                  IF(kmct.don_gia_sau_khuyen_mai is null ,0, kmct.don_gia_sau_khuyen_mai) AS don_gia_sau_khuyen_mai,
+                  IF(spct.don_gia_sau_khuyen_mai is null ,0, spct.don_gia_sau_khuyen_mai) AS don_gia_sau_khuyen_mai,
                   spct.don_gia, 
                   ram.dung_luong as dung_luong_ram,
                   rom.dung_luong as dung_luong_rom
                   FROM san_pham sp
                   JOIN san_pham_chi_tiet spct ON spct.id_san_pham = sp.id
-                  LEFT JOIN khuyen_mai_chi_tiet kmct ON kmct.id_chi_tiet_san_pham = spct.id
                   LEFT JOIN image ON image.id = spct.id_image
                   JOIN ram ON ram.id = spct.id_ram
                   JOIN rom ON rom.id = spct.id_rom
@@ -37,16 +36,16 @@ public interface ProductDetailClientRepository extends ISanPhamChiTietRepository
     @Query(value = """
             SELECT
              spct.id,
-             IF(kmct.don_gia_sau_khuyen_mai is null ,0, kmct.don_gia_sau_khuyen_mai) AS don_gia_sau_khuyen_mai,
+             IF(spct.don_gia_sau_khuyen_mai is null ,0, spct.don_gia_sau_khuyen_mai) AS don_gia_sau_khuyen_mai,
              spct.don_gia,
              spct.so_luong_ton_kho,
              image.path as duong_dan,
              ms.ten_mau_sac,
              ram.dung_luong as dung_luong_ram,
-             rom.dung_luong as dung_luong_rom
+             rom.dung_luong as dung_luong_rom,
+             sp.ten_san_pham
              FROM san_pham sp
              JOIN san_pham_chi_tiet spct ON spct.id_san_pham = sp.id
-             LEFT JOIN khuyen_mai_chi_tiet kmct ON kmct.id_chi_tiet_san_pham = spct.id
              JOIN ram ON ram.id = spct.id_ram
              JOIN rom ON rom.id = spct.id_rom
              LEFT JOIN image ON image.id = spct.id_image
@@ -132,13 +131,12 @@ public interface ProductDetailClientRepository extends ISanPhamChiTietRepository
                   sp.id,    
                   image.path AS duong_dan,
                   sp.ten_san_pham, 
-                  IF(kmct.don_gia_sau_khuyen_mai is null ,0, kmct.don_gia_sau_khuyen_mai) AS don_gia_sau_khuyen_mai,
+                  IF(spct.don_gia_sau_khuyen_mai is null ,0, spct.don_gia_sau_khuyen_mai) AS don_gia_sau_khuyen_mai,
                   spct.don_gia, 
                   ram.dung_luong as dung_luong_ram,
                   rom.dung_luong as dung_luong_rom
                   FROM san_pham sp
                   JOIN san_pham_chi_tiet spct ON spct.id_san_pham = sp.id
-                  LEFT JOIN khuyen_mai_chi_tiet kmct ON kmct.id_chi_tiet_san_pham = spct.id
                   LEFT JOIN image ON image.id = spct.id_image
                   JOIN ram ON ram.id = spct.id_ram
                   JOIN rom ON rom.id = spct.id_rom

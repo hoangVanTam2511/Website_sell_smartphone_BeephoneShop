@@ -36,4 +36,7 @@ public interface ConfigResponce {
     @Value("#{target.so_luong_ton_kho}")
     Integer getSoLuongTonKho();
 
+    @Value("#{target.ten_san_pham}")
+    String getTenSanPham();
+
 }
