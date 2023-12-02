@@ -71,6 +71,7 @@ import PriceSlider from "./rangePriceSlider";
 import InputNumberAmount from "./input-number-amount-product.js";
 import { FaExternalLinkSquareAlt, FaTrashAlt } from "react-icons/fa";
 import { FaEye } from "react-icons/fa6";
+import Scanner from "./scanner";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -5344,8 +5345,8 @@ export function ConfirmAddProduct(props) {
               sx={{ color: "black" }}
               id="alert-dialog-description"
             >
-              Bạn có chắc chắc muốn thêm sản phẩm 
-              <span style={{fontWeight: "500"}}>{" " + name + " "}</span>
+              Bạn có chắc chắc muốn thêm sản phẩm
+              <span style={{ fontWeight: "500" }}>{" " + name + " "}</span>
               ?
             </DialogContentText>
           </DialogContent>
@@ -5392,3 +5393,59 @@ export function ConfirmAddProduct(props) {
     </div>
   );
 }
+export const ScannerBarcode = ({
+  open,
+  close,
+  getResult,
+  refresh
+}) => {
+
+  const [scanning, setScanning] = useState(true);
+
+  // const scan = () => {
+  //   setScanning((scan) => !scan);
+  // }
+
+  const onDetected = (result) => {
+    const getResultByScanner = result.codeResult.code;
+    getResult(getResultByScanner);
+    setScanning(false);
+    close();
+  }
+
+  useEffect(() => {
+    setScanning(true);
+  }, [refresh])
+
+  return (
+    <>
+      <Dialog
+        open={open}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={() => {
+          close();
+          // setScanning(!scanning);
+        }}
+        maxWidth="xxl"
+        maxHeight="xxl"
+      >
+        <DialogContent className="">
+          <div className="mt-2" style={{ width: "800px" }}>
+            <div className="container" style={{}}>
+              <div className="">
+                <div className="mt-1">
+                  <span className="fs-4 fw-bold">Quét Barcode Sản Phẩm</span>
+                </div>
+                <div className="mt-4 text-center" style={{ height: "480px" }}>
+                  {scanning ? <Scanner onDetected={onDetected} /> : null}
+                </div>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+        <div className="mt-3"></div>
+      </Dialog>
+    </>
+  );
+};

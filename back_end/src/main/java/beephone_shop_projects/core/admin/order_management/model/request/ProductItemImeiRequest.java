@@ -20,4 +20,6 @@ public class ProductItemImeiRequest {
 
   private StatusImei trangThai;
 
+  private String barcode;
+
 }

@@ -22,7 +22,12 @@ import beephone_shop_projects.entity.HinhThucThanhToan;
 import beephone_shop_projects.entity.HoaDon;
 import beephone_shop_projects.infrastructure.constant.HttpStatus;
 import beephone_shop_projects.infrastructure.constant.Message;
+import beephone_shop_projects.utils.BarcodeGenerator;
 import beephone_shop_projects.utils.ReadFileExcelUtils;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.oned.Code128Writer;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -45,6 +50,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
@@ -83,6 +90,37 @@ public class TestController {
 
   @Autowired
   private CartItemServiceImpl cartItemService;
+
+  @Autowired
+  private BarcodeGenerator barcodeGenerator;
+
+  @GetMapping("/barcode/{code}")
+  public ResponseEntity<byte[]> generateBarcode(@PathVariable String code) {
+    try {
+      // Tạo mã barcode
+      BitMatrix bitMatrix = new Code128Writer().encode(code,
+              BarcodeFormat.CODE_128,
+              300,
+              100
+      );
+      // Tạo buffered image từ BitMatrix
+      BufferedImage bufferedImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
+
+      // Chuyển đổi BufferedImage thành mảng byte để trả về như là ảnh
+      ByteArrayOutputStream stream = new ByteArrayOutputStream();
+      ImageIO.write(bufferedImage, "png", stream);
+      byte[] imageBytes = stream.toByteArray();
+
+      // Trả về ảnh barcode cùng với link
+      return ResponseEntity.ok()
+              .header("Content-Type", "image/png")
+              .header("Content-Disposition", "inline; filename=barcode.png")
+              .body(imageBytes);
+    } catch (Exception e) {
+      // Xử lý lỗi nếu có
+      return ResponseEntity.status(500).body(null);
+    }
+  }
 
 
   @GetMapping("/test1")
@@ -131,6 +169,12 @@ public class TestController {
   public ResponseObject refund(@RequestBody OrderItemsCustomRefundRequest req) throws Exception {
     OrderItemResponse refundProduct = cartItemService.refundOrder(req);
     return new ResponseObject(refundProduct);
+  }
+
+  @PutMapping("/carts/scanner")
+  public ResponseObject home22222(@RequestBody CartItemRequest req) throws Exception {
+    CartItemResponse addProductItemToCartScanner = cartItemService.addProductItemToCartByScanner(req);
+    return new ResponseObject(addProductItemToCartScanner);
   }
 
   @PutMapping("/carts")

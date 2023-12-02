@@ -39,7 +39,7 @@ public class KhachHangRestcontroller {
         return new ResponsePage(accService.getAll(request));
     }
     @GetMapping("hien-thi")
-    public ResponsePage hienThi(@RequestParam(name = "page", defaultValue = "0") Integer pageNo) {
+    public ResponsePage hienThi(@RequestParam(name = "page", defaultValue = "1") Integer pageNo) {
         return new ResponsePage(accService.getAllKH(pageNo));
     }
 

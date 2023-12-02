@@ -168,6 +168,7 @@ public class ProductServiceImpl extends AbstractServiceImpl<SanPham, ProductResp
             for (ProductItemImeiRequest imei : item.getImeis()) {
               Imei productImei = new Imei();
               productImei.setSoImei(imei.getImei());
+              productImei.setBarcode(imei.getBarcode());
               productImei.setCreatedAt(imei.getCreatedAt());
               productImei.setSanPhamChiTiet(createdProductItem);
               productImei.setTrangThai(imei.getTrangThai());

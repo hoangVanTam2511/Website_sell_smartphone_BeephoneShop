@@ -121,6 +121,7 @@ import RefundOrder from "../views/admin/order-manager/refund-order";
 import RefundDetail from "../views/admin/order-manager/refund-details";
 import UpdateProduct from "../views/admin/order-manager/update-product";
 import ManagementRanks from "../views/admin/rank-manager/management-rank";
+import ManagementProductItems from "../views/admin/order-manager/management-product-items";
 
 export const DefaultRouter = [
   {
@@ -288,6 +289,10 @@ export const DefaultRouter = [
       {
         path: "dashboard/products",
         element: <ManagementProducts />,
+      },
+      {
+        path: "dashboard/products/:id",
+        element: <ManagementProductItems />,
       },
       {
         path: "dashboard/sims",

@@ -25,6 +25,7 @@ import {
   ModalUpdateImeiByProductItem,
   ProductDetailsDialog,
   ProductsDialog,
+  ScannerBarcode,
 } from "./AlertDialogSlide";
 import RemoveOutlinedIcon from "@mui/icons-material/RemoveOutlined";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
@@ -45,10 +46,15 @@ import {
 } from "./text-field-info-ship";
 import QrCodeScannerOutlinedIcon from "@mui/icons-material/QrCodeScannerOutlined";
 import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
+import Scanner from "./scanner";
 
 const TabItem = ({
+  scanner,
+  openScanner,
+  closeScanner,
   openUpdateImei,
   onCloseUpdateImei,
+  onOpenScanner,
   onOpenUpdateImei,
   openImei,
   onCloseImei,
@@ -85,6 +91,8 @@ const TabItem = ({
   const [imeis, setImeis] = useState([]);
   const [selectedImei, setSelectedImei] = useState([]);
   const [selectedImeiRefresh, setSelectedImeiRefresh] = useState([]);
+  const [scannerRef, setScannerRef] = useState([]);
+
 
   const handleOpenImei = () => {
     onOpenImei();
@@ -444,9 +452,9 @@ const TabItem = ({
               >
                 {item && item.sanPhamChiTiet.donGia
                   ? item.sanPhamChiTiet.donGia.toLocaleString("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                    })
+                    style: "currency",
+                    currency: "VND",
+                  })
                   : ""}
               </span>
             </div>
@@ -555,6 +563,13 @@ const TabItem = ({
     },
   ];
 
+
+  const [result, setResult] = useState("");
+
+  const getResult = (data) => {
+    setResult(data);
+  }
+
   return (
     <>
       <div style={{ width: "", height: "auto" }} className="mt-3">
@@ -573,20 +588,18 @@ const TabItem = ({
                 Giỏ hàng
               </span>
             </div>
-            <div className="">
-              {/*
+            <div className="d-flex">
               <Button
-                onClick={() => openProductsDialog()}
+                onClick={() => { onOpenScanner(); setScannerRef([]) }}
                 className="rounded-2 me-2"
                 type="warning"
                 style={{ height: "38px", width: "150px", fontSize: "15px" }}
               >
                 <QrCodeScannerOutlinedIcon sx={{ marginBottom: "2px" }} />
                 <span className='' style={{ fontSize: "15px", fontWeight: "500", marginLeft: "5px", marginTop: "1px" }}>
-                  Quét barcode
+                  Quét Barcode
                 </span>
               </Button>
-*/}
               <Button
                 onClick={() => openProductsDialog()}
                 className="rounded-2 button-mui"
@@ -672,6 +685,8 @@ const TabItem = ({
         refresh={selectedImeiRefresh}
         update={updateAmount}
       />
+
+      <ScannerBarcode open={openScanner} close={closeScanner} getResult={scanner} refresh={scannerRef} />
 
       {isLoading && <LoadingIndicator />}
     </>
