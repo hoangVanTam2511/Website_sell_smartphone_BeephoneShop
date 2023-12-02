@@ -1,6 +1,108 @@
 import { TextField } from "@mui/material"
 import { useEffect, useState } from "react";
 
+
+export const TextFieldFullName = ({ fullNameDefault, getFullName, update }) => {
+  const [fullName, setFullName] = useState(fullNameDefault);
+  const [initial, setInitial] = useState();
+  const setInitialValue = (value) => {
+    setFullName(value);
+    setInitial(value);
+  }
+
+  useEffect(() => {
+    setFullName(fullNameDefault);
+  }, [fullNameDefault])
+
+  return (
+    <>
+      <TextField label="Nhập họ và tên"
+        value={fullName}
+        onChange={(e) => { setFullName(e.target.value) }}
+        onBlur={() => {
+          if (fullName !== initial) {
+            getFullName(fullName); update(fullName)
+          }
+        }
+        }
+        onFocus={() => setInitialValue(fullName)}
+        style={{ width: "100%" }}
+        inputProps={{
+          style: {
+          },
+        }}
+        size='small' className='custom' />
+    </>
+  )
+}
+export const TextFieldSdt = ({ sdtDefault, getSdt, update }) => {
+  const [sdt, setSdt] = useState(sdtDefault);
+  const [initial, setInitial] = useState();
+  const setInitialValue = (value) => {
+    setSdt(value);
+    setInitial(value);
+  }
+
+  useEffect(() => {
+    setSdt(sdtDefault);
+  }, [sdtDefault])
+
+  return (
+    <>
+      <TextField label="Nhập số điện thoại"
+        value={sdt}
+        onChange={(e) => { setSdt(e.target.value) }}
+        onBlur={() => {
+          if (sdt !== initial) {
+            getSdt(sdt); update(sdt)
+          }
+        }
+        }
+        onFocus={() => setInitialValue(sdt)}
+        style={{ width: "100%" }}
+        inputProps={{
+          style: {
+          },
+        }}
+        size='small' className='custom' />
+    </>
+  )
+}
+
+export const TextFieldEmail = ({ emailDefault, getEmail, update }) => {
+  const [customerEmail, setCustomerEmai] = useState(emailDefault);
+  const [initial, setInitial] = useState();
+  const setInitialValue = (value) => {
+    setCustomerEmai(value);
+    setInitial(value);
+  }
+
+  useEffect(() => {
+    setCustomerEmai(emailDefault);
+  }, [emailDefault])
+
+  return (
+    <>
+      <TextField label="Nhập email"
+        value={customerEmail}
+        onChange={(e) => { setCustomerEmai(e.target.value) }}
+        onBlur={() => {
+          if (customerEmail !== initial) {
+            getEmail(customerEmail); update(customerEmail)
+          }
+        }
+        }
+        onFocus={() => setInitialValue(customerEmail)}
+        style={{ width: "100%" }}
+        inputProps={{
+          style: {
+          },
+        }}
+        size='small' className='custom' />
+    </>
+  )
+}
+
 export const TextFieldPhone = ({ phoneDefault, getPhone, update }) => {
   const [customerPhone, setCustomerPhone] = useState(phoneDefault);
   const [initial, setInitial] = useState();

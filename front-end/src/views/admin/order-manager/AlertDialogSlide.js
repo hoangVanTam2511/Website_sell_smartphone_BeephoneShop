@@ -1,3 +1,6 @@
+import Html5QrcodePlugin from './Html5QrcodePlugin.jsx';
+import ResultContainerPlugin from './ResultContainerPlugin.jsx';
+import styleReader from './html5-qrcode-css.css';
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Slider from "@mui/material/Slider";
@@ -72,6 +75,7 @@ import InputNumberAmount from "./input-number-amount-product.js";
 import { FaExternalLinkSquareAlt, FaTrashAlt } from "react-icons/fa";
 import { FaEye } from "react-icons/fa6";
 import Scanner from "./scanner";
+import AppBarCode from "./App";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -5402,20 +5406,28 @@ export const ScannerBarcode = ({
 
   const [scanning, setScanning] = useState(true);
 
-  // const scan = () => {
-  //   setScanning((scan) => !scan);
-  // }
-
-  const onDetected = (result) => {
-    const getResultByScanner = result.codeResult.code;
-    getResult(getResultByScanner);
-    setScanning(false);
-    close();
-  }
-
   useEffect(() => {
     setScanning(true);
   }, [refresh])
+
+  const onNewScanResult = (decodedText, decodedResult) => {
+    console.log(decodedText);
+    getResult(decodedText);
+    setScanning(false);
+  };
+
+  const Barcode = () => {
+    return (
+      <div className="mx-auto" style={{ width: "500px" }}>
+        <Html5QrcodePlugin
+          fps={10}
+          qrbox={250}
+          disableFlip={false}
+          qrCodeSuccessCallback={onNewScanResult}
+        />
+      </div>
+    )
+  }
 
   return (
     <>
@@ -5425,26 +5437,117 @@ export const ScannerBarcode = ({
         keepMounted
         onClose={() => {
           close();
-          // setScanning(!scanning);
+          // setScanning(true);
         }}
         maxWidth="xxl"
         maxHeight="xxl"
       >
         <DialogContent className="">
-          <div className="mt-2" style={{ width: "800px" }}>
+          <div className="mt-2" style={{ width: "600px" }}>
             <div className="container" style={{}}>
               <div className="">
                 <div className="mt-1">
                   <span className="fs-4 fw-bold">Quét Barcode Sản Phẩm</span>
                 </div>
-                <div className="mt-4 text-center" style={{ height: "480px" }}>
-                  {scanning ? <Scanner onDetected={onDetected} /> : null}
+                <div className="mt-4 text-center" style={{}}>
+                  {scanning === true && open === true ?
+                    <Barcode /> : "Đang chờ ..."
+                  }
                 </div>
               </div>
             </div>
           </div>
         </DialogContent>
         <div className="mt-3"></div>
+      </Dialog>
+    </>
+  );
+};
+export const ModalViewImeiHadBuy = ({
+  open,
+  close,
+  imeis,
+}) => {
+
+  return (
+    <>
+      <Dialog
+        open={open}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={() => {
+          close(); /*  setSelectedImei([])  */
+        }}
+        maxWidth="xxl"
+        maxHeight="xxl"
+        sx={{ marginBottom: "170px" }}
+      >
+        <DialogContent className="">
+          <div className="mt-2" style={{ width: "900px" }}>
+            <div className="container" style={{}}>
+              <div className="header-title">
+                <div className="mt-1">
+                  <span className="fs-4" style={{ fontWeight: "500" }}>
+                    Danh sách IMEI đã bán
+                  </span>
+                </div>
+              </div>
+              <div className="mt-3 pt-2">
+                <div className="me-2" style={{}}>
+                  <table className="table" style={{ borderRadius: "10px" }}>
+                    <thead style={{ borderRadius: "10px" }}>
+                      <tr>
+                        <th scope="col" className="text-center text-dark">
+                          STT
+                        </th>
+                        <th scope="col" className="text-center text-dark">
+                          Imei
+                        </th>
+                        <th scope="col" className="text-center text-dark">
+                          Trạng Thái
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {imeis.length
+                        ? imeis.map((item, index) => (
+                          <tr
+                          >
+                            <td className="text-center">{index + 1}</td>
+                            <td className="text-center">{item.soImei}</td>
+                            <td className="text-center">
+                              <div
+                                className={
+                                  "badge-success rounded-pill mx-auto"
+                                }
+                                style={{
+                                  height: "35px",
+                                  width: "105px",
+                                  padding: "4px",
+                                }}
+                              >
+                                <span
+                                  className="text-white"
+                                  style={{
+                                    fontSize: "14px",
+                                    fontWeight: "400",
+                                  }}
+                                >
+                                  Đã Bán
+                                </span>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                        : ""}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+        <div className="mt-2"></div>
       </Dialog>
     </>
   );

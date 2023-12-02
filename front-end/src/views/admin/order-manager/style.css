@@ -17,6 +17,9 @@
   .wrap-printer{
     display: none;
   }
+  .wrap-printer-delivery{
+    display: none;
+  }
 }
 @media print {
 	.qrcode-none  {
@@ -108,6 +111,10 @@ clip-path: inset(0 100% 0 0);
 }
 .txt-price{
   color: #dc1111;
+}
+.txt-price-discount{
+  color: gray;
+  text-decoration: line-through;
 }
 .badge-success{
   background-color: #09a129;

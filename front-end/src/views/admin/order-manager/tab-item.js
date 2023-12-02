@@ -21,6 +21,7 @@ import Paper from "@mui/material/Paper";
 import axios from "axios";
 import { styled } from "@mui/material/styles";
 import { Button, Table as TableAntd } from "antd";
+import { BiBarcodeReader } from "react-icons/bi";
 import {
   ModalUpdateImeiByProductItem,
   ProductDetailsDialog,
@@ -47,6 +48,7 @@ import {
 import QrCodeScannerOutlinedIcon from "@mui/icons-material/QrCodeScannerOutlined";
 import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import Scanner from "./scanner";
+import { FaBarcode } from "react-icons/fa6";
 
 const TabItem = ({
   scanner,
@@ -369,10 +371,10 @@ const TabItem = ({
   const CartEmpty = () => {
     return (
       <>
-        <div className="text-center" style={{ height: "324px" }}>
+        <div className="text-center mt-4" style={{ height: "324px" }}>
           <img
-            src="https://img.freepik.com/premium-vector/shopping-cart-with-cross-mark-wireless-paymant-icon-shopping-bag-failure-paymant-sign-online-shopping-vector_662353-912.jpg"
-            style={{ width: "240px" }}
+            src="https://res.cloudinary.com/dqwfbbd9g/image/upload/v1701448962/yy04ozpcgnsz3lv4r2h2.png"
+            style={{ width: "290px" }}
           />
           <p
             className="text-dark"
@@ -393,10 +395,20 @@ const TabItem = ({
   const cartTotalPrice = () => {
     let total = 0;
     cartItems.map((item) => {
-      total += item.donGia * item.soLuong;
+      if (item.sanPhamChiTiet.donGiaSauKhuyenMai !== null || item.sanPhamChiTiet.donGiaSauKhuyenMai !== 0) {
+        total += item.sanPhamChiTiet.donGiaSauKhuyenMai * item.soLuong;
+      }
+      else {
+        total += item.donGia * item.soLuong;
+      }
     });
     return total;
   };
+
+  const countPrice = (price, afterDiscount) => {
+    return price - afterDiscount;
+
+  }
 
   const columns = [
     {
@@ -405,7 +417,7 @@ const TabItem = ({
       align: "center",
       render: (text, item) => (
         <div className="d-flex">
-          <div className="product-img">
+          <div className="product-img" style={{ position: "relative" }}>
             <img
               src={
                 item &&
@@ -417,6 +429,35 @@ const TabItem = ({
               alt=""
               style={{ width: "125px", height: "125px" }}
             />
+            {item &&
+              item.sanPhamChiTiet.donGiaSauKhuyenMai &&
+              <div
+                className="category"
+                style={{
+                  userSelect: "none",
+                  backgroundColor: "#ffcc00",
+                  position: "absolute",
+                  top: "0px",
+                  borderTopLeftRadius: `8px`,
+                  fontSize: "11px",
+                  borderTopRightRadius: `20px`,
+                  borderBottomRightRadius: `20px`,
+                  fontWeight: "600",
+                  padding: "4px 8px", // Add padding for better visibility
+                  // width: "auto",
+                  // height: "30px"
+                  marginLeft: "10px",
+                  // marginTop: "25px",
+                }}
+              >
+                Giảm{' '}
+                {countPrice(item.sanPhamChiTiet.donGia, item.sanPhamChiTiet.donGiaSauKhuyenMai).toLocaleString("vi-VN", {
+                  style: "currency",
+                  currency: "VND",
+                })
+                }
+              </div>
+            }
           </div>
           <div className="product ms-3 text-start">
             <Tooltip
@@ -446,9 +487,19 @@ const TabItem = ({
               </div>
             </Tooltip>
             <div className="mt-2">
-              <span
-                className="product-price txt-price"
+              <span className="txt-price"
                 style={{ fontSize: "17.5px", fontWeight: "" }}
+              >
+                {item && item.sanPhamChiTiet.donGiaSauKhuyenMai
+                  ? item.sanPhamChiTiet.donGiaSauKhuyenMai.toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  })
+                  : ""}
+              </span>
+              <span
+                className={item.sanPhamChiTiet.donGiaSauKhuyenMai !== null || item.sanPhamChiTiet.donGiaSauKhuyenMai !== 0 ? "txt-price-discount ms-2" : "text-price"}
+                style={{ fontSize: "17px", fontWeight: "" }}
               >
                 {item && item.sanPhamChiTiet.donGia
                   ? item.sanPhamChiTiet.donGia.toLocaleString("vi-VN", {
@@ -485,11 +536,12 @@ const TabItem = ({
           style={{ fontSize: "17.5px", fontWeight: "" }}
           className="txt-price"
         >
-          {item &&
-            total(item.donGia, item.soLuong).toLocaleString("vi-VN", {
+          {(item &&
+            total(item.soLuong, item.sanPhamChiTiet.donGiaSauKhuyenMai !== null || item.sanPhamChiTiet.donGiaSauKhuyenMai !== 0 ? item.sanPhamChiTiet.donGiaSauKhuyenMai : item.sanPhamChiTiet.donGia).toLocaleString("vi-VN", {
               style: "currency",
               currency: "VND",
-            })}
+            })) ||
+            0}
         </span>
       ),
     },
@@ -593,10 +645,9 @@ const TabItem = ({
                 onClick={() => { onOpenScanner(); setScannerRef([]) }}
                 className="rounded-2 me-2"
                 type="warning"
-                style={{ height: "38px", width: "150px", fontSize: "15px" }}
+                style={{ height: "38px", width: "120px", fontSize: "15px" }}
               >
-                <QrCodeScannerOutlinedIcon sx={{ marginBottom: "2px" }} />
-                <span className='' style={{ fontSize: "15px", fontWeight: "500", marginLeft: "5px", marginTop: "1px" }}>
+                <span className='' style={{ fontSize: "15px", fontWeight: "500", marginBottom: "2px" }}>
                   Quét Barcode
                 </span>
               </Button>
