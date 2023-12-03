@@ -14,6 +14,8 @@ import java.util.List;
 @NoArgsConstructor
 public class OrderItemsCustomRefundRequest {
 
+  private String id;
+
   private List<OrderItemRefundRequest> orderItemRefunds;
 
   private Integer amount;
