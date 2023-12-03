@@ -73,10 +73,15 @@ import { OrderStatusString, OrderTypeString, Notistack } from "./enum";
 import useCustomSnackbar from "../../../utilities/notistack";
 import {
   TextFieldAddress,
+  TextFieldEmail,
+  TextFieldFullName,
   TextFieldName,
   TextFieldPhone,
+  TextFieldSdt,
 } from "./text-field-info-ship";
 import DeliveryInfoShip from "./delivery-info-ship";
+import AppBarCode from "./App";
+import Html5QrcodePlugin from "./Html5QrcodePlugin";
 
 const IOSSwitch = styled((props) => (
   <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
@@ -186,7 +191,22 @@ const PointOfSales = () => {
   const [customerAddressList, setCustomerAddressList] = useState([]);
   const [isShow, setIsShow] = useState(false);
 
+  const [confirm, setConfirm] = useState(false);
+  const [fullName, setFullName] = useState("");
+  const [sdt, setSdt] = useState("");
+  const [email, setEmail] = useState("");
+
   const [openScanner, setOpenScanner] = useState(false);
+
+  const getFullName = (value) => {
+    setFullName(value);
+  }
+  const getSdt = (value) => {
+    setSdt(value);
+  }
+  const getEmail = (value) => {
+    setEmail(value);
+  }
 
   const handleOpenScanner = () => {
     setOpenScanner(true);
@@ -195,6 +215,113 @@ const PointOfSales = () => {
   const handleCloseOpenScanner = () => {
     setOpenScanner(false);
   }
+
+  const updateSdt = async (sdt) => {
+    const orderRequest = {
+      soDienThoai: sdt.trim() === "" ? null : sdt,
+      isUpdateSdt: true,
+      isPayment: false,
+      isUpdateType: false,
+      isUpdateAccount: false,
+      isUpdateInfoShip: false,
+      isUpdateVoucher: false,
+      isUpdateNoteShip: false,
+      isUpdateNameShip: true,
+      isUpdateAddressShip: false,
+      isUpdatePhoneShip: false,
+      isUpdateInfoShipByCustomer: false,
+      isUpdateFullName: false,
+      isUpdateEmail: false,
+    };
+    try {
+      await axios
+        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          params: {
+            isUpdateStatusOrderDelivery: false,
+          },
+        })
+        .then((response) => {
+          const data = response.data.data;
+          setOrder(data);
+          setSdt(data.soDienThoai === null ? "" : data.soDienThoai);
+          getAllOrdersPending();
+        });
+    } catch (error) { }
+  };
+  const updateEmail = async (email) => {
+    const orderRequest = {
+      email: email.trim() === "" ? null : email,
+      isUpdateSdt: false,
+      isPayment: false,
+      isUpdateType: false,
+      isUpdateAccount: false,
+      isUpdateInfoShip: false,
+      isUpdateVoucher: false,
+      isUpdateNoteShip: false,
+      isUpdateNameShip: true,
+      isUpdateAddressShip: false,
+      isUpdatePhoneShip: false,
+      isUpdateInfoShipByCustomer: false,
+      isUpdateFullName: false,
+      isUpdateEmail: true,
+    };
+    try {
+      await axios
+        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          params: {
+            isUpdateStatusOrderDelivery: false,
+          },
+        })
+        .then((response) => {
+          const data = response.data.data;
+          setOrder(data);
+          setEmail(data.email === null ? "" : data.email);
+          getAllOrdersPending();
+        });
+    } catch (error) { }
+  };
+
+  const updateFullName = async (name) => {
+    const orderRequest = {
+      hoVaTen: name.trim() === "" ? null : name,
+      isUpdateSdt: false,
+      isPayment: false,
+      isUpdateType: false,
+      isUpdateAccount: false,
+      isUpdateInfoShip: false,
+      isUpdateVoucher: false,
+      isUpdateNoteShip: false,
+      isUpdateNameShip: true,
+      isUpdateAddressShip: false,
+      isUpdatePhoneShip: false,
+      isUpdateInfoShipByCustomer: false,
+      isUpdateFullName: true,
+      isUpdateEmail: false,
+    };
+    try {
+      await axios
+        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          params: {
+            isUpdateStatusOrderDelivery: false,
+          },
+        })
+        .then((response) => {
+          const data = response.data.data;
+          setOrder(data);
+          setFullName(data.hoVaTen === null ? "" : data.hoVaTen);
+          getAllOrdersPending();
+        });
+    } catch (error) { }
+  };
 
   const [selectedValuePaymentMethod, setSelectedValuePaymentMethod] =
     useState("Tiền mặt");
@@ -273,6 +400,9 @@ const PointOfSales = () => {
       isUpdateNameShip: false,
       isUpdateAddressShip: false,
       isUpdatePhoneShip: false,
+      isUpdateSdt: false,
+      isUpdateFullName: false,
+      isUpdateEmail: false,
     };
     try {
       await axios
@@ -318,6 +448,9 @@ const PointOfSales = () => {
       isUpdateVoucher: false,
       isUpdateInfoShipByCustomer: false,
       isUpdateType: false,
+      isUpdateSdt: false,
+      isUpdateFullName: false,
+      isUpdateEmail: false,
     };
     try {
       await axios
@@ -350,6 +483,9 @@ const PointOfSales = () => {
       isUpdateInfoShip: false,
       isUpdateVoucher: false,
       isUpdateInfoShipByCustomer: false,
+      isUpdateSdt: false,
+      isUpdateFullName: false,
+      isUpdateEmail: false,
     };
     try {
       await axios
@@ -382,6 +518,9 @@ const PointOfSales = () => {
       isUpdateVoucher: false,
       isUpdateInfoShipByCustomer: false,
       isUpdateType: false,
+      isUpdateSdt: false,
+      isUpdateFullName: false,
+      isUpdateEmail: false,
     };
     try {
       await axios
@@ -416,6 +555,9 @@ const PointOfSales = () => {
       isUpdateAddressShip: false,
       isUpdatePhoneShip: false,
       isUpdateInfoShipByCustomer: false,
+      isUpdateSdt: false,
+      isUpdateFullName: false,
+      isUpdateEmail: false,
     };
     try {
       await axios
@@ -511,6 +653,9 @@ const PointOfSales = () => {
       isUpdateAddressShip: false,
       isUpdatePhoneShip: false,
       isUpdateInfoShipByCustomer: false,
+      isUpdateSdt: false,
+      isUpdateFullName: false,
+      isUpdateEmail: false,
     };
     try {
       await axios
@@ -554,6 +699,9 @@ const PointOfSales = () => {
       isUpdateAddressShip: false,
       isUpdatePhoneShip: false,
       isUpdateInfoShipByCustomer: false,
+      isUpdateSdt: false,
+      isUpdateFullName: false,
+      isUpdateEmail: false,
     };
     try {
       await axios
@@ -618,21 +766,42 @@ const PointOfSales = () => {
     }
   };
 
+  const divRef = useRef(null);
+  const scrollToDiv = () => {
+    const { top, height } = divRef.current.getBoundingClientRect();
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const offset = top + scrollTop - (window.innerHeight - height) / 2;
+
+    window.scrollTo({
+      top: offset,
+      behavior: 'smooth',
+    });
+  };
+
   const { handleOpenAlertVariant } = useCustomSnackbar();
 
   const [openDialogConfirmPayment, setOpenDialogConfirmPayment] =
     useState(false);
 
+  const checkInfoGuest = () => {
+    if (order.account === null) {
+      if (fullName.trim() === "" || sdt.trim() === "") {
+        return true;
+      }
+      return false;
+    }
+  }
+
   const handleOpenDialogConfirmPayment = () => {
+    setConfirm(true);
+    console.log(checkInfoGuest());
+    if (checkInfoGuest() === true) {
+      scrollToDiv();
+      return;
+    }
     if (cartItems && cartItems.length == 0) {
       handleOpenAlertVariant("Giỏ hàng chưa có sản phẩm!", Notistack.ERROR);
     }
-    // else if (customerPaymentFormat === "" && delivery === false) {
-    //   handleOpenAlertVariant("Vui lòng nhập số tiền thanh toán!", Notistack.ERROR);
-    // }
-    // else if (paymentWhenReceive === false && delivery === true && customerPaymentFormat === "") {
-    //   handleOpenAlertVariant("Vui lòng nhập số tiền thanh toán!", Notistack.ERROR);
-    // }
     else if (
       customerPayment < handleCountTotalMoneyCustomerNeedPay() &&
       delivery == false
@@ -724,6 +893,9 @@ const PointOfSales = () => {
       isUpdateNameShip: false,
       isUpdateAddressShip: false,
       isUpdatePhoneShip: false,
+      isUpdateSdt: false,
+      isUpdateFullName: false,
+      isUpdateEmail: false,
     };
     try {
       await axios
@@ -762,6 +934,9 @@ const PointOfSales = () => {
       isUpdateNameShip: false,
       isUpdateAddressShip: false,
       isUpdatePhoneShip: false,
+      isUpdateSdt: false,
+      isUpdateFullName: false,
+      isUpdateEmail: false,
       account: {
         id: id,
       },
@@ -804,6 +979,9 @@ const PointOfSales = () => {
       isUpdateNameShip: false,
       isUpdateAddressShip: false,
       isUpdatePhoneShip: false,
+      isUpdateSdt: false,
+      isUpdateFullName: false,
+      isUpdateEmail: false,
     };
     if (idVoucher === null && loading) {
       setLoadingChild(true);
@@ -1028,6 +1206,7 @@ const PointOfSales = () => {
         const order = response && response.data.data[0];
         navigate(`/dashboard/point-of-sales/${order.ma}`);
         setValueTabs(1);
+        setCartId((response && response.data.data[0].cart.id) || "");
 
         if (order.loaiHoaDon === OrderTypeString.DELIVERY) {
           setCustomerNameShip(
@@ -1073,8 +1252,24 @@ const PointOfSales = () => {
               : ""
           );
         }
+        setEmail(
+          order.email != null
+            ? order.email
+            : ""
+        );
+        setSdt(
+          order.soDienThoai != null
+            ? order.soDienThoai
+            : ""
+        );
+        setFullName(
+          order.hoVaTen != null
+            ? order.hoVaTen
+            : ""
+        );
         setOrder(order);
-        setCartId((response && response.data.data[0].cart.id) || "");
+        setConfirm(false);
+        console.log((order && order.cart.id) || "");
         // setShipFee(response && response.data.data[0].phiShip || 0);
         setDelivery(
           response &&
@@ -1168,6 +1363,7 @@ const PointOfSales = () => {
         //
         //   console.log(valueTabs)
 
+        setCartId((order && order.cart.id) || "");
         const indexTab = data.indexOf(order);
         setValueTabs(indexTab + 1);
 
@@ -1216,12 +1412,29 @@ const PointOfSales = () => {
           );
         }
 
+        setEmail(
+          order.email != null
+            ? order.email
+            : ""
+        );
+        setSdt(
+          order.soDienThoai != null
+            ? order.soDienThoai
+            : ""
+        );
+        setFullName(
+          order.hoVaTen != null
+            ? order.hoVaTen
+            : ""
+        );
+
+        console.log((order && order.cart.id) || "");
         setOrder(order);
-        setCartId((order && order.cart.id) || "");
         // setShipFee(order && order.phiShip || 0);
         setDelivery(
           order && order.loaiHoaDon === OrderTypeString.DELIVERY ? true : false
         );
+        setConfirm(false);
         console.log(order && order.loaiHoaDon);
         setCartItems(order && order.cart.cartItems);
         const account = order && order.account;
@@ -1464,6 +1677,7 @@ const PointOfSales = () => {
           // setHadPaymentBank(false);
         }
 
+        setConfirm(false);
         setCustomerNameShip(
           order.loaiHoaDon === OrderTypeString.DELIVERY &&
             order.tenNguoiNhan !== null
@@ -1505,6 +1719,21 @@ const PointOfSales = () => {
             ? order.ghiChu
             : ""
         );
+        setEmail(
+          lastOrder.email != null
+            ? lastOrder.email
+            : ""
+        );
+        setSdt(
+          lastOrder.soDienThoai != null
+            ? lastOrder.soDienThoai
+            : ""
+        );
+        setFullName(
+          lastOrder.hoVaTen != null
+            ? lastOrder.hoVaTen
+            : ""
+        );
 
         setDelivery(
           lastOrder.loaiHoaDon === OrderTypeString.DELIVERY ? true : false
@@ -1543,7 +1772,7 @@ const PointOfSales = () => {
 
   const handleAddOrderPending = async () => {
     setIsLoading(true);
-    if (orders.length >= 5) {
+    if (orders.length >= 6) {
       handleOpenAlertVariant("Tối đa 6 tab!", "warning");
       setIsLoading(false);
     } else {
@@ -1570,6 +1799,7 @@ const PointOfSales = () => {
         setShipFee(0);
         setDiscount("");
         setIdVoucher("");
+        setConfirm(false);
         setDiscountValue(0);
         setIdCustomer("");
         setCustomerName("");
@@ -1583,7 +1813,12 @@ const PointOfSales = () => {
         setCustomerProvinceShip("");
         setCustomerDistrictShip("");
         setCustomerNoteShip("");
+
+        setFullName("");
+        setEmail("");
+        setSdt("");
         setIsLoading(false);
+
       } catch (error) {
         setIsLoading(false);
         console.log(error);
@@ -1706,6 +1941,23 @@ const PointOfSales = () => {
         : ""
     );
 
+    setEmail(
+      order.email != null
+        ? order.email
+        : ""
+    );
+    setSdt(
+      order.soDienThoai != null
+        ? order.soDienThoai
+        : ""
+    );
+    setFullName(
+      order.hoVaTen != null
+        ? order.hoVaTen
+        : ""
+    );
+
+    setConfirm(false);
     const payments = order.paymentMethods;
     if (payments.length > 0) {
       setPaymentHistories(payments);
@@ -1811,7 +2063,12 @@ const PointOfSales = () => {
     let total = 0;
     cartItems &&
       cartItems.map((item) => {
-        total += item.donGia * item.soLuong;
+        if (item.sanPhamChiTiet.donGiaSauKhuyenMai !== null && item.sanPhamChiTiet.donGiaSauKhuyenMai !== 0) {
+          total += item.sanPhamChiTiet.donGiaSauKhuyenMai * item.soLuong;
+        }
+        else {
+          total += item.donGia * item.soLuong;
+        }
       });
     const result = customerPayment - (total + shipFee - discountValue || 0);
     return result;
@@ -1820,7 +2077,12 @@ const PointOfSales = () => {
     let total = 0;
     cartItems &&
       cartItems.map((item) => {
-        total += item.donGia * item.soLuong;
+        if (item.sanPhamChiTiet.donGiaSauKhuyenMai !== null && item.sanPhamChiTiet.donGiaSauKhuyenMai !== 0) {
+          total += item.sanPhamChiTiet.donGiaSauKhuyenMai * item.soLuong;
+        }
+        else {
+          total += item.donGia * item.soLuong;
+        }
       });
     const surplus = customerPayment - (total + shipFee - discountValue || 0);
     const result = surplus.toLocaleString("vi-VN", {
@@ -1833,7 +2095,12 @@ const PointOfSales = () => {
     let total = 0;
     cartItems &&
       cartItems.map((item) => {
-        total += item.donGia * item.soLuong;
+        if (item.sanPhamChiTiet.donGiaSauKhuyenMai !== null && item.sanPhamChiTiet.donGiaSauKhuyenMai !== 0) {
+          total += item.sanPhamChiTiet.donGiaSauKhuyenMai * item.soLuong;
+        }
+        else {
+          total += item.donGia * item.soLuong;
+        }
       });
     return total;
   };
@@ -1841,7 +2108,12 @@ const PointOfSales = () => {
     let total = 0;
     cartItems &&
       cartItems.map((item) => {
-        total += item.donGia * item.soLuong;
+        if (item.sanPhamChiTiet.donGiaSauKhuyenMai !== null && item.sanPhamChiTiet.donGiaSauKhuyenMai !== 0) {
+          total += item.sanPhamChiTiet.donGiaSauKhuyenMai * item.soLuong;
+        }
+        else {
+          total += item.donGia * item.soLuong;
+        }
       });
     const result = total.toLocaleString("vi-VN", {
       style: "currency",
@@ -1853,7 +2125,12 @@ const PointOfSales = () => {
     let total = 0;
     cartItems &&
       cartItems.map((item) => {
-        total += item.donGia * item.soLuong;
+        if (item.sanPhamChiTiet.donGiaSauKhuyenMai !== null && item.sanPhamChiTiet.donGiaSauKhuyenMai !== 0) {
+          total += item.sanPhamChiTiet.donGiaSauKhuyenMai * item.soLuong;
+        }
+        else {
+          total += item.donGia * item.soLuong;
+        }
       });
     const result = total + shipFee - (discountValue || 0);
     return result;
@@ -1863,7 +2140,12 @@ const PointOfSales = () => {
     let total = 0;
     cartItems &&
       cartItems.map((item) => {
-        total += item.donGia * item.soLuong;
+        if (item.sanPhamChiTiet.donGiaSauKhuyenMai !== null && item.sanPhamChiTiet.donGiaSauKhuyenMai !== 0) {
+          total += item.sanPhamChiTiet.donGiaSauKhuyenMai * item.soLuong;
+        }
+        else {
+          total += item.donGia * item.soLuong;
+        }
       });
     let totalFinal = total + shipFee - (discountValue || 0);
     result = totalFinal.toLocaleString("vi-VN", {
@@ -1885,19 +2167,19 @@ const PointOfSales = () => {
     }
   };
 
-  const isMounted = useRef(false);
+  // const isMounted = useRef(false);
   useEffect(() => {
-    if (!isMounted.current) {
-      isMounted.current = true;
-      setIsLoading(true);
-      getAllOrdersPending();
-      if (id) {
-        getOrderPendingById(id);
-      } else {
-        getOrderPendingDefaultFirst();
-      }
-      getAllCustomers();
+    // if (!isMounted.current) {
+    // isMounted.current = true;
+    setIsLoading(true);
+    getAllOrdersPending();
+    if (id) {
+      getOrderPendingById(id);
+    } else {
+      getOrderPendingDefaultFirst();
     }
+    getAllCustomers();
+    // }
   }, []);
 
   const [openModalConfirmRedirectPayment, setOpenModalConfirmRedirectPayment] =
@@ -2018,6 +2300,7 @@ const PointOfSales = () => {
   };
 
   const addCartItemsToCart = async (cartItems) => {
+    console.log(cartId);
     setIsLoading(true);
     const data = {
       amount: cartItems.amount,
@@ -2030,6 +2313,7 @@ const PointOfSales = () => {
       },
       imeis: cartItems.imeis,
     };
+    console.log(data);
     try {
       await axios.put(`http://localhost:8080/api/carts`, data, {
         headers: {
@@ -2177,12 +2461,12 @@ const PointOfSales = () => {
   const [itemId, setItemId] = React.useState("");
 
   const handleChange = (event, newValue) => {
-    setIsLoading(true);
+    // setIsLoading(true);
     setValueTabs(newValue);
     getOrderPendingByTabIndex(newValue);
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 500);
+    // setTimeout(() => {
+    //   setIsLoading(false);
+    // }, 500);
   };
 
   const StyledBadge = styled(Badge)(({ theme }) => ({
@@ -2271,7 +2555,7 @@ const PointOfSales = () => {
                                     textTransform: "capitalize",
                                   }}
                                 >
-                                  Đơn hàng {item.ma.substring(8)}
+                                  HD000{item.ma.substring(10)}
                                 </span>
                                 <StyledBadge
                                   showZero={true}
@@ -2424,7 +2708,7 @@ const PointOfSales = () => {
               "0 0.1rem 0.3rem #00000020",
           }}
         >
-          <div className="d-flex justify-content-between mt-1">
+          <div className="d-flex justify-content-between mt-1" ref={divRef}>
             <div className="ms-2" style={{ marginTop: "5px" }}>
               <span
                 className=""
@@ -2459,64 +2743,70 @@ const PointOfSales = () => {
               borderWidth: "2px",
             }}
           ></div>
-          <div className="d-flex ms-2 mt-4">
-            <div className="d-flex">
-              <div
-                className=""
-                style={{ marginTop: "5px", width: "200px", height: "35px" }}
-              >
-                Tên khách hàng
-              </div>
-              {!isLoading && customerName === "" ? (
-                <div
-                  className="rounded-pill"
-                  style={{
-                    height: "35px",
-                    width: "auto",
-                    padding: "5px",
-                    backgroundColor: "#e1e1e1",
-                  }}
-                >
-                  <span className="text-dark p-2" style={{ fontSize: "14px" }}>
-                    Khách hàng lẻ
+          {order.account ?
+            <>
+              <div className="d-flex ms-2 mt-4 account">
+                <div className="d-flex">
+                  <div
+                    className=""
+                    style={{ marginTop: "5px", width: "200px", height: "35px" }}
+                  >
+                    Tên khách hàng
+                  </div>
+                  <span className="text-dark ms-1" style={{ marginTop: "5px" }}>
+                    {!isLoading && customerName}
                   </span>
                 </div>
-              ) : (
-                <span className="text-dark ms-1" style={{ marginTop: "5px" }}>
-                  {!isLoading && customerName}
-                </span>
-              )}
-            </div>
 
-            {!isLoading && customerEmail !== "" && (
-              <div
-                className=" d-flex"
-                style={{ marginLeft: "300px", marginTop: "5px" }}
-              >
-                <div className="" style={{ width: "130px" }}>
-                  Email
+                <div
+                  className=" d-flex"
+                  style={{ marginLeft: "300px", marginTop: "5px" }}
+                >
+                  <div className="" style={{ width: "130px" }}>
+                    Email
+                  </div>
+                  <div style={{}}>
+                    <span className="text-dark" style={{}}>
+                      {!isLoading && customerEmail}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="d-flex ms-2 mt-2">
+                <div className="" style={{ width: "200px" }}>
+                  Số điện thoại
                 </div>
                 <div style={{}}>
-                  <span className="text-dark" style={{}}>
-                    {!isLoading && customerEmail}
+                  <span className="text-dark ms-1" style={{}}>
+                    {!isLoading && customerPhone}
                   </span>
                 </div>
               </div>
-            )}
-          </div>
-          {customerPhone !== "" && (
-            <div className="d-flex ms-2 mt-2">
-              <div className="" style={{ width: "200px" }}>
-                Số điện thoại
+              <div className="mt-2"></div>
+            </>
+            :
+            <>
+              <div className="d-flex ms-2 mt-4 account">
+                <div className="d-flex" style={{ width: "400px" }}>
+                  <TextFieldFullName confirm={confirm} fullNameDefault={fullName} getFullName={getFullName} update={updateFullName} />
+                </div>
+
+                <div
+                  className="d-flex ms-auto"
+                >
+                  <div className="" style={{ width: "400px" }}>
+                    <TextFieldEmail emailDefault={email} getEmail={getEmail} update={updateEmail} />
+                  </div>
+                </div>
               </div>
-              <div style={{}}>
-                <span className="text-dark ms-1" style={{}}>
-                  {!isLoading && customerPhone}
-                </span>
+              <div className="d-flex ms-2 mt-3">
+                <div className="" style={{ width: "400px" }}>
+                  <TextFieldSdt sdtDefault={sdt} confirm={confirm} getSdt={getSdt} update={updateSdt} />
+                </div>
               </div>
-            </div>
-          )}
-          <div className="mt-2"></div>
+              <div className="mt-2"></div>
+            </>
+          }
         </div>
         <div
           className="mt-4 p-3"

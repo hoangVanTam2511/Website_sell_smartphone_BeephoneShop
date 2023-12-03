@@ -34,6 +34,7 @@ import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDown
 import moment from "moment";
 import { over } from "stompjs";
 import SockJS from "sockjs-client";
+import { FaPencilAlt } from "react-icons/fa";
 
 const ManagementOrders = () => {
   const navigate = useNavigate();
@@ -226,27 +227,12 @@ const ManagementOrders = () => {
     {
       title: "Khách Hàng",
       align: "center",
-      dataIndex: "tenNguoiNhan",
       width: "10%",
       render: (text, order) =>
         order.account === null &&
-        order.loaiHoaDon === OrderTypeString.AT_COUNTER ? (
-          <div
-            className="rounded-pill mx-auto"
-            style={{
-              height: "35px",
-              width: "130px",
-              padding: "4px",
-              backgroundColor: "#e1e1e1",
-            }}
-          >
-            <span className="text-dark mt-1" style={{ fontSize: "14px" }}>
-              Khách hàng lẻ
-            </span>
-          </div>
-        ) : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
-          order.account &&
-          order.account.hoVaTen ? (
+          order.loaiHoaDon === OrderTypeString.AT_COUNTER ? order.hoVaTen : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
+            order.account &&
+            order.account.hoVaTen ? (
           order.account.hoVaTen
         ) : (
           order.tenNguoiNhan
@@ -259,13 +245,13 @@ const ManagementOrders = () => {
       render: (text, order) => (
         <span style={{ fontWeight: "400" }}>
           {order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
-          order.account === null
-            ? "..."
+            order.account === null
+            ? order.soDienThoai
             : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
               order.account &&
               order.account.soDienThoai
-            ? order.account.soDienThoai
-            : order.soDienThoaiNguoiNhan}
+              ? order.account.soDienThoai
+              : order.soDienThoaiNguoiNhan}
         </span>
       ),
     },
@@ -442,10 +428,10 @@ const ManagementOrders = () => {
       dataIndex: "ma",
       render: (text, record) => (
         <div className="button-container">
-          <Link className="ms-1" to={`/dashboard/order-detail/${record.ma}`}>
+          <Link className="" to={`/dashboard/order-detail/${record.ma}`}>
             <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
               <IconButton size="">
-                <BorderColorOutlinedIcon color="primary" />
+                <FaPencilAlt color="#2f80ed" />
               </IconButton>
             </Tooltip>
           </Link>
