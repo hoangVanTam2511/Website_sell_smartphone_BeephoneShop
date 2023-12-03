@@ -395,7 +395,7 @@ const TabItem = ({
   const cartTotalPrice = () => {
     let total = 0;
     cartItems.map((item) => {
-      if (item.sanPhamChiTiet.donGiaSauKhuyenMai !== null || item.sanPhamChiTiet.donGiaSauKhuyenMai !== 0) {
+      if (item.sanPhamChiTiet.donGiaSauKhuyenMai !== null && item.sanPhamChiTiet.donGiaSauKhuyenMai !== 0) {
         total += item.sanPhamChiTiet.donGiaSauKhuyenMai * item.soLuong;
       }
       else {
@@ -430,7 +430,7 @@ const TabItem = ({
               style={{ width: "125px", height: "125px" }}
             />
             {item &&
-              item.sanPhamChiTiet.donGiaSauKhuyenMai &&
+              item.sanPhamChiTiet.donGiaSauKhuyenMai !== null && item.sanPhamChiTiet.donGiaSauKhuyenMai !== 0 &&
               <div
                 className="category"
                 style={{
@@ -498,7 +498,7 @@ const TabItem = ({
                   : ""}
               </span>
               <span
-                className={item.sanPhamChiTiet.donGiaSauKhuyenMai !== null || item.sanPhamChiTiet.donGiaSauKhuyenMai !== 0 ? "txt-price-discount ms-2" : "text-price"}
+                className={item.sanPhamChiTiet.donGiaSauKhuyenMai !== null && item.sanPhamChiTiet.donGiaSauKhuyenMai !== 0 ? "txt-price-discount ms-2" : "txt-price"}
                 style={{ fontSize: "17px", fontWeight: "" }}
               >
                 {item && item.sanPhamChiTiet.donGia
@@ -537,7 +537,7 @@ const TabItem = ({
           className="txt-price"
         >
           {(item &&
-            total(item.soLuong, item.sanPhamChiTiet.donGiaSauKhuyenMai !== null || item.sanPhamChiTiet.donGiaSauKhuyenMai !== 0 ? item.sanPhamChiTiet.donGiaSauKhuyenMai : item.sanPhamChiTiet.donGia).toLocaleString("vi-VN", {
+            total(item.soLuong, item.sanPhamChiTiet.donGiaSauKhuyenMai !== null && item.sanPhamChiTiet.donGiaSauKhuyenMai !== 0 ? item.sanPhamChiTiet.donGiaSauKhuyenMai : item.sanPhamChiTiet.donGia).toLocaleString("vi-VN", {
               style: "currency",
               currency: "VND",
             })) ||

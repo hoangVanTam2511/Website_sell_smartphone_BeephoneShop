@@ -81,7 +81,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
   }
   const navigate = useNavigate();
   const redirectProductPage = () => {
-    window.location.href = "/dashboard/products";
+    navigate(`/dashboard/products`);
   }
   const [listColor, setListColor] = useState([]);
   const getListColor = async () => {
@@ -1837,7 +1837,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
         defaultRam={defaultRam} defaultRom={defaultRom} colorsHadSelect={selectedColors} list={cauHinhs}
         rams={listRam} roms={listRom} updateData={updateData} listColor={listColor} listFinal={cauHinhsFinal}
       />
-      <ImportAndExportExcelImei open={openModalImel} close={handleCloseModalImei} imeis={imeis} productName={productName} view={true}/>
+      <ImportAndExportExcelImei open={openModalImel} close={handleCloseModalImei} imeis={imeis} productName={productName} view={true} />
 
       <CreateRam
         open={openRam}

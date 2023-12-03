@@ -126,7 +126,7 @@ const ManagementProductItems = ({/*  open, close, productItems, productName */ }
               style={{ width: "125px", height: "125px" }}
             />
             {item &&
-              item.donGiaSauKhuyenMai &&
+              item.donGiaSauKhuyenMai !== null && item.donGiaSauKhuyenMai !== 0 &&
               <div
                 className="category"
                 style={{
@@ -226,6 +226,7 @@ const ManagementProductItems = ({/*  open, close, productItems, productName */ }
       render: (text, record) => (
         <>
           <div className="button-container">
+            <ImportExcelImei /* ma={record.ma} get={getImeisFromImport} listImeiCurrent={listImeiCurrent} listImeiCurrentSheet={cauHinhsFinal && imeiObjects} */ />
             <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
               <IconButton size="">
                 <FaPencilAlt color="#2f80ed" />
@@ -243,7 +244,7 @@ const ManagementProductItems = ({/*  open, close, productItems, productName */ }
           <Card.Header className="d-flex justify-content-between">
             <div className="header-title mt-2">
               <TextField
-                label="Tìm Sản Phẩm Theo Mã, Màu Sắc Hoặc Đơn Giá"
+                label="Tìm Sản Phẩm Theo Mã, Số Lượng Hoặc Đơn Giá"
                 // onChange={handleGetValueFromInputTextField}
                 // value={keyword}
                 InputLabelProps={{
@@ -359,7 +360,7 @@ const ManagementProductItems = ({/*  open, close, productItems, productName */ }
                   className="ms-2 ps-1"
                   style={{ fontSize: "15px", fontWeight: "450" }}
                 >
-                  Bộ Nhớ RAM:{""}
+                  RAM:{""}
                 </span>
               </div>
               <FormControl
@@ -416,7 +417,7 @@ const ManagementProductItems = ({/*  open, close, productItems, productName */ }
                   className="ms-2 ps-1"
                   style={{ fontSize: "15px", fontWeight: "450" }}
                 >
-                  Bộ Nhớ ROM:{""}
+                  ROM:{""}
                 </span>
               </div>
               <FormControl
@@ -474,6 +475,63 @@ const ManagementProductItems = ({/*  open, close, productItems, productName */ }
                   style={{ fontSize: "15px", fontWeight: "450" }}
                 >
                   Màu Sắc:{""}
+                </span>
+              </div>
+              <FormControl
+                sx={{
+                  minWidth: 50,
+                }}
+                size="small"
+              >
+                <Select
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        borderRadius: "7px",
+                      },
+                    },
+                  }}
+                  IconComponent={KeyboardArrowDownOutlinedIcon}
+                  sx={{
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none !important",
+                    },
+                    "& .MuiSelect-select": {
+                      color: "#2f80ed",
+                      fontWeight: "500",
+                    },
+                  }}
+                  // open={openSelect1}
+                  // onClose={handleCloseSelect1}
+                  // onOpen={handleOpenSelect1}
+                  defaultValue={14}
+                >
+                  <MenuItem className="" value={14}>
+                    Tất cả
+                  </MenuItem>
+                  <MenuItem value={15}>Khách hàng mới</MenuItem>
+                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
+            <div
+              className="d-flex ms-3"
+              style={{
+                height: "40px",
+                position: "relative",
+                cursor: "pointer",
+              }}
+            >
+              <div
+                // onClick={handleOpenSelect1}
+                className=""
+                style={{ marginTop: "8px" }}
+              >
+                <span
+                  className="ms-2 ps-1"
+                  style={{ fontSize: "15px", fontWeight: "450" }}
+                >
+                  Khoảng Giá:{""}
                 </span>
               </div>
               <FormControl

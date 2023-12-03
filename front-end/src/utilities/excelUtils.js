@@ -263,33 +263,31 @@ const ImportAndExportExcelImei = ({ open, close, imeis, productName, view }) => 
                     </span>
                   </Button>
                 </div>
-                <div className="mt-2">
-                  {view &&
-                    <Button
-                      onClick={handleUploadClick}
-                      className="rounded-2 button-mui me-2"
-                      type="primary"
-                      style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                <div className="">
+                  <Button
+                    onClick={handleUploadClick}
+                    className="rounded-2 button-mui me-2"
+                    type="primary"
+                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                  >
+                    <FaUpload
+                      className="ms-1"
+                      style={{
+                        position: "absolute",
+                        bottom: "13.5px",
+                        left: "10px",
+                      }}
+                    />
+                    <span
+                      className="ms-3 ps-1"
+                      style={{ marginBottom: "3px", fontWeight: "500" }}
                     >
-                      <FaUpload
-                        className="ms-1"
-                        style={{
-                          position: "absolute",
-                          bottom: "13.5px",
-                          left: "10px",
-                        }}
-                      />
-                      <span
-                        className="ms-3 ps-1"
-                        style={{ marginBottom: "3px", fontWeight: "500" }}
-                      >
-                        Import Excel
+                      Import Excel
 
-                        <input style={{ display: "none" }} ref={inputRef} type="file" name="file" className="custom-file-input" id="inputGroupFile" required onChange={handleImport}
-                          accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
-                      </span>
-                    </Button>
-                  }
+                      <input style={{ display: "none" }} ref={inputRef} type="file" name="file" className="custom-file-input" id="inputGroupFile" required onChange={handleImport}
+                        accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
+                    </span>
+                  </Button>
                   {!view &&
                     <Button
                       onClick={handleExport}
@@ -313,29 +311,27 @@ const ImportAndExportExcelImei = ({ open, close, imeis, productName, view }) => 
                       </span>
                     </Button>
                   }
-                  {view &&
-                    <Button
-                      onClick={handleDownloadSample}
-                      className="rounded-2 button-mui"
-                      type="primary"
-                      style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                  <Button
+                    onClick={handleDownloadSample}
+                    className="rounded-2 button-mui"
+                    type="primary"
+                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                  >
+                    <FaDownload
+                      className="ms-1"
+                      style={{
+                        position: "absolute",
+                        bottom: "13.5px",
+                        left: "10px",
+                      }}
+                    />
+                    <span
+                      className="ms-3 ps-1"
+                      style={{ marginBottom: "3px", fontWeight: "500" }}
                     >
-                      <FaDownload
-                        className="ms-1"
-                        style={{
-                          position: "absolute",
-                          bottom: "13.5px",
-                          left: "10px",
-                        }}
-                      />
-                      <span
-                        className="ms-3 ps-1"
-                        style={{ marginBottom: "3px", fontWeight: "500" }}
-                      >
-                        Tải Mẫu
-                      </span>
-                    </Button>
-                  }
+                      Tải Mẫu
+                    </span>
+                  </Button>
                 </div>
               </div>
               <div className="mx-auto mt-3">

@@ -1569,30 +1569,15 @@ const OrderDetail = (props) => {
               </div>
               <div className="ms-5 ps-5">
                 {order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
-                  order.account === null ? (
-                  <div
-                    className="rounded-pill text-center"
-                    style={{
-                      height: "35px",
-                      width: "130px",
-                      padding: "5px",
-                      backgroundColor: "#e1e1e1",
-                    }}
-                  >
-                    <span
-                      className="text-dark p-2"
-                      style={{ fontSize: "14px" }}
-                    >
-                      Khách hàng lẻ
-                    </span>
-                  </div>
-                ) : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
-                  order.account &&
-                  order.account.hoVaTen ? (
-                  order.account.hoVaTen
-                ) : (
-                  order.tenNguoiNhan
-                )}
+                  order.account === null ?
+                  order.hoVaTen
+                  : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
+                    order.account &&
+                    order.account.hoVaTen ? (
+                    order.account.hoVaTen
+                  ) : (
+                    order.tenNguoiNhan
+                  )}
               </div>
             </div>
             <div className="ms-4 mt-4 mt-1 d-flex" style={{ height: "30px" }}>
@@ -1603,7 +1588,7 @@ const OrderDetail = (props) => {
                 <span className="text-dark" style={{ fontSize: "17px" }}>
                   {order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
                     order.account === null
-                    ? "..."
+                    ? order.soDienThoai
                     : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
                       order.account &&
                       order.account.soDienThoai
@@ -1619,7 +1604,7 @@ const OrderDetail = (props) => {
               <div className="ms-5 ps-5 mt-1">
                 <span className="text-dark" style={{ fontSize: "17px" }}>
                   {order.account === null
-                    ? "..."
+                    ? order.email
                     : order.account && order.account.email
                       ? order.account.email
                       : "..."}
@@ -1841,7 +1826,7 @@ const OrderDetail = (props) => {
               style={{ width: "125px", height: "125px" }}
             />
             {item &&
-              item.sanPhamChiTiet.donGiaSauKhuyenMai !== null || item.sanPhamChiTiet.donGiaSauKhuyenMai !== 0 ?
+              item.donGiaSauGiam !== null && item.donGiaSauGiam !== 0 ?
               <div
                 className="category"
                 style={{
@@ -1862,7 +1847,7 @@ const OrderDetail = (props) => {
                 }}
               >
                 Giảm{' '}
-                {countPrice(item.sanPhamChiTiet.donGia, item.sanPhamChiTiet.donGiaSauKhuyenMai).toLocaleString("vi-VN", {
+                {countPrice(item.donGia, item.donGiaSauGiam).toLocaleString("vi-VN", {
                   style: "currency",
                   currency: "VND",
                 })
@@ -1901,19 +1886,19 @@ const OrderDetail = (props) => {
               <span className="txt-price"
                 style={{ fontSize: "17.5px", fontWeight: "" }}
               >
-                {item && item.sanPhamChiTiet.donGiaSauKhuyenMai
-                  ? item.sanPhamChiTiet.donGiaSauKhuyenMai.toLocaleString("vi-VN", {
+                {item && item.donGiaSauGiam !== null && item.donGiaSauGiam !== 0
+                  ? item.donGiaSauGiam.toLocaleString("vi-VN", {
                     style: "currency",
                     currency: "VND",
                   })
                   : ""}
               </span>
               <span
-                className={item.sanPhamChiTiet.donGiaSauKhuyenMai !== null || item.sanPhamChiTiet.donGiaSauKhuyenMai !== 0 ? "txt-price-discount ms-2" : "text-price"}
+                className={item.donGiaSauGiam !== null && item.donGiaSauGiam !== 0 ? "txt-price-discount ms-2" : "txt-price"}
                 style={{ fontSize: "17px", fontWeight: "" }}
               >
-                {item && item.sanPhamChiTiet.donGia
-                  ? item.sanPhamChiTiet.donGia.toLocaleString("vi-VN", {
+                {item && item.donGia
+                  ? item.donGia.toLocaleString("vi-VN", {
                     style: "currency",
                     currency: "VND",
                   })
@@ -1959,7 +1944,7 @@ const OrderDetail = (props) => {
             className="txt-price"
           >
             {(item &&
-              totalItem(item.soLuong, item.sanPhamChiTiet.donGiaSauKhuyenMai !== null || item.sanPhamChiTiet.donGiaSauKhuyenMai !== 0 ? item.sanPhamChiTiet.donGiaSauKhuyenMai : item.sanPhamChiTiet.donGia).toLocaleString("vi-VN", {
+              totalItem(item.soLuong, item.donGiaSauGiam !== null && item.donGiaSauGiam !== 0 ? item.donGiaSauGiam : item.donGia).toLocaleString("vi-VN", {
                 style: "currency",
                 currency: "VND",
               })) ||
