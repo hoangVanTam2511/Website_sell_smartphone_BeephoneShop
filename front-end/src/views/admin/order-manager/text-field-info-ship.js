@@ -2,7 +2,7 @@ import { TextField } from "@mui/material"
 import { useEffect, useState } from "react";
 
 
-export const TextFieldFullName = ({ fullNameDefault, getFullName, update }) => {
+export const TextFieldFullName = ({ confirm, fullNameDefault, getFullName, update }) => {
   const [fullName, setFullName] = useState(fullNameDefault);
   const [initial, setInitial] = useState();
   const setInitialValue = (value) => {
@@ -27,6 +27,8 @@ export const TextFieldFullName = ({ fullNameDefault, getFullName, update }) => {
         }
         onFocus={() => setInitialValue(fullName)}
         style={{ width: "100%" }}
+        helperText={confirm === true && fullName.trim() === "" ? "Bạn chưa nhập họ và tên" : ""}
+        error={confirm === true && fullName.trim() === ""}
         inputProps={{
           style: {
           },
@@ -35,7 +37,7 @@ export const TextFieldFullName = ({ fullNameDefault, getFullName, update }) => {
     </>
   )
 }
-export const TextFieldSdt = ({ sdtDefault, getSdt, update }) => {
+export const TextFieldSdt = ({ confirm, sdtDefault, getSdt, update }) => {
   const [sdt, setSdt] = useState(sdtDefault);
   const [initial, setInitial] = useState();
   const setInitialValue = (value) => {
@@ -60,6 +62,8 @@ export const TextFieldSdt = ({ sdtDefault, getSdt, update }) => {
         }
         onFocus={() => setInitialValue(sdt)}
         style={{ width: "100%" }}
+        helperText={confirm === true && sdt.trim() === "" ? "Bạn chưa nhập số điện thoại" : ""}
+        error={confirm === true && sdt.trim() === ""}
         inputProps={{
           style: {
           },
@@ -103,7 +107,7 @@ export const TextFieldEmail = ({ emailDefault, getEmail, update }) => {
   )
 }
 
-export const TextFieldPhone = ({ phoneDefault, getPhone, update }) => {
+export const TextFieldPhone = ({ confirm, phoneDefault, getPhone, update }) => {
   const [customerPhone, setCustomerPhone] = useState(phoneDefault);
   const [initial, setInitial] = useState();
   const setInitialValue = (value) => {
@@ -119,6 +123,8 @@ export const TextFieldPhone = ({ phoneDefault, getPhone, update }) => {
     <>
       <TextField label="Số điện thoại"
         value={customerPhone}
+        helperText={confirm === true && customerPhone.trim() === "" ? "Bạn chưa nhập số điện thoại người nhận" : ""}
+        error={confirm === true && customerPhone.trim() === ""}
         onChange={(e) => { setCustomerPhone(e.target.value) }}
         onBlur={() => {
           if (customerPhone !== initial) {
@@ -136,7 +142,7 @@ export const TextFieldPhone = ({ phoneDefault, getPhone, update }) => {
     </>
   )
 }
-export const TextFieldName = ({ nameDefault, getName, update }) => {
+export const TextFieldName = ({ confirm, nameDefault, getName, update }) => {
   const [customerName, setCustomerName] = useState(nameDefault);
   const [initial, setInitial] = useState('');
   const setInitialValue = (value) => {
@@ -152,6 +158,8 @@ export const TextFieldName = ({ nameDefault, getName, update }) => {
       <TextField label="Tên người nhận"
         value={customerName}
         onChange={(e) => { setCustomerName(e.target.value); }}
+        helperText={confirm === true && customerName.trim() === "" ? "Bạn chưa nhập tên người nhận" : ""}
+        error={confirm === true && customerName.trim() === ""}
         onBlur={(e) => {
           if (customerName !== initial) {
             getName(customerName); update(customerName)
@@ -163,7 +171,7 @@ export const TextFieldName = ({ nameDefault, getName, update }) => {
     </>
   )
 }
-export const TextFieldAddress = ({ addressDefault, getAddress, update }) => {
+export const TextFieldAddress = ({ confirm, addressDefault, getAddress, update }) => {
   const [customerAddress, setCustomerAddress] = useState(addressDefault);
   const [initial, setInitial] = useState('');
   const setInitialValue = (value) => {
@@ -178,6 +186,8 @@ export const TextFieldAddress = ({ addressDefault, getAddress, update }) => {
     <>
       <TextField label="Địa chỉ"
         value={customerAddress}
+        helperText={confirm === true && customerAddress.trim() === "" ? "Bạn chưa nhập địa chỉ" : ""}
+        error={confirm === true && customerAddress.trim() === ""}
         onChange={(e) => setCustomerAddress(e.target.value)}
         onBlur={() => {
           if (customerAddress !== initial) {

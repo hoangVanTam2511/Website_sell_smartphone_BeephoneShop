@@ -738,10 +738,13 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
 
   @Override
   public OrderItemResponse refundOrder(OrderItemsCustomRefundRequest req) throws Exception {
-
+    HoaDon findOrderCurrent = orderRepository.findOneById(req.getId());
+    if (findOrderCurrent == null) {
+      throw new RestApiException("Đơn hàng không tồn tại!");
+    }
     for (OrderItemRefundRequest order : req.getOrderItemRefunds()) {
       Optional<HoaDonChiTiet> findCartItemOrder = orderItemRepository.findById(order.getId());
-      HoaDon findOrderCurrent = orderRepository.findOneById(findCartItemOrder.get().getHoaDon().getId());
+
       Optional<SanPhamChiTiet> findProductItem = sanPhamChiTietRepository.
               findProductById(findCartItemOrder.get().getSanPhamChiTiet().getId());
 
@@ -750,9 +753,6 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
       }
       if (!findProductItem.isPresent()) {
         throw new RestApiException("Sản phẩm không tồn tại!");
-      }
-      if (findOrderCurrent == null) {
-        throw new RestApiException("Đơn hàng không tồn tại!");
       }
       Set<Imei> imeisProduct = findProductItem.get().getImeis();
       imeisProduct.forEach((s) -> {
@@ -774,19 +774,6 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
 //        BigDecimal khachCanTraCurrent = findOrderCurrent.getKhachCanTra();
 //        BigDecimal khachCanTra = khachCanTraCurrent.subtract(req.getTongTien().add(req.getPhuPhi()));
 //        findOrderCurrent.setKhachCanTra(khachCanTra);
-      if (findOrderCurrent.getTienTraHang() != null) {
-        findOrderCurrent.setTienTraHang(findOrderCurrent.getTienTraHang().add(req.getTongTien()));
-
-      } else {
-        findOrderCurrent.setTienTraHang((req.getTongTien()));
-      }
-      if (findOrderCurrent.getTienTraKhach() != null) {
-        findOrderCurrent.setTienTraKhach(findOrderCurrent.getTienTraKhach().add(req.getTongTien()));
-
-      } else {
-        findOrderCurrent.setTienTraKhach((req.getTongTien()));
-      }
-      orderRepository.save(findOrderCurrent);
 //
 ////      findOrderCurrent.setTienTraKhach();
 //        orderRepository.save(findOrderCurrent);
@@ -807,22 +794,32 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
 ////      }
 //    }
 
-      SanPhamChiTiet getOptional = findProductItem.get();
-
-      LichSuHoaDon orderHistory = new LichSuHoaDon();
-      orderHistory.setHoaDon(findOrderCurrent);
-      orderHistory.setCreatedAt(new Date());
-      orderHistory.setThaoTac("Hoàn Trả");
-      orderHistory.setMoTa("Đã hoàn trả [" + req.getAmount() + "] sản phẩm [" +
-              getOptional.getSanPham().getTenSanPham() + "] phiên bản [" +
-              getOptional.getRam().getDungLuong() + "/" + getOptional.getRom().getDungLuong() + " - " +
-              getOptional.getMauSac().getTenMauSac() + "] với phụ phí [" + req.getPhuPhi() + "]. " + req.getGhiChu());
-      orderHistory.setLoaiThaoTac(7);
-      lichSuHoaDonRepository.save(orderHistory);
 
 //    findCartItemOrder.get().setSoLuong(findProductItem.get().getSoLuongTonKho() - req.getAmount());
 //    orderItemRepository.save(findCartItemOrder.get());
     }
+    if (findOrderCurrent.getTienTraHang() != null) {
+      findOrderCurrent.setTienTraHang(findOrderCurrent.getTienTraHang().add(req.getTongTien()));
+
+    } else {
+      findOrderCurrent.setTienTraHang((req.getTongTien()));
+    }
+    if (findOrderCurrent.getTienTraKhach() != null) {
+      findOrderCurrent.setTienTraKhach(findOrderCurrent.getTienTraKhach().add(req.getTongTien()));
+
+    } else {
+      findOrderCurrent.setTienTraKhach((req.getTongTien()));
+    }
+    orderRepository.save(findOrderCurrent);
+//    SanPhamChiTiet getOptional = findProductItem.get();
+
+    LichSuHoaDon orderHistory = new LichSuHoaDon();
+    orderHistory.setHoaDon(findOrderCurrent);
+    orderHistory.setCreatedAt(new Date());
+    orderHistory.setThaoTac("Hoàn Trả");
+    orderHistory.setMoTa("Đã hoàn trả [" + req.getAmount() + "] sản phẩm với số tiền là [" + req.getTongTien() + "]. " + req.getGhiChu());
+    orderHistory.setLoaiThaoTac(7);
+    lichSuHoaDonRepository.save(orderHistory);
     return null;
   }
 }

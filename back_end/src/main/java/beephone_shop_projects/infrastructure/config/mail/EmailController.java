@@ -30,4 +30,5 @@ public class EmailController {
     emailService.sendEmailWithHtmlTemplate(emailRequest.getTo(), emailRequest.getSubject(), "email-template", context);
     return "HTML email sent successfully!";
   }
+
 }

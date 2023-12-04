@@ -96,13 +96,13 @@ const PrintBillAtTheCounter = React.forwardRef((props, ref) => {
           <span style={{ fontWeight: "500" }}>
             Khách hàng: {" "}
           </span>
-          {props.data.tenNguoiNhan}
+          {props.data.hoVaTen}
         </div>
         <div className='phone mt-1'>
           <span style={{ fontWeight: "500" }}>
             SĐT: {" "}
           </span>
-          {props.data.soDienThoaiNguoiNhan}
+          {props.data.soDienThoai}
         </div>
       </div>
 
@@ -124,11 +124,18 @@ const PrintBillAtTheCounter = React.forwardRef((props, ref) => {
                   <td align='center'>{index + 1}</td>
                   <td align="center">{item.sanPhamChiTiet.sanPham.tenSanPham + " " + item.sanPhamChiTiet.ram.dungLuong + "/" + item.sanPhamChiTiet.rom.dungLuong + "GB " + item.sanPhamChiTiet.mauSac.tenMauSac}</td>
                   <td align="center">{item.soLuong}</td>
-                  <td align="center">{item.donGia.toLocaleString("vi-VN", {
-                    style: "currency",
-                    currency: "VND"
-                  })}</td>
-                  <td align="center">{total(item.donGia, item.soLuong).toLocaleString("vi-VN", {
+                  {item.donGiaSauGiam !== null && item.donGiaSauGiam !== 0 ?
+                    <td align="center">{item.donGiaSauGiam.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND"
+                    })}</td>
+                    :
+                    <td align="center">{item.donGia.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND"
+                    })}</td>
+                  }
+                  <td align="center">{total(item.donGiaSauGiam !== null && item.donGiaSauGiam !== 0 ? item.donGiaSauGiam : item.donGia, item.soLuong).toLocaleString("vi-VN", {
                     style: "currency",
                     currency: "VND"
                   })}</td>

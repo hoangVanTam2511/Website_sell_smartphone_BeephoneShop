@@ -747,6 +747,11 @@ export function ProductsDialog(props) {
 
   const classes = useStyles();
 
+  const countPrice = (price, afterDiscount) => {
+    return price - afterDiscount;
+
+  }
+
   const TableProduct = () => {
     return (
       <>
@@ -797,17 +802,48 @@ export function ProductsDialog(props) {
                       align="center"
                       style={{ width: "200px" }}
                     >
-                      <img
-                        src={item && item.image && item.image.path}
-                        alt=""
-                        style={{ width: "110px", height: "110px" }}
-                      />
+                      <div style={{ position: "relative" }}>
+                        <img
+                          src={item && item.image && item.image.path}
+                          alt=""
+                          style={{ width: "125px", height: "125px" }}
+                        />
+                        {item &&
+                          item.donGiaSauKhuyenMai !== null && item.donGiaSauKhuyenMai !== 0 ?
+                          <div
+                            className="category"
+                            style={{
+                              userSelect: "none",
+                              backgroundColor: "#ffcc00",
+                              position: "absolute",
+                              top: "0px",
+                              borderTopLeftRadius: `8px`,
+                              fontSize: "11px",
+                              borderTopRightRadius: `20px`,
+                              borderBottomRightRadius: `20px`,
+                              fontWeight: "600",
+                              padding: "4px 8px", // Add padding for better visibility
+                              // width: "auto",
+                              // height: "30px"
+                              marginLeft: "25px",
+                              // marginTop: "25px",
+                            }}
+                          >
+                            Giảm{' '}
+                            {countPrice(item.donGia, item.donGiaSauKhuyenMai).toLocaleString("vi-VN", {
+                              style: "currency",
+                              currency: "VND",
+                            })
+                            }
+                          </div>
+                          : null}
+                      </div>
                     </TableCell>
                     <TableCell
                       align="center"
                       style={{ fontSize: "16px", width: "" }}
                     >
-                      No.900{index + 1}
+                      SP0000{index + 1}
                     </TableCell>
                     <TableCell
                       align="center"
@@ -843,12 +879,16 @@ export function ProductsDialog(props) {
                       style={{ width: "150px", fontSize: "16px" }}
                     >
                       <span style={{ color: "#dc1111" }}>
-                        {item && item.donGia
-                          ? item.donGia.toLocaleString("vi-VN", {
+                        {item && item.donGiaSauKhuyenMai
+                          ? item.donGiaSauKhuyenMai.toLocaleString("vi-VN", {
                             style: "currency",
                             currency: "VND",
                           })
-                          : ""}
+                          :
+                          item.donGia.toLocaleString("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          })}
                       </span>
                     </TableCell>
                     <TableCell
@@ -875,6 +915,7 @@ export function ProductsDialog(props) {
                           Chọn
                         </span>
                       </Button>
+                      {/*
                       <Button
                         className="rounded-2 ms-2 ant-btn-warning"
                         onClick={toggleDrawer("left", true)}
@@ -888,6 +929,7 @@ export function ProductsDialog(props) {
                           Chi tiết
                         </span>
                       </Button>
+*/}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -5016,14 +5058,15 @@ export const ModalRefundProduct = ({
         }}
         maxWidth="xxl"
         maxHeight="xxl"
+        sx={{ marginBottom: "170px" }}
       >
         <DialogContent className="">
-          <div className="mt-2" style={{ width: "1000px" }}>
+          <div className="mt-2" style={{ width: "900px" }}>
             <div className="container" style={{}}>
               <div className="header-title">
                 <div className="mt-1">
                   <span className="fs-4" style={{ fontWeight: "500" }}>
-                    Chọn Imei Cần Trả Hàng
+                    Chọn Imei Cần Trả
                   </span>
                 </div>
               </div>
@@ -5112,7 +5155,7 @@ export const ModalRefundProduct = ({
                   </table>
                 </div>
               </div>
-              <div className="d-flex justify-content-end mt-3 me-2">
+              <div className="d-flex justify-content-end mt-4 me-2">
                 <Button
                   onClick={() => {
                     if (selectedImei.length === 0) {
@@ -5518,7 +5561,7 @@ export const ModalViewImeiHadBuy = ({
                             <td className="text-center">
                               <div
                                 className={
-                                  "badge-success rounded-pill mx-auto"
+                                  item.trangThai === StatusImei.SOLD ? "badge-success rounded-pill mx-auto" : item.trangThai === StatusImei.CANCELLED || item.trangThai === StatusImei.REFUND ? "badge-danger rounded-pill mx-auto" : ""
                                 }
                                 style={{
                                   height: "35px",
@@ -5533,7 +5576,7 @@ export const ModalViewImeiHadBuy = ({
                                     fontWeight: "400",
                                   }}
                                 >
-                                  Đã Bán
+                                  {item.trangThai === StatusImei.SOLD ? "Đã bán" : item.trangThai === StatusImei.REFUND ? "Hoàn trả" : "Đã hủy"}
                                 </span>
                               </div>
                             </td>
@@ -5552,3 +5595,95 @@ export const ModalViewImeiHadBuy = ({
     </>
   );
 };
+
+export function ConfirmRefund({ open, close, confirm, total, size }) {
+
+  const [description, setDescription] = useState("");
+
+  const handleGetValueFromInputTextField = (event) => {
+    const value = event.target.value;
+    setDescription(value);
+  };
+
+  return (
+    <div className="rounded-pill">
+      <Dialog
+        TransitionComponent={Transition}
+        keepMounted
+        open={open}
+        onClose={close}
+        aria-describedby="alert-dialog-slide-description1"
+        maxWidth="md"
+        maxHeight="md"
+        sx={{
+          marginBottom: "100px",
+        }}
+      >
+        <DialogTitle id="alert-dialog-title">
+          {<span className="fs-4 text-dark">{"Xác Nhận Hoàn Trả " + size + " Sản Phẩm Với Số Tiền " + total
+          }</span>}
+        </DialogTitle>
+        <DialogContent>
+          <TextField
+            label="Ghi chú"
+            value={description}
+            onChange={handleGetValueFromInputTextField}
+            multiline
+            maxRows={1}
+            inputProps={{
+              style: {
+                width: "755px",
+                paddingBottom: "80px",
+              },
+            }}
+            size="medium"
+            className="mt-2"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              confirm(description);
+            }}
+            className="rounded-2 me-2"
+            type="primary"
+            style={{
+              height: "40px",
+              width: "auto",
+              fontSize: "16px",
+              marginBottom: "20px",
+            }}
+          >
+            <span
+              className="text-white"
+              style={{ fontWeight: "500", marginBottom: "2px" }}
+            >
+              Xác nhận
+            </span>
+          </Button>
+          <Button
+            onClick={() => {
+              close();
+              setDescription("");
+            }}
+            className="rounded-2 me-3"
+            type="danger"
+            style={{
+              height: "40px",
+              width: "auto",
+              fontSize: "16px",
+              marginBottom: "20px",
+            }}
+          >
+            <span
+              className="text-white"
+              style={{ fontWeight: "500", marginBottom: "2px" }}
+            >
+              Hủy bỏ
+            </span>
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
+  );
+}

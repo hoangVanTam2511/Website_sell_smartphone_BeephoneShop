@@ -191,6 +191,7 @@ const PointOfSales = () => {
   const [customerAddressList, setCustomerAddressList] = useState([]);
   const [isShow, setIsShow] = useState(false);
 
+  const [confirm, setConfirm] = useState(false);
   const [fullName, setFullName] = useState("");
   const [sdt, setSdt] = useState("");
   const [email, setEmail] = useState("");
@@ -199,21 +200,21 @@ const PointOfSales = () => {
 
   const getFullName = (value) => {
     setFullName(value);
-  }
+  };
   const getSdt = (value) => {
     setSdt(value);
-  }
+  };
   const getEmail = (value) => {
     setEmail(value);
-  }
+  };
 
   const handleOpenScanner = () => {
     setOpenScanner(true);
-  }
+  };
 
   const handleCloseOpenScanner = () => {
     setOpenScanner(false);
-  }
+  };
 
   const updateSdt = async (sdt) => {
     const orderRequest = {
@@ -245,14 +246,14 @@ const PointOfSales = () => {
         .then((response) => {
           const data = response.data.data;
           setOrder(data);
-          setSdt(data && data.soDienThoai);
+          setSdt(data.soDienThoai === null ? "" : data.soDienThoai);
           getAllOrdersPending();
         });
-    } catch (error) { }
+    } catch (error) {}
   };
-  const updateEmail = async (emai) => {
+  const updateEmail = async (email) => {
     const orderRequest = {
-      hoVaTen: email.trim() === "" ? null : email,
+      email: email.trim() === "" ? null : email,
       isUpdateSdt: false,
       isPayment: false,
       isUpdateType: false,
@@ -280,15 +281,15 @@ const PointOfSales = () => {
         .then((response) => {
           const data = response.data.data;
           setOrder(data);
-          setEmail(data && data.email);
+          setEmail(data.email === null ? "" : data.email);
           getAllOrdersPending();
         });
-    } catch (error) { }
+    } catch (error) {}
   };
 
   const updateFullName = async (name) => {
     const orderRequest = {
-      hoVaTen: fullName.trim() === "" ? null : fullName,
+      hoVaTen: name.trim() === "" ? null : name,
       isUpdateSdt: false,
       isPayment: false,
       isUpdateType: false,
@@ -316,10 +317,10 @@ const PointOfSales = () => {
         .then((response) => {
           const data = response.data.data;
           setOrder(data);
-          setFullName(data && data.hoVaTen);
+          setFullName(data.hoVaTen === null ? "" : data.hoVaTen);
           getAllOrdersPending();
         });
-    } catch (error) { }
+    } catch (error) {}
   };
 
   const [selectedValuePaymentMethod, setSelectedValuePaymentMethod] =
@@ -467,7 +468,7 @@ const PointOfSales = () => {
           setCustomerPhoneShip(data && data.soDienThoaiNguoiNhan);
           getAllOrdersPending();
         });
-    } catch (error) { }
+    } catch (error) {}
   };
   const updateAddressShipOrder = async (address) => {
     const orderRequest = {
@@ -502,7 +503,7 @@ const PointOfSales = () => {
           setCustomerAddressShip(data && data.diaChiNguoiNhan);
           getAllOrdersPending();
         });
-    } catch (error) { }
+    } catch (error) {}
   };
   const updateNoteShipOrder = async (note) => {
     const orderRequest = {
@@ -537,7 +538,7 @@ const PointOfSales = () => {
           setCustomerNoteShip(data && data.ghiChu);
           getAllOrdersPending();
         });
-    } catch (error) { }
+    } catch (error) {}
   };
 
   const updateTypeOrder = async (type) => {
@@ -672,7 +673,7 @@ const PointOfSales = () => {
           setCustomerNameShip(data && data.tenNguoiNhan);
           getAllOrdersPending();
         });
-    } catch (error) { }
+    } catch (error) {}
   };
 
   const updateInfoShipOrder = async (
@@ -720,7 +721,7 @@ const PointOfSales = () => {
           setCustomerDistrictShip(data && data.quanHuyenNguoiNhan);
           getAllOrdersPending();
         });
-    } catch (error) { }
+    } catch (error) {}
   };
 
   const getCustomerById = async (id) => {
@@ -765,22 +766,42 @@ const PointOfSales = () => {
     }
   };
 
+  const divRef = useRef(null);
+  const scrollToDiv = () => {
+    const { top, height } = divRef.current.getBoundingClientRect();
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const offset = top + scrollTop - (window.innerHeight - height) / 2;
+
+    window.scrollTo({
+      top: offset,
+      behavior: "smooth",
+    });
+  };
+
   const { handleOpenAlertVariant } = useCustomSnackbar();
 
   const [openDialogConfirmPayment, setOpenDialogConfirmPayment] =
     useState(false);
 
+  const checkInfoGuest = () => {
+    if (order.account === null) {
+      if (fullName.trim() === "" || sdt.trim() === "") {
+        return true;
+      }
+      return false;
+    }
+  };
+
   const handleOpenDialogConfirmPayment = () => {
+    setConfirm(true);
+    console.log(checkInfoGuest());
+    if (checkInfoGuest() === true) {
+      scrollToDiv();
+      return;
+    }
     if (cartItems && cartItems.length == 0) {
       handleOpenAlertVariant("Giỏ hàng chưa có sản phẩm!", Notistack.ERROR);
-    }
-    // else if (customerPaymentFormat === "" && delivery === false) {
-    //   handleOpenAlertVariant("Vui lòng nhập số tiền thanh toán!", Notistack.ERROR);
-    // }
-    // else if (paymentWhenReceive === false && delivery === true && customerPaymentFormat === "") {
-    //   handleOpenAlertVariant("Vui lòng nhập số tiền thanh toán!", Notistack.ERROR);
-    // }
-    else if (
+    } else if (
       customerPayment < handleCountTotalMoneyCustomerNeedPay() &&
       delivery == false
     ) {
@@ -888,16 +909,17 @@ const PointOfSales = () => {
         .then((response) => {
           setIsLoading(false);
           handleOpenAlertVariant(
-            `${data.loaiHoaDon == OrderTypeString.DELIVERY
-              ? "Xác nhận đặt hàng thành công!"
-              : "Xác nhận thanh toán thành công!"
+            `${
+              data.loaiHoaDon == OrderTypeString.DELIVERY
+                ? "Xác nhận đặt hàng thành công!"
+                : "Xác nhận thanh toán thành công!"
             }`,
             Notistack.SUCCESS
           );
           navigate(`/dashboard/order-detail/${order.ma}`);
           console.log(orderRequest);
         });
-    } catch (error) { }
+    } catch (error) {}
   };
 
   const updateAccount = async (id) => {
@@ -936,13 +958,14 @@ const PointOfSales = () => {
           // setIsLoading(false);
           // handleOpenAlertVariant(message, Notistack.SUCCESS);
         });
-    } catch (error) { }
+    } catch (error) {}
   };
   const handleAddOrRemoveVoucher = async (idVoucher, loading, keep) => {
-    const message = `${idVoucher === null
-      ? "Mã giảm giá đã được gỡ bỏ thành công!"
-      : "Áp dụng thành công mã giảm giá!"
-      }`;
+    const message = `${
+      idVoucher === null
+        ? "Mã giảm giá đã được gỡ bỏ thành công!"
+        : "Áp dụng thành công mã giảm giá!"
+    }`;
     const orderRequest = {
       voucher: {
         id: idVoucher,
@@ -1112,7 +1135,7 @@ const PointOfSales = () => {
           loaiThaoTac: 0,
           moTa: "Nhân viên tạo đơn cho khách hàng",
           createdAt: new Date(),
-          createdBy: "Admin",
+          createdBy: "Lê Thị Vân Anh",
           hoaDon: {
             id: order.id,
           },
@@ -1123,7 +1146,7 @@ const PointOfSales = () => {
           loaiThaoTac: 6,
           moTa: "Khách hàng đã thanh toán đơn hàng",
           createdAt: new Date(),
-          createdBy: "Admin",
+          createdBy: "Lê Thị Vân Anh",
           hoaDon: {
             id: order.id,
           },
@@ -1136,7 +1159,7 @@ const PointOfSales = () => {
           loaiThaoTac: 0,
           moTa: "Đơn hàng đã được đặt thành công",
           createdAt: new Date(),
-          createdBy: "Admin",
+          createdBy: "Lê Thị Vân Anh",
           hoaDon: {
             id: order.id,
           },
@@ -1147,7 +1170,7 @@ const PointOfSales = () => {
           loaiThaoTac: 1,
           moTa: "Thông tin đơn hàng đã được xác nhận",
           createdAt: new Date(),
-          createdBy: "Admin",
+          createdBy: "Lê Thị Vân Anh",
           hoaDon: {
             id: order.id,
           },
@@ -1230,22 +1253,11 @@ const PointOfSales = () => {
               : ""
           );
         }
-        setEmail(
-          order.email != null
-            ? order.email
-            : ""
-        );
-        setSdt(
-          order.soDienThoai != null
-            ? order.soDienThoai
-            : ""
-        );
-        setFullName(
-          order.hoVaTen != null
-            ? order.hoVaTen
-            : ""
-        );
+        setEmail(order.email != null ? order.email : "");
+        setSdt(order.soDienThoai != null ? order.soDienThoai : "");
+        setFullName(order.hoVaTen != null ? order.hoVaTen : "");
         setOrder(order);
+        setConfirm(false);
         console.log((order && order.cart.id) || "");
         // setShipFee(response && response.data.data[0].phiShip || 0);
         setDelivery(
@@ -1299,19 +1311,19 @@ const PointOfSales = () => {
           (response &&
             response.data.data[0].voucher &&
             response.data.data[0].voucher.ma) ||
-          ""
+            ""
         );
         setIdVoucher(
           (response &&
             response.data.data[0].voucher &&
             response.data.data[0].voucher.id) ||
-          ""
+            ""
         );
         setDiscountValue(
           (response &&
             response.data.data[0].voucher &&
             response.data.data[0].voucher.giaTriVoucher) ||
-          0
+            0
         );
         console.log(order);
 
@@ -1389,21 +1401,9 @@ const PointOfSales = () => {
           );
         }
 
-        setEmail(
-          order.email != null
-            ? order.email
-            : ""
-        );
-        setSdt(
-          order.soDienThoai != null
-            ? order.soDienThoai
-            : ""
-        );
-        setFullName(
-          order.hoVaTen != null
-            ? order.hoVaTen
-            : ""
-        );
+        setEmail(order.email != null ? order.email : "");
+        setSdt(order.soDienThoai != null ? order.soDienThoai : "");
+        setFullName(order.hoVaTen != null ? order.hoVaTen : "");
 
         console.log((order && order.cart.id) || "");
         setOrder(order);
@@ -1411,6 +1411,7 @@ const PointOfSales = () => {
         setDelivery(
           order && order.loaiHoaDon === OrderTypeString.DELIVERY ? true : false
         );
+        setConfirm(false);
         console.log(order && order.loaiHoaDon);
         setCartItems(order && order.cart.cartItems);
         const account = order && order.account;
@@ -1653,6 +1654,7 @@ const PointOfSales = () => {
           // setHadPaymentBank(false);
         }
 
+        setConfirm(false);
         setCustomerNameShip(
           order.loaiHoaDon === OrderTypeString.DELIVERY &&
             order.tenNguoiNhan !== null
@@ -1694,21 +1696,9 @@ const PointOfSales = () => {
             ? order.ghiChu
             : ""
         );
-        setEmail(
-          lastOrder.email != null
-            ? lastOrder.email
-            : ""
-        );
-        setSdt(
-          lastOrder.soDienThoai != null
-            ? lastOrder.soDienThoai
-            : ""
-        );
-        setFullName(
-          lastOrder.hoVaTen != null
-            ? lastOrder.hoVaTen
-            : ""
-        );
+        setEmail(lastOrder.email != null ? lastOrder.email : "");
+        setSdt(lastOrder.soDienThoai != null ? lastOrder.soDienThoai : "");
+        setFullName(lastOrder.hoVaTen != null ? lastOrder.hoVaTen : "");
 
         setDelivery(
           lastOrder.loaiHoaDon === OrderTypeString.DELIVERY ? true : false
@@ -1774,6 +1764,7 @@ const PointOfSales = () => {
         setShipFee(0);
         setDiscount("");
         setIdVoucher("");
+        setConfirm(false);
         setDiscountValue(0);
         setIdCustomer("");
         setCustomerName("");
@@ -1792,7 +1783,6 @@ const PointOfSales = () => {
         setEmail("");
         setSdt("");
         setIsLoading(false);
-
       } catch (error) {
         setIsLoading(false);
         console.log(error);
@@ -1915,22 +1905,11 @@ const PointOfSales = () => {
         : ""
     );
 
-    setEmail(
-      order.email != null
-        ? order.email
-        : ""
-    );
-    setSdt(
-      order.soDienThoai != null
-        ? order.soDienThoai
-        : ""
-    );
-    setFullName(
-      order.hoVaTen != null
-        ? order.hoVaTen
-        : ""
-    );
+    setEmail(order.email != null ? order.email : "");
+    setSdt(order.soDienThoai != null ? order.soDienThoai : "");
+    setFullName(order.hoVaTen != null ? order.hoVaTen : "");
 
+    setConfirm(false);
     const payments = order.paymentMethods;
     if (payments.length > 0) {
       setPaymentHistories(payments);
@@ -2036,10 +2015,12 @@ const PointOfSales = () => {
     let total = 0;
     cartItems &&
       cartItems.map((item) => {
-        if (item.sanPhamChiTiet.donGiaSauKhuyenMai !== null || item.sanPhamChiTiet.donGiaSauKhuyenMai !== 0) {
+        if (
+          item.sanPhamChiTiet.donGiaSauKhuyenMai !== null &&
+          item.sanPhamChiTiet.donGiaSauKhuyenMai !== 0
+        ) {
           total += item.sanPhamChiTiet.donGiaSauKhuyenMai * item.soLuong;
-        }
-        else {
+        } else {
           total += item.donGia * item.soLuong;
         }
       });
@@ -2050,10 +2031,12 @@ const PointOfSales = () => {
     let total = 0;
     cartItems &&
       cartItems.map((item) => {
-        if (item.sanPhamChiTiet.donGiaSauKhuyenMai !== null || item.sanPhamChiTiet.donGiaSauKhuyenMai !== 0) {
+        if (
+          item.sanPhamChiTiet.donGiaSauKhuyenMai !== null &&
+          item.sanPhamChiTiet.donGiaSauKhuyenMai !== 0
+        ) {
           total += item.sanPhamChiTiet.donGiaSauKhuyenMai * item.soLuong;
-        }
-        else {
+        } else {
           total += item.donGia * item.soLuong;
         }
       });
@@ -2068,10 +2051,12 @@ const PointOfSales = () => {
     let total = 0;
     cartItems &&
       cartItems.map((item) => {
-        if (item.sanPhamChiTiet.donGiaSauKhuyenMai !== null || item.sanPhamChiTiet.donGiaSauKhuyenMai !== 0) {
+        if (
+          item.sanPhamChiTiet.donGiaSauKhuyenMai !== null &&
+          item.sanPhamChiTiet.donGiaSauKhuyenMai !== 0
+        ) {
           total += item.sanPhamChiTiet.donGiaSauKhuyenMai * item.soLuong;
-        }
-        else {
+        } else {
           total += item.donGia * item.soLuong;
         }
       });
@@ -2081,10 +2066,12 @@ const PointOfSales = () => {
     let total = 0;
     cartItems &&
       cartItems.map((item) => {
-        if (item.sanPhamChiTiet.donGiaSauKhuyenMai !== null || item.sanPhamChiTiet.donGiaSauKhuyenMai !== 0) {
+        if (
+          item.sanPhamChiTiet.donGiaSauKhuyenMai !== null &&
+          item.sanPhamChiTiet.donGiaSauKhuyenMai !== 0
+        ) {
           total += item.sanPhamChiTiet.donGiaSauKhuyenMai * item.soLuong;
-        }
-        else {
+        } else {
           total += item.donGia * item.soLuong;
         }
       });
@@ -2098,10 +2085,12 @@ const PointOfSales = () => {
     let total = 0;
     cartItems &&
       cartItems.map((item) => {
-        if (item.sanPhamChiTiet.donGiaSauKhuyenMai !== null || item.sanPhamChiTiet.donGiaSauKhuyenMai !== 0) {
+        if (
+          item.sanPhamChiTiet.donGiaSauKhuyenMai !== null &&
+          item.sanPhamChiTiet.donGiaSauKhuyenMai !== 0
+        ) {
           total += item.sanPhamChiTiet.donGiaSauKhuyenMai * item.soLuong;
-        }
-        else {
+        } else {
           total += item.donGia * item.soLuong;
         }
       });
@@ -2113,10 +2102,12 @@ const PointOfSales = () => {
     let total = 0;
     cartItems &&
       cartItems.map((item) => {
-        if (item.sanPhamChiTiet.donGiaSauKhuyenMai !== null || item.sanPhamChiTiet.donGiaSauKhuyenMai !== 0) {
+        if (
+          item.sanPhamChiTiet.donGiaSauKhuyenMai !== null &&
+          item.sanPhamChiTiet.donGiaSauKhuyenMai !== 0
+        ) {
           total += item.sanPhamChiTiet.donGiaSauKhuyenMai * item.soLuong;
-        }
-        else {
+        } else {
           total += item.donGia * item.soLuong;
         }
       });
@@ -2556,9 +2547,9 @@ const PointOfSales = () => {
                                       onMouseDown={() => {
                                         handleConfirmBeforeDeleteOrderPendingHasProduct(
                                           item &&
-                                          item.cart &&
-                                          item.cart.cartItems &&
-                                          item.cart.cartItems.length,
+                                            item.cart &&
+                                            item.cart.cartItems &&
+                                            item.cart.cartItems.length,
                                           item.id
                                         );
                                         setItemMa(item.ma);
@@ -2681,7 +2672,7 @@ const PointOfSales = () => {
               "0 0.1rem 0.3rem #00000020",
           }}
         >
-          <div className="d-flex justify-content-between mt-1">
+          <div className="d-flex justify-content-between mt-1" ref={divRef}>
             <div className="ms-2" style={{ marginTop: "5px" }}>
               <span
                 className=""
@@ -2716,9 +2707,9 @@ const PointOfSales = () => {
               borderWidth: "2px",
             }}
           ></div>
-          {order.account ?
+          {order.account ? (
             <>
-              <div className="d-flex ms-2 mt-4">
+              <div className="d-flex ms-2 mt-4 account">
                 <div className="d-flex">
                   <div
                     className=""
@@ -2757,30 +2748,41 @@ const PointOfSales = () => {
               </div>
               <div className="mt-2"></div>
             </>
-            :
+          ) : (
             <>
-              <div className="d-flex ms-2 mt-4">
-                <div className="d-flex" style={{ width: "300px" }}>
-                  <TextFieldFullName fullNameDefault={fullName} getFullName={getFullName} update={updateFullName} />
+              <div className="d-flex ms-2 mt-4 account">
+                <div className="d-flex" style={{ width: "400px" }}>
+                  <TextFieldFullName
+                    confirm={confirm}
+                    fullNameDefault={fullName}
+                    getFullName={getFullName}
+                    update={updateFullName}
+                  />
                 </div>
 
-                <div
-                  className=" d-flex"
-                  style={{ marginLeft: "300px" }}
-                >
-                  <div className="" style={{ width: "300px" }}>
-                    <TextFieldEmail emailDefault={email} getEmail={getEmail} update={updateEmail} />
+                <div className="d-flex ms-auto">
+                  <div className="" style={{ width: "400px" }}>
+                    <TextFieldEmail
+                      emailDefault={email}
+                      getEmail={getEmail}
+                      update={updateEmail}
+                    />
                   </div>
                 </div>
               </div>
               <div className="d-flex ms-2 mt-3">
-                <div className="" style={{ width: "300px" }}>
-                  <TextFieldSdt sdtDefault={sdt} getSdt={getSdt} update={updateSdt} />
+                <div className="" style={{ width: "400px" }}>
+                  <TextFieldSdt
+                    sdtDefault={sdt}
+                    confirm={confirm}
+                    getSdt={getSdt}
+                    update={updateSdt}
+                  />
                 </div>
               </div>
               <div className="mt-2"></div>
             </>
-          }
+          )}
         </div>
         <div
           className="mt-4 p-3"
@@ -3233,14 +3235,15 @@ const PointOfSales = () => {
                   </div>
 
                   {customerPayment != handleCountTotalMoneyCustomerNeedPay() &&
-                    (delivery == true || delivery == false) &&
-                    paymentWhenReceive == false &&
-                    cartItems.length > 0 ? (
+                  (delivery == true || delivery == false) &&
+                  paymentWhenReceive == false &&
+                  cartItems.length > 0 ? (
                     <div
-                      className={`d-flex justify-content-between ${`${paymentWhenReceive == false && delivery == true
-                        ? "pt-4 mt-1"
-                        : "pt-3 mt-2"
-                        }`} ms-2`}
+                      className={`d-flex justify-content-between ${`${
+                        paymentWhenReceive == false && delivery == true
+                          ? "pt-4 mt-1"
+                          : "pt-3 mt-2"
+                      }`} ms-2`}
                       style={{ marginLeft: "1px" }}
                     >
                       <span

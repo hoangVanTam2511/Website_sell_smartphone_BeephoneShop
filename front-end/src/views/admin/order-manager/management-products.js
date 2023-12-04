@@ -652,6 +652,63 @@ const ManagementProducts = () => {
                   className="ms-2 ps-1"
                   style={{ fontSize: "15px", fontWeight: "450" }}
                 >
+                  Khoảng Giá:{""}
+                </span>
+              </div>
+              <FormControl
+                sx={{
+                  minWidth: 50,
+                }}
+                size="small"
+              >
+                <Select
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        borderRadius: "7px",
+                      },
+                    },
+                  }}
+                  IconComponent={KeyboardArrowDownOutlinedIcon}
+                  sx={{
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none !important",
+                    },
+                    "& .MuiSelect-select": {
+                      color: "#2f80ed",
+                      fontWeight: "500",
+                    },
+                  }}
+                  // open={openSelect1}
+                  // onClose={handleCloseSelect1}
+                  // onOpen={handleOpenSelect1}
+                  defaultValue={14}
+                >
+                  <MenuItem className="" value={14}>
+                    Tất cả
+                  </MenuItem>
+                  <MenuItem value={15}>Khách hàng mới</MenuItem>
+                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
+            <div
+              className="d-flex ms-3"
+              style={{
+                height: "40px",
+                position: "relative",
+                cursor: "pointer",
+              }}
+            >
+              <div
+                // onClick={handleOpenSelect1}
+                className=""
+                style={{ marginTop: "8px" }}
+              >
+                <span
+                  className="ms-2 ps-1"
+                  style={{ fontSize: "15px", fontWeight: "450" }}
+                >
                   Trạng Thái:{""}
                 </span>
               </div>
