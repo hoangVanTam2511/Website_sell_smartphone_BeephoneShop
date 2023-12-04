@@ -442,10 +442,10 @@ export const DefaultRouter = [
         path: "dashboard/refund-order/:id",
         element: <RefundDetail />,
       },
-      {
-        path: "dashboard/rank",
-        element: <ManagementRanks />,
-      },
+      // {
+      //   path: "dashboard/rank",
+      //   element: <ManagementRanks />,
+      // },
       // {
       //   path: 'dashboard/add-product',
       //   element: <ManagementProducts />,

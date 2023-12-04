@@ -41,6 +41,12 @@ public class OrderRequest {
 
   private String ghiChu;
 
+  private String hoVaTen;
+
+  private String soDienThoai;
+
+  private String email;
+
   private BigDecimal phiShip;
 
   private String tenNguoiNhan;
@@ -101,6 +107,11 @@ public class OrderRequest {
 
   private String hoanTien;
 
+  private Boolean isUpdateFullName;
+
+  private Boolean isUpdateEmail;
+
+  private Boolean isUpdateSdt;
 
 
 }

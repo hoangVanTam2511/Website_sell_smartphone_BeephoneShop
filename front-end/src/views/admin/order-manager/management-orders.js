@@ -34,6 +34,7 @@ import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDown
 import moment from "moment";
 import { over } from "stompjs";
 import SockJS from "sockjs-client";
+import { FaPencilAlt } from "react-icons/fa";
 
 const ManagementOrders = () => {
   const navigate = useNavigate();
@@ -203,6 +204,10 @@ const ManagementOrders = () => {
     setOpen(false);
   };
 
+  const orderSort = orders.sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  );
+
   const columns = [
     {
       title: "STT",
@@ -226,31 +231,16 @@ const ManagementOrders = () => {
     {
       title: "Khách Hàng",
       align: "center",
-      dataIndex: "tenNguoiNhan",
       width: "10%",
       render: (text, order) =>
         order.account === null &&
-        order.loaiHoaDon === OrderTypeString.AT_COUNTER ? (
-          <div
-            className="rounded-pill mx-auto"
-            style={{
-              height: "35px",
-              width: "130px",
-              padding: "4px",
-              backgroundColor: "#e1e1e1",
-            }}
-          >
-            <span className="text-dark mt-1" style={{ fontSize: "14px" }}>
-              Khách hàng lẻ
-            </span>
-          </div>
-        ) : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
-          order.account &&
-          order.account.hoVaTen ? (
-          order.account.hoVaTen
-        ) : (
-          order.tenNguoiNhan
-        ),
+        order.loaiHoaDon === OrderTypeString.AT_COUNTER
+          ? order.hoVaTen
+          : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
+            order.account &&
+            order.account.hoVaTen
+          ? order.account.hoVaTen
+          : order.tenNguoiNhan,
     },
     {
       title: "Số Điện Thoại",
@@ -260,7 +250,7 @@ const ManagementOrders = () => {
         <span style={{ fontWeight: "400" }}>
           {order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
           order.account === null
-            ? "..."
+            ? order.soDienThoai
             : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
               order.account &&
               order.account.soDienThoai
@@ -442,10 +432,10 @@ const ManagementOrders = () => {
       dataIndex: "ma",
       render: (text, record) => (
         <div className="button-container">
-          <Link className="ms-1" to={`/dashboard/order-detail/${record.ma}`}>
+          <Link className="" to={`/dashboard/order-detail/${record.ma}`}>
             <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
               <IconButton size="">
-                <BorderColorOutlinedIcon color="primary" />
+                <FaPencilAlt color="#2f80ed" />
               </IconButton>
             </Tooltip>
           </Link>

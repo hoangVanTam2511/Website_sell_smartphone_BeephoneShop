@@ -17,6 +17,9 @@
   .wrap-printer{
     display: none;
   }
+  .wrap-printer-delivery{
+    display: none;
+  }
 }
 @media print {
 	.qrcode-none  {
@@ -108,6 +111,10 @@ clip-path: inset(0 100% 0 0);
 }
 .txt-price{
   color: #dc1111;
+}
+.txt-price-discount{
+  color: gray;
+  text-decoration: line-through;
 }
 .badge-success{
   background-color: #09a129;
@@ -303,6 +310,11 @@ font-family: 'Roboto', sans-serif;
     background-color: #ffffff;
 }
 
+.wrap-order-refund {
+    box-shadow: 0 0.1rem 0.4rem #00000060;
+    background-color: #ffffff;
+  height: auto;
+}
 .wrap-order-detail {
     box-shadow: 0 0.1rem 0.4rem #00000060;
     background-color: #ffffff;
@@ -1015,7 +1027,7 @@ input[type="number"]::-ms-outer-spin-button {
 	border-spacing: 0;
 	border-collapse: collapse;
 	width: 100%;
-	margin: 15px auto;
+	/* margin: 15px auto; */
 }
 
 .table-info-order th,

@@ -5,6 +5,7 @@ import beephone_shop_projects.entity.base.PrimaryEntity;
 import beephone_shop_projects.infrastructure.constant.OrderStatus;
 import beephone_shop_projects.infrastructure.constant.OrderType;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -52,6 +53,12 @@ public class HoaDon extends PrimaryEntity implements IsIdentified {
 
   private String ghiChu;
 
+  private String hoVaTen;
+
+  private String soDienThoai;
+
+  private String email;
+
   private BigDecimal phiShip;
 
   private BigDecimal tienKhachTra;
@@ -62,6 +69,7 @@ public class HoaDon extends PrimaryEntity implements IsIdentified {
 
   private BigDecimal tienTraHang;
 
+  @Column(length = 10000)
   private String maQrCode;
 
   @Enumerated(EnumType.ORDINAL)

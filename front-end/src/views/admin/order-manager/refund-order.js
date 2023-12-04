@@ -1,13 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "antd";
-import {
-  TextField,
-} from "@mui/material";
+import { TextField } from "@mui/material";
 import axios from "axios";
-import {
-  Notistack,
-} from "./enum";
+import { Notistack } from "./enum";
 import useCustomSnackbar from "../../../utilities/notistack";
 
 const RefundOrder = () => {
@@ -27,13 +23,11 @@ const RefundOrder = () => {
   };
 
   const handleRedirectRefundOrderDetail = () => {
-    navigate(`/dashboard/refund-order/${orderCode}`)
-  }
+    navigate(`/dashboard/refund-order/${orderCode}`);
+  };
 
   // useEffect(() => {
   // }, []);
-
-
 
   return (
     <>
@@ -42,12 +36,17 @@ const RefundOrder = () => {
         style={{
           backgroundColor: "#ffffff",
           boxShadow: "0 0.1rem 0.3rem #00000010",
-          height: "675px"
+          height: "675px",
         }}
       >
         <div className="text-center">
           <div className="mt-4 pt-3">
-            <img className="" style={{ width: "500px", height: "300px" }} src="https://img.freepik.com/free-vector/flat-design-illustrated-transport-truck_23-2149151340.jpg?w=1060&t=st=1700877824~exp=1700878424~hmac=1f975ae98b8555e1f4dcb9c75f7afcbec36ba6b13f9114b21804578f8506d45a" alt="" />
+            <img
+              className=""
+              style={{ width: "500px", height: "300px" }}
+              src="https://img.freepik.com/free-vector/flat-design-illustrated-transport-truck_23-2149151340.jpg?w=1060&t=st=1700877824~exp=1700878424~hmac=1f975ae98b8555e1f4dcb9c75f7afcbec36ba6b13f9114b21804578f8506d45a"
+              alt=""
+            />
             <div className="header-title mt-2">
               <TextField
                 label="Tìm Kiếm Đơn Hàng"
@@ -81,6 +80,26 @@ const RefundOrder = () => {
                   Tìm Kiếm
                 </span>
               </Button>
+              <Button
+                // onClick={() => {
+                //   onOpenScanner();
+                //   setScannerRef([]);
+                // }}
+                className="rounded-2 me-2 ms-2"
+                type="warning"
+                style={{ height: "38px", width: "120px", fontSize: "15px" }}
+              >
+                <span
+                  className=""
+                  style={{
+                    fontSize: "15px",
+                    fontWeight: "500",
+                    marginBottom: "2px",
+                  }}
+                >
+                  Quét Barcode
+                </span>
+              </Button>
             </div>
           </div>
         </div>
@@ -88,6 +107,5 @@ const RefundOrder = () => {
       </div>
     </>
   );
-}
+};
 export default RefundOrder;
-

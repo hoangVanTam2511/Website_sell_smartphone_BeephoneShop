@@ -11,6 +11,7 @@ import beephone_shop_projects.core.admin.order_management.model.response.OrderIt
 import beephone_shop_projects.core.admin.order_management.model.response.OrderResponse;
 import beephone_shop_projects.core.admin.order_management.repository.CartItemRepository;
 import beephone_shop_projects.core.admin.order_management.repository.HinhThucThanhToanCustomRepository;
+import beephone_shop_projects.core.admin.order_management.repository.ImeiCustomRepository;
 import beephone_shop_projects.core.admin.order_management.repository.impl.CartRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.repository.impl.HinhThucThanhToanRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.repository.impl.OrderRepositoryImpl;
@@ -20,14 +21,15 @@ import beephone_shop_projects.core.admin.product_management.repository.ProductDe
 import beephone_shop_projects.core.common.base.ResponseObject;
 import beephone_shop_projects.entity.HinhThucThanhToan;
 import beephone_shop_projects.entity.HoaDon;
+import beephone_shop_projects.entity.Imei;
 import beephone_shop_projects.infrastructure.constant.HttpStatus;
 import beephone_shop_projects.infrastructure.constant.Message;
 import beephone_shop_projects.utils.BarcodeGenerator;
 import beephone_shop_projects.utils.ReadFileExcelUtils;
 import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
-import com.google.zxing.oned.Code128Writer;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -94,34 +96,26 @@ public class TestController {
   @Autowired
   private BarcodeGenerator barcodeGenerator;
 
+  @Autowired
+  private ImeiCustomRepository imeiCustomRepository;
+
   @GetMapping("/barcode/{code}")
-  public ResponseEntity<byte[]> generateBarcode(@PathVariable String code) {
+  public ResponseEntity<String> generateBarcode(@PathVariable String code) {
     try {
-      // Tạo mã barcode
-      BitMatrix bitMatrix = new Code128Writer().encode(code,
-              BarcodeFormat.CODE_128,
-              300,
-              100
-      );
-      // Tạo buffered image từ BitMatrix
-      BufferedImage bufferedImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
+      String getUri = barcodeGenerator.generateBarcodeImageBase64Url(code, BarcodeFormat.QR_CODE);
+      return new ResponseEntity<>(getUri, org.springframework.http.HttpStatus.OK);
 
-      // Chuyển đổi BufferedImage thành mảng byte để trả về như là ảnh
-      ByteArrayOutputStream stream = new ByteArrayOutputStream();
-      ImageIO.write(bufferedImage, "png", stream);
-      byte[] imageBytes = stream.toByteArray();
-
-      // Trả về ảnh barcode cùng với link
-      return ResponseEntity.ok()
-              .header("Content-Type", "image/png")
-              .header("Content-Disposition", "inline; filename=barcode.png")
-              .body(imageBytes);
     } catch (Exception e) {
       // Xử lý lỗi nếu có
       return ResponseEntity.status(500).body(null);
     }
   }
 
+  @GetMapping("/imeis/all")
+  public ResponseObject home10111() {
+    List<Imei> imeis = imeiCustomRepository.findAll();
+    return new ResponseObject(imeis);
+  }
 
   @GetMapping("/test1")
   public ResponseEntity<?> home10() {
@@ -169,6 +163,12 @@ public class TestController {
   public ResponseObject refund(@RequestBody OrderItemsCustomRefundRequest req) throws Exception {
     OrderItemResponse refundProduct = cartItemService.refundOrder(req);
     return new ResponseObject(refundProduct);
+  }
+
+  @PutMapping("/carts/order/scanner")
+  public ResponseObject home2222122(@RequestBody OrderItemRequest req) throws Exception {
+    OrderItemResponse addProductItemToCartOrderScanner = cartItemService.addProductItemToCartOrderByScanner(req);
+    return new ResponseObject(addProductItemToCartOrderScanner);
   }
 
   @PutMapping("/carts/scanner")

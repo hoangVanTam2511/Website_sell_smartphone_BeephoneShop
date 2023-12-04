@@ -195,7 +195,7 @@ const VerticalNav = memo((props) => {
             </div>
           </Link>
         </li>
-        <li className="nav-item">
+        {/* <li className="nav-item">
           <Link
             className={`${
               location.pathname.includes("/dashboard/rank") ||
@@ -233,7 +233,7 @@ const VerticalNav = memo((props) => {
               </span>
             </div>
           </Link>
-        </li>
+        </li> */}
 
         <li className="nav-item">
           <Link

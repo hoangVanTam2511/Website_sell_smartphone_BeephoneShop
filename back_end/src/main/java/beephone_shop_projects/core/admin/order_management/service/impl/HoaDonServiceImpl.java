@@ -40,7 +40,9 @@ import beephone_shop_projects.infrastructure.constant.OrderStatus;
 import beephone_shop_projects.infrastructure.constant.OrderType;
 import beephone_shop_projects.infrastructure.constant.StatusImei;
 import beephone_shop_projects.infrastructure.exeption.rest.RestApiException;
+import beephone_shop_projects.utils.BarcodeGenerator;
 import beephone_shop_projects.utils.RandomCodeGenerator;
+import com.google.zxing.BarcodeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -114,6 +116,9 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
   @Autowired
   private VoucherRepository voucherRepository;
 
+  @Autowired
+  private BarcodeGenerator barcodeGenerator;
+
   public HoaDonServiceImpl(OrderRepositoryImpl repo, OrderConverter converter) {
     super(repo, converter);
   }
@@ -179,7 +184,7 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
     if (searchFilter.getPageSize() == null) {
       searchFilter.setPageSize(5);
     }
-    Pageable pageable = PageRequest.of(searchFilter.getCurrentPage() - 1, searchFilter.getPageSize(), Sort.by("createdAt").ascending());
+    Pageable pageable = PageRequest.of(searchFilter.getCurrentPage() - 1, searchFilter.getPageSize(), Sort.by("createdAt").descending());
     Page<HoaDon> orders = hoaDonRepository.findOrdersByMultipleCriteriaWithPagination(pageable, searchFilter);
     return orderConverter.convertToPageResponse(orders);
   }
@@ -322,6 +327,21 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
       HoaDon updateOrderPending = hoaDonRepository.save(orderConverter.convertResponseToEntity(orderCurrent));
       return orderConverter.convertEntityToResponse(updateOrderPending);
     }
+    if (req.getIsUpdateSdt()) {
+      orderCurrent.setSoDienThoai(req.getSoDienThoai());
+      HoaDon updateOrderPending = hoaDonRepository.save(orderConverter.convertResponseToEntity(orderCurrent));
+      return orderConverter.convertEntityToResponse(updateOrderPending);
+    }
+    if (req.getIsUpdateFullName()) {
+      orderCurrent.setHoVaTen(req.getHoVaTen());
+      HoaDon updateOrderPending = hoaDonRepository.save(orderConverter.convertResponseToEntity(orderCurrent));
+      return orderConverter.convertEntityToResponse(updateOrderPending);
+    }
+    if (req.getIsUpdateEmail()) {
+      orderCurrent.setEmail(req.getEmail());
+      HoaDon updateOrderPending = hoaDonRepository.save(orderConverter.convertResponseToEntity(orderCurrent));
+      return orderConverter.convertEntityToResponse(updateOrderPending);
+    }
 
     if (req.getIsPayment()) {
       orderCurrent.setCart(null);
@@ -332,6 +352,9 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
       orderCurrent.setLoaiHoaDon(req.getLoaiHoaDon());
       orderCurrent.setPhiShip(req.getPhiShip());
       orderCurrent.setKhachCanTra(req.getKhachCanTra());
+
+      String uri = barcodeGenerator.generateBarcodeImageBase64Url(orderCurrent.getMa(), BarcodeFormat.QR_CODE);
+      orderCurrent.setMaQrCode(uri);
 
       if (req.getLoaiHoaDon().equals(OrderType.AT_COUNTER)) {
         orderCurrent.setTenNguoiNhan(null);
@@ -482,8 +505,9 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
   public List<OrderResponse> getOrdersPending() throws Exception {
     List<HoaDon> orders = hoaDonRepository.getOrdersPending();
     if (orders.isEmpty()) {
-      orders = hoaDonRepository.getOrdersPending();
       this.createOrderPending();
+      List<HoaDon> ordersDefault = hoaDonRepository.getOrdersPending();
+      return orderConverter.convertToListResponse(ordersDefault);
     }
     return orderConverter.convertToListResponse(orders);
   }

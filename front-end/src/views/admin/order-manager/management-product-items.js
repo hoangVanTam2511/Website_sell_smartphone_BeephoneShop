@@ -20,6 +20,7 @@ import { FaPencilAlt } from "react-icons/fa";
 import { ImportExcelImei } from "./import-imei-by";
 import { FaDownload, FaUpload } from "react-icons/fa6";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
+import ImportAndExportExcelImei from "../../../utilities/excelUtils";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -33,6 +34,11 @@ const ManagementProductItems = ({/*  open, close, productItems, productName */ }
   const [searchParams, setSearchParams] = useSearchParams();
   const [keyword, setKeyword] = useState(searchParams.get('keyword'));
   const [currentPage, setCurrentPage] = useState(searchParams.get('currentPage') || 1);
+  const [productName, setProductName] = useState("");
+
+  const [imeis, setImeis] = useState([]);
+  const [selectedImei, setSelectedImei] = useState([]);
+  const [selectedImeiRefresh, setSelectedImeiRefresh] = useState([]);
 
   const { id } = useParams();
 
@@ -44,10 +50,20 @@ const ManagementProductItems = ({/*  open, close, productItems, productName */ }
     navigate(`/dashboard/create-product`);
   }
 
+  const [openModalImel, setOpenModalImei] = useState(false);
+
+  const handleOpenModalImei = () => {
+    setOpenModalImei(true);
+  }
+
+  const handleCloseModalImei = () => {
+    setOpenModalImei(false);
+  }
+
   const OrderTable = () => {
     return (
       <>
-        <Table className="table-container mt-4 pt-2"
+        <Table className="table-container "
           columns={columns}
           rowKey="ma"
           dataSource={products}
@@ -107,10 +123,10 @@ const ManagementProductItems = ({/*  open, close, productItems, productName */ }
               }
               class=""
               alt=""
-              style={{ width: "145px", height: "150px" }}
+              style={{ width: "125px", height: "125px" }}
             />
             {item &&
-              item.donGiaSauKhuyenMai &&
+              item.donGiaSauKhuyenMai !== null && item.donGiaSauKhuyenMai !== 0 &&
               <div
                 className="category"
                 style={{
@@ -119,7 +135,7 @@ const ManagementProductItems = ({/*  open, close, productItems, productName */ }
                   position: "absolute",
                   top: "0px",
                   borderTopLeftRadius: `8px`,
-                  fontSize: "12.5px",
+                  fontSize: "11px",
                   borderTopRightRadius: `20px`,
                   borderBottomRightRadius: `20px`,
                   fontWeight: "600",
@@ -190,7 +206,11 @@ const ManagementProductItems = ({/*  open, close, productItems, productName */ }
       width: "11%",
       render: (text, record) => (
         <Tooltip title="Danh sách IMEI" TransitionComponent={Zoom}>
-          <div style={{ cursor: "pointer" }}>
+          <div onClick={() => {
+            setOpenModalImei(true); setImeis(record.imeis && record.imeis);
+            const productName = record.sanPham.tenSanPham + " " + record.ram.dungLuong + "/" + record.rom.dungLuong + "GB" + " (" + record.mauSac.tenMauSac + ")";
+            setProductName(productName);
+          }} style={{ cursor: "pointer" }}>
             <span style={{ fontWeight: "400" }} className="underline-blue">
               {record.soLuongTonKho}
             </span>
@@ -206,6 +226,7 @@ const ManagementProductItems = ({/*  open, close, productItems, productName */ }
       render: (text, record) => (
         <>
           <div className="button-container">
+            <ImportExcelImei /* ma={record.ma} get={getImeisFromImport} listImeiCurrent={listImeiCurrent} listImeiCurrentSheet={cauHinhsFinal && imeiObjects} */ />
             <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
               <IconButton size="">
                 <FaPencilAlt color="#2f80ed" />
@@ -223,7 +244,7 @@ const ManagementProductItems = ({/*  open, close, productItems, productName */ }
           <Card.Header className="d-flex justify-content-between">
             <div className="header-title mt-2">
               <TextField
-                label="Tìm Sản Phẩm Chi Tiết"
+                label="Tìm Sản Phẩm Theo Mã, Số Lượng Hoặc Đơn Giá"
                 // onChange={handleGetValueFromInputTextField}
                 // value={keyword}
                 InputLabelProps={{
@@ -316,14 +337,14 @@ const ManagementProductItems = ({/*  open, close, productItems, productName */ }
                   className=""
                   style={{ marginBottom: "2px", fontWeight: "500", marginLeft: "21px" }}
                 >
-                  Tải Mẫu
+                  Tải Mẫu Import IMEI
                 </span>
               </Button>
             </div>
           </Card.Header>
-          <div className="d-flex mt-4 pt-1 mx-auto">
+          <div className="d-flex mt-4 mx-auto">
             <div
-              className="d-flex"
+              className="d-flex ms-3"
               style={{
                 height: "40px",
                 position: "relative",
@@ -339,7 +360,7 @@ const ManagementProductItems = ({/*  open, close, productItems, productName */ }
                   className="ms-2 ps-1"
                   style={{ fontSize: "15px", fontWeight: "450" }}
                 >
-                  Danh Mục:{" "}
+                  RAM:{""}
                 </span>
               </div>
               <FormControl
@@ -396,7 +417,7 @@ const ManagementProductItems = ({/*  open, close, productItems, productName */ }
                   className="ms-2 ps-1"
                   style={{ fontSize: "15px", fontWeight: "450" }}
                 >
-                  Hãng:{" "}
+                  ROM:{""}
                 </span>
               </div>
               <FormControl
@@ -453,7 +474,7 @@ const ManagementProductItems = ({/*  open, close, productItems, productName */ }
                   className="ms-2 ps-1"
                   style={{ fontSize: "15px", fontWeight: "450" }}
                 >
-                  Hệ Điều Hành:{" "}
+                  Màu Sắc:{""}
                 </span>
               </div>
               <FormControl
@@ -510,123 +531,7 @@ const ManagementProductItems = ({/*  open, close, productItems, productName */ }
                   className="ms-2 ps-1"
                   style={{ fontSize: "15px", fontWeight: "450" }}
                 >
-                  CPU:{""}
-                </span>
-              </div>
-              <FormControl
-                sx={{
-                  minWidth: 50,
-                }}
-                size="small"
-              >
-                <Select
-                  MenuProps={{
-                    PaperProps: {
-                      style: {
-                        borderRadius: "7px",
-                      },
-                    },
-                  }}
-                  IconComponent={KeyboardArrowDownOutlinedIcon}
-                  sx={{
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      border: "none !important",
-                    },
-                    "& .MuiSelect-select": {
-                      color: "#2f80ed",
-                      fontWeight: "500",
-                    },
-                  }}
-                  // open={openSelect1}
-                  // onClose={handleCloseSelect1}
-                  // onOpen={handleOpenSelect1}
-                  defaultValue={14}
-                >
-                  <MenuItem className="" value={14}>
-                    Tất cả
-                  </MenuItem>
-                  <MenuItem value={15}>Khách hàng mới</MenuItem>
-                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
-                </Select>
-              </FormControl>
-            </div>
-            <div
-              className="d-flex ms-3"
-              style={{
-                height: "40px",
-                position: "relative",
-                cursor: "pointer",
-              }}
-            >
-              <div
-                // onClick={handleOpenSelect1}
-                className=""
-                style={{ marginTop: "8px" }}
-              >
-                <span
-                  className="ms-2 ps-1"
-                  style={{ fontSize: "15px", fontWeight: "450" }}
-                >
-                  Màn Hình:{""}
-                </span>
-              </div>
-              <FormControl
-                sx={{
-                  minWidth: 50,
-                }}
-                size="small"
-              >
-                <Select
-                  MenuProps={{
-                    PaperProps: {
-                      style: {
-                        borderRadius: "7px",
-                      },
-                    },
-                  }}
-                  IconComponent={KeyboardArrowDownOutlinedIcon}
-                  sx={{
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      border: "none !important",
-                    },
-                    "& .MuiSelect-select": {
-                      color: "#2f80ed",
-                      fontWeight: "500",
-                    },
-                  }}
-                  // open={openSelect1}
-                  // onClose={handleCloseSelect1}
-                  // onOpen={handleOpenSelect1}
-                  defaultValue={14}
-                >
-                  <MenuItem className="" value={14}>
-                    Tất cả
-                  </MenuItem>
-                  <MenuItem value={15}>Khách hàng mới</MenuItem>
-                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
-                </Select>
-              </FormControl>
-            </div>
-          </div>
-          <div className="d-flex mt-3 mx-auto">
-            <div
-              className="d-flex ms-3"
-              style={{
-                height: "40px",
-                position: "relative",
-                cursor: "pointer",
-              }}
-            >
-              <div
-                // onClick={handleOpenSelect1}
-                className=""
-                style={{ marginTop: "8px" }}
-              >
-                <span
-                  className="ms-2 ps-1"
-                  style={{ fontSize: "15px", fontWeight: "450" }}
-                >
-                  Trạng Thái:{""}
+                  Khoảng Giá:{""}
                 </span>
               </div>
               <FormControl
@@ -793,6 +698,7 @@ const ManagementProductItems = ({/*  open, close, productItems, productName */ }
         </Card>
       </div>
       {isLoading && <LoadingIndicator />}
+      <ImportAndExportExcelImei open={openModalImel} close={handleCloseModalImei} imeis={imeis} productName={productName} view={false} />
     </>
   )
 
