@@ -29,7 +29,11 @@ import {
 import useCustomSnackbar from "../../../utilities/notistack";
 import { add } from "lodash";
 import PrinterInvoice, { Print } from "./printer-invoice";
-import { ConfirmRefund, ConfirmRefundOrder, ModalRefundProduct } from "./AlertDialogSlide";
+import {
+  ConfirmRefund,
+  ConfirmRefundOrder,
+  ModalRefundProduct,
+} from "./AlertDialogSlide";
 import { ref, updateMetadata } from "firebase/storage";
 const RefundDetail = () => {
   const navigate = useNavigate();
@@ -142,8 +146,7 @@ const RefundDetail = () => {
         if (item.trangThai === StatusImei.SOLD) {
           if (item.donGiaSauGiam !== null && item.donGiaSauGiam !== 0) {
             total += item.donGiaSauGiam;
-          }
-          else {
+          } else {
             total += item.donGia;
           }
         }
@@ -153,7 +156,7 @@ const RefundDetail = () => {
 
   const canTraKhach = () => {
     return totalRefund() - order.tienTraKhach;
-  }
+  };
 
   const totalRefund = () => {
     let total = 0;
@@ -161,8 +164,7 @@ const RefundDetail = () => {
       orderRefunds.map((item) => {
         if (item.donGiaSauGiam !== null && item.donGiaSauGiam !== 0) {
           total += item.donGiaSauGiam;
-        }
-        else {
+        } else {
           total += item.donGia;
         }
       });
@@ -171,8 +173,7 @@ const RefundDetail = () => {
 
   const countPrice = (price, afterDiscount) => {
     return price - afterDiscount;
-
-  }
+  };
 
   const columnsOrderItemsRefund = [
     {
@@ -222,25 +223,30 @@ const RefundDetail = () => {
               </div>
             </Tooltip>
             <div className="mt-2">
-              <span className="txt-price"
+              <span
+                className="txt-price"
                 style={{ fontSize: "17.5px", fontWeight: "" }}
               >
                 {item && item.donGiaSauGiam !== null && item.donGiaSauGiam !== 0
                   ? item.donGiaSauGiam.toLocaleString("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  })
+                      style: "currency",
+                      currency: "VND",
+                    })
                   : ""}
               </span>
               <span
-                className={item.donGiaSauGiam !== null && item.donGiaSauGiam !== 0 ? "txt-price-discount ms-2" : "txt-price"}
+                className={
+                  item.donGiaSauGiam !== null && item.donGiaSauGiam !== 0
+                    ? "txt-price-discount ms-2"
+                    : "txt-price"
+                }
                 style={{ fontSize: "17px", fontWeight: "" }}
               >
                 {item && item.donGia
                   ? item.donGia.toLocaleString("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  })
+                      style: "currency",
+                      currency: "VND",
+                    })
                   : ""}
               </span>
             </div>
@@ -252,11 +258,7 @@ const RefundDetail = () => {
       title: "Số Imei",
       align: "center",
       width: "10%",
-      render: (text, item) => (
-        <div>
-          {item.imei.soImei}
-        </div>
-      ),
+      render: (text, item) => <div>{item.imei.soImei}</div>,
     },
     {
       title: "Thành tiền",
@@ -269,7 +271,12 @@ const RefundDetail = () => {
             className="txt-price"
           >
             {(item &&
-              totalItem(item.soLuong, item.donGiaSauGiam !== null && item.donGiaSauGiam !== 0 ? item.donGiaSauGiam : item.donGia).toLocaleString("vi-VN", {
+              totalItem(
+                item.soLuong,
+                item.donGiaSauGiam !== null && item.donGiaSauGiam !== 0
+                  ? item.donGiaSauGiam
+                  : item.donGia
+              ).toLocaleString("vi-VN", {
                 style: "currency",
                 currency: "VND",
               })) ||
@@ -287,7 +294,8 @@ const RefundDetail = () => {
         <div>
           <div className="button-container">
             {item.imei.trangThai === StatusImei.REFUND ? (
-              <Button onClick={() => console.log(totalRefund())}
+              <Button
+                onClick={() => console.log(totalRefund())}
                 className="rounded-2 ant-btn-light"
                 style={{ height: "38px", width: "130px", fontSize: "15px" }}
               >
@@ -383,9 +391,9 @@ const RefundDetail = () => {
               >
                 {item && item.donGia
                   ? item.donGia.toLocaleString("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  })
+                      style: "currency",
+                      currency: "VND",
+                    })
                   : ""}
               </span>
             </div>
@@ -467,8 +475,7 @@ const RefundDetail = () => {
       <div
         className="wrap-order-refund mt-4"
         style={{
-          height:
-            "380px",
+          height: "380px",
         }}
       >
         <div className="p-3">
@@ -477,7 +484,8 @@ const RefundDetail = () => {
               <span className="" style={{ fontSize: "25px", color: "" }}>
                 CHÍNH SÁCH TRẢ HÀNG & HOÀN TIỀN
                 <span style={{ color: "#2f80ed" }}>
-                  {" "}(TRẢI NGHIỆM 7 NGÀY DÙNG THỬ MIỄN PHÍ)
+                  {" "}
+                  (TRẢI NGHIỆM 7 NGÀY DÙNG THỬ MIỄN PHÍ)
                 </span>
               </span>
             </div>
@@ -494,52 +502,82 @@ const RefundDetail = () => {
         </div>
 
         <div className="text-center ms-4" style={{ width: "96.5%" }}>
-          <table className='table-info-order' border="1" cellpadding="5" cellspacing="10">
+          <table
+            className="table-info-order"
+            border="1"
+            cellpadding="5"
+            cellspacing="10"
+          >
             <thead>
               <tr>
                 <th align="center" class="" style={{ width: "50%" }}>
-                  Điều kiện áp dụng hoàn trả sản phẩm</th>
-                <th align="center" class="" style={{ width: "50%" }}>Yêu cầu về việc hoàn trả sản phẩm</th>
+                  Điều kiện áp dụng hoàn trả sản phẩm
+                </th>
+                <th align="center" class="" style={{ width: "50%" }}>
+                  Yêu cầu về việc hoàn trả sản phẩm
+                </th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td align='center' style={{ whiteSpace: "pre-line", width: "50%" }}>
-                  - Áp dụng với các hóa đơn thanh toán bằng tiền mặt hoặc chuyển khoản trực tiếp.
+                <td
+                  align="center"
+                  style={{ whiteSpace: "pre-line", width: "50%" }}
+                >
+                  - Áp dụng với các hóa đơn thanh toán bằng tiền mặt hoặc chuyển
+                  khoản trực tiếp.
                 </td>
-                <td align="center" style={{ whiteSpace: "pre-line", width: "50%" }}>
-                  - Còn hóa đơn mua hàng, phiếu bảo hành hoặc chứng thực thông tin mua người mua hàng và số điện thoại.
+                <td
+                  align="center"
+                  style={{ whiteSpace: "pre-line", width: "50%" }}
+                >
+                  - Còn hóa đơn mua hàng, phiếu bảo hành hoặc chứng thực thông
+                  tin mua người mua hàng và số điện thoại.
                 </td>
               </tr>
               <tr>
-                <td align='center' style={{ whiteSpace: "pre-line", width: "50%" }}>
+                <td
+                  align="center"
+                  style={{ whiteSpace: "pre-line", width: "50%" }}
+                >
                   - Không áp dụng với các hình thức thanh toán khác.
                 </td>
-                <td align="center" style={{ whiteSpace: "pre-line", width: "50%" }}>
-                  - Còn đẩy đủ hộp sản phẩm, phụ kiện đi kèm (nếu có), sản phẩm còn nguyên vẹn không trầy xước, cấn móp.
+                <td
+                  align="center"
+                  style={{ whiteSpace: "pre-line", width: "50%" }}
+                >
+                  - Còn đẩy đủ hộp sản phẩm, phụ kiện đi kèm (nếu có), sản phẩm
+                  còn nguyên vẹn không trầy xước, cấn móp.
                 </td>
               </tr>
               <tr>
                 <td colSpan="2" align="left">
-                  <span className="ms-2 ps-1" style={{ color: "red", fontWeight: "500" }}>Lưu ý:</span>
+                  <span
+                    className="ms-2 ps-1"
+                    style={{ color: "red", fontWeight: "500" }}
+                  >
+                    Lưu ý:
+                  </span>
                   <div className="p-2 ms-1">
                     <div>
                       <span style={{ whiteSpace: "pre-line" }}>
-                        - {" "}
+                        -{" "}
                         <span className="" style={{ fontWeight: "500" }}>
-                          Sau 7 ngày {" "}</span>
-                        không áp dụng chính sách trả hàng. Thời gian được tính từ ngày nhận hàng và không quá
-
-                        {" "}
+                          Sau 7 ngày{" "}
+                        </span>
+                        không áp dụng chính sách trả hàng. Thời gian được tính
+                        từ ngày nhận hàng và không quá{" "}
                         <span className="" style={{ fontWeight: "500" }}>
-                          5 (ngày)
-                          {" "}</span>
-                        so với ngày mua hàng trên hoá đơn áp dụng với hình thức giao hàng qua dịch vụ có phát sinh thời gian giao hàng.
+                          5 (ngày){" "}
+                        </span>
+                        so với ngày mua hàng trên hoá đơn áp dụng với hình thức
+                        giao hàng qua dịch vụ có phát sinh thời gian giao hàng.
                       </span>
                     </div>
                     <div>
                       <span style={{ whiteSpace: "pre-line" }}>
-                        - Ngoài thời gian trên sản phẩm được bảo hành theo Chính sách Bảo hành mặc định của {" "}
+                        - Ngoài thời gian trên sản phẩm được bảo hành theo Chính
+                        sách Bảo hành mặc định của{" "}
                         <span style={{}} className="underline-custom">
                           beephoneshop.vn.
                         </span>
@@ -550,10 +588,7 @@ const RefundDetail = () => {
               </tr>
             </tbody>
           </table>
-
-
         </div>
-
       </div>
     );
   };
@@ -815,14 +850,13 @@ const RefundDetail = () => {
               </div>
               <div className="ms-5 ps-5">
                 {order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
-                  order.account === null ? order.hoVaTen :
-                  order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
+                order.account === null
+                  ? order.hoVaTen
+                  : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
                     order.account &&
-                    order.account.hoVaTen ? (
                     order.account.hoVaTen
-                  ) : (
-                    order.tenNguoiNhan
-                  )}
+                  ? order.account.hoVaTen
+                  : order.tenNguoiNhan}
               </div>
             </div>
             <div className="ms-4 mt-4 mt-1 d-flex" style={{ height: "30px" }}>
@@ -832,13 +866,13 @@ const RefundDetail = () => {
               <div className="ms-5 ps-5 mt-1">
                 <span className="text-dark" style={{ fontSize: "17px" }}>
                   {order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
-                    order.account === null
+                  order.account === null
                     ? order.soDienThoai
                     : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
                       order.account &&
                       order.account.soDienThoai
-                      ? order.account.soDienThoai
-                      : order.soDienThoaiNguoiNhan}
+                    ? order.account.soDienThoai
+                    : order.soDienThoaiNguoiNhan}
                 </span>
               </div>
             </div>
@@ -851,8 +885,8 @@ const RefundDetail = () => {
                   {order.account === null
                     ? order.email
                     : order.account && order.account.email
-                      ? order.account.email
-                      : "..."}
+                    ? order.account.email
+                    : "..."}
                 </span>
               </div>
             </div>
@@ -895,7 +929,9 @@ const RefundDetail = () => {
                 </span>
               </div>
               <div className="">
-                {orderRefunds.filter((item) => item.trangThai === StatusImei.SOLD).length > 0 ? (
+                {orderRefunds.filter(
+                  (item) => item.trangThai === StatusImei.SOLD
+                ).length > 0 ? (
                   <Button
                     onClick={() => {
                       setOpenModalRefundOrder(true);
@@ -965,7 +1001,7 @@ const RefundDetail = () => {
               </div>
               <div className="">
                 {order.trangThai === OrderStatusString.SUCCESS_DELIVERY ||
-                  order.trangThai === OrderStatusString.HAD_PAID ? (
+                order.trangThai === OrderStatusString.HAD_PAID ? (
                   <Button
                     onClick={() => {
                       // setOpenProducts(true);
@@ -1115,14 +1151,17 @@ const RefundDetail = () => {
       <div
         className="mt-4 "
         style={{
-          width: "100%"
+          width: "100%",
           // backgroundColor: "#ffffff",
           // boxShadow: "0 0.1rem 0.3rem #00000010",
         }}
       >
         <ChinhSachTraHang />
         <OrderInfo />
-        {orderItems && orderItems.filter((item) => item.soLuong > 0).length > 0 && <ProductHadBuy />}
+        {orderItems &&
+          orderItems.filter((item) => item.soLuong > 0).length > 0 && (
+            <ProductHadBuy />
+          )}
 
         {orderRefunds && orderRefunds.length > 0 && <ProductRefund />}
         <div className="d-flex mt-3  wrap-order-detail">
@@ -1135,7 +1174,23 @@ const RefundDetail = () => {
             className="rounded-2 ms-auto"
           >
             <div className="p-4">
-              <div className="d-flex justify-content-between">
+              <div className="d-flex justify-content-between mt-3">
+                <span className="" style={{ fontSize: "16px", color: "" }}>
+                  Tổng tiền hàng giá gốc
+                </span>
+                <span
+                  className="text-dark"
+                  style={{ fontSize: "17px", fontWeight: "500" }}
+                >
+                  {(order.tongTien &&
+                    order.tongTien.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })) ||
+                    0}
+                </span>
+              </div>
+              <div className="d-flex justify-content-between mt-3">
                 <span className="" style={{ fontSize: "16px" }}>
                   Số lượng hoàn trả
                 </span>
@@ -1160,6 +1215,7 @@ const RefundDetail = () => {
                   }) || 0}
                 </span>
               </div>
+
               <div className="d-flex justify-content-between mt-3">
                 <span className="" style={{ fontSize: "16px", color: "" }}>
                   Cần trả khách
@@ -1174,7 +1230,7 @@ const RefundDetail = () => {
                   }) || 0}
                 </span>
               </div>
-              {order.tienTraKhach !== null && order.tienTraKhach !== 0 &&
+              {order.tienTraKhach !== null && order.tienTraKhach !== 0 && (
                 <div className="d-flex justify-content-between mt-3">
                   <span className="" style={{ fontSize: "16px", color: "" }}>
                     Đã trả khách
@@ -1183,13 +1239,15 @@ const RefundDetail = () => {
                     className="text-dark"
                     style={{ fontSize: "17px", fontWeight: "500" }}
                   >
-                    {order.tienTraKhach && order.tienTraKhach.toLocaleString("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                    }) || 0}
+                    {(order.tienTraKhach &&
+                      order.tienTraKhach.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })) ||
+                      0}
                   </span>
                 </div>
-              }
+              )}
             </div>
           </div>
         </div>
@@ -1211,8 +1269,7 @@ const RefundDetail = () => {
         total={totalRefundFinal().toLocaleString("vi-VN", {
           style: "currency",
           currency: "VND",
-        })
-        }
+        })}
         size={totalSizeRefundFinal()}
       />
       {isLoading && <LoadingIndicator />}

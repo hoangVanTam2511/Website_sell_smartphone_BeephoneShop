@@ -204,6 +204,10 @@ const ManagementOrders = () => {
     setOpen(false);
   };
 
+  const orderSort = orders.sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  );
+
   const columns = [
     {
       title: "STT",
@@ -230,13 +234,13 @@ const ManagementOrders = () => {
       width: "10%",
       render: (text, order) =>
         order.account === null &&
-          order.loaiHoaDon === OrderTypeString.AT_COUNTER ? order.hoVaTen : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
+        order.loaiHoaDon === OrderTypeString.AT_COUNTER
+          ? order.hoVaTen
+          : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
             order.account &&
-            order.account.hoVaTen ? (
-          order.account.hoVaTen
-        ) : (
-          order.tenNguoiNhan
-        ),
+            order.account.hoVaTen
+          ? order.account.hoVaTen
+          : order.tenNguoiNhan,
     },
     {
       title: "Số Điện Thoại",
@@ -245,13 +249,13 @@ const ManagementOrders = () => {
       render: (text, order) => (
         <span style={{ fontWeight: "400" }}>
           {order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
-            order.account === null
+          order.account === null
             ? order.soDienThoai
             : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
               order.account &&
               order.account.soDienThoai
-              ? order.account.soDienThoai
-              : order.soDienThoaiNguoiNhan}
+            ? order.account.soDienThoai
+            : order.soDienThoaiNguoiNhan}
         </span>
       ),
     },
