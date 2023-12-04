@@ -1,19 +1,33 @@
 package beephone_shop_projects.infrastructure.config.mail;
 
+import beephone_shop_projects.core.client.repositories.AccountClientRepository;
+import beephone_shop_projects.entity.Account;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.thymeleaf.context.Context;
 
 @RestController
+@RequestMapping("/email")
 public class EmailController {
 
   private final EmailService emailService;
 
   @Autowired
-  public EmailController(EmailService emailService) {
+  private AccountClientRepository accountClientRepository;
+
+  private final PasswordEncoder passwordEncoder;
+
+  BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+
+  @Autowired
+  public EmailController(EmailService emailService, PasswordEncoder passwordEncoder) {
     this.emailService = emailService;
+    this.passwordEncoder = passwordEncoder;
   }
 
   @PostMapping("/send-email")
@@ -28,6 +42,26 @@ public class EmailController {
     context.setVariable("message", emailRequest.getBody());
 
     emailService.sendEmailWithHtmlTemplate(emailRequest.getTo(), emailRequest.getSubject(), "email-template", context);
+    return "HTML email sent successfully!";
+  }
+
+  @PostMapping("/send-html-email-get-pass")
+  public String sendHtmlEmailGetPass(@RequestBody ForgetPassRequest forgetPassRequest) {
+    Account account = accountClientRepository.findByEmail(forgetPassRequest.getEmail());
+
+    if(account == null){
+      throw new RuntimeException("Không tìm thấy tài khoản");
+    }
+    Context context = new Context();
+
+    //create new pass
+    String newPass = "Abc123.";
+    account.setMatKhau(passwordEncoder.encode(newPass));
+    accountClientRepository.save(account);
+    //send new pass
+    context.setVariable("password", newPass);
+
+    emailService.sendEmailWithHtmlTemplate(forgetPassRequest.getEmail(), "Mật khẩu của bạn", "email-get-pass-template", context);
     return "HTML email sent successfully!";
   }
 }
