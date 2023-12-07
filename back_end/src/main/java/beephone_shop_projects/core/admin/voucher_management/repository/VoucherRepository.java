@@ -73,8 +73,12 @@ public interface VoucherRepository extends IVoucherRepository, CustomVoucherRepo
 
 
     @Query(value = """
-            SELECT v FROM Voucher v WHERE v.trangThai = 1 AND  v.soLuong > 0 
+            SELECT v FROM Voucher v WHERE (v.trangThai = 1 AND  v.soLuong > 0)
+            AND ((:#{#request.ma} IS NULL OR :#{#request.ma} = '' OR v.ma LIKE :#{'%' + #request.ma + '%'}) AND
+             (:#{#request.giaTriVoucher} IS NULL OR :#{#request.giaTriVoucher} = '' OR v.giaTriVoucher = :#{#request.giaTriVoucher} ))
+             ORDER BY v.giaTriVoucher DESC 
+                        
             """)
-    Page<VoucherResponse> getVoucherStatusIsActive(Pageable pageable, FindVoucherRequest request);
+    Page<VoucherResponse> getVoucherStatusIsActive(Pageable pageable, @Param("request") FindVoucherRequest request);
 
 }

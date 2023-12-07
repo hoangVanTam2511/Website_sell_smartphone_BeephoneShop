@@ -273,7 +273,7 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
-    public Page<VoucherResponse> getVoucherStatusIsActive(FindVoucherRequest request) {
+    public Page<VoucherResponse> getVoucherStatusIsActive(Integer pageNo,FindVoucherRequest request) {
         if (request.getPageNo() == null) {
             request.setPageNo(1);
         }
