@@ -20,14 +20,15 @@ import java.util.Optional;
 @Repository
 public interface AccountRepository extends IAccountRepository, CustomKhachHangRepository {
     @Query(value = """
-                SELECT  ac FROM Account ac
-                WHERE :#{#req.hoVaTen} IS NULL 
-                OR :#{#req.ma} IS NULL
-                        OR ac.hoVaTen LIKE CONCAT('%', :#{#req.hoVaTen}, '%')
-                        OR ac.ma LIKE CONCAT('%', :#{#req.ma}, '%')
-      AND ac.idRole.ma='role1'
-            """)
+                      SELECT  ac FROM Account ac
+                      WHERE :#{#req.hoVaTen} IS NULL 
+                      OR :#{#req.ma} IS NULL
+                              OR ac.hoVaTen LIKE CONCAT('%', :#{#req.hoVaTen}, '%')
+                              OR ac.ma LIKE CONCAT('%', :#{#req.ma}, '%')
+            AND ac.idRole.ma='role1'
+                  """)
     Page<Account> findAllHaha(Pageable pageable, @Param("req") SearchAccountRequest request);
+
     //                 OR #{#req.email} IS NULL OR #{#req.email} IS NULL OR #{#req.diaChi} IS NULL OR #{#req.email} IS NULL
 //    OR ac.email LIKE CONCAT('%', :tenKH, '%')
     //                        OR ac.diaChi LIKE CONCAT('%', :tenKH, '%')
@@ -39,16 +40,18 @@ public interface AccountRepository extends IAccountRepository, CustomKhachHangRe
                 SELECT  kh FROM Account kh where kh.idRole.ma='role1'
             """)
     Page<Account> getAllNV(Pageable pageable);
+
     @Query(value = """
                 SELECT  kh FROM Account kh where kh.idRole.ma='role1'
             """)
     List<Account> getAllNVienNoPage();
 
     @Query(value = """
-        SELECT  a.ma ,a.id,a.email,a.ho_va_ten, a.trang_thai,a.mat_khau , a.so_dien_thoai , a.ngay_sinh ,a.id_role
-                FROM account a join role b on a.id_role=b.id where b.ma="role2"
-    """,nativeQuery = true)
+                SELECT  a.ma ,a.id,a.email,a.ho_va_ten, a.trang_thai,a.mat_khau , a.so_dien_thoai , a.ngay_sinh ,a.id_role
+                        FROM account a join role b on a.id_role=b.id where b.ma="role2"
+            """, nativeQuery = true)
     Page<AccountResponse> getAllKH(Pageable pageable);
+
     @Transactional
     @Modifying
     @Query(value = """
@@ -62,6 +65,7 @@ public interface AccountRepository extends IAccountRepository, CustomKhachHangRe
 
             """)
     void doiTrangThai(@Param("idBanGhi") String id);
+
     @Transactional
     @Modifying
     @Query(value = """
@@ -87,6 +91,7 @@ public interface AccountRepository extends IAccountRepository, CustomKhachHangRe
                         ) AND ac.idRole.ma='role1'
             """)
     Page<Account> searchAllNV(@RequestParam("tenKH") Optional<String> tenKH, Pageable pageable);
+
     @Query(value = "SELECT a.ma AS ma, a.id, a.email, a.ho_va_ten, a.trang_thai, a.mat_khau, a.so_dien_thoai, a.ngay_sinh, a.id_role\n" +
             "FROM account a INNER JOIN role r ON r.id = a.id_role \n" +
             "WHERE (:tenKH IS NULL OR a.ho_va_ten LIKE CONCAT('%', :tenKH, '%')\n" +
@@ -96,10 +101,13 @@ public interface AccountRepository extends IAccountRepository, CustomKhachHangRe
             "OR CAST(a.ngay_sinh AS CHAR) LIKE CONCAT('%', :tenKH, '%'))\n" +
             "AND r.ma='role2';\n",
             nativeQuery = true)
-
-    Page<AccountResponse> searchAllKH(@Param("tenKH")Optional<String> tenKH, Pageable pageable);
+    Page<AccountResponse> searchAllKH(@Param("tenKH") Optional<String> tenKH, Pageable pageable);
 
     @Query("SELECT a FROM Account a WHERE  a.trangThai= :trangThai AND a.idRole.ma='role1' ")
-    Page<Account> filterTrangThai(@RequestParam("trangThai")StatusAccountCus trangThai, Pageable pageable);
+    Page<Account> filterTrangThai(@RequestParam("trangThai") StatusAccountCus trangThai, Pageable pageable);
+
+
+    @Query("SELECT a FROM Account a WHERE a.idRole.ma='role2'")
+    List<Account> sendMailAccount();
 
 }

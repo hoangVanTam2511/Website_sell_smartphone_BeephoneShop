@@ -348,6 +348,7 @@ const HienThiVoucher = () => {
       title: "Mã",
       dataIndex: "ma",
       align: "center",
+      width: "10%",
       render: (text, record) => (
         <span style={{ fontWeight: "400" }}>{record.ma}</span>
       ),
@@ -399,7 +400,7 @@ const HienThiVoucher = () => {
     {
       title: "Điều kiện",
       dataIndex: "dieuKienApDung",
-      width: "25%",
+      width: "15%",
       align: "center",
       render: (text, record) => (
         <>
@@ -411,7 +412,7 @@ const HienThiVoucher = () => {
               fontSize: "15px",
             }}
           >
-            Đơn tối thiểu{" "}
+            Đơn tối thiểu <br />
             {record &&
               record.dieuKienApDung &&
               record.dieuKienApDung.toLocaleString("vi-VN", {
@@ -425,7 +426,7 @@ const HienThiVoucher = () => {
     {
       title: "Số Lượng",
       dataIndex: "soLuong",
-      width: "5%",
+      width: "10%",
       align: "center",
     },
 
