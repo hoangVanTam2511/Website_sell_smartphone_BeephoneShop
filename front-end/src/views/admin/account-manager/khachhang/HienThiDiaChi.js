@@ -8,6 +8,7 @@ import AddressFormUpdate from "./DiaChiUpdate";
 import { TextField } from "@mui/material";
 import { Notistack } from "../../order-manager/enum";
 import useCustomSnackbar from "../../../../utilities/notistack";
+import { request } from '../../../../store/helpers/axios_helper'
 
 function AddressTable({ diaChiList, account, updateDiaChiList }) {
   const { Panel } = Collapse;
@@ -204,8 +205,7 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
         hoTenKH: hoTenKH,
         account: account,
       };
-      axios
-        .put(
+      request('PUT',
           `${apiURLKH}/dia-chi/update/${id}`, // Extract id from updatedData
           updatedItem
         )
@@ -236,9 +236,7 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
     }
     setOpenPanelKey(id);
     isProcessing = true;
-    fetch(apiURLKH + `/dia-chi/thiet-lap-md/${id}?account=${account}`, {
-      method: "PUT",
-    })
+    request("PUT", apiURLKH + `/dia-chi/thiet-lap-md/${id}?account=${account}`)
       .then((response) => {
         if (response.ok) {
           const updatedDiaChiList = diaChiList.map((address) =>

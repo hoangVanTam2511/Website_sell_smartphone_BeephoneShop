@@ -32,6 +32,8 @@ import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import useCustomSnackbar from "../../../utilities/notistack";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
+import { request } from '../../../store/helpers/axios_helper'
+
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -69,8 +71,7 @@ const ManagementTheNhos = () => {
   // };
 
   const getListTheNho = (page) => {
-    axios
-      .get(`http://localhost:8080/api/the-nhos`)
+    request('GET',`/api/the-nhos`)
       .then((response) => {
         setListTheNho(response.data.data);
         // setIsLoading(false);
@@ -88,8 +89,7 @@ const ManagementTheNhos = () => {
 
   const getListProductSearchAndPage = (page) => {
     // setIsLoading(false);
-    axios
-      .get(`http://localhost:8080/api/the-nhos/search`, {
+    request('GET',`/api/the-nhos/search`, {
         params: {
           keyword: searchTatCa,
           currentPage: page,
@@ -334,8 +334,7 @@ const ManagementTheNhos = () => {
   const [idTheNho, setIdTheNho] = useState("");
 
   const detailTheNhos = async (id) => {
-    await axios
-      .get(`http://localhost:8080/api/the-nhos/${id}`)
+    request('GET',`/api/the-nhos/${id}`)
       .then((response) => {
         setTheNhoCode(response.data.data.ma);
         setStatus(response.data.data.status);
@@ -424,8 +423,7 @@ const ManagementTheNhos = () => {
       loaiTheNho: loaiTheNho,
       status: status,
     };
-    axios
-      .put(`http://localhost:8080/api/the-nhos`, obj)
+    request('PUT',`/api/the-nhos`, obj)
       .then((response) => {
         getListProductSearchAndPage(currentPage);
         handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
@@ -437,8 +435,7 @@ const ManagementTheNhos = () => {
   };
 
   const doiTrangThaiProducts = (idTheNho) => {
-    axios
-      .put(`http://localhost:8080/api/the-nhos/${idTheNho}`)
+    request('PUT',`/api/the-nhos/${idTheNho}`)
       .then((response) => {
         getListProductSearchAndPage();
         handleOpenAlertVariant(

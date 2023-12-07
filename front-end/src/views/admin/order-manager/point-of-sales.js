@@ -82,6 +82,7 @@ import {
 import DeliveryInfoShip from "./delivery-info-ship";
 import AppBarCode from "./App";
 import Html5QrcodePlugin from "./Html5QrcodePlugin";
+import { request } from '../../../store/helpers/axios_helper'
 
 const IOSSwitch = styled((props) => (
   <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
@@ -234,8 +235,7 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      await axios
-        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+       request('PUT',`/api/orders/${order.id}`, orderRequest, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -269,8 +269,7 @@ const PointOfSales = () => {
       isUpdateEmail: true,
     };
     try {
-      await axios
-        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+       request('PUT',`/api/orders/${order.id}`, orderRequest, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -305,8 +304,7 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      await axios
-        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+       request('PUT',`/api/orders/${order.id}`, orderRequest, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -405,8 +403,7 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      await axios
-        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+       request('PUT',`/api/orders/${order.id}`, orderRequest, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -453,8 +450,7 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      await axios
-        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+       request('PUT',`/api/orders/${order.id}`, orderRequest, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -488,8 +484,7 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      await axios
-        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+       request('PUT',`/api/orders/${order.id}`, orderRequest, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -523,8 +518,7 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      await axios
-        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+       request('PUT',`/api/orders/${order.id}`, orderRequest, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -560,8 +554,7 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      await axios
-        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+       request('PUT',`/api/orders/${order.id}`, orderRequest, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -658,8 +651,7 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      await axios
-        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+       request('PUT',`/api/orders/${order.id}`, orderRequest, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -704,8 +696,7 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      await axios
-        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+       request('PUT',`/api/orders/${order.id}`, orderRequest, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -727,8 +718,7 @@ const PointOfSales = () => {
   const getCustomerById = async (id) => {
     setIsLoading(true);
     if (id !== null) {
-      await axios
-        .get(`http://localhost:8080/khach-hang/hien-thi-theo/${id}`)
+       request('GET',`/khach-hang/hien-thi-theo/${id}`)
         .then(async (response) => {
           const data = response.data;
           await updateAccount(id);
@@ -897,8 +887,7 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      await axios
-        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+       request('PUT',`/api/orders/${order.id}`, orderRequest, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -942,8 +931,7 @@ const PointOfSales = () => {
       },
     };
     try {
-      await axios
-        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+       request('PUT',`/api/orders/${order.id}`, orderRequest, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -988,8 +976,7 @@ const PointOfSales = () => {
       setLoadingChild(true);
       setTimeout(() => {
         try {
-          axios
-            .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+           request('PUT',`/api/orders/${order.id}`, orderRequest, {
               headers: {
                 "Content-Type": "application/json",
               },
@@ -1013,8 +1000,7 @@ const PointOfSales = () => {
       }, 1000);
     } else if (idVoucher === null && !loading) {
       try {
-        axios
-          .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+         request('PUT',`/api/orders/${order.id}`, orderRequest, {
             headers: {
               "Content-Type": "application/json",
             },
@@ -1039,8 +1025,7 @@ const PointOfSales = () => {
       setLoadingChild(true);
       setTimeout(() => {
         try {
-          axios
-            .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+           request('PUT',`/api/orders/${order.id}`, orderRequest, {
               headers: {
                 "Content-Type": "application/json",
               },
@@ -1064,8 +1049,7 @@ const PointOfSales = () => {
       }, 1000);
     } else {
       try {
-        await axios
-          .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+         request('PUT',`/api/orders/${order.id}`, orderRequest, {
             headers: {
               "Content-Type": "application/json",
             },
@@ -1100,7 +1084,7 @@ const PointOfSales = () => {
       },
     };
     try {
-      await axios.put(`http://localhost:8080/api/carts/amount`, request, {
+       request('PUT',`/api/carts/amount`, request, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -1186,8 +1170,7 @@ const PointOfSales = () => {
   };
 
   const getAllOrdersPending = async () => {
-    await axios
-      .get(`http://localhost:8080/api/orders/pending`, {})
+    await  request('GET',`/api/orders/pending`, {})
       .then((response) => {
         setOrders(response.data.data);
       })
@@ -1201,8 +1184,7 @@ const PointOfSales = () => {
   };
 
   const getOrderPendingDefaultFirst = async () => {
-    await axios
-      .get(`http://localhost:8080/api/orders/pending`, {})
+    await  request('GET',`/api/orders/pending`, {})
       .then((response) => {
         const order = response && response.data.data[0];
         navigate(`/dashboard/point-of-sales/${order.ma}`);
@@ -1339,8 +1321,7 @@ const PointOfSales = () => {
   };
 
   const getOrderPendingById = async () => {
-    await axios
-      .get(`http://localhost:8080/api/orders/pending`, {})
+    await  request('GET',`/api/orders/pending`, {})
       .then((response) => {
         const data = response && response.data.data;
         const order = data.find((item) => item.ma === id);
@@ -1485,8 +1466,7 @@ const PointOfSales = () => {
         code: order.ma,
       };
       try {
-        await axios
-          .post(`http://localhost:8080/api/vnpay/payment`, vnpayReq, {
+        request('POST',`/api/vnpay/payment`, vnpayReq, {
             headers: {
               "Content-Type": "application/json",
             },
@@ -1510,8 +1490,7 @@ const PointOfSales = () => {
         hinhThucThanhToan: type,
       };
       try {
-        await axios
-          .put(`http://localhost:8080/api/vnpay/payment/cash`, orderRequest, {
+         request('PUT',`/api/vnpay/payment/cash`, orderRequest, {
             headers: {
               "Content-Type": "application/json",
             },
@@ -1540,8 +1519,7 @@ const PointOfSales = () => {
   };
 
   const getVouchersIsActive = () => {
-    axios
-      .get(`http://localhost:8080/voucher/voucherActive`)
+     request('GET',`/voucher/voucherActive`)
       .then((response) => {
         setVouchers(response.data.data);
         console.log(response.data.data);
@@ -1566,8 +1544,7 @@ const PointOfSales = () => {
   }, [cartItems, discountValue, shipFee]);
 
   const getCartItems = async () => {
-    await axios
-      .get(`http://localhost:8080/api/orders/pending/${order.id}`)
+    await  request('GET',`/api/orders/pending/${order.id}`)
       .then((response) => {
         const data = response.data.data;
         setOrder(data);
@@ -1592,8 +1569,7 @@ const PointOfSales = () => {
   };
 
   const getPaymentsOfOrder = async () => {
-    await axios
-      .get(`http://localhost:8080/api/orders/pending/${order.id}`)
+    await  request('GET',`/api/orders/pending/${order.id}`)
       .then((response) => {
         const data = response.data.data;
         setOrder(data);
@@ -1615,8 +1591,7 @@ const PointOfSales = () => {
 
   const getOrderPendingLastRemove = async () => {
     // setIsLoading(true);
-    await axios
-      .get(`http://localhost:8080/api/orders/pending`, {})
+    await  request('GET',`/api/orders/pending`, {})
       .then((response) => {
         const orders = response.data.data;
         setOrders(orders);
@@ -1745,8 +1720,7 @@ const PointOfSales = () => {
         id: order.id,
       };
       try {
-        const response = await axios.post(
-          `http://localhost:8080/api/orders?isPending=true`,
+        const response =  request('POST',`/api/orders?isPending=true`,
           data
         );
         await getAllOrdersPending();
@@ -1793,7 +1767,7 @@ const PointOfSales = () => {
   const handleDeletePaymentById = async (id) => {
     setIsLoading(true);
     try {
-      await axios.delete(`http://localhost:8080/api/payment/${id}`, {
+      request('DELETE',`/api/payment/${id}`, {
         params: {
           orderId: order.id,
         },
@@ -1811,7 +1785,7 @@ const PointOfSales = () => {
   const handleDeleteCartItemById = async (id) => {
     setIsLoading(true);
     try {
-      await axios.delete(`http://localhost:8080/api/carts/${id}`);
+      request('DELETE',`/api/carts/${id}`);
       await getCartItems();
       await getAllOrdersPending();
       setIsLoading(false);
@@ -1835,7 +1809,7 @@ const PointOfSales = () => {
         setIsLoading(true);
       }
       try {
-        await axios.delete(`http://localhost:8080/api/orders/${id}`);
+        request('DELETE',`/api/orders/${id}`);
         await getOrderPendingLastRemove();
         if (sizeCartItems > 0) {
           setIsLoading(false);
@@ -1970,8 +1944,7 @@ const PointOfSales = () => {
   };
 
   const getAllCustomers = () => {
-    axios
-      .get(`http://localhost:8080/khach-hang/hien-thi`)
+     request('GET',`/khach-hang/hien-thi`)
       .then((response) => {
         setCustomers(response.data.data);
       })
@@ -1983,8 +1956,7 @@ const PointOfSales = () => {
   const handleCheckVoucher = (value) => {
     setLoadingChild(true);
     setTimeout(() => {
-      axios
-        .get(`http://localhost:8080/voucher/findVoucher`, {
+      request('GET',`/voucher/findVoucher`, {
           params: {
             input: value,
             tongTien: handleCountTotalMoney(),
@@ -2241,7 +2213,7 @@ const PointOfSales = () => {
       imei: imei,
     };
     try {
-      await axios.put(`http://localhost:8080/api/carts/scanner`, data, {
+      request('PUT',`/api/carts/scanner`, data, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -2279,7 +2251,7 @@ const PointOfSales = () => {
     };
     console.log(data);
     try {
-      await axios.put(`http://localhost:8080/api/carts`, data, {
+      request('PUT',`/api/carts`, data, {
         headers: {
           "Content-Type": "application/json",
         },

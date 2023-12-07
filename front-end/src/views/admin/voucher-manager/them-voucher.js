@@ -27,6 +27,7 @@ import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
 import useCustomSnackbar from "../../../utilities/notistack";
 import LoadingIndicator from "../../../utilities/loading";
 import { Navigate, useNavigate } from "react-router-dom";
+import { request } from '../../../store/helpers/axios_helper'
 
 const AddVoucher = () => {
   const navigate = useNavigate();
@@ -152,8 +153,7 @@ const AddVoucher = () => {
       loaiVoucher: selectDiscount,
     };
 
-    axios
-      .post(apiURLVoucher + "/addVoucher", obj)
+    request('POST', apiURLVoucher + "/addVoucher", obj)
       .then((response) => {
         setTimeout(() => {
           setIsLoading(true);

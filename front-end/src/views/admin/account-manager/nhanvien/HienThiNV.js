@@ -24,7 +24,7 @@ import {
 import { StatusAccountCus } from "../khachhang/enum";
 import { Notistack } from "../../order-manager/enum";
 import useCustomSnackbar from "../../../../utilities/notistack";
-
+import { request } from '../../../../store/helpers/axios_helper'
 //show
 const HienThiNV = () => {
   const [form] = Form.useForm();
@@ -45,7 +45,7 @@ const HienThiNV = () => {
         loadDataListRole(targetPage); // Tải danh sách từ trang targetPage
         return;
       }
-      const response = await axios.get(apiURLNV + "/search-all", {
+      const response = request('GET',apiURLNV + "/search-all", {
         params: {
           tenKH: searchText,
           page: currentPage,
@@ -84,7 +84,7 @@ const HienThiNV = () => {
   }, [filterStatus, currentPage]);
   const fetchEmployeeList = async (currentPage) => {
     try {
-      const response = await axios.get(apiURLNV + "/filter", {
+      const response =request('GET', apiURLNV + "/filter", {
         params: {
           trangThai: filterStatus,
           page: currentPage,
@@ -102,8 +102,7 @@ const HienThiNV = () => {
   }, [currentPage]);
   // load
   const loadDataListRole = (currentPage) => {
-    axios
-      .get(apiURLNV + "/hien-thi?page=" + currentPage)
+    request('GET', apiURLNV + "/hien-thi?page=" + currentPage)
       .then((response) => {
         setListNV(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -143,8 +142,7 @@ const HienThiNV = () => {
     setEditingKey(record.id);
   };
   const doChangeTrangThai = (id) => {
-    axios
-      .put(apiURLNV + `/${id}/doi-tt`)
+    request('PUT', apiURLNV + `/${id}/doi-tt`)
       .then((response) => {
         loadDataListRole(currentPage);
         handleOpenAlertVariant("Đổi trạng thái thành công", Notistack.SUCCESS);

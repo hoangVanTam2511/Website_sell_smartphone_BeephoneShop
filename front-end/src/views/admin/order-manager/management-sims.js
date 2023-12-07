@@ -35,6 +35,7 @@ import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDown
 import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
+import { request } from '../../../store/helpers/axios_helper'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -76,8 +77,7 @@ const ManagementSims = () => {
 
   const getListProductSearchAndPage = (page) => {
     // setIsLoading(false);
-    axios
-      .get(`http://localhost:8080/api/sim-cards/search`, {
+    request('GET',`/api/sim-cards/search`, {
         params: {
           keyword: searchTatCa,
           currentPage: page,
@@ -334,8 +334,7 @@ const ManagementSims = () => {
   const [simType, setSimType] = useState("");
 
   const detailTheSims = async (id) => {
-    await axios
-      .get(`http://localhost:8080/api/sim-cards/${id}`)
+    request('GET',`/api/sim-cards/${id}`)
       .then((response) => {
         setTheSimCode(response.data.data.ma);
         setStatus(response.data.data.status);
@@ -400,8 +399,7 @@ const ManagementSims = () => {
       loaiTheSim: loaiTheSim,
       status: status,
     };
-    axios
-      .put(`http://localhost:8080/api/sim-cards`, obj)
+    request('PUT',`/api/sim-cards`, obj)
       .then((response) => {
         getListProductSearchAndPage();
         handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
@@ -413,8 +411,7 @@ const ManagementSims = () => {
   };
 
   const doiTrangThaiProducts = (idTheSim) => {
-    axios
-      .put(`http://localhost:8080/api/sim-cards/${idTheSim}`)
+    request('PUT',`/api/sim-cards/${idTheSim}`)
       .then((response) => {
         getListProductSearchAndPage();
         handleOpenAlertVariant(

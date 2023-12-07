@@ -21,6 +21,7 @@ import * as dayjs from "dayjs";
 import { Notistack } from "../order-manager/enum";
 import axios from "axios";
 import { format } from "date-fns";
+import { request } from '../../../store/helpers/axios_helper'
 
 const Transaction = () => {
   const [form] = useForm();
@@ -50,8 +51,7 @@ const Transaction = () => {
       ngayBatDau: searchNgayBatDau,
       ngayKetThuc: searchNgayKetThuc,
     };
-    axios
-      .get(`http://localhost:8080/transaction/transactions`, {
+    request('GET',`/transaction/transactions`, {
         params: requestParams,
       })
       .then((response) => {

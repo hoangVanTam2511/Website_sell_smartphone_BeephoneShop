@@ -49,6 +49,8 @@ import QrCodeScannerOutlinedIcon from "@mui/icons-material/QrCodeScannerOutlined
 import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import Scanner from "./scanner";
 import { FaBarcode } from "react-icons/fa6";
+import { request } from '../../../store/helpers/axios_helper'
+
 
 const TabItem = ({
   scanner,
@@ -94,7 +96,6 @@ const TabItem = ({
   const [selectedImei, setSelectedImei] = useState([]);
   const [selectedImeiRefresh, setSelectedImeiRefresh] = useState([]);
   const [scannerRef, setScannerRef] = useState([]);
-
 
   const handleOpenImei = () => {
     onOpenImei();
@@ -199,8 +200,7 @@ const TabItem = ({
   };
 
   const getAllProducts = async () => {
-    await axios
-      .get(`http://localhost:8080/api/products/product-items`)
+    request('GET',`/api/products/product-items`)
       .then((response) => {
         setProducts(response.data.data);
       })

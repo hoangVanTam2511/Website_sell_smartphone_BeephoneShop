@@ -19,7 +19,7 @@ import AddressForm from "./DiaChi";
 import ImageUploadComponent from "./Anh";
 import IDScan from "./QuetCanCuoc";
 import { useNavigate } from "react-router-dom";
-
+import { request } from '../../../../store/helpers/axios_helper'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faExclamationCircle,
@@ -207,7 +207,7 @@ const AddNV = () => {
         setIsConfirmVisible(false);
         return;
       }
-      const nhanVienRespone = await axios.post(apiURLNV + "/add", obj);
+      const nhanVienRespone = request('POST', apiURLNV + "/add", obj);
 
       const generatedMaKhachHang = nhanVienRespone.data.data.id;
       addDiaChiList(generatedMaKhachHang);
@@ -240,8 +240,7 @@ const AddNV = () => {
       account: generatedMaKhachHang,
       trangThaiNV: 1,
     };
-    axios
-      .post(`${apiURLNV}/dia-chi/add?id=${generatedMaKhachHang}`, newAddress)
+    request('POST', `${apiURLNV}/dia-chi/add?id=${generatedMaKhachHang}`, newAddress)
       .then((response) => {
         let newKhachHangResponse = {
           diaChi: diaChi,

@@ -31,6 +31,7 @@ import CreatePin from "./create-pin";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
+import { request } from '../../../store/helpers/axios_helper'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -51,8 +52,7 @@ const ManagementPins = () => {
   const [openSelect, setOpenSelect] = useState(false);
 
   const loadDataPins = () => {
-    axios
-      .get(`http://localhost:8080/api/pins`)
+    request('GET',`/api/pins`)
       .then((response) => {
         setPins(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -66,8 +66,7 @@ const ManagementPins = () => {
 
   const getListPinSearchAndPage = (page) => {
     // setIsLoading(false);
-    axios
-      .get(`http://localhost:8080/api/pins/search`, {
+    request('GET',`/api/pins/search`, {
         params: {
           keyword: searchTatCa,
           currentPage: page,
@@ -282,8 +281,7 @@ const ManagementPins = () => {
   const [idPin, setIdPin] = useState("");
 
   const detailPins = async (id) => {
-    await axios
-      .get(`http://localhost:8080/api/pins/${id}`)
+    request('GET',`/api/pins/${id}`)
       .then((response) => {
         setPinCode(response.data.data.ma);
         setStatus(response.data.data.status);
@@ -372,8 +370,7 @@ const ManagementPins = () => {
       dungLuong: dungLuong,
       status: status,
     };
-    axios
-      .put(`http://localhost:8080/api/pins`, obj)
+    request('PUT',`/api/pins`, obj)
       .then((response) => {
         loadDataPins();
         handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
@@ -385,8 +382,7 @@ const ManagementPins = () => {
   };
 
   const doiTrangThaiProducts = (idPin) => {
-    axios
-      .put(`http://localhost:8080/api/pins/${idPin}`)
+    request('PUT',`/api/pins/${idPin}`)
       .then((response) => {
         loadDataPins();
         handleOpenAlertVariant(

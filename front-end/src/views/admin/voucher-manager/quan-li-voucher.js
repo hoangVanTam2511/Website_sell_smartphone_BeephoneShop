@@ -43,6 +43,7 @@ import {
 import useCustomSnackbar from "../../../utilities/notistack";
 import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
 import * as React from "react";
+import { request } from '../../../store/helpers/axios_helper'
 
 //show
 const HienThiVoucher = () => {
@@ -71,8 +72,7 @@ const HienThiVoucher = () => {
 
   const loadDataListVoucher = (page) => {
     setIsLoading(false);
-    axios
-      .get(`${apiURLVoucher}/vouchers`, {
+    request('GET', `${apiURLVoucher}/vouchers`, {
         params: {
           keyword: searchTatCa,
           pageNo: page,
@@ -115,8 +115,7 @@ const HienThiVoucher = () => {
       giamGia: "3.000.000 VND",
       tongCong: "34.999.000 VND",
     };
-    axios
-      .post(`${apiURLVoucher}/sendMail`, obj)
+    request('POST', `${apiURLVoucher}/sendMail`, obj)
       .then((response) => {
         handleOpenAlertVariant("Thành công", Notistack.SUCCESS);
       })
@@ -129,8 +128,7 @@ const HienThiVoucher = () => {
   };
 
   const loadDataListVoucher1 = (page) => {
-    axios
-      .get(`${apiURLVoucher}/vouchers`, {
+    request('GET', `${apiURLVoucher}/vouchers`, {
         params: {
           keyword: searchTatCa,
           pageNo: page,
@@ -206,8 +204,7 @@ const HienThiVoucher = () => {
       lyDoHuy: lyDoHuy,
     };
     setIsLoading(false);
-    axios
-      .put(`${apiURLVoucher}/deleteTrangThaiVoucher/${id}`, obj)
+    request('PUT', `${apiURLVoucher}/deleteTrangThaiVoucher/${id}`, obj)
       .then((response) => {
         loadDataListVoucher(currentPage);
         handleOpenAlertVariant("Đổi trạng thái thành công!", Notistack.SUCCESS);
@@ -223,8 +220,7 @@ const HienThiVoucher = () => {
 
   const kichHoatVoucher = () => {
     setIsLoading(false);
-    axios
-      .put(`${apiURLVoucher}/kichHoatVoucher/${id}`)
+    request('PUT', `${apiURLVoucher}/kichHoatVoucher/${id}`)
       .then((response) => {
         loadDataListVoucher(currentPage);
         handleOpenAlertVariant("Kích hoạt thành công!", Notistack.SUCCESS);

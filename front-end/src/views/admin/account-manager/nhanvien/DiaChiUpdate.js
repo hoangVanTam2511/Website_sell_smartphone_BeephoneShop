@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { MenuItem, Grid, TextField } from "@mui/material";
+import { request } from '../../../../store/helpers/axios_helper'
+
 const host = "https://provinces.open-api.vn/api/";
 
 const AddressFormUpdate = ({
@@ -61,7 +63,7 @@ const AddressFormUpdate = ({
   }, [selectedXaPhuong, wards]);
 
   const callAPI = async (api) => {
-    const response = await axios.get(api);
+    const response = request('GET', api);
     return response.data;
   };
 

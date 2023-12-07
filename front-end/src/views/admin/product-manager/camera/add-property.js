@@ -6,7 +6,7 @@ import { FormLabel } from "react-bootstrap";
 import { PlusOutlined } from "@ant-design/icons";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import { request } from '../../../../store/helpers/axios_helper'
 
 const AddProperty = (props) => {
   const [loading, setLoading] = useState(false);
@@ -62,7 +62,7 @@ const AddProperty = (props) => {
     }
 
     setLoading(true);
-    axios.post("http://localhost:8080/camera/save", cameraForm);
+    request('POST',"/camera/save", cameraForm);
     setTimeout(() => {
       props.loadData()
       setLoading(false);

@@ -102,4 +102,9 @@ public interface AccountRepository extends IAccountRepository, CustomKhachHangRe
     @Query("SELECT a FROM Account a WHERE  a.trangThai= :trangThai AND a.idRole.ma='role1' ")
     Page<Account> filterTrangThai(@RequestParam("trangThai")StatusAccountCus trangThai, Pageable pageable);
 
+    @Query(value = """
+            SELECT * FROM account acc WHERE acc.email = :email 
+            """, nativeQuery = true)
+    Account findByEmail(@Param("email") String email);
+
 }

@@ -5,6 +5,7 @@ import { TextField } from "@mui/material";
 import axios from "axios";
 import { Notistack } from "./enum";
 import useCustomSnackbar from "../../../utilities/notistack";
+import { request } from '../../../store/helpers/axios_helper'
 
 const RefundOrder = () => {
   const navigate = useNavigate();
@@ -12,8 +13,7 @@ const RefundOrder = () => {
   const { handleOpenAlertVariant } = useCustomSnackbar();
 
   const getOrderItemsById = async () => {
-    await axios
-      .get(`http://localhost:8080/api/orders/${orderCode}`)
+    request('GET',`/api/orders/${orderCode}`)
       .then((response) => {
         handleRedirectRefundOrderDetail();
       })

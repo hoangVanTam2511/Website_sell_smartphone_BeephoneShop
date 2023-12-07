@@ -29,6 +29,7 @@ import * as dayjs from "dayjs";
 import useCustomSnackbar from "../../../../utilities/notistack";
 import { Notistack } from "../../order-manager/enum";
 import { useNavigate } from "react-router-dom";
+import { request } from '../../../../store/helpers/axios_helper'
 
 const UpdateKH = () => {
   const { id } = useParams();
@@ -92,8 +93,7 @@ const UpdateKH = () => {
     getKHById(id);
   }, [id]);
   const getKHById = (id) => {
-    axios
-      .get(apiURLKH + `/hien-thi-theo/${id}`)
+    request('GET', apiURLKH + `/hien-thi-theo/${id}`)
       .then((response) => {
         const data = response.data;
         setMa(data.ma);
@@ -268,8 +268,7 @@ const UpdateKH = () => {
       return;
     }
     setIsModalVisibleS(false);
-    axios
-      .post(`${apiURLKH}/dia-chi/add?id=${id}`, newAddress)
+    request('POST', `${apiURLKH}/dia-chi/add?id=${id}`, newAddress)
       .then((response) => {
         let newKhachHangResponse = {
           diaChi: diaChi,
@@ -343,8 +342,7 @@ const UpdateKH = () => {
         matKhau: matKhau,
       };
 
-      axios
-        .put(`${apiURLKH}/update/${id}`, updatedItem)
+      request('PUT', `${apiURLKH}/update/${id}`, updatedItem)
         .then((response) => {
           if (response.status === 200) {
             handleOpenAlertVariant("Sửa thành công", Notistack.SUCCESS);

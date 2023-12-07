@@ -25,6 +25,8 @@ import ModalAddDiaChiKhachHang from "./ModalAddDiaChiKhachHang";
 import { Notistack } from "../../order-manager/enum";
 import useCustomSnackbar from "../../../../utilities/notistack";
 import { useNavigate } from "react-router-dom";
+import { request } from '../../../../store/helpers/axios_helper'
+
 const ModalAddKhachHang = ({ close }) => {
   let [listKH, setListKH] = useState([]);
   let [hoVaTen, setTen] = useState("");
@@ -217,7 +219,7 @@ const ModalAddKhachHang = ({ close }) => {
         return;
       }
       // Gọi API tạo khách hàng mới
-      const khachHangResponse = await axios.post(
+      const khachHangResponse = request('POST',
         apiURLKH + "/add",
         khachHangData
       );
@@ -260,8 +262,7 @@ const ModalAddKhachHang = ({ close }) => {
       account: generatedMaKhachHang,
       trangThai: trangThaiKH,
     };
-    axios
-      .post(`${apiURLKH}/dia-chi/add?id=${generatedMaKhachHang}`, newAddress)
+    request('POST', `${apiURLKH}/dia-chi/add?id=${generatedMaKhachHang}`, newAddress)
       .then((response) => {
         let newKhachHangResponse = {
           diaChi: diaChi,

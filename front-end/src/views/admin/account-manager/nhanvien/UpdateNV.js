@@ -26,6 +26,8 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { Notistack } from "../../order-manager/enum";
 import useCustomSnackbar from "../../../../utilities/notistack";
 import { useNavigate } from "react-router-dom";
+import { request } from '../../../../store/helpers/axios_helper'
+
 const UpdateNV = () => {
   const { id } = useParams();
   let [hoVaTen, setTen] = useState("");
@@ -80,8 +82,7 @@ const UpdateNV = () => {
     getKHById(id);
   }, [id]);
   const getKHById = (id) => {
-    axios
-      .get(apiURLNV + `/hien-thi-theo/${id}`)
+    request('GET', apiURLNV + `/hien-thi-theo/${id}`)
       .then((response) => {
         const data = response.data;
         setXaPhuong(data.diaChiList[0].xaPhuong);
@@ -227,7 +228,7 @@ const UpdateNV = () => {
         matKhau: matKhau,
       };
 
-      const updateEmployeeResponse = await axios.put(
+      const updateEmployeeResponse = request('PUT',
         `${apiURLNV}/update/${id}`,
         updatedEmployee
       );
@@ -253,7 +254,7 @@ const UpdateNV = () => {
           account: id,
         };
 
-        const updateAddressResponse = await axios.put(
+        const updateAddressResponse = request('PUT',
           `${apiURLNV}/dia-chi/update?id=` + id,
           updatedAddress
         );

@@ -8,7 +8,7 @@ import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import CircularProgress from '@mui/material/CircularProgress';
-
+import { request } from '../../../store/helpers/axios_helper'
 
 const InputSearchCustomer = ({ getCustomer, handleOpenDialogCustomers }) => {
 
@@ -20,7 +20,7 @@ const InputSearchCustomer = ({ getCustomer, handleOpenDialogCustomers }) => {
 
   const handleSearchCustomers = async () => {
     setLoadingChild(true);
-    await axios.get(`http://localhost:8080/khach-hang/search-all`, {
+    request('GET',`/khach-hang/search-all`, {
       params: {
         tenKH: dataCus,
         page: 1,

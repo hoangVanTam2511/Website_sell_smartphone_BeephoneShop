@@ -10,6 +10,7 @@ import { FaDownload } from "react-icons/fa6";
 import { FaUpload } from "react-icons/fa6";
 import useCustomSnackbar from "./notistack.js";
 import { format } from "date-fns";
+import { request } from '../store/helpers/axios_helper'
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -82,8 +83,7 @@ const ImportAndExportExcelImei = ({ open, close, imeis, productName, view }) => 
         imeis
       };
       setIsLoading(true);
-      axios
-        .post('http://localhost:8080/api/export-excel-by', request, { responseType: 'blob' }) // Sử dụng phương thức POST
+      request('POST','/api/export-excel-by', request, { responseType: 'blob' }) // Sử dụng phương thức POST
         .then((response) => {
           const url = window.URL.createObjectURL(new Blob([response.data]));
           const link = document.createElement('a');
@@ -110,8 +110,7 @@ const ImportAndExportExcelImei = ({ open, close, imeis, productName, view }) => 
 
   const handleDownloadSample = () => {
     setIsLoading(true);
-    axios
-      .post('http://localhost:8080/api/create-excel-template-by', {}, { responseType: 'blob' }) // Sử dụng phương thức POST
+    request('POST','/api/create-excel-template-by', {}, { responseType: 'blob' }) // Sử dụng phương thức POST
       .then((response) => {
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');

@@ -31,6 +31,8 @@ import LoadingIndicator from "../../../utilities/loading";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
 import CreateDanhMuc from "./create-danh-muc";
+import { request } from '../../../store/helpers/axios_helper'
+
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -57,8 +59,7 @@ const ManagementDanhMuc = () => {
   const [openSelect, setOpenSelect] = useState(false);
 
   const getListDanhMuc = () => {
-    axios
-      .get(`http://localhost:8080/api/danh-mucs`)
+    request('GET',`/api/danh-mucs`)
       .then((response) => {
         setDanhMuc(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -70,8 +71,7 @@ const ManagementDanhMuc = () => {
 
   const getListDanhMucSearchAndPage = (page) => {
     // setIsLoading(false);
-    axios
-      .get(`http://localhost:8080/api/danh-mucs/search`, {
+    request('GET',`/api/danh-mucs/search`, {
         params: {
           keyword: searchTatCa,
           currentPage: page,
@@ -91,8 +91,7 @@ const ManagementDanhMuc = () => {
   };
 
   const detailDanhMuc = async (id) => {
-    await axios
-      .get(`http://localhost:8080/api/danh-mucs/${id}`)
+    request('GET',`/api/danh-mucs/${id}`)
       .then((response) => {
         setDanhMucCode(response.data.data.ma);
         setStatus(response.data.data.status);
@@ -179,8 +178,7 @@ const ManagementDanhMuc = () => {
   };
 
   const doiTrangThaiDanhMuc = (idDanhMuc) => {
-    axios
-      .put(`http://localhost:8080/api/danh-mucs/${idDanhMuc}`)
+    request('PUT',`/api/danh-mucs/${idDanhMuc}`)
       .then((response) => {
         getListDanhMuc();
         handleOpenAlertVariant(
@@ -355,8 +353,7 @@ const ManagementDanhMuc = () => {
       tenDanhMuc: danhMucName,
       status: status,
     };
-    axios
-      .put(`http://localhost:8080/api/danh-mucs`, obj)
+    request('PUT',`/api/danh-mucs`, obj)
       .then((response) => {
         getListDanhMuc();
         handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);

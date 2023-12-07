@@ -11,6 +11,7 @@ import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import * as dayjs from "dayjs";
 import { Empty } from "antd";
+import { request } from '../../../store/helpers/axios_helper'
 
 const ThongKe = () => {
   const [listDonHangAll, setListDonHangAll] = useState([]);
@@ -22,8 +23,7 @@ const ThongKe = () => {
   const [searchYear, setSearchYear] = useState(dayjs());
 
   const thongKeTheoNgay = () => {
-    axios
-      .get(`http://localhost:8080/thong-ke/don-hang-all`)
+    request('GET',`/thong-ke/don-hang-all`)
       .then((response) => {
         setListDonHangAll(response.data);
       })
@@ -40,8 +40,7 @@ const ThongKe = () => {
   // };
 
   const thongKeTheoSanPham = () => {
-    axios
-      .get(`http://localhost:8080/thong-ke/san-pham`)
+    request('GET',`/thong-ke/san-pham`)
       .then((response) => {
         setListSanPham(response.data);
       })
@@ -49,8 +48,7 @@ const ThongKe = () => {
   };
 
   const getSanPhamTop5 = () => {
-    axios
-      .get(`http://localhost:8080/thong-ke/san-pham-ban-chay`)
+    request('GET',`/thong-ke/san-pham-ban-chay`)
       .then((response) => {
         setListSanPhamTop5(response.data);
         console.log(response.data);
@@ -59,8 +57,7 @@ const ThongKe = () => {
   };
 
   const getDonHangTheoNam = () => {
-    axios
-      .get(`http://localhost:8080/thong-ke/don-hang-year`, {
+    request('GET',`/thong-ke/don-hang-year`, {
         params: {
           month: 11,
           year: 2023,
@@ -91,7 +88,7 @@ const ThongKe = () => {
       // Lấy dữ liệu cho tất cả các tháng trong năm
       const dataPromises = Array.from({ length: 12 }, (_, index) => {
         const month = index + 1; // Tháng bắt đầu từ 1
-        return axios.get(`http://localhost:8080/thong-ke/don-hang-year`, {
+        return  request('GET',`/thong-ke/don-hang-year`, {
           params: {
             month,
             year: 2023,

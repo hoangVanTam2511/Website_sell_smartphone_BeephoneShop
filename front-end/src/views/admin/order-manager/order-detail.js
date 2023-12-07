@@ -55,6 +55,7 @@ import { over } from "stompjs";
 import SockJS from "sockjs-client";
 import PrinterInvoice, { Print, PrintDelivery } from "./printer-invoice";
 import { useSelector } from "react-redux";
+import { request } from '../../../store/helpers/axios_helper'
 
 var stompClient = null;
 const OrderDetail = (props) => {
@@ -106,7 +107,7 @@ const OrderDetail = (props) => {
       imei: imei,
     };
     try {
-      await axios.put(`http://localhost:8080/api/carts/order/scanner`, data, {
+      request('PUT',`/api/carts/order/scanner`, data, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -158,8 +159,7 @@ const OrderDetail = (props) => {
     setOpenModalImei(false);
   };
   const getAllProducts = async () => {
-    await axios
-      .get(`http://localhost:8080/api/products/product-items`)
+    request('GET',`/api/products/product-items`)
       .then((response) => {
         setProducts(response.data.data);
       })
@@ -223,7 +223,7 @@ const OrderDetail = (props) => {
       imeis: cartItems.imeis,
     };
     try {
-      await axios.put(`http://localhost:8080/api/carts/order`, data, {
+      request('PUT',`/api/carts/order`, data, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -257,7 +257,7 @@ const OrderDetail = (props) => {
   const handleDeleteCartItemOrderById = async (id) => {
     setIsLoading(true);
     try {
-      await axios.delete(`http://localhost:8080/api/carts/order/${id}`);
+      request('DELETE',`/api/carts/order/${id}`);
       await getOrderItemsById();
       setIsLoading(false);
       handleOpenAlertVariant(
@@ -280,7 +280,7 @@ const OrderDetail = (props) => {
       },
     };
     try {
-      await axios.put(`http://localhost:8080/api/carts/order/amount`, request, {
+      request('PUT',`/api/carts/order/amount`, request, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -303,8 +303,7 @@ const OrderDetail = (props) => {
 
   const getOrderItemsById = async () => {
     setIsLoading(true);
-    await axios
-      .get(`http://localhost:8080/api/orders/${id}`)
+    request('GET',`/api/orders/${id}`)
       .then((response) => {
         const data = response.data.data;
         setOrder(data);
@@ -427,7 +426,7 @@ const OrderDetail = (props) => {
       tongTienString: totalString,
     };
     try {
-      await axios.put(`http://localhost:8080/api/carts/order/refund`, request, {
+      request('PUT',`/api/carts/order/refund`, request, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -469,8 +468,7 @@ const OrderDetail = (props) => {
   const updateStatusOrderDelivery = async (orderRequest) => {
     setIsLoading(true);
     try {
-      await axios
-        .put(`http://localhost:8080/api/orders/${id}`, orderRequest, {
+      request('PUT',`/api/orders/${id}`, orderRequest, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -507,8 +505,7 @@ const OrderDetail = (props) => {
       hoanTien: isRefund === true ? "Hoàn tiền" : "",
     };
     try {
-      await axios
-        .put(`http://localhost:8080/api/vnpay/payment/delivery`, orderRequest, {
+      request('PUT',`/api/vnpay/payment/delivery`, orderRequest, {
           headers: {
             "Content-Type": "application/json",
           },

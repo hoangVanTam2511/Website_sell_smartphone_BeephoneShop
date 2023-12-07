@@ -31,6 +31,7 @@ import useCustomSnackbar from "../../../utilities/notistack";
 import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
+import { request } from '../../../store/helpers/axios_helper'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -68,8 +69,7 @@ const ManagementRearCameras = () => {
 
   const getListProductSearchAndPage = (page) => {
     // setIsLoading(false);
-    axios
-      .get(`http://localhost:8080/api/camera-rears/search`, {
+    request('GET',`/api/camera-rears/search`, {
         params: {
           keyword: searchTatCa,
           currentPage: page,
@@ -132,8 +132,7 @@ const ManagementRearCameras = () => {
   };
 
   const getListCameraRear = () => {
-    axios
-      .get(`http://localhost:8080/api/camera-rears`)
+    request('GET',`/api/camera-rears`)
       .then((response) => {
         setCameraRears(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -304,8 +303,7 @@ const ManagementRearCameras = () => {
   const [cameraType, setCameraType] = useState("");
 
   const detailCameras = async (id) => {
-    await axios
-      .get(`http://localhost:8080/api/camera-rears/${id}`)
+    request('GET',`/api/camera-rears/${id}`)
       .then((response) => {
         setCameraCode(response.data.data.ma);
         setCameraType(response.data.data.cameraType);
@@ -376,8 +374,7 @@ const ManagementRearCameras = () => {
       cameraType: cameraType,
       status: status,
     };
-    axios
-      .put(`http://localhost:8080/api/camera-rears`, obj)
+    request('PUT',`/api/camera-rears`, obj)
       .then((response) => {
         getListCameraRear();
         handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
@@ -389,8 +386,7 @@ const ManagementRearCameras = () => {
   };
 
   const doiTrangThaiProducts = (idCamera) => {
-    axios
-      .put(`http://localhost:8080/api/camera-rears/${idCamera}`)
+    request('PUT',`/api/camera-rears/${idCamera}`)
       .then((response) => {
         getListCameraRear();
         handleOpenAlertVariant(

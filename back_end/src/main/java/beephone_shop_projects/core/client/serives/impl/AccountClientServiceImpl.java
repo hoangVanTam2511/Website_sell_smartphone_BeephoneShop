@@ -51,6 +51,7 @@ public class AccountClientServiceImpl{
                     .ma(kh.getMa())
                     .anhDaiDien(kh.getAnhDaiDien())
                     .soDienThoai(kh.getSoDienThoai())
+                    .idRole(kh.getIdRole().getMa())
                     .build();
             return dto;
         }else{
@@ -121,6 +122,7 @@ public class AccountClientServiceImpl{
                 .hoVaTen(kh.getHoVaTen())
                 .ma(kh.getMa())
                 .soDienThoai(kh.getSoDienThoai())
+                .idRole(kh.getIdRole().getMa())
                 .id(kh.getId())
                 .build();
         return dto;

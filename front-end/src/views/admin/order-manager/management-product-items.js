@@ -21,6 +21,7 @@ import { ImportExcelImei } from "./import-imei-by";
 import { FaDownload, FaUpload } from "react-icons/fa6";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import ImportAndExportExcelImei from "../../../utilities/excelUtils";
+import { request } from '../../../store/helpers/axios_helper'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -76,12 +77,10 @@ const ManagementProductItems = ({/*  open, close, productItems, productName */ }
 
   const getProductsItemById = async () => {
     setIsLoading(true);
-    await axios
-      .get(`http://localhost:8080/api/products/product-items/${id}`)
+    request('GET',`/api/products/product-items/${id}`)
       .then((response) => {
         setProducts(response.data.data);
 
-        console.log(data);
         setIsLoading(false);
       })
       .catch((error) => {

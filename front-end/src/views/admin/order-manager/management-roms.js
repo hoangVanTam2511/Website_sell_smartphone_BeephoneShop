@@ -30,7 +30,9 @@ import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import CreateRom from "./create-rom";
 import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
+import { request } from '../../../store/helpers/axios_helper'
 import useCustomSnackbar from "../../../utilities/notistack";
+
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -50,8 +52,7 @@ const ManagementRoms = () => {
   const [openSelect, setOpenSelect] = useState(false);
 
   const loadDataRoms = () => {
-    axios
-      .get(`http://localhost:8080/api/roms`)
+    request('GET',`/api/roms`)
       .then((response) => {
         setListRom(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -65,8 +66,7 @@ const ManagementRoms = () => {
 
   const getListRomSearchAndPage = (page) => {
     // setIsLoading(false);
-    axios
-      .get(`http://localhost:8080/api/roms/search`, {
+    request('GET',`/api/roms/search`, {
         params: {
           keyword: searchTatCa,
           currentPage: page,
@@ -271,8 +271,7 @@ const ManagementRoms = () => {
   const [idRom, setIdRom] = useState("");
 
   const detailRoms = async (id) => {
-    await axios
-      .get(`http://localhost:8080/api/roms/${id}`)
+    request('GET',`/api/roms/${id}`)
       .then((response) => {
         setRomCode(response.data.data.ma);
         setStatus(response.data.data.status);
@@ -345,8 +344,7 @@ const ManagementRoms = () => {
       dungLuong: dungLuong,
       status: status,
     };
-    axios
-      .put(`http://localhost:8080/api/roms`, obj)
+    request('PUT',`/api/roms`, obj)
       .then((response) => {
         loadDataRoms();
         handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
@@ -358,8 +356,7 @@ const ManagementRoms = () => {
   };
 
   const doiTrangThaiProducts = (idRom) => {
-    axios
-      .put(`http://localhost:8080/api/roms/${idRom}`)
+    request('PUT',`/api/roms/${idRom}`)
       .then((response) => {
         loadDataRoms();
         handleOpenAlertVariant(

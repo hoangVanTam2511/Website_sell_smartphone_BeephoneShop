@@ -35,6 +35,8 @@ public class AccountDto {
     @Enumerated(EnumType.ORDINAL)
     private StatusAccountCus trangThai;
 
+    private String idRole;
+
     private String token;
 
 }

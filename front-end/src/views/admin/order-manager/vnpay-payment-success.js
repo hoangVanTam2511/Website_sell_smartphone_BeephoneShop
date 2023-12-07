@@ -38,6 +38,7 @@ import {
 import LoadingIndicator from "../../../utilities/loading";
 import { PaymentDialog } from "./AlertDialogSlide";
 import useCustomSnackbar from "../../../utilities/notistack";
+import { request } from '../../../store/helpers/axios_helper'
 
 const PaymentSuccess = () => {
   const navigate = useNavigate();
@@ -80,8 +81,7 @@ const PaymentSuccess = () => {
       code: orderCode,
     };
     try {
-      await axios
-        .post(`http://localhost:8080/api/vnpay/payment`, vnpayReq, {
+      request('POST',`/api/vnpay/payment`, vnpayReq, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -110,8 +110,7 @@ const PaymentSuccess = () => {
       personConfirm: null,
     };
     try {
-      await axios
-        .put(`http://localhost:8080/api/vnpay/update-order`, vnpayReq, {
+      request('PUT',`/api/vnpay/update-order`, vnpayReq, {
           headers: {
             "Content-Type": "application/json",
           },

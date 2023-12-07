@@ -38,6 +38,7 @@ import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
 import useCustomSnackbar from "../../../utilities/notistack";
+import { request } from '../../../store/helpers/axios_helper'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -98,8 +99,7 @@ const ManagementScreens = () => {
 
   const getListProductSearchAndPage = (page) => {
     // setIsLoading(false);
-    axios
-      .get(`http://localhost:8080/api/display/search`, {
+    request('GET',`/api/display/search`, {
         params: {
           keyword: searchTatCa,
           currentPage: page,
@@ -394,8 +394,7 @@ const ManagementScreens = () => {
   const [maDoPhanGiai, setMaDoPhanGiai] = useState("");
 
   const detailManHinhs = (id) => {
-    axios
-      .get(`http://localhost:8080/api/display/${id}`)
+    request('GET',`/api/display/${id}`)
       .then((response) => {
         setManHinhCode(response.data.data.ma);
         setTrangThai(response.data.data.status);
@@ -477,8 +476,7 @@ const ManagementScreens = () => {
       kichThuoc: kichThuoc,
       status: trangThai,
     };
-    axios
-      .put(`http://localhost:8080/api/display`, obj)
+    request('PUT',`/api/display`, obj)
       .then((response) => {
         loadDataList();
         handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
@@ -490,8 +488,7 @@ const ManagementScreens = () => {
   };
 
   const doiTrangThaiProducts = (idManHinh) => {
-    axios
-      .put(`http://localhost:8080/api/display/${idManHinh}`)
+    request('PUT',`/api/display/${idManHinh}`)
       .then((response) => {
         loadDataList();
         handleOpenAlertVariant(

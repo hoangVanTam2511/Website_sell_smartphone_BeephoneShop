@@ -764,7 +764,7 @@ const VerticalNav = memo((props) => {
 
         {user === undefined || user.ma === "" ? (
           <></>
-        ) : user.idRole.ma === "role3" ? (
+        ) : user.idRole === "role3" ? (
           <Accordion.Item
             as="li"
             eventKey="sidebar-user"

@@ -1,114 +1,167 @@
 import React, { useEffect, useState } from 'react'
 import './login-page.css'
-import Logo from '../../../components/partials/components/logo.png'
 import { useDispatch } from 'react-redux'
-import { loginUser } from '../../../store/user/userSlice'
+import { loginUser, changeInformationUser } from '../../../store/user/userSlice'
 import { useNavigate } from 'react-router-dom'
+import { request, setAuthHeader } from '../../../store/helpers/axios_helper'
+import { Button, notification, Space } from 'antd';
 
 const LoginPage = () => {
+  const [isForgetView, setIsForgetView] = useState(0)
+  const [api, contextHolder] = notification.useNotification();
+
+  const openNotificationWithIcon = (type, mess, content, placement) => {
+    api[type]({
+      message: mess,
+      description: content,
+      placement
+    });
+  };
+
+  const [userLogin, setUserLogin] = useState({
+    email: '',
+    password: ''
+  })
+
   useEffect(() => {})
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
+  const resetLogin = () => {
+    setUserLogin({
+      email: '',
+      password: ''
+    })
+  }
+
   const login = e => {
     e.preventDefault()
+    setAuthHeader(null)
 
-    let email = document.querySelector('.email')
-    let psd = document.querySelector('.password')
-    let check = document.querySelector('#rem')
-    let msg = document.querySelectorAll('.msg')
-
-    if (email.value === '') {
-      msg[0].innerText = 'Vui lòng nhập đúng định dạng email.'
+    if (userLogin.email === '') {
+      alert('Vui lòng nhập email')
+      return
     }
-    if (psd.value === '') {
-      msg[1].innerText =
-        'Vui lòng nhập đúng mật khẩu'
-    } else {
-      var userLogin = {
-        'email' : email.value,
-        'password' : psd.value
-      }
-      msg[0].innerText = ''
-      msg[1].innerText = ''
-      dispatch(loginUser(userLogin)).then((data) => {
-        if( data.payload.id === null || data.payload.id === ""){
-        //   toast.error('Đăng nhập không thành công.');
-        }else{
-          if(data.payload.idRole.ma === 'role2'){
-            alert("Bạn không có quyền truy cập hệ thống.Vui lòng liên hệ quản trị viên.")
-          }else{
-            alert("Đăng nhập thành công")
+
+    if (userLogin.password === '') {
+      alert('Vui lòng nhập mật khẩu')
+      return
+    }
+
+    request("POST", "/client/account/login", userLogin)
+    .then(res => {
+      if (res.status === 200) {
+        setAuthHeader(res.data.token)
+        dispatch(changeInformationUser(res.data))
+          if (res.data.idRole === 'role2') {
+            openNotificationWithIcon('error',"Bạn không quyền truy cập hệ thống.", "Bạn không có quyền truy cập hệ thống.")
+          } else {
+            resetLogin()
+            openNotificationWithIcon('success',"Đăng nhập thành công.", "")
             navigate('/home')
           }
-        }
-      })
-    }
-
-    email.value = ''
-    psd.value = ''
-    check.checked = ''
+      }
+  })
+    .catch(error =>{
+      openNotificationWithIcon('error',"Sai tài khoản hoặc mật khẩu.", "Bạn không nhập đúng tài khoản hoặc mật khẩu.Vui lòng kiểm tra lại.")
+    })
   }
+
+  const forgetPass = () => {
+    request("POST", "/email/send-html-email-get-pass",
+    {
+      "email": userLogin.email
+    }).then(res => {
+      setIsForgetView(0)
+      openNotificationWithIcon('success',"Mật khẩu đã dược gửi về email của bạn.", "Mật khẩu đã được gửi về email của bạn.")
+    }).catch(error => {
+      openNotificationWithIcon('error',"Không tìm thấy email trên hệ thống.", "")
+    })
+  }
+
   return (
     <>
-      <div className='body'>
-        <img src={Logo} class='logo' />
+     {contextHolder}
+      <div className='bodyLogin'>
+        <div>
+          {/* <img src='logo.png' /> */}
+        </div>
+        <div class='wrapper'>
+          <div>
+            <h1 style={{ color: 'white' }}>
+              {
+                isForgetView === 0 ? 'Đăng nhập' : 'Quên mật khẩu'
+              }
+            </h1>
+            <div class='input-box'>
+              <input
+                type='text'
+                placeholder='Email'
+                required
+                value={userLogin.email}
+                onChange={e =>
+                  setUserLogin({ ...userLogin, email: e.target.value })
+                }
+              />
+              <i class='bx bxs-user'></i>
+            </div>
+            {isForgetView === 0 ? (
+              <div class='input-box'>
+                <input
+                  type='password'
+                  placeholder='Mật khẩu'
+                  required
+                  value={userLogin.password}
+                  onChange={e =>
+                    setUserLogin({ ...userLogin, password: e.target.value })
+                  }
+                />
+                <i class='bx bxs-lock-alt'></i>
+              </div>
+            ) : (
+              <></>
+            )}
 
-        <form onsubmit='refresh(); return false'>
-          <h3>Đăng nhập</h3>
+            <div class='remember-forgot'>
+              {isForgetView === 0 ? (
+                <label style={{ marginLeft: '15px' }}>
+                  <input type='checkbox' />
+                  Nhớ mật khẩu
+                </label>
+              ) : (
+                <>
+                </>
+              )}
 
-          <div class='inputbox'>
-            <label>Nhập email của bạn</label>
-            <input type='text' class='email' />
-            <p class='msg'></p>
-          </div>
-
-          <div class='inputbox'>
-            <label>Nhập mật khẩu</label>
-            <input type='password' class='password' />
-            <p class='msg'></p>
-          </div>
-
-          <input
-            type='submit'
-            value='Đăng nhập'
-            onClick={e => login(e)}
-            class='submit'
-          />
-
-          <div class='helpBox'>
-            <div class='checkBox' style={{ marginLeft: '9px' }}>
-              <input type='checkbox' id='rem' />
-              <label for='rem'>Nhớ mật khẩu</label>
+              {isForgetView === 1 ? (
+                <span  style={{ cursor: 'pointer', textAlign: 'center', marginLeft: '101px' }} onClick={() => setIsForgetView(0)}>
+                  Quay lại đăng nhập
+                </span>
+              ) : (
+                <span
+                  style={{ cursor: 'pointer', marginRight: '17px'  }}
+                  onClick={() => setIsForgetView(1)}
+                >
+                  Quên mật khẩu?
+                </span>
+              )}
             </div>
 
-            <a href='##'>Quên mật khẩu</a>
+            {isForgetView === 1 ? (
+              <>
+                <button class='btn' onClick={e => forgetPass(e)}>
+                  Gửi mật khẩu về Gmail
+                </button>
+              </>
+            ) : (
+              <>
+                <button class='btn' onClick={e => login(e)}>
+                  Đăng nhập
+                </button>
+              </>
+            )}
           </div>
-
-          <p class='sign'>
-            Bạn chưa có tài khoản
-            <a style={{ marginLeft: '5px' }} href='##'>
-              Đăng kí ngay
-            </a>
-            .
-          </p>
-
-          <p class='msg'>
-            BEEPHONE-version 1.0.0 - 2023
-            <a href='##'>Learn more.</a>
-          </p>
-        </form>
-
-        <i
-          class='fa fa-youtube-play'
-          style={{ fontSize: `1.2em` }}
-          title='youtube channel...'
-        >
-          {' '}
-          <a href='https://www.youtube.com/@MR.shortzed333' target='_blank'>
-            Youtube
-          </a>
-        </i>
+        </div>
       </div>
     </>
   )

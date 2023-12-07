@@ -18,6 +18,7 @@ import LoadingIndicator from "../../../utilities/loading";
 import generateRandomCode from "../../../utilities/randomCode";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { Notistack, StatusCommonProductsNumber } from "../order-manager/enum";
+import { request } from '../../../store/helpers/axios_helper'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -45,8 +46,7 @@ const CreateRank = ({ open, close, getAll, ranks }) => {
       uuDai: uuDai,
       status: status,
     };
-    axios
-      .post(`http://localhost:8080/rank/addRank`, obj)
+    request('POST',`/rank/addRank`, obj)
       .then((response) => {
         close();
         getAll();

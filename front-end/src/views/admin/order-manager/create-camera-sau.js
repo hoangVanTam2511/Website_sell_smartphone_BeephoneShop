@@ -22,7 +22,7 @@ import {
   TypeCameraNumber,
 } from "./enum";
 import useCustomSnackbar from "../../../utilities/notistack";
-
+import { request } from '../../../store/helpers/axios_helper'
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -76,8 +76,7 @@ const CreateCameraSau = ({ open, close, getAll, cameraRear }) => {
       doPhanGiai: doPhanGiai,
       status: status,
     };
-    axios
-      .post(`http://localhost:8080/api/camera-rears`, obj)
+    request('POST',`/api/camera-rears`, obj)
       .then((response) => {
         close();
         getAll();

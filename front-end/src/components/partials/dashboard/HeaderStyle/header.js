@@ -2,7 +2,7 @@ import React, { useEffect, Fragment, memo } from "react";
 import { Navbar, Container, Nav, Dropdown } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import CustomToggle from "../../../dropdowns";
-
+import { request, setAuthHeader } from '../../../../store/helpers/axios_helper'
 //img
 // import flag1 from '../../../../assets/images/Flag/flag001.png'
 // import flag2 from '../../../../assets/images/Flag/flag-02.png'
@@ -131,9 +131,9 @@ const Header = memo((props) => {
                             alt=""
                           />
                           <div className="w-100 ms-3">
-                            <h6 className="mb-0 ">New Mail from Fenny</h6>
+                            <h6 className="mb-0 ">Thông báo từ ai đó pro</h6>
                             <div className="d-flex justify-content-between align-items-center">
-                              <p className="mb-0">Cyst Bni</p>
+                              <p className="mb-0">No body for me</p>
                               <small className="float-right font-size-12">
                                 3 days ago
                               </small>
@@ -170,14 +170,18 @@ const Header = memo((props) => {
                   aria-labelledby="navbarDropdown"
                 >
                   <Dropdown.Item href="https://templates.iqonic.design/hope-ui/react/build/dashboard/app/user-profile">
-                    Profile
+                    Thông tin cá nhân
                   </Dropdown.Item>
                   <Dropdown.Item href="https://templates.iqonic.design/hope-ui/react/build/dashboard/app/user-privacy-setting">
-                    Privacy Setting
+                    Cài đặt
                   </Dropdown.Item>
                   <Dropdown.Divider />
-                  <Dropdown.Item href="https://templates.iqonic.design/hope-ui/react/build/auth/sign-in">
-                    Logout
+                  <Dropdown.Item href="http://localhost:3000/login"
+                    onClick={() => {
+                      setAuthHeader(null)
+                    }}
+                  >
+                    Đăng xuất
                   </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>

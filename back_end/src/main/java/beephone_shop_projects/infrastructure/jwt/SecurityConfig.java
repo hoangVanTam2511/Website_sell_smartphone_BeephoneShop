@@ -30,7 +30,42 @@ public class SecurityConfig {
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers(
                                 "/client/**",
-                                "/email/**"
+                                "/email/**",
+                                "/khach-hang/**",
+                                "/nhan-vien/**",
+                                "/role/**",
+                                "/san-pham/**",
+                                "/thong-ke/**",
+                                "/api/orders/**",
+                                "/api/carts/**",
+                                "/api/roms/**",
+                                "/api/imeis/**",
+                                "/api/danh-mucs/**",
+                                "/api/rams/**",
+                                "/api/sim-cards/**",
+                                "/api/resolution/**",
+                                "/api/display/**",
+                                "/api/brands/**",
+                                "/api/chips/**",
+                                "/api/pins/**",
+                                "/api/colors/**",
+                                "/api/image/**",
+                                "/api/cameras/**",
+                                "/api/camera-fronts/**",
+                                "/api/camera-rears/**",
+                                "/api/the-nhos/**",
+                                "/api/screens/**",
+                                "/api/chargers/**",
+                                "/api/products/**",
+                                "/khuyen-mai/**",
+                                "/khuyen-mai-chi-tiet/**",
+                                "/san-pham-1",
+                                "/san-pham-chi-tiet-1/**",
+                                "/san-pham-chi-tiet/removeALL",
+                                "/chi-tiet-khuyen-mai/detail/**",
+                                "/detail/khuyen-mai/**",
+                                "/size/khuyen-mai-chi-tiet/**",
+                                "/voucher/**"
                                 )
                         .permitAll()
                         .anyRequest().authenticated()

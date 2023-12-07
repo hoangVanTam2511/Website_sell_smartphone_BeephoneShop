@@ -31,6 +31,7 @@ import * as React from "react";
 import ModalAddKhachHang from "./ModalAddKhachHang";
 import { Notistack } from "../../order-manager/enum";
 import useCustomSnackbar from "../../../../utilities/notistack";
+import { request } from '../../../../store/helpers/axios_helper'
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -103,8 +104,7 @@ const HienThiKH = () => {
         loadDataListRole(targetPage); // Tải danh sách từ trang targetPage
         return;
       }
-      axios
-        .get(apiURLKH + "/search-all", {
+      request('GET', apiURLKH + "/search-all", {
           params: {
             tenKH: searchText,
             page: currentPage,
@@ -143,8 +143,7 @@ const HienThiKH = () => {
   }, [currentPage]);
   // load
   const loadDataListRole = (currentPage) => {
-    axios
-      .get(apiURLKH + "/hien-thi?page=" + currentPage)
+    request('GET', apiURLKH + "/hien-thi?page=" + currentPage)
       .then((response) => {
         setListKH(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -177,8 +176,7 @@ const HienThiKH = () => {
   };
 
   const doChangeTrangThai = (id) => {
-    axios
-      .put(apiURLKH + `/${id}/doi-tt`)
+    request('PUT', apiURLKH + `/${id}/doi-tt`)
       .then((response) => {
         loadDataListRole(currentPage);
         handleOpenAlertVariant("Đổi trạng thái thành công", Notistack.SUCCESS);

@@ -35,6 +35,8 @@ import {
   ModalRefundProduct,
 } from "./AlertDialogSlide";
 import { ref, updateMetadata } from "firebase/storage";
+import { request } from '../../../store/helpers/axios_helper'
+
 const RefundDetail = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -47,8 +49,7 @@ const RefundDetail = () => {
   const [total, setTotal] = useState(0);
 
   const getOrderItemsById = async () => {
-    await axios
-      .get(`http://localhost:8080/api/orders/${id}`)
+    request('GET',`/api/orders/${id}`)
       .then((response) => {
         const data = response.data.data;
         setOrder(data);
@@ -1066,7 +1067,7 @@ const RefundDetail = () => {
       amount: totalSizeRefundFinal(),
     };
     try {
-      await axios.put(`http://localhost:8080/api/carts/order/refund`, request, {
+      request('PUT',`/api/carts/order/refund`, request, {
         headers: {
           "Content-Type": "application/json",
         },

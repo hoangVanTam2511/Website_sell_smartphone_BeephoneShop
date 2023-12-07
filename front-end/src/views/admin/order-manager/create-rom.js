@@ -17,6 +17,7 @@ import axios from "axios";
 import LoadingIndicator from "../../../utilities/loading";
 import generateRandomCode from "../../../utilities/randomCode";
 import { StatusCommonProductsNumber } from "./enum";
+import { request } from '../../../store/helpers/axios_helper'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -81,8 +82,7 @@ const CreateRom = ({ open, close, getAll, roms }) => {
       dungLuong: kichThuoc,
       status: status,
     };
-    axios
-      .post(`http://localhost:8080/api/roms`, obj)
+    request('POST',`/api/roms`, obj)
       .then((response) => {
         close();
         getAll();

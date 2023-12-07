@@ -7,7 +7,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {  faPencilAlt, } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
+import { request } from '../../../../store/helpers/axios_helper'
 
 const AddProperty = (props) => {
   const [loading, setLoading] = useState(false);
@@ -68,7 +68,7 @@ const AddProperty = (props) => {
     }
 
     setLoading(true);
-    axios.post("http://localhost:8080/rom/save", romForm);
+    request('POST',"/rom/save", romForm);
     setTimeout(() => {
       props.loadData(props.currentPage)
       setLoading(false);

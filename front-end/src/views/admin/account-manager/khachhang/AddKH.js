@@ -25,6 +25,8 @@ import AnhKhachHang from "./AnhKhachHang";
 import useCustomSnackbar from "../../../../utilities/notistack";
 import { Notistack } from "../../order-manager/enum";
 import { useNavigate } from "react-router-dom";
+import { request } from '../../../../store/helpers/axios_helper'
+
 const AddKH = () => {
   const { handleOpenAlertVariant } = useCustomSnackbar();
   let [listKH, setListKH] = useState([]);
@@ -217,29 +219,34 @@ const AddKH = () => {
         return;
       }
       // Gọi API tạo khách hàng mới
-      const khachHangResponse = await axios.post(
+      request('POST',
         apiURLKH + "/add",
         khachHangData
-      );
+      ).then((response) => {
+        if(response.status === 200){
+          var khachHangResponse = response;
 
-      // Lấy mã khách hàng từ response
-      const generatedMaKhachHang = khachHangResponse.data.data.id;
-      addDiaChiList(generatedMaKhachHang);
-      redirectToHienThiKH(generatedMaKhachHang);
+          // Lấy mã khách hàng từ response
+          var generatedMaKhachHang = khachHangResponse.data.data.id;
+          addDiaChiList(generatedMaKhachHang);
+          redirectToHienThiKH(generatedMaKhachHang);
 
-      // Cập nhật danh sách khách hàng và hiển thị thông báo
-      const newKhachHangResponse = {
-        hoVaTen: hoVaTen,
-        ngaySinh: ngaySinh,
-        soDienThoai: soDienThoai,
-        gioiTinh: gioiTinh,
-        diaChiList: [],
-        email: email,
-        anhDaiDien: anhDaiDien,
-      };
+          // Cập nhật danh sách khách hàng và hiển thị thông báo
+          const newKhachHangResponse = {
+            hoVaTen: hoVaTen,
+            ngaySinh: ngaySinh,
+            soDienThoai: soDienThoai,
+            gioiTinh: gioiTinh,
+            diaChiList: [],
+            email: email,
+            anhDaiDien: anhDaiDien,
+          };
 
-      setListKH([newKhachHangResponse, ...listKH]);
-      handleOpenAlertVariant("Thêm thành công", Notistack.SUCCESS);
+          setListKH([newKhachHangResponse, ...listKH]);
+          handleOpenAlertVariant("Thêm thành công", Notistack.SUCCESS);
+        }
+      });
+     
     } catch (error) {
       // Xử lý lỗi
       alert("Thêm khách hàng thất bại");
@@ -261,8 +268,7 @@ const AddKH = () => {
       account: generatedMaKhachHang,
       trangThai: trangThaiKH,
     };
-    axios
-      .post(`${apiURLKH}/dia-chi/add?id=${generatedMaKhachHang}`, newAddress)
+    request('POST', `${apiURLKH}/dia-chi/add?id=${generatedMaKhachHang}`, newAddress)
       .then((response) => {
         let newKhachHangResponse = {
           diaChi: diaChi,

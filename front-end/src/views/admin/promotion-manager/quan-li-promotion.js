@@ -40,6 +40,7 @@ import { ConvertStatusVoucherNumberToString } from "../../../utilities/convertEn
 import useCustomSnackbar from "../../../utilities/notistack";
 import LoadingIndicator from "../../../utilities/loading";
 import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
+import { request } from '../../../store/helpers/axios_helper'
 
 //show
 const HienThiKhuyenMai = () => {
@@ -83,8 +84,7 @@ const HienThiKhuyenMai = () => {
   // cutstom load data
   const loadDataListKhuyenMai = (page) => {
     setIsLoading(false);
-    axios
-      .get(`${apiURLKhuyenMai}/hien-thi`, {
+    request('GET', `${apiURLKhuyenMai}/hien-thi`, {
         params: {
           keyword: searchTatCa,
           pageNo: page,
@@ -113,8 +113,7 @@ const HienThiKhuyenMai = () => {
   };
 
   const loadDataListKhuyenMai1 = (page) => {
-    axios
-      .get(`${apiURLKhuyenMai}/hien-thi`, {
+    request('GET', `${apiURLKhuyenMai}/hien-thi`, {
         params: {
           keyword: searchTatCa,
           pageNo: page,
@@ -211,8 +210,7 @@ const HienThiKhuyenMai = () => {
     setIsLoading(false);
     console.log(obj.status);
 
-    axios
-      .put(`${apiURLKhuyenMai}/doi-trang-thai/${id}`, obj)
+    request('PUT', `${apiURLKhuyenMai}/doi-trang-thai/${id}`, obj)
       .then((response) => {
         loadDataListKhuyenMai(currentPage);
         handleOpenAlertVariant("Đổi trạng thái thành công!", Notistack.SUCCESS);
@@ -229,8 +227,7 @@ const HienThiKhuyenMai = () => {
 
   const kichHoatKhuyenMai = () => {
     setIsLoading(false);
-    axios
-      .put(`${apiURLKhuyenMai}/kich-hoat-promotion/${id}`)
+    request('PUT', `${apiURLKhuyenMai}/kich-hoat-promotion/${id}`)
       .then((response) => {
         loadDataListKhuyenMai(currentPage);
         handleOpenAlertVariant("Kích hoạt thành công!", Notistack.SUCCESS);

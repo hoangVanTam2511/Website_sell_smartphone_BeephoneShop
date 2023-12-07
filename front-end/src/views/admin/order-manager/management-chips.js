@@ -31,6 +31,7 @@ import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import { current } from "@reduxjs/toolkit";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
+import { request } from '../../../store/helpers/axios_helper'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -56,8 +57,7 @@ const ManagementChips = () => {
   );
 
   const findOrdersByMultipleCriteriaWithPagination = (page) => {
-    axios
-      .get(`http://localhost:8080/api/orders`, {
+    request('GET',`/api/orders`, {
         params: {
           currentPage: page,
           keyword: keyword,
@@ -77,8 +77,7 @@ const ManagementChips = () => {
   };
 
   const getListChip = (page) => {
-    axios
-      .get(`http://localhost:8080/api/chips`)
+    request('GET',`/api/chips`)
       .then((response) => {
         setListChip(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -98,8 +97,7 @@ const ManagementChips = () => {
 
   const getListProductSearchAndPage = (page) => {
     // setIsLoading(false);
-    axios
-      .get(`http://localhost:8080/api/chips/search`, {
+    request('GET',`/api/chips/search`, {
         params: {
           keyword: searchTatCa,
           currentPage: page,
@@ -179,8 +177,7 @@ const ManagementChips = () => {
   };
 
   const detailChip = async (idChip) => {
-    await axios
-      .get(`http://localhost:8080/api/chips/${idChip}`)
+    request('GET',`/api/chips/${idChip}`)
       .then((response) => {
         setMaChip(response.data.data.ma);
         setStatus(response.data.data.status);
@@ -190,8 +187,7 @@ const ManagementChips = () => {
   };
 
   const doiTrangThaiChip = (idChip) => {
-    axios
-      .put(`http://localhost:8080/api/chips/${idChip}`)
+    request('PUT',`/api/chips/${idChip}`)
       .then((response) => {
         getListChip();
         handleOpenAlertVariant(
@@ -254,8 +250,7 @@ const ManagementChips = () => {
       tenChip: tenChip,
       status: status,
     };
-    axios
-      .put(`http://localhost:8080/api/chips`, obj)
+    request('PUT',`/api/chips`, obj)
       .then((response) => {
         getListChip();
         handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
