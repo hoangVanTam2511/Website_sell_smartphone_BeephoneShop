@@ -4,6 +4,7 @@ import beephone_shop_projects.infrastructure.constant.OperatingType;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -23,6 +24,8 @@ public class ProductResponse {
   private ChargingPortResponse congSac;
 
   private String moTa;
+
+  private Date createdAt;
 
   private BrandResponse hang;
 

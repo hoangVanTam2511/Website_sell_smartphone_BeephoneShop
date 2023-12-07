@@ -36,12 +36,6 @@ public class HinhThucThanhToan extends PrimaryEntity implements IsIdentified {
 
   private Integer trangThai;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "id_khach_hang")
-  private Account account;
-
-  private String nguoiXacNhan;
-
   @JsonIgnore
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_hoa_don")
