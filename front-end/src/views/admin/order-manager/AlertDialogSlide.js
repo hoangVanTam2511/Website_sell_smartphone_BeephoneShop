@@ -5361,6 +5361,83 @@ export function ConfirmRefundOrder(props) {
   );
 }
 
+export function ConfirmRemoveProductDetails(props) {
+  const { open, onClose, confirm, name } = props;
+
+  return (
+    <div className="rounded-pill">
+      <Dialog
+        TransitionComponent={Transition1}
+        open={open}
+        onClose={onClose}
+        aria-describedby="alert-dialog-slide-description1"
+        sx={{
+          height: "300px",
+          "& .MuiPaper-root": {
+            borderRadius: "15px",
+            marginTop: "150px",
+          },
+        }}
+      >
+        <div className="p-2" style={{}}>
+          <DialogTitle
+            sx={{ color: "#2f80ed", fontWeight: "500", fontSize: "18px" }}
+            id="alert-dialog-title"
+          >
+            {"Xác nhận xóa phiên bản"}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText
+              sx={{ color: "black" }}
+              id="alert-dialog-description"
+            >
+              Bạn có chắc chắc muốn xóa sản phẩm
+              <span style={{ fontWeight: "500" }}>{" " + name + " "}</span> và danh sách Imei của sản phẩm này ?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={confirm}
+              className="rounded-2 me-1 button-mui"
+              type="primary"
+              style={{
+                height: "40px",
+                width: "auto",
+                fontSize: "16px",
+                marginBottom: "20px",
+              }}
+            >
+              <span
+                className="text-white"
+                style={{ fontWeight: "500", marginBottom: "2px" }}
+              >
+                Xác nhận
+              </span>
+            </Button>
+            <Button
+              onClick={onClose}
+              className="rounded-2 me-3 ant-btn-danger"
+              type="primary"
+              style={{
+                height: "40px",
+                width: "auto",
+                fontSize: "16px",
+                marginBottom: "20px",
+              }}
+            >
+              <span
+                className="text-white"
+                style={{ fontWeight: "500", marginBottom: "2px" }}
+              >
+                Hủy bỏ
+              </span>
+            </Button>
+          </DialogActions>
+        </div>
+      </Dialog>
+    </div>
+  );
+}
 
 export function ConfirmAddProduct(props) {
   const { open, onClose, confirm, name } = props;

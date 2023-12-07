@@ -664,6 +664,8 @@ const UpdateProduct = ({ }) => {
     }
   ]);
 
+  const [productId, setProductId] = useState("");
+  const [productCode, setProductCode] = useState("");
   const [productName, setProductName] = useState("");
   const handleOnInputChangeProductName = (event, value) => {
     setProductName(value);
@@ -833,15 +835,18 @@ const UpdateProduct = ({ }) => {
   }
 
   const [findProduct, setFindProduct] = useState({});
+  const [findProductItem, setFindProductItem] = useState([]);
   const [selectedRam, setSelectedRam] = useState([]);
   const [selectedRom, setSelectedRom] = useState([]);
 
   const getProductById = async () => {
-    // setIsLoading(true);
+    setIsLoading(true);
     await axios
       .get(`http://localhost:8080/api/products/${id}`)
       .then((response) => {
         const data = response.data.data;
+        setProductId(data.id);
+        setProductCode(data.ma);
         setProductName(data.tenSanPham);
         setBrand(data.hang.id);
         setChip(data.chip.id)
@@ -852,6 +857,7 @@ const UpdateProduct = ({ }) => {
         setOpera(data.operatingType);
         setStatus(data.trangThai);
         setFindProduct(data);
+        setFindProductItem(data.productItems);
 
         const mainCameraSau = data.cameraSaus.find(camera => camera.isCameraMain === true);
         const findMainCameraSau = mainCameraSau ? mainCameraSau.cameraSau.id : ""
@@ -872,7 +878,6 @@ const UpdateProduct = ({ }) => {
 
           return updatedRatings;
         });
-
 
         const mainCameraTruoc = data.cameraTruocs.find(camera => camera.isCameraMain === true);
         const findMainCameraTruoc = mainCameraTruoc ? mainCameraTruoc.cameraTruoc.id : ""
@@ -912,11 +917,11 @@ const UpdateProduct = ({ }) => {
 
 
         console.log(data);
-        // setIsLoading(false);
+        setIsLoading(false);
       })
       .catch((error) => {
         console.error(error);
-        // setIsLoading(false);
+        setIsLoading(false);
       });
   };
 
@@ -1168,6 +1173,43 @@ const UpdateProduct = ({ }) => {
                       <FormHelperText>Bạn chưa chọn thẻ nhớ!</FormHelperText>
                     }
                   </FormControl>
+                </div>
+              </div>
+              <div className="mt-4 d-flex mx-auto" style={{ width: "100%" }}>
+                <div className="" style={{ width: "100%" }}>
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">Hệ Điều Hành</InputLabel>
+                    <Select className="custom"
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={opera}
+                      label="Hệ Điều Hành"
+                      onChange={handleChangeOpera}
+                      defaultValue={0}
+                    >
+                      <MenuItem value={0}>Android</MenuItem>
+                      <MenuItem value={1}>IOS</MenuItem>
+                    </Select>
+                  </FormControl>
+                </div>
+                <div className="ms-3" style={{ width: "100%" }}>
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">Trạng Thái</InputLabel>
+                    <Select className="custom"
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={status}
+                      label="Trạng Thái"
+                      onChange={handleChangeStatus}
+                      defaultValue={0}
+                    >
+                      <MenuItem value={0}>Kinh Doanh</MenuItem>
+                      <MenuItem value={1}>Ngừng Kinh Doanh</MenuItem>
+                    </Select>
+                  </FormControl>
+                </div>
+                <div className="ms-3" style={{ width: "100%" }}>
+                  <TextField fullWidth inputProps={{}} className="custom" id="outlined-basic" label="Trọng Lượng" variant="outlined" />
                 </div>
               </div>
               <div className="mt-4 d-flex">
@@ -1428,40 +1470,6 @@ const UpdateProduct = ({ }) => {
                   </FormControl>
                 </div>
               </div>
-              <div className="mt-4 d-flex mx-auto" style={{ width: "65%" }}>
-                <div className="" style={{ width: "100%" }}>
-                  <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">Hệ Điều Hành</InputLabel>
-                    <Select className="custom"
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      value={opera}
-                      label="Hệ Điều Hành"
-                      onChange={handleChangeOpera}
-                      defaultValue={0}
-                    >
-                      <MenuItem value={0}>Android</MenuItem>
-                      <MenuItem value={1}>IOS</MenuItem>
-                    </Select>
-                  </FormControl>
-                </div>
-                <div className="ms-3" style={{ width: "100%" }}>
-                  <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">Trạng Thái</InputLabel>
-                    <Select className="custom"
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      value={status}
-                      label="Trạng Thái"
-                      onChange={handleChangeStatus}
-                      defaultValue={0}
-                    >
-                      <MenuItem value={0}>Kinh Doanh</MenuItem>
-                      <MenuItem value={1}>Ngừng Kinh Doanh</MenuItem>
-                    </Select>
-                  </FormControl>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -1521,7 +1529,7 @@ const UpdateProduct = ({ }) => {
         cameraFront={camerasTruoc}
       />
       <CreatePin open={openPin} close={handleCloseOpenPin} getAll={getListPin} pins={listPin} />
-      <UpdateCauHinh valid={handleValidation()} confirm={getConfirm} isConfirm={confirm} productName={productName} getProduct={product} getOverplay={getOverplay} getSelectedRam={selectedRam} getSelectedRom={selectedRom}/>
+      <UpdateCauHinh valid={handleValidation()} confirm={getConfirm} isConfirm={confirm} productName={productName} getProduct={product} getOverplay={getOverplay} getSelectedRam={selectedRam} getSelectedRom={selectedRom} findProductItem={findProductItem} />
       {isLoading && <LoadingIndicator />}
     </>
   )
