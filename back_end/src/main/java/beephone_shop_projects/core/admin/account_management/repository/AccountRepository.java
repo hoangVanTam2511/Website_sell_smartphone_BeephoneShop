@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.admin.account_management.repository;
 
+import beephone_shop_projects.core.admin.account_management.model.request.FindAccountRequest;
 import beephone_shop_projects.core.admin.account_management.model.request.SearchAccountRequest;
 import beephone_shop_projects.core.admin.account_management.model.response.AccountResponse;
 import beephone_shop_projects.entity.Account;
@@ -47,10 +48,15 @@ public interface AccountRepository extends IAccountRepository, CustomKhachHangRe
     List<Account> getAllNVienNoPage();
 
     @Query(value = """
-                SELECT  a.ma ,a.id,a.email,a.ho_va_ten, a.trang_thai,a.mat_khau , a.so_dien_thoai , a.ngay_sinh ,a.id_role
-                        FROM account a join role b on a.id_role=b.id where b.ma="role2"
+                SELECT  a.ma ,a.id,a.email,a.ho_va_ten, a.trang_thai,a.mat_khau , a.so_dien_thoai , a.ngay_sinh ,a.id_role, a.anh_dai_dien, a.created_at
+                        FROM account a join role b on a.id_role=b.id where b.ma="role2" 
+                        AND ((:#{#request.keyword} IS NULL OR :#{#request.keyword} = '' OR a.ma LIKE :#{'%' + #request.keyword + '%'}) 
+             OR (:#{#request.keyword} IS NULL OR :#{#request.keyword} = '' OR a.ho_va_ten LIKE :#{'%' + #request.keyword + '%'}) 
+             OR (:#{#request.keyword} IS NULL OR :#{#request.keyword} = '' OR a.email LIKE :#{'%' + #request.keyword + '%'}) 
+             OR (:#{#request.keyword} IS NULL OR :#{#request.keyword} = '' OR a.so_dien_thoai LIKE :#{'%' + #request.keyword + '%'}))
+             ORDER BY a.created_at DESC 
             """, nativeQuery = true)
-    Page<AccountResponse> getAllKH(Pageable pageable);
+    Page<AccountResponse> getAllKH(Pageable pageable, @Param("request") FindAccountRequest request);
 
     @Transactional
     @Modifying

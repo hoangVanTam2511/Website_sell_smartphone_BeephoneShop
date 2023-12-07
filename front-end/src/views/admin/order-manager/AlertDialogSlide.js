@@ -1,10 +1,10 @@
-import Html5QrcodePlugin from './Html5QrcodePlugin.jsx';
-import ResultContainerPlugin from './ResultContainerPlugin.jsx';
-import styleReader from './html5-qrcode-css.css';
+import Html5QrcodePlugin from "./Html5QrcodePlugin.jsx";
+import ResultContainerPlugin from "./ResultContainerPlugin.jsx";
+import styleReader from "./html5-qrcode-css.css";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Slider from "@mui/material/Slider";
-import { Button, Empty, Table as TableAntd } from "antd";
+import { Button, Empty, Modal, Table as TableAntd } from "antd";
 // import  EmptyData from "antd";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import { useTheme } from "@mui/material/styles";
@@ -77,6 +77,9 @@ import { FaEye } from "react-icons/fa6";
 import Scanner from "./scanner";
 import AppBarCode from "./App";
 
+import Card from "../../../components/Card";
+import ModalAddKhachHang from "../account-manager/khachhang/ModalAddKhachHang.js";
+
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -131,8 +134,9 @@ export function OrderConfirmPayment(props) {
               sx={{ color: "black" }}
               id="alert-dialog-description"
             >
-              {`Bạn có chắc chắn muốn ${delivery ? "đặt đơn hàng" : "thanh toán đơn hàng"
-                }`}{" "}
+              {`Bạn có chắc chắn muốn ${
+                delivery ? "đặt đơn hàng" : "thanh toán đơn hàng"
+              }`}{" "}
               <span className="" style={{ fontWeight: "500" }}>
                 {" "}
                 {ma}
@@ -393,7 +397,7 @@ export function UpdateRecipientOrderDialog(props) {
           wardName
         );
       }
-    } catch (error) { }
+    } catch (error) {}
   };
 
   return (
@@ -749,8 +753,7 @@ export function ProductsDialog(props) {
 
   const countPrice = (price, afterDiscount) => {
     return price - afterDiscount;
-
-  }
+  };
 
   const TableProduct = () => {
     return (
@@ -809,7 +812,8 @@ export function ProductsDialog(props) {
                           style={{ width: "125px", height: "125px" }}
                         />
                         {item &&
-                          item.donGiaSauKhuyenMai !== null && item.donGiaSauKhuyenMai !== 0 ?
+                        item.donGiaSauKhuyenMai !== null &&
+                        item.donGiaSauKhuyenMai !== 0 ? (
                           <div
                             className="category"
                             style={{
@@ -829,14 +833,16 @@ export function ProductsDialog(props) {
                               // marginTop: "25px",
                             }}
                           >
-                            Giảm{' '}
-                            {countPrice(item.donGia, item.donGiaSauKhuyenMai).toLocaleString("vi-VN", {
+                            Giảm{" "}
+                            {countPrice(
+                              item.donGia,
+                              item.donGiaSauKhuyenMai
+                            ).toLocaleString("vi-VN", {
                               style: "currency",
                               currency: "VND",
-                            })
-                            }
+                            })}
                           </div>
-                          : null}
+                        ) : null}
                       </div>
                     </TableCell>
                     <TableCell
@@ -856,11 +862,11 @@ export function ProductsDialog(props) {
                       {item &&
                         item.sanPham &&
                         item.sanPham.tenSanPham +
-                        " " +
-                        item.ram.dungLuong +
-                        "/" +
-                        item.rom.dungLuong +
-                        "GB"}
+                          " " +
+                          item.ram.dungLuong +
+                          "/" +
+                          item.rom.dungLuong +
+                          "GB"}
                     </TableCell>
                     <TableCell
                       align="center"
@@ -881,14 +887,13 @@ export function ProductsDialog(props) {
                       <span style={{ color: "#dc1111" }}>
                         {item && item.donGiaSauKhuyenMai
                           ? item.donGiaSauKhuyenMai.toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                          })
-                          :
-                          item.donGia.toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                          })}
+                              style: "currency",
+                              currency: "VND",
+                            })
+                          : item.donGia.toLocaleString("vi-VN", {
+                              style: "currency",
+                              currency: "VND",
+                            })}
                       </span>
                     </TableCell>
                     <TableCell
@@ -1904,6 +1909,8 @@ export function VouchersDialog(props) {
     discount,
     total,
     checkDieuKien,
+    totalPages,
+    getVoucher,
   } = props;
   const StyledTableContainer = styled(TableContainer)({
     boxShadow: "none",
@@ -1952,18 +1959,6 @@ export function VouchersDialog(props) {
             style: "currency",
             currency: "VND",
           })}
-        </span>
-      ),
-    },
-    {
-      title: "Giảm Tối Đa",
-      align: "center",
-      width: "15%",
-      render: (text, item) => (
-        <span>
-          {item.loaiVoucher === TypeDiscountNumber.VND
-            ? "..."
-            : item.giaTriToiDa}
         </span>
       ),
     },
@@ -2022,8 +2017,8 @@ export function VouchersDialog(props) {
             discount === item.id
               ? "danger"
               : discount !== item.id
-                ? "primary"
-                : ""
+              ? "primary"
+              : ""
           }
           style={{
             height: "35px",
@@ -2052,6 +2047,28 @@ export function VouchersDialog(props) {
 
   const classes = useStyles();
   const filteredData = data.filter((item) => total() >= item.dieuKienApDung);
+
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const chuyenTrang = (event, page) => {
+    setCurrentPage(page);
+    getVoucher(page);
+  };
+
+  const [keyword, setKeyword] = useState("");
+
+  const handleChangeSearchVoucher = (event) => {
+    const searchTatCaInput = event.target.value;
+    setKeyword(searchTatCaInput);
+    setCurrentPage(1);
+  };
+
+  useEffect(
+    (page) => {
+      getVoucher(page, keyword);
+    },
+    [keyword]
+  );
 
   const TableVouchers = () => {
     return (
@@ -2097,112 +2114,114 @@ export function VouchersDialog(props) {
               <TableBody>
                 {filteredData.length > 0
                   ? filteredData.map((item, index) => (
-                    <TableRow
-                      key={index}
-                      sx={{
-                        "&:last-child td, &:last-child th": { border: 0 },
-                      }}
-                    >
-                      <TableCell component="th" scope="row" align="center">
-                        {index + 1}
-                      </TableCell>
-                      <TableCell align="center" style={{ fontSize: "15px" }}>
-                        {item.ma}
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        style={{
-                          width: "",
-                          fontSize: "15px",
-                          color: "#dc1111",
+                      <TableRow
+                        key={index}
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
                         }}
                       >
-                        {item.giaTriVoucher.toLocaleString("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        })}
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        style={{ width: "", fontSize: "15px" }}
-                      >
-                        {item.loaiVoucher === TypeDiscountNumber.VND
-                          ? "..."
-                          : item.giaTriToiDa}
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        style={{ width: "", fontSize: "15px" }}
-                      >
-                        {item.soLuong}
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        style={{
-                          width: "200px",
-                          fontSize: "15px",
-                          whiteSpace: "pre-line",
-                        }}
-                      >
-                        Áp dụng cho đơn tối thiểu
-                        <span className="" style={{}}>
-                          {" " +
-                            item.dieuKienApDung.toLocaleString("vi-VN", {
-                              style: "currency",
-                              currency: "VND",
-                            })}
-                        </span>
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        style={{ width: "", fontSize: "15px" }}
-                      >
-                        <div
-                          className="rounded-pill badge-primary"
+                        <TableCell component="th" scope="row" align="center">
+                          {index + 1}
+                        </TableCell>
+                        <TableCell align="center" style={{ fontSize: "15px" }}>
+                          {item.ma}
+                        </TableCell>
+                        <TableCell
+                          align="center"
                           style={{
-                            height: "35px",
-                            width: "auto",
-                            padding: "7.5px",
+                            width: "",
+                            fontSize: "15px",
+                            color: "#dc1111",
                           }}
                         >
-                          <span className="text-white p-2" style={{}}>
-                            {item.trangThai == 1 ? "Hoạt động" : ""}
+                          {item.giaTriVoucher.toLocaleString("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          })}
+                        </TableCell>
+                        <TableCell
+                          align="center"
+                          style={{ width: "", fontSize: "15px" }}
+                        >
+                          {item.loaiVoucher === TypeDiscountNumber.VND
+                            ? "..."
+                            : item.giaTriToiDa}
+                        </TableCell>
+                        <TableCell
+                          align="center"
+                          style={{ width: "", fontSize: "15px" }}
+                        >
+                          {item.soLuong}
+                        </TableCell>
+                        <TableCell
+                          align="center"
+                          style={{
+                            width: "200px",
+                            fontSize: "15px",
+                            whiteSpace: "pre-line",
+                          }}
+                        >
+                          Áp dụng cho đơn tối thiểu
+                          <span className="" style={{}}>
+                            {" " +
+                              item.dieuKienApDung.toLocaleString("vi-VN", {
+                                style: "currency",
+                                currency: "VND",
+                              })}
                           </span>
-                        </div>
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        style={{
-                          width: "200px",
-                          fontSize: "15px",
-                          whiteSpace: "pre-line",
-                        }}
-                      >
-                        <div
-                          className={`${item.dieuKienApDung <= total()
-                            ? "rounded-pill badge-success"
-                            : "rounded-pill badge-danger"
+                        </TableCell>
+                        <TableCell
+                          align="center"
+                          style={{ width: "", fontSize: "15px" }}
+                        >
+                          <div
+                            className="rounded-pill badge-primary"
+                            style={{
+                              height: "35px",
+                              width: "auto",
+                              padding: "7.5px",
+                            }}
+                          >
+                            <span className="text-white p-2" style={{}}>
+                              {item.trangThai == 1 ? "Hoạt động" : ""}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell
+                          align="center"
+                          style={{
+                            width: "200px",
+                            fontSize: "15px",
+                            whiteSpace: "pre-line",
+                          }}
+                        >
+                          <div
+                            className={`${
+                              item.dieuKienApDung <= total()
+                                ? "rounded-pill badge-success"
+                                : "rounded-pill badge-danger"
                             }`}
-                          style={{
-                            height: "35px",
-                            width: "auto",
-                            padding: "7.5px",
-                          }}
-                        >
-                          <span className="text-white p-2" style={{}}>
-                            <span>{`${item.dieuKienApDung <= total()
-                              ? "Có thể áp dụng"
-                              : "Không thể áp dụng"
+                            style={{
+                              height: "35px",
+                              width: "auto",
+                              padding: "7.5px",
+                            }}
+                          >
+                            <span className="text-white p-2" style={{}}>
+                              <span>{`${
+                                item.dieuKienApDung <= total()
+                                  ? "Có thể áp dụng"
+                                  : "Không thể áp dụng"
                               }`}</span>
-                          </span>
-                        </div>
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        style={{ width: "" }}
-                      ></TableCell>
-                    </TableRow>
-                  ))
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell
+                          align="center"
+                          style={{ width: "" }}
+                        ></TableCell>
+                      </TableRow>
+                    ))
                   : ""}
               </TableBody>
             </Table>
@@ -2218,7 +2237,10 @@ export function VouchersDialog(props) {
         open={open}
         TransitionComponent={Transition}
         keepMounted
-        onClose={onCloseNoAction}
+        onClose={() => {
+          onCloseNoAction();
+          setKeyword("");
+        }}
         aria-describedby="alert-dialog-slide-description1"
         maxWidth="lg"
         maxHeight="lg"
@@ -2241,8 +2263,8 @@ export function VouchersDialog(props) {
           <div className="mt-2 d-flex">
             <TextField
               label="Tìm Voucher"
-              // onChange={handleGetValueFromInputTextField}
-              // value={keyword}
+              onChange={handleChangeSearchVoucher}
+              value={keyword}
               InputLabelProps={{
                 sx: {
                   marginTop: "0.5px",
@@ -2273,7 +2295,7 @@ export function VouchersDialog(props) {
             </Button>
           </div>
           <div className="mt-4">
-            <TableAntd
+            {/* <TableAntd
               className="table-container"
               columns={columns}
               dataSource={data}
@@ -2284,7 +2306,28 @@ export function VouchersDialog(props) {
               rowKey={"id"}
               key={"id"}
               locale={{ emptyText: <Empty /> }}
+            /> */}
+            <TableAntd
+              className="table-container"
+              dataSource={data}
+              columns={columns}
+              pagination={false}
+              rowClassName={(record) =>
+                total() < record.dieuKienApDung && "disabled-row"
+              }
+              rowKey="id"
+              size="middle"
+              locale={{ emptyText: <Empty /> }}
             />
+            <div className="d-flex justify-content-center mt-2">
+              <Pagination
+                page={parseInt(currentPage)}
+                count={totalPages}
+                onChange={chuyenTrang}
+                color="primary"
+              />
+            </div>
+            <div className="mt-4"></div>
           </div>
         </DialogContent>
         <DialogActions></DialogActions>
@@ -2294,7 +2337,49 @@ export function VouchersDialog(props) {
 }
 
 export function CustomersDialog(props) {
-  const { open, onClose, onCloseNoAction, data, add, idCus, isOpen } = props;
+  const {
+    open,
+    onClose,
+    onCloseNoAction,
+    data,
+    add,
+    idCus,
+    isOpen,
+    totalPages,
+    getCustomer,
+  } = props;
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [openCustomer, setOpenCustomer] = React.useState(false);
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleClose = () => {
+    setOpenCustomer(false);
+  };
+
+  const handleClickOpen = () => {
+    setOpenCustomer(true);
+  };
+  const chuyenTrang = (event, page) => {
+    setCurrentPage(page);
+    getCustomer(page);
+  };
+
+  const [keyword, setKeyword] = useState("");
+
+  const handleChangeSearchCustomer = (event) => {
+    const searchTatCaInput = event.target.value;
+    setKeyword(searchTatCaInput);
+    setCurrentPage(1);
+  };
+
+  useEffect(
+    (page) => {
+      getCustomer(page, keyword);
+    },
+    [keyword]
+  );
 
   const handleSelectCustomer = (id) => {
     if (idCus === id) {
@@ -2316,7 +2401,7 @@ export function CustomersDialog(props) {
       width: "10%",
       render: (text, item) => (
         <div className="d-flex justify-content-center" style={{}}>
-          <Avatar src="https://ecdn.game4v.com/g4v-content/uploads/2021/02/ava-1.png" />
+          <Avatar src={item.anhDaiDien} />
         </div>
       ),
     },
@@ -2349,8 +2434,8 @@ export function CustomersDialog(props) {
       align: "center",
       width: "15%",
       render: (text, item) => (
-        <span style={{ fontWeight: "normal" }}>
-          {format(new Date(), "HH:mm:ss - dd/MM/yyyy")}
+        <span style={{ fontWeight: "normal", whiteSpace: "pre-line" }}>
+          {format(new Date(item.ngayTao), "HH:mm:ss, dd/MM/yyyy")}
         </span>
       ),
     },
@@ -2406,7 +2491,9 @@ export function CustomersDialog(props) {
         open={open}
         TransitionComponent={Transition}
         keepMounted
-        onClose={onCloseNoAction}
+        onClose={() => {
+          onCloseNoAction();
+        }}
         aria-describedby="alert-dialog-slide-description1"
         maxWidth="lg"
         maxHeight="lg"
@@ -2432,8 +2519,8 @@ export function CustomersDialog(props) {
                 <div>
                   <TextField
                     label="Tìm Khách Hàng"
-                    // onChange={handleGetValueFromInputTextField}
-                    // value={keyword}
+                    onChange={handleChangeSearchCustomer}
+                    value={keyword}
                     InputLabelProps={{
                       sx: {
                         marginTop: "0.5px",
@@ -2465,7 +2552,7 @@ export function CustomersDialog(props) {
                 </div>
                 <div>
                   <Button
-                    // onClick={handleCreateNewOrderPending}
+                    onClick={handleClickOpen}
                     className="rounded-2 button-mui"
                     type="primary"
                     style={{ height: "40px", width: "165px", fontSize: "15px" }}
@@ -2488,7 +2575,7 @@ export function CustomersDialog(props) {
                 </div>
               </div>
               <div className="mt-4">
-                <TableAntd
+                {/* <TableAntd
                   className="table-container"
                   columns={columns}
                   dataSource={data}
@@ -2496,12 +2583,58 @@ export function CustomersDialog(props) {
                   rowKey={"id"}
                   key={"id"}
                   locale={{ emptyText: <Empty /> }}
+                /> */}
+                <TableAntd
+                  className="table-container"
+                  dataSource={data}
+                  columns={columns}
+                  pagination={false}
+                  rowKey="id"
+                  key={"id"}
+                  size="middle"
+                  locale={{ emptyText: <Empty /> }}
                 />
+                <div className="d-flex justify-content-center mt-2">
+                  <Pagination
+                    page={parseInt(currentPage)}
+                    count={totalPages}
+                    onChange={chuyenTrang}
+                    color="primary"
+                  />
+                </div>
+                <div className="mt-4"></div>
               </div>
             </>
           ) : null}
         </DialogContent>
         <DialogActions></DialogActions>
+      </Dialog>
+      <Dialog
+        open={openCustomer}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={() => {
+          handleClose();
+        }}
+        maxWidth={false}
+        sx={{
+          width: "100%",
+          maxWidth: "unset",
+          overflowX: "hidden", // Ngăn việc cuộn ngang
+          "& .MuiDialog-paper": {
+            width: "100%",
+            maxWidth: "84vw",
+            maxHeight: "unset", // Loại bỏ giới hạn chiều cao nếu cần
+          },
+        }}
+      >
+        <DialogContent className="">
+          <ModalAddKhachHang
+            close={() => {
+              handleClose();
+            }}
+          />
+        </DialogContent>
       </Dialog>
     </div>
   );
@@ -3040,11 +3173,11 @@ export const ProductDetailsDialog = (props) => {
                   <span style={{ fontWeight: "500", fontSize: "25px" }}>
                     {productItem1 &&
                       productItem1.sanPham.tenSanPham +
-                      " " +
-                      productItem1.ram.dungLuong +
-                      "/" +
-                      productItem1.rom.dungLuong +
-                      "GB"}
+                        " " +
+                        productItem1.ram.dungLuong +
+                        "/" +
+                        productItem1.rom.dungLuong +
+                        "GB"}
                     <span
                       className="ms-2"
                       style={{ fontSize: "13.5px", color: "gray" }}
@@ -3090,9 +3223,9 @@ export const ProductDetailsDialog = (props) => {
                         defaultValue={
                           productItem &&
                           productItem.ram.dungLuong +
-                          "/" +
-                          productItem.rom.dungLuong +
-                          "GB"
+                            "/" +
+                            productItem.rom.dungLuong +
+                            "GB"
                         }
                         size="lg"
                         sx={{ gap: 1.7 }}
@@ -3121,11 +3254,11 @@ export const ProductDetailsDialog = (props) => {
                                         >
                                           {productItem &&
                                             productItem.sanPham.tenSanPham +
-                                            " " +
-                                            item.ram.dungLuong +
-                                            "/" +
-                                            item.rom.dungLuong +
-                                            "GB"}
+                                              " " +
+                                              item.ram.dungLuong +
+                                              "/" +
+                                              item.rom.dungLuong +
+                                              "GB"}
                                         </span>
                                       </div>
                                       <div className="text-center">
@@ -3463,7 +3596,7 @@ export const ModalImeiByProductItem = ({
                     className=""
                   />
                   <Button
-                    onClick={() => { }}
+                    onClick={() => {}}
                     className="rounded-2 ms-2 button-mui"
                     type="primary"
                     style={{ width: "100px", fontSize: "15px" }}
@@ -3495,95 +3628,95 @@ export const ModalImeiByProductItem = ({
                       <tbody>
                         {itemsOnCurrentPage.length
                           ? itemsOnCurrentPage.map((item, index) => (
-                            <>
-                              <tr
-                                key={index}
-                                style={{
-                                  cursor: "pointer",
-                                  pointerEvents:
-                                    item.trangThai ===
-                                      StatusImei.PENDING_DELIVERY ||
+                              <>
+                                <tr
+                                  key={index}
+                                  style={{
+                                    cursor: "pointer",
+                                    pointerEvents:
+                                      item.trangThai ===
+                                        StatusImei.PENDING_DELIVERY ||
                                       item.trangThai === StatusImei.IN_THE_CART
-                                      ? "none"
-                                      : "auto",
-                                  opacity:
-                                    item.trangThai ===
-                                      StatusImei.PENDING_DELIVERY ||
+                                        ? "none"
+                                        : "auto",
+                                    opacity:
+                                      item.trangThai ===
+                                        StatusImei.PENDING_DELIVERY ||
                                       item.trangThai === StatusImei.IN_THE_CART
-                                      ? "0.5"
-                                      : "1",
-                                }}
-                                onClick={() => {
-                                  if (
-                                    selectedImei.length >= 4 &&
-                                    !selectedImei.includes(item)
-                                  ) {
-                                    handleOpenAlertVariant(
-                                      "Lựa chọn tối đa 4 số lượng sản phẩm!",
-                                      "warning"
-                                    );
-                                  } else if (!selectedImei.includes(item)) {
-                                    setSelectedImei((val) => [...val, item]);
-                                  } else {
-                                    setSelectedImei((val) =>
-                                      val.filter((text) => text !== item)
-                                    );
-                                  }
-                                }}
-                              >
-                                <td>
-                                  <Checkbox
-                                    color="primary"
-                                    checked={selectedImei.includes(item)}
-                                  />
-                                </td>
-                                <td className="text-center">{item.soImei}</td>
+                                        ? "0.5"
+                                        : "1",
+                                  }}
+                                  onClick={() => {
+                                    if (
+                                      selectedImei.length >= 4 &&
+                                      !selectedImei.includes(item)
+                                    ) {
+                                      handleOpenAlertVariant(
+                                        "Lựa chọn tối đa 4 số lượng sản phẩm!",
+                                        "warning"
+                                      );
+                                    } else if (!selectedImei.includes(item)) {
+                                      setSelectedImei((val) => [...val, item]);
+                                    } else {
+                                      setSelectedImei((val) =>
+                                        val.filter((text) => text !== item)
+                                      );
+                                    }
+                                  }}
+                                >
+                                  <td>
+                                    <Checkbox
+                                      color="primary"
+                                      checked={selectedImei.includes(item)}
+                                    />
+                                  </td>
+                                  <td className="text-center">{item.soImei}</td>
 
-                                <td className="text-center">
-                                  {item.trangThai ===
-                                    StatusImei.PENDING_DELIVERY ||
+                                  <td className="text-center">
+                                    {item.trangThai ===
+                                      StatusImei.PENDING_DELIVERY ||
                                     item.trangThai === StatusImei.NOT_SOLD ||
                                     item.trangThai ===
-                                    StatusImei.IN_THE_CART ? (
-                                    <div
-                                      className={
-                                        item.trangThai ===
+                                      StatusImei.IN_THE_CART ? (
+                                      <div
+                                        className={
+                                          item.trangThai ===
                                           StatusImei.PENDING_DELIVERY
-                                          ? "badge-primary rounded-pill mx-auto"
-                                          : "badge-success rounded-pill mx-auto"
-                                      }
-                                      style={{
-                                        height: "35px",
-                                        width: "115px",
-                                        padding: "4px",
-                                      }}
-                                    >
-                                      <span
-                                        className="text-white"
+                                            ? "badge-primary rounded-pill mx-auto"
+                                            : "badge-success rounded-pill mx-auto"
+                                        }
                                         style={{
-                                          fontSize: "14px",
-                                          fontWeight: "400",
+                                          height: "35px",
+                                          width: "115px",
+                                          padding: "4px",
                                         }}
                                       >
-                                        {item.trangThai ===
+                                        <span
+                                          className="text-white"
+                                          style={{
+                                            fontSize: "14px",
+                                            fontWeight: "400",
+                                          }}
+                                        >
+                                          {item.trangThai ===
                                           StatusImei.NOT_SOLD
-                                          ? "Chưa Bán"
-                                          : item.trangThai ===
-                                            StatusImei.IN_THE_CART
+                                            ? "Chưa Bán"
+                                            : item.trangThai ===
+                                              StatusImei.IN_THE_CART
                                             ? "Chưa Bán"
                                             : item.trangThai ===
                                               StatusImei.PENDING_DELIVERY
-                                              ? "Chờ Giao"
-                                              : ""}
-                                      </span>
-                                    </div>
-                                  ) : (
-                                    ""
-                                  )}
-                                </td>
-                              </tr>
-                            </>
-                          ))
+                                            ? "Chờ Giao"
+                                            : ""}
+                                        </span>
+                                      </div>
+                                    ) : (
+                                      ""
+                                    )}
+                                  </td>
+                                </tr>
+                              </>
+                            ))
                           : ""}
                       </tbody>
                     ) : null}
@@ -3626,9 +3759,9 @@ export const ModalImeiByProductItem = ({
                               action: ({ checked }) => ({
                                 sx: checked
                                   ? {
-                                    border: "1px solid",
-                                    borderColor: "#2f80ed",
-                                  }
+                                      border: "1px solid",
+                                      borderColor: "#2f80ed",
+                                    }
                                   : {},
                               }),
                             }}
@@ -3818,114 +3951,114 @@ export const ModalUpdateImeiByProductItem = ({
                     <tbody>
                       {itemsOnCurrentPage.length
                         ? itemsOnCurrentPage.map((item, index) => (
-                          <tr
-                            key={index}
-                            style={{
-                              cursor: "pointer",
-                              pointerEvents:
-                                (item.trangThai ===
-                                  StatusImei.PENDING_DELIVERY ||
-                                  item.trangThai ===
-                                  StatusImei.IN_THE_CART) &&
+                            <tr
+                              key={index}
+                              style={{
+                                cursor: "pointer",
+                                pointerEvents:
+                                  (item.trangThai ===
+                                    StatusImei.PENDING_DELIVERY ||
+                                    item.trangThai ===
+                                      StatusImei.IN_THE_CART) &&
                                   !imeisChuaBan.some(
                                     (selectedItem) =>
                                       selectedItem.soImei === item.soImei
                                   )
-                                  ? "none"
-                                  : "auto",
-                              opacity:
-                                (item.trangThai ===
-                                  StatusImei.PENDING_DELIVERY ||
-                                  item.trangThai ===
-                                  StatusImei.IN_THE_CART) &&
+                                    ? "none"
+                                    : "auto",
+                                opacity:
+                                  (item.trangThai ===
+                                    StatusImei.PENDING_DELIVERY ||
+                                    item.trangThai ===
+                                      StatusImei.IN_THE_CART) &&
                                   !imeisChuaBan.some(
                                     (selectedItem) =>
                                       selectedItem.soImei === item.soImei
                                   )
-                                  ? "0.5"
-                                  : "1",
-                            }}
-                            onClick={() => {
-                              if (
-                                selectedImei.length >= 4 &&
-                                !selectedImei.some(
-                                  (selectedItem) =>
-                                    selectedItem.soImei === item.soImei
-                                )
-                              ) {
-                                handleOpenAlertVariant(
-                                  "Lựa chọn tối đa 4 số lượng sản phẩm!",
-                                  "warning"
-                                );
-                              } else if (
-                                !selectedImei.some(
-                                  (selectedItem) =>
-                                    selectedItem.soImei === item.soImei
-                                )
-                              ) {
-                                setSelectedImei([...selectedImei, item]);
-                              } else {
-                                setSelectedImei(
-                                  selectedImei.filter(
+                                    ? "0.5"
+                                    : "1",
+                              }}
+                              onClick={() => {
+                                if (
+                                  selectedImei.length >= 4 &&
+                                  !selectedImei.some(
                                     (selectedItem) =>
-                                      selectedItem.soImei !== item.soImei
+                                      selectedItem.soImei === item.soImei
                                   )
-                                );
-                              }
-                            }}
-                          >
-                            <td>
-                              <Checkbox
-                                color="primary"
-                                checked={selectedImei.some(
-                                  (selectedItem) =>
-                                    selectedItem.soImei === item.soImei
-                                )}
-                              />
-                            </td>
-                            <td className="text-center">{item.soImei}</td>
-                            <td className="text-center">
-                              {item.trangThai ===
-                                StatusImei.PENDING_DELIVERY ||
+                                ) {
+                                  handleOpenAlertVariant(
+                                    "Lựa chọn tối đa 4 số lượng sản phẩm!",
+                                    "warning"
+                                  );
+                                } else if (
+                                  !selectedImei.some(
+                                    (selectedItem) =>
+                                      selectedItem.soImei === item.soImei
+                                  )
+                                ) {
+                                  setSelectedImei([...selectedImei, item]);
+                                } else {
+                                  setSelectedImei(
+                                    selectedImei.filter(
+                                      (selectedItem) =>
+                                        selectedItem.soImei !== item.soImei
+                                    )
+                                  );
+                                }
+                              }}
+                            >
+                              <td>
+                                <Checkbox
+                                  color="primary"
+                                  checked={selectedImei.some(
+                                    (selectedItem) =>
+                                      selectedItem.soImei === item.soImei
+                                  )}
+                                />
+                              </td>
+                              <td className="text-center">{item.soImei}</td>
+                              <td className="text-center">
+                                {item.trangThai ===
+                                  StatusImei.PENDING_DELIVERY ||
                                 item.trangThai === StatusImei.NOT_SOLD ||
                                 item.trangThai === StatusImei.IN_THE_CART ? (
-                                <div
-                                  className={
-                                    item.trangThai ===
+                                  <div
+                                    className={
+                                      item.trangThai ===
                                       StatusImei.PENDING_DELIVERY
-                                      ? "badge-primary rounded-pill mx-auto"
-                                      : "badge-success rounded-pill mx-auto"
-                                  }
-                                  style={{
-                                    height: "35px",
-                                    width: "115px",
-                                    padding: "4px",
-                                  }}
-                                >
-                                  <span
-                                    className="text-white"
+                                        ? "badge-primary rounded-pill mx-auto"
+                                        : "badge-success rounded-pill mx-auto"
+                                    }
                                     style={{
-                                      fontSize: "14px",
-                                      fontWeight: "400",
+                                      height: "35px",
+                                      width: "115px",
+                                      padding: "4px",
                                     }}
                                   >
-                                    {item.trangThai === StatusImei.NOT_SOLD
-                                      ? "Chưa Bán"
-                                      : item.trangThai ===
-                                        StatusImei.IN_THE_CART
+                                    <span
+                                      className="text-white"
+                                      style={{
+                                        fontSize: "14px",
+                                        fontWeight: "400",
+                                      }}
+                                    >
+                                      {item.trangThai === StatusImei.NOT_SOLD
+                                        ? "Chưa Bán"
+                                        : item.trangThai ===
+                                          StatusImei.IN_THE_CART
                                         ? "Chưa Bán"
                                         : item.trangThai ===
                                           StatusImei.PENDING_DELIVERY
-                                          ? "Chờ Giao"
-                                          : ""}
-                                  </span>
-                                </div>
-                              ) : (
-                                ""
-                              )}
-                            </td>
-                          </tr>
-                        ))
+                                        ? "Chờ Giao"
+                                        : ""}
+                                    </span>
+                                  </div>
+                                ) : (
+                                  ""
+                                )}
+                              </td>
+                            </tr>
+                          ))
                         : ""}
                     </tbody>
                   </table>
@@ -3965,9 +4098,9 @@ export const ModalUpdateImeiByProductItem = ({
                               action: ({ checked }) => ({
                                 sx: checked
                                   ? {
-                                    border: "1px solid",
-                                    borderColor: "#2f80ed",
-                                  }
+                                      border: "1px solid",
+                                      borderColor: "#2f80ed",
+                                    }
                                   : {},
                               }),
                             }}
@@ -4378,11 +4511,11 @@ export function MultiplePaymentMethods({
                               action: ({ checked }) => ({
                                 sx: checked
                                   ? {
-                                    border: "1px solid",
-                                    borderColor: "#2f80ed",
-                                    // borderRadius: "10px",
-                                    // height: "40px",
-                                  }
+                                      border: "1px solid",
+                                      borderColor: "#2f80ed",
+                                      // borderRadius: "10px",
+                                      // height: "40px",
+                                    }
                                   : {},
                               }),
                             }}
@@ -4930,11 +5063,11 @@ export function MultiplePaymentMethodsDelivery({
                               action: ({ checked }) => ({
                                 sx: checked
                                   ? {
-                                    border: "1px solid",
-                                    borderColor: "#2f80ed",
-                                    // borderRadius: "10px",
-                                    // height: "40px",
-                                  }
+                                      border: "1px solid",
+                                      borderColor: "#2f80ed",
+                                      // borderRadius: "10px",
+                                      // height: "40px",
+                                    }
                                   : {},
                               }),
                             }}
@@ -5021,13 +5154,7 @@ export function MultiplePaymentMethodsDelivery({
   );
 }
 
-export const ModalRefundProduct = ({
-  open,
-  close,
-  imeis,
-  refresh,
-  refund,
-}) => {
+export const ModalRefundProduct = ({ open, close, imeis, refresh, refund }) => {
   const [selectedImei, setSelectedImei] = useState([]);
   const { handleOpenAlertVariant } = useCustomSnackbar();
 
@@ -5093,63 +5220,63 @@ export const ModalRefundProduct = ({
                     <tbody>
                       {imeis.length
                         ? imeis.map((item, index) => (
-                          <tr
-                            key={index}
-                            style={{
-                              cursor: "pointer",
-                            }}
-                            onClick={() => {
-                              if (
-                                !selectedImei.some(
-                                  (selectedItem) =>
-                                    selectedItem.soImei === item.soImei
-                                )
-                              ) {
-                                setSelectedImei([...selectedImei, item]);
-                              } else {
-                                setSelectedImei(
-                                  selectedImei.filter(
+                            <tr
+                              key={index}
+                              style={{
+                                cursor: "pointer",
+                              }}
+                              onClick={() => {
+                                if (
+                                  !selectedImei.some(
                                     (selectedItem) =>
-                                      selectedItem.soImei !== item.soImei
+                                      selectedItem.soImei === item.soImei
                                   )
-                                );
-                              }
-                            }}
-                          >
-                            <td>
-                              <Checkbox
-                                color="primary"
-                                checked={selectedImei.some(
-                                  (selectedItem) =>
-                                    selectedItem.soImei === item.soImei
-                                )}
-                              />
-                            </td>
-                            <td className="text-center">{item.soImei}</td>
-                            <td className="text-center">
-                              <div
-                                className={
-                                  "badge-success rounded-pill mx-auto"
+                                ) {
+                                  setSelectedImei([...selectedImei, item]);
+                                } else {
+                                  setSelectedImei(
+                                    selectedImei.filter(
+                                      (selectedItem) =>
+                                        selectedItem.soImei !== item.soImei
+                                    )
+                                  );
                                 }
-                                style={{
-                                  height: "35px",
-                                  width: "105px",
-                                  padding: "4px",
-                                }}
-                              >
-                                <span
-                                  className="text-white"
+                              }}
+                            >
+                              <td>
+                                <Checkbox
+                                  color="primary"
+                                  checked={selectedImei.some(
+                                    (selectedItem) =>
+                                      selectedItem.soImei === item.soImei
+                                  )}
+                                />
+                              </td>
+                              <td className="text-center">{item.soImei}</td>
+                              <td className="text-center">
+                                <div
+                                  className={
+                                    "badge-success rounded-pill mx-auto"
+                                  }
                                   style={{
-                                    fontSize: "14px",
-                                    fontWeight: "400",
+                                    height: "35px",
+                                    width: "105px",
+                                    padding: "4px",
                                   }}
                                 >
-                                  Đã Bán
-                                </span>
-                              </div>
-                            </td>
-                          </tr>
-                        ))
+                                  <span
+                                    className="text-white"
+                                    style={{
+                                      fontSize: "14px",
+                                      fontWeight: "400",
+                                    }}
+                                  >
+                                    Đã Bán
+                                  </span>
+                                </div>
+                              </td>
+                            </tr>
+                          ))
                         : ""}
                     </tbody>
                   </table>
@@ -5164,8 +5291,7 @@ export const ModalRefundProduct = ({
                         "warning"
                       );
                     } else {
-                      refund(selectedImei
-                      );
+                      refund(selectedImei);
                       close();
                     }
                   }}
@@ -5236,8 +5362,8 @@ export function ConfirmChangeTypePhienBan(props) {
               sx={{ color: "black" }}
               id="alert-dialog-description"
             >
-              Thông tin của các phiên bản hiện tại
-              sẽ không được lưu lại. Bạn có chắc chắn muốn chuyển sang tính năng này ?
+              Thông tin của các phiên bản hiện tại sẽ không được lưu lại. Bạn có
+              chắc chắn muốn chuyển sang tính năng này ?
             </DialogContentText>
           </DialogContent>
           <DialogActions>
@@ -5361,7 +5487,6 @@ export function ConfirmRefundOrder(props) {
   );
 }
 
-
 export function ConfirmAddProduct(props) {
   const { open, onClose, confirm, name } = props;
 
@@ -5393,8 +5518,7 @@ export function ConfirmAddProduct(props) {
               id="alert-dialog-description"
             >
               Bạn có chắc chắc muốn thêm sản phẩm
-              <span style={{ fontWeight: "500" }}>{" " + name + " "}</span>
-              ?
+              <span style={{ fontWeight: "500" }}>{" " + name + " "}</span>?
             </DialogContentText>
           </DialogContent>
           <DialogActions>
@@ -5440,18 +5564,12 @@ export function ConfirmAddProduct(props) {
     </div>
   );
 }
-export const ScannerBarcode = ({
-  open,
-  close,
-  getResult,
-  refresh
-}) => {
-
+export const ScannerBarcode = ({ open, close, getResult, refresh }) => {
   const [scanning, setScanning] = useState(true);
 
   useEffect(() => {
     setScanning(true);
-  }, [refresh])
+  }, [refresh]);
 
   const onNewScanResult = (decodedText, decodedResult) => {
     console.log(decodedText);
@@ -5469,8 +5587,8 @@ export const ScannerBarcode = ({
           qrCodeSuccessCallback={onNewScanResult}
         />
       </div>
-    )
-  }
+    );
+  };
 
   return (
     <>
@@ -5493,9 +5611,11 @@ export const ScannerBarcode = ({
                   <span className="fs-4 fw-bold">Quét Barcode Sản Phẩm</span>
                 </div>
                 <div className="mt-4 text-center" style={{}}>
-                  {scanning === true && open === true ?
-                    <Barcode /> : "Đang chờ ..."
-                  }
+                  {scanning === true && open === true ? (
+                    <Barcode />
+                  ) : (
+                    "Đang chờ ..."
+                  )}
                 </div>
               </div>
             </div>
@@ -5506,12 +5626,7 @@ export const ScannerBarcode = ({
     </>
   );
 };
-export const ModalViewImeiHadBuy = ({
-  open,
-  close,
-  imeis,
-}) => {
-
+export const ModalViewImeiHadBuy = ({ open, close, imeis }) => {
   return (
     <>
       <Dialog
@@ -5554,34 +5669,43 @@ export const ModalViewImeiHadBuy = ({
                     <tbody>
                       {imeis.length
                         ? imeis.map((item, index) => (
-                          <tr
-                          >
-                            <td className="text-center">{index + 1}</td>
-                            <td className="text-center">{item.soImei}</td>
-                            <td className="text-center">
-                              <div
-                                className={
-                                  item.trangThai === StatusImei.SOLD ? "badge-success rounded-pill mx-auto" : item.trangThai === StatusImei.CANCELLED || item.trangThai === StatusImei.REFUND ? "badge-danger rounded-pill mx-auto" : ""
-                                }
-                                style={{
-                                  height: "35px",
-                                  width: "105px",
-                                  padding: "4px",
-                                }}
-                              >
-                                <span
-                                  className="text-white"
+                            <tr>
+                              <td className="text-center">{index + 1}</td>
+                              <td className="text-center">{item.soImei}</td>
+                              <td className="text-center">
+                                <div
+                                  className={
+                                    item.trangThai === StatusImei.SOLD
+                                      ? "badge-success rounded-pill mx-auto"
+                                      : item.trangThai ===
+                                          StatusImei.CANCELLED ||
+                                        item.trangThai === StatusImei.REFUND
+                                      ? "badge-danger rounded-pill mx-auto"
+                                      : ""
+                                  }
                                   style={{
-                                    fontSize: "14px",
-                                    fontWeight: "400",
+                                    height: "35px",
+                                    width: "105px",
+                                    padding: "4px",
                                   }}
                                 >
-                                  {item.trangThai === StatusImei.SOLD ? "Đã bán" : item.trangThai === StatusImei.REFUND ? "Hoàn trả" : "Đã hủy"}
-                                </span>
-                              </div>
-                            </td>
-                          </tr>
-                        ))
+                                  <span
+                                    className="text-white"
+                                    style={{
+                                      fontSize: "14px",
+                                      fontWeight: "400",
+                                    }}
+                                  >
+                                    {item.trangThai === StatusImei.SOLD
+                                      ? "Đã bán"
+                                      : item.trangThai === StatusImei.REFUND
+                                      ? "Hoàn trả"
+                                      : "Đã hủy"}
+                                  </span>
+                                </div>
+                              </td>
+                            </tr>
+                          ))
                         : ""}
                     </tbody>
                   </table>
@@ -5597,7 +5721,6 @@ export const ModalViewImeiHadBuy = ({
 };
 
 export function ConfirmRefund({ open, close, confirm, total, size }) {
-
   const [description, setDescription] = useState("");
 
   const handleGetValueFromInputTextField = (event) => {
@@ -5620,8 +5743,11 @@ export function ConfirmRefund({ open, close, confirm, total, size }) {
         }}
       >
         <DialogTitle id="alert-dialog-title">
-          {<span className="fs-4 text-dark">{"Xác Nhận Hoàn Trả " + size + " Sản Phẩm Với Số Tiền " + total
-          }</span>}
+          {
+            <span className="fs-4 text-dark">
+              {"Xác Nhận Hoàn Trả " + size + " Sản Phẩm Với Số Tiền " + total}
+            </span>
+          }
         </DialogTitle>
         <DialogContent>
           <TextField

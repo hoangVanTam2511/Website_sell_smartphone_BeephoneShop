@@ -25,11 +25,11 @@ public class FindVoucherRequest {
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date ngayKetThuc;
 
-    private BigDecimal dieuKienApDung;
+    private String dieuKienApDung;
 
-    private BigDecimal giaTriVoucher;
+    private String giaTriVoucher;
 
-    private BigDecimal giaTriToiDa;
+    private String giaTriToiDa;
 
     private Integer soLuong;
 
