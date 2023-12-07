@@ -91,7 +91,6 @@ public interface AccountRepository extends IAccountRepository, CustomKhachHangRe
                         ) AND ac.idRole.ma='role1'
             """)
     Page<Account> searchAllNV(@RequestParam("tenKH") Optional<String> tenKH, Pageable pageable);
-
     @Query(value = "SELECT a.ma AS ma, a.id, a.email, a.ho_va_ten, a.trang_thai, a.mat_khau, a.so_dien_thoai, a.ngay_sinh, a.id_role\n" +
             "FROM account a INNER JOIN role r ON r.id = a.id_role \n" +
             "WHERE (:tenKH IS NULL OR a.ho_va_ten LIKE CONCAT('%', :tenKH, '%')\n" +
