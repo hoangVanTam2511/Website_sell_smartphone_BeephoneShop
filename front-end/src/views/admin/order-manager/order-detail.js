@@ -11,18 +11,9 @@ import {
   FaRegCalendarTimes,
   FaBusinessTime,
 } from "react-icons/fa";
-import { Table as TableMui, Tooltip, Zoom } from "@mui/material";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
+import { FaArrowRotateLeft, FaArrowsRotate } from "react-icons/fa6";
+import { Tooltip, Zoom } from "@mui/material";
 import LoadingIndicator from "../../../utilities/loading";
-import EditIcon from "@mui/icons-material/Edit";
-import Radio from "@mui/joy/Radio";
-import RadioGroup from "@mui/joy/RadioGroup";
-import Sheet from "@mui/joy/Sheet";
 import Card from "../../../components/Card";
 import styleCss from "./style.css";
 import { format } from "date-fns";
@@ -41,6 +32,7 @@ import {
   ScannerBarcode,
   ModalViewImeiHadBuy,
   ConfirmRollbackStatusOrder,
+  ConfirmRollBack,
 } from "./AlertDialogSlide.js";
 import {
   OrderStatusString,
@@ -108,18 +100,20 @@ const OrderDetail = (props) => {
     return order.trangThai === OrderStatusString.CONFIRMED
       ? "Chờ xác nhận"
       : order.trangThai === OrderStatusString.DELIVERING
-      ? "Chờ giao hàng"
-      : order.trangThai === OrderStatusString.SUCCESS_DELIVERY
-      ? "Đang giao hàng"
-      : "";
+        ? "Chờ giao hàng"
+        : order.trangThai === OrderStatusString.SUCCESS_DELIVERY
+          ? "Đang giao hàng"
+          : "";
   };
 
-  const rollBackStatus = async () => {
+  const rollBackStatus = async (note) => {
     setIsLoading(true);
     const data = {
       id: id,
       orderHistory: largestItem,
       statusOrder: getStatusToRollBack(),
+      note: note,
+      createdBy: userId,
     };
     try {
       await axios.put(
@@ -369,7 +363,7 @@ const OrderDetail = (props) => {
         setOrder(data);
         const sortOrderHistories =
           data.orderHistories &&
-          data.orderHistories.sort((a, b) => a.loaiThaoTac - b.loaiThaoTac);
+          data.orderHistories.sort((a, b) => b.createdAt - a.createdAt);
         setOrderHistories(sortOrderHistories);
         const sortPayments =
           data.paymentMethods &&
@@ -419,12 +413,12 @@ const OrderDetail = (props) => {
         const getAddressDefault =
           address &&
           address.diaChi +
-            ", " +
-            address.xaPhuong +
-            ", " +
-            address.quanHuyen +
-            ", " +
-            address.tinhThanhPho;
+          ", " +
+          address.xaPhuong +
+          ", " +
+          address.quanHuyen +
+          ", " +
+          address.tinhThanhPho;
         setAddressDefault(getAddressDefault);
 
         if (data.loaiHoaDon === OrderTypeString.DELIVERY) {
@@ -461,6 +455,18 @@ const OrderDetail = (props) => {
         setIsLoading(false);
       });
   };
+
+    const orderImeis = orderItems.map((order) => {
+    return order.imeisDaBan.map((item) => {
+      return {
+        ...order,
+        soLuong: 1,
+        imei: item,
+        trangThai: StatusImei.SOLD,
+      };
+    });
+  });
+
 
   useEffect(() => {
     getOrderItemsById();
@@ -690,16 +696,36 @@ const OrderDetail = (props) => {
               </>
             ) : item.loaiThaoTac == 7 ? (
               <>
-                <FaMoneyBillTransfer
+                <FaArrowsRotate
                   color="#e5383b"
                   size={"40px"}
                   style={{ marginBottom: "5px" }}
                 />
                 <span className="ms-4">{item.thaoTac}</span>
               </>
-            ) : (
-              ""
-            )}
+            )
+              : item.loaiThaoTac == 8 ? (
+                <>
+                  <FaArrowRotateLeft
+                    color="#ffd500"
+                    size={"40px"}
+                    style={{ marginBottom: "5px" }}
+                  />
+                  <span className="ms-4">{item.thaoTac}</span>
+                </>
+              ) : item.loaiThaoTac == 9 ? (
+                <>
+                  <FaMoneyCheckDollar
+                    color="#ffd500"
+                    size={"40px"}
+                    style={{ marginBottom: "5px" }}
+                  />
+                  <span className="ms-4">{item.thaoTac}</span>
+                </>
+              )
+                : (
+                  ""
+                )}
           </span>
         </div>
       ),
@@ -934,6 +960,7 @@ const OrderDetail = (props) => {
   };
 
   const handleClickOpenDialogDetailOrderHistories = () => {
+    console.log(orderImeis)
     setOpenDialogDetailOrderHistories(true);
   };
 
@@ -1053,18 +1080,22 @@ const OrderDetail = (props) => {
                   item.loaiThaoTac == 0
                     ? FaRegFileAlt
                     : item.loaiThaoTac == 1
-                    ? FaBusinessTime
-                    : item.loaiThaoTac == 3
-                    ? FaTruck
-                    : item.loaiThaoTac == 4
-                    ? FaRegCalendarCheck
-                    : item.loaiThaoTac == 5
-                    ? FaRegCalendarTimes
-                    : item.loaiThaoTac == 6
-                    ? FaRegCalendarCheck
-                    : item.loaiThaoTac == 7
-                    ? FaMoneyBillTransfer
-                    : ""
+                      ? FaBusinessTime
+                      : item.loaiThaoTac == 3
+                        ? FaTruck
+                        : item.loaiThaoTac == 4
+                          ? FaRegCalendarCheck
+                          : item.loaiThaoTac == 5
+                            ? FaRegCalendarTimes
+                            : item.loaiThaoTac == 6
+                              ? FaRegCalendarCheck
+                              : item.loaiThaoTac == 7
+                                ? FaArrowsRotate
+                                : item.loaiThaoTac == 8
+                                  ? FaArrowRotateLeft
+                                  : item.loaiThaoTac == 9
+                                    ? FaMoneyCheckDollar
+                                    : ""
                 }
                 title={
                   <div className="mt-1">
@@ -1081,18 +1112,22 @@ const OrderDetail = (props) => {
                   item.loaiThaoTac == 0
                     ? "#09a129"
                     : item.loaiThaoTac == 1
-                    ? "#ffd500"
-                    : item.loaiThaoTac == 3
-                    ? "#09a129"
-                    : item.loaiThaoTac == 4
-                    ? "#09a129"
-                    : item.loaiThaoTac == 5
-                    ? "#e5383b"
-                    : item.loaiThaoTac == 6
-                    ? "#09a129"
-                    : item.loaiThaoTac == 7
-                    ? "#e5383b"
-                    : ""
+                      ? "#ffd500"
+                      : item.loaiThaoTac == 3
+                        ? "#09a129"
+                        : item.loaiThaoTac == 4
+                          ? "#09a129"
+                          : item.loaiThaoTac == 5
+                            ? "#e5383b"
+                            : item.loaiThaoTac == 6
+                              ? "#09a129"
+                              : item.loaiThaoTac == 7
+                                ? "#e5383b"
+                                : item.loaiThaoTac == 8
+                                  ? "#ffd500"
+                                  : item.loaiThaoTac == 9
+                                    ? "#ffd500"
+                                    : ""
                 }
               />
             ))}
@@ -1106,7 +1141,7 @@ const OrderDetail = (props) => {
       <div className="d-flex justify-content-between mt-2 p-3">
         <div className="d-flex order-info">
           {order.trangThai == OrderStatusString.PENDING_CONFIRM &&
-          order.loaiHoaDon == OrderTypeString.DELIVERY ? (
+            order.loaiHoaDon == OrderTypeString.DELIVERY ? (
             <div>
               <Button
                 onClick={() =>
@@ -1133,7 +1168,7 @@ const OrderDetail = (props) => {
             </div>
           ) : null}
           {order.trangThai === OrderStatusString.CONFIRMED &&
-          order.loaiHoaDon === OrderTypeString.DELIVERY ? (
+            order.loaiHoaDon === OrderTypeString.DELIVERY ? (
             <div>
               <Button
                 onClick={() =>
@@ -1160,8 +1195,8 @@ const OrderDetail = (props) => {
             </div>
           ) : null}
           {order.tienKhachTra >= total &&
-          order.trangThai == OrderStatusString.DELIVERING &&
-          order.loaiHoaDon == OrderTypeString.DELIVERY ? (
+            order.trangThai == OrderStatusString.DELIVERING &&
+            order.loaiHoaDon == OrderTypeString.DELIVERY ? (
             <div>
               <Button
                 onClick={() =>
@@ -1192,7 +1227,7 @@ const OrderDetail = (props) => {
           {(order.trangThai === OrderStatusString.CONFIRMED ||
             order.trangThai === OrderStatusString.DELIVERING ||
             order.trangThai === OrderStatusString.SUCCESS_DELIVERY) &&
-          order.loaiHoaDon === OrderTypeString.DELIVERY ? (
+            order.loaiHoaDon === OrderTypeString.DELIVERY ? (
             <div>
               <Button
                 onClick={() => {
@@ -1216,10 +1251,10 @@ const OrderDetail = (props) => {
             </div>
           ) : null}
           {paymentHistorys &&
-          paymentHistorys.length <= 0 &&
-          order.trangThai != OrderStatusString.CANCELLED &&
-          order.trangThai != OrderStatusString.SUCCESS_DELIVERY &&
-          order.loaiHoaDon == OrderTypeString.DELIVERY ? (
+            paymentHistorys.length <= 0 &&
+            order.trangThai != OrderStatusString.CANCELLED &&
+            order.trangThai != OrderStatusString.SUCCESS_DELIVERY &&
+            order.loaiHoaDon == OrderTypeString.DELIVERY ? (
             <div className="">
               <Button
                 onClick={() => handleOpenDialogConfirmOrder(null, true)}
@@ -1245,10 +1280,10 @@ const OrderDetail = (props) => {
           )}
         </div>
         <div className="d-flex">
+          <Print data={order} imeis={orderImeis}/>
           {order.loaiHoaDon === OrderTypeString.DELIVERY && (
             <PrintDelivery data={order} />
           )}
-          <Print data={order} />
           <Button
             onClick={handleClickOpenDialogDetailOrderHistories}
             className="rounded-2"
@@ -1291,7 +1326,7 @@ const OrderDetail = (props) => {
             </div>
             <div className="">
               {order.trangThai === OrderStatusString.PENDING_CONFIRM ||
-              order.trangThai === OrderStatusString.CONFIRMED ? (
+                order.trangThai === OrderStatusString.CONFIRMED ? (
                 <Button
                   onClick={handleClickOpenDialogUpdateRecipientOrder}
                   className="rounded-2 ms-2"
@@ -1589,13 +1624,13 @@ const OrderDetail = (props) => {
               </div>
               <div className="ms-5 ps-5">
                 {order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
-                order.account === null
+                  order.account === null
                   ? order.hoVaTen
                   : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
                     order.account &&
                     order.account.hoVaTen
-                  ? order.account.hoVaTen
-                  : order.tenNguoiNhan}
+                    ? order.account.hoVaTen
+                    : order.tenNguoiNhan}
               </div>
             </div>
             <div className="ms-4 mt-4 mt-1 d-flex" style={{ height: "30px" }}>
@@ -1605,13 +1640,13 @@ const OrderDetail = (props) => {
               <div className="ms-5 ps-5 mt-1">
                 <span className="text-dark" style={{ fontSize: "17px" }}>
                   {order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
-                  order.account === null
+                    order.account === null
                     ? order.soDienThoai
                     : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
                       order.account &&
                       order.account.soDienThoai
-                    ? order.account.soDienThoai
-                    : order.soDienThoaiNguoiNhan}
+                      ? order.account.soDienThoai
+                      : order.soDienThoaiNguoiNhan}
                 </span>
               </div>
             </div>
@@ -1624,8 +1659,8 @@ const OrderDetail = (props) => {
                   {order.account === null
                     ? order.email
                     : order.account && order.account.email
-                    ? order.account.email
-                    : "..."}
+                      ? order.account.email
+                      : "..."}
                 </span>
               </div>
             </div>
@@ -1644,13 +1679,13 @@ const OrderDetail = (props) => {
               >
                 <span className="text-dark" style={{ fontSize: "17px" }}>
                   {order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
-                  order.account === null
+                    order.account === null
                     ? "..."
                     : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
                       order.account &&
                       order.account.diaChiList
-                    ? addressDefault
-                    : order.diaChiNguoiNhan +
+                      ? addressDefault
+                      : order.diaChiNguoiNhan +
                       ", " +
                       order.xaPhuongNguoiNhan +
                       ", " +
@@ -1721,7 +1756,7 @@ const OrderDetail = (props) => {
             </div>
             <div className="">
               {order.loaiHoaDon === OrderTypeString.DELIVERY &&
-              order.tienKhachTra < total ? (
+                order.tienKhachTra < total ? (
                 <Button
                   onClick={() => setOpenPayment(true)}
                   className="rounded-2 ms-2"
@@ -1908,9 +1943,9 @@ const OrderDetail = (props) => {
               >
                 {item && item.donGiaSauGiam !== null && item.donGiaSauGiam !== 0
                   ? item.donGiaSauGiam.toLocaleString("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                    })
+                    style: "currency",
+                    currency: "VND",
+                  })
                   : ""}
               </span>
               <span
@@ -1923,9 +1958,9 @@ const OrderDetail = (props) => {
               >
                 {item && item.donGia
                   ? item.donGia.toLocaleString("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                    })
+                    style: "currency",
+                    currency: "VND",
+                  })
                   : ""}
               </span>
             </div>
@@ -1991,7 +2026,7 @@ const OrderDetail = (props) => {
         <div>
           <div className="button-container">
             {order.trangThai === OrderStatusString.PENDING_CONFIRM ||
-            order.trangThai === OrderStatusString.CONFIRMED ? (
+              order.trangThai === OrderStatusString.CONFIRMED ? (
               <>
                 <Button
                   onClick={() => {
@@ -2094,7 +2129,7 @@ const OrderDetail = (props) => {
             </div>
             <div className="">
               {order.trangThai === OrderStatusString.PENDING_CONFIRM ||
-              order.trangThai === OrderStatusString.CONFIRMED ? (
+                order.trangThai === OrderStatusString.CONFIRMED ? (
                 <>
                   <Button
                     onClick={() => {
@@ -2494,10 +2529,10 @@ const OrderDetail = (props) => {
           refresh={scannerRef}
         />
 
-        <ConfirmRollbackStatusOrder
+        <ConfirmRollBack
           open={openRollback}
           confirm={rollBackStatus}
-          onClose={handleCloseOpenRollback}
+          close={handleCloseOpenRollback}
         />
 
         {isLoading && <LoadingIndicator />}
