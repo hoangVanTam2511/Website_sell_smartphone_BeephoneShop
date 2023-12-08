@@ -115,7 +115,8 @@ public class NhanVienServiceImpl implements NhanVienService {
     @Override
     public Page<Account> search(Optional<String> tenSearch,Integer acc,  Integer pageNo) {
         Pageable pageable = PageRequest.of(pageNo - 1, 5);
-        return accountRepository.searchAllNV(tenSearch,acc, pageable);
+//        return accountRepository.searchAllNV(tenSearch,acc, pageable);
+        return null;
     }
 
     @Override

@@ -12,7 +12,7 @@ public class AuditEntityListener {
       entity.setCreatedAt(new Date());
       entity.setUpdatedAt(new Date());
       entity.setDelected(true);
-      entity.setCreatedBy(null);
+//      entity.setCreatedBy(null);
       entity.setUpdatedBy(null);
     }
 

@@ -29,4 +29,6 @@ public interface HoaDonService extends GenericService<OrderResponse, OrderReques
 
   Boolean deleteOrderPening(String id) throws Exception;
 
+  OrderResponse rollBackStatusOrder(OrderRequest req) throws Exception;
+
 }

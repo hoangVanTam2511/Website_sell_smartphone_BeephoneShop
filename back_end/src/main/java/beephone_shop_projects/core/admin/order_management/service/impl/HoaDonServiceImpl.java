@@ -405,6 +405,9 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
 
       if (req.getOrderHistories() != null) {
         List<OrderHistoryRequest> sortOrderHistory = req.getOrderHistories();
+        sortOrderHistory.forEach(s -> {
+          System.out.println(s.getCreatedBy());
+        });
         sortOrderHistory.sort((e1, e2) ->
                 e1.getStt() - e2.getStt()
         );
@@ -549,6 +552,46 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
     } catch (Exception e) {
       return false;
     }
+  }
+
+  @Override
+  public OrderResponse rollBackStatusOrder(OrderRequest req) throws Exception {
+    OrderResponse orderCurrent = getOrderDetailsById(req.getId());
+    if (orderCurrent == null) {
+      throw new RestApiException("Đơn hàng không tồn tại!");
+    }
+
+    if (req.getOrderHistory() != null) {
+      if (req.getOrderHistory().getLoaiThaoTac() == 3) {
+        for (OrderItemResponse orderItem : orderCurrent.getOrderItems()) {
+          Optional<SanPhamChiTiet> findProductItem = sanPhamChiTietRepository.
+                  findProductById(orderItem.getSanPhamChiTiet().getId());
+          Set<Imei> imeisProduct = findProductItem.get().getImeis();
+          orderItem.getImeisDaBan().forEach(s -> {
+            imeisProduct.forEach(s1 -> {
+              if (s1.getSoImei().equals(s.getSoImei())) {
+                s1.setTrangThai(StatusImei.PENDING_DELIVERY);
+              }
+            });
+            s.setTrangThai(StatusImei.PENDING_DELIVERY);
+            imeiDaBanCustomRepository.save(s);
+          });
+          findProductItem.get().setSoLuongTonKho(findProductItem.get().getSoLuongTonKho() +
+                  orderItem.getImeisDaBan().size());
+          sanPhamChiTietRepository.save(findProductItem.get());
+        }
+      }
+    }
+    if (req.getStatusOrder().equals("Chờ xác nhận")) {
+      orderCurrent.setTrangThai(OrderStatus.PENDING_CONFIRM);
+    } else if (req.getStatusOrder().equals("Chờ giao hàng")) {
+      orderCurrent.setTrangThai(OrderStatus.CONFIRMED);
+    } else if (req.getStatusOrder().equals("Đang giao hàng")) {
+      orderCurrent.setTrangThai(OrderStatus.DELIVERING);
+    }
+    HoaDon updatedOrderCurrent = hoaDonRepository.save(orderConverter.convertResponseToEntity(orderCurrent));
+    orderHistoryServiceImpl.deleteById(req.getOrderHistory().getId());
+    return orderConverter.convertEntityToResponse(updatedOrderCurrent);
   }
 
 }

@@ -86,6 +86,7 @@ public class VNPayController {
     hinhThucThanhToan.setHinhThucThanhToan(req.getHinhThucThanhToan().equals("Chuyển khoản thường") ? 2 : 1);
     hinhThucThanhToan.setTrangThai(1);
     hinhThucThanhToan.setCreatedAt(new Date());
+    hinhThucThanhToan.setCreatedBy(req.getCreatedByPayment());
     hinhThucThanhToanRepository.save(hinhThucThanhToan);
 
     if (req.getHoanTien().equals("Hoàn tiền")) {
@@ -138,6 +139,7 @@ public class VNPayController {
     hinhThucThanhToan.setHinhThucThanhToan(req.getHinhThucThanhToan().equals("Chuyển khoản thường") ? 2 : 1);
     hinhThucThanhToan.setTrangThai(1);
     hinhThucThanhToan.setCreatedAt(new Date());
+    hinhThucThanhToan.setCreatedBy(req.getCreatedByPayment());
     hinhThucThanhToanRepository.save(hinhThucThanhToan);
 
     if (orderCurrent.getTienKhachTra() != null) {

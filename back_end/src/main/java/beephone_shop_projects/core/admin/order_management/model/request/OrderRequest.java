@@ -113,5 +113,9 @@ public class OrderRequest {
 
   private Boolean isUpdateSdt;
 
+  private String createdByPayment;
+
+  private String statusOrder;
+
 
 }

@@ -17,6 +17,9 @@ import java.util.List;
 
 public interface VoucherRepository extends IVoucherRepository, CustomVoucherRepository {
 
+    @Query("SELECT V FROM Voucher V")
+    List<Voucher> getAllVoucherList();
+
     @Query(value = """
              SELECT v.id, v.ma, v.ten, v.so_luong as soLuong,
                  v.gia_tri_toi_da as giaTriToiDa, 

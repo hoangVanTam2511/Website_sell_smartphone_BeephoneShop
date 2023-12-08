@@ -52,7 +52,7 @@ public class SanPham extends PrimaryEntity implements IsIdentified {
 
   private String moTa;
 
-  private Integer trongLuong;
+//  private Integer trongLuong;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_dong_san_pham")

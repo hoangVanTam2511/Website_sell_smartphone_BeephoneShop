@@ -13,6 +13,8 @@ import java.util.Date;
 @NoArgsConstructor
 public class OrderHistoryRequest {
 
+  private String id;
+
   private Integer stt;
 
   private Integer loaiThaoTac;

@@ -21,6 +21,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -38,6 +39,11 @@ public class NhanVienRestcontroller {
     @GetMapping("hien-thi")
     public ResponsePage<Account> hienThi(@RequestParam(name = "page", defaultValue = "0") Integer pageNo) {
         return new ResponsePage(accService.getAllNV(pageNo));
+    }
+
+    @GetMapping("/all/no-page")
+    public ResponseObject<List<Account>> hienThiAllNhanVien() {
+        return new ResponseObject<>(accService.getAllNVienNoPage());
     }
 
     @PostMapping("add")

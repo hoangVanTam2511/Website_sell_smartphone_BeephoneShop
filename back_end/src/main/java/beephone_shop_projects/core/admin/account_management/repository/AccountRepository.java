@@ -37,7 +37,7 @@ public interface AccountRepository extends IAccountRepository, CustomKhachHangRe
 //                        OR ac.quanHuyen LIKE CONCAT('%', :tenKH, '%')
 //                        OR ac.soDienThoai LIKE CONCAT('%', :tenKH, '%')
     @Query(value = """
-                SELECT  kh FROM Account kh where kh.idRole.ma='role1'
+                SELECT  kh FROM Account kh where kh.idRole.ma='role1' or  kh.idRole.ma  ='role3'
             """)
     Page<Account> getAllNV(Pageable pageable);
 
