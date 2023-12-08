@@ -306,13 +306,6 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
 //    HoaDon createdOrderPending = hoaDonRepository.save(newOrderPending);
 //    return orderConverter.convertEntityToResponse(createdOrderPending);
 
-//    LichSuHoaDon orderHistory = new LichSuHoaDon();
-//    orderHistory.setHoaDon(createdOrderPending);
-//    orderHistory.setCreatedAt(new Date());
-//    orderHistory.setThaoTac("Tạo Đơn Hàng");
-//    orderHistory.setMoTa("Nhân viên tạo đơn cho khách");
-//    orderHistory.setLoaiThaoTac(0);
-//    lichSuHoaDonRepository.save(orderHistory);
   }
 
   @Override
@@ -352,6 +345,9 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
       orderCurrent.setLoaiHoaDon(req.getLoaiHoaDon());
       orderCurrent.setPhiShip(req.getPhiShip());
       orderCurrent.setKhachCanTra(req.getKhachCanTra());
+      orderCurrent.setHoVaTen(req.getHoVaTen());
+      orderCurrent.setEmail(req.getEmail());
+      orderCurrent.setSoDienThoai(req.getSoDienThoai());
 
       String uri = barcodeGenerator.generateBarcodeImageBase64Url(orderCurrent.getMa(), BarcodeFormat.QR_CODE);
       orderCurrent.setMaQrCode(uri);
@@ -455,6 +451,7 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
         orderCurrent.setTinhThanhPhoNguoiNhan(req.getTinhThanhPhoNguoiNhan());
         orderCurrent.setQuanHuyenNguoiNhan(null);
         orderCurrent.setXaPhuongNguoiNhan(null);
+        System.out.println(orderCurrent.getTinhThanhPhoNguoiNhan());
       }
       if (req.getQuanHuyenNguoiNhan() != null) {
         orderCurrent.setQuanHuyenNguoiNhan(req.getQuanHuyenNguoiNhan());
@@ -590,7 +587,14 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
       orderCurrent.setTrangThai(OrderStatus.DELIVERING);
     }
     HoaDon updatedOrderCurrent = hoaDonRepository.save(orderConverter.convertResponseToEntity(orderCurrent));
-    orderHistoryServiceImpl.deleteById(req.getOrderHistory().getId());
+    LichSuHoaDon lichSuHoaDon = new LichSuHoaDon();
+    lichSuHoaDon.setCreatedBy(req.getCreatedBy());
+    lichSuHoaDon.setCreatedAt(new Date());
+    lichSuHoaDon.setMoTa(req.getNote());
+    lichSuHoaDon.setHoaDon(updatedOrderCurrent);
+    lichSuHoaDon.setLoaiThaoTac(8);
+    lichSuHoaDon.setThaoTac("Hoàn Tác");
+    lichSuHoaDonRepository.save(lichSuHoaDon);
     return orderConverter.convertEntityToResponse(updatedOrderCurrent);
   }
 
