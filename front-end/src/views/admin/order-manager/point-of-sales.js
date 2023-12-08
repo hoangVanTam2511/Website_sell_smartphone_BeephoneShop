@@ -175,6 +175,7 @@ const PointOfSales = () => {
   const [customerNeedPayFormat, setCustomerNeedPayFormat] = useState(0);
 
   const [idVoucher, setIdVoucher] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
   const [vouchers, setVouchers] = useState([]);
   const [order, setOrder] = useState({});
   const [cartId, setCartId] = useState("");
@@ -1552,12 +1553,19 @@ const PointOfSales = () => {
     }
   };
 
-  const getVouchersIsActive = () => {
+  const [totalPagesVoucher, setTotalPagesVoucher] = useState();
+
+  const getVouchersIsActive = (page, keyword) => {
     axios
-      .get(`http://localhost:8080/voucher/voucherActive`)
+      .get(`http://localhost:8080/voucher/voucherActive`, {
+        params: {
+          pageNo: page,
+          keyword: keyword,
+        },
+      })
       .then((response) => {
         setVouchers(response.data.data);
-        console.log(response.data.data);
+        setTotalPagesVoucher(response.data.totalPages);
       })
       .catch((error) => {
         console.error(error);
@@ -1983,11 +1991,18 @@ const PointOfSales = () => {
     setDiscountValidate("");
   };
 
-  const getAllCustomers = () => {
+  const [totalPagesCustomer, setTotalPagesCustomer] = useState();
+  const getAllCustomers = (page, keyword) => {
     axios
-      .get(`http://localhost:8080/khach-hang/hien-thi`)
+      .get(`http://localhost:8080/khach-hang/hien-thi`, {
+        params: {
+          pageNo: page,
+          keyword: keyword,
+        },
+      })
       .then((response) => {
         setCustomers(response.data.data);
+        setTotalPagesCustomer(response.data.totalPages);
       })
       .catch((error) => {
         console.error("Error");
@@ -2409,7 +2424,9 @@ const PointOfSales = () => {
     getVouchersIsActive();
     setOpenVouchers(true);
     setIsOpen(true);
+    setCurrentPage(1);
   };
+
   const handleCloseNoActionDialogVouchers = () => {
     setOpenVouchers(false);
     setIsOpen(false);
@@ -3501,6 +3518,8 @@ const PointOfSales = () => {
         data={customers}
         idCus={idCustomer}
         isOpen={isOpen}
+        totalPages={totalPagesCustomer}
+        getCustomer={getAllCustomers}
       />
 
       <AddressDialog
@@ -3534,6 +3553,8 @@ const PointOfSales = () => {
         discount={idVoucher}
         total={handleCountTotalMoney}
         checkDieuKien={getDieuKien}
+        totalPages={totalPagesVoucher}
+        getVoucher={getVouchersIsActive}
       />
       <OrderConfirmPayment
         open={openDialogConfirmPayment}

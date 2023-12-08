@@ -6,12 +6,13 @@ import beephone_shop_projects.core.admin.account_management.model.request.FindAc
 import beephone_shop_projects.core.admin.account_management.model.response.AccountResponse;
 import beephone_shop_projects.entity.Account;
 import org.springframework.data.domain.Page;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 import java.util.UUID;
 
 public interface KhachHangService {
-    Page<AccountResponse> getAllKH(Integer pageNo);
+    Page<AccountResponse> getAllKH(@Param("request") FindAccountRequest request);
     Page<Account> getAll(FindAccountRequest search);
 //    Page<AccountResponse> searchAllKHang(Integer pageable);
 

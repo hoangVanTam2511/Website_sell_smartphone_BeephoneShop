@@ -76,12 +76,15 @@ public interface VoucherRepository extends IVoucherRepository, CustomVoucherRepo
 
 
     @Query(value = """
-            SELECT v FROM Voucher v WHERE (v.trangThai = 1 AND  v.soLuong > 0)
-            AND ((:#{#request.ma} IS NULL OR :#{#request.ma} = '' OR v.ma LIKE :#{'%' + #request.ma + '%'}) AND
-             (:#{#request.giaTriVoucher} IS NULL OR :#{#request.giaTriVoucher} = '' OR v.giaTriVoucher = :#{#request.giaTriVoucher} ))
-             ORDER BY v.giaTriVoucher DESC 
-                        
-            """)
+            SELECT v.id, v.ma, v.ten, v.so_luong as soLuong, v.gia_tri_voucher as giaTriVoucher, v.trang_thai as trangThai, v.loai_voucher as loaiVoucher, 
+             v.dieu_kien_ap_dung as dieuKienApDung, v.ngay_bat_dau as ngayBatDau, v.ngay_ket_thuc as ngayKetThuc, v.gia_tri_toi_da as giaTriToiDa 
+             FROM voucher v WHERE (v.trang_thai  = 1 AND  v.so_luong > 0)
+             AND ((:#{#request.keyword} IS NULL OR :#{#request.keyword} = '' OR v.ma LIKE :#{'%' + #request.keyword + '%'}) 
+             OR (:#{#request.keyword} IS NULL OR :#{#request.keyword} = '' OR v.gia_tri_voucher LIKE :#{'%' + #request.keyword + '%'}) 
+             OR (:#{#request.keyword} IS NULL OR :#{#request.keyword} = '' OR v.so_luong LIKE :#{'%' + #request.keyword + '%'}) 
+             OR (:#{#request.keyword} IS NULL OR :#{#request.keyword} = '' OR v.dieu_kien_ap_dung LIKE :#{'%' + #request.keyword + '%'}))
+             ORDER BY v.gia_tri_voucher DESC          
+            """, nativeQuery = true)
     Page<VoucherResponse> getVoucherStatusIsActive(Pageable pageable, @Param("request") FindVoucherRequest request);
 
 }

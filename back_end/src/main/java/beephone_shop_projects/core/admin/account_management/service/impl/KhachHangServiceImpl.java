@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import java.text.Normalizer;
@@ -31,9 +32,18 @@ public class KhachHangServiceImpl implements KhachHangService {
     private RoleRepository roleRepository;
 
     @Override
-    public Page<AccountResponse> getAllKH(Integer pageNo) {
-        Pageable pageable = PageRequest.of(pageNo - 1, 5);
-        return accountRepository.getAllKH(pageable);
+    public Page<AccountResponse> getAllKH(FindAccountRequest request) {
+        if (request.getPageNo() == null) {
+            request.setPageNo(1);
+        }
+        if (request.getPageSize() == null) {
+            request.setPageSize(5);
+        }
+        if (request.getKeyword() == null) {
+            request.setKeyword("");
+        }
+        Pageable pageable = PageRequest.of(request.getPageNo() - 1, request.getPageSize());
+        return accountRepository.getAllKH(pageable, request);
     }
 
     @Override

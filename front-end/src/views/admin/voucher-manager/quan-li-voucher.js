@@ -88,7 +88,6 @@ const HienThiVoucher = () => {
         setListVoucher(response.data.data);
         setTotalPages(response.data.totalPages);
         setIsLoading(true);
-        console.log(response.data.data);
       })
       .catch((error) => {
         handleOpenAlertVariant(
