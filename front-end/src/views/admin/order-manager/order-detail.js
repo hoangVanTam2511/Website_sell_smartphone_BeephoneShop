@@ -40,6 +40,7 @@ import {
   ModalRefundProduct,
   ScannerBarcode,
   ModalViewImeiHadBuy,
+  ConfirmRollbackStatusOrder,
 } from "./AlertDialogSlide.js";
 import {
   OrderStatusString,
@@ -69,6 +70,7 @@ const OrderDetail = (props) => {
   const [status, setStatus] = useState();
   const [paymentHistorys, setPaymentHistorys] = useState([]);
   const [orderItems, setOrderItems] = useState([]);
+  const [codeDiscount, setCodeDiscount] = useState("");
   const [orderItemRefund, setOrderItemRefund] = useState([]);
   const { id } = useParams();
   const { handleOpenAlertVariant } = useCustomSnackbar();
@@ -86,7 +88,7 @@ const OrderDetail = (props) => {
   const [openScanner, setOpenScanner] = useState(false);
   const [scannerRef, setScannerRef] = useState([]);
 
-  const user = useSelector(state => state.user.user);
+  const userId = useSelector(state => state.user.user.id);
 
   const handleOpenScanner = () => {
     setOpenScanner(true);
@@ -95,6 +97,38 @@ const OrderDetail = (props) => {
   const handleCloseOpenScanner = () => {
     setOpenScanner(false);
   }
+  const filteredItems = orderHistories.filter(item => [1, 3, 4].includes(item.loaiThaoTac));
+  const largestItem = filteredItems && filteredItems.sort((a, b) => b.loaiThaoTac - a.loaiThaoTac)[0];
+
+  const getStatusToRollBack = () => {
+    return order.trangThai === OrderStatusString.CONFIRMED ? "Chờ xác nhận" : order.trangThai ===
+      OrderStatusString.DELIVERING ? "Chờ giao hàng" : order.trangThai === OrderStatusString.SUCCESS_DELIVERY
+      ? "Đang giao hàng" : "";
+  }
+
+  const rollBackStatus = async () => {
+    setIsLoading(true);
+    const data = {
+      id: id,
+      orderHistory: largestItem,
+      statusOrder: getStatusToRollBack(),
+    };
+    try {
+      await axios.put(`http://localhost:8080/api/orders/roll-back-status`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      await getOrderItemsById();
+      handleOpenAlertVariant("Hoàn tác thành công ", Notistack.SUCCESS);
+      handleCloseOpenRollback();
+      setIsLoading(false);
+    } catch (error) {
+      handleOpenAlertVariant(error.response.data.message, "warning");
+      handleCloseOpenRollback();
+      setIsLoading(false);
+    }
+  };
 
   const addProductToOrderByScanner = async (imei) => {
     setIsLoading(true);
@@ -121,6 +155,20 @@ const OrderDetail = (props) => {
       setIsLoading(false);
     }
   };
+
+  const [customers, setCustomers] = useState([]);
+
+  const getCustomers = () => {
+    axios
+      .get(`http://localhost:8080/nhan-vien/all/no-page`)
+      .then((response) => {
+        setCustomers(response.data.data);
+      })
+      .catch((error) => {
+        console.error("Error");
+      });
+  };
+
 
   //connnect
   const connect = () => {
@@ -404,9 +452,9 @@ const OrderDetail = (props) => {
   };
 
   useEffect(() => {
-    console.log(user);
     getOrderItemsById();
     getAllProducts();
+    getCustomers();
     if (stompClient === null) {
       connect();
     }
@@ -505,6 +553,7 @@ const OrderDetail = (props) => {
       hinhThucThanhToan:
         type === "Chuyển khoản" ? "Chuyển khoản thường" : "Tiền mặt",
       hoanTien: isRefund === true ? "Hoàn tiền" : "",
+      createdByPayment: userId,
     };
     try {
       await axios
@@ -555,6 +604,17 @@ const OrderDetail = (props) => {
       return [...p, newPayment];
     });
   };
+  {/*
+    item.loaiThaoTac == 2 ? (
+              <>
+                <FaMoneyCheckDollar
+                  color="#ffd500"
+                  size={"40px"}
+                  style={{ marginBottom: "5px" }}
+                />
+                <span className="ms-4">{item.thaoTac}</span>
+              </>
+            ) : */}
   const columnsTableOrderHistories = [
     {
       width: "10%",
@@ -573,15 +633,6 @@ const OrderDetail = (props) => {
               </>
             ) : item.loaiThaoTac == 1 ? (
               <>
-                <FaMoneyCheckDollar
-                  color="#09a129"
-                  size={"40px"}
-                  style={{ marginBottom: "5px" }}
-                />
-                <span className="ms-4">{item.thaoTac}</span>
-              </>
-            ) : item.loaiThaoTac == 2 ? (
-              <>
                 <FaBusinessTime
                   color="#ffd500"
                   size={"40px"}
@@ -589,54 +640,55 @@ const OrderDetail = (props) => {
                 />
                 <span className="ms-4">{item.thaoTac}</span>
               </>
-            ) : item.loaiThaoTac == 3 ? (
-              <>
-                <FaTruck
-                  color="#09a129"
-                  size={"40px"}
-                  style={{ marginBottom: "5px" }}
-                />
-                <span className="ms-4">{item.thaoTac}</span>
-              </>
-            ) : item.loaiThaoTac == 4 ? (
-              <>
-                <FaRegCalendarCheck
-                  color="#09a129"
-                  size={"40px"}
-                  style={{ marginBottom: "5px" }}
-                />
-                <span className="ms-4">{item.thaoTac}</span>
-              </>
-            ) : item.loaiThaoTac == 5 ? (
-              <>
-                <FaRegCalendarTimes
-                  color="#e5383b"
-                  size={"40px"}
-                  style={{ marginBottom: "5px" }}
-                />
-                <span className="ms-4">{item.thaoTac}</span>
-              </>
-            ) : item.loaiThaoTac == 6 ? (
-              <>
-                <FaRegCalendarCheck
-                  color="#09a129"
-                  size={"40px"}
-                  style={{ marginBottom: "5px" }}
-                />
-                <span className="ms-4">{item.thaoTac}</span>
-              </>
-            ) : item.loaiThaoTac == 7 ? (
-              <>
-                <FaMoneyBillTransfer
-                  color="#e5383b"
-                  size={"40px"}
-                  style={{ marginBottom: "5px" }}
-                />
-                <span className="ms-4">{item.thaoTac}</span>
-              </>
-            ) : (
-              ""
-            )}
+            ) :
+              item.loaiThaoTac == 3 ? (
+                <>
+                  <FaTruck
+                    color="#09a129"
+                    size={"40px"}
+                    style={{ marginBottom: "5px" }}
+                  />
+                  <span className="ms-4">{item.thaoTac}</span>
+                </>
+              ) : item.loaiThaoTac == 4 ? (
+                <>
+                  <FaRegCalendarCheck
+                    color="#09a129"
+                    size={"40px"}
+                    style={{ marginBottom: "5px" }}
+                  />
+                  <span className="ms-4">{item.thaoTac}</span>
+                </>
+              ) : item.loaiThaoTac == 5 ? (
+                <>
+                  <FaRegCalendarTimes
+                    color="#e5383b"
+                    size={"40px"}
+                    style={{ marginBottom: "5px" }}
+                  />
+                  <span className="ms-4">{item.thaoTac}</span>
+                </>
+              ) : item.loaiThaoTac == 6 ? (
+                <>
+                  <FaRegCalendarCheck
+                    color="#09a129"
+                    size={"40px"}
+                    style={{ marginBottom: "5px" }}
+                  />
+                  <span className="ms-4">{item.thaoTac}</span>
+                </>
+              ) : item.loaiThaoTac == 7 ? (
+                <>
+                  <FaMoneyBillTransfer
+                    color="#e5383b"
+                    size={"40px"}
+                    style={{ marginBottom: "5px" }}
+                  />
+                  <span className="ms-4">{item.thaoTac}</span>
+                </>
+              ) : (
+                ""
+              )}
           </span>
         </div>
       ),
@@ -655,10 +707,11 @@ const OrderDetail = (props) => {
     {
       title: "Người Xác Nhận",
       align: "center",
-      dataIndex: "nguoiXacNhan",
-      width: "10%",
+      width: "25%",
       render: (text, record) => (
-        <span style={{ fontWeight: "550" }}>Admin</span>
+        <span style={{ fontWeight: "500", cursor: "pointer" }} className="underline-custom">
+          {customers.find((item) => item.id === record.createdBy)?.hoVaTen}
+        </span>
       ),
     },
     {
@@ -824,7 +877,11 @@ const OrderDetail = (props) => {
       title: "Người Xác Nhận",
       align: "center",
       width: "15%",
-      dataIndex: "nguoiXacNhan",
+      render: (text, record) => (
+        <span style={{ fontWeight: "500", cursor: "pointer" }} className="underline-custom">
+          {customers.find((item) => item.id === record.createdBy)?.hoVaTen}
+        </span>
+      ),
     },
   ];
   const EmptyData = () => {
@@ -872,7 +929,7 @@ const OrderDetail = (props) => {
       trangThai: OrderStatusString.CANCELLED,
       orderHistory: {
         createdAt: new Date(),
-        createdBy: "",
+        createdBy: userId,
         thaoTac: "Đã Hủy Đơn",
         loaiThaoTac: 5,
         moTa: description || "",
@@ -889,7 +946,7 @@ const OrderDetail = (props) => {
       trangThai: OrderStatusString.SUCCESS_DELIVERY,
       orderHistory: {
         createdAt: new Date(),
-        createdBy: "",
+        createdBy: userId,
         thaoTac: "Giao Hàng Thành Công",
         loaiThaoTac: 4,
         moTa: description || "",
@@ -906,7 +963,7 @@ const OrderDetail = (props) => {
       trangThai: OrderStatusString.DELIVERING,
       orderHistory: {
         createdAt: new Date(),
-        createdBy: "",
+        createdBy: userId,
         thaoTac: "Đã Giao Hàng Cho Bên Vận Chuyển",
         loaiThaoTac: 3,
         moTa: description,
@@ -918,31 +975,31 @@ const OrderDetail = (props) => {
     updateStatusOrderDelivery(data);
     setOpenCommon(false);
   };
-  const handleConfirmPreparing = (description) => {
-    const data = {
-      trangThai: OrderStatusString.PREPARING,
-      orderHistory: {
-        createdAt: new Date(),
-        createdBy: "",
-        thaoTac: "Đang Chuẩn Bị Hàng",
-        loaiThaoTac: 2,
-        moTa: description,
-        hoaDon: {
-          id: order.id,
-        },
-      },
-    };
-    updateStatusOrderDelivery(data);
-    setOpenCommon(false);
-  };
+  // const handleConfirmPreparing = (description) => {
+  //   const data = {
+  //     trangThai: OrderStatusString.PREPARING,
+  //     orderHistory: {
+  //       createdAt: new Date(),
+  //       createdBy: userId,
+  //       thaoTac: "Đang Chuẩn Bị Hàng",
+  //       loaiThaoTac: 2,
+  //       moTa: description,
+  //       hoaDon: {
+  //         id: order.id,
+  //       },
+  //     },
+  //   };
+  //   updateStatusOrderDelivery(data);
+  //   setOpenCommon(false);
+  // };
 
   const handleConfirmOrderInfo = (description) => {
     const data = {
       trangThai: OrderStatusString.CONFIRMED,
       orderHistory: {
         createdAt: new Date(),
-        createdBy: "",
-        thaoTac: "Đã Xác Nhận Thông Tin Đơn Hàng",
+        createdBy: userId,
+        thaoTac: "Chờ Giao Hàng",
         loaiThaoTac: 1,
         moTa: description,
         hoaDon: {
@@ -976,25 +1033,12 @@ const OrderDetail = (props) => {
     setOpenDialogPayment(false);
   };
 
-  const StyledTableContainer = styled(TableContainer)({
-    boxShadow: "none",
-  });
+  const [openRollback, setOpenRollback] = useState(false);
 
-  const StyledTableHead = styled(TableHead)`
-    & tr:hover th {
-      background-color: white !important;
-    }
-  `;
+  const handleCloseOpenRollback = () => {
+    setOpenRollback(false);
+  }
 
-  const StyledTableBody = styled(TableBody)`
-    & tr:hover td {
-      background-color: white !important;
-    }
-  `;
-
-  const useStyles = () => ({});
-
-  const classes = useStyles();
 
   const TimeLine = () => {
     return (
@@ -1010,20 +1054,19 @@ const OrderDetail = (props) => {
                   item.loaiThaoTac == 0
                     ? FaRegFileAlt
                     : item.loaiThaoTac == 1
-                      ? FaMoneyCheckDollar
-                      : item.loaiThaoTac == 2
-                        ? FaBusinessTime
-                        : item.loaiThaoTac == 3
-                          ? FaTruck
-                          : item.loaiThaoTac == 4
-                            ? FaRegCalendarCheck
-                            : item.loaiThaoTac == 5
-                              ? FaRegCalendarTimes
-                              : item.loaiThaoTac == 6
-                                ? FaRegCalendarCheck
-                                : item.loaiThaoTac == 7
-                                  ? FaMoneyBillTransfer
-                                  : ""
+                      ? FaBusinessTime
+                      :
+                      item.loaiThaoTac == 3
+                        ? FaTruck
+                        : item.loaiThaoTac == 4
+                          ? FaRegCalendarCheck
+                          : item.loaiThaoTac == 5
+                            ? FaRegCalendarTimes
+                            : item.loaiThaoTac == 6
+                              ? FaRegCalendarCheck
+                              : item.loaiThaoTac == 7
+                                ? FaMoneyBillTransfer
+                                : ""
                 }
                 title={
                   <div className="mt-1">
@@ -1040,20 +1083,18 @@ const OrderDetail = (props) => {
                   item.loaiThaoTac == 0
                     ? "#09a129"
                     : item.loaiThaoTac == 1
-                      ? "#09a129"
-                      : item.loaiThaoTac == 2
-                        ? "#ffd500"
-                        : item.loaiThaoTac == 3
+                      ? "#ffd500"
+                      : item.loaiThaoTac == 3
+                        ? "#09a129"
+                        : item.loaiThaoTac == 4
                           ? "#09a129"
-                          : item.loaiThaoTac == 4
-                            ? "#09a129"
-                            : item.loaiThaoTac == 5
-                              ? "#e5383b"
-                              : item.loaiThaoTac == 6
-                                ? "#09a129"
-                                : item.loaiThaoTac == 7
-                                  ? "#e5383b"
-                                  : ""
+                          : item.loaiThaoTac == 5
+                            ? "#e5383b"
+                            : item.loaiThaoTac == 6
+                              ? "#09a129"
+                              : item.loaiThaoTac == 7
+                                ? "#e5383b"
+                                : ""
                 }
               />
             ))}
@@ -1093,61 +1134,34 @@ const OrderDetail = (props) => {
               </Button>
             </div>
           ) : null}
-          {(order.trangThai === OrderStatusString.PREPARING ||
-            order.trangThai === OrderStatusString.CONFIRMED) &&
-            order.loaiHoaDon === OrderTypeString.DELIVERY ? (
-            <div>
-              <Button
-                onClick={() =>
-                  handleOpenDialogConfirmOrder(
-                    OrderStatusString.PREPARING,
-                    false
-                  )
-                }
-                className="rounded-2 ms-2"
-                type="primary"
-                style={{
-                  height: "40px",
-                  width: "auto",
-                  fontSize: "16px",
-                }}
-              >
-                <span
-                  className=""
-                  style={{ fontWeight: "500", marginBottom: "2px" }}
+          {
+            order.trangThai === OrderStatusString.CONFIRMED &&
+              order.loaiHoaDon === OrderTypeString.DELIVERY ? (
+              <div>
+                <Button
+                  onClick={() =>
+                    handleOpenDialogConfirmOrder(
+                      OrderStatusString.CONFIRMED,
+                      false
+                    )
+                  }
+                  className="rounded-2 ms-2"
+                  type="primary"
+                  style={{
+                    height: "40px",
+                    width: "auto",
+                    fontSize: "16px",
+                  }}
                 >
-                  GIAO HÀNG
-                </span>
-              </Button>
-            </div>
-          ) : null}
-          {order.trangThai == OrderStatusString.CONFIRMED &&
-            order.loaiHoaDon == OrderTypeString.DELIVERY ? (
-            <div>
-              <Button
-                onClick={() =>
-                  handleOpenDialogConfirmOrder(
-                    OrderStatusString.CONFIRMED,
-                    false
-                  )
-                }
-                className="rounded-2 ms-2"
-                type="warning"
-                style={{
-                  height: "40px",
-                  width: "auto",
-                  fontSize: "16px",
-                }}
-              >
-                <span
-                  className=""
-                  style={{ fontWeight: "500", marginBottom: "2px" }}
-                >
-                  ĐANG CHUẨN BỊ
-                </span>
-              </Button>
-            </div>
-          ) : null}
+                  <span
+                    className=""
+                    style={{ fontWeight: "500", marginBottom: "2px" }}
+                  >
+                    GIAO HÀNG
+                  </span>
+                </Button>
+              </div>
+            ) : null}
           {order.tienKhachTra >= total &&
             order.trangThai == OrderStatusString.DELIVERING &&
             order.loaiHoaDon == OrderTypeString.DELIVERY ? (
@@ -1178,6 +1192,33 @@ const OrderDetail = (props) => {
           ) : (
             ""
           )}
+          {
+            (order.trangThai === OrderStatusString.CONFIRMED || order.trangThai === OrderStatusString.DELIVERING
+              || order.trangThai === OrderStatusString.SUCCESS_DELIVERY) &&
+              order.loaiHoaDon === OrderTypeString.DELIVERY ? (
+              <div>
+                <Button
+                  onClick={() => {
+                    setOpenRollback(true);
+                  }
+                  }
+                  className="rounded-2 ms-2"
+                  type="primary"
+                  style={{
+                    height: "40px",
+                    width: "auto",
+                    fontSize: "16px",
+                  }}
+                >
+                  <span
+                    className=""
+                    style={{ fontWeight: "500", marginBottom: "2px" }}
+                  >
+                    HOÀN TÁC
+                  </span>
+                </Button>
+              </div>
+            ) : null}
           {paymentHistorys &&
             paymentHistorys.length <= 0 &&
             order.trangThai != OrderStatusString.CANCELLED &&
@@ -1254,8 +1295,7 @@ const OrderDetail = (props) => {
             </div>
             <div className="">
               {order.trangThai === OrderStatusString.PENDING_CONFIRM ||
-                order.trangThai === OrderStatusString.CONFIRMED ||
-                order.trangThai === OrderStatusString.PREPARING ? (
+                order.trangThai === OrderStatusString.CONFIRMED ? (
                 <Button
                   onClick={handleClickOpenDialogUpdateRecipientOrder}
                   className="rounded-2 ms-2"
@@ -1376,7 +1416,7 @@ const OrderDetail = (props) => {
                     className="rounded-pill badge-success text-center"
                     style={{
                       height: "35px",
-                      width: "115px",
+                      width: "128px",
                       padding: "5px",
                     }}
                   >
@@ -1384,23 +1424,7 @@ const OrderDetail = (props) => {
                       className="text-white p-2"
                       style={{ fontSize: "14px" }}
                     >
-                      Đã xác nhận
-                    </span>
-                  </div>
-                ) : order.trangThai == OrderStatusString.PREPARING ? (
-                  <div
-                    className="rounded-pill mx-auto badge-warning text-center"
-                    style={{
-                      height: "35px",
-                      width: "160px",
-                      padding: "5px",
-                    }}
-                  >
-                    <span
-                      className="text-dark p-2"
-                      style={{ fontSize: "14px" }}
-                    >
-                      Đang chuẩn bị hàng
+                      Chờ giao hàng
                     </span>
                   </div>
                 ) : order.trangThai == OrderStatusString.DELIVERING ? (
@@ -1962,7 +1986,6 @@ const OrderDetail = (props) => {
         <div>
           <div className="button-container">
             {order.trangThai === OrderStatusString.PENDING_CONFIRM ||
-              order.trangThai === OrderStatusString.PREPARING ||
               order.trangThai === OrderStatusString.CONFIRMED ? (
               <>
                 <Button
@@ -2066,8 +2089,7 @@ const OrderDetail = (props) => {
             </div>
             <div className="">
               {order.trangThai === OrderStatusString.PENDING_CONFIRM ||
-                order.trangThai === OrderStatusString.CONFIRMED ||
-                order.trangThai === OrderStatusString.PREPARING ? (
+                order.trangThai === OrderStatusString.CONFIRMED ? (
                 <>
                   <Button
                     onClick={() => { handleOpenScanner(); setScannerRef([]) }}
@@ -2177,12 +2199,17 @@ const OrderDetail = (props) => {
               </div>
               <div className="d-flex justify-content-between mt-3">
                 <span className="" style={{ fontSize: "16px", color: "" }}>
-                  Giảm giá hóa đơn
+                  Phiếu giảm giá
                 </span>
                 <span
                   className="text-dark"
                   style={{ fontSize: "17px", fontWeight: "500" }}
                 >
+                  <span className="underline-custom" style={{ cursor: "pointer", fontWeight: "500" }}>
+                    {order &&
+                      order.voucher &&
+                      order.voucher.ma && "(" + order.voucher.ma + ") " || ""}
+                  </span>
                   {(order &&
                     order.voucher &&
                     order.voucher.giaTriVoucher &&
@@ -2306,7 +2333,7 @@ const OrderDetail = (props) => {
               {order.tienTraHang && (
                 <div className="d-flex justify-content-between mt-3">
                   <span className="" style={{ fontSize: "16px", color: "" }}>
-                    Hoàn trả
+                    Tổng tiền trả hàng
                   </span>
                   <span className="text-dark" style={{ fontSize: "17px" }}>
                     {order &&
@@ -2352,7 +2379,6 @@ const OrderDetail = (props) => {
           <ConfirmDialog
             open={openCommon}
             status={status}
-            confirmPreparing={handleConfirmPreparing}
             confirmOrderInfo={handleConfirmOrderInfo}
             confirmDelivery={handleConfirmDelivery}
             confirmFinish={handleConfirmOrderFinish}
@@ -2442,6 +2468,8 @@ const OrderDetail = (props) => {
         />
 
         <ScannerBarcode open={openScanner} close={handleCloseOpenScanner} getResult={addProductToOrderByScanner} refresh={scannerRef} />
+
+        <ConfirmRollbackStatusOrder open={openRollback} confirm={rollBackStatus} onClose={handleCloseOpenRollback} />
 
         {isLoading && <LoadingIndicator />}
         <div className="mt-4"></div>

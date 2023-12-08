@@ -67,6 +67,7 @@ const ManagementProductItems = ({/*  open, close, productItems, productName */ }
           columns={columns}
           rowKey="ma"
           dataSource={products}
+          rowClassName={(record) => record.soLuongTonKho < 0 ? "disable-product" : ""}
           pagination={false}
           locale={{ emptyText: <Empty description="Không có dữ liệu" /> }}
         />

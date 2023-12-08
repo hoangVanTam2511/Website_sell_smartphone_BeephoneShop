@@ -902,10 +902,10 @@ const CreateProduct = ({ }) => {
                           </InputAdornment>
                         </>
                       }
-                      renderValue={(selected) => selected.map(id => {
-                        const category = categorys.find(c => c.id === id);
-                        return category ? category.tenDanhMuc : '';
-                      }).join(', ')}
+                    renderValue={(selected) => selected.map(id => {
+                      const category = categorys.find(c => c.id === id);
+                      return category ? category.tenDanhMuc : '';
+                    }).join(', ')}
                     >
                       {categorys.map((c) => (
                         <MenuItem key={c.id} value={c.id}>

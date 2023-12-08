@@ -1,3 +1,7 @@
+.disable-product{
+  opacity: 0.7;
+  pointer-events: none;
+}
 .ant-checkbox-inner, .ant-checkbox-input {
     transform: scale(1.2)
   }

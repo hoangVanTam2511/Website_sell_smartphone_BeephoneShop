@@ -246,7 +246,7 @@ const UpdateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
   useEffect(() => {
     // setSelectedRam(getSelectedRam);
     // setSelectedRom(getSelectedRom);
-    setProductItems(findProductItem)
+    // setProductItems(findProductItem)
 
     const ramIds = findProductItem && findProductItem.map(item => item.ram.id);
     const uniqueRamIds = [...new Set(ramIds)];

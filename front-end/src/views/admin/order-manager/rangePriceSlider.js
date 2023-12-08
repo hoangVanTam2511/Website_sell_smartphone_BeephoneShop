@@ -44,7 +44,7 @@ const PrettoSlider = styled(Slider)({
     },
   },
 });
-const PriceSlider = ({ }) => {
+const PriceSlider = ({ getPrice }) => {
   const [openSelect4, setOpenSelect4] = useState(false);
   const handleCloseSelect4 = () => {
     setOpenSelect4(false);
@@ -128,7 +128,7 @@ const PriceSlider = ({ }) => {
   return (
     <>
       <div
-        className="d-flex"
+        className="d-flex ms-3"
         style={{ height: "40px", cursor: "pointer" }}
       >
         <div onClick={handleOpenSelect4} className="mt-2">
@@ -256,6 +256,13 @@ const PriceSlider = ({ }) => {
                       setIsRangePrice(true);
                       setFromPrice(valueStart);
                       setToPrice(valueEnd);
+                      let valueFinalFrom;
+                      valueFinalFrom = String(valueStart)
+                        .replace(/[^0-9]+/g, "")
+                      let valueFinalTo;
+                      valueFinalTo = String(valueEnd)
+                        .replace(/[^0-9]+/g, "")
+                      getPrice(valueFinalFrom, valueFinalTo);
                     }}
                     className="rounded-2 button-mui ms-2"
                     type="primary"
