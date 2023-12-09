@@ -13,7 +13,7 @@ export const loginUser = createAsyncThunk('user/login', async data => {
         setAuthHeader(res.data.token)
         user = res.data
         console.log(user)
-        localStorage.setItem('user', JSON.stringify(user))
+        window.localStorage.setItem('user', user);
         return res.data
       }
     })
@@ -56,6 +56,7 @@ const userSlice = createSlice({
       .addCase(changeInformationUser.fulfilled, (state, action) => {
         state.user = action.payload
         state.error = null
+
       })
       .addCase(changeInformationUser.rejected, (state, action) => {
         state.user = {

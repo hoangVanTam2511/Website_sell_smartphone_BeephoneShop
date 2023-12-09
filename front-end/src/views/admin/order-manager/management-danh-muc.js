@@ -31,7 +31,7 @@ import LoadingIndicator from "../../../utilities/loading";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
 import CreateDanhMuc from "./create-danh-muc";
-import { request } from '../../../store/helpers/axios_helper'
+import { request, requestParam } from '../../../store/helpers/axios_helper'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -71,13 +71,11 @@ const ManagementDanhMuc = () => {
 
   const getListDanhMucSearchAndPage = (page) => {
     // setIsLoading(false);
-    request('GET',`/api/danh-mucs/search`, {
-        params: {
+    requestParam('GET',`/api/danh-mucs/search`, {
           keyword: searchTatCa,
           currentPage: page,
           pageSize: pageShow,
           status: ConvertStatusProductsNumberToString(searchTrangThai),
-        },
       })
       .then((response) => {
         setDanhMucPages(response.data.data);

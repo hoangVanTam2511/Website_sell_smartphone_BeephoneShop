@@ -35,7 +35,7 @@ import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDown
 import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
-import { request } from '../../../store/helpers/axios_helper'
+import { request, requestParam } from '../../../store/helpers/axios_helper'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -77,13 +77,11 @@ const ManagementSims = () => {
 
   const getListProductSearchAndPage = (page) => {
     // setIsLoading(false);
-    request('GET',`/api/sim-cards/search`, {
-        params: {
+    requestParam('GET',`/api/sim-cards/search`, {
           keyword: searchTatCa,
           currentPage: page,
           pageSize: pageShow,
           status: ConvertStatusProductsNumberToString(searchTrangThai),
-        },
       })
       .then((response) => {
         setProductPages(response.data.data);

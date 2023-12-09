@@ -31,7 +31,7 @@ import CreatePin from "./create-pin";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
-import { request } from '../../../store/helpers/axios_helper'
+import { request, requestParam } from '../../../store/helpers/axios_helper'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -66,12 +66,10 @@ const ManagementPins = () => {
 
   const getListPinSearchAndPage = (page) => {
     // setIsLoading(false);
-    request('GET',`/api/pins/search`, {
-        params: {
+    requestParam('GET',`/api/pins/search`, {
           keyword: searchTatCa,
           currentPage: page,
           status: ConvertStatusProductsNumberToString(searchTrangThai),
-        },
       })
       .then((response) => {
         setPinPages(response.data.data);

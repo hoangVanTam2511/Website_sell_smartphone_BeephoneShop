@@ -31,7 +31,7 @@ import LoadingIndicator from "../../../utilities/loading";
 import CreateMauSac from "./create-mau-sac";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
-import { request } from '../../../store/helpers/axios_helper'
+import { request, requestParam } from '../../../store/helpers/axios_helper'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -71,13 +71,11 @@ const ManagementColors = () => {
 
   const getListProductSearchAndPage = (page) => {
     // setIsLoading(false);
-    request('GET',`/api/colors/search`, {
-        params: {
+    requestParam('GET',`/api/colors/search`, {
           keyword: searchTatCa,
           currentPage: page,
           pageSize: pageShow,
           status: ConvertStatusProductsNumberToString(searchTrangThai),
-        },
       })
       .then((response) => {
         setColorPages(response.data.data);

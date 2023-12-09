@@ -17,11 +17,26 @@ export const request = (method, url, data) => {
     if (getAuthToken() !== null && getAuthToken() !== "null") {
         headers = { 'Authorization': `Bearer ${getAuthToken()}`}
     }
-    console.log(headers)
 
     return axios({
         method: method,
         url: url,
         headers: headers,
-        data: data});
+        data: data,
+    })
+};
+
+export const requestParam = (method, url, data) => {
+
+    let headers = {};
+    if (getAuthToken() !== null && getAuthToken() !== "null") {
+        headers = { 'Authorization': `Bearer ${getAuthToken()}`}
+    }
+
+    return axios({
+        method: method,
+        url: url,
+        headers: headers,
+        params: data,
+    })
 };

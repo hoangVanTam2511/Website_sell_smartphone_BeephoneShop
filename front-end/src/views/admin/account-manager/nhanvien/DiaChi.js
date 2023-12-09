@@ -24,12 +24,12 @@ const AddressForm = ({
   }, []);
 
   const callAPI = async (api) => {
-    const response =  request('GET', api);
+    const response = await axios.get(api);
     return response.data;
   };
 
   const fetchProvinces = () => {
-    callAPI(host + "?depth=1")
+    callAPI(host + "?depth=2")
       .then((data) => {
         setProvinces(data);
       })

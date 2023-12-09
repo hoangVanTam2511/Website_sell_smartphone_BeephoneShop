@@ -32,7 +32,7 @@ import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import useCustomSnackbar from "../../../utilities/notistack";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
-import { request } from '../../../store/helpers/axios_helper'
+import { request, requestParam } from '../../../store/helpers/axios_helper'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -74,6 +74,7 @@ const ManagementTheNhos = () => {
     request('GET',`/api/the-nhos`)
       .then((response) => {
         setListTheNho(response.data.data);
+        getListProductSearchAndPage(currentPage);
         // setIsLoading(false);
       })
       .catch((error) => {
@@ -89,13 +90,11 @@ const ManagementTheNhos = () => {
 
   const getListProductSearchAndPage = (page) => {
     // setIsLoading(false);
-    request('GET',`/api/the-nhos/search`, {
-        params: {
+    requestParam('GET',`/api/the-nhos/search`, {
           keyword: searchTatCa,
           currentPage: page,
           pageSize: pageShow,
           status: ConvertStatusProductsNumberToString(searchTrangThai),
-        },
       })
       .then((response) => {
         setProductPages(response.data.data);

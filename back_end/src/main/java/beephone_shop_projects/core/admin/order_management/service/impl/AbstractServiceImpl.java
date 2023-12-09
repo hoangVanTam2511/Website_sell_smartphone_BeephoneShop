@@ -47,7 +47,7 @@ public class AbstractServiceImpl<E, D, R, ID extends Serializable> implements Ge
   @Override
   public D update(R req) throws Exception {
     E entity = converter.convertRequestToEntity(req);
-    E updatedEntity = repo.update(entity);
+    E updatedEntity = repo.save(entity);
     return converter.convertEntityToResponse(updatedEntity);
   }
 

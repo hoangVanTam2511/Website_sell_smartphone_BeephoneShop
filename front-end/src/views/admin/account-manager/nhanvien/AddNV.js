@@ -207,23 +207,29 @@ const AddNV = () => {
         setIsConfirmVisible(false);
         return;
       }
-      const nhanVienRespone = request('POST', apiURLNV + "/add", obj);
+      request('POST', apiURLNV + "/add", obj).then(
+        (res) => {
+          if (res.status === 200) {
+            var nhanVienRespone = res
+            const generatedMaKhachHang = nhanVienRespone.data.data.id;
+            addDiaChiList(generatedMaKhachHang);
+            redirectToHienThiKH(generatedMaKhachHang);
+            const newNhanVienRespone = {
+              hoVaTen: hoVaTen,
+              ngaySinh: ngaySinh,
+              soDienThoai: soDienThoai,
+              diaChiList: [],
+              gioiTinh: gioiTinh,
+              email: email,
+              anhDaiDien: anhDaiDien,
+              canCuocCongDan: cccd,
+            };
+            setListNV([newNhanVienRespone, ...listNV]);
+            handleOpenAlertVariant("Thêm khách hàng thành công", Notistack.SUCCESS);
+          }
+        }
+      );
 
-      const generatedMaKhachHang = nhanVienRespone.data.data.id;
-      addDiaChiList(generatedMaKhachHang);
-      redirectToHienThiKH(generatedMaKhachHang);
-      const newNhanVienRespone = {
-        hoVaTen: hoVaTen,
-        ngaySinh: ngaySinh,
-        soDienThoai: soDienThoai,
-        diaChiList: [],
-        gioiTinh: gioiTinh,
-        email: email,
-        anhDaiDien: anhDaiDien,
-        canCuocCongDan: cccd,
-      };
-      setListNV([newNhanVienRespone, ...listNV]);
-      handleOpenAlertVariant("Thêm khách hàng thành công", Notistack.SUCCESS);
     } catch (error) {
       handleOpenAlertVariant("Thêm thất bại", Notistack.ERROR);
     }
@@ -251,6 +257,8 @@ const AddNV = () => {
           trangThaiNV: 1,
         };
         setDiaChiList([newKhachHangResponse, ...diaChiList]);
+      }).catch((error) => {
+        console.log(error)
       });
   };
   const handleChangeDate = (date) => {

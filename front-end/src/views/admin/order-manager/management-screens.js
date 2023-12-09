@@ -38,7 +38,7 @@ import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
 import useCustomSnackbar from "../../../utilities/notistack";
-import { request } from '../../../store/helpers/axios_helper'
+import { request, requestParam } from '../../../store/helpers/axios_helper'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -99,13 +99,11 @@ const ManagementScreens = () => {
 
   const getListProductSearchAndPage = (page) => {
     // setIsLoading(false);
-    request('GET',`/api/display/search`, {
-        params: {
+    requestParam('GET',`/api/display/search`, {
           keyword: searchTatCa,
           currentPage: page,
           pageSize: pageShow,
           status: ConvertStatusProductsNumberToString(searchTrangThai),
-        },
       })
       .then((response) => {
         setProductPages(response.data.data);
@@ -214,7 +212,7 @@ const ManagementScreens = () => {
       width: "15%",
       dataIndex: "ma",
       render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>{record.ma}</span>
+        <span style={{ fontWeight: "400" }}>{ record.ma}</span>
       ),
     },
     {
@@ -233,8 +231,8 @@ const ManagementScreens = () => {
       width: "15%",
       render: (text, record) => (
         <span style={{ fontWeight: "400" }}>
-          {record.doPhanGiaiManHinh.chieuDai} x{" "}
-          {record.doPhanGiaiManHinh.chieuRong + " Pixels"}
+          {record.doPhanGiaiManHinh === null ? '':record.doPhanGiaiManHinh.chieuDai} x{" "}
+          {record.doPhanGiaiManHinh === null ? '': record.doPhanGiaiManHinh.chieuRong + " Pixels"}
         </span>
       ),
     },
@@ -243,7 +241,7 @@ const ManagementScreens = () => {
       align: "center",
       width: "15%",
       render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>{record.tanSoQuet + " HZ"}</span>
+        <span style={{ fontWeight: "400" }}>{ record.tanSoQuet + " HZ"}</span>
       ),
     },
     {

@@ -22,7 +22,7 @@ import { FaDownload, FaEye, FaUpload } from "react-icons/fa6";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import Barcode from 'react-barcode';
 import html2canvas from 'html2canvas';
-import { request } from '../../../store/helpers/axios_helper'
+import { request, requestParam } from '../../../store/helpers/axios_helper'
 
 const ManagementProducts = () => {
   const navigate = useNavigate();

@@ -43,7 +43,7 @@ import {
 import useCustomSnackbar from "../../../utilities/notistack";
 import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
 import * as React from "react";
-import { request } from '../../../store/helpers/axios_helper'
+import { request, requestParam } from '../../../store/helpers/axios_helper'
 
 //show
 const HienThiVoucher = () => {
@@ -72,8 +72,7 @@ const HienThiVoucher = () => {
 
   const loadDataListVoucher = (page) => {
     setIsLoading(false);
-    request('GET', `${apiURLVoucher}/vouchers`, {
-        params: {
+    requestParam('GET', `${apiURLVoucher}/vouchers`, {
           keyword: searchTatCa,
           pageNo: page,
           pageSize: showPage,
@@ -82,8 +81,8 @@ const HienThiVoucher = () => {
           trangThai: ConvertStatusVoucherNumberToString(searchTrangThai),
           ngayBatDau: searchNgayBatDau,
           ngayKetThuc: searchNgayKetThuc,
-        },
-      })
+        }
+      )
       .then((response) => {
         setListVoucher(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -128,8 +127,7 @@ const HienThiVoucher = () => {
   };
 
   const loadDataListVoucher1 = (page) => {
-    request('GET', `${apiURLVoucher}/vouchers`, {
-        params: {
+    requestParam('GET', `${apiURLVoucher}/vouchers`, {
           keyword: searchTatCa,
           pageNo: page,
           pageSize: showPage,
@@ -138,8 +136,8 @@ const HienThiVoucher = () => {
           trangThai: ConvertStatusVoucherNumberToString(searchTrangThai),
           ngayBatDau: searchNgayBatDau,
           ngayKetThuc: searchNgayKetThuc,
-        },
-      })
+        }
+      )
       .then((response) => {
         setListVoucher(response.data.data);
         setTotalPages(response.data.totalPages);

@@ -30,7 +30,7 @@ import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import useCustomSnackbar from "../../../utilities/notistack";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
-import { request } from '../../../store/helpers/axios_helper'
+import { request, requestParam } from '../../../store/helpers/axios_helper'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -49,12 +49,10 @@ const ManagementHangs = () => {
   );
 
   const findOrdersByMultipleCriteriaWithPagination = (page) => {
-    request('GET',`/api/orders`, {
-        params: {
+    requestParam('GET',`/api/orders`, {
           currentPage: page,
           keyword: keyword,
           isPending: false,
-        },
       })
       .then((response) => {
         setListHang(response.data.data);

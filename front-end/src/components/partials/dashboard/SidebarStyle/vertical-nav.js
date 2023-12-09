@@ -36,7 +36,9 @@ const VerticalNav = memo((props) => {
   const [active, setActive] = useState("");
   //location
   let location = useLocation();
-  const user = useSelector((state) => state.user.user);
+  const user =  window.localStorage.getItem('user')
+
+  
 
   return (
     <Fragment>

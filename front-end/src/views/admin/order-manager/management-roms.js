@@ -30,7 +30,7 @@ import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import CreateRom from "./create-rom";
 import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
-import { request } from '../../../store/helpers/axios_helper'
+import { request, requestParam } from '../../../store/helpers/axios_helper'
 import useCustomSnackbar from "../../../utilities/notistack";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -66,12 +66,10 @@ const ManagementRoms = () => {
 
   const getListRomSearchAndPage = (page) => {
     // setIsLoading(false);
-    request('GET',`/api/roms/search`, {
-        params: {
+    requestParam('GET',`/api/roms/search`, {
           keyword: searchTatCa,
           currentPage: page,
           status: ConvertStatusProductsNumberToString(searchTrangThai),
-        },
       })
       .then((response) => {
         setRomPages(response.data.data);

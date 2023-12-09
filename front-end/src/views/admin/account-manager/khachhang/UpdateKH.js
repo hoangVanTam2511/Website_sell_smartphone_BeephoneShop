@@ -76,9 +76,15 @@ const UpdateKH = () => {
   //hiển thị diaChi
   const fetchDiaChiList = async () => {
     try {
-      const response = await fetch(apiURLKH + "/dia-chi/hien-thi/" + id);
-      const data = await response.json();
-      setDiaChiList(data);
+      request('GET',apiURLKH + "/dia-chi/hien-thi/" + id).then(
+        (res) => {
+          if(res.status === 200){
+            setDiaChiList(res.data);
+          }
+        }
+      )
+      // console.log(response);
+      
     } catch (error) {
       console.error("Error fetching dia chi list:", error);
     }

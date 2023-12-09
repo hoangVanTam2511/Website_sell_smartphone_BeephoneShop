@@ -40,7 +40,7 @@ import { ConvertStatusVoucherNumberToString } from "../../../utilities/convertEn
 import useCustomSnackbar from "../../../utilities/notistack";
 import LoadingIndicator from "../../../utilities/loading";
 import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
-import { request } from '../../../store/helpers/axios_helper'
+import { request, requestParam } from '../../../store/helpers/axios_helper'
 
 //show
 const HienThiKhuyenMai = () => {
@@ -84,8 +84,7 @@ const HienThiKhuyenMai = () => {
   // cutstom load data
   const loadDataListKhuyenMai = (page) => {
     setIsLoading(false);
-    request('GET', `${apiURLKhuyenMai}/hien-thi`, {
-        params: {
+    requestParam('GET', `${apiURLKhuyenMai}/hien-thi`, {
           keyword: searchTatCa,
           pageNo: page,
           pageSize: showPage,
@@ -94,7 +93,7 @@ const HienThiKhuyenMai = () => {
           ngayBatDau: searchNgayBatDau,
           ngayKetThuc: searchNgayKetThuc,
         },
-      })
+      )
       .then((response) => {
         const modifiedData = response.data.data.map((item, index) => ({
           ...item,

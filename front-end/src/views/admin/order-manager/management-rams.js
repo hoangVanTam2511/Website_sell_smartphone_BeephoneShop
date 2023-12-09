@@ -31,7 +31,7 @@ import CreateRam from "./create-ram";
 import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
 import useCustomSnackbar from "../../../utilities/notistack";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
-import { request } from '../../../store/helpers/axios_helper'
+import { request, requestParam } from '../../../store/helpers/axios_helper'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -66,12 +66,10 @@ const ManagementRams = () => {
 
   const getListRamSearchAndPage = (page) => {
     // setIsLoading(false);
-    request('GET',`/api/rams/search`, {
-        params: {
+    requestParam('GET',`/api/rams/search`, {
           keyword: searchTatCa,
           currentPage: page,
           status: ConvertStatusProductsNumberToString(searchTrangThai),
-        },
       })
       .then((response) => {
         setRamPages(response.data.data);

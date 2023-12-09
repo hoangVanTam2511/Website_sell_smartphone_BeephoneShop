@@ -32,7 +32,7 @@ import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import CreateCameraTruoc from "./create-camera-truoc";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
-import { request } from '../../../store/helpers/axios_helper'
+import { request, requestParam } from '../../../store/helpers/axios_helper'
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -90,14 +90,13 @@ const ManagementFrontCameras = () => {
 
   const getListProductSearchAndPage = (page) => {
     // setIsLoading(false);
-    request('GET',`/api/camera-fronts/search`, {
-        params: {
+    requestParam('GET',`/api/camera-fronts/search`, {
           keyword: searchTatCa,
           currentPage: page,
           pageSize: pageShow,
           status: ConvertStatusProductsNumberToString(searchTrangThai),
-        },
-      })
+        }
+      )
       .then((response) => {
         setCameraPages(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -212,8 +211,11 @@ const ManagementFrontCameras = () => {
   const validationAll = () => {
     const msg = {};
 
-    if (!doPhanGiai.trim("")) {
-      msg.doPhanGiai = "Độ phân giải không được trống.";
+    console.log(String(doPhanGiai))
+
+    if(String(doPhanGiai) === null || String(doPhanGiai) === "" || String(doPhanGiai) === undefined){
+      msg.doPhanGiai = "Độ phân giải không được bỏ trống.";
+      return;
     }
 
     setValidationMsg(msg);
@@ -235,7 +237,8 @@ const ManagementFrontCameras = () => {
       cameraType: cameraType,
       status: status,
     };
-    request('PUT',`/api/camera-fronts`, obj)
+    console.log(obj)
+    request('PUT',`/api/camera-fronts/update`, obj)
       .then((response) => {
         getListCameraFront();
         handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
