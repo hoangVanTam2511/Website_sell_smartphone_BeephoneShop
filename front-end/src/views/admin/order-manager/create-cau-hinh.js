@@ -885,6 +885,8 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
       product: getProduct,
       productItems: JSON.parse(storeItem),
     }
+    // check product
+    console.log(request)
     try {
       request('POST',`/api/products`, request, {
         headers: {
@@ -905,7 +907,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
     catch (error) {
       setIsLoadingInside(false);
       getOverplay(false);
-      console.error("Error");
+      console.error(error);
     }
   }
   const listFiles = [...cauHinhsFinal]

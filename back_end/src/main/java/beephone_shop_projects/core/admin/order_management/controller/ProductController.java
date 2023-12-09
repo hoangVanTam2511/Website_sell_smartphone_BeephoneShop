@@ -62,7 +62,7 @@ public class ProductController {
   private ModelMapper modelMapper;
 
   @GetMapping("/product-items/page")
-  public ResponsePage home101(@ModelAttribute SearchFilterProductItemDto searchFilter) {
+    public ResponsePage home101(@ModelAttribute SearchFilterProductItemDto searchFilter) {
     if (searchFilter.getKeyword() == null) {
       searchFilter.setKeyword("");
     }

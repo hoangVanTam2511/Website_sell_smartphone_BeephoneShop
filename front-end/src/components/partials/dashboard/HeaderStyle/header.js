@@ -3,6 +3,7 @@ import { Navbar, Container, Nav, Dropdown } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import CustomToggle from "../../../dropdowns";
 import { request, setAuthHeader } from '../../../../store/helpers/axios_helper'
+import { useNavigate } from 'react-router-dom'
 //img
 // import flag1 from '../../../../assets/images/Flag/flag001.png'
 // import flag2 from '../../../../assets/images/Flag/flag-02.png'
@@ -34,6 +35,7 @@ const Header = memo((props) => {
   const navbarHide = useSelector(SettingSelector.navbar_show); // array
   const headerNavbar = useSelector(SettingSelector.header_navbar);
   const user = useSelector(state => state.user.user)
+  const navigate = useNavigate()
 
   useEffect(() => {
     // navbarstylemode
@@ -162,7 +164,7 @@ const Header = memo((props) => {
                   />
                   <div className="caption ms-3 d-none d-md-block ">
                     <h6 className="mb-0 caption-title">{user === undefined || user.ma === "" ? '' : user.hoVaTen}</h6>
-                    <p className="mb-0 caption-sub-title">{user === undefined || user.ma === "" ? '' : user.idRole.ten}</p>
+                    <p className="mb-0 caption-sub-title">{user === undefined || user.ma === "" ? '' : user.idRole}</p>
                   </div>
                 </Dropdown.Toggle>
                 <Dropdown.Menu
@@ -176,8 +178,9 @@ const Header = memo((props) => {
                     Cài đặt
                   </Dropdown.Item>
                   <Dropdown.Divider />
-                  <Dropdown.Item href="http://localhost:3000/login"
+                  <Dropdown.Item
                     onClick={() => {
+                      navigate("/login")
                       setAuthHeader(null)
                     }}
                   >

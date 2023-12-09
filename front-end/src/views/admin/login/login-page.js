@@ -51,6 +51,7 @@ const LoginPage = () => {
     request("POST", "/client/account/login", userLogin)
     .then(res => {
       if (res.status === 200) {
+        console.log(res.data)
         setAuthHeader(res.data.token)
         dispatch(changeInformationUser(res.data))
           if (res.data.idRole === 'role2') {
@@ -99,6 +100,7 @@ const LoginPage = () => {
                 placeholder='Email'
                 required
                 value={userLogin.email}
+                name="email"
                 onChange={e =>
                   setUserLogin({ ...userLogin, email: e.target.value })
                 }
@@ -112,6 +114,7 @@ const LoginPage = () => {
                   placeholder='Mật khẩu'
                   required
                   value={userLogin.password}
+                  name="password"
                   onChange={e =>
                     setUserLogin({ ...userLogin, password: e.target.value })
                   }
