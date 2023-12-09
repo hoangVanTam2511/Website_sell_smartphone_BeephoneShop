@@ -3,27 +3,75 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "antd";
 import { TextField } from "@mui/material";
 import axios from "axios";
-import { Notistack } from "./enum";
+import { Notistack, OrderStatusString } from "./enum";
 import useCustomSnackbar from "../../../utilities/notistack";
-import { request } from '../../../store/helpers/axios_helper'
+import LoadingIndicator from "../../../utilities/loading";
+import { ScannerBarcodeOrder } from "./AlertDialogSlide";
 
 const RefundOrder = () => {
   const navigate = useNavigate();
   const [orderCode, setOrderCode] = useState("");
   const { handleOpenAlertVariant } = useCustomSnackbar();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const getOrderItemsById = async () => {
-    request('GET',`/api/orders/${orderCode}`)
+  const getOrderItemsByIdScanner = async (code) => {
+    setIsLoading(true);
+    await axios
+      .get(`http://localhost:8080/api/orders/${code}`)
       .then((response) => {
-        handleRedirectRefundOrderDetail();
+        const data = response.data.data;
+        if (data.trangThai === OrderStatusString.HAD_PAID || data.trangThai === OrderStatusString.SUCCESS_DELIVERY) {
+          setIsLoading(false);
+          handleRedirectRefundOrderDetail();
+          handleCloseOpenScanner();
+        }
+        else {
+          setIsLoading(false);
+          handleOpenAlertVariant("Đơn hàng chưa hoàn thành!", Notistack.ERROR);
+          handleCloseOpenScanner();
+        }
       })
       .catch((error) => {
+        setIsLoading(false);
+        handleOpenAlertVariant("Không tìm thấy đơn hàng!", Notistack.ERROR);
+        handleCloseOpenScanner();
+      });
+  };
+
+  const getOrderItemsById = async () => {
+    setIsLoading(true);
+    await axios
+      .get(`http://localhost:8080/api/orders/${orderCode}`)
+      .then((response) => {
+        const data = response.data.data;
+        if (data.trangThai === OrderStatusString.HAD_PAID || data.trangThai === OrderStatusString.SUCCESS_DELIVERY) {
+          setIsLoading(false);
+          handleRedirectRefundOrderDetail();
+        }
+        else {
+          setIsLoading(false);
+          handleOpenAlertVariant("Đơn hàng chưa hoàn thành!", Notistack.ERROR);
+        }
+      })
+      .catch((error) => {
+        setIsLoading(false);
         handleOpenAlertVariant("Không tìm thấy đơn hàng!", Notistack.ERROR);
       });
   };
 
   const handleRedirectRefundOrderDetail = () => {
     navigate(`/dashboard/refund-order/${orderCode}`);
+  };
+
+  const [openScanner, setOpenScanner] = useState(false);
+  const [scannerRef, setScannerRef] = useState([]);
+
+  const handleOpenScanner = () => {
+    setOpenScanner(true);
+  };
+
+  const handleCloseOpenScanner = () => {
+    setOpenScanner(false);
   };
 
   // useEffect(() => {
@@ -69,22 +117,21 @@ const RefundOrder = () => {
               />
               <Button
                 onClick={() => getOrderItemsById()}
-                className="rounded-2 ms-2"
-                type="warning"
-                style={{ width: "100px", fontSize: "15px" }}
+                className="rounded-2 ms-2 button-mui"
+                style={{ height: "38px", width: "100px", fontSize: "15px" }}
               >
                 <span
-                  className="text-dark"
+                  className="text-white"
                   style={{ fontWeight: "500", marginBottom: "2px" }}
                 >
                   Tìm Kiếm
                 </span>
               </Button>
               <Button
-                // onClick={() => {
-                //   onOpenScanner();
-                //   setScannerRef([]);
-                // }}
+                onClick={() => {
+                  handleOpenScanner();
+                  setScannerRef([]);
+                }}
                 className="rounded-2 me-2 ms-2"
                 type="warning"
                 style={{ height: "38px", width: "120px", fontSize: "15px" }}
@@ -104,6 +151,8 @@ const RefundOrder = () => {
           </div>
         </div>
         <div className="mt-4"></div>
+        <ScannerBarcodeOrder open={openScanner} close={handleCloseOpenScanner} getResult={getOrderItemsByIdScanner} refresh={scannerRef} />
+        {isLoading && <LoadingIndicator />}
       </div>
     </>
   );

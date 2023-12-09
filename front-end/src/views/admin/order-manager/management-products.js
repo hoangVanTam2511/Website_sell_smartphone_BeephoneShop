@@ -79,6 +79,14 @@ const ManagementProducts = () => {
     );
   };
 
+  const totalAmountInStock = (item) => {
+    let total = 0;
+    item.map((product) => {
+      total += product.soLuongTonKho;
+    })
+    return total;
+  }
+
 
   const columns = [
     {
@@ -97,16 +105,21 @@ const ManagementProducts = () => {
       render: (text, item) => (
         <>
           <div style={{ position: "relative" }}>
-            <img
-              src={
-                item &&
-                item.productItems && item.productItems[0] &&
-                item.productItems[0].image && item.productItems[0].image.path
-              }
-              class=""
-              alt=""
-              style={{ width: "125px", height: "125px" }}
-            />
+            {
+              item.productItems.some((pi) => pi.image !== null) ?
+                <img
+                  src={
+                    item &&
+                    item.productItems && item.productItems[0] &&
+                    item.productItems[0].image && item.productItems[0].image.path
+                  }
+                  class=""
+                  alt=""
+                  style={{ width: "125px", height: "125px" }}
+                />
+                :
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="90" style={{ width: "125px", height: "125px", color: "rgb(232, 234, 235)", margin: "0px auto" }}><path d="M19 3H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h14c1.103 0 2-.897 2-2V5c0-1.103-.897-2-2-2ZM5 19V5h14l.002 14H5Z" fill="currentColor"></path><path d="m10 14-1-1-3 4h12l-5-7-3 4ZM8.5 11a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" fill="currentColor"></path></svg>
+            }
           </div>
         </>
       ),
@@ -128,7 +141,7 @@ const ManagementProducts = () => {
       width: "15%",
       dataIndex: "tenSanPham",
       render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>{record.tenSanPham}</span>
+        <span className="" style={{ fontWeight: "400" }}>{record.tenSanPham}</span>
       ),
     },
     {
@@ -144,9 +157,20 @@ const ManagementProducts = () => {
       title: "Hệ Điều Hành",
       align: "center",
       width: "15%",
-      dataIndex: "hang",
       render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>{record.operatingType}</span>
+        record.operatingType
+      ),
+    },
+    {
+      title: "Số Lượng Tồn",
+      align: "center",
+      width: "15%",
+      render: (text, record) => (
+        <div>
+          <span style={{ fontWeight: "400", whiteSpace: "pre-line" }}>{totalAmountInStock(record.productItems)}
+          </span>
+          <span style={{ color: "gray", fontSize: "14px", display: "block" }}>({record.productItems && record.productItems.length} phiên bản)</span>
+        </div>
       ),
     },
     {
@@ -203,7 +227,7 @@ const ManagementProducts = () => {
                 <FaPencilAlt color="#2f80ed" />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Chi tiết" TransitionComponent={Zoom}>
+            <Tooltip title="Xem chi tiết các phiên bản" TransitionComponent={Zoom}>
               <IconButton size="" className=""
                 onClick={() => {
                   navigate(`/dashboard/products/${record.id}`);
@@ -227,13 +251,13 @@ const ManagementProducts = () => {
           <Card.Header className="d-flex justify-content-between">
             <div className="header-title mt-2">
               <TextField
-                label="Tìm Sản Phẩm Theo Mã Hoặc Tên"
+                label="Tìm kiếm theo mã, tên, số lượng tồn"
                 // onChange={handleGetValueFromInputTextField}
                 // value={keyword}
                 InputLabelProps={{
                   sx: {
                     marginTop: "",
-                    textTransform: "capitalize",
+                    // textTransform: "capitalize",
                   },
                 }}
                 inputProps={{
@@ -281,29 +305,6 @@ const ManagementProducts = () => {
                   Import IMEI
                 </span>
               </Button>
-              {/*
-              <Button
-                // onClick={handleUploadClick}
-                className="rounded-2 button-mui me-2"
-                type="primary"
-                style={{ height: "40px", width: "auto", fontSize: "15px" }}
-              >
-                <FaDownload
-                  className="ms-1"
-                  style={{
-                    position: "absolute",
-                    bottom: "13.5px",
-                    left: "10px",
-                  }}
-                />
-                <span
-                  className=""
-                  style={{ marginBottom: "2px", fontWeight: "500", marginLeft: "21px" }}
-                >
-                  Export Excel
-                </span>
-              </Button>
-*/}
               <Button
                 // onClick={handleUploadClick}
                 className="rounded-2 button-mui me-2"
@@ -323,6 +324,27 @@ const ManagementProducts = () => {
                   style={{ marginBottom: "2px", fontWeight: "500", marginLeft: "21px" }}
                 >
                   Tải Mẫu Import IMEI
+                </span>
+              </Button>
+              <Button
+                // onClick={handleUploadClick}
+                className="rounded-2 button-mui me-2"
+                type="primary"
+                style={{ height: "40px", width: "auto", fontSize: "15px" }}
+              >
+                <FaDownload
+                  className="ms-1"
+                  style={{
+                    position: "absolute",
+                    bottom: "13.5px",
+                    left: "10px",
+                  }}
+                />
+                <span
+                  className=""
+                  style={{ marginBottom: "2px", fontWeight: "500", marginLeft: "21px" }}
+                >
+                  Export Excel
                 </span>
               </Button>
               <Button

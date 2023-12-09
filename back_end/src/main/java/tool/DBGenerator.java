@@ -148,7 +148,7 @@ public class DBGenerator implements CommandLineRunner {
 
         DanhMuc danhMuc1 = new DanhMuc();
         danhMuc1.setMa("DMUC14");
-        danhMuc1.setTenDanhMuc("Xem Phim, Quay Video, Chụp Ảnh");
+        danhMuc1.setTenDanhMuc("Quay Video, Chụp Ảnh");
         danhMuc1.setStatus(StatusCommon.ACTIVE);
         danhMuc1.setId(danhMucRepository.save(danhMuc1).getId());
 
@@ -724,7 +724,7 @@ public class DBGenerator implements CommandLineRunner {
         //Bảng Pin
         Pin pin = new Pin();
         pin.setMa("Pin01");
-        pin.setLoaiPin("Lithium-polymer");
+        pin.setLoaiPin("Polymer");
         pin.setDungLuong(6000);
         pin.setStatus(StatusCommon.ACTIVE);
         pin.setId(pinRepository.save(pin).getId());
@@ -732,14 +732,14 @@ public class DBGenerator implements CommandLineRunner {
         Pin pin1 = new Pin();
         pin1.setMa("Pin012");
         pin1.setDungLuong(4800);
-        pin1.setLoaiPin("Lithium-ion");
+        pin1.setLoaiPin("Li-ion");
         pin1.setStatus(StatusCommon.ACTIVE);
         pin1.setId(pinRepository.save(pin1).getId());
 
         Pin pin2 = new Pin();
         pin2.setMa("Pin013");
         pin2.setDungLuong(5000);
-        pin2.setLoaiPin("Lithium-ion");
+        pin2.setLoaiPin("Lipo");
         pin2.setStatus(StatusCommon.ACTIVE);
         pin2.setId(pinRepository.save(pin2).getId());
 

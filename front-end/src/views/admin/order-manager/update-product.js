@@ -43,7 +43,6 @@ import CreateDanhMuc from "./create-danh-muc";
 import CreateCameraSau from "./create-camera-sau";
 import CreateCameraTruoc from "./create-camera-truoc";
 import UpdateCauHinh from "./update-cau-hinh";
-import { request } from '../../../store/helpers/axios_helper'
 // import Sketch from '@uiw/react-color-sketch';
 
 const ITEM_HEIGHT = 130;
@@ -74,7 +73,8 @@ const UpdateProduct = ({ }) => {
 
   const [categorys, setCategorys] = useState([]);
   const getListDanhMuc = () => {
-    request('GET',`/api/danh-mucs`)
+    axios
+      .get(`http://localhost:8080/api/danh-mucs`)
       .then((response) => {
         setCategorys(response.data.data);
       })
@@ -88,7 +88,8 @@ const UpdateProduct = ({ }) => {
     setOpenHang(false);
   }
   const getListHang = () => {
-    request('GET',`/api/brands`)
+    axios
+      .get(`http://localhost:8080/api/brands`)
       .then((response) => {
         setListHang(response.data.data);
       })
@@ -103,7 +104,8 @@ const UpdateProduct = ({ }) => {
     setOpenChip(false);
   }
   const getListChip = () => {
-    request('GET',`/api/chips`)
+    axios
+      .get(`http://localhost:8080/api/chips`)
       .then((response) => {
         setListChip(response.data.data);
       })
@@ -118,7 +120,8 @@ const UpdateProduct = ({ }) => {
     setOpenPin(false);
   }
   const getListPin = () => {
-    request('GET',`/api/pins`)
+    axios
+      .get(`http://localhost:8080/api/pins`)
       .then((response) => {
         setListPin(response.data.data);
       })
@@ -133,7 +136,8 @@ const UpdateProduct = ({ }) => {
     setOpenSac(false);
   }
   const getListSac = () => {
-    request('GET',`/api/chargers`)
+    axios
+      .get(`http://localhost:8080/api/chargers`)
       .then((response) => {
         setListSac(response.data.data);
       })
@@ -148,7 +152,8 @@ const UpdateProduct = ({ }) => {
     setOpenTheNho(false);
   }
   const getListTheNho = () => {
-    request('GET',`/api/the-nhos`)
+    axios
+      .get(`http://localhost:8080/api/the-nhos`)
       .then((response) => {
         setListTheNho(response.data.data);
       })
@@ -163,7 +168,8 @@ const UpdateProduct = ({ }) => {
     setOpenManHinh(false);
   }
   const getListManHinh = () => {
-    request('GET',`/api/display`)
+    axios
+      .get(`http://localhost:8080/api/display`)
       .then((response) => {
         setListManHinh(response.data.data);
         console.log(response.data.data)
@@ -183,7 +189,8 @@ const UpdateProduct = ({ }) => {
     setOpenTheSim(false);
   }
   const getListTheSim = () => {
-    request('GET',`/api/sim-cards/all`)
+    axios
+      .get(`http://localhost:8080/api/sim-cards/all`)
       .then((response) => {
         setListTheSim(response.data.data);
       })
@@ -494,7 +501,8 @@ const UpdateProduct = ({ }) => {
   const [camerasSau, setCamerasSau] = useState([]);
   const [camerasTruoc, setCamerasTruoc] = useState([]);
   const getListCameraTruoc = () => {
-    request('GET',`/api/camera-fronts`)
+    axios
+      .get(`http://localhost:8080/api/camera-fronts`)
       .then((response) => {
         setCamerasTruoc(response.data.data);
       })
@@ -503,7 +511,8 @@ const UpdateProduct = ({ }) => {
       });
   };
   const getListCameraSau = () => {
-    request('GET',`/api/camera-rears`)
+    axios
+      .get(`http://localhost:8080/api/camera-rears`)
       .then((response) => {
         setCamerasSau(response.data.data);
       })
@@ -655,6 +664,8 @@ const UpdateProduct = ({ }) => {
     }
   ]);
 
+  const [productId, setProductId] = useState("");
+  const [productCode, setProductCode] = useState("");
   const [productName, setProductName] = useState("");
   const handleOnInputChangeProductName = (event, value) => {
     setProductName(value);
@@ -824,14 +835,18 @@ const UpdateProduct = ({ }) => {
   }
 
   const [findProduct, setFindProduct] = useState({});
+  const [findProductItem, setFindProductItem] = useState([]);
   const [selectedRam, setSelectedRam] = useState([]);
   const [selectedRom, setSelectedRom] = useState([]);
 
   const getProductById = async () => {
-    // setIsLoading(true);
-    request('GET',`/api/products/${id}`)
+    setIsLoading(true);
+    await axios
+      .get(`http://localhost:8080/api/products/${id}`)
       .then((response) => {
         const data = response.data.data;
+        setProductId(data.id);
+        setProductCode(data.ma);
         setProductName(data.tenSanPham);
         setBrand(data.hang.id);
         setChip(data.chip.id)
@@ -842,6 +857,7 @@ const UpdateProduct = ({ }) => {
         setOpera(data.operatingType);
         setStatus(data.trangThai);
         setFindProduct(data);
+        setFindProductItem(data.productItems);
 
         const mainCameraSau = data.cameraSaus.find(camera => camera.isCameraMain === true);
         const findMainCameraSau = mainCameraSau ? mainCameraSau.cameraSau.id : ""
@@ -862,7 +878,6 @@ const UpdateProduct = ({ }) => {
 
           return updatedRatings;
         });
-
 
         const mainCameraTruoc = data.cameraTruocs.find(camera => camera.isCameraMain === true);
         const findMainCameraTruoc = mainCameraTruoc ? mainCameraTruoc.cameraTruoc.id : ""
@@ -902,11 +917,11 @@ const UpdateProduct = ({ }) => {
 
 
         console.log(data);
-        // setIsLoading(false);
+        setIsLoading(false);
       })
       .catch((error) => {
         console.error(error);
-        // setIsLoading(false);
+        setIsLoading(false);
       });
   };
 
@@ -1158,6 +1173,43 @@ const UpdateProduct = ({ }) => {
                       <FormHelperText>Bạn chưa chọn thẻ nhớ!</FormHelperText>
                     }
                   </FormControl>
+                </div>
+              </div>
+              <div className="mt-4 d-flex mx-auto" style={{ width: "100%" }}>
+                <div className="" style={{ width: "100%" }}>
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">Hệ Điều Hành</InputLabel>
+                    <Select className="custom"
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={opera}
+                      label="Hệ Điều Hành"
+                      onChange={handleChangeOpera}
+                      defaultValue={0}
+                    >
+                      <MenuItem value={0}>Android</MenuItem>
+                      <MenuItem value={1}>IOS</MenuItem>
+                    </Select>
+                  </FormControl>
+                </div>
+                <div className="ms-3" style={{ width: "100%" }}>
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">Trạng Thái</InputLabel>
+                    <Select className="custom"
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={status}
+                      label="Trạng Thái"
+                      onChange={handleChangeStatus}
+                      defaultValue={0}
+                    >
+                      <MenuItem value={0}>Kinh Doanh</MenuItem>
+                      <MenuItem value={1}>Ngừng Kinh Doanh</MenuItem>
+                    </Select>
+                  </FormControl>
+                </div>
+                <div className="ms-3" style={{ width: "100%" }}>
+                  <TextField fullWidth inputProps={{}} className="custom" id="outlined-basic" label="Trọng Lượng" variant="outlined" />
                 </div>
               </div>
               <div className="mt-4 d-flex">
@@ -1418,40 +1470,6 @@ const UpdateProduct = ({ }) => {
                   </FormControl>
                 </div>
               </div>
-              <div className="mt-4 d-flex mx-auto" style={{ width: "65%" }}>
-                <div className="" style={{ width: "100%" }}>
-                  <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">Hệ Điều Hành</InputLabel>
-                    <Select className="custom"
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      value={opera}
-                      label="Hệ Điều Hành"
-                      onChange={handleChangeOpera}
-                      defaultValue={0}
-                    >
-                      <MenuItem value={0}>Android</MenuItem>
-                      <MenuItem value={1}>IOS</MenuItem>
-                    </Select>
-                  </FormControl>
-                </div>
-                <div className="ms-3" style={{ width: "100%" }}>
-                  <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">Trạng Thái</InputLabel>
-                    <Select className="custom"
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      value={status}
-                      label="Trạng Thái"
-                      onChange={handleChangeStatus}
-                      defaultValue={0}
-                    >
-                      <MenuItem value={0}>Kinh Doanh</MenuItem>
-                      <MenuItem value={1}>Ngừng Kinh Doanh</MenuItem>
-                    </Select>
-                  </FormControl>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -1511,7 +1529,7 @@ const UpdateProduct = ({ }) => {
         cameraFront={camerasTruoc}
       />
       <CreatePin open={openPin} close={handleCloseOpenPin} getAll={getListPin} pins={listPin} />
-      <UpdateCauHinh valid={handleValidation()} confirm={getConfirm} isConfirm={confirm} productName={productName} getProduct={product} getOverplay={getOverplay} getSelectedRam={selectedRam} getSelectedRom={selectedRom}/>
+      <UpdateCauHinh valid={handleValidation()} confirm={getConfirm} isConfirm={confirm} productName={productName} getProduct={product} getOverplay={getOverplay} getSelectedRam={selectedRam} getSelectedRom={selectedRom} findProductItem={findProductItem} />
       {isLoading && <LoadingIndicator />}
     </>
   )

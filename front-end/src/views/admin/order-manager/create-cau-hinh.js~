@@ -37,7 +37,6 @@ import ModalChonDonGiaChung from "./modal-don-gia-chung";
 import CreateMauSac from "./create-mau-sac";
 import Barcode from 'react-barcode';
 import html2canvas from 'html2canvas';
-import { request } from '../../../store/helpers/axios_helper'
 
 const ITEM_HEIGHT = 130;
 const ITEM_PADDING_TOP = 8;
@@ -86,7 +85,8 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
   }
   const [listColor, setListColor] = useState([]);
   const getListColor = async () => {
-    request('GET',`/api/colors`)
+    await axios
+      .get(`http://localhost:8080/api/colors`)
       .then((response) => {
         setListColor(response.data.data);
       })
@@ -97,7 +97,8 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
   const [listRam, setListRam] = useState([]);
   const [listRom, setListRom] = useState([]);
   const getListRom = () => {
-    request('GET',`/api/roms`)
+    axios
+      .get(`http://localhost:8080/api/roms`)
       .then((response) => {
         setListRom(response.data.data);
       })
@@ -106,7 +107,8 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
       });
   };
   const getListRam = () => {
-    request('GET',`/api/rams`)
+    axios
+      .get(`http://localhost:8080/api/rams`)
       .then((response) => {
         setListRam(response.data.data);
       })
@@ -118,7 +120,8 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
   const [listImeiCurrent, setListImeiCurrent] = useState([]);
 
   const getAllImei = () => {
-    request('GET',`/api/imeis/all`, {
+    axios
+      .get(`http://localhost:8080/api/imeis/all`, {
       })
       .then((response) => {
         setListImeiCurrent(response.data.data);
@@ -142,7 +145,8 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
   const [isLoadingInside, setIsLoadingInside] = useState(false);
   const handleDownloadSample = () => {
     setIsLoading(true);
-    request('POST','/api/create-excel-template-by', {}, { responseType: 'blob' }) // Sử dụng phương thức POST
+    axios
+      .post('http://localhost:8080/api/create-excel-template-by', {}, { responseType: 'blob' }) // Sử dụng phương thức POST
       .then((response) => {
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');
@@ -886,7 +890,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
       productItems: JSON.parse(storeItem),
     }
     try {
-      request('POST',`/api/products`, request, {
+      await axios.post(`http://localhost:8080/api/products`, request, {
         headers: {
           "Content-Type": "application/json",
         }
@@ -925,7 +929,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
 
   const addFiles = async (ma) => {
     try {
-      request('POST','/api/products/upload-multiple', formData, {
+      await axios.post('http://localhost:8080/api/products/upload-multiple', formData, {
         params: {
           ma: ma,
         }
@@ -1029,7 +1033,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
             )
           })}
         </div>
-        {/* <button onClick={convertBarcodeToImage}>Chuyển đổi thành ảnh</button> */}
+        <button onClick={convertBarcodeToImage}>Chuyển đổi thành ảnh</button>
         {barcodeImages.map((item, index) => (
           <img key={index} src={item.image} alt={`Barcode ${index}`} />
         ))}

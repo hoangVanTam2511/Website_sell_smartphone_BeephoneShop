@@ -675,6 +675,7 @@ const CreateProduct = ({ }) => {
   const [isLoading, setIsLoading] = React.useState(false);
   const [isNonNull, setIsNonNull] = React.useState(false);
 
+  const [weight, setWeight] = React.useState('');
   const [status, setStatus] = React.useState();
   const [brand, setBrand] = React.useState('');
   const [brandName, setBrandName] = React.useState('');
@@ -705,6 +706,9 @@ const CreateProduct = ({ }) => {
   };
   const handleChangeStatus = (event) => {
     setStatus(event.target.value);
+  };
+  const handleChangeWeight = (event) => {
+    setWeight(event.target.value);
   };
   const getTenHangById = (id) => {
     const hang = listHang.find((item) => item.id === id);
@@ -889,10 +893,10 @@ const CreateProduct = ({ }) => {
                           </InputAdornment>
                         </>
                       }
-                      renderValue={(selected) => selected.map(id => {
-                        const category = categorys.find(c => c.id === id);
-                        return category ? category.tenDanhMuc : '';
-                      }).join(', ')}
+                    renderValue={(selected) => selected.map(id => {
+                      const category = categorys.find(c => c.id === id);
+                      return category ? category.tenDanhMuc : '';
+                    }).join(', ')}
                     >
                       {categorys.map((c) => (
                         <MenuItem key={c.id} value={c.id}>
@@ -1072,6 +1076,43 @@ const CreateProduct = ({ }) => {
                       <FormHelperText>Bạn chưa chọn thẻ nhớ!</FormHelperText>
                     }
                   </FormControl>
+                </div>
+              </div>
+              <div className="mt-4 d-flex mx-auto" style={{ width: "100%" }}>
+                <div className="" style={{ width: "100%" }}>
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">Hệ Điều Hành</InputLabel>
+                    <Select className="custom"
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={opera}
+                      label="Hệ Điều Hành"
+                      onChange={handleChangeOpera}
+                      defaultValue={0}
+                    >
+                      <MenuItem value={0}>Android</MenuItem>
+                      <MenuItem value={1}>IOS</MenuItem>
+                    </Select>
+                  </FormControl>
+                </div>
+                <div className="ms-3" style={{ width: "100%" }}>
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">Trạng Thái</InputLabel>
+                    <Select className="custom"
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={status}
+                      label="Trạng Thái"
+                      onChange={handleChangeStatus}
+                      defaultValue={0}
+                    >
+                      <MenuItem value={0}>Kinh Doanh</MenuItem>
+                      <MenuItem value={1}>Ngừng Kinh Doanh</MenuItem>
+                    </Select>
+                  </FormControl>
+                </div>
+                <div className="ms-3" style={{ width: "100%" }}>
+                  <TextField fullWidth inputProps={{}} className="custom" id="outlined-basic" label="Trọng Lượng" variant="outlined" />
                 </div>
               </div>
               <div className="mt-4 d-flex">
@@ -1329,40 +1370,6 @@ const CreateProduct = ({ }) => {
                     {confirm && selectedSim.length === 0 &&
                       <FormHelperText>Bạn chưa chọn thẻ SIM!</FormHelperText>
                     }
-                  </FormControl>
-                </div>
-              </div>
-              <div className="mt-4 d-flex mx-auto" style={{ width: "65%" }}>
-                <div className="" style={{ width: "100%" }}>
-                  <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">Hệ Điều Hành</InputLabel>
-                    <Select className="custom"
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      value={opera}
-                      label="Hệ Điều Hành"
-                      onChange={handleChangeOpera}
-                      defaultValue={0}
-                    >
-                      <MenuItem value={0}>Android</MenuItem>
-                      <MenuItem value={1}>IOS</MenuItem>
-                    </Select>
-                  </FormControl>
-                </div>
-                <div className="ms-3" style={{ width: "100%" }}>
-                  <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">Trạng Thái</InputLabel>
-                    <Select className="custom"
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      value={status}
-                      label="Trạng Thái"
-                      onChange={handleChangeStatus}
-                      defaultValue={0}
-                    >
-                      <MenuItem value={0}>Kinh Doanh</MenuItem>
-                      <MenuItem value={1}>Ngừng Kinh Doanh</MenuItem>
-                    </Select>
                   </FormControl>
                 </div>
               </div>

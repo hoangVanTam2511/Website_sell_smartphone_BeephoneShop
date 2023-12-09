@@ -16,6 +16,7 @@ import beephone_shop_projects.entity.DiaChi;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -39,8 +40,8 @@ public class KhachHangRestcontroller {
         return new ResponsePage(accService.getAll(request));
     }
     @GetMapping("hien-thi")
-    public ResponsePage hienThi(@RequestParam(name = "page", defaultValue = "1") Integer pageNo) {
-        return new ResponsePage(accService.getAllKH(pageNo));
+    public ResponsePage hienThi(final FindAccountRequest request) {
+        return new ResponsePage(accService.getAllKH(request));
     }
 
     @GetMapping("search-all")

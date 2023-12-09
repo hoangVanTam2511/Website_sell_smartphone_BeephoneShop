@@ -28,4 +28,6 @@ public class OrderItemsCustomRefundRequest {
 
   private BigDecimal phuPhi;
 
+  private String createdByRefund;
+
 }

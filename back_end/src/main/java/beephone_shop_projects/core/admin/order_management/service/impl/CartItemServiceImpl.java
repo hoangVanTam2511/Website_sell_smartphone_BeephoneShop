@@ -25,6 +25,7 @@ import beephone_shop_projects.core.admin.order_management.repository.impl.ImeiRe
 import beephone_shop_projects.core.admin.order_management.repository.impl.OrderRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.service.CartItemService;
 import beephone_shop_projects.core.admin.product_management.repository.ProductDetailRepository;
+import beephone_shop_projects.core.admin.voucher_management.repository.VoucherRepository;
 import beephone_shop_projects.entity.GioHang;
 import beephone_shop_projects.entity.GioHangChiTiet;
 import beephone_shop_projects.entity.HoaDon;
@@ -48,6 +49,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, CartItemResponse, CartItemRequest, String> implements CartItemService {
+  @Autowired
+  private VoucherRepository voucherRepository;
 
   @Autowired
   private CartItemRepositoryImpl cartItemRepository;
@@ -724,6 +727,7 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
         }
         orderRepository.save(findOrderCurrent);
       }
+
 //      Integer resetAmount = findCartItem.getSoLuong();
       imeiDaBanCustomRepository.deleteAll(findCartItemOrder.get().getImeisDaBan());
       orderItemRepository.deleteById(findCartItemOrder.get().getId());
@@ -810,12 +814,33 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
     } else {
       findOrderCurrent.setTienTraKhach((req.getTongTien()));
     }
+
+    if (findOrderCurrent.getVoucher() != null) {
+      BigDecimal dieuKien = findOrderCurrent.getVoucher().getDieuKienApDung();
+      BigDecimal tongTien = BigDecimal.ZERO;
+      BigDecimal tongTienTraHang = BigDecimal.ZERO;
+
+      if (findOrderCurrent.getTienTraHang() != null) {
+        tongTien = findOrderCurrent.getTongTien();
+      }
+      if (findOrderCurrent.getTongTien() != null) {
+        tongTienTraHang = findOrderCurrent.getTienTraHang();
+      }
+
+      BigDecimal tongTienSauKhiTra = tongTien.subtract(tongTienTraHang);
+
+      if (tongTienSauKhiTra.compareTo(dieuKien) < 0) {
+        findOrderCurrent.setVoucher(null);
+      }
+    }
+
     orderRepository.save(findOrderCurrent);
 //    SanPhamChiTiet getOptional = findProductItem.get();
 
     LichSuHoaDon orderHistory = new LichSuHoaDon();
     orderHistory.setHoaDon(findOrderCurrent);
     orderHistory.setCreatedAt(new Date());
+    orderHistory.setCreatedBy(req.getCreatedByRefund());
     orderHistory.setThaoTac("Hoàn Trả");
     orderHistory.setMoTa("Đã hoàn trả [" + req.getAmount() + "] sản phẩm với số tiền là [" + req.getTongTien() + "]. " + req.getGhiChu());
     orderHistory.setLoaiThaoTac(7);

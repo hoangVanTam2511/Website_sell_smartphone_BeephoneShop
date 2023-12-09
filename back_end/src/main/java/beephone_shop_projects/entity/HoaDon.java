@@ -96,6 +96,10 @@ public class HoaDon extends PrimaryEntity implements IsIdentified {
   private Account account;
 
   @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_nhan_vien")
+  private Account accountEmployee;
+
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_voucher")
   private Voucher voucher;
 

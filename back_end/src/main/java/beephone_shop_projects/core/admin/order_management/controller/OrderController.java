@@ -5,10 +5,8 @@ import beephone_shop_projects.core.admin.order_management.model.request.SearchFi
 import beephone_shop_projects.core.admin.order_management.model.response.OrderResponse;
 import beephone_shop_projects.core.admin.order_management.service.impl.HoaDonServiceImpl;
 import beephone_shop_projects.core.admin.order_management.service.impl.LichSuHoaDonServiceImpl;
-import beephone_shop_projects.core.common.base.ResponsePage;
 import beephone_shop_projects.core.common.base.ResponseObject;
-import beephone_shop_projects.entity.Account;
-import beephone_shop_projects.entity.Voucher;
+import beephone_shop_projects.core.common.base.ResponsePage;
 import beephone_shop_projects.infrastructure.constant.ApiConstants;
 import beephone_shop_projects.infrastructure.constant.HttpStatus;
 import beephone_shop_projects.infrastructure.constant.Message;
@@ -71,6 +69,12 @@ public class OrderController {
     }
     OrderResponse placedOrder = hoaDonService.placeOrder(orderRequest);
     return new ResponseObject(placedOrder);
+  }
+
+  @PutMapping("/roll-back-status")
+  public ResponseObject<OrderResponse> rollBackStatusOrder(@RequestBody OrderRequest req) throws Exception {
+    OrderResponse rollBack = hoaDonService.rollBackStatusOrder(req);
+    return new ResponseObject(rollBack);
   }
 
   @PutMapping("/{id}")

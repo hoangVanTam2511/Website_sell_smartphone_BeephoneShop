@@ -35,28 +35,38 @@ import {
   ModalRefundProduct,
 } from "./AlertDialogSlide";
 import { ref, updateMetadata } from "firebase/storage";
-import { request } from '../../../store/helpers/axios_helper'
-
+import { useSelector } from "react-redux";
 const RefundDetail = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [order, setOrder] = useState({});
   const [orderItems, setOrderItems] = useState([]);
+  const [orderItemsTotal, setOrderItemsTotal] = useState([]);
   const [orderItem, setOrderItem] = useState([]);
   const [orderRefunds, setOrderRefunds] = useState([]);
   const { handleOpenAlertVariant } = useCustomSnackbar();
   const { id } = useParams();
   const [total, setTotal] = useState(0);
+  const [totalDiscount, setTotalDiscount] = useState(0);
+  const [codeDiscount, setCodeDiscount] = useState("");
+
+  const userId = useSelector(state => state.user.user.id);
 
   const getOrderItemsById = async () => {
-    request('GET',`/api/orders/${id}`)
+    await axios
+      .get(`http://localhost:8080/api/orders/${id}`)
       .then((response) => {
         const data = response.data.data;
         setOrder(data);
         console.log(data);
 
+        const discountVoucher = data.voucher && data.voucher.giaTriVoucher;
+        const discountVoucherCode = data.voucher && data.voucher.ma;
+        setTotalDiscount(discountVoucher || 0);
+        setCodeDiscount(discountVoucherCode === null ? "" : discountVoucherCode);
+
         // const filteredData = data.orderItems.filter((item) => item.soLuong > 0);
-        // setOrderItems(filteredData);
+        setOrderItemsTotal(data.orderItems);
 
         const updatedOrderItems = data.orderItems.map((orderItem) => {
           const imeiRefundCount = orderItem.imeisDaBan.filter(
@@ -230,9 +240,9 @@ const RefundDetail = () => {
               >
                 {item && item.donGiaSauGiam !== null && item.donGiaSauGiam !== 0
                   ? item.donGiaSauGiam.toLocaleString("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                    })
+                    style: "currency",
+                    currency: "VND",
+                  })
                   : ""}
               </span>
               <span
@@ -245,9 +255,9 @@ const RefundDetail = () => {
               >
                 {item && item.donGia
                   ? item.donGia.toLocaleString("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                    })
+                    style: "currency",
+                    currency: "VND",
+                  })
                   : ""}
               </span>
             </div>
@@ -392,9 +402,9 @@ const RefundDetail = () => {
               >
                 {item && item.donGia
                   ? item.donGia.toLocaleString("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                    })
+                    style: "currency",
+                    currency: "VND",
+                  })
                   : ""}
               </span>
             </div>
@@ -486,7 +496,7 @@ const RefundDetail = () => {
                 CHÍNH SÁCH TRẢ HÀNG & HOÀN TIỀN
                 <span style={{ color: "#2f80ed" }}>
                   {" "}
-                  (TRẢI NGHIỆM 7 NGÀY DÙNG THỬ MIỄN PHÍ)
+                  (TRẢI NGHIỆM 7 NGÀY DÙNG THỬ)
                 </span>
               </span>
             </div>
@@ -851,13 +861,13 @@ const RefundDetail = () => {
               </div>
               <div className="ms-5 ps-5">
                 {order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
-                order.account === null
+                  order.account === null
                   ? order.hoVaTen
                   : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
                     order.account &&
                     order.account.hoVaTen
-                  ? order.account.hoVaTen
-                  : order.tenNguoiNhan}
+                    ? order.account.hoVaTen
+                    : order.tenNguoiNhan}
               </div>
             </div>
             <div className="ms-4 mt-4 mt-1 d-flex" style={{ height: "30px" }}>
@@ -867,13 +877,13 @@ const RefundDetail = () => {
               <div className="ms-5 ps-5 mt-1">
                 <span className="text-dark" style={{ fontSize: "17px" }}>
                   {order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
-                  order.account === null
+                    order.account === null
                     ? order.soDienThoai
                     : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
                       order.account &&
                       order.account.soDienThoai
-                    ? order.account.soDienThoai
-                    : order.soDienThoaiNguoiNhan}
+                      ? order.account.soDienThoai
+                      : order.soDienThoaiNguoiNhan}
                 </span>
               </div>
             </div>
@@ -886,8 +896,8 @@ const RefundDetail = () => {
                   {order.account === null
                     ? order.email
                     : order.account && order.account.email
-                    ? order.account.email
-                    : "..."}
+                      ? order.account.email
+                      : "..."}
                 </span>
               </div>
             </div>
@@ -913,10 +923,6 @@ const RefundDetail = () => {
     );
   };
 
-  const hasOrderWithoutStatus = orderRefunds.some((orderRefund) => {
-    const imeiValues = Object.values(orderRefund.imei);
-    return imeiValues.some((imei) => imei.trangThai !== StatusImei.REFUND);
-  });
 
   const ProductRefund = () => {
     return (
@@ -1002,12 +1008,36 @@ const RefundDetail = () => {
               </div>
               <div className="">
                 {order.trangThai === OrderStatusString.SUCCESS_DELIVERY ||
-                order.trangThai === OrderStatusString.HAD_PAID ? (
+                  order.trangThai === OrderStatusString.HAD_PAID ? (
                   <Button
                     onClick={() => {
-                      // setOpenProducts(true);
-                      // getAllProducts();
-                      // setIsOpen(true);
+                      const updatedOrderItems = orderItemsTotal.map((orderItem) => {
+                        return {
+                          ...orderItem,
+                          soLuong: 0,
+                          imeisDaBan: [],
+                        };
+                      });
+
+                      setOrderItems(updatedOrderItems);
+                      const ordersRefunds = orderItemsTotal.flatMap((order) => {
+                        return order.imeisDaBan.flatMap((item) => {
+                          if (orderRefunds.some((refund) => refund.imei.soImei === item.soImei)) {
+                            return [];
+                          } else {
+                            return {
+                              ...order,
+                              soLuong: 1,
+                              imei: item,
+                              trangThai: StatusImei.SOLD,
+                            };
+                          }
+                        });
+                      });
+                      const updatedOrderRefunds = [...orderRefunds, ...ordersRefunds];
+                      setOrderRefunds(updatedOrderRefunds);
+                      console.log(updatedOrderRefunds);
+                      handleOpenAlertVariant("Trả toàn bộ thành công!", Notistack.SUCCESS);
                     }}
                     className="rounded-2"
                     type="primary"
@@ -1065,9 +1095,10 @@ const RefundDetail = () => {
       tongTien: totalRefundFinal(),
       id: order.id,
       amount: totalSizeRefundFinal(),
+      createdByRefund: userId,
     };
     try {
-      request('PUT',`/api/carts/order/refund`, request, {
+      await axios.put(`http://localhost:8080/api/carts/order/refund`, request, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -1219,6 +1250,24 @@ const RefundDetail = () => {
 
               <div className="d-flex justify-content-between mt-3">
                 <span className="" style={{ fontSize: "16px", color: "" }}>
+                  Phiếu giảm giá
+                </span>
+                <span
+                  className="text-dark"
+                  style={{ fontSize: "17px", fontWeight: "500" }}
+                >
+                  <span className="underline-custom" style={{ cursor: "pointer", fontWeight: "500" }}>
+                    {codeDiscount !== null || codeDiscount !== "" && "(" + codeDiscount + ") "}
+                  </span>
+                  {totalDiscount && totalDiscount.toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  }) || 0}
+                </span>
+              </div>
+
+              <div className="d-flex justify-content-between mt-3">
+                <span className="" style={{ fontSize: "16px", color: "" }}>
                   Cần trả khách
                 </span>
                 <span
@@ -1231,24 +1280,22 @@ const RefundDetail = () => {
                   }) || 0}
                 </span>
               </div>
-              {order.tienTraKhach !== null && order.tienTraKhach !== 0 && (
-                <div className="d-flex justify-content-between mt-3">
-                  <span className="" style={{ fontSize: "16px", color: "" }}>
-                    Đã trả khách
-                  </span>
-                  <span
-                    className="text-dark"
-                    style={{ fontSize: "17px", fontWeight: "500" }}
-                  >
-                    {(order.tienTraKhach &&
-                      order.tienTraKhach.toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })) ||
-                      0}
-                  </span>
-                </div>
-              )}
+              <div className="d-flex justify-content-between mt-3">
+                <span className="" style={{ fontSize: "16px", color: "" }}>
+                  Đã trả khách
+                </span>
+                <span
+                  className="text-dark"
+                  style={{ fontSize: "17px", fontWeight: "500" }}
+                >
+                  {(order.tienTraKhach &&
+                    order.tienTraKhach.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })) ||
+                    0}
+                </span>
+              </div>
             </div>
           </div>
         </div>

@@ -25,8 +25,7 @@ import ModalAddDiaChiKhachHang from "./ModalAddDiaChiKhachHang";
 import { Notistack } from "../../order-manager/enum";
 import useCustomSnackbar from "../../../../utilities/notistack";
 import { useNavigate } from "react-router-dom";
-import { request } from '../../../../store/helpers/axios_helper'
-
+import { ConfirmDialog } from "../../../../utilities/confirmModalDialoMui";
 const ModalAddKhachHang = ({ close }) => {
   let [listKH, setListKH] = useState([]);
   let [hoVaTen, setTen] = useState("");
@@ -67,9 +66,34 @@ const ModalAddKhachHang = ({ close }) => {
   const [sdtkhError, setSDTKHError] = useState("");
   const [hoTenKHErr, setHoTenKHErr] = useState("");
   let [huy, setHuy] = useState(false);
-  const showConfirm = () => {
-    setShowConfirmModal(true);
+  const [openConfirm, setOpenConfirm] = useState(false);
+
+  const handleOpenDialogConfirmAdd = () => {
+    setOpenConfirm(true);
   };
+
+  const handleCloseDialogConfirmAdd = () => {
+    setOpenConfirm(false);
+  };
+
+  const Header = () => {
+    return (
+      <>
+        <span style={{ fontWeight: "bold" }}>Xác nhận thêm khách hàng</span>
+      </>
+    );
+  };
+  const Title = () => {
+    return (
+      <>
+        <span>
+          Bạn có chắc chắn muốn thêm khách hàng{" "}
+          <span style={{ fontWeight: "bolder" }}>{hoTenKH}</span> không ?
+        </span>
+      </>
+    );
+  };
+
   const handleHoVaTenChange = (e) => {
     const value = e.target.value;
     const specialCharPattern = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]+/;
@@ -87,6 +111,7 @@ const ModalAddKhachHang = ({ close }) => {
       setHoVaTenError("");
     }
   };
+
   const handleHoVaTenKH = (e) => {
     const value = e.target.value;
     const specialCharPattern = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+/;
@@ -104,6 +129,7 @@ const ModalAddKhachHang = ({ close }) => {
       setHoTenKHErr("");
     }
   };
+
   const handleEmailChange = (e) => {
     const value = e.target.value.trim();
     const parn = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -116,6 +142,7 @@ const ModalAddKhachHang = ({ close }) => {
       setEmailError("");
     }
   };
+
   const handleDiaChi = (e) => {
     const value = e.target.value;
     setDiaChi(value);
@@ -128,6 +155,7 @@ const ModalAddKhachHang = ({ close }) => {
       setDiaChiError("");
     }
   };
+
   const handleSDT = (e) => {
     const value = e.target.value.trim();
     const parn = /^(?:\+84|0)[1-9]\d{8}$/;
@@ -140,6 +168,7 @@ const ModalAddKhachHang = ({ close }) => {
       setSDTError("");
     }
   };
+
   const handleSDTKH = (e) => {
     const value = e.target.value.trim();
     const parn = /^(?:\+84|0)[1-9]\d{8}$/;
@@ -152,12 +181,15 @@ const ModalAddKhachHang = ({ close }) => {
       setSDTKHError("");
     }
   };
-  const redirectToHienThiKH = (generatedMaKhachHang) => {
-    navigate("/update-khach-hang/" + generatedMaKhachHang);
-  };
+
+  // const redirectToHienThiKH = (generatedMaKhachHang) => {
+  //   navigate("/update-khach-hang/" + generatedMaKhachHang);
+  // };
+
   const handleAddressChange = (result) => {
     setDiaChi(result);
   };
+
   const handleProvinceChange = (value) => {
     setTinhThanhPho(value);
   };
@@ -172,6 +204,22 @@ const ModalAddKhachHang = ({ close }) => {
 
   const handleAnhDaiDienChange = (imageURL) => {
     setAnhDaiDien(imageURL);
+  };
+
+  const handleResetForm = () => {
+    setTen("");
+    setHoTenKH("");
+    setNgaySinh("");
+    setSdt("");
+    setEmail("");
+    setGioiTinh(true);
+    setSoDienThoaiKhachHang("");
+    setAnhDaiDien("");
+    setXaPhuong("");
+    setQuanHuyen("");
+    setTinhThanhPho("");
+    setDiaChi("");
+    setHuy(true);
   };
 
   const AddKH = async () => {
@@ -219,7 +267,7 @@ const ModalAddKhachHang = ({ close }) => {
         return;
       }
       // Gọi API tạo khách hàng mới
-      const khachHangResponse = request('POST',
+      const khachHangResponse = await axios.post(
         apiURLKH + "/add",
         khachHangData
       );
@@ -227,7 +275,6 @@ const ModalAddKhachHang = ({ close }) => {
       // Lấy mã khách hàng từ response
       const generatedMaKhachHang = khachHangResponse.data.data.id;
       addDiaChiList(generatedMaKhachHang);
-      redirectToHienThiKH(generatedMaKhachHang);
 
       // Cập nhật danh sách khách hàng và hiển thị thông báo
       const newKhachHangResponse = {
@@ -241,9 +288,10 @@ const ModalAddKhachHang = ({ close }) => {
       };
 
       setListKH([newKhachHangResponse, ...listKH]);
+      close();
+      handleResetForm();
       handleOpenAlertVariant("Thêm thành công", Notistack.SUCCESS);
     } catch (error) {
-      // Xử lý lỗi
       handleOpenAlertVariant("Lỗi khi thêm khách hàng", Notistack.ERROR);
     }
   };
@@ -262,7 +310,8 @@ const ModalAddKhachHang = ({ close }) => {
       account: generatedMaKhachHang,
       trangThai: trangThaiKH,
     };
-    request('POST', `${apiURLKH}/dia-chi/add?id=${generatedMaKhachHang}`, newAddress)
+    axios
+      .post(`${apiURLKH}/dia-chi/add?id=${generatedMaKhachHang}`, newAddress)
       .then((response) => {
         let newKhachHangResponse = {
           diaChi: diaChi,
@@ -588,21 +637,17 @@ const ModalAddKhachHang = ({ close }) => {
         </Grid>{" "}
       </Grid>
       <div style={{ float: "right", marginTop: "10px", marginRight: "10px" }}>
-        <Button type="primary" onClick={showConfirm} size={"large"}>
+        <Button
+          type="primary"
+          onClick={handleOpenDialogConfirmAdd}
+          size={"large"}
+        >
           <FontAwesomeIcon
             icon={faFloppyDisk}
             style={{ paddingRight: "5px" }}
           />
           Lưu Khách Hàng{" "}
         </Button>
-        <Modal
-          title="Xác nhận"
-          open={showConfirmModal}
-          onOk={AddKH}
-          onCancel={() => setShowConfirmModal(false)}
-        >
-          Bạn có chắc muốn lưu khách hàng?
-        </Modal>
       </div>
       <ToastContainer
         position="top-right"
@@ -615,6 +660,13 @@ const ModalAddKhachHang = ({ close }) => {
         draggable
         pauseOnHover
         theme="colored"
+      />
+      <ConfirmDialog
+        open={openConfirm}
+        onClose={handleCloseDialogConfirmAdd}
+        add={AddKH}
+        title={<Title />}
+        header={<Header />}
       />
     </>
   );

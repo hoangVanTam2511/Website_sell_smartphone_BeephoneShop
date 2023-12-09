@@ -68,6 +68,7 @@ const ManagementProductItems = ({/*  open, close, productItems, productName */ }
           columns={columns}
           rowKey="ma"
           dataSource={products}
+          rowClassName={(record) => record.soLuongTonKho < 0 ? "disable-product" : ""}
           pagination={false}
           locale={{ emptyText: <Empty description="Không có dữ liệu" /> }}
         />
@@ -116,14 +117,19 @@ const ManagementProductItems = ({/*  open, close, productItems, productName */ }
       render: (text, item) => (
         <>
           <div style={{ position: "relative" }}>
-            <img
-              src={
-                item && item.image.path
-              }
-              class=""
-              alt=""
-              style={{ width: "125px", height: "125px" }}
-            />
+            {
+              item.image !== null ?
+                <img
+                  src={
+                    item.image.path
+                  }
+                  class=""
+                  alt=""
+                  style={{ width: "125px", height: "125px" }}
+                />
+                :
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="90" style={{ width: "125px", height: "125px", color: "rgb(232, 234, 235)", margin: "0px auto" }}><path d="M19 3H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h14c1.103 0 2-.897 2-2V5c0-1.103-.897-2-2-2ZM5 19V5h14l.002 14H5Z" fill="currentColor"></path><path d="m10 14-1-1-3 4h12l-5-7-3 4ZM8.5 11a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" fill="currentColor"></path></svg>
+            }
             {item &&
               item.donGiaSauKhuyenMai !== null && item.donGiaSauKhuyenMai !== 0 &&
               <div
@@ -175,15 +181,7 @@ const ManagementProductItems = ({/*  open, close, productItems, productName */ }
       dataIndex: "tenSanPham",
       render: (text, record) => (
         <span style={{ fontWeight: "400" }}>{record.sanPham.tenSanPham + " " + record.ram.dungLuong + "/" +
-          record.rom.dungLuong + "GB"}</span>
-      ),
-    },
-    {
-      title: "Màu Sắc",
-      align: "center",
-      width: "11%",
-      render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>{record.mauSac.tenMauSac}</span>
+          record.rom.dungLuong + "GB (" + record.mauSac.tenMauSac + ")"}</span>
       ),
     },
     {
@@ -225,12 +223,12 @@ const ManagementProductItems = ({/*  open, close, productItems, productName */ }
       render: (text, record) => (
         <>
           <div className="button-container">
-            <ImportExcelImei /* ma={record.ma} get={getImeisFromImport} listImeiCurrent={listImeiCurrent} listImeiCurrentSheet={cauHinhsFinal && imeiObjects} */ />
             <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
-              <IconButton size="">
+              <IconButton size="" className="me-2">
                 <FaPencilAlt color="#2f80ed" />
               </IconButton>
             </Tooltip>
+            <ImportExcelImei /* ma={record.ma} get={getImeisFromImport} listImeiCurrent={listImeiCurrent} listImeiCurrentSheet={cauHinhsFinal && imeiObjects} */ />
           </div>
         </>
       ),
@@ -243,19 +241,19 @@ const ManagementProductItems = ({/*  open, close, productItems, productName */ }
           <Card.Header className="d-flex justify-content-between">
             <div className="header-title mt-2">
               <TextField
-                label="Tìm Sản Phẩm Theo Mã, Số Lượng Hoặc Đơn Giá"
+                label="Tìm theo mã, tên, số lượng tồn hoặc đơn giá"
                 // onChange={handleGetValueFromInputTextField}
                 // value={keyword}
                 InputLabelProps={{
                   sx: {
                     marginTop: "",
-                    textTransform: "capitalize",
+                    // textTransform: "capitalize",
                   },
                 }}
                 inputProps={{
                   style: {
                     height: "23px",
-                    width: "350px",
+                    width: "400px",
                   },
                 }}
                 size="small"
@@ -276,27 +274,6 @@ const ManagementProductItems = ({/*  open, close, productItems, productName */ }
               </Button>
             </div>
             <div className="mt-2">
-              <Button
-                // onClick={handleUploadClick}
-                className="rounded-2 button-mui me-2"
-                type="primary"
-                style={{ height: "40px", width: "auto", fontSize: "15px" }}
-              >
-                <FaUpload
-                  className="ms-1"
-                  style={{
-                    position: "absolute",
-                    bottom: "13.5px",
-                    left: "10px",
-                  }}
-                />
-                <span
-                  className=""
-                  style={{ marginBottom: "2px", fontWeight: "500", marginLeft: "21px" }}
-                >
-                  Import IMEI
-                </span>
-              </Button>
               <Button
                 // onClick={handleUploadClick}
                 className="rounded-2 button-mui me-2"

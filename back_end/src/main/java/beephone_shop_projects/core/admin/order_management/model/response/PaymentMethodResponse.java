@@ -28,6 +28,8 @@ public class PaymentMethodResponse {
 
   private Date createdAt;
 
+  private String createdBy;
+
   private Integer trangThai;
 
   private String nguoiXacNhan;

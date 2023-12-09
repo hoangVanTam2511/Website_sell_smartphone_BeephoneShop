@@ -1,10 +1,10 @@
-import Html5QrcodePlugin from './Html5QrcodePlugin.jsx';
-import ResultContainerPlugin from './ResultContainerPlugin.jsx';
-import styleReader from './html5-qrcode-css.css';
+import Html5QrcodePlugin from "./Html5QrcodePlugin.jsx";
+import ResultContainerPlugin from "./ResultContainerPlugin.jsx";
+import styleReader from "./html5-qrcode-css.css";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Slider from "@mui/material/Slider";
-import { Button, Empty, Table as TableAntd } from "antd";
+import { Button, Empty, Modal, Table as TableAntd } from "antd";
 // import  EmptyData from "antd";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import { useTheme } from "@mui/material/styles";
@@ -26,9 +26,10 @@ import {
   DialogActions,
   Box,
   InputAdornment,
-  // Checkbox,
+  Checkbox as CheckBoxMui,
   FormControlLabel,
   Pagination,
+  ListItemText,
 } from "@mui/material";
 import Checkbox from "@mui/joy/Checkbox";
 import styleCss from "./style.css";
@@ -76,6 +77,9 @@ import { FaExternalLinkSquareAlt, FaTrashAlt } from "react-icons/fa";
 import { FaEye } from "react-icons/fa6";
 import Scanner from "./scanner";
 import AppBarCode from "./App";
+
+import Card from "../../../components/Card";
+import ModalAddKhachHang from "../account-manager/khachhang/ModalAddKhachHang.js";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -131,8 +135,9 @@ export function OrderConfirmPayment(props) {
               sx={{ color: "black" }}
               id="alert-dialog-description"
             >
-              {`Bạn có chắc chắn muốn ${delivery ? "đặt đơn hàng" : "thanh toán đơn hàng"
-                }`}{" "}
+              {`Bạn có chắc chắn muốn ${
+                delivery ? "đặt đơn hàng" : "thanh toán đơn hàng"
+              }`}{" "}
               <span className="" style={{ fontWeight: "500" }}>
                 {" "}
                 {ma}
@@ -393,7 +398,7 @@ export function UpdateRecipientOrderDialog(props) {
           wardName
         );
       }
-    } catch (error) { }
+    } catch (error) {}
   };
 
   return (
@@ -705,29 +710,38 @@ export function ProductsDialog(props) {
     onClose,
     data,
     add,
-    openProductDetails,
-    openDialogProductItems,
-    closeDialogProductDetails,
-    closeNoActionDialogProductDetails,
-    getAmount,
     openImei,
     onOpenImei,
     onCloseImei,
   } = props;
-  const StyledTableContainer = styled(TableContainer)({
-    boxShadow: "none",
-  });
 
-  const [openSelect, setOpenSelect] = useState(false);
-  const [openSelect1, setOpenSelect1] = useState(false);
-  const [openSelect2, setOpenSelect2] = useState(false);
-  const [openSelect3, setOpenSelect3] = useState(false);
-  const [openSelect4, setOpenSelect4] = useState(false);
-  const [openSelect5, setOpenSelect5] = useState(false);
-  const [openSelect6, setOpenSelect6] = useState(false);
-  const [openSelect7, setOpenSelect7] = useState(false);
-  const [openSelect8, setOpenSelect8] = useState(false);
-  const [openSelect9, setOpenSelect9] = useState(false);
+  const [openCategory, setOpenCategory] = useState(false);
+  const [openBrand, setOpenBrand] = useState(false);
+  const [openOpera, setOpenOpera] = useState(false);
+  const [openCpu, setOpenCpu] = useState(false);
+  const [openRam, setOpenRam] = useState(false);
+  const [openRom, setOpenRom] = useState(false);
+  const [openScreen, setOpenScreen] = useState(false);
+  const [openPin, setOpenPin] = useState(false);
+  const [openSort, setOpenSort] = useState(false);
+  const [openPage, setOpenPage] = useState(false);
+  const [page, setPage] = useState(false);
+
+  const handleOpenSort = () => {
+    setOpenSort(true);
+  };
+
+  const handleCloseOpenSort = () => {
+    setOpenSort(false);
+  };
+
+  const handleOpenPage = () => {
+    setOpenPage(true);
+  };
+
+  const handleCloseOpenPage = () => {
+    setOpenPage(false);
+  };
 
   const [price, setPrice] = useState(0);
   const [id, setId] = useState("");
@@ -737,209 +751,180 @@ export function ProductsDialog(props) {
   };
   const filterdData = data.filter((item) => item.soLuongTonKho > 0);
 
-  const StyledTableHead = styled(TableHead)`
-    & tr:hover th {
-      background-color: white !important;
-    }
-  `;
-
-  const useStyles = () => ({});
-
-  const classes = useStyles();
-
   const countPrice = (price, afterDiscount) => {
     return price - afterDiscount;
-
-  }
-
-  const TableProduct = () => {
-    return (
-      <>
-        <div className="">
-          <StyledTableContainer component={Paper}>
-            <Table
-              sx={{ minWidth: 650, boxShadow: "none" }}
-              aria-label="simple table"
-              className={classes.tableContainer}
-            >
-              <StyledTableHead>
-                <TableRow>
-                  <TableCell style={{ fontWeight: "500" }} align="center">
-                    Ảnh
-                  </TableCell>
-                  <TableCell style={{ fontWeight: "500" }} align="center">
-                    Mã Sản Phẩm
-                  </TableCell>
-                  <TableCell style={{ fontWeight: "500" }} align="center">
-                    Tên Sản Phẩm
-                  </TableCell>
-                  <TableCell style={{ fontWeight: "500" }} align="center">
-                    Màu sắc
-                  </TableCell>
-                  <TableCell style={{ fontWeight: "500" }} align="center">
-                    Hãng
-                  </TableCell>
-                  <TableCell style={{ fontWeight: "500" }} align="center">
-                    Đơn Giá
-                  </TableCell>
-                  <TableCell style={{ fontWeight: "500" }} align="center">
-                    Số lượng tồn
-                  </TableCell>
-                  <TableCell style={{ fontWeight: "500" }} align="center">
-                    Thao Tác
-                  </TableCell>
-                </TableRow>
-              </StyledTableHead>
-              <TableBody>
-                {filterdData.map((item, index) => (
-                  <TableRow
-                    key={index}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  >
-                    <TableCell
-                      component="th"
-                      scope="row"
-                      align="center"
-                      style={{ width: "200px" }}
-                    >
-                      <div style={{ position: "relative" }}>
-                        <img
-                          src={item && item.image && item.image.path}
-                          alt=""
-                          style={{ width: "125px", height: "125px" }}
-                        />
-                        {item &&
-                          item.donGiaSauKhuyenMai !== null && item.donGiaSauKhuyenMai !== 0 ?
-                          <div
-                            className="category"
-                            style={{
-                              userSelect: "none",
-                              backgroundColor: "#ffcc00",
-                              position: "absolute",
-                              top: "0px",
-                              borderTopLeftRadius: `8px`,
-                              fontSize: "11px",
-                              borderTopRightRadius: `20px`,
-                              borderBottomRightRadius: `20px`,
-                              fontWeight: "600",
-                              padding: "4px 8px", // Add padding for better visibility
-                              // width: "auto",
-                              // height: "30px"
-                              marginLeft: "25px",
-                              // marginTop: "25px",
-                            }}
-                          >
-                            Giảm{' '}
-                            {countPrice(item.donGia, item.donGiaSauKhuyenMai).toLocaleString("vi-VN", {
-                              style: "currency",
-                              currency: "VND",
-                            })
-                            }
-                          </div>
-                          : null}
-                      </div>
-                    </TableCell>
-                    <TableCell
-                      align="center"
-                      style={{ fontSize: "16px", width: "" }}
-                    >
-                      SP0000{index + 1}
-                    </TableCell>
-                    <TableCell
-                      align="center"
-                      style={{
-                        width: "430px",
-                        fontSize: "16px",
-                        whiteSpace: "pre-line",
-                      }}
-                    >
-                      {item &&
-                        item.sanPham &&
-                        item.sanPham.tenSanPham +
-                        " " +
-                        item.ram.dungLuong +
-                        "/" +
-                        item.rom.dungLuong +
-                        "GB"}
-                    </TableCell>
-                    <TableCell
-                      align="center"
-                      style={{ fontSize: "16px", width: "150px" }}
-                    >
-                      {item.mauSac.tenMauSac}
-                    </TableCell>
-                    <TableCell
-                      align="center"
-                      style={{ fontSize: "16px", width: "150px" }}
-                    >
-                      {item.sanPham.hang.tenHang}
-                    </TableCell>
-                    <TableCell
-                      align="center"
-                      style={{ width: "150px", fontSize: "16px" }}
-                    >
-                      <span style={{ color: "#dc1111" }}>
-                        {item && item.donGiaSauKhuyenMai
-                          ? item.donGiaSauKhuyenMai.toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                          })
-                          :
-                          item.donGia.toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                          })}
-                      </span>
-                    </TableCell>
-                    <TableCell
-                      align="center"
-                      style={{ fontSize: "16px", width: "" }}
-                    >
-                      {item.soLuongTonKho}
-                    </TableCell>
-                    <TableCell align="center" style={{ width: "230px" }}>
-                      <Button
-                        onClick={() => {
-                          handleOpenModalImeiByProductItem(item);
-                          setId(item.id);
-                          setPrice(item.donGia);
-                        }}
-                        className="rounded-2 button-mui"
-                        type="primary"
-                        style={{ width: "82px", fontSize: "14px" }}
-                      >
-                        <span
-                          className=""
-                          style={{ fontWeight: "500", marginBottom: "3px" }}
-                        >
-                          Chọn
-                        </span>
-                      </Button>
-                      {/*
-                      <Button
-                        className="rounded-2 ms-2 ant-btn-warning"
-                        onClick={toggleDrawer("left", true)}
-                        type="primary"
-                        style={{ width: "82px", fontSize: "14px" }}
-                      >
-                        <span
-                          className=""
-                          style={{ fontWeight: "500", marginBottom: "3px" }}
-                        >
-                          Chi tiết
-                        </span>
-                      </Button>
-*/}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </StyledTableContainer>
-        </div>
-      </>
-    );
   };
+
+  const columns = [
+    {
+      title: "STT",
+      align: "center",
+      dataIndex: "stt",
+      width: "5%",
+      render: (text, record, index) => (
+        <span style={{ fontWeight: "400" }}>
+          {products.indexOf(record) + 1}
+        </span>
+      ),
+    },
+    {
+      title: "Ảnh",
+      align: "center",
+      key: "ma",
+      width: "15%",
+      render: (text, item) => (
+        <>
+          <div style={{ position: "relative" }}>
+            {item.image !== null ? (
+              <img
+                src={item.image.path}
+                class=""
+                alt=""
+                style={{ width: "125px", height: "125px" }}
+              />
+            ) : (
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                width="90"
+                height="90"
+                style={{
+                  width: "125px",
+                  height: "125px",
+                  color: "rgb(232, 234, 235)",
+                  margin: "0px auto",
+                }}
+              >
+                <path
+                  d="M19 3H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h14c1.103 0 2-.897 2-2V5c0-1.103-.897-2-2-2ZM5 19V5h14l.002 14H5Z"
+                  fill="currentColor"
+                ></path>
+                <path
+                  d="m10 14-1-1-3 4h12l-5-7-3 4ZM8.5 11a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"
+                  fill="currentColor"
+                ></path>
+              </svg>
+            )}
+            {item &&
+              item.donGiaSauKhuyenMai !== null &&
+              item.donGiaSauKhuyenMai !== 0 && (
+                <div
+                  className="category"
+                  style={{
+                    userSelect: "none",
+                    backgroundColor: "#ffcc00",
+                    position: "absolute",
+                    top: "0px",
+                    borderTopLeftRadius: `8px`,
+                    fontSize: "11px",
+                    borderTopRightRadius: `20px`,
+                    borderBottomRightRadius: `20px`,
+                    fontWeight: "600",
+                    padding: "4px 8px", // Add padding for better visibility
+                    // width: "auto",
+                    // height: "30px"
+                    marginLeft: "10px",
+                    // marginTop: "25px",
+                  }}
+                >
+                  Giảm{" "}
+                  {countPrice(
+                    item.donGia,
+                    item.donGiaSauKhuyenMai
+                  ).toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  })}
+                </div>
+              )}
+          </div>
+        </>
+      ),
+    },
+    {
+      title: "Mã Sản Phẩm",
+      align: "center",
+      key: "ma",
+      width: "15%",
+      dataIndex: "ma",
+      render: (text, record) => (
+        <span style={{ fontWeight: "400" }}>
+          {"SP00000" + data.indexOf(record) + 1}
+        </span>
+      ),
+    },
+    {
+      title: "Tên Sản Phẩm",
+      align: "center",
+      key: "tenSanPham",
+      width: "15%",
+      dataIndex: "tenSanPham",
+      render: (text, record) => (
+        <span style={{ fontWeight: "400" }}>
+          {record.sanPham.tenSanPham +
+            " " +
+            record.ram.dungLuong +
+            "/" +
+            record.rom.dungLuong +
+            "GB (" +
+            record.mauSac.tenMauSac +
+            ")"}
+        </span>
+      ),
+    },
+    {
+      title: "Đơn Giá",
+      align: "center",
+      width: "11%",
+      render: (text, item) => (
+        <span style={{ color: "#dc1111" }}>
+          {item && item.donGiaSauKhuyenMai
+            ? item.donGiaSauKhuyenMai.toLocaleString("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              })
+            : item.donGia.toLocaleString("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              })}
+        </span>
+      ),
+    },
+    {
+      title: "Số Lượng Tồn",
+      align: "center",
+      width: "11%",
+      render: (text, record) => record.soLuongTonKho,
+    },
+    {
+      title: "Thao Tác",
+      align: "center",
+      width: "15%",
+      dataIndex: "ma",
+      render: (text, item) => (
+        <>
+          <Button
+            onClick={() => {
+              handleOpenModalImeiByProductItem(item);
+              setId(item.id);
+              setPrice(item.donGia);
+            }}
+            className="rounded-2 button-mui"
+            type="primary"
+            style={{ width: "82px", fontSize: "14px" }}
+          >
+            <span
+              className=""
+              style={{ fontWeight: "500", marginBottom: "3px" }}
+            >
+              Chọn
+            </span>
+          </Button>
+        </>
+      ),
+    },
+  ];
 
   // const [openModalImei, setOpenModalImei] = useState(false);
   const [imeis, setImeis] = useState([]);
@@ -951,305 +936,302 @@ export function ProductsDialog(props) {
     setImeis(item.imeis);
   };
 
-  const handleCloseSelect = () => {
-    setOpenSelect(false);
+  const handleCloseOpenCategory = () => {
+    setOpenCategory(false);
   };
 
-  const handleOpenSelect = () => {
-    setOpenSelect(true);
+  const handleOpenCategory = () => {
+    setOpenCategory(true);
   };
 
-  const handleCloseSelect1 = () => {
-    setOpenSelect1(false);
+  const handleCloseBrand = () => {
+    setOpenBrand(false);
   };
 
-  const handleOpenSelect1 = () => {
-    setOpenSelect1(true);
+  const handleOpenBrand = () => {
+    setOpenBrand(true);
   };
-  const handleCloseSelect2 = () => {
-    setOpenSelect2(false);
-  };
-
-  const handleOpenSelect2 = () => {
-    setOpenSelect2(true);
-  };
-  const handleCloseSelect3 = () => {
-    setOpenSelect3(false);
+  const handleCloseOpera = () => {
+    setOpenOpera(false);
   };
 
-  const handleOpenSelect3 = () => {
-    setOpenSelect3(true);
+  const handleOpenOpera = () => {
+    setOpenOpera(true);
   };
-  const handleCloseSelect4 = () => {
-    setOpenSelect4(false);
-  };
-
-  const [fromPrice, setFromPrice] = useState("");
-  const [toPrice, setToPrice] = useState("");
-  const [isRangePrice, setIsRangePrice] = useState(false);
-
-  const handleOpenSelect4 = () => {
-    setOpenSelect4(true);
-  };
-  const handleCloseSelect5 = () => {
-    setOpenSelect5(false);
+  const handleCloseCpu = () => {
+    setOpenCpu(false);
   };
 
-  const handleOpenSelect5 = () => {
-    setOpenSelect5(true);
-  };
-  const handleCloseSelect6 = () => {
-    setOpenSelect6(false);
+  const handleOpenCpu = () => {
+    setOpenCpu(true);
   };
 
-  const handleOpenSelect6 = () => {
-    setOpenSelect6(true);
-  };
-  const handleCloseSelect7 = () => {
-    setOpenSelect7(false);
+  const handleCloseRam = () => {
+    setOpenRam(false);
   };
 
-  const handleOpenSelect7 = () => {
-    setOpenSelect7(true);
+  const handleOpenRam = () => {
+    setOpenRam(true);
   };
-  const handleCloseSelect8 = () => {
-    setOpenSelect8(false);
-  };
-
-  const handleOpenSelect8 = () => {
-    setOpenSelect8(true);
-  };
-  const handleCloseSelect9 = () => {
-    setOpenSelect9(false);
+  const handleCloseSelectRom = () => {
+    setOpenRom(false);
   };
 
-  const handleOpenSelect9 = () => {
-    setOpenSelect9(true);
+  const handleOpenRom = () => {
+    setOpenRom(true);
+  };
+  const handleCloseScreen = () => {
+    setOpenScreen(false);
   };
 
-  const [productItem, setProductItem] = useState();
-  const [productItem1, setProductItem1] = useState();
-  const [productItem2, setProductItem2] = useState();
-  const [productImage, setProductImage] = useState();
-  const [productItems, setProductItems] = useState([]);
-  const [productItemAll, setProductItemAll] = useState([]);
-  const [productItems1, setProductItems1] = useState([]);
+  const handleOpenScreen = () => {
+    setOpenScreen(true);
+  };
+  const handleClosePin = () => {
+    setOpenPin(false);
+  };
 
-  const handleChangeInfoProductItem = (item, color) => {
-    const product = {
-      id: item.id,
-      ram: item.ram,
-      rom: item.rom,
-      mauSac: item.mauSac,
-      donGia: item.donGia,
-      sanPham: item.sanPham,
-    };
+  const handleOpenPin = () => {
+    setOpenPin(true);
+  };
 
-    const getProductItems1 = data.filter((i) => i.maCauHinh == item.maCauHinh);
-    const sortedProductItems1 = getProductItems1.sort(
-      (a, b) => a.donGia - b.donGia
+  const [selectedValueCategorys, setSelectedValueCategorys] = React.useState([
+    0,
+  ]);
+  const [selectedValueBrands, setSelectedValueBrands] = React.useState([0]);
+  const [selectedValueOperas, setSelectedValueOperas] = React.useState([
+    "None",
+  ]);
+  const [selectedValueCpus, setSelectedValueCpus] = React.useState([0]);
+  const [selectedValueRams, setSelectedValueRams] = React.useState([0]);
+  const [selectedValueRoms, setSelectedValueRoms] = React.useState([0]);
+  const [selectedValueScreens, setSelectedValueScreens] = React.useState([0]);
+  const [selectedValuePins, setSelectedValuePins] = React.useState([0]);
+
+  const [categorys, setCategorys] = useState([]);
+  const getListDanhMuc = () => {
+    axios
+      .get(`http://localhost:8080/api/danh-mucs`)
+      .then((response) => {
+        setCategorys(response.data.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+  const [listHang, setListHang] = useState([]);
+  const getListHang = () => {
+    axios
+      .get(`http://localhost:8080/api/brands`)
+      .then((response) => {
+        setListHang(response.data.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const [listChip, setListChip] = useState([]);
+  const getListChip = () => {
+    axios
+      .get(`http://localhost:8080/api/chips`)
+      .then((response) => {
+        setListChip(response.data.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const [listPin, setListPin] = useState([]);
+  const getListPin = () => {
+    axios
+      .get(`http://localhost:8080/api/pins`)
+      .then((response) => {
+        setListPin(response.data.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const [listManHinh, setListManHinh] = useState([]);
+  const getListManHinh = () => {
+    axios
+      .get(`http://localhost:8080/api/display`)
+      .then((response) => {
+        setListManHinh(response.data.data);
+        console.log(response.data.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const [listRam, setListRam] = useState([]);
+  const [listRom, setListRom] = useState([]);
+  const getListRom = () => {
+    axios
+      .get(`http://localhost:8080/api/roms`)
+      .then((response) => {
+        setListRom(response.data.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+  const getListRam = () => {
+    axios
+      .get(`http://localhost:8080/api/rams`)
+      .then((response) => {
+        setListRam(response.data.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const [totalPages, setTotalPages] = useState();
+  const [refreshPage, setRefreshPage] = useState(1);
+  const [keyword, setKeyword] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sort, setSort] = useState("");
+  const [size, setSize] = useState(10);
+
+  const handlePageChange = (event, page) => {
+    setCurrentPage(page);
+  };
+
+  const [fromPrice, setFromPrice] = useState();
+  const [toPrice, setToPrice] = useState();
+
+  const getPrice = (from, to) => {
+    setFromPrice(from);
+    setToPrice(to);
+  };
+
+  const [products, setProducts] = useState([]);
+  const operas = ["ANDROID", "IOS"];
+
+  const findProductsByMultipleCriteriaWithPagination = (page) => {
+    const params = new URLSearchParams();
+    params.append("currentPage", page);
+    params.append("pageSize", size);
+    params.append("keyword", keyword);
+    params.append(
+      "danhMucs",
+      selectedValueCategorys.length === 1 && selectedValueCategorys[0] === 0
+        ? []
+        : selectedValueCategorys
     );
-    setProductItems1(sortedProductItems1);
-    setProductItem1(product);
-
-    const findColor = data.find(
-      (i) =>
-        i.mauSac.tenMauSac === color &&
-        i.maCauHinh === item.maCauHinh &&
-        i.soLuongTonKho > 0
+    params.append(
+      "hangs",
+      selectedValueBrands.length === 1 && selectedValueBrands[0] === 0
+        ? []
+        : selectedValueBrands
     );
-    if (findColor) {
-      setProductItem2(findColor);
-    } else {
-      const findColorCurrentIsStocking = data.find(
-        (i) => i.maCauHinh === item.maCauHinh && i.soLuongTonKho > 0
-      );
-      setProductItem2(findColorCurrentIsStocking);
-      // Tìm vè giá be nhat ?? chưa làm
-    }
-  };
-  const handleChangeProductImage = (item) => {
-    const product = {
-      id: item.id,
-      image: item.image,
-      soLuongTonKho: item.soLuongTonKho,
-      mauSac: item.mauSac,
-      donGia: item.donGia,
-    };
-    setProductItem2(product);
-  };
-
-  const handleOpenDialogProductItems = (item) => {
-    openDialogProductItems();
-    setProductItem(item); // general
-    setProductItem1(item); //ten va cau hinh, gia
-    setProductItem2(item); // so luong va image
-
-    const findDataAllByIdProduct = data.filter((d) => {
-      return d.sanPham.id === item.sanPham.id;
-    });
-    setProductItemAll(findDataAllByIdProduct);
-
-    // const getProductItems = data.filter((item, index) => {
-    //   const isDuplicate = data.some((i, iIndex) => i.donGia === item.donGia && iIndex < index);
-    //   return !isDuplicate;
-    // });
-
-    const getIdByItem = item && item.sanPham.id;
-    const uniqueItems = Object.values(
-      data.reduce((acc, item) => {
-        if (
-          (!acc[item.maCauHinh] ||
-            (acc[item.maCauHinh].donGia > item.donGia &&
-              !acc[item.maCauHinh].isDuplicate)) &&
-          item.sanPham.id === getIdByItem
-        ) {
-          acc[item.maCauHinh] = item;
-        } else if (
-          acc[item.maCauHinh] &&
-          acc[item.maCauHinh].isDuplicate &&
-          acc[item.maCauHinh].donGia > item.donGia
-        ) {
-          acc[item.maCauHinh] = {
-            ...item,
-            isDuplicate: false,
-          };
-        }
-        return acc;
-      }, {})
+    params.append(
+      "heDieuHanhs",
+      selectedValueOperas.length === 1 && selectedValueOperas[0] === "None"
+        ? operas
+        : selectedValueOperas
     );
-    const sortedProductItems = uniqueItems.sort((a, b) => a.donGia - b.donGia);
-    setProductItems(sortedProductItems);
-
-    const getProductItems1 = data.filter((i) => i.maCauHinh === item.maCauHinh);
-    const sortedProductItems1 = getProductItems1.sort(
-      (a, b) => a.donGia - b.donGia
+    params.append(
+      "chips",
+      selectedValueCpus.length === 1 && selectedValueCpus[0] === 0
+        ? []
+        : selectedValueCpus
     );
-    setProductItems1(sortedProductItems1);
+    params.append(
+      "manHinhs",
+      selectedValueScreens.length === 1 && selectedValueScreens[0] === 0
+        ? []
+        : selectedValueScreens
+    );
+    params.append(
+      "pins",
+      selectedValuePins.length === 1 && selectedValuePins[0] === 0
+        ? []
+        : selectedValuePins
+    );
+    params.append(
+      "rams",
+      selectedValueRams.length === 1 && selectedValueRams[0] === 0
+        ? []
+        : selectedValueRams
+    );
+    params.append(
+      "roms",
+      selectedValueRoms.length === 1 && selectedValueRoms[0] === 0
+        ? []
+        : selectedValueRoms
+    );
+    params.append("fromPrice", fromPrice || 0);
+    params.append("toPrice", toPrice || 51900000);
+    axios
+      .get(
+        `http://localhost:8080/api/products/product-items/page?${params}`,
+        {}
+      )
+      .then((response) => {
+        setProducts(response.data.data);
+        setTotalPages(response.data.totalPages);
+        // setIsLoading(false);
+        console.log(response.data.data);
+      })
+      .catch((error) => {
+        // setIsLoading(false);
+        console.error(error);
+      });
   };
 
-  const [open1, setOpen1] = useState(false);
-  const [placement, setPlacement] = useState("left");
-  const showDrawer = () => {
-    setOpen1(true);
+  useEffect(() => {
+    findProductsByMultipleCriteriaWithPagination(currentPage);
+  }, [
+    currentPage,
+    keyword,
+    size,
+    selectedValueRams,
+    selectedValuePins,
+    selectedValueRoms,
+    selectedValueScreens,
+    selectedValueCpus,
+    selectedValueBrands,
+    selectedValueOperas,
+    selectedValueCategorys,
+    fromPrice,
+    toPrice,
+  ]);
+
+  useEffect(() => {
+    getListDanhMuc();
+    getListHang();
+    getListManHinh();
+    getListChip();
+    getListPin();
+    getListRam();
+    getListRom();
+  }, []);
+
+  const TableProduct = () => {
+    return (
+      <>
+        <div className="">
+          <TableAntd
+            className="table-container "
+            columns={columns}
+            rowKey="ma"
+            dataSource={products}
+            rowClassName={(record) =>
+              record.soLuongTonKho <= 0 && "disable-product"
+            }
+            pagination={false}
+            locale={{ emptyText: <Empty description="Không có dữ liệu" /> }}
+          />
+        </div>
+      </>
+    );
   };
-  const onClose1 = () => {
-    setOpen1(false);
-  };
-  const onChange = (e) => {
-    setPlacement(e.target.value);
-  };
-
-  const [categorys, setCategorys] = useState("Tất cả");
-  const handleChangeCategory = (event) => {
-    const value = event.target.value;
-    setCategorys(value);
-  };
-
-  const [state, setState] = React.useState({
-    left: false,
-  });
-
-  const toggleDrawer = (anchor, open) => (event) => {
-    if (
-      event.type === "keydown" &&
-      (event.key === "Tab" || event.key === "Shift")
-    ) {
-      return;
-    }
-
-    setState({ ...state, [anchor]: open });
-  };
-
-  const list = (anchor) => (
-    <Box
-      sx={{ width: 800 }}
-      role="dialog"
-      onClick={toggleDrawer(anchor, false)}
-      onKeyDown={toggleDrawer(anchor, false)}
-    ></Box>
-  );
-
-  const handleFormatValue = (value) => {
-    let valueFinal;
-    valueFinal = String(value)
-      .replace(/[^0-9]+/g, "")
-      .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-
-    return valueFinal;
-  };
-
-  const [valueSlider, setValueSlider] = React.useState([0, 51990000]);
-  const [valueStart, setValueStart] = React.useState(
-    valueSlider && handleFormatValue(valueSlider[0])
-  );
-  const [valueEnd, setValueEnd] = React.useState(
-    valueSlider && handleFormatValue(valueSlider[1])
-  );
-
-  const handleChangeSlider = (event, newValue) => {
-    setValueSlider(newValue);
-    setValueStart(newValue && handleFormatValue(newValue[0]));
-    setValueEnd(newValue && handleFormatValue(newValue[1]));
-  };
-
-  const handleChangeValueEnd = (event) => {
-    const valueSliderFirst = valueSlider[0];
-    const value = event.target.value;
-    const parseValueToNumber = parseFloat(value.replace(/[^0-9.-]+/g, ""));
-
-    let valueFinal;
-    valueFinal = String(value)
-      .replace(/[^0-9]+/g, "")
-      .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    setValueEnd(valueFinal);
-    setValueSlider([valueSliderFirst, parseValueToNumber]);
-    if (value === null || value === "") {
-      setValueEnd("");
-      setValueSlider([valueSliderFirst, 0]);
-    } else if (parseValueToNumber > 51900000) {
-      let valueOld = 51900000;
-      valueFinal = String(valueOld)
-        .replace(/[^0-9]+/g, "")
-        .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      setValueEnd(valueFinal);
-      setValueSlider([valueSliderFirst, valueOld]);
-    }
-  };
-  const handleChangeValueStart = (event) => {
-    const valueSliderEnd = valueSlider[1];
-    const value = event.target.value;
-    const parseValueToNumber = parseFloat(value.replace(/[^0-9.-]+/g, ""));
-    let valueFinal;
-    valueFinal = value
-      .replace(/[^0-9]+/g, "")
-      .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    setValueStart(valueFinal);
-    setValueSlider([parseValueToNumber, valueSliderEnd]);
-
-    if (value === null || value === "") {
-      setValueStart("");
-      setValueSlider([0, valueSliderEnd]);
-    } else if (parseValueToNumber > 51900000) {
-      let valueOld = 51900000;
-      valueFinal = String(valueOld)
-        .replace(/[^0-9]+/g, "")
-        .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      setValueStart(valueFinal);
-      setValueSlider([valueOld, valueSliderEnd]);
-    }
-  };
-
-  const [selectedValues, setSelectedValues] = React.useState([0]);
-  const [selectedValues1, setSelectedValues1] = React.useState([0]);
-  const [selectedValues2, setSelectedValues2] = React.useState([0]);
-  const [selectedValues3, setSelectedValues3] = React.useState([0]);
-  const [selectedValues4, setSelectedValues4] = React.useState([0]);
-  const [selectedValues5, setSelectedValues5] = React.useState([0]);
-  const [selectedValues6, setSelectedValues6] = React.useState([0]);
-  const [selectedValues7, setSelectedValues7] = React.useState([0]);
-  const [selectedValues8, setSelectedValues8] = React.useState([0]);
-  const [selectedValues9, setSelectedValues9] = React.useState([0]);
 
   return (
     <div className="rounded-pill">
@@ -1267,16 +1249,6 @@ export function ProductsDialog(props) {
           zIndex: 1250,
         }}
       >
-        <Drawer
-          anchor={"left"}
-          open={state["left"]}
-          onClose={toggleDrawer("left", false)}
-          sx={{
-            zIndex: 1250,
-          }}
-        >
-          {list("left")}
-        </Drawer>
         <DialogTitle id="alert-dialog-title">
           <div className="d-flex justify-content-between mt-1">
             <div>
@@ -1301,19 +1273,21 @@ export function ProductsDialog(props) {
             <>
               <div className="mt-1 pt-1 d-flex">
                 <TextField
-                  label="Tìm sản phẩm"
-                  // onChange={handleGetValueFromInputTextField}
-                  // value={keyword}
+                  label="Tìm kiếm theo mã, tên, số lượng tồn"
+                  onChange={(e) => {
+                    setKeyword(e.target.value);
+                  }}
+                  value={keyword}
                   InputLabelProps={{
                     sx: {
-                      textTransform: "capitalize",
+                      // textTransform: "capitalize",
                     },
                   }}
                   style={{ height: "23px" }}
                   inputProps={{
                     style: {
                       // height: "23px",
-                      width: "250px",
+                      width: "450px",
                     },
                   }}
                   size="small"
@@ -1321,7 +1295,7 @@ export function ProductsDialog(props) {
                 />
                 <Button
                   // onClick={handleRefreshData}
-                  className="rounded-2 ms-3"
+                  className="rounded-2 ms-2"
                   type="warning"
                   style={{
                     height: "40px",
@@ -1337,19 +1311,21 @@ export function ProductsDialog(props) {
                     Làm Mới
                   </span>
                 </Button>
+              </div>
+              <div className="d-flex justify-content-center mt-4">
                 <div
-                  className="ms-3 d-flex"
+                  className="d-flex"
                   style={{ height: "40px", cursor: "pointer" }}
                 >
-                  <div onClick={handleOpenSelect} className="mt-2">
+                  <div onClick={handleOpenCategory} className="mt-2">
                     <span
                       className="ms-2 ps-1"
                       style={{ fontSize: "15px", fontWeight: "450" }}
                     >
-                      Nhu cầu:{" "}
+                      Danh Mục:{" "}
                     </span>
                   </div>
-                  <FormControl sx={{ maxWidth: 180 }} size="small">
+                  <FormControl sx={{ maxWidth: 200 }} size="small">
                     <SelectMui
                       multiple
                       MenuProps={{
@@ -1369,40 +1345,45 @@ export function ProductsDialog(props) {
                           fontWeight: "500",
                         },
                       }}
-                      open={openSelect}
-                      onClose={handleCloseSelect}
-                      onOpen={handleOpenSelect}
-                      defaultValue={selectedValues}
-                      value={selectedValues}
+                      open={openCategory}
+                      onClose={handleCloseOpenCategory}
+                      onOpen={handleOpenCategory}
+                      defaultValue={selectedValueCategorys}
+                      value={selectedValueCategorys}
                       onChange={(e) => {
-                        setSelectedValues(e.target.value);
+                        setSelectedValueCategorys(e.target.value);
                       }}
+                      renderValue={(selected) =>
+                        selected && selected.length > 1
+                          ? selected
+                              .filter((id) =>
+                                categorys.find((c) => c.id === id)
+                              ) // Loại bỏ các giá trị không hợp lệ
+                              .map(
+                                (id) =>
+                                  categorys.find((c) => c.id === id).tenDanhMuc
+                              ) // Lấy tên danh mục tương ứng
+                              .join(", ")
+                          : "Chọn Danh Mục"
+                      }
                     >
-                      {selectedValues.length === 1 &&
-                        selectedValues[0] == 0 && (
-                          <MenuItem
-                            className=""
-                            value={0}
-                            style={{ display: "none" }}
-                          >
-                            Chọn nhu cầu
-                          </MenuItem>
-                        )}
-                      <MenuItem value={1}>Chơi game</MenuItem>
-                      <MenuItem value={2}>Pin trâu</MenuItem>
-                      <MenuItem value={3}>Chụp ảnh, quay phim</MenuItem>
-                      <MenuItem value={4}>Livestream</MenuItem>
-                      <MenuItem value={5}>Nhỏ gọn</MenuItem>
-                      <MenuItem value={6}>Cấu hình cao</MenuItem>
+                      {categorys.map((c) => (
+                        <MenuItem key={c.id} value={c.id}>
+                          <CheckBoxMui
+                            checked={selectedValueCategorys.indexOf(c.id) > -1}
+                          />
+                          <ListItemText primary={c.tenDanhMuc} />
+                        </MenuItem>
+                      ))}
                     </SelectMui>
                   </FormControl>
                 </div>
 
                 <div
-                  className="ms-1 d-flex"
+                  className="ms-3 d-flex"
                   style={{ height: "40px", cursor: "pointer" }}
                 >
-                  <div onClick={handleOpenSelect1} className="mt-2">
+                  <div onClick={handleOpenBrand} className="mt-2">
                     <span
                       className="ms-2 ps-1"
                       style={{ fontSize: "15px", fontWeight: "450" }}
@@ -1412,7 +1393,7 @@ export function ProductsDialog(props) {
                   </div>
                   <FormControl
                     sx={{
-                      maxWidth: 150,
+                      maxWidth: 200,
                     }}
                     size="small"
                   >
@@ -1434,52 +1415,55 @@ export function ProductsDialog(props) {
                           fontWeight: "500",
                         },
                       }}
-                      open={openSelect1}
-                      onClose={handleCloseSelect1}
-                      onOpen={handleOpenSelect1}
-                      defaultValue={selectedValues1}
-                      value={selectedValues1}
+                      open={openBrand}
+                      onClose={handleCloseBrand}
+                      onOpen={handleOpenBrand}
+                      defaultValue={selectedValueBrands}
+                      value={selectedValueBrands}
                       onChange={(e) => {
-                        setSelectedValues1(e.target.value);
+                        setSelectedValueBrands(e.target.value);
+                        console.log(e.target.value);
                       }}
                       multiple
+                      renderValue={(selected) =>
+                        selected && selected.length > 1
+                          ? selected
+                              .filter((id) => listHang.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
+                              .map(
+                                (id) =>
+                                  listHang.find((c) => c.id === id).tenHang
+                              ) // Lấy tên danh mục tương ứng
+                              .join(", ")
+                          : "Chọn Hãng"
+                      }
                     >
-                      {selectedValues1.length === 1 &&
-                        selectedValues[0] == 0 && (
-                          <MenuItem
-                            className=""
-                            value={0}
-                            style={{ display: "none" }}
-                          >
-                            Chọn hãng
-                          </MenuItem>
-                        )}
-                      <MenuItem value={1}>Iphone</MenuItem>
-                      <MenuItem value={2}>Samsung</MenuItem>
-                      <MenuItem value={3}>Oppo</MenuItem>
-                      <MenuItem value={4}>Xiaomi</MenuItem>
-                      <MenuItem value={5}>Readme</MenuItem>
-                      <MenuItem value={6}>Nokia</MenuItem>
-                      <MenuItem value={7}>Vivo</MenuItem>
+                      {listHang.map((c) => (
+                        <MenuItem key={c.id} value={c.id}>
+                          <CheckBoxMui
+                            checked={selectedValueBrands.indexOf(c.id) > -1}
+                          />
+                          <ListItemText primary={c.tenHang} />
+                        </MenuItem>
+                      ))}
                     </SelectMui>
                   </FormControl>
                 </div>
 
                 <div
-                  className="ms-1 d-flex"
+                  className="ms-3 d-flex"
                   style={{ height: "40px", cursor: "pointer" }}
                 >
-                  <div onClick={handleOpenSelect2} className="mt-2">
+                  <div onClick={handleOpenOpera} className="mt-2">
                     <span
                       className="ms-2 ps-1"
                       style={{ fontSize: "15px", fontWeight: "450" }}
                     >
-                      Loại điện thoại:{" "}
+                      Hệ Điều Hành:{" "}
                     </span>
                   </div>
                   <FormControl
                     sx={{
-                      maxWidth: 150,
+                      maxWidth: 200,
                     }}
                     size="small"
                   >
@@ -1501,46 +1485,62 @@ export function ProductsDialog(props) {
                           fontWeight: "500",
                         },
                       }}
-                      open={openSelect2}
-                      onClose={handleCloseSelect2}
-                      onOpen={handleOpenSelect2}
+                      open={openOpera}
+                      onClose={handleCloseOpera}
+                      onOpen={handleOpenOpera}
                       multiple
-                      defaultValue={selectedValues2}
-                      value={selectedValues2}
+                      defaultValue={selectedValueOperas}
+                      value={selectedValueOperas}
                       onChange={(e) => {
-                        setSelectedValues2(e.target.value);
+                        if (e.target.value.length === 0) {
+                          setSelectedValueOperas(["None"]);
+                        } else {
+                          const values = e.target.value.filter(
+                            (value) => value !== "None"
+                          );
+                          setSelectedValueOperas(values);
+                        }
                       }}
+                      renderValue={(selected) =>
+                        selected &&
+                        selected.filter((value) => value !== "None").length > 0
+                          ? selected
+                              .filter((id) =>
+                                ["ANDROID", "IOS"].find((c) => c === id)
+                              ) // Loại bỏ các giá trị không hợp lệ
+                              .map((id) =>
+                                ["ANDROID", "IOS"].find((c) => c === id)
+                              ) // Lấy tên danh mục tương ứng
+                              .join(", ")
+                          : "Chọn Hệ Điều Hành"
+                      }
                     >
-                      {selectedValues2.length === 1 &&
-                        selectedValues[0] == 0 && (
-                          <MenuItem
-                            className=""
-                            value={0}
-                            style={{ display: "none" }}
-                          >
-                            Chọn loại
-                          </MenuItem>
-                        )}
-                      <MenuItem value={1}>Iphone</MenuItem>
-                      <MenuItem value={2}>Android</MenuItem>
+                      {["ANDROID", "IOS"].map((c) => (
+                        <MenuItem key={c} value={c}>
+                          <CheckBoxMui
+                            checked={selectedValueOperas.indexOf(c) > -1}
+                          />
+                          <ListItemText primary={c} />
+                        </MenuItem>
+                      ))}
                     </SelectMui>
                   </FormControl>
                 </div>
                 <div
-                  className="ms-1 d-flex"
+                  className="ms-3 d-flex"
                   style={{ height: "40px", cursor: "pointer" }}
                 >
-                  <div onClick={handleOpenSelect3} className="mt-2">
+                  <div onClick={handleOpenCpu} className="mt-2">
                     <span
                       className="ms-2 ps-1"
                       style={{ fontSize: "15px", fontWeight: "450" }}
                     >
-                      Chip xử lý:{" "}
+                      Chip:{" "}
                     </span>
                   </div>
                   <FormControl
                     sx={{
-                      maxWidth: 160,
+                      maxWidth: 200,
                     }}
                     size="small"
                   >
@@ -1562,48 +1562,52 @@ export function ProductsDialog(props) {
                           fontWeight: "500",
                         },
                       }}
-                      open={openSelect3}
-                      onClose={handleCloseSelect3}
-                      onOpen={handleOpenSelect3}
-                      defaultValue={selectedValues3}
-                      value={selectedValues3}
+                      open={openCpu}
+                      onClose={handleCloseCpu}
+                      onOpen={handleOpenCpu}
+                      defaultValue={selectedValueCpus}
+                      value={selectedValueCpus}
                       onChange={(e) => {
-                        setSelectedValues3(e.target.value);
+                        setSelectedValueCpus(e.target.value);
                       }}
                       multiple
+                      renderValue={(selected) =>
+                        selected && selected.length > 1
+                          ? selected
+                              .filter((id) => listChip.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
+                              .map(
+                                (id) =>
+                                  listChip.find((c) => c.id === id).tenChip
+                              ) // Lấy tên danh mục tương ứng
+                              .join(", ")
+                          : "Chọn Chip"
+                      }
                     >
-                      {selectedValues3.length === 1 &&
-                        selectedValues[0] == 0 && (
-                          <MenuItem
-                            className=""
-                            value={0}
-                            style={{ display: "none" }}
-                          >
-                            Chọn chip
-                          </MenuItem>
-                        )}
-                      <MenuItem value={1}>Snapdragon</MenuItem>
-                      <MenuItem value={2}>Apple A</MenuItem>
-                      <MenuItem value={3}>Mediatek Helio</MenuItem>
-                      <MenuItem value={4}>Mediatek Dimensity</MenuItem>
-                      <MenuItem value={5}>Exynos</MenuItem>
+                      {listChip.map((c) => (
+                        <MenuItem key={c.id} value={c.id}>
+                          <CheckBoxMui
+                            checked={selectedValueCpus.indexOf(c.id) > -1}
+                          />
+                          <ListItemText primary={c.tenChip} />
+                        </MenuItem>
+                      ))}
                     </SelectMui>
                   </FormControl>
                 </div>
+                <PriceSlider getPrice={getPrice} />
               </div>
 
-              <div className="d-flex mt-3 mx-auto ms-4 ps-3">
-                <PriceSlider />
+              <div className="d-flex justify-content-center mt-3">
                 <div
-                  className="ms-1 d-flex"
+                  className="ms-3 d-flex"
                   style={{ height: "40px", cursor: "pointer" }}
                 >
-                  <div onClick={handleOpenSelect5} className="mt-2">
+                  <div onClick={handleOpenRam} className="mt-2">
                     <span
                       className="ms-2 ps-1"
                       style={{ fontSize: "15px", fontWeight: "450" }}
                     >
-                      Bộ nhớ trong:{" "}
+                      RAM:{" "}
                     </span>
                   </div>
                   <FormControl
@@ -1630,52 +1634,55 @@ export function ProductsDialog(props) {
                           fontWeight: "500",
                         },
                       }}
-                      open={openSelect5}
-                      onClose={handleCloseSelect5}
-                      onOpen={handleOpenSelect5}
-                      defaultValue={selectedValues5}
-                      value={selectedValues5}
+                      open={openRam}
+                      onClose={handleCloseRam}
+                      onOpen={handleOpenRam}
+                      defaultValue={selectedValueRams}
+                      value={selectedValueRams}
                       onChange={(e) => {
-                        setSelectedValues5(e.target.value);
+                        setSelectedValueRams(e.target.value);
                       }}
                       multiple
+                      renderValue={(selected) =>
+                        selected && selected.length > 1
+                          ? selected
+                              .filter((id) => listRam.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
+                              .map(
+                                (id) =>
+                                  listRam.find((c) => c.id === id).dungLuong +
+                                  "GB"
+                              ) // Lấy tên danh mục tương ứng
+                              .join(", ")
+                          : "Chọn Ram"
+                      }
                     >
-                      {selectedValues5.length === 1 &&
-                        selectedValues[0] == 0 && (
-                          <MenuItem
-                            className=""
-                            value={0}
-                            style={{ display: "none" }}
-                          >
-                            Chọn bộ nhớ
-                          </MenuItem>
-                        )}
-                      <MenuItem value={1}>16GB</MenuItem>
-                      <MenuItem value={2}>32GB</MenuItem>
-                      <MenuItem value={3}>64GB</MenuItem>
-                      <MenuItem value={4}>128GB</MenuItem>
-                      <MenuItem value={5}>256GB</MenuItem>
-                      <MenuItem value={6}>512GB</MenuItem>
-                      <MenuItem value={7}>1TB</MenuItem>
+                      {listRam.map((c) => (
+                        <MenuItem key={c.id} value={c.id}>
+                          <CheckBoxMui
+                            checked={selectedValueRams.indexOf(c.id) > -1}
+                          />
+                          <ListItemText primary={c.dungLuong + "GB"} />
+                        </MenuItem>
+                      ))}
                     </SelectMui>
                   </FormControl>
                 </div>
 
                 <div
-                  className="ms-1 d-flex"
+                  className="ms-3 d-flex"
                   style={{ height: "40px", cursor: "pointer" }}
                 >
-                  <div onClick={handleOpenSelect6} className="mt-2">
+                  <div onClick={handleOpenRom} className="mt-2">
                     <span
                       className="ms-2 ps-1"
                       style={{ fontSize: "15px", fontWeight: "450" }}
                     >
-                      Dung lượng RAM:{" "}
+                      ROM:{" "}
                     </span>
                   </div>
                   <FormControl
                     sx={{
-                      maxWidth: 130,
+                      maxWidth: 150,
                     }}
                     size="small"
                   >
@@ -1697,41 +1704,53 @@ export function ProductsDialog(props) {
                           fontWeight: "500",
                         },
                       }}
-                      open={openSelect6}
-                      onClose={handleCloseSelect6}
-                      onOpen={handleOpenSelect6}
-                      defaultValue={selectedValues6}
-                      value={selectedValues6}
+                      open={openRom}
+                      onClose={handleCloseSelectRom}
+                      onOpen={handleOpenRom}
+                      defaultValue={selectedValueRoms}
+                      value={selectedValueRoms}
                       onChange={(e) => {
-                        setSelectedValues6(e.target.value);
+                        setSelectedValueRoms(e.target.value);
                       }}
                       multiple
+                      renderValue={(selected) =>
+                        selected && selected.length > 1
+                          ? selected
+                              .filter((id) => listRom.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
+                              .map((id) =>
+                                listRom.find((c) => c.id === id).dungLuong ===
+                                1024
+                                  ? 1 + "TB"
+                                  : listRom.find((c) => c.id === id).dungLuong +
+                                    "GB"
+                              ) // Lấy tên danh mục tương ứng
+                              .join(", ")
+                          : "Chọn Rom"
+                      }
                     >
-                      {selectedValues6.length === 1 &&
-                        selectedValues[0] == 0 && (
-                          <MenuItem
-                            className=""
-                            value={0}
-                            style={{ display: "none" }}
-                          >
-                            Chọn RAM
-                          </MenuItem>
-                        )}
-                      <MenuItem value={1}>2GB</MenuItem>
-                      <MenuItem value={2}>3GB</MenuItem>
-                      <MenuItem value={3}>4GB</MenuItem>
-                      <MenuItem value={4}>6GB</MenuItem>
-                      <MenuItem value={5}>8GB</MenuItem>
-                      <MenuItem value={6}>12GB</MenuItem>
+                      {listRom.map((c) => (
+                        <MenuItem key={c.id} value={c.id}>
+                          <CheckBoxMui
+                            checked={selectedValueRoms.indexOf(c.id) > -1}
+                          />
+                          <ListItemText
+                            primary={
+                              c.dungLuong === 1024
+                                ? 1 + "TB"
+                                : c.dungLuong + "GB"
+                            }
+                          />
+                        </MenuItem>
+                      ))}
                     </SelectMui>
                   </FormControl>
                 </div>
 
                 <div
-                  className="ms-1 d-flex"
+                  className="ms-3 d-flex"
                   style={{ height: "40px", cursor: "pointer" }}
                 >
-                  <div onClick={handleOpenSelect7} className="mt-2">
+                  <div onClick={handleOpenScreen} className="mt-2">
                     <span
                       className="ms-2 ps-1"
                       style={{ fontSize: "15px", fontWeight: "450" }}
@@ -1741,7 +1760,7 @@ export function ProductsDialog(props) {
                   </div>
                   <FormControl
                     sx={{
-                      maxWidth: 170,
+                      maxWidth: 200,
                     }}
                     size="small"
                   >
@@ -1763,47 +1782,80 @@ export function ProductsDialog(props) {
                           fontWeight: "500",
                         },
                       }}
-                      open={openSelect7}
-                      onClose={handleCloseSelect7}
-                      onOpen={handleOpenSelect7}
-                      defaultValue={selectedValues7}
-                      value={selectedValues7}
+                      open={openScreen}
+                      onClose={handleCloseScreen}
+                      onOpen={handleOpenScreen}
+                      defaultValue={selectedValueScreens}
+                      value={selectedValueScreens}
                       onChange={(e) => {
-                        setSelectedValues7(e.target.value);
+                        setSelectedValueScreens(e.target.value);
                       }}
                       multiple
+                      renderValue={(selected) =>
+                        selected && selected.length > 1
+                          ? selected
+                              .filter((id) =>
+                                listManHinh.find((c) => c.id === id)
+                              ) // Loại bỏ các giá trị không hợp lệ
+                              .map(
+                                (id) =>
+                                  listManHinh.find((c) => c.id === id)
+                                    .loaiManHinh +
+                                  " " +
+                                  `(${
+                                    listManHinh.find((c) => c.id === id)
+                                      .doPhanGiaiManHinh.chieuRong +
+                                    " x " +
+                                    listManHinh.find((c) => c.id === id)
+                                      .doPhanGiaiManHinh.chieuDai
+                                  } pixels) ` +
+                                  listManHinh.find((c) => c.id === id)
+                                    .kichThuoc +
+                                  `"`
+                              ) // Lấy tên danh mục tương ứng
+                              .join(", ")
+                          : "Chọn Màn Hình"
+                      }
                     >
-                      {selectedValues7.length === 1 &&
-                        selectedValues[0] == 0 && (
-                          <MenuItem
-                            className=""
-                            value={0}
-                            style={{ display: "none" }}
-                          >
-                            Chọn kích thước
-                          </MenuItem>
-                        )}
-                      <MenuItem value={1}>Dưới 6 inch</MenuItem>
-                      <MenuItem value={2}>Trên 6 inch</MenuItem>
+                      {listManHinh.map((c) => (
+                        <MenuItem key={c.id} value={c.id}>
+                          <CheckBoxMui
+                            checked={selectedValueScreens.indexOf(c.id) > -1}
+                          />
+                          <ListItemText
+                            primary={
+                              c.loaiManHinh +
+                              " " +
+                              `(${
+                                c.doPhanGiaiManHinh.chieuRong +
+                                " x " +
+                                c.doPhanGiaiManHinh.chieuDai
+                              } pixels) ` +
+                              c.kichThuoc +
+                              `"`
+                            }
+                          />
+                        </MenuItem>
+                      ))}
                     </SelectMui>
                   </FormControl>
                 </div>
 
                 <div
-                  className="ms-1 d-flex"
+                  className="ms-3 d-flex"
                   style={{ height: "40px", cursor: "pointer" }}
                 >
-                  <div onClick={handleOpenSelect8} className="mt-2">
+                  <div onClick={handleOpenPin} className="mt-2">
                     <span
                       className="ms-2 ps-1"
                       style={{ fontSize: "15px", fontWeight: "450" }}
                     >
-                      Tính năng đặc biệt:{" "}
+                      Pin:{" "}
                     </span>
                   </div>
                   <FormControl
                     sx={{
-                      maxWidth: 160,
+                      maxWidth: 200,
                     }}
                     size="small"
                   >
@@ -1825,37 +1877,168 @@ export function ProductsDialog(props) {
                           fontWeight: "500",
                         },
                       }}
-                      open={openSelect8}
-                      onClose={handleCloseSelect8}
-                      onOpen={handleOpenSelect8}
-                      defaultValue={selectedValues8}
-                      value={selectedValues8}
+                      open={openPin}
+                      onClose={handleClosePin}
+                      onOpen={handleOpenPin}
+                      defaultValue={selectedValuePins}
+                      value={selectedValuePins}
                       onChange={(e) => {
-                        setSelectedValues8(e.target.value);
+                        setSelectedValuePins(e.target.value);
                       }}
                       multiple
+                      renderValue={(selected) =>
+                        selected && selected.length > 1
+                          ? selected
+                              .filter((id) => listPin.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
+                              .map(
+                                (id) =>
+                                  listPin.find((c) => c.id === id).loaiPin +
+                                  " " +
+                                  listPin.find((c) => c.id === id).dungLuong +
+                                  " mAh"
+                              ) // Lấy tên danh mục tương ứng
+                              .join(", ")
+                          : "Chọn Pin"
+                      }
                     >
-                      {selectedValues8.length === 1 &&
-                        selectedValues[0] == 0 && (
-                          <MenuItem
-                            className=""
-                            value={0}
-                            style={{ display: "none" }}
-                          >
-                            Chọn tính năng
-                          </MenuItem>
-                        )}
-                      <MenuItem value={1}>Kháng nước, kháng bụi</MenuItem>
-                      <MenuItem value={2}>Hỗ trợ 5G</MenuItem>
-                      <MenuItem value={3}>Bảo mật vân tay</MenuItem>
-                      <MenuItem value={4}>Bảo mật khuôn mặt</MenuItem>
-                      <MenuItem value={5}>Sạc không dây</MenuItem>
+                      {listPin.map((c) => (
+                        <MenuItem key={c.id} value={c.id}>
+                          <CheckBoxMui
+                            checked={selectedValuePins.indexOf(c.id) > -1}
+                          />
+                          <ListItemText
+                            primary={c.loaiPin + " " + c.dungLuong + " mAh"}
+                          />
+                        </MenuItem>
+                      ))}
+                    </SelectMui>
+                  </FormControl>
+                </div>
+                <div
+                  className="d-flex ms-3"
+                  style={{
+                    height: "40px",
+                    position: "relative",
+                    cursor: "pointer",
+                  }}
+                >
+                  <div
+                    onClick={handleOpenSort}
+                    className=""
+                    style={{ marginTop: "8px" }}
+                  >
+                    <span
+                      className="ms-2 ps-1"
+                      style={{ fontSize: "15px", fontWeight: "450" }}
+                    >
+                      Sắp Xếp:{""}
+                    </span>
+                  </div>
+                  <FormControl
+                    sx={{
+                      maxWidth: 200,
+                    }}
+                    size="small"
+                  >
+                    <SelectMui
+                      MenuProps={{
+                        PaperProps: {
+                          style: {
+                            borderRadius: "7px",
+                          },
+                        },
+                      }}
+                      IconComponent={KeyboardArrowDownOutlinedIcon}
+                      sx={{
+                        "& .MuiOutlinedInput-notchedOutline": {
+                          border: "none !important",
+                        },
+                        "& .MuiSelect-select": {
+                          color: "#2f80ed",
+                          fontWeight: "500",
+                        },
+                      }}
+                      open={openSort}
+                      onClose={handleCloseOpenSort}
+                      onOpen={handleOpenSort}
+                      defaultValue={"New"}
+                    >
+                      <MenuItem value={"New"}>Mới</MenuItem>
+                      <MenuItem value={"Old"}>Cũ</MenuItem>
+                    </SelectMui>
+                  </FormControl>
+                </div>
+                <div
+                  className="d-flex ms-3"
+                  style={{
+                    height: "40px",
+                    position: "relative",
+                    cursor: "pointer",
+                  }}
+                >
+                  <div
+                    onClick={handleOpenPage}
+                    className=""
+                    style={{ marginTop: "8px" }}
+                  >
+                    <span
+                      className="ms-2 ps-1"
+                      style={{ fontSize: "15px", fontWeight: "450" }}
+                    >
+                      Hiển Thị:{""}
+                    </span>
+                  </div>
+                  <FormControl
+                    sx={{
+                      maxWidth: 200,
+                    }}
+                    size="small"
+                  >
+                    <SelectMui
+                      MenuProps={{
+                        PaperProps: {
+                          style: {
+                            borderRadius: "7px",
+                          },
+                        },
+                      }}
+                      IconComponent={KeyboardArrowDownOutlinedIcon}
+                      sx={{
+                        "& .MuiOutlinedInput-notchedOutline": {
+                          border: "none !important",
+                        },
+                        "& .MuiSelect-select": {
+                          color: "#2f80ed",
+                          fontWeight: "500",
+                        },
+                      }}
+                      open={openPage}
+                      onClose={handleCloseOpenPage}
+                      onOpen={handleOpenPage}
+                      defaultValue={10}
+                      value={size}
+                      onChange={(e) => {
+                        setSize(e.target.value);
+                      }}
+                    >
+                      <MenuItem value={10}>10/Pages</MenuItem>
+                      <MenuItem value={20}>20/Pages</MenuItem>
+                      <MenuItem value={50}>50/Pages</MenuItem>
                     </SelectMui>
                   </FormControl>
                 </div>
               </div>
-              <div className="mt-3">
+              <div className="mt-4">
                 <TableProduct />
+              </div>
+              <div className="mt-3 d-flex justify-content-center">
+                <Pagination
+                  color="primary"
+                  page={parseInt(currentPage)}
+                  key={refreshPage}
+                  count={totalPages}
+                  onChange={handlePageChange}
+                />
               </div>
             </>
           ) : null}
@@ -1881,7 +2064,7 @@ export function ProductsDialog(props) {
         productItem1={productItem1}
         productItem2={productItem2}
         getProductItems={productItems}
-        getProductItems1={productItems1}
+getProductItems1={productItems1}
         changeProductItem={handleChangeInfoProductItem}
         changeProductImage={handleChangeProductImage}
         getAmount={getAmount}
@@ -1904,6 +2087,8 @@ export function VouchersDialog(props) {
     discount,
     total,
     checkDieuKien,
+    totalPages,
+    getVoucher,
   } = props;
   const StyledTableContainer = styled(TableContainer)({
     boxShadow: "none",
@@ -1952,18 +2137,6 @@ export function VouchersDialog(props) {
             style: "currency",
             currency: "VND",
           })}
-        </span>
-      ),
-    },
-    {
-      title: "Giảm Tối Đa",
-      align: "center",
-      width: "15%",
-      render: (text, item) => (
-        <span>
-          {item.loaiVoucher === TypeDiscountNumber.VND
-            ? "..."
-            : item.giaTriToiDa}
         </span>
       ),
     },
@@ -2022,8 +2195,8 @@ export function VouchersDialog(props) {
             discount === item.id
               ? "danger"
               : discount !== item.id
-                ? "primary"
-                : ""
+              ? "primary"
+              : ""
           }
           style={{
             height: "35px",
@@ -2052,6 +2225,28 @@ export function VouchersDialog(props) {
 
   const classes = useStyles();
   const filteredData = data.filter((item) => total() >= item.dieuKienApDung);
+
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const chuyenTrang = (event, page) => {
+    setCurrentPage(page);
+    getVoucher(page);
+  };
+
+  const [keyword, setKeyword] = useState("");
+
+  const handleChangeSearchVoucher = (event) => {
+    const searchTatCaInput = event.target.value;
+    setKeyword(searchTatCaInput);
+    setCurrentPage(1);
+  };
+
+  useEffect(
+    (page) => {
+      getVoucher(page, keyword);
+    },
+    [keyword]
+  );
 
   const TableVouchers = () => {
     return (
@@ -2097,112 +2292,114 @@ export function VouchersDialog(props) {
               <TableBody>
                 {filteredData.length > 0
                   ? filteredData.map((item, index) => (
-                    <TableRow
-                      key={index}
-                      sx={{
-                        "&:last-child td, &:last-child th": { border: 0 },
-                      }}
-                    >
-                      <TableCell component="th" scope="row" align="center">
-                        {index + 1}
-                      </TableCell>
-                      <TableCell align="center" style={{ fontSize: "15px" }}>
-                        {item.ma}
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        style={{
-                          width: "",
-                          fontSize: "15px",
-                          color: "#dc1111",
+                      <TableRow
+                        key={index}
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
                         }}
                       >
-                        {item.giaTriVoucher.toLocaleString("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        })}
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        style={{ width: "", fontSize: "15px" }}
-                      >
-                        {item.loaiVoucher === TypeDiscountNumber.VND
-                          ? "..."
-                          : item.giaTriToiDa}
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        style={{ width: "", fontSize: "15px" }}
-                      >
-                        {item.soLuong}
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        style={{
-                          width: "200px",
-                          fontSize: "15px",
-                          whiteSpace: "pre-line",
-                        }}
-                      >
-                        Áp dụng cho đơn tối thiểu
-                        <span className="" style={{}}>
-                          {" " +
-                            item.dieuKienApDung.toLocaleString("vi-VN", {
-                              style: "currency",
-                              currency: "VND",
-                            })}
-                        </span>
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        style={{ width: "", fontSize: "15px" }}
-                      >
-                        <div
-                          className="rounded-pill badge-primary"
+                        <TableCell component="th" scope="row" align="center">
+                          {index + 1}
+                        </TableCell>
+                        <TableCell align="center" style={{ fontSize: "15px" }}>
+                          {item.ma}
+                        </TableCell>
+                        <TableCell
+                          align="center"
                           style={{
-                            height: "35px",
-                            width: "auto",
-                            padding: "7.5px",
+                            width: "",
+                            fontSize: "15px",
+                            color: "#dc1111",
                           }}
                         >
-                          <span className="text-white p-2" style={{}}>
-                            {item.trangThai == 1 ? "Hoạt động" : ""}
+                          {item.giaTriVoucher.toLocaleString("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          })}
+                        </TableCell>
+                        <TableCell
+                          align="center"
+                          style={{ width: "", fontSize: "15px" }}
+                        >
+                          {item.loaiVoucher === TypeDiscountNumber.VND
+                            ? "..."
+                            : item.giaTriToiDa}
+                        </TableCell>
+                        <TableCell
+                          align="center"
+                          style={{ width: "", fontSize: "15px" }}
+                        >
+                          {item.soLuong}
+                        </TableCell>
+                        <TableCell
+                          align="center"
+                          style={{
+                            width: "200px",
+                            fontSize: "15px",
+                            whiteSpace: "pre-line",
+                          }}
+                        >
+                          Áp dụng cho đơn tối thiểu
+                          <span className="" style={{}}>
+                            {" " +
+                              item.dieuKienApDung.toLocaleString("vi-VN", {
+                                style: "currency",
+                                currency: "VND",
+                              })}
                           </span>
-                        </div>
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        style={{
-                          width: "200px",
-                          fontSize: "15px",
-                          whiteSpace: "pre-line",
-                        }}
-                      >
-                        <div
-                          className={`${item.dieuKienApDung <= total()
-                            ? "rounded-pill badge-success"
-                            : "rounded-pill badge-danger"
+                        </TableCell>
+                        <TableCell
+                          align="center"
+                          style={{ width: "", fontSize: "15px" }}
+                        >
+                          <div
+                            className="rounded-pill badge-primary"
+                            style={{
+                              height: "35px",
+                              width: "auto",
+                              padding: "7.5px",
+                            }}
+                          >
+                            <span className="text-white p-2" style={{}}>
+                              {item.trangThai == 1 ? "Hoạt động" : ""}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell
+                          align="center"
+                          style={{
+                            width: "200px",
+                            fontSize: "15px",
+                            whiteSpace: "pre-line",
+                          }}
+                        >
+                          <div
+                            className={`${
+                              item.dieuKienApDung <= total()
+                                ? "rounded-pill badge-success"
+                                : "rounded-pill badge-danger"
                             }`}
-                          style={{
-                            height: "35px",
-                            width: "auto",
-                            padding: "7.5px",
-                          }}
-                        >
-                          <span className="text-white p-2" style={{}}>
-                            <span>{`${item.dieuKienApDung <= total()
-                              ? "Có thể áp dụng"
-                              : "Không thể áp dụng"
+                            style={{
+                              height: "35px",
+                              width: "auto",
+                              padding: "7.5px",
+                            }}
+                          >
+                            <span className="text-white p-2" style={{}}>
+                              <span>{`${
+                                item.dieuKienApDung <= total()
+                                  ? "Có thể áp dụng"
+                                  : "Không thể áp dụng"
                               }`}</span>
-                          </span>
-                        </div>
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        style={{ width: "" }}
-                      ></TableCell>
-                    </TableRow>
-                  ))
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell
+                          align="center"
+                          style={{ width: "" }}
+                        ></TableCell>
+                      </TableRow>
+                    ))
                   : ""}
               </TableBody>
             </Table>
@@ -2218,7 +2415,10 @@ export function VouchersDialog(props) {
         open={open}
         TransitionComponent={Transition}
         keepMounted
-        onClose={onCloseNoAction}
+        onClose={() => {
+          onCloseNoAction();
+          setKeyword("");
+        }}
         aria-describedby="alert-dialog-slide-description1"
         maxWidth="lg"
         maxHeight="lg"
@@ -2241,8 +2441,8 @@ export function VouchersDialog(props) {
           <div className="mt-2 d-flex">
             <TextField
               label="Tìm Voucher"
-              // onChange={handleGetValueFromInputTextField}
-              // value={keyword}
+              onChange={handleChangeSearchVoucher}
+              value={keyword}
               InputLabelProps={{
                 sx: {
                   marginTop: "0.5px",
@@ -2273,7 +2473,7 @@ export function VouchersDialog(props) {
             </Button>
           </div>
           <div className="mt-4">
-            <TableAntd
+            {/* <TableAntd
               className="table-container"
               columns={columns}
               dataSource={data}
@@ -2284,7 +2484,28 @@ export function VouchersDialog(props) {
               rowKey={"id"}
               key={"id"}
               locale={{ emptyText: <Empty /> }}
+            /> */}
+            <TableAntd
+              className="table-container"
+              dataSource={data}
+              columns={columns}
+              pagination={false}
+              rowClassName={(record) =>
+                total() < record.dieuKienApDung && "disabled-row"
+              }
+              rowKey="id"
+              size="middle"
+              locale={{ emptyText: <Empty /> }}
             />
+            <div className="d-flex justify-content-center mt-2">
+              <Pagination
+                page={parseInt(currentPage)}
+                count={totalPages}
+                onChange={chuyenTrang}
+                color="primary"
+              />
+            </div>
+            <div className="mt-4"></div>
           </div>
         </DialogContent>
         <DialogActions></DialogActions>
@@ -2294,7 +2515,49 @@ export function VouchersDialog(props) {
 }
 
 export function CustomersDialog(props) {
-  const { open, onClose, onCloseNoAction, data, add, idCus, isOpen } = props;
+  const {
+    open,
+    onClose,
+    onCloseNoAction,
+    data,
+    add,
+    idCus,
+    isOpen,
+    totalPages,
+    getCustomer,
+  } = props;
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [openCustomer, setOpenCustomer] = React.useState(false);
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleClose = () => {
+    setOpenCustomer(false);
+  };
+
+  const handleClickOpen = () => {
+    setOpenCustomer(true);
+  };
+  const chuyenTrang = (event, page) => {
+    setCurrentPage(page);
+    getCustomer(page);
+  };
+
+  const [keyword, setKeyword] = useState("");
+
+  const handleChangeSearchCustomer = (event) => {
+    const searchTatCaInput = event.target.value;
+    setKeyword(searchTatCaInput);
+    setCurrentPage(1);
+  };
+
+  useEffect(
+    (page) => {
+      getCustomer(page, keyword);
+    },
+    [keyword]
+  );
 
   const handleSelectCustomer = (id) => {
     if (idCus === id) {
@@ -2316,7 +2579,7 @@ export function CustomersDialog(props) {
       width: "10%",
       render: (text, item) => (
         <div className="d-flex justify-content-center" style={{}}>
-          <Avatar src="https://ecdn.game4v.com/g4v-content/uploads/2021/02/ava-1.png" />
+          <Avatar src={item.anhDaiDien} />
         </div>
       ),
     },
@@ -2349,8 +2612,8 @@ export function CustomersDialog(props) {
       align: "center",
       width: "15%",
       render: (text, item) => (
-        <span style={{ fontWeight: "normal" }}>
-          {format(new Date(), "HH:mm:ss - dd/MM/yyyy")}
+        <span style={{ fontWeight: "normal", whiteSpace: "pre-line" }}>
+          {format(new Date(item.ngayTao), "HH:mm:ss, dd/MM/yyyy")}
         </span>
       ),
     },
@@ -2406,7 +2669,9 @@ export function CustomersDialog(props) {
         open={open}
         TransitionComponent={Transition}
         keepMounted
-        onClose={onCloseNoAction}
+        onClose={() => {
+          onCloseNoAction();
+        }}
         aria-describedby="alert-dialog-slide-description1"
         maxWidth="lg"
         maxHeight="lg"
@@ -2432,8 +2697,8 @@ export function CustomersDialog(props) {
                 <div>
                   <TextField
                     label="Tìm Khách Hàng"
-                    // onChange={handleGetValueFromInputTextField}
-                    // value={keyword}
+                    onChange={handleChangeSearchCustomer}
+                    value={keyword}
                     InputLabelProps={{
                       sx: {
                         marginTop: "0.5px",
@@ -2465,7 +2730,7 @@ export function CustomersDialog(props) {
                 </div>
                 <div>
                   <Button
-                    // onClick={handleCreateNewOrderPending}
+                    onClick={handleClickOpen}
                     className="rounded-2 button-mui"
                     type="primary"
                     style={{ height: "40px", width: "165px", fontSize: "15px" }}
@@ -2488,7 +2753,7 @@ export function CustomersDialog(props) {
                 </div>
               </div>
               <div className="mt-4">
-                <TableAntd
+                {/* <TableAntd
                   className="table-container"
                   columns={columns}
                   dataSource={data}
@@ -2496,12 +2761,58 @@ export function CustomersDialog(props) {
                   rowKey={"id"}
                   key={"id"}
                   locale={{ emptyText: <Empty /> }}
+                /> */}
+                <TableAntd
+                  className="table-container"
+                  dataSource={data}
+                  columns={columns}
+                  pagination={false}
+                  rowKey="id"
+                  key={"id"}
+                  size="middle"
+                  locale={{ emptyText: <Empty /> }}
                 />
+                <div className="d-flex justify-content-center mt-2">
+                  <Pagination
+                    page={parseInt(currentPage)}
+                    count={totalPages}
+                    onChange={chuyenTrang}
+                    color="primary"
+                  />
+                </div>
+                <div className="mt-4"></div>
               </div>
             </>
           ) : null}
         </DialogContent>
         <DialogActions></DialogActions>
+      </Dialog>
+      <Dialog
+        open={openCustomer}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={() => {
+          handleClose();
+        }}
+        maxWidth={false}
+        sx={{
+          width: "100%",
+          maxWidth: "unset",
+          overflowX: "hidden", // Ngăn việc cuộn ngang
+          "& .MuiDialog-paper": {
+            width: "100%",
+            maxWidth: "84vw",
+            maxHeight: "unset", // Loại bỏ giới hạn chiều cao nếu cần
+          },
+        }}
+      >
+        <DialogContent className="">
+          <ModalAddKhachHang
+            close={() => {
+              handleClose();
+            }}
+          />
+        </DialogContent>
       </Dialog>
     </div>
   );
@@ -2841,7 +3152,6 @@ export function ConfirmDialog(props) {
   const {
     open,
     status,
-    confirmPreparing,
     confirmOrderInfo,
     confirmDelivery,
     confirmFinish,
@@ -2864,8 +3174,6 @@ export function ConfirmDialog(props) {
     if (status === OrderStatusString.PENDING_CONFIRM) {
       confirmOrderInfo(description);
     } else if (status === OrderStatusString.CONFIRMED) {
-      confirmPreparing(description);
-    } else if (status === OrderStatusString.PREPARING) {
       confirmDelivery(description);
     } else if (status === OrderStatusString.DELIVERING) {
       confirmFinish(description);
@@ -2878,8 +3186,6 @@ export function ConfirmDialog(props) {
     if (status === OrderStatusString.PENDING_CONFIRM) {
       return "Xác nhận đơn hàng";
     } else if (status === OrderStatusString.CONFIRMED) {
-      return "Xác nhận đang chuẩn bị hàng";
-    } else if (status === OrderStatusString.PREPARING) {
       return "Xác nhận giao hàng";
     } else if (status === OrderStatusString.DELIVERING) {
       return "Xác nhận đã giao";
@@ -3040,11 +3346,11 @@ export const ProductDetailsDialog = (props) => {
                   <span style={{ fontWeight: "500", fontSize: "25px" }}>
                     {productItem1 &&
                       productItem1.sanPham.tenSanPham +
-                      " " +
-                      productItem1.ram.dungLuong +
-                      "/" +
-                      productItem1.rom.dungLuong +
-                      "GB"}
+                        " " +
+                        productItem1.ram.dungLuong +
+                        "/" +
+                        productItem1.rom.dungLuong +
+                        "GB"}
                     <span
                       className="ms-2"
                       style={{ fontSize: "13.5px", color: "gray" }}
@@ -3090,9 +3396,9 @@ export const ProductDetailsDialog = (props) => {
                         defaultValue={
                           productItem &&
                           productItem.ram.dungLuong +
-                          "/" +
-                          productItem.rom.dungLuong +
-                          "GB"
+                            "/" +
+                            productItem.rom.dungLuong +
+                            "GB"
                         }
                         size="lg"
                         sx={{ gap: 1.7 }}
@@ -3121,11 +3427,11 @@ export const ProductDetailsDialog = (props) => {
                                         >
                                           {productItem &&
                                             productItem.sanPham.tenSanPham +
-                                            " " +
-                                            item.ram.dungLuong +
-                                            "/" +
-                                            item.rom.dungLuong +
-                                            "GB"}
+                                              " " +
+                                              item.ram.dungLuong +
+                                              "/" +
+                                              item.rom.dungLuong +
+                                              "GB"}
                                         </span>
                                       </div>
                                       <div className="text-center">
@@ -3463,7 +3769,7 @@ export const ModalImeiByProductItem = ({
                     className=""
                   />
                   <Button
-                    onClick={() => { }}
+                    onClick={() => {}}
                     className="rounded-2 ms-2 button-mui"
                     type="primary"
                     style={{ width: "100px", fontSize: "15px" }}
@@ -3495,95 +3801,95 @@ export const ModalImeiByProductItem = ({
                       <tbody>
                         {itemsOnCurrentPage.length
                           ? itemsOnCurrentPage.map((item, index) => (
-                            <>
-                              <tr
-                                key={index}
-                                style={{
-                                  cursor: "pointer",
-                                  pointerEvents:
-                                    item.trangThai ===
-                                      StatusImei.PENDING_DELIVERY ||
+                              <>
+                                <tr
+                                  key={index}
+                                  style={{
+                                    cursor: "pointer",
+                                    pointerEvents:
+                                      item.trangThai ===
+                                        StatusImei.PENDING_DELIVERY ||
                                       item.trangThai === StatusImei.IN_THE_CART
-                                      ? "none"
-                                      : "auto",
-                                  opacity:
-                                    item.trangThai ===
-                                      StatusImei.PENDING_DELIVERY ||
+                                        ? "none"
+                                        : "auto",
+                                    opacity:
+                                      item.trangThai ===
+                                        StatusImei.PENDING_DELIVERY ||
                                       item.trangThai === StatusImei.IN_THE_CART
-                                      ? "0.5"
-                                      : "1",
-                                }}
-                                onClick={() => {
-                                  if (
-                                    selectedImei.length >= 4 &&
-                                    !selectedImei.includes(item)
-                                  ) {
-                                    handleOpenAlertVariant(
-                                      "Lựa chọn tối đa 4 số lượng sản phẩm!",
-                                      "warning"
-                                    );
-                                  } else if (!selectedImei.includes(item)) {
-                                    setSelectedImei((val) => [...val, item]);
-                                  } else {
-                                    setSelectedImei((val) =>
-                                      val.filter((text) => text !== item)
-                                    );
-                                  }
-                                }}
-                              >
-                                <td>
-                                  <Checkbox
-                                    color="primary"
-                                    checked={selectedImei.includes(item)}
-                                  />
-                                </td>
-                                <td className="text-center">{item.soImei}</td>
+                                        ? "0.5"
+                                        : "1",
+                                  }}
+                                  onClick={() => {
+                                    if (
+                                      selectedImei.length >= 4 &&
+                                      !selectedImei.includes(item)
+                                    ) {
+                                      handleOpenAlertVariant(
+                                        "Lựa chọn tối đa 4 số lượng sản phẩm!",
+                                        "warning"
+                                      );
+                                    } else if (!selectedImei.includes(item)) {
+                                      setSelectedImei((val) => [...val, item]);
+                                    } else {
+                                      setSelectedImei((val) =>
+                                        val.filter((text) => text !== item)
+                                      );
+                                    }
+                                  }}
+                                >
+                                  <td>
+                                    <Checkbox
+                                      color="primary"
+                                      checked={selectedImei.includes(item)}
+                                    />
+                                  </td>
+                                  <td className="text-center">{item.soImei}</td>
 
-                                <td className="text-center">
-                                  {item.trangThai ===
-                                    StatusImei.PENDING_DELIVERY ||
+                                  <td className="text-center">
+                                    {item.trangThai ===
+                                      StatusImei.PENDING_DELIVERY ||
                                     item.trangThai === StatusImei.NOT_SOLD ||
                                     item.trangThai ===
-                                    StatusImei.IN_THE_CART ? (
-                                    <div
-                                      className={
-                                        item.trangThai ===
+                                      StatusImei.IN_THE_CART ? (
+                                      <div
+                                        className={
+                                          item.trangThai ===
                                           StatusImei.PENDING_DELIVERY
-                                          ? "badge-primary rounded-pill mx-auto"
-                                          : "badge-success rounded-pill mx-auto"
-                                      }
-                                      style={{
-                                        height: "35px",
-                                        width: "115px",
-                                        padding: "4px",
-                                      }}
-                                    >
-                                      <span
-                                        className="text-white"
+                                            ? "badge-primary rounded-pill mx-auto"
+                                            : "badge-success rounded-pill mx-auto"
+                                        }
                                         style={{
-                                          fontSize: "14px",
-                                          fontWeight: "400",
+                                          height: "35px",
+                                          width: "115px",
+                                          padding: "4px",
                                         }}
                                       >
-                                        {item.trangThai ===
+                                        <span
+                                          className="text-white"
+                                          style={{
+                                            fontSize: "14px",
+                                            fontWeight: "400",
+                                          }}
+                                        >
+                                          {item.trangThai ===
                                           StatusImei.NOT_SOLD
-                                          ? "Chưa Bán"
-                                          : item.trangThai ===
-                                            StatusImei.IN_THE_CART
+                                            ? "Chưa Bán"
+                                            : item.trangThai ===
+                                              StatusImei.IN_THE_CART
                                             ? "Chưa Bán"
                                             : item.trangThai ===
                                               StatusImei.PENDING_DELIVERY
-                                              ? "Chờ Giao"
-                                              : ""}
-                                      </span>
-                                    </div>
-                                  ) : (
-                                    ""
-                                  )}
-                                </td>
-                              </tr>
-                            </>
-                          ))
+                                            ? "Chờ Giao"
+                                            : ""}
+                                        </span>
+                                      </div>
+                                    ) : (
+                                      ""
+                                    )}
+                                  </td>
+                                </tr>
+                              </>
+                            ))
                           : ""}
                       </tbody>
                     ) : null}
@@ -3626,9 +3932,9 @@ export const ModalImeiByProductItem = ({
                               action: ({ checked }) => ({
                                 sx: checked
                                   ? {
-                                    border: "1px solid",
-                                    borderColor: "#2f80ed",
-                                  }
+                                      border: "1px solid",
+                                      borderColor: "#2f80ed",
+                                    }
                                   : {},
                               }),
                             }}
@@ -3818,114 +4124,114 @@ export const ModalUpdateImeiByProductItem = ({
                     <tbody>
                       {itemsOnCurrentPage.length
                         ? itemsOnCurrentPage.map((item, index) => (
-                          <tr
-                            key={index}
-                            style={{
-                              cursor: "pointer",
-                              pointerEvents:
-                                (item.trangThai ===
-                                  StatusImei.PENDING_DELIVERY ||
-                                  item.trangThai ===
-                                  StatusImei.IN_THE_CART) &&
+                            <tr
+                              key={index}
+                              style={{
+                                cursor: "pointer",
+                                pointerEvents:
+                                  (item.trangThai ===
+                                    StatusImei.PENDING_DELIVERY ||
+                                    item.trangThai ===
+                                      StatusImei.IN_THE_CART) &&
                                   !imeisChuaBan.some(
                                     (selectedItem) =>
                                       selectedItem.soImei === item.soImei
                                   )
-                                  ? "none"
-                                  : "auto",
-                              opacity:
-                                (item.trangThai ===
-                                  StatusImei.PENDING_DELIVERY ||
-                                  item.trangThai ===
-                                  StatusImei.IN_THE_CART) &&
+                                    ? "none"
+                                    : "auto",
+                                opacity:
+                                  (item.trangThai ===
+                                    StatusImei.PENDING_DELIVERY ||
+                                    item.trangThai ===
+                                      StatusImei.IN_THE_CART) &&
                                   !imeisChuaBan.some(
                                     (selectedItem) =>
                                       selectedItem.soImei === item.soImei
                                   )
-                                  ? "0.5"
-                                  : "1",
-                            }}
-                            onClick={() => {
-                              if (
-                                selectedImei.length >= 4 &&
-                                !selectedImei.some(
-                                  (selectedItem) =>
-                                    selectedItem.soImei === item.soImei
-                                )
-                              ) {
-                                handleOpenAlertVariant(
-                                  "Lựa chọn tối đa 4 số lượng sản phẩm!",
-                                  "warning"
-                                );
-                              } else if (
-                                !selectedImei.some(
-                                  (selectedItem) =>
-                                    selectedItem.soImei === item.soImei
-                                )
-                              ) {
-                                setSelectedImei([...selectedImei, item]);
-                              } else {
-                                setSelectedImei(
-                                  selectedImei.filter(
+                                    ? "0.5"
+                                    : "1",
+                              }}
+                              onClick={() => {
+                                if (
+                                  selectedImei.length >= 4 &&
+                                  !selectedImei.some(
                                     (selectedItem) =>
-                                      selectedItem.soImei !== item.soImei
+                                      selectedItem.soImei === item.soImei
                                   )
-                                );
-                              }
-                            }}
-                          >
-                            <td>
-                              <Checkbox
-                                color="primary"
-                                checked={selectedImei.some(
-                                  (selectedItem) =>
-                                    selectedItem.soImei === item.soImei
-                                )}
-                              />
-                            </td>
-                            <td className="text-center">{item.soImei}</td>
-                            <td className="text-center">
-                              {item.trangThai ===
-                                StatusImei.PENDING_DELIVERY ||
+                                ) {
+                                  handleOpenAlertVariant(
+                                    "Lựa chọn tối đa 4 số lượng sản phẩm!",
+                                    "warning"
+                                  );
+                                } else if (
+                                  !selectedImei.some(
+                                    (selectedItem) =>
+                                      selectedItem.soImei === item.soImei
+                                  )
+                                ) {
+                                  setSelectedImei([...selectedImei, item]);
+                                } else {
+                                  setSelectedImei(
+                                    selectedImei.filter(
+                                      (selectedItem) =>
+                                        selectedItem.soImei !== item.soImei
+                                    )
+                                  );
+                                }
+                              }}
+                            >
+                              <td>
+                                <Checkbox
+                                  color="primary"
+                                  checked={selectedImei.some(
+                                    (selectedItem) =>
+                                      selectedItem.soImei === item.soImei
+                                  )}
+                                />
+                              </td>
+                              <td className="text-center">{item.soImei}</td>
+                              <td className="text-center">
+                                {item.trangThai ===
+                                  StatusImei.PENDING_DELIVERY ||
                                 item.trangThai === StatusImei.NOT_SOLD ||
                                 item.trangThai === StatusImei.IN_THE_CART ? (
-                                <div
-                                  className={
-                                    item.trangThai ===
+                                  <div
+                                    className={
+                                      item.trangThai ===
                                       StatusImei.PENDING_DELIVERY
-                                      ? "badge-primary rounded-pill mx-auto"
-                                      : "badge-success rounded-pill mx-auto"
-                                  }
-                                  style={{
-                                    height: "35px",
-                                    width: "115px",
-                                    padding: "4px",
-                                  }}
-                                >
-                                  <span
-                                    className="text-white"
+                                        ? "badge-primary rounded-pill mx-auto"
+                                        : "badge-success rounded-pill mx-auto"
+                                    }
                                     style={{
-                                      fontSize: "14px",
-                                      fontWeight: "400",
+                                      height: "35px",
+                                      width: "115px",
+                                      padding: "4px",
                                     }}
                                   >
-                                    {item.trangThai === StatusImei.NOT_SOLD
-                                      ? "Chưa Bán"
-                                      : item.trangThai ===
-                                        StatusImei.IN_THE_CART
+                                    <span
+                                      className="text-white"
+                                      style={{
+                                        fontSize: "14px",
+                                        fontWeight: "400",
+                                      }}
+                                    >
+                                      {item.trangThai === StatusImei.NOT_SOLD
+                                        ? "Chưa Bán"
+                                        : item.trangThai ===
+                                          StatusImei.IN_THE_CART
                                         ? "Chưa Bán"
                                         : item.trangThai ===
                                           StatusImei.PENDING_DELIVERY
-                                          ? "Chờ Giao"
-                                          : ""}
-                                  </span>
-                                </div>
-                              ) : (
-                                ""
-                              )}
-                            </td>
-                          </tr>
-                        ))
+                                        ? "Chờ Giao"
+                                        : ""}
+                                    </span>
+                                  </div>
+                                ) : (
+                                  ""
+                                )}
+                              </td>
+                            </tr>
+                          ))
                         : ""}
                     </tbody>
                   </table>
@@ -3965,9 +4271,9 @@ export const ModalUpdateImeiByProductItem = ({
                               action: ({ checked }) => ({
                                 sx: checked
                                   ? {
-                                    border: "1px solid",
-                                    borderColor: "#2f80ed",
-                                  }
+                                      border: "1px solid",
+                                      borderColor: "#2f80ed",
+                                    }
                                   : {},
                               }),
                             }}
@@ -4378,11 +4684,11 @@ export function MultiplePaymentMethods({
                               action: ({ checked }) => ({
                                 sx: checked
                                   ? {
-                                    border: "1px solid",
-                                    borderColor: "#2f80ed",
-                                    // borderRadius: "10px",
-                                    // height: "40px",
-                                  }
+                                      border: "1px solid",
+                                      borderColor: "#2f80ed",
+                                      // borderRadius: "10px",
+                                      // height: "40px",
+                                    }
                                   : {},
                               }),
                             }}
@@ -4930,11 +5236,11 @@ export function MultiplePaymentMethodsDelivery({
                               action: ({ checked }) => ({
                                 sx: checked
                                   ? {
-                                    border: "1px solid",
-                                    borderColor: "#2f80ed",
-                                    // borderRadius: "10px",
-                                    // height: "40px",
-                                  }
+                                      border: "1px solid",
+                                      borderColor: "#2f80ed",
+                                      // borderRadius: "10px",
+                                      // height: "40px",
+                                    }
                                   : {},
                               }),
                             }}
@@ -5021,13 +5327,7 @@ export function MultiplePaymentMethodsDelivery({
   );
 }
 
-export const ModalRefundProduct = ({
-  open,
-  close,
-  imeis,
-  refresh,
-  refund,
-}) => {
+export const ModalRefundProduct = ({ open, close, imeis, refresh, refund }) => {
   const [selectedImei, setSelectedImei] = useState([]);
   const { handleOpenAlertVariant } = useCustomSnackbar();
 
@@ -5093,63 +5393,63 @@ export const ModalRefundProduct = ({
                     <tbody>
                       {imeis.length
                         ? imeis.map((item, index) => (
-                          <tr
-                            key={index}
-                            style={{
-                              cursor: "pointer",
-                            }}
-                            onClick={() => {
-                              if (
-                                !selectedImei.some(
-                                  (selectedItem) =>
-                                    selectedItem.soImei === item.soImei
-                                )
-                              ) {
-                                setSelectedImei([...selectedImei, item]);
-                              } else {
-                                setSelectedImei(
-                                  selectedImei.filter(
+                            <tr
+                              key={index}
+                              style={{
+                                cursor: "pointer",
+                              }}
+                              onClick={() => {
+                                if (
+                                  !selectedImei.some(
                                     (selectedItem) =>
-                                      selectedItem.soImei !== item.soImei
+                                      selectedItem.soImei === item.soImei
                                   )
-                                );
-                              }
-                            }}
-                          >
-                            <td>
-                              <Checkbox
-                                color="primary"
-                                checked={selectedImei.some(
-                                  (selectedItem) =>
-                                    selectedItem.soImei === item.soImei
-                                )}
-                              />
-                            </td>
-                            <td className="text-center">{item.soImei}</td>
-                            <td className="text-center">
-                              <div
-                                className={
-                                  "badge-success rounded-pill mx-auto"
+                                ) {
+                                  setSelectedImei([...selectedImei, item]);
+                                } else {
+                                  setSelectedImei(
+                                    selectedImei.filter(
+                                      (selectedItem) =>
+                                        selectedItem.soImei !== item.soImei
+                                    )
+                                  );
                                 }
-                                style={{
-                                  height: "35px",
-                                  width: "105px",
-                                  padding: "4px",
-                                }}
-                              >
-                                <span
-                                  className="text-white"
+                              }}
+                            >
+                              <td>
+                                <Checkbox
+                                  color="primary"
+                                  checked={selectedImei.some(
+                                    (selectedItem) =>
+                                      selectedItem.soImei === item.soImei
+                                  )}
+                                />
+                              </td>
+                              <td className="text-center">{item.soImei}</td>
+                              <td className="text-center">
+                                <div
+                                  className={
+                                    "badge-success rounded-pill mx-auto"
+                                  }
                                   style={{
-                                    fontSize: "14px",
-                                    fontWeight: "400",
+                                    height: "35px",
+                                    width: "105px",
+                                    padding: "4px",
                                   }}
                                 >
-                                  Đã Bán
-                                </span>
-                              </div>
-                            </td>
-                          </tr>
-                        ))
+                                  <span
+                                    className="text-white"
+                                    style={{
+                                      fontSize: "14px",
+                                      fontWeight: "400",
+                                    }}
+                                  >
+                                    Đã Bán
+                                  </span>
+                                </div>
+                              </td>
+                            </tr>
+                          ))
                         : ""}
                     </tbody>
                   </table>
@@ -5164,8 +5464,7 @@ export const ModalRefundProduct = ({
                         "warning"
                       );
                     } else {
-                      refund(selectedImei
-                      );
+                      refund(selectedImei);
                       close();
                     }
                   }}
@@ -5236,8 +5535,8 @@ export function ConfirmChangeTypePhienBan(props) {
               sx={{ color: "black" }}
               id="alert-dialog-description"
             >
-              Thông tin của các phiên bản hiện tại
-              sẽ không được lưu lại. Bạn có chắc chắn muốn chuyển sang tính năng này ?
+              Thông tin của các phiên bản hiện tại sẽ không được lưu lại. Bạn có
+              chắc chắn muốn chuyển sang tính năng này ?
             </DialogContentText>
           </DialogContent>
           <DialogActions>
@@ -5361,8 +5660,85 @@ export function ConfirmRefundOrder(props) {
   );
 }
 
+export function ConfirmRollbackStatusOrder(props) {
+  const { open, onClose, confirm } = props;
 
-export function ConfirmAddProduct(props) {
+  return (
+    <div className="rounded-pill">
+      <Dialog
+        TransitionComponent={Transition1}
+        open={open}
+        onClose={onClose}
+        aria-describedby="alert-dialog-slide-description1"
+        sx={{
+          height: "300px",
+          "& .MuiPaper-root": {
+            borderRadius: "15px",
+            marginTop: "150px",
+          },
+        }}
+      >
+        <div className="p-2" style={{}}>
+          <DialogTitle
+            sx={{ color: "#2f80ed", fontWeight: "500", fontSize: "18px" }}
+            id="alert-dialog-title"
+          >
+            {"Xác nhận hoàn tác"}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText
+              sx={{ color: "black" }}
+              id="alert-dialog-description"
+            >
+              Bạn có chắc chắc muốn hoàn tác về trạng thái trước đó của đơn hàng
+              ?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={confirm}
+              className="rounded-2 me-1 button-mui"
+              type="primary"
+              style={{
+                height: "40px",
+                width: "auto",
+                fontSize: "16px",
+                marginBottom: "20px",
+              }}
+            >
+              <span
+                className="text-white"
+                style={{ fontWeight: "500", marginBottom: "2px" }}
+              >
+                Đồng ý
+              </span>
+            </Button>
+            <Button
+              onClick={onClose}
+              className="rounded-2 me-3 ant-btn-danger"
+              type="primary"
+              style={{
+                height: "40px",
+                width: "auto",
+                fontSize: "16px",
+                marginBottom: "20px",
+              }}
+            >
+              <span
+                className="text-white"
+                style={{ fontWeight: "500", marginBottom: "2px" }}
+              >
+                Hủy bỏ
+              </span>
+            </Button>
+          </DialogActions>
+        </div>
+      </Dialog>
+    </div>
+  );
+}
+
+export function ConfirmRemoveProductDetails(props) {
   const { open, onClose, confirm, name } = props;
 
   return (
@@ -5385,16 +5761,16 @@ export function ConfirmAddProduct(props) {
             sx={{ color: "#2f80ed", fontWeight: "500", fontSize: "18px" }}
             id="alert-dialog-title"
           >
-            {"Xác nhận thêm sản phẩm"}
+            {"Xác nhận xóa phiên bản"}
           </DialogTitle>
           <DialogContent>
             <DialogContentText
               sx={{ color: "black" }}
               id="alert-dialog-description"
             >
-              Bạn có chắc chắc muốn thêm sản phẩm
-              <span style={{ fontWeight: "500" }}>{" " + name + " "}</span>
-              ?
+              Bạn có chắc chắc muốn xóa sản phẩm
+              <span style={{ fontWeight: "500" }}>{" " + name + " "}</span> và
+              danh sách Imei của sản phẩm này ?
             </DialogContentText>
           </DialogContent>
           <DialogActions>
@@ -5440,18 +5816,90 @@ export function ConfirmAddProduct(props) {
     </div>
   );
 }
-export const ScannerBarcode = ({
-  open,
-  close,
-  getResult,
-  refresh
-}) => {
 
+export function ConfirmAddProduct(props) {
+  const { open, onClose, confirm, name } = props;
+
+  return (
+    <div className="rounded-pill">
+      <Dialog
+        TransitionComponent={Transition1}
+        open={open}
+        onClose={onClose}
+        aria-describedby="alert-dialog-slide-description1"
+        sx={{
+          height: "300px",
+          "& .MuiPaper-root": {
+            borderRadius: "15px",
+            marginTop: "150px",
+          },
+        }}
+      >
+        <div className="p-2" style={{}}>
+          <DialogTitle
+            sx={{ color: "#2f80ed", fontWeight: "500", fontSize: "18px" }}
+            id="alert-dialog-title"
+          >
+            {"Xác nhận thêm sản phẩm"}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText
+              sx={{ color: "black" }}
+              id="alert-dialog-description"
+            >
+              Bạn có chắc chắc muốn thêm sản phẩm
+              <span style={{ fontWeight: "500" }}>{" " + name + " "}</span>?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={confirm}
+              className="rounded-2 me-1 button-mui"
+              type="primary"
+              style={{
+                height: "40px",
+                width: "auto",
+                fontSize: "16px",
+                marginBottom: "20px",
+              }}
+            >
+              <span
+                className="text-white"
+                style={{ fontWeight: "500", marginBottom: "2px" }}
+              >
+                Xác nhận
+              </span>
+            </Button>
+            <Button
+              onClick={onClose}
+              className="rounded-2 me-3 ant-btn-danger"
+              type="primary"
+              style={{
+                height: "40px",
+                width: "auto",
+                fontSize: "16px",
+                marginBottom: "20px",
+              }}
+            >
+              <span
+                className="text-white"
+                style={{ fontWeight: "500", marginBottom: "2px" }}
+              >
+                Hủy bỏ
+              </span>
+            </Button>
+          </DialogActions>
+        </div>
+      </Dialog>
+    </div>
+  );
+}
+export const ScannerBarcodeOrder = ({ open, close, getResult, refresh }) => {
   const [scanning, setScanning] = useState(true);
 
   useEffect(() => {
     setScanning(true);
-  }, [refresh])
+  }, [refresh]);
 
   const onNewScanResult = (decodedText, decodedResult) => {
     console.log(decodedText);
@@ -5469,8 +5917,70 @@ export const ScannerBarcode = ({
           qrCodeSuccessCallback={onNewScanResult}
         />
       </div>
-    )
-  }
+    );
+  };
+
+  return (
+    <>
+      <Dialog
+        open={open}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={() => {
+          close();
+          // setScanning(true);
+        }}
+        maxWidth="xxl"
+        maxHeight="xxl"
+      >
+        <DialogContent className="">
+          <div className="mt-2" style={{ width: "600px" }}>
+            <div className="container" style={{}}>
+              <div className="">
+                <div className="mt-1">
+                  <span className="fs-4 fw-bold">Quét Barcode Đơn Hàng</span>
+                </div>
+                <div className="mt-4 text-center" style={{}}>
+                  {scanning === true && open === true ? (
+                    <Barcode />
+                  ) : (
+                    "Đang chờ ..."
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+        <div className="mt-3"></div>
+      </Dialog>
+    </>
+  );
+};
+export const ScannerBarcode = ({ open, close, getResult, refresh }) => {
+  const [scanning, setScanning] = useState(true);
+
+  useEffect(() => {
+    setScanning(true);
+  }, [refresh]);
+
+  const onNewScanResult = (decodedText, decodedResult) => {
+    console.log(decodedText);
+    getResult(decodedText);
+    setScanning(false);
+  };
+
+  const Barcode = () => {
+    return (
+      <div className="mx-auto" style={{ width: "500px" }}>
+        <Html5QrcodePlugin
+          fps={10}
+          qrbox={250}
+          disableFlip={false}
+          qrCodeSuccessCallback={onNewScanResult}
+        />
+      </div>
+    );
+  };
 
   return (
     <>
@@ -5493,9 +6003,11 @@ export const ScannerBarcode = ({
                   <span className="fs-4 fw-bold">Quét Barcode Sản Phẩm</span>
                 </div>
                 <div className="mt-4 text-center" style={{}}>
-                  {scanning === true && open === true ?
-                    <Barcode /> : "Đang chờ ..."
-                  }
+                  {scanning === true && open === true ? (
+                    <Barcode />
+                  ) : (
+                    "Đang chờ ..."
+                  )}
                 </div>
               </div>
             </div>
@@ -5506,12 +6018,7 @@ export const ScannerBarcode = ({
     </>
   );
 };
-export const ModalViewImeiHadBuy = ({
-  open,
-  close,
-  imeis,
-}) => {
-
+export const ModalViewImeiHadBuy = ({ open, close, imeis }) => {
   return (
     <>
       <Dialog
@@ -5554,34 +6061,46 @@ export const ModalViewImeiHadBuy = ({
                     <tbody>
                       {imeis.length
                         ? imeis.map((item, index) => (
-                          <tr
-                          >
-                            <td className="text-center">{index + 1}</td>
-                            <td className="text-center">{item.soImei}</td>
-                            <td className="text-center">
-                              <div
-                                className={
-                                  item.trangThai === StatusImei.SOLD ? "badge-success rounded-pill mx-auto" : item.trangThai === StatusImei.CANCELLED || item.trangThai === StatusImei.REFUND ? "badge-danger rounded-pill mx-auto" : ""
-                                }
-                                style={{
-                                  height: "35px",
-                                  width: "105px",
-                                  padding: "4px",
-                                }}
-                              >
-                                <span
-                                  className="text-white"
+                            <tr>
+                              <td className="text-center">{index + 1}</td>
+                              <td className="text-center">{item.soImei}</td>
+                              <td className="text-center">
+                                <div
+                                  className={
+                                    item.trangThai === StatusImei.SOLD
+                                      ? "badge-success rounded-pill mx-auto"
+                                      : item.trangThai ===
+                                          StatusImei.CANCELLED ||
+                                        item.trangThai === StatusImei.REFUND
+                                      ? "badge-danger rounded-pill mx-auto"
+                                      : ""
+                                  }
                                   style={{
-                                    fontSize: "14px",
-                                    fontWeight: "400",
+                                    height: "35px",
+                                    width: "105px",
+                                    padding: "4px",
                                   }}
                                 >
-                                  {item.trangThai === StatusImei.SOLD ? "Đã bán" : item.trangThai === StatusImei.REFUND ? "Hoàn trả" : "Đã hủy"}
-                                </span>
-                              </div>
-                            </td>
-                          </tr>
-                        ))
+                                  <span
+                                    className="text-white"
+                                    style={{
+                                      fontSize: "14px",
+                                      fontWeight: "400",
+                                    }}
+                                  >
+                                    {item.trangThai === StatusImei.SOLD
+                                      ? "Đã bán"
+                                      : item.trangThai === StatusImei.REFUND
+                                      ? "Hoàn trả"
+                                      : item.trangThai ===
+                                        StatusImei.PENDING_DELIVERY
+                                      ? "Chờ giao"
+                                      : "Đã hủy"}
+                                  </span>
+                                </div>
+                              </td>
+                            </tr>
+                          ))
                         : ""}
                     </tbody>
                   </table>
@@ -5597,7 +6116,6 @@ export const ModalViewImeiHadBuy = ({
 };
 
 export function ConfirmRefund({ open, close, confirm, total, size }) {
-
   const [description, setDescription] = useState("");
 
   const handleGetValueFromInputTextField = (event) => {
@@ -5620,8 +6138,11 @@ export function ConfirmRefund({ open, close, confirm, total, size }) {
         }}
       >
         <DialogTitle id="alert-dialog-title">
-          {<span className="fs-4 text-dark">{"Xác Nhận Hoàn Trả " + size + " Sản Phẩm Với Số Tiền " + total
-          }</span>}
+          {
+            <span className="fs-4 text-dark">
+              {"Xác Nhận Hoàn Trả " + size + " Sản Phẩm Với Số Tiền " + total}
+            </span>
+          }
         </DialogTitle>
         <DialogContent>
           <TextField

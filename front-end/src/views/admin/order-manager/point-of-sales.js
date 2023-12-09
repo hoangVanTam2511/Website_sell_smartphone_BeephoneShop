@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 import { Row, Col } from "react-bootstrap";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { responsiveFontSizes, styled } from "@mui/material/styles";
@@ -82,7 +83,8 @@ import {
 import DeliveryInfoShip from "./delivery-info-ship";
 import AppBarCode from "./App";
 import Html5QrcodePlugin from "./Html5QrcodePlugin";
-import { request } from '../../../store/helpers/axios_helper'
+import { PrintBillAtTheCounter, PrintBillAtTheCounterAuto } from "./printer-invoice";
+import { useReactToPrint } from "react-to-print";
 
 const IOSSwitch = styled((props) => (
   <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
@@ -136,6 +138,11 @@ const IOSSwitch = styled((props) => (
 }));
 
 const PointOfSales = () => {
+  const componentRef = useRef();
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+  });
+
   const navigate = useNavigate();
   const { id } = useParams();
   const [isLoading, setIsLoading] = useState(false);
@@ -168,6 +175,7 @@ const PointOfSales = () => {
   const [customerNeedPayFormat, setCustomerNeedPayFormat] = useState(0);
 
   const [idVoucher, setIdVoucher] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
   const [vouchers, setVouchers] = useState([]);
   const [order, setOrder] = useState({});
   const [cartId, setCartId] = useState("");
@@ -235,7 +243,8 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-       request('PUT',`/api/orders/${order.id}`, orderRequest, {
+      await axios
+        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -249,7 +258,7 @@ const PointOfSales = () => {
           setSdt(data.soDienThoai === null ? "" : data.soDienThoai);
           getAllOrdersPending();
         });
-    } catch (error) {}
+    } catch (error) { }
   };
   const updateEmail = async (email) => {
     const orderRequest = {
@@ -269,7 +278,8 @@ const PointOfSales = () => {
       isUpdateEmail: true,
     };
     try {
-       request('PUT',`/api/orders/${order.id}`, orderRequest, {
+      await axios
+        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -283,7 +293,7 @@ const PointOfSales = () => {
           setEmail(data.email === null ? "" : data.email);
           getAllOrdersPending();
         });
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const updateFullName = async (name) => {
@@ -304,7 +314,8 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-       request('PUT',`/api/orders/${order.id}`, orderRequest, {
+      await axios
+        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -318,7 +329,7 @@ const PointOfSales = () => {
           setFullName(data.hoVaTen === null ? "" : data.hoVaTen);
           getAllOrdersPending();
         });
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const [selectedValuePaymentMethod, setSelectedValuePaymentMethod] =
@@ -403,7 +414,8 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-       request('PUT',`/api/orders/${order.id}`, orderRequest, {
+      await axios
+        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -450,7 +462,8 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-       request('PUT',`/api/orders/${order.id}`, orderRequest, {
+      await axios
+        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -464,7 +477,7 @@ const PointOfSales = () => {
           setCustomerPhoneShip(data && data.soDienThoaiNguoiNhan);
           getAllOrdersPending();
         });
-    } catch (error) {}
+    } catch (error) { }
   };
   const updateAddressShipOrder = async (address) => {
     const orderRequest = {
@@ -484,7 +497,8 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-       request('PUT',`/api/orders/${order.id}`, orderRequest, {
+      await axios
+        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -498,7 +512,7 @@ const PointOfSales = () => {
           setCustomerAddressShip(data && data.diaChiNguoiNhan);
           getAllOrdersPending();
         });
-    } catch (error) {}
+    } catch (error) { }
   };
   const updateNoteShipOrder = async (note) => {
     const orderRequest = {
@@ -518,7 +532,8 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-       request('PUT',`/api/orders/${order.id}`, orderRequest, {
+      await axios
+        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -532,7 +547,7 @@ const PointOfSales = () => {
           setCustomerNoteShip(data && data.ghiChu);
           getAllOrdersPending();
         });
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const updateTypeOrder = async (type) => {
@@ -554,7 +569,8 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-       request('PUT',`/api/orders/${order.id}`, orderRequest, {
+      await axios
+        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -651,7 +667,8 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-       request('PUT',`/api/orders/${order.id}`, orderRequest, {
+      await axios
+        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -665,7 +682,7 @@ const PointOfSales = () => {
           setCustomerNameShip(data && data.tenNguoiNhan);
           getAllOrdersPending();
         });
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const updateInfoShipOrder = async (
@@ -696,7 +713,8 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-       request('PUT',`/api/orders/${order.id}`, orderRequest, {
+      await axios
+        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -712,13 +730,14 @@ const PointOfSales = () => {
           setCustomerDistrictShip(data && data.quanHuyenNguoiNhan);
           getAllOrdersPending();
         });
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const getCustomerById = async (id) => {
     setIsLoading(true);
     if (id !== null) {
-       request('GET',`/khach-hang/hien-thi-theo/${id}`)
+      await axios
+        .get(`http://localhost:8080/khach-hang/hien-thi-theo/${id}`)
         .then(async (response) => {
           const data = response.data;
           await updateAccount(id);
@@ -823,24 +842,9 @@ const PointOfSales = () => {
     setDieuKien(dieuKien);
   };
 
-  const getCustomer = (customer) => {
-    setCustomer(customer);
-  };
-  const getClear = (clear) => {
-    setClear(clear);
-  };
-
-  let amountProductItem = 1;
-
-  const getAmount = (amount) => {
-    amountProductItem = amount;
-  };
-
-  const getIdCustomer = (id) => {
-    setIdCustomer(id);
-  };
-
   useEffect(() => {
+    const validVouchers = vouchers.filter(item => handleCountTotalMoney() >= item.dieuKienApDung);
+    const sortedVouchers = validVouchers.sort((a, b) => b.giaTriVoucher - a.giaTriVoucher);
     if (cartItems.length === 0 && discountValue != 0) {
       handleCheckVoucher(discount);
     } else if (cartItems.length !== 0) {
@@ -851,6 +855,18 @@ const PointOfSales = () => {
       } else if (discount != "" && discountValue != 0) {
         if (handleCountTotalMoney() < dieuKien) {
           handleCheckVoucher(discount);
+        }
+        else if (sortedVouchers.length > 0) {
+          const maxVoucher = sortedVouchers[0];
+          if (maxVoucher) {
+            handleCheckVoucher(maxVoucher.ma);
+          }
+        }
+      }
+      else if (sortedVouchers.length > 0) {
+        const maxVoucher = sortedVouchers[0];
+        if (maxVoucher) {
+          handleCheckVoucher(maxVoucher.ma);
         }
       }
     }
@@ -863,10 +879,13 @@ const PointOfSales = () => {
       // isDelivery: delivery,
       tongTien: handleCountTotalMoney(),
       tienThua: paymentWhenReceive === true ? 0 : handleCountTotalSurplus(),
-      tongTienSauKhiGiam: handleCountTotalMoneyCustomerNeedPay(),
+      tongTienSauKhiGiam: handleCountTotalMoney() - discountValue,
       khachCanTra: handleCountTotalMoneyCustomerNeedPay(),
       // tienKhachTra: paymentWhenReceive === true ? null : customerPayment,
       trangThai: data.trangThai,
+      hoVaTen: order.account !== null ? order.account.hoVaTen : fullName,
+      soDienThoai: order.account !== null ? order.account.soDienThoai : sdt,
+      email: order.account !== null ? order.account.email : email,
       loaiHoaDon: data.loaiHoaDon,
       phiShip: delivery === true ? shipFee : null,
       orderHistories: data.orderHistories,
@@ -887,7 +906,8 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-       request('PUT',`/api/orders/${order.id}`, orderRequest, {
+      await axios
+        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -896,19 +916,20 @@ const PointOfSales = () => {
           },
         })
         .then((response) => {
+          setOrder(response.data.data);
           setIsLoading(false);
           handleOpenAlertVariant(
-            `${
-              data.loaiHoaDon == OrderTypeString.DELIVERY
-                ? "Xác nhận đặt hàng thành công!"
-                : "Xác nhận thanh toán thành công!"
+            `${data.loaiHoaDon == OrderTypeString.DELIVERY
+              ? "Xác nhận đặt hàng thành công!"
+              : "Xác nhận thanh toán thành công!"
             }`,
             Notistack.SUCCESS
           );
           navigate(`/dashboard/order-detail/${order.ma}`);
+          // handlePrint();
           console.log(orderRequest);
         });
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const updateAccount = async (id) => {
@@ -931,7 +952,8 @@ const PointOfSales = () => {
       },
     };
     try {
-       request('PUT',`/api/orders/${order.id}`, orderRequest, {
+      await axios
+        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -946,14 +968,13 @@ const PointOfSales = () => {
           // setIsLoading(false);
           // handleOpenAlertVariant(message, Notistack.SUCCESS);
         });
-    } catch (error) {}
+    } catch (error) { }
   };
   const handleAddOrRemoveVoucher = async (idVoucher, loading, keep) => {
-    const message = `${
-      idVoucher === null
-        ? "Mã giảm giá đã được gỡ bỏ thành công!"
-        : "Áp dụng thành công mã giảm giá!"
-    }`;
+    const message = `${idVoucher === null
+      ? "Mã giảm giá đã được gỡ bỏ thành công!"
+      : "Áp dụng thành công mã giảm giá!"
+      }`;
     const orderRequest = {
       voucher: {
         id: idVoucher,
@@ -976,7 +997,8 @@ const PointOfSales = () => {
       setLoadingChild(true);
       setTimeout(() => {
         try {
-           request('PUT',`/api/orders/${order.id}`, orderRequest, {
+          axios
+            .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
               headers: {
                 "Content-Type": "application/json",
               },
@@ -1000,7 +1022,8 @@ const PointOfSales = () => {
       }, 1000);
     } else if (idVoucher === null && !loading) {
       try {
-         request('PUT',`/api/orders/${order.id}`, orderRequest, {
+        axios
+          .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
             headers: {
               "Content-Type": "application/json",
             },
@@ -1025,7 +1048,8 @@ const PointOfSales = () => {
       setLoadingChild(true);
       setTimeout(() => {
         try {
-           request('PUT',`/api/orders/${order.id}`, orderRequest, {
+          axios
+            .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
               headers: {
                 "Content-Type": "application/json",
               },
@@ -1049,7 +1073,8 @@ const PointOfSales = () => {
       }, 1000);
     } else {
       try {
-         request('PUT',`/api/orders/${order.id}`, orderRequest, {
+        await axios
+          .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
             headers: {
               "Content-Type": "application/json",
             },
@@ -1084,7 +1109,7 @@ const PointOfSales = () => {
       },
     };
     try {
-       request('PUT',`/api/carts/amount`, request, {
+      await axios.put(`http://localhost:8080/api/carts/amount`, request, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -1096,6 +1121,7 @@ const PointOfSales = () => {
         "Cập nhật số lượng thành công!",
         Notistack.SUCCESS
       );
+      setChangedCartItems(changedCartItems + 1);
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
@@ -1104,7 +1130,10 @@ const PointOfSales = () => {
     }
   };
 
+  const userId = useSelector(state => state.user.user.id);
+
   const processingPaymentOrder = () => {
+    console.log(userId);
     if (cartItems && cartItems.length > 0) {
       const statusOrder = delivery
         ? OrderStatusString.CONFIRMED
@@ -1119,7 +1148,7 @@ const PointOfSales = () => {
           loaiThaoTac: 0,
           moTa: "Nhân viên tạo đơn cho khách hàng",
           createdAt: new Date(),
-          createdBy: "Lê Thị Vân Anh",
+          createdBy: userId,
           hoaDon: {
             id: order.id,
           },
@@ -1130,7 +1159,7 @@ const PointOfSales = () => {
           loaiThaoTac: 6,
           moTa: "Khách hàng đã thanh toán đơn hàng",
           createdAt: new Date(),
-          createdBy: "Lê Thị Vân Anh",
+          createdBy: userId,
           hoaDon: {
             id: order.id,
           },
@@ -1143,18 +1172,18 @@ const PointOfSales = () => {
           loaiThaoTac: 0,
           moTa: "Đơn hàng đã được đặt thành công",
           createdAt: new Date(),
-          createdBy: "Lê Thị Vân Anh",
+          createdBy: userId,
           hoaDon: {
             id: order.id,
           },
         },
         {
           stt: 2,
-          thaoTac: "Đã Xác Nhận Thông Tin Đơn Hàng",
+          thaoTac: "Chờ Giao Hàng",
           loaiThaoTac: 1,
-          moTa: "Thông tin đơn hàng đã được xác nhận",
+          moTa: "Thông tin đơn hàng đã được xác nhận và đang trong quá trình chờ giao hàng",
           createdAt: new Date(),
-          createdBy: "Lê Thị Vân Anh",
+          createdBy: userId,
           hoaDon: {
             id: order.id,
           },
@@ -1170,7 +1199,8 @@ const PointOfSales = () => {
   };
 
   const getAllOrdersPending = async () => {
-    await  request('GET',`/api/orders/pending`, {})
+    await axios
+      .get(`http://localhost:8080/api/orders/pending`, {})
       .then((response) => {
         setOrders(response.data.data);
       })
@@ -1184,7 +1214,8 @@ const PointOfSales = () => {
   };
 
   const getOrderPendingDefaultFirst = async () => {
-    await  request('GET',`/api/orders/pending`, {})
+    await axios
+      .get(`http://localhost:8080/api/orders/pending`, {})
       .then((response) => {
         const order = response && response.data.data[0];
         navigate(`/dashboard/point-of-sales/${order.ma}`);
@@ -1293,19 +1324,19 @@ const PointOfSales = () => {
           (response &&
             response.data.data[0].voucher &&
             response.data.data[0].voucher.ma) ||
-            ""
+          ""
         );
         setIdVoucher(
           (response &&
             response.data.data[0].voucher &&
             response.data.data[0].voucher.id) ||
-            ""
+          ""
         );
         setDiscountValue(
           (response &&
             response.data.data[0].voucher &&
             response.data.data[0].voucher.giaTriVoucher) ||
-            0
+          0
         );
         console.log(order);
 
@@ -1321,7 +1352,8 @@ const PointOfSales = () => {
   };
 
   const getOrderPendingById = async () => {
-    await  request('GET',`/api/orders/pending`, {})
+    await axios
+      .get(`http://localhost:8080/api/orders/pending`, {})
       .then((response) => {
         const data = response && response.data.data;
         const order = data.find((item) => item.ma === id);
@@ -1466,7 +1498,8 @@ const PointOfSales = () => {
         code: order.ma,
       };
       try {
-        request('POST',`/api/vnpay/payment`, vnpayReq, {
+        await axios
+          .post(`http://localhost:8080/api/vnpay/payment`, vnpayReq, {
             headers: {
               "Content-Type": "application/json",
             },
@@ -1488,9 +1521,11 @@ const PointOfSales = () => {
         tienKhachTra: total,
         id: order.id,
         hinhThucThanhToan: type,
+        createdByPayment: userId,
       };
       try {
-         request('PUT',`/api/vnpay/payment/cash`, orderRequest, {
+        await axios
+          .put(`http://localhost:8080/api/vnpay/payment/cash`, orderRequest, {
             headers: {
               "Content-Type": "application/json",
             },
@@ -1518,11 +1553,19 @@ const PointOfSales = () => {
     }
   };
 
-  const getVouchersIsActive = () => {
-     request('GET',`/voucher/voucherActive`)
+  const [totalPagesVoucher, setTotalPagesVoucher] = useState();
+
+  const getVouchersIsActive = (page, keyword) => {
+    axios
+      .get(`http://localhost:8080/voucher/voucherActive`, {
+        params: {
+          pageNo: page,
+          keyword: keyword,
+        },
+      })
       .then((response) => {
         setVouchers(response.data.data);
-        console.log(response.data.data);
+        setTotalPagesVoucher(response.data.totalPages);
       })
       .catch((error) => {
         console.error(error);
@@ -1544,7 +1587,8 @@ const PointOfSales = () => {
   }, [cartItems, discountValue, shipFee]);
 
   const getCartItems = async () => {
-    await  request('GET',`/api/orders/pending/${order.id}`)
+    await axios
+      .get(`http://localhost:8080/api/orders/pending/${order.id}`)
       .then((response) => {
         const data = response.data.data;
         setOrder(data);
@@ -1569,7 +1613,8 @@ const PointOfSales = () => {
   };
 
   const getPaymentsOfOrder = async () => {
-    await  request('GET',`/api/orders/pending/${order.id}`)
+    await axios
+      .get(`http://localhost:8080/api/orders/pending/${order.id}`)
       .then((response) => {
         const data = response.data.data;
         setOrder(data);
@@ -1591,7 +1636,8 @@ const PointOfSales = () => {
 
   const getOrderPendingLastRemove = async () => {
     // setIsLoading(true);
-    await  request('GET',`/api/orders/pending`, {})
+    await axios
+      .get(`http://localhost:8080/api/orders/pending`, {})
       .then((response) => {
         const orders = response.data.data;
         setOrders(orders);
@@ -1720,7 +1766,8 @@ const PointOfSales = () => {
         id: order.id,
       };
       try {
-        const response =  request('POST',`/api/orders?isPending=true`,
+        const response = await axios.post(
+          `http://localhost:8080/api/orders?isPending=true`,
           data
         );
         await getAllOrdersPending();
@@ -1767,7 +1814,7 @@ const PointOfSales = () => {
   const handleDeletePaymentById = async (id) => {
     setIsLoading(true);
     try {
-      request('DELETE',`/api/payment/${id}`, {
+      await axios.delete(`http://localhost:8080/api/payment/${id}`, {
         params: {
           orderId: order.id,
         },
@@ -1785,10 +1832,11 @@ const PointOfSales = () => {
   const handleDeleteCartItemById = async (id) => {
     setIsLoading(true);
     try {
-      request('DELETE',`/api/carts/${id}`);
+      await axios.delete(`http://localhost:8080/api/carts/${id}`);
       await getCartItems();
       await getAllOrdersPending();
       setIsLoading(false);
+      setChangedCartItems(changedCartItems + 1);
       handleOpenAlertVariant(
         "Xóa thành công sản phẩm khỏi giỏ hàng!",
         Notistack.SUCCESS
@@ -1809,7 +1857,7 @@ const PointOfSales = () => {
         setIsLoading(true);
       }
       try {
-        request('DELETE',`/api/orders/${id}`);
+        await axios.delete(`http://localhost:8080/api/orders/${id}`);
         await getOrderPendingLastRemove();
         if (sizeCartItems > 0) {
           setIsLoading(false);
@@ -1943,10 +1991,18 @@ const PointOfSales = () => {
     setDiscountValidate("");
   };
 
-  const getAllCustomers = () => {
-     request('GET',`/khach-hang/hien-thi`)
+  const [totalPagesCustomer, setTotalPagesCustomer] = useState();
+  const getAllCustomers = (page, keyword) => {
+    axios
+      .get(`http://localhost:8080/khach-hang/hien-thi`, {
+        params: {
+          pageNo: page,
+          keyword: keyword,
+        },
+      })
       .then((response) => {
         setCustomers(response.data.data);
+        setTotalPagesCustomer(response.data.totalPages);
       })
       .catch((error) => {
         console.error("Error");
@@ -1956,7 +2012,8 @@ const PointOfSales = () => {
   const handleCheckVoucher = (value) => {
     setLoadingChild(true);
     setTimeout(() => {
-      request('GET',`/voucher/findVoucher`, {
+      axios
+        .get(`http://localhost:8080/voucher/findVoucher`, {
           params: {
             input: value,
             tongTien: handleCountTotalMoney(),
@@ -2115,6 +2172,7 @@ const PointOfSales = () => {
       getOrderPendingDefaultFirst();
     }
     getAllCustomers();
+    getVouchersIsActive();
     // }
   }, []);
 
@@ -2213,7 +2271,7 @@ const PointOfSales = () => {
       imei: imei,
     };
     try {
-      request('PUT',`/api/carts/scanner`, data, {
+      await axios.put(`http://localhost:8080/api/carts/scanner`, data, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -2251,7 +2309,7 @@ const PointOfSales = () => {
     };
     console.log(data);
     try {
-      request('PUT',`/api/carts`, data, {
+      await axios.put(`http://localhost:8080/api/carts`, data, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -2366,7 +2424,9 @@ const PointOfSales = () => {
     getVouchersIsActive();
     setOpenVouchers(true);
     setIsOpen(true);
+    setCurrentPage(1);
   };
+
   const handleCloseNoActionDialogVouchers = () => {
     setOpenVouchers(false);
     setIsOpen(false);
@@ -2519,9 +2579,9 @@ const PointOfSales = () => {
                                       onMouseDown={() => {
                                         handleConfirmBeforeDeleteOrderPendingHasProduct(
                                           item &&
-                                            item.cart &&
-                                            item.cart.cartItems &&
-                                            item.cart.cartItems.length,
+                                          item.cart &&
+                                          item.cart.cartItems &&
+                                          item.cart.cartItems.length,
                                           item.id
                                         );
                                         setItemMa(item.ma);
@@ -3207,15 +3267,14 @@ const PointOfSales = () => {
                   </div>
 
                   {customerPayment != handleCountTotalMoneyCustomerNeedPay() &&
-                  (delivery == true || delivery == false) &&
-                  paymentWhenReceive == false &&
-                  cartItems.length > 0 ? (
+                    (delivery == true || delivery == false) &&
+                    paymentWhenReceive == false &&
+                    cartItems.length > 0 ? (
                     <div
-                      className={`d-flex justify-content-between ${`${
-                        paymentWhenReceive == false && delivery == true
-                          ? "pt-4 mt-1"
-                          : "pt-3 mt-2"
-                      }`} ms-2`}
+                      className={`d-flex justify-content-between ${`${paymentWhenReceive == false && delivery == true
+                        ? "pt-4 mt-1"
+                        : "pt-3 mt-2"
+                        }`} ms-2`}
                       style={{ marginLeft: "1px" }}
                     >
                       <span
@@ -3459,6 +3518,8 @@ const PointOfSales = () => {
         data={customers}
         idCus={idCustomer}
         isOpen={isOpen}
+        totalPages={totalPagesCustomer}
+        getCustomer={getAllCustomers}
       />
 
       <AddressDialog
@@ -3492,6 +3553,8 @@ const PointOfSales = () => {
         discount={idVoucher}
         total={handleCountTotalMoney}
         checkDieuKien={getDieuKien}
+        totalPages={totalPagesVoucher}
+        getVoucher={getVouchersIsActive}
       />
       <OrderConfirmPayment
         open={openDialogConfirmPayment}
@@ -3515,6 +3578,7 @@ const PointOfSales = () => {
         deleteOrder={() => handleCloseDialogOrderClose(itemId)}
       />
       {isLoading && <LoadingIndicator />}
+
     </>
   );
 };

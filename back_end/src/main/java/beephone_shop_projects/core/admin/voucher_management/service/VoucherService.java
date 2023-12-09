@@ -30,6 +30,6 @@ public interface VoucherService {
 
     CheckVoucherResponse checkVoucher(String input, BigDecimal tongTien);
 
-    Page<VoucherResponse> getVoucherStatusIsActive(FindVoucherRequest request);
+    Page<VoucherResponse> getVoucherStatusIsActive(Integer pageNo, FindVoucherRequest request);
 
 }

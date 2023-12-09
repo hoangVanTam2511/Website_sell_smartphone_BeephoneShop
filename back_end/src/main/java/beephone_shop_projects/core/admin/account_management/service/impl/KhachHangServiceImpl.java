@@ -8,42 +8,42 @@ import beephone_shop_projects.core.admin.account_management.repository.AccountRe
 import beephone_shop_projects.core.admin.account_management.repository.RoleRepository;
 import beephone_shop_projects.core.admin.account_management.service.KhachHangService;
 import beephone_shop_projects.entity.Account;
-import beephone_shop_projects.infrastructure.config.mail.EmailService;
 import beephone_shop_projects.infrastructure.constant.StatusAccountCus;
 import beephone_shop_projects.infrastructure.constant.StatusDiscount;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.context.Context;
 
 import java.text.Normalizer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-@RequiredArgsConstructor
 @Service
-public class KhachHangServiceImpl implements KhachHangService {
 
+public class KhachHangServiceImpl implements KhachHangService {
     @Autowired
     private AccountRepository accountRepository;
 
     @Autowired
     private RoleRepository roleRepository;
 
-    @Autowired
-    private EmailService emailService;
-
-    private final PasswordEncoder passwordEncoder;
-
     @Override
-    public Page<AccountResponse> getAllKH(Integer pageNo) {
-        Pageable pageable = PageRequest.of(pageNo - 1, 5);
-        return accountRepository.getAllKH(pageable);
+    public Page<AccountResponse> getAllKH(FindAccountRequest request) {
+        if (request.getPageNo() == null) {
+            request.setPageNo(1);
+        }
+        if (request.getPageSize() == null) {
+            request.setPageSize(5);
+        }
+        if (request.getKeyword() == null) {
+            request.setKeyword("");
+        }
+        Pageable pageable = PageRequest.of(request.getPageNo() - 1, request.getPageSize());
+        return accountRepository.getAllKH(pageable, request);
     }
 
     @Override
@@ -66,12 +66,6 @@ public class KhachHangServiceImpl implements KhachHangService {
 
     @Override
     public Account addKH(AddKhachHangRequest request) {
-
-        // check email
-        if(accountRepository.findByEmail(request.getEmail()) != null){
-            throw new RuntimeException("Email đã tồn tại trong hệ thống");
-        }
-
         Random random = new Random();
         Date date = null;
         try {
@@ -84,7 +78,9 @@ public class KhachHangServiceImpl implements KhachHangService {
         String code = String.format("KH%04d", number);
         String hoVaTenWithoutSpaces = hoVaTen.replaceAll("\\s+", "");
         String hoVaTenWithoutDiacritics = removeDiacritics(hoVaTenWithoutSpaces);
-        String matKhau = "Abc123.";
+        String[] specialCharsArray = {"!", "@", "#", "$", "%", "^", "&", "*", "+", "-"};
+        String specialChars = getRandomSpecialChars(specialCharsArray);
+        String matKhau = hoVaTenWithoutDiacritics + specialChars + code;
         Account kh = new Account().builder()
                 .email(request.getEmail())
                 .ngaySinh(date)
@@ -94,13 +90,9 @@ public class KhachHangServiceImpl implements KhachHangService {
                 .gioiTinh(request.getGioiTinh())
                 .trangThai(StatusAccountCus.HOAT_DONG)
                 .ma(code)
-                .matKhau(passwordEncoder.encode(matKhau))
+                .matKhau(matKhau)
                 .soDienThoai(request.getSoDienThoai())
                 .build();
-
-        Context context = new Context();
-        context.setVariable("password", request.getMatKhau());
-        emailService.sendEmailWithHtmlTemplate(request.getEmail(), "Mật khẩu của bạn", "email-get-pass-template", context);
         return accountRepository.save(kh);
     }
 

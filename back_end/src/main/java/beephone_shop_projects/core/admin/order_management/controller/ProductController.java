@@ -1,23 +1,29 @@
 package beephone_shop_projects.core.admin.order_management.controller;
 
 import beephone_shop_projects.core.admin.order_management.model.request.ProductItemConfigurationsRequest;
+import beephone_shop_projects.core.admin.order_management.model.request.SearchFilterProductItemDto;
 import beephone_shop_projects.core.admin.order_management.model.response.product_response.ProductCustomResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.product_response.ProductItemResponse;
 import beephone_shop_projects.core.admin.order_management.repository.ProductCustomRepository;
 import beephone_shop_projects.core.admin.order_management.repository.ProductItemCustomRepository;
+import beephone_shop_projects.core.admin.order_management.repository.ProductItemRepository;
 import beephone_shop_projects.core.admin.order_management.repository.impl.ProductRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.service.impl.ProductServiceImpl;
 import beephone_shop_projects.core.admin.product_managements.service.impl.ImageServiceImpl;
 import beephone_shop_projects.core.common.base.ResponseObject;
+import beephone_shop_projects.core.common.base.ResponsePage;
 import beephone_shop_projects.entity.SanPham;
 import beephone_shop_projects.infrastructure.constant.ApiConstants;
 import beephone_shop_projects.infrastructure.constant.Message;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,6 +50,9 @@ public class ProductController {
   private ProductItemCustomRepository productItemCustomRepository;
 
   @Autowired
+  private ProductItemRepository productItemRepository;
+
+  @Autowired
   private ProductCustomRepository productCustomRepository;
 
   @Autowired
@@ -51,6 +60,21 @@ public class ProductController {
 
   @Autowired
   private ModelMapper modelMapper;
+
+  @GetMapping("/product-items/page")
+  public ResponsePage home101(@ModelAttribute SearchFilterProductItemDto searchFilter) {
+    if (searchFilter.getKeyword() == null) {
+      searchFilter.setKeyword("");
+    }
+    if (searchFilter.getCurrentPage() == null) {
+      searchFilter.setCurrentPage(1);
+    }
+    if (searchFilter.getPageSize() == null) {
+      searchFilter.setPageSize(10);
+    }
+    Pageable pageable = PageRequest.of(searchFilter.getCurrentPage() - 1, searchFilter.getPageSize());
+    return new ResponsePage(productItemRepository.findProductItemByMultipleWithPagination(pageable, searchFilter).map(e -> modelMapper.map(e, ProductItemResponse.class)));
+  }
 
   @GetMapping("/product-items")
   public ResponseObject home1() {

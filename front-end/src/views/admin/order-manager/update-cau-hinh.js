@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import { Button, Empty, Table } from "antd";
+import { Button, Empty, Table, Checkbox as CheckboxAntd } from "antd";
 import Link from '@mui/material/Link';
 import { Box, FormControl, IconButton, Select, InputLabel, MenuItem, Pagination, TextField, Tooltip, Checkbox, FormControlLabel, Autocomplete, InputAdornment, OutlinedInput, Dialog, DialogContent, DialogTitle, DialogActions, Slide, ListItemText, Rating, ImageListItemBar, } from "@mui/material";
 import Alert from "@mui/joy/Alert";
@@ -49,7 +49,8 @@ const MenuProps = {
   },
 };
 
-const UpdateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, isConfirm, getSelectedRam, getSelectedRom }) => {
+const UpdateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, isConfirm, getSelectedRam, getSelectedRom, findProductItem }) => {
+
 
   const [validImage, setValidImage] = useState(true);
   const [refreshPrice, setRefreshPrice] = useState([]);
@@ -62,7 +63,7 @@ const UpdateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
   const handleCloseOpenModalType = () => {
     setOpenModalType(false);
   }
-  const [type, setType] = useState(false);
+  const [type, setType] = useState(true);
   const handleChangeType = (e) => {
     const value = e.target.checked;
     if (cauHinhs && cauHinhs.length > 0) {
@@ -178,15 +179,41 @@ const UpdateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
   }
 
   const [itemId, setItemId] = useState("");
+  const [selectedCauHinhs, setSelectedCauHinhs] = useState([]);
+  const handleChangeSelectedCauHinhs = (e, item) => {
+    if (e.target.checked) {
+      setSelectedCauHinhs([...selectedCauHinhs, item]);
+    } else {
+      setSelectedCauHinhs(selectedCauHinhs.filter((cauHinh) => cauHinh.id !== item.id));
+    }
+  };
 
+  const cauHinhsFinalById = (id) => {
+    return cauHinhsFinal.filter((item) => item.id === id);
+  };
+
+
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const onSelectChange = (newSelectedRowKeys) => {
+    console.log(newSelectedRowKeys);
+    setSelectedRowKeys(newSelectedRowKeys);
+  };
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: onSelectChange,
+  };
+
+  const [dataChanged, setDataChanged] = useState(0);
   const updatePriceCommon = (donGia) => {
     const updatedCauHinhsFinal = cauHinhsFinal.map((item) => {
-      if (item.id === itemId) {
+      if (selectedRowKeys.some((selected) => item.ma === selected)) {
         return { ...item, donGia: donGia };
       }
       return item;
     })
+    console.log(updatedCauHinhsFinal);
     setCauHinhsFinal(updatedCauHinhsFinal);
+    setDataChanged((count) => count + 1);
   }
 
   const [openMauSac, setOpenMauSac] = React.useState(false);
@@ -210,18 +237,65 @@ const UpdateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
 
   const [selectedRam, setSelectedRam] = useState([]);
   const [selectedRom, setSelectedRom] = useState([]);
+  const [listRamByProduct, setListRamByProduct] = useState([]);
+  const [listRomByProduct, setListRomByProduct] = useState([]);
 
-  // const isFirstRender = useRef(true);
-  // useEffect(() => {
-  //   if (isFirstRender.current) {
-  //     isFirstRender.current = false;
-  //     setSelectedRam(getSelectedRam);
-  //   }
-  // }, [getSelectedRam]);
   useEffect(() => {
-    setSelectedRam(getSelectedRam);
-    setSelectedRom(getSelectedRom);
-  }, [getSelectedRam, getSelectedRom])
+    // setSelectedRam(getSelectedRam);
+    // setSelectedRom(getSelectedRom);
+    // setProductItems(findProductItem)
+
+    const ramIds = findProductItem && findProductItem.map(item => item.ram.id);
+    const uniqueRamIds = [...new Set(ramIds)];
+
+    setSelectedRam(uniqueRamIds);
+
+    const romIds = findProductItem && findProductItem.map(item => item.rom.id);
+    const uniqueRomIds = [...new Set(romIds)]; // Lọc các giá trị duy nhất
+
+    setSelectedRom(uniqueRomIds);
+
+    setListRamByProduct(uniqueRamIds);
+    setListRomByProduct(uniqueRomIds);
+
+
+    const uniqueCauHinhs = findProductItem.reduce((unique, item) => {
+      const isDuplicate = unique.some(
+        (cauHinh) => cauHinh.ram.id === item.ram.id && cauHinh.rom.id === item.rom.id
+      );
+
+      if (!isDuplicate) {
+        unique.push({
+          id: item.maCauHinh,
+          ram: item.ram,
+          rom: item.rom,
+          colors: findProductItem.filter((colorItem) => colorItem.maCauHinh === item.maCauHinh)
+            .map((colorItem) => colorItem.mauSac),
+        });
+      }
+
+      return unique;
+    }, []);
+
+    setCauHinhs(uniqueCauHinhs);
+    console.log(uniqueCauHinhs);
+
+    const objectsTachRa = findProductItem.map((item) => {
+      const object = {
+        ...item,
+        id: item.maCauHinh,
+        color: item.mauSac,
+      }
+      return object;
+    });
+
+    setCauHinhsFinal(objectsTachRa);
+
+    console.log(objectsTachRa);
+
+
+
+  }, [findProductItem])
 
   const handleChangeSelectedRam = (event) => {
     const list = event.target.value;
@@ -744,6 +818,44 @@ const UpdateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
       },
     },
     {
+      title: "Trạng Thái",
+      align: "center",
+      width: "15%",
+      render: (text, record) => {
+        return (
+          record.trangThai == 1 ? (
+            <div
+              className="rounded-pill mx-auto badge-danger"
+              style={{
+                height: "35px",
+                width: "130px",
+                padding: "4px",
+              }}
+            >
+              <span
+                className="text-white"
+                style={{ fontSize: "14px", fontWeight: "400" }}
+              >
+                Ngưng hoạt động
+              </span>
+            </div>
+          ) : (
+            <div
+              className="rounded-pill badge-success mx-auto"
+              style={{ height: "35px", width: "100px", padding: "4px" }}
+            >
+              <span
+                className="text-white"
+                style={{ fontSize: "14px", fontWeight: "400" }}
+              >
+                Hoạt động
+              </span>
+            </div>
+          )
+        )
+      },
+    },
+    {
       title: "Thao Tác",
       align: "center",
       width: "15%",
@@ -921,33 +1033,9 @@ const UpdateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
         <div className="mt-4" style={{ backgroundColor: "#ffffff", boxShadow: "0 0.1rem 0.3rem #00000010", height: "auto" }}>
           <div className="container" style={{}}>
             <div className="mx-auto" style={{ maxWidth: "95%" }}>
-              <div className="d-flex justify-content-between pt-4" style={{}}>
-                <div>
-                  <span className="" style={{ fontWeight: "550", fontSize: "29px", visibility: "hidden" }}>THÊM PHIÊN BẢN</span>
-                </div>
-                <div className="ms-5 ps-3" style={{}}>
-                  <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>PHIÊN BẢN</span>
-                </div>
-                <div className="me-1">
-                  <BoxJoy
-                    sx={{
-                      width: 310,
-                      "& > div": { p: 1, borderRadius: "md", display: "flex" },
-                    }}
-                  >
-                    <Sheet variant="outlined" color="primary">
-                      <CheckboxJoy
-                        overlay
-                        checked={type}
-                        onChange={(e) => handleChangeType(e)}
-                        label={
-                          <span style={{ fontSize: "16.5px", fontWeight: "400" }}>
-                            Phiên Bản Có Cùng Biến Thể RAM
-                          </span>
-                        }
-                      />
-                    </Sheet>
-                  </BoxJoy>
+              <div className="d-flex justify-content-center pt-4" style={{}}>
+                <div className="" style={{}}>
+                  <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>CẬP NHẬT PHIÊN BẢN</span>
                 </div>
               </div>
               <div className="d-flex mt-4">
@@ -984,7 +1072,7 @@ const UpdateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
                       {listRam
                         .sort((r1, r2) => r1.dungLuong - r2.dungLuong)
                         .map((r) => (
-                          <MenuItem key={r.id} value={r.id}>
+                          <MenuItem key={r.id} value={r.id} disabled={listRamByProduct.includes(r.id)}>
                             <Checkbox checked={selectedRam.indexOf(r.id) > -1} />
                             <ListItemText primary={r.dungLuong + "GB"} />
                           </MenuItem>
@@ -1027,7 +1115,7 @@ const UpdateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
                       {listRom
                         .sort((rom1, rom2) => rom1.dungLuong - rom2.dungLuong)
                         .map((r) => (
-                          <MenuItem key={r.id} value={r.id}>
+                          <MenuItem key={r.id} value={r.id} disabled={listRomByProduct.includes(r.id)}>
                             <Checkbox checked={selectedRom.indexOf(r.id) > -1} />
                             <ListItemText primary={r.dungLuong === 1024 ? 1 + "TB" : r.dungLuong + "GB"} />
                           </MenuItem>
@@ -1222,7 +1310,7 @@ const UpdateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
                           ></div>
                           <h5 className="ms-1 mt-3">Màu Sắc Đã Chọn</h5>
                           <div className="colors-had-select ms-1 mt-3 d-flex">
-                            <div style={{ /* maxWidth: "200px" */ }}>
+                            <div style={{}}>
                               <List
                                 orientation="horizontal"
                                 wrap
@@ -1504,8 +1592,74 @@ const UpdateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
                 </Button>
 */}
               </div>
-              {cauHinhs && cauHinhs.length > 0 &&
+              {cauHinhsFinal && cauHinhsFinal.length > 0 &&
                 <div className="mt-3 d-flex justify-content-between">
+                  <div>
+                    {selectedCauHinhs.length > 0 &&
+                      <Button
+                        onClick={() => {
+                          // const newCauHinhs = cauHinhs.filter((cauHinh) => {
+                          //   return !selectedCauHinhs.some((selectedCauHinh) => selectedCauHinh.id === cauHinh.id);
+                          // });
+                          // setCauHinhs(newCauHinhs);
+                          //
+                          // const newCauHinhsFinal = cauHinhsFinal.filter((cauHinh) => {
+                          //   return !selectedCauHinhs.some((selectedCauHinh) => selectedCauHinh.id === cauHinh.id);
+                          // });
+                          // setCauHinhsFinal(newCauHinhsFinal);
+                          //
+                          // if (newCauHinhs && newCauHinhs.length === 0) {
+                          //   setSelectedRam([]);
+                          //   setSelectedRom([]);
+                          // }
+                          // const newRams = selectedRam.filter((ram) => {
+                          //   return newCauHinhs.some((cauHinh) => cauHinh.ram.id === ram);
+                          // });
+                          // setSelectedRam(newRams);
+                          //
+                          // const newRoms = selectedRom.filter((rom) => {
+                          //   return newCauHinhs.some((cauHinh) => cauHinh.rom.id === rom);
+                          // });
+                          // setSelectedRom(newRoms);
+                          //
+                          //
+                          // setSelectedCauHinhs([]);
+                          handleOpenAlertVariant("Đã tạm ngưng hoạt động các phiên bản!", Notistack.SUCCESS);
+                        }}
+                        className="rounded-2"
+                        type="danger"
+                        style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                      >
+                        <span
+                          className=""
+                          style={{ marginBottom: "2px", fontWeight: "500" }}
+                        >
+                          Ngừng Hoạt Động
+                        </span>
+                      </Button>
+                    }
+                    <Button
+                      onClick={handleDownloadSample}
+                      className={selectedCauHinhs.length > 0 ? "ms-2 rounded-2 button-mui" : "rounded-2 button-mui"}
+                      type="primary"
+                      style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                    >
+                      <FaDownload
+                        className="ms-1"
+                        style={{
+                          position: "absolute",
+                          bottom: "13.5px",
+                          left: "10px",
+                        }}
+                      />
+                      <span
+                        className="ms-3 ps-1"
+                        style={{ marginBottom: "2px", fontWeight: "500" }}
+                      >
+                        Tải Mẫu Import IMEI
+                      </span>
+                    </Button>
+                  </div>
                   <div style={{ width: "42%" }} className="no-version">
                     {isConfirm === true && (cauHinhs.some((cauHinh) => {
                       const foundFinalConfig = cauHinhsFinal.find((finalItem) => finalItem.id === cauHinh.id);
@@ -1519,27 +1673,6 @@ const UpdateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
                       : null
                     }
                   </div>
-                  <Button
-                    onClick={handleDownloadSample}
-                    className="rounded-2 button-mui me-1"
-                    type="primary"
-                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
-                  >
-                    <FaDownload
-                      className="ms-1"
-                      style={{
-                        position: "absolute",
-                        bottom: "13.5px",
-                        left: "10px",
-                      }}
-                    />
-                    <span
-                      className="ms-3 ps-1"
-                      style={{ marginBottom: "2px", fontWeight: "500" }}
-                    >
-                      Tải Mẫu Import IMEI
-                    </span>
-                  </Button>
                 </div>
               }
             </div>
@@ -1559,8 +1692,15 @@ const UpdateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
                     >
                       <div className="d-flex justify-content-between">
                         <div className="d-flex">
-                          <span className="mt-1 text-dark" style={{ fontWeight: "550", fontSize: "25.5px" }}>
-                            PHIÊN BẢN {' ' + (item.ram ? item.ram.dungLuong : "") + "/" + (item.rom ? item.rom.dungLuong : "") + "GB"}
+                          <span className="" style={{ marginTop: "2px" }}>
+                            <CheckboxAntd size="lg"
+                              checked={selectedCauHinhs.some((cauHinh) => cauHinh.id === item.id)}
+                              onChange={(e) => handleChangeSelectedCauHinhs(e, item)}
+                            >
+                              <span className="text-dark ms-1" style={{ fontWeight: "550", fontSize: "25.5px" }}>
+                                PHIÊN BẢN {' ' + (item.ram ? item.ram.dungLuong : "") + "/" + (item.rom ? item.rom.dungLuong : "") + "GB"}
+                              </span>
+                            </CheckboxAntd>
                           </span>
                           <span className="ms-3">
                             {isConfirm === true &&
@@ -1609,7 +1749,7 @@ const UpdateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
                               Cập Nhật Màu Sắc
                             </span>
                           </Button>
-                          {cauHinhsFinal.some((finalItem) => finalItem.id === item.id) === true &&
+                          {cauHinhsFinalById(item.id).some((finalItem) => selectedRowKeys.some((selectedItem) => selectedItem === finalItem.ma)) === true &&
                             <Button
                               onClick={() => {
                                 handleOpenModalUpdatePrice();
@@ -1628,48 +1768,29 @@ const UpdateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
                               </span>
                             </Button>
                           }
+                          {cauHinhsFinalById(item.id).some((finalItem) => selectedRowKeys.some((selectedItem) => selectedItem === finalItem.ma)) === true &&
+                            <Button
+                              onClick={() => {
+                                const newCauHinhsFinal = cauHinhsFinal.filter((cauHinh) => {
+                                  return !selectedRowKeys.some((selected) => selected === cauHinh.ma);
+                                });
+                                setCauHinhsFinal(newCauHinhsFinal);
+                                handleOpenAlertVariant("Xóa thành công!", Notistack.SUCCESS)
+                              }}
+                              className="rounded-2 button-mui me-2"
+                              type="danger"
+                              style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                            >
+                              <span
+                                className=""
+                                style={{ marginBottom: "2px", fontWeight: "500" }}
+                              >
+                                Ngưng Hoạt Động Màu Sắc
+                              </span>
+                            </Button>
+                          }
                           <Button
                             onClick={() => {
-                              const newCauHinhs = cauHinhs && cauHinhs.filter((cauHinh) => cauHinh.id !== item.id);
-                              setCauHinhs(newCauHinhs);
-                              const newCauHinhsFinal = cauHinhsFinal.filter((cauHinh) => cauHinh.id !== item.id);
-                              setCauHinhsFinal(newCauHinhsFinal);
-
-                              if (!type) {
-                                const newRams = selectedRam.filter((ram) => ram !== item.ram.id);
-                                setSelectedRam(newRams);
-                                const newRoms = selectedRom.filter((rom) => rom !== item.rom.id);
-                                setSelectedRom(newRoms);
-                              }
-                              else {
-                                if (newCauHinhs && newCauHinhs.length === 0) {
-                                  setSelectedRam([]);
-                                  setSelectedRom([]);
-                                }
-                                let removeRam = true;
-                                newCauHinhs && newCauHinhs.forEach((cauHinh) => {
-                                  if (cauHinh.ram.id === item.ram.id) {
-                                    removeRam = false;
-                                  }
-                                })
-
-                                if (removeRam) {
-                                  const newRams = selectedRam.filter((ram) => ram !== item.ram.id);
-                                  setSelectedRam(newRams);
-                                }
-
-                                let removeRom = true;
-                                newCauHinhs && newCauHinhs.forEach((cauHinh) => {
-                                  if (cauHinh.rom.id === item.rom.id) {
-                                    removeRom = false;
-                                  }
-                                })
-                                if (removeRom) {
-                                  const newRoms = selectedRom.filter((rom) => rom !== item.rom.id);
-                                  setSelectedRom(newRoms);
-                                }
-
-                              }
                               handleOpenAlertVariant("Xóa cấu hình thành công!", Notistack.SUCCESS)
                             }}
                             className="rounded-2"
@@ -1680,14 +1801,23 @@ const UpdateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
                               className=""
                               style={{ marginBottom: "2px", fontWeight: "500" }}
                             >
-                              Xóa
+                              Ngưng Hoạt Động Phiên Bản
                             </span>
                           </Button>
                         </div>
                       </div>
                       <Divider sx={{ backgroundColor: 'gray', height: "1.5px" }} />
                       <BoxJoy sx={{ display: 'contents' }}>
-                        <CauHinhTable id={item.id} />
+                        <Table
+                          className="table-container mt-2"
+                          columns={columns}
+                          rowKey="ma"
+                          key={dataChanged}
+                          rowSelection={rowSelection}
+                          dataSource={[...cauHinhsFinal].filter((c) => c.id === item.id)}
+                          pagination={false}
+                          locale={{ emptyText: <Empty description="Không có dữ liệu" /> }}
+                        />
                       </BoxJoy>
                     </CardJoy>
                   </div>
@@ -1695,53 +1825,51 @@ const UpdateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
               )
             })}
           </div>
-          {cauHinhs && cauHinhs.length > 0 &&
-            <div className="" style={{ width: "97%" }}>
-              <div className="d-flex justify-content-end mt-4">
-                <Button
-                  onClick={() => {
-                    if (!valid) {
-                      confirm(true);
-                      window.scrollTo(0, 0);
+          <div className="" style={{ width: "97%" }}>
+            <div className="d-flex justify-content-end mt-4">
+              <Button
+                onClick={() => {
+                  if (!valid) {
+                    confirm(true);
+                    window.scrollTo(0, 0);
+                  }
+                  else if (cauHinhs && cauHinhs.length > 0) {
+                    confirm(true);
+                    const hasInvalidConfiguration = cauHinhs.some((cauHinh) => {
+                      const foundFinalConfig = cauHinhsFinal.find((finalItem) => finalItem.id === cauHinh.id);
+                      return !foundFinalConfig;
+                    });
+                    const isMissingConfig = cauHinhsFinal.some((cauHinh) => !cauHinh.ram || !cauHinh.rom);
+                    const isMissingPrice = cauHinhsFinal.some((cauHinh) => !cauHinh.donGia);
+                    if (hasInvalidConfiguration || isMissingConfig) {
+                      window.scrollTo(0, 800);
                     }
-                    else if (cauHinhs && cauHinhs.length > 0) {
-                      confirm(true);
-                      const hasInvalidConfiguration = cauHinhs.some((cauHinh) => {
-                        const foundFinalConfig = cauHinhsFinal.find((finalItem) => finalItem.id === cauHinh.id);
-                        return !foundFinalConfig;
-                      });
-                      const isMissingConfig = cauHinhsFinal.some((cauHinh) => !cauHinh.ram || !cauHinh.rom);
-                      const isMissingPrice = cauHinhsFinal.some((cauHinh) => !cauHinh.donGia);
-                      if (hasInvalidConfiguration || isMissingConfig) {
-                        window.scrollTo(0, 800);
-                      }
-                      else if (isMissingPrice) {
-                        handleOpenAlertVariant("Vui lòng nhập đơn giá cho sản phẩm!", "warning")
-                      }
-                      else if (!validImage) {
-                        window.scrollTo(0, document.body.scrollHeight);
-                      }
-                      else {
-                        setOpenModalConfirmAddProduct(true);
-                      }
+                    else if (isMissingPrice) {
+                      handleOpenAlertVariant("Vui lòng nhập đơn giá cho sản phẩm!", "warning")
                     }
-                  }}
-                  className={isLoadingInside ? "loading" : undefined + " button-mui rounded-2"}
-                  type="primary"
-                  style={{ height: "40px", width: "120px", fontSize: "15px" }}
+                    else if (!validImage) {
+                      window.scrollTo(0, document.body.scrollHeight);
+                    }
+                    else {
+                      setOpenModalConfirmAddProduct(true);
+                    }
+                  }
+                }}
+                className={isLoadingInside ? "loading" : undefined + " button-mui rounded-2"}
+                type="primary"
+                style={{ height: "40px", width: "120px", fontSize: "15px" }}
+              >
+                <div className="spinner" />
+                <span
+                  className="text-loading"
+                  style={{ marginBottom: "2px", fontWeight: "500" }}
                 >
-                  <div className="spinner" />
-                  <span
-                    className="text-loading"
-                    style={{ marginBottom: "2px", fontWeight: "500" }}
-                  >
-                    Hoàn Tất
-                  </span>
-                </Button>
-              </div>
+                  Hoàn Tất
+                </span>
+              </Button>
             </div>
-          }
-          {cauHinhs && cauHinhs.length === 0 &&
+          </div>
+          {cauHinhsFinal && cauHinhsFinal.length === 0 &&
             <div style={{ height: "25px" }}></div>
           }
           <div style={{ height: "25px" }}></div>
@@ -1812,9 +1940,8 @@ const UpdateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
           setSelectedRam([]);
           setSelectedRom([]);
         }}
-
-
       />
+      {isLoading && <LoadingIndicator />}
     </>
   )
 }
