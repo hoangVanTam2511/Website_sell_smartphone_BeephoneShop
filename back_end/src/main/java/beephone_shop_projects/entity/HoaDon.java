@@ -5,6 +5,7 @@ import beephone_shop_projects.entity.base.PrimaryEntity;
 import beephone_shop_projects.infrastructure.constant.OrderStatus;
 import beephone_shop_projects.infrastructure.constant.OrderType;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -38,6 +39,12 @@ public class HoaDon extends PrimaryEntity implements IsIdentified {
 
   private String diaChiNguoiNhan;
 
+  private String tinhThanhPhoNguoiNhan;
+
+  private String quanHuyenNguoiNhan;
+
+  private String xaPhuongNguoiNhan;
+
   private BigDecimal tongTien;
 
   private BigDecimal tienThua;
@@ -46,9 +53,24 @@ public class HoaDon extends PrimaryEntity implements IsIdentified {
 
   private String ghiChu;
 
+  private String hoVaTen;
+
+  private String soDienThoai;
+
+  private String email;
+
   private BigDecimal phiShip;
 
   private BigDecimal tienKhachTra;
+
+  private BigDecimal khachCanTra;
+
+  private BigDecimal tienTraKhach;
+
+  private BigDecimal tienTraHang;
+
+  @Column(length = 10000)
+  private String maQrCode;
 
   @Enumerated(EnumType.ORDINAL)
   private OrderType loaiHoaDon;
@@ -84,7 +106,7 @@ public class HoaDon extends PrimaryEntity implements IsIdentified {
   @OneToMany(mappedBy = "hoaDon", cascade = CascadeType.REMOVE)
   private Set<LichSuHoaDon> orderHistories;
 
-//  @OneToMany(mappedBy = "hoaDon", cascade = CascadeType.REMOVE)
-//  private Set<HoaDonChiTiet> orderDetails;
+  @OneToMany(mappedBy = "hoaDon")
+  private Set<HoaDonChiTiet> orderItems;
 
 }

@@ -1,65 +1,90 @@
 package beephone_shop_projects.core.admin.account_management.service.impl;
 
-import beephone_shop_projects.core.admin.account_management.model.request.CreateAccountRequest;
+import beephone_shop_projects.core.admin.account_management.model.request.AddKhachHangRequest;
 import beephone_shop_projects.core.admin.account_management.model.request.CreateKhachHangRequest;
+import beephone_shop_projects.core.admin.account_management.model.request.FindAccountRequest;
 import beephone_shop_projects.core.admin.account_management.model.response.AccountResponse;
 import beephone_shop_projects.core.admin.account_management.repository.AccountRepository;
-import beephone_shop_projects.core.admin.account_management.repository.DiaChiRepository;
 import beephone_shop_projects.core.admin.account_management.repository.RoleRepository;
 import beephone_shop_projects.core.admin.account_management.service.KhachHangService;
 import beephone_shop_projects.entity.Account;
-import beephone_shop_projects.entity.DiaChi;
+import beephone_shop_projects.infrastructure.config.mail.EmailService;
 import beephone_shop_projects.infrastructure.constant.StatusAccountCus;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
+import beephone_shop_projects.infrastructure.constant.StatusDiscount;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.text.Normalizer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+@RequiredArgsConstructor
 @Service
-
 public class KhachHangServiceImpl implements KhachHangService {
+
     @Autowired
     private AccountRepository accountRepository;
+
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    private EmailService emailService;
+
+    private final PasswordEncoder passwordEncoder;
+
     @Override
     public Page<AccountResponse> getAllKH(Integer pageNo) {
-        Pageable pageable = PageRequest.of(pageNo - 1, 10);
+        Pageable pageable = PageRequest.of(pageNo - 1, 5);
         return accountRepository.getAllKH(pageable);
     }
 
     @Override
-    public Account addKH(CreateKhachHangRequest request) {
-        Random random = new Random();
+    public Page<Account> getAll(FindAccountRequest search) {
+        if (search.getPageNo() == null) {
+            search.setPageNo(1);
+        }
+        if (search.getPageSize() == null) {
+            search.setPageSize(5);
+        }
+        if (search.getKeyword() == null) {
+            search.setKeyword("");
+        }
+        Pageable pageable = PageRequest.of(search.getPageNo()-1, search.getPageSize());
+        Page<Account> page = accountRepository.findAllKH(pageable, search);
+        return page;
+    }
 
-        String hoVaTen = request.getHoVaTen();
-        int number = random.nextInt(10000);
-        String code = String.format("KH%04d", number);
-        String hoVaTenWithoutSpaces = hoVaTen.replaceAll("\\s+", "");
+
+
+    @Override
+    public Account addKH(AddKhachHangRequest request) {
+
+        // check email
+        if(accountRepository.findByEmail(request.getEmail()) != null){
+            throw new RuntimeException("Email đã tồn tại trong hệ thống");
+        }
+
+        Random random = new Random();
         Date date = null;
         try {
             date = new SimpleDateFormat("dd/MM/yyyy").parse(request.getNgaySinh());
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
-
+        String hoVaTen = request.getHoVaTen();
+        int number = random.nextInt(10000);
+        String code = String.format("KH%04d", number);
+        String hoVaTenWithoutSpaces = hoVaTen.replaceAll("\\s+", "");
         String hoVaTenWithoutDiacritics = removeDiacritics(hoVaTenWithoutSpaces);
-        String[] specialCharsArray = {"!", "@", "#", "$", "%", "^", "&", "*", "+", "-"};
-        String specialChars = getRandomSpecialChars(specialCharsArray);
-        String matKhau = hoVaTenWithoutDiacritics + specialChars + code;
+        String matKhau = "Abc123.";
         Account kh = new Account().builder()
                 .email(request.getEmail())
                 .ngaySinh(date)
@@ -69,9 +94,13 @@ public class KhachHangServiceImpl implements KhachHangService {
                 .gioiTinh(request.getGioiTinh())
                 .trangThai(StatusAccountCus.HOAT_DONG)
                 .ma(code)
-                .matKhau(matKhau)
+                .matKhau(passwordEncoder.encode(matKhau))
                 .soDienThoai(request.getSoDienThoai())
                 .build();
+
+        Context context = new Context();
+        context.setVariable("password", request.getMatKhau());
+        emailService.sendEmailWithHtmlTemplate(request.getEmail(), "Mật khẩu của bạn", "email-get-pass-template", context);
         return accountRepository.save(kh);
     }
 
@@ -83,12 +112,6 @@ public class KhachHangServiceImpl implements KhachHangService {
     @Override
     public Account updateKH(CreateKhachHangRequest request, String id) {
         Optional<Account> optional = accountRepository.findById(id);
-        Date date = null;
-        try {
-            date = new SimpleDateFormat("dd/MM/yyyy").parse(request.getNgaySinh());
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
         if (optional.isPresent()) {
             optional.get().setId(id);
             optional.get().setMa(request.getMa());
@@ -96,12 +119,11 @@ public class KhachHangServiceImpl implements KhachHangService {
             optional.get().setEmail(request.getEmail());
             optional.get().setTrangThai(request.getTrangThai());
             optional.get().setIdRole(roleRepository.findByMa("role2"));
-            optional.get().setNgaySinh(date);
+            optional.get().setNgaySinh(request.getNgaySinh());
             optional.get().setAnhDaiDien(request.getAnhDaiDien());
             optional.get().setGioiTinh(request.getGioiTinh());
             optional.get().setHoVaTen(request.getHoVaTen());
             optional.get().setSoDienThoai(request.getSoDienThoai());
-            accountRepository.save(optional.get());
             return accountRepository.save(optional.get());
         }
         return optional.get();
@@ -109,7 +131,7 @@ public class KhachHangServiceImpl implements KhachHangService {
 
     @Override
     public Page<AccountResponse> search(Optional<String> tenSearch, Integer pageNo) {
-        Pageable pageable = PageRequest.of(pageNo-1, 10);
+        Pageable pageable = PageRequest.of(pageNo - 1, 5);
         return accountRepository.searchAllKH(tenSearch, pageable);
     }
 

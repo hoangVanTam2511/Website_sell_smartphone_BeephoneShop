@@ -1,38 +1,67 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { Form } from 'react-bootstrap'
-import axios from "axios"
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
-import Box from '@mui/material/Box';
-import CurrencyInput from 'react-currency-input-field';
-import { faPlus, faTrashAlt, faCheck, faThumbtack, faMinus, faCircleXmark } from '@fortawesome/free-solid-svg-icons'
-import { storage } from "./firebase"
-import { ref, uploadBytes, listAll, getDownloadURL, deleteObject } from 'firebase/storage'
-import { apiURLCamera, apiURLCauHinh, apiURLChip, apiURLDongSanPham, apiURLManHinh, apiURLMauSac, apiURLNhaSanXuat, apiURLPin, apiURLram, apiURLrom } from '../../../../service/api';
+import React, { useState, useEffect, useRef } from "react";
+import { Form } from "react-bootstrap";
+import axios from "axios";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import InputLabel from "@mui/material/InputLabel";
+import FormControl from "@mui/material/FormControl";
+import Box from "@mui/material/Box";
+import CurrencyInput from "react-currency-input-field";
+import { FormLabel } from "react-bootstrap";
 import {
-    Col, Row,
-    Input, Card,
-    Tag, Pagination,
-    Tabs, Space,
-    Divider, Table, Modal,
-    Avatar, Segmented, notification
+  faPlus,
+  faTrashAlt,
+  faCheck,
+  faThumbtack,
+  faMinus,
+} from "@fortawesome/free-solid-svg-icons";
+import { storage } from "./firebase";
+import { ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
+import {
+  apiURLCamera,
+  apiURLCauHinh,
+  apiURLChip,
+  apiURLDongSanPham,
+  apiURLManHinh,
+  apiURLMauSac,
+  apiURLHang,
+  apiURLPin,
+  apiURLram,
+  apiURLrom,
+} from "../../../../service/api";
+import {
+  Col,
+  Row,
+  Input,
+  Card,
+  Tag,
+  Pagination,
+  Tabs,
+  Space,
+  Divider,
+  Table,
+  Modal,
+  Avatar,
+  Segmented,
+  notification,
 } from "antd";
-import { useTheme } from '@mui/material/styles';
+import { useTheme } from "@mui/material/styles";
 import {
-    CloseOutlined, ArrowRightOutlined, ArrowLeftOutlined, CheckOutlined, 
-} from "@ant-design/icons"
-import {
-    FontAwesomeIcon
-} from "@fortawesome/react-fontawesome";
-import "../../../../assets/scss/addProduct.scss";
-import Button from '@mui/material/Button';
-import { useNavigate } from 'react-router-dom'
-import Chip from '@mui/material/Chip';
-import TextField from '@mui/material/TextField';
-import FormHelperText from '@mui/material/FormHelperText';
-
+  CloseOutlined,
+  ArrowRightOutlined,
+  ArrowLeftOutlined,
+  CheckOutlined,
+} from "@ant-design/icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import "../../../../assets/scss/addProduct.css";
+import Button from "@mui/material/Button";
+import { useNavigate } from "react-router-dom";
+import Chip from "@mui/material/Chip";
+import TextField from "@mui/material/TextField";
+import FormHelperText from "@mui/material/FormHelperText";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { request } from '../../../../store/helpers/axios_helper'
 
 const { TextArea } = Input;
 let index = 0;
@@ -56,23 +85,23 @@ const ThemSanPham = () => {
   const [hiddenConfig, sethiddenConfig] = useState(false);
   const [listCauHinhSelected, setListCauHinhSelected] = useState([]);
 
-    const [currentPage, setCurrentPage] = useState(0);
-    const [totalPages, setTotalPages] = useState(0);
-    const [nameStorage, setNameStorage] = useState("images/")
-    const imageListRef = ref(storage, nameStorage);
-    // modal
-    const [open, setOpen] = useState(false);
-    const [confirmLoading, setConfirmLoading] = useState(false);
-    //hidden in cofig
-    const [sizeOfListSelected, setSizeOfListSelected] = useState(0)
-    // image
-    const [urlImage, seturlImage] = useState(new Map())
-    const [pinImage, setpinImage] = useState(new Map())
-    // step in selected
-    const [step, setStep] = useState(0)
-    let navigate = useNavigate();
-    // notification
-    const [api, contextHolder] = notification.useNotification();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [nameStorage, setNameStorage] = useState("images/");
+  const imageListRef = ref(storage, nameStorage);
+  // modal
+  const [open, setOpen] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  //hidden in cofig
+  const [sizeOfListSelected, setSizeOfListSelected] = useState(0);
+  // image
+  const [urlImage, seturlImage] = useState(new Map());
+  const [pinImage, setpinImage] = useState(new Map());
+  // step in selected
+  const [step, setStep] = useState(0);
+  let navigate = useNavigate();
+  // notification
+  const [api, contextHolder] = notification.useNotification();
 
   const theme = useTheme();
   const [personName, setPersonName] = React.useState([]);
@@ -96,81 +125,98 @@ const ThemSanPham = () => {
     },
   };
 
-
-    function getStyles(name, personName, theme) {
-        return {
-            fontWeight:
-                personName.indexOf(name) === -1
-                    ? theme.typography.fontWeightRegular
-                    : theme.typography.fontWeightMedium,
-        };
+  // toast notification
+  const showNotification = (type, message) => {
+    if (type === "success") {
+      toast.success(message);
+    } else if (type === "error") {
+      toast.error(message);
     }
+  };
+
+  function getStyles(name, personName, theme) {
+    return {
+      fontWeight:
+        personName.indexOf(name) === -1
+          ? theme.typography.fontWeightRegular
+          : theme.typography.fontWeightMedium,
+    };
+  }
 
   // modal nhà sản xuất
 
-    const [nhaSanXuatForm, setNhaSanXuatForm] = useState({
-        maNhaSanXuat: "",
-        tenNhaSanXuat: ""
-    })
-
-    const { maNhaSanXuat, tenNhaSanXuat } = nhaSanXuatForm // tạo contructor
+  const [nhaSanXuatForm, setNhaSanXuatForm] = useState({
+    idBrand: "",
+    nameBrand: "",
+  });
+  const [nameBrandError, setnameBrandError] = useState("");
+  const { idBrand, nameBrand } = nhaSanXuatForm; // tạo contructor
 
   const onInputChangeFormNhaSanXuat = (e) => {
     setNhaSanXuatForm({ ...nhaSanXuatForm, [e.target.name]: e.target.value });
   };
 
-    const showModal = async () => {
-        setOpen(true);
-        await axios.get("http://localhost:8080/nha-san-xuat/new-code")
-            .then((res) => {
-                setNhaSanXuatForm({ ...nhaSanXuatForm, 'maNhaSanXuat': res.data })
-            }).catch((res) => console.log(res))
-    };
+  const showModal = async () => {
+    setOpen(true);
+  };
 
-    const handleOk = async () => {
-        await axios.post("http://localhost:8080/nha-san-xuat/save", nhaSanXuatForm)
-        setConfirmLoading(true);
-        setTimeout(() => {
-            setOpen(false);
-            setConfirmLoading(false);
-        }, 500);
-    };
+  const handleOk = async () => {
+    var flag = false;
+    if (!nhaSanXuatForm.nameBrand) {
+        setFormSubmitted(true);
+        setnameBrandError("Tên hãng không được bỏ trống");
+        flag = true;
+      }
+    
+    if (flag == true) {
+        showNotification("error", "Đã có lỗi.Vui lòng kiểm tra và thử lại")
+        return;
+    }
 
-    const handleCancel = () => {
-        setOpen(false);
-        setOpenFormChip(false)
-        setOpenFormDongSanPham(false)
-        setOpenFormmanHinh(false)
-        setOpenFormmauSac(false)
-        setOpenFormpin(false)
-        setOpenFormram(false)
-    };
+    request('POST',"/hang/save", nhaSanXuatForm);
+    setConfirmLoading(true);
+    setTimeout(() => {
+      setOpen(false);
+      setConfirmLoading(false);
+    }, 500);
+  };
+
+  const handleCancel = () => {
+    setOpen(false);
+    setOpenFormChip(false);
+    setOpenFormDongSanPham(false);
+    setOpenFormmanHinh(false);
+    setOpenFormmauSac(false);
+    setOpenFormpin(false);
+    setOpenFormram(false);
+  };
 
   // chip
 
   const [openFormChip, setOpenFormChip] = useState(false);
 
-    const [chipForm, setChipForm] = useState({
-        maChip: "",
-        tenChip: ""
-    })
+  const [chipForm, setChipForm] = useState({
+    maChip: "",
+    tenChip: "",
+  });
 
-    const { maChip, tenChip } = chipForm // tạo contructor
+  const { maChip, tenChip } = chipForm; // tạo contructor
 
-    const onInputChangeFormChip = (e) => {
-        setChipForm({ ...chipForm, 'tenChip': e.target.value })
-    }
+  const onInputChangeFormChip = (e) => {
+    setChipForm({ ...chipForm, tenChip: e.target.value });
+  };
 
-    const showModalFormChip = async () => {
-        setOpenFormChip(true);
-        await axios.get("http://localhost:8080/chip/new-code")
-            .then((res) => {
-                setChipForm({ ...chipForm, 'maChip': res.data })
-            }).catch((res) => console.log(res))
-    };
+  const showModalFormChip = async () => {
+    setOpenFormChip(true);
+    request('GET',"/chip/new-code")
+      .then((res) => {
+        setChipForm({ ...chipForm, maChip: res.data });
+      })
+      .catch((res) => console.log(res));
+  };
 
   const handleOkFormChip = async () => {
-    await axios.post("http://localhost:8080/chip/save", chipForm);
+    request('POST',"/chip/save", chipForm);
     setConfirmLoading(true);
     setTimeout(() => {
       setOpenFormChip(false);
@@ -178,242 +224,245 @@ const ThemSanPham = () => {
     }, 500);
   };
 
-    // pin
+  // pin
 
-    const [openFormpin, setOpenFormpin] = useState(false);
+  const [openFormpin, setOpenFormpin] = useState(false);
 
-    const [pinForm, setpinForm] = useState({
-        mapin: "",
-        tenpin: ""
-    })
+  const [pinForm, setpinForm] = useState({
+    mapin: "",
+    tenpin: "",
+  });
 
-    const { mapin, tenpin } = pinForm // tạo contructor
+  const { mapin, tenpin } = pinForm; // tạo contructor
 
-    const onInputChangeFormpin = (e) => {
-        setpinForm({ ...pinForm, [e.target.name]: e.target.value })
-    }
+  const onInputChangeFormpin = (e) => {
+    setpinForm({ ...pinForm, [e.target.name]: e.target.value });
+  };
 
-    const showModalFormpin = async () => {
-        setOpenFormpin(true);
+  const showModalFormpin = async () => {
+    setOpenFormpin(true);
 
-        await axios.get("http://localhost:8080/pin/new-code")
-            .then((res) => {
-                setpinForm({ ...pinForm, 'mapin': res.data })
-            }).catch((res) => console.log(res))
+    request('GET',"/pin/new-code")
+      .then((res) => {
+        setpinForm({ ...pinForm, mapin: res.data });
+      })
+      .catch((res) => console.log(res));
+  };
 
-    };
-
-    const handleOkFormpin = async () => {
-        await axios.post("http://localhost:8080/pin/save-second", pinForm)
-        setConfirmLoading(true);
-        setTimeout(() => {
-            setOpenFormpin(false);
-            setConfirmLoading(false);
-        }, 500);
-    };
+  const handleOkFormpin = async () => {
+    request('POST',"/pin/save-second", pinForm);
+    setConfirmLoading(true);
+    setTimeout(() => {
+      setOpenFormpin(false);
+      setConfirmLoading(false);
+    }, 500);
+  };
 
   //ram
 
   const [openFormram, setOpenFormram] = useState(false);
 
-    const [ramForm, setramForm] = useState({
-        maram: "",
-        tenram: ""
-    })
+  const [ramForm, setramForm] = useState({
+    maram: "",
+    tenram: "",
+  });
 
-    const { maram, tenram } = ramForm // tạo contructor
+  const { maram, tenram } = ramForm; // tạo contructor
 
   const onInputChangeFormram = (e) => {
     setramForm({ ...ramForm, [e.target.name]: e.target.value });
   };
 
-    const showModalFormram = async () => {
-        setOpenFormram(true);
+  const showModalFormram = async () => {
+    setOpenFormram(true);
 
-        await axios.get("http://localhost:8080/ram/new-code")
-            .then((res) => {
-                setramForm({ ...ramForm, 'maram': res.data })
-            }).catch((res) => console.log(res))
-    };
-    const handleOkFormram = async () => {
-        await axios.post("http://localhost:8080/ram/save-second", ramForm)
-        setConfirmLoading(true);
-        setTimeout(() => {
-            setOpenFormram(false);
-            setConfirmLoading(false);
-        }, 500);
-    };
+    request('GET',"/ram/new-code")
+      .then((res) => {
+        setramForm({ ...ramForm, maram: res.data });
+      })
+      .catch((res) => console.log(res));
+  };
+  const handleOkFormram = async () => {
+    request('POST',"/ram/save-second", ramForm);
+    setConfirmLoading(true);
+    setTimeout(() => {
+      setOpenFormram(false);
+      setConfirmLoading(false);
+    }, 500);
+  };
 
   //rom
 
-    const [openFormrom, setOpenFormrom] = useState(false);
+  const [openFormrom, setOpenFormrom] = useState(false);
+  const [capacityRomError, setcapacityRomError] = useState("");
 
-    const [romForm, setromForm] = useState({
-        marom: "",
-        tenrom: ""
-    })
+  const [romForm, setromForm] = useState({
+    idRom: "",
+    capacityRom: "",
+  });
 
-    const { marom, tenrom } = romForm // tạo contructor
+  const { idRom, capacityRom } = romForm; // tạo contructor
 
   const onInputChangeFormrom = (e) => {
     setromForm({ ...romForm, [e.target.name]: e.target.value });
   };
 
-    const showModalFormrom = async () => {
-        setOpenFormrom(true);
+  const showModalFormrom = async () => {
+    setOpenFormrom(true);
+  };
 
-        await axios.get("http://localhost:8080/rom/new-code")
-            .then((res) => {
-                setromForm({ ...romForm, 'marom': res.data })
-            }).catch((res) => console.log(res))
-    };
-
-    const handleOkFormrom = async () => {
-        await axios.post("http://localhost:8080/rom/save-second", romForm)
-        setConfirmLoading(true);
-        setTimeout(() => {
-            setOpenFormrom(false);
-            setConfirmLoading(false);
-        }, 500);
-    };
+  const handleOkFormrom = async () => {
+    request('POST',"/rom/save-second", romForm);
+    setConfirmLoading(true);
+    setTimeout(() => {
+      setOpenFormrom(false);
+      setConfirmLoading(false);
+    }, 500);
+  };
 
   // mau-sac
   const [openFormmauSac, setOpenFormmauSac] = useState(false);
 
-    const [mauSacForm, setmauSacForm] = useState({
-        mamauSac: "",
-        tenmauSac: ""
-    })
+  const [mauSacForm, setmauSacForm] = useState({
+    mamauSac: "",
+    tenmauSac: "",
+  });
 
-    const { mamauSac, tenmauSac } = mauSacForm // tạo contructor
+  const { mamauSac, tenmauSac } = mauSacForm; // tạo contructor
 
   const onInputChangeFormmauSac = (e) => {
     setmauSacForm({ ...mauSacForm, [e.target.name]: e.target.value });
   };
 
-    const showModalFormmauSac = async () => {
-        setOpenFormmauSac(true);
+  const showModalFormmauSac = async () => {
+    setOpenFormmauSac(true);
 
-        await axios.get("http://localhost:8080/mau-sac/new-code")
-            .then((res) => {
-                setmauSacForm({ ...mauSacForm, 'mamauSac': res.data })
-            }).catch((res) => console.log(res))
-    };
+    request('GET',"/mau-sac/new-code")
+      .then((res) => {
+        setmauSacForm({ ...mauSacForm, mamauSac: res.data });
+      })
+      .catch((res) => console.log(res));
+  };
 
-    const handleOkFormmauSac = async () => {
-        await axios.post("http://localhost:8080/mau-sac/save-second", mauSacForm)
-        setConfirmLoading(true);
-        setTimeout(() => {
-            setOpenFormmauSac(false);
-            setConfirmLoading(false);
-        }, 500);
-    };
+  const handleOkFormmauSac = async () => {
+    request('POST',"/mau-sac/save-second", mauSacForm);
+    setConfirmLoading(true);
+    setTimeout(() => {
+      setOpenFormmauSac(false);
+      setConfirmLoading(false);
+    }, 500);
+  };
 
   // màn hình
   const [openFormmanHinh, setOpenFormmanHinh] = useState(false);
 
-    const [manHinhForm, setmanHinhForm] = useState({
-        mamanHinh: "",
-        tenmanHinh: ""
-    })
+  const [manHinhForm, setmanHinhForm] = useState({
+    mamanHinh: "",
+    tenmanHinh: "",
+  });
 
-    const { mamanHinh, tenmanHinh } = manHinhForm // tạo contructor
+  const { mamanHinh, tenmanHinh } = manHinhForm; // tạo contructor
 
-    const [cameraForm, setCameraForm] = useState({
-        resolutionCamera: ""
-    })
-    const [openFormCamera, setOpenFormCamera] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [resolutionCameraError, setResoluTionCameraError] = useState("")
-    const [formSubmitted, setFormSubmitted] = useState(false);
-    const [formSubmittedConfig, setFormSubmittedConfig] = useState(false);
+  const [cameraForm, setCameraForm] = useState({
+    resolutionCamera: "",
+  });
+  const [openFormCamera, setOpenFormCamera] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [resolutionCameraError, setResoluTionCameraError] = useState("");
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [formSubmittedConfig, setFormSubmittedConfig] = useState(false);
 
-    const showModalFormCamera = () => {
-        setOpenFormCamera(true);
-    };
-    const handleOkFormCamera = () => {
-        if (!cameraForm.resolutionCamera) {
-            setFormSubmitted(true);
-            setResoluTionCameraError("Độ phân giải không được bỏ trống")
-            return;
-        }
-        setLoading(true);
-        axios.post("http://localhost:8080/camera/save", cameraForm)
-        setTimeout(() => {
-            setLoading(false);
-            setOpenFormCamera(false);
-        }, 300);
-    };
-    const handleCancelFormCamera = () => {
-        setOpenFormCamera(false);
-    };
-    const onInputChangeFormmanHinh = (e) => {
-        setmanHinhForm({ ...manHinhForm, [e.target.name]: e.target.value })
+  const showModalFormCamera = () => {
+    setOpenFormCamera(true);
+  };
+  const handleOkFormCamera = () => {
+    if (!cameraForm.resolutionCamera) {
+      setFormSubmitted(true);
+      setResoluTionCameraError("Độ phân giải không được bỏ trống");
+      return;
     }
+    setLoading(true);
+    request('POST',"/camera/save", cameraForm);
+    setTimeout(() => {
+      setLoading(false);
+      setOpenFormCamera(false);
+      loadDataComboBox();
+    }, 300);
+  };
+  const handleCancelFormCamera = () => {
+    setOpenFormCamera(false);
+  };
+  const onInputChangeFormmanHinh = (e) => {
+    setmanHinhForm({ ...manHinhForm, [e.target.name]: e.target.value });
+  };
 
-    const showModalFormmanHinh = async () => {
-        setOpenFormmanHinh(true);
+  const showModalFormmanHinh = async () => {
+    setOpenFormmanHinh(true);
 
-        await axios.get("http://localhost:8080/man-hinh/new-code")
-            .then((res) => {
-                setmanHinhForm({ ...manHinhForm, 'mamanHinh': res.data })
-            }).catch((res) => console.log(res))
-    };
-    const handleOkFormmanHinh = async () => {
-        await axios.post("http://localhost:8080/man-hinh/save-second", manHinhForm)
-        setConfirmLoading(true);
-        setTimeout(() => {
-            setOpenFormmanHinh(false);
-            setConfirmLoading(false);
-        }, 500);
-    };
+    request('GET',"/man-hinh/new-code")
+      .then((res) => {
+        setmanHinhForm({ ...manHinhForm, mamanHinh: res.data });
+      })
+      .catch((res) => console.log(res));
+  };
+  const handleOkFormmanHinh = async () => {
+    request('POST',"/man-hinh/save-second", manHinhForm);
+    setConfirmLoading(true);
+    setTimeout(() => {
+      setOpenFormmanHinh(false);
+      setConfirmLoading(false);
+    }, 500);
+  };
 
   // dòng sản phẩm
 
-    const [openFormDongSanPham, setOpenFormDongSanPham] = useState(false);
+  const [openFormDongSanPham, setOpenFormDongSanPham] = useState(false);
 
-    const [DongSanPhamForm, setDongSanPhamForm] = useState({
-        maDongSanPham: "",
-        tenDongSanPham: ""
-    })
+  const [DongSanPhamForm, setDongSanPhamForm] = useState({
+    maDongSanPham: "",
+    tenDongSanPham: "",
+  });
 
-    const { maDongSanPham, tenDongSanPham } = DongSanPhamForm // tạo contructor
+  const { maDongSanPham, tenDongSanPham } = DongSanPhamForm; // tạo contructor
 
   const onInputChangeFormDongSanPham = (e) => {
     setDongSanPhamForm({ ...DongSanPhamForm, [e.target.name]: e.target.value });
   };
 
-    const showModalFormDongSanPham = async () => {
-        setOpenFormDongSanPham(true);
+  const showModalFormDongSanPham = async () => {
+    setOpenFormDongSanPham(true);
 
-        await axios.get("http://localhost:8080/dong-san-pham/new-code")
-            .then((res) => {
-                setDongSanPhamForm({ ...DongSanPhamForm, 'maDongSanPham': res.data })
-            }).catch((res) => console.log(res))
-    };
-    const handleOkFormDongSanPham = async () => {
-        await axios.post("http://localhost:8080/dong-san-pham/save", DongSanPhamForm)
-        setConfirmLoading(true);
-        setTimeout(() => {
-            setOpenFormDongSanPham(false);
-            setConfirmLoading(false);
-        }, 500);
-    };
+    request('GET',"/dong-san-pham/new-code")
+      .then((res) => {
+        setDongSanPhamForm({ ...DongSanPhamForm, maDongSanPham: res.data });
+      })
+      .catch((res) => console.log(res));
+  };
+  const handleOkFormDongSanPham = async () => {
+    request('POST',"/dong-san-pham/save",
+      DongSanPhamForm
+    );
+    setConfirmLoading(true);
+    setTimeout(() => {
+      setOpenFormDongSanPham(false);
+      setConfirmLoading(false);
+    }, 500);
+  };
 
   // cấu hình
   const [openFormCauHinh, setOpenFormCauHinh] = useState(false);
 
-    const showModalFormCauHinh = () => {
-        setOpenFormCauHinh(true);
-    };
-    // notification
-    const openNotificationError = (placement, title, content) => {
-        api.error({
-            message: `${title} `,
-            description: `${content}`,
-            placement,
-        });
-    };
+  const showModalFormCauHinh = () => {
+    setOpenFormCauHinh(true);
+  };
+  // notification
+  const openNotificationError = (placement, title, content) => {
+    api.error({
+      message: `${title} `,
+      description: `${content}`,
+      placement,
+    });
+  };
 
   const openNotificationSuccess = (placement, title, content) => {
     api.success({
@@ -433,8 +482,7 @@ const ThemSanPham = () => {
         );
         return;
       }
-      await axios
-        .post("http://localhost:8080/cau-hinh/save", cauHinh)
+      request('POST',"/cau-hinh/save", cauHinh)
         .then((res) => {
           openNotificationSuccess(
             "success",
@@ -486,20 +534,23 @@ const ThemSanPham = () => {
     }
   };
 
-    const loadDataListCauHinh = async (currentPage) => {
-        axios.get(apiURLCauHinh + "/view-all?page=" + currentPage).then((response) => {
-            const modifiedData = response.data.content.map((item, index) => ({
-                ...item,
-                'key': item.id,
-            }));
-            setListCauHinh(modifiedData);
-            setCurrentPage(response.data.number);
-            setTotalPages(response.data.totalPages);
-        }).catch((res) => console.log(res));
-    };
-    const handleCancelFromCauHinh = () => {
-        setOpenFormCauHinh(false)
-    };
+  const loadDataListCauHinh = async (currentPage) => {
+    axios
+      .get(apiURLCauHinh + "/view-all?page=1")
+      .then((response) => {
+        const modifiedData = response.data.content.map((item, index) => ({
+          ...item,
+          key: item.id,
+        }));
+        setListCauHinh(modifiedData);
+        setCurrentPage(response.data.number);
+        setTotalPages(response.data.totalPages);
+      })
+      .catch((res) => console.log(res));
+  };
+  const handleCancelFromCauHinh = () => {
+    setOpenFormCauHinh(false);
+  };
 
   const deleteCauHinh = async (record) => {
     const index = listMauSac.findIndex((item) => record.id === item.id);
@@ -509,8 +560,7 @@ const ThemSanPham = () => {
 
   // delete
   const deleteColor = async (id) => {
-    await axios
-      .delete(`${apiURLCauHinh}/delete/${id}`)
+    request('DELETE',`${apiURLCauHinh}/delete/${id}`)
       .then((response) => {
         loadDataListCauHinh(currentPage);
       })
@@ -620,12 +670,9 @@ const ThemSanPham = () => {
   const { donGia, moTa } = chiTietSanPham; // tạo contructor
 
   const onSubmit = async () => {
-    await axios
-      .post("http://localhost:8080/san-pham/save", chiTietSanPham)
+    request('POST',"/san-pham/save", chiTietSanPham)
       .then((res) => {
-        axios
-          .post(
-            `http://localhost:8080/chi-tiet-san-pham/save?id=${res.data.id}`,
+        request('POST',`/chi-tiet-san-pham/save?id=${res.data.id}`,
             listIdCauHinh
           )
           .then((res) => {})
@@ -762,22 +809,29 @@ const ThemSanPham = () => {
     });
   };
 
-    const loadDataComboBox = async () => {
-        // load các combobox tương ứng 
-        axios.get(apiURLDongSanPham + "/get-list").then((response) => {
-            const modifiedData = response.data.map((item, index) => ({
-                label: item.tenDongSanPham,
-                value: "dongSanPham:" + item.tenDongSanPham,
-            }));
-            setListDongSanPham(modifiedData);
-        }).catch((res) => console.log(res));
-        axios.get(apiURLNhaSanXuat + "/get-list").then((response) => {
-            const modifiedData = response.data.map((item, index) => ({
-                label: item.tenNhaSanXuat,
-                value: "nhaSanXuat:" + item.tenNhaSanXuat,
-            }));
-            setlistNhaSanXuat(modifiedData);
-        }).catch((res) => console.log(res));
+  const loadDataComboBox = async () => {
+    // load các combobox tương ứng
+    axios
+      .get(apiURLDongSanPham + "/get-list")
+      .then((response) => {
+        const modifiedData = response.data.map((item, index) => ({
+          label: item.tenDongSanPham,
+          value: "dongSanPham:" + item.tenDongSanPham,
+        }));
+        console.log(apiURLDongSanPham);
+        setListDongSanPham(modifiedData);
+      })
+      .catch((res) => console.log(res));
+    axios
+      .get(apiURLHang + "/get-list")
+      .then((response) => {
+        const modifiedData = response.data.map((item, index) => ({
+          label: item.tenHang,
+          value: "nhaSanXuat:" + item.tenHang,
+        }));
+        setlistNhaSanXuat(modifiedData);
+      })
+      .catch((res) => console.log(res));
 
     axios
       .get(apiURLPin + "/get-list")
@@ -834,13 +888,16 @@ const ThemSanPham = () => {
       })
       .catch((res) => console.log(res));
 
-        axios.get(apiURLManHinh + "/get-list").then((response) => {
-            const modifiedData = response.data.map((item, index) => ({
-                label: item.kichThuoc + " inch",
-                value: "manHinh:" + item.kichThuoc,
-            }));
-            setlistManHinh(modifiedData);
-        }).catch((res) => console.log(res));
+    axios
+      .get(apiURLManHinh + "/get-list")
+      .then((response) => {
+        const modifiedData = response.data.map((item, index) => ({
+          label: item.kichThuoc + " inch",
+          value: "manHinh:" + item.kichThuoc,
+        }));
+        setlistManHinh(modifiedData);
+      })
+      .catch((res) => console.log(res));
 
     axios
       .get(apiURLCamera + "/view-all")
@@ -877,49 +934,42 @@ const ThemSanPham = () => {
     setStep(0);
   };
 
-    const handleClickStepThree = async () => {
-
-        await axios.post("http://localhost:8080/san-pham/save", chiTietSanPham).then(
-            (res) => {
-                {
-                    listCauHinhSelected.forEach((item) => {
-                        item.idSanPham = res.data.id;
-                    })
-                   
-                }
-            }
-        ).catch((res) => console.log(res))
-
-        listCauHinhSelected.forEach(async (item, index) => {
-
-            await axios.post("http://localhost:8080/chi-tiet-san-pham/save", item).then(
-                (res) => {
-                    for (let [key, value] of urlImage) {
-
-                        if (getIndexOfLocationImage(key) == index) {
-                            if (value != null) {
-                                axios.post("http://localhost:8080/anh/save", {
-                                    "tenAnh": key,
-                                    "duongDan": value,
-                                    "trangThai": pinImage.get(key),
-                                    "idChiTietSanPham": res.data.id
-                                }).then((res) => {
-
-                                })
-                            }
-                        }
-                    }
-                }
-            ).catch((res) => console.log(res))
+  const handleClickStepThree = async () => {
+    request('POST',"/san-pham/save", chiTietSanPham)
+      .then((res) => {
+        {
+            console.log(res.data.id)
+          listCauHinhSelected.forEach((item) => {
+            item.idSanPham = res.data.id;
+          });
         }
-        )
-        openNotificationSuccess('success', "Bạn đã tạo sản phẩm thành công ", '')
-        setTimeout(()=>{
-            navigate("/san-pham")
-        },200)
-    }
+      })
+      .catch((res) => console.log(res));
 
-
+    listCauHinhSelected.forEach(async (item, index) => {
+      request('POST',"/chi-tiet-san-pham/save", item)
+        .then((res) => {
+          for (let [key, value] of urlImage) {
+            if (getIndexOfLocationImage(key) == index) {
+              if (value != null) {
+                request('POST',"/anh/save", {
+                    tenAnh: key,
+                    duongDan: value,
+                    trangThai: pinImage.get(key),
+                    idChiTietSanPham: res.data.id,
+                  })
+                  .then((res) => {});
+              }
+            }
+          }
+        })
+        .catch((res) => console.log(res));
+    });
+    openNotificationSuccess("success", "Bạn đã tạo sản phẩm thành công ", "");
+    setTimeout(() => {
+      navigate("/san-pham");
+    }, 200);
+  };
 
   return (
     <div className="card-body" style={{ marginLeft: 40, marginTop: 50 }}>
@@ -1097,113 +1147,137 @@ const ThemSanPham = () => {
                   </Form.Group>
                 </Col>
 
-                                <Col span={11}>
-                                    <Form.Group className="form-group">
-
-                                        <Form.Label htmlFor="pwd" style={{ width: `20%`, color: 'black', display: `block`, marginBottom: `12px` }} >Cổng sạc
-                                        </Form.Label>
-                                        <Space direction="vertical">
-                                            <Segmented
-                                                onChange={(even) => handleChangeSegemented(even)}
-                                                options={[
-                                                    {
-                                                        label: (
-                                                            <div
-                                                                style={{
-                                                                    padding: 4,
-                                                                }}
-                                                            >
-                                                                <Avatar src="data:image/jpeg;base64,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" />
-                                                                <div>Cổng lightning</div>
-                                                            </div>
-                                                        ),
-                                                        value: 'congSac:lightning',
-                                                    },
-                                                    {
-                                                        label: (
-                                                            <div
-                                                                style={{
-                                                                    padding: 4,
-                                                                }}
-                                                            >
-                                                                <Avatar src="data:image/jpeg;base64,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" />
-                                                                <div>Cổng type c</div>
-                                                            </div>
-                                                        ),
-                                                        value: 'congSac:type c',
-                                                    },
-                                                    {
-                                                        label: (
-                                                            <div
-                                                                style={{
-                                                                    padding: 4,
-                                                                }}
-                                                            >
-                                                                <Avatar src="data:image/jpeg;base64,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" />
-                                                                <div>Cổng micro usb</div>
-                                                            </div>
-                                                        ),
-                                                        value: 'congSac:micro usb',
-                                                    },
-
-                                                ]}
-                                            />
-
-                                        </Space>
-                                    </Form.Group>
-                                </Col>
-
-
-                            </Row>
-                            <Row>
-                                <Col span={12} style={{ transform: `translate(36px, 0px)` }}>
-                                    <Form.Group className="form-group">
-                                        <FontAwesomeIcon style={{
-                                            transform: `translate(92px, 27px)`, border: `1px solid`, borderRadius: `50%`, height: 8, width: 8,
-                                        }}
-                                            className='font_awesome_icon_selection_custom'
-                                            icon={faPlus} onClick={showModalFormCamera} />
-                                        <Form.Label htmlFor="pwd" style={{ width: `25%`, color: 'black', display: `block`, marginBottom: `5%` }} >Camera trước
-                                        </Form.Label>
-                                        <Select
-                                            error={(formSubmitted && chiTietSanPham.cameraTruoc.length === 0) || !!cameraTruocError}
-                                            style={{ width: 340 }}
-                                            id="demo-multiple-chip"
-                                            multiple
-                                            name="cameraTruoc"
-                                            value={chiTietSanPham.cameraTruoc}
-                                            onChange={handleChangeSelectMultipleFront}
-                                            renderValue={(selected) => (
-
-                                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                                    {selected.map((value) => (
-                                                        <Chip key={value} label={value} />
-                                                    ))}
-                                                </Box>
-                                            )}
-                                            MenuProps={MenuProps}
-                                        >
-                                            {listCamera.map((name) => (
-                                                <MenuItem
-                                                    key={name.label}
-                                                    value={name.label}
-                                                    style={getStyles(name, personName, theme)}
-                                                >
-                                                    {name.label}
-                                                </MenuItem>
-                                            ))}
-                                        </Select>
-                                        <FormHelperText style={{ color: `red` }}>
-                                            {
-                                                cameraTruocError ||
-                                                (formSubmitted && chiTietSanPham.cameraTruoc.length === 0 && `
+                <Col span={11}>
+                  <Form.Group className="form-group">
+                    <Form.Label
+                      htmlFor="pwd"
+                      style={{
+                        width: `20%`,
+                        color: "black",
+                        display: `block`,
+                        marginBottom: `12px`,
+                      }}
+                    >
+                      Cổng sạc
+                    </Form.Label>
+                    <Space direction="vertical">
+                      <Segmented
+                        onChange={(even) => handleChangeSegemented(even)}
+                        options={[
+                          {
+                            label: (
+                              <div
+                                style={{
+                                  padding: 4,
+                                }}
+                              >
+                                <Avatar src="data:image/jpeg;base64,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" />
+                                <div>Cổng lightning</div>
+                              </div>
+                            ),
+                            value: "congSac:lightning",
+                          },
+                          {
+                            label: (
+                              <div
+                                style={{
+                                  padding: 4,
+                                }}
+                              >
+                                <Avatar src="data:image/jpeg;base64,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" />
+                                <div>Cổng type c</div>
+                              </div>
+                            ),
+                            value: "congSac:type c",
+                          },
+                          {
+                            label: (
+                              <div
+                                style={{
+                                  padding: 4,
+                                }}
+                              >
+                                <Avatar src="data:image/jpeg;base64,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" />
+                                <div>Cổng micro usb</div>
+                              </div>
+                            ),
+                            value: "congSac:micro usb",
+                          },
+                        ]}
+                      />
+                    </Space>
+                  </Form.Group>
+                </Col>
+              </Row>
+              <Row>
+                <Col span={12} style={{ transform: `translate(36px, 0px)` }}>
+                  <Form.Group className="form-group">
+                    <FontAwesomeIcon
+                      style={{
+                        transform: `translate(92px, 27px)`,
+                        border: `1px solid`,
+                        borderRadius: `50%`,
+                        height: 8,
+                        width: 8,
+                      }}
+                      className="font_awesome_icon_selection_custom"
+                      icon={faPlus}
+                      onClick={showModalFormCamera}
+                    />
+                    <Form.Label
+                      htmlFor="pwd"
+                      style={{
+                        width: `25%`,
+                        color: "black",
+                        display: `block`,
+                        marginBottom: `5%`,
+                      }}
+                    >
+                      Camera trước
+                    </Form.Label>
+                    <Select
+                      error={
+                        (formSubmitted &&
+                          chiTietSanPham.cameraTruoc.length === 0) ||
+                        !!cameraTruocError
+                      }
+                      style={{ width: 340 }}
+                      id="demo-multiple-chip"
+                      multiple
+                      name="cameraTruoc"
+                      value={chiTietSanPham.cameraTruoc}
+                      onChange={handleChangeSelectMultipleFront}
+                      renderValue={(selected) => (
+                        <Box
+                          sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}
+                        >
+                          {selected.map((value) => (
+                            <Chip key={value} label={value} />
+                          ))}
+                        </Box>
+                      )}
+                      MenuProps={MenuProps}
+                    >
+                      {listCamera.map((name) => (
+                        <MenuItem
+                          key={name.label}
+                          value={name.label}
+                          style={getStyles(name, personName, theme)}
+                        >
+                          {name.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    <FormHelperText style={{ color: `red` }}>
+                      {cameraTruocError ||
+                        (formSubmitted &&
+                          chiTietSanPham.cameraTruoc.length === 0 &&
+                          `
                                                      Camera trước không được để trống
-                                                  `)
-                                            }
-                                        </FormHelperText>
-
-                                    </Form.Group>
-                                </Col>
+                                                  `)}
+                    </FormHelperText>
+                  </Form.Group>
+                </Col>
 
                 <Col span={12} style={{ transform: `translate(36px, 0px)` }}>
                   <Form.Group className="form-group">
@@ -1322,138 +1396,186 @@ const ThemSanPham = () => {
                 </Modal>
               </Row>
 
+              <br />
+              <Row style={{ justifyContent: `start` }}>
+                <Col span={8}>
+                  <Form.Group className="form-group">
+                    <FontAwesomeIcon
+                      className="font_awesome_icon_selection_custom"
+                      icon={faPlus}
+                      onClick={showModal}
+                    />
+                    <Modal
+                      title="Thêm hãng"
+                      open={open}
+                      confirmLoading={confirmLoading}
+                      footer={[
+                        <Button
+                          type="danger"
+                          style={{ height: 40, marginRight: `3%` }}
+                          onClick={handleCancel}
+                        >
+                          Huỷ
+                        </Button>,
+                        <Button
+                          type="primary"
+                          loading={loading}
+                          style={{ height: 40, marginRight: `36%` }}
+                          onClick={handleOk}
+                        >
+                          + Thêm mới
+                        </Button>,
+                      ]}
+                    >
+                      <p>
+                        <h2
+                          style={{
+                            marginBottom: `2%`,
+                            textAlign: `center`,
+                            fontSize: `27px`,
+                          }}
+                        >
+                          Thêm hãng
+                        </h2>
 
-                            <br />
-                            <Row style={{ justifyContent: `start` }}>
-                                <Col span={8}>
-                                    <Form.Group className="form-group">
+                        <FormLabel
+                          style={{ marginLeft: `9px`, fontSize: `14px` }}
+                        >
+                          {" "}
+                          Tên hãng{" "}
+                        </FormLabel>
+                        <TextField
+                          label=""
+                          id="fullWidth"
+                          name="nameBrand"
+                          value={nhaSanXuatForm.nameBrand}
+                          onChange={(e) => onInputChangeFormNhaSanXuat(e)}
+                          error={
+                            (formSubmitted && !nhaSanXuatForm.nameBrand) ||
+                            !!nameBrandError
+                          }
+                          helperText={
+                            nameBrandError ||
+                            (formSubmitted &&
+                              !nhaSanXuatForm.nameBrand &&
+                              "Tên hãng không được trống")
+                          }
+                          style={{ width: "100%" }}
+                        />
+                      </p>
+                    </Modal>
 
-                                        <FontAwesomeIcon
-                                            className='font_awesome_icon_selection_custom'
-                                            icon={faPlus} onClick={showModal} />
-                                        <Modal
-                                            title="Thêm nhà sản xuất"
-                                            open={open}
-                                            onOk={handleOk}
-                                            confirmLoading={confirmLoading}
-                                            onCancel={handleCancel}
-                                        >
-                                            <p>
-                                                <Form >
-                                                    <Form.Group className="form-group">
-                                                        <Form.Label htmlFor="email">Mã</Form.Label>
-                                                        <Form.Control type="text"
-                                                            placeholder='Nhập mã '
-                                                            name='maNhaSanXuat'
-                                                            value={maNhaSanXuat}
+                    <FormControl
+                      variant="standard"
+                      sx={{ m: 1, minWidth: 120 }}
+                    >
+                      <InputLabel
+                        id="demo-simple-select-standard-label"
+                        className="inputlabel_of_selection"
+                      >
+                        Hãng
+                      </InputLabel>
+                      <Select
+                        error={
+                          (formSubmitted && !chiTietSanPham.nhaSanXuat) ||
+                          !!nhaSanXuatError
+                        }
+                        className="selection_custom"
+                        labelId="demo-simple-select-standard-label"
+                        id="demo-simple-select-filled"
+                        // value={tenram}
+                        onChange={handleChange}
+                      >
+                        {listNhaSanXuat.map((item, index) => {
+                          return (
+                            <MenuItem value={item.value}>{item.label}</MenuItem>
+                          );
+                        })}
+                      </Select>
+                      <FormHelperText style={{ color: `red` }}>
+                        {nhaSanXuatError ||
+                          (formSubmitted &&
+                            !chiTietSanPham.nhaSanXuat &&
+                            `
+                                                  hãng không được để trống
+                                                  `)}
+                      </FormHelperText>
+                    </FormControl>
+                  </Form.Group>
+                </Col>
 
-                                                            id="maNhaSanXuat" />
-                                                    </Form.Group>
-                                                    <Form.Group className="form-group">
-                                                        <Form.Label htmlFor="pwd">Tên nhà sản xuất</Form.Label>
-                                                        <Form.Control type="text"
-                                                            placeholder='Nhập tên nhà sản xuất)'
-                                                            name='tenNhaSanXuat'
-                                                            value={tenNhaSanXuat}
-                                                            onChange={(e) => onInputChangeFormNhaSanXuat(e)}
-                                                            id="ten`" />
-                                                    </Form.Group>
-                                                </Form>
-                                            </p>
-                                        </Modal>
+                <Col span={8}>
+                  <Form.Group className="form-group">
+                    <FontAwesomeIcon
+                      className="font_awesome_icon_selection_custom"
+                      icon={faPlus}
+                      onClick={showModalFormChip}
+                    />
+                    <Modal
+                      title="Thêm chip"
+                      open={openFormChip}
+                      onOk={handleOkFormChip}
+                      confirmLoading={confirmLoading}
+                      onCancel={handleCancel}
+                    >
+                      <p>
+                        <Form>
+                          <Form.Group className="form-group">
+                            <Form.Label htmlFor="email">Mã</Form.Label>
+                            <Form.Control
+                              type="text"
+                              placeholder="Nhập mã sản phẩm"
+                              name="maNhaSanXuat"
+                              value={maChip}
+                              id="maNhaSanXuat"
+                            />
+                          </Form.Group>
+                          <Form.Group className="form-group">
+                            <Form.Label htmlFor="pwd">Tên chip</Form.Label>
+                            <Form.Control
+                              type="text"
+                              placeholder="Nhập chip"
+                              name="tenChip"
+                              value={tenChip}
+                              onChange={(e) => onInputChangeFormChip(e)}
+                              id="tenChip`"
+                            />
+                          </Form.Group>
+                        </Form>
+                      </p>
+                    </Modal>
 
-                                        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-                                            <InputLabel id="demo-simple-select-standard-label" className='inputlabel_of_selection' >Nhà sản xuất</InputLabel>
-                                            <Select
-                                                error={(formSubmitted && !chiTietSanPham.nhaSanXuat) || !!nhaSanXuatError}
-                                                className='selection_custom'
-                                                labelId="demo-simple-select-standard-label"
-                                                id="demo-simple-select-filled"
-                                                // value={tenram}
-                                                onChange={handleChange}>
-                                                {
-                                                    listNhaSanXuat.map((item, index) => {
-                                                        return (
-                                                            <MenuItem value={item.value}>{item.label}</MenuItem>
-                                                        )
-                                                    })
-                                                }
-
-                                            </Select>
-                                            <FormHelperText style={{ color: `red` }}>
-                                                {
-                                                    nhaSanXuatError ||
-                                                    (formSubmitted && !chiTietSanPham.nhaSanXuat && `
-                                                  Nhà sản xuất không được để trống
-                                                  `)
-                                                }
-                                            </FormHelperText>
-
-                                        </FormControl>
-
-                                    </Form.Group>
-                                </Col>
-
-                                <Col span={8}>
-
-                                    <Form.Group className="form-group">
-                                        <FontAwesomeIcon
-                                            className='font_awesome_icon_selection_custom'
-                                            icon={faPlus} onClick={showModalFormChip} />
-                                        <Modal
-                                            title="Thêm chip"
-                                            open={openFormChip}
-                                            onOk={handleOkFormChip}
-                                            confirmLoading={confirmLoading}
-                                            onCancel={handleCancel}
-                                        >
-                                            <p>
-                                                <Form >
-                                                    <Form.Group className="form-group">
-                                                        <Form.Label htmlFor="email">Mã</Form.Label>
-                                                        <Form.Control type="text"
-                                                            placeholder='Nhập mã sản phẩm'
-                                                            name='maNhaSanXuat'
-                                                            value={maChip}
-
-                                                            id="maNhaSanXuat" />
-                                                    </Form.Group>
-                                                    <Form.Group className="form-group">
-                                                        <Form.Label htmlFor="pwd">Tên chip</Form.Label>
-                                                        <Form.Control type="text"
-                                                            placeholder='Nhập chip'
-                                                            name='tenChip'
-                                                            value={tenChip}
-                                                            onChange={(e) => onInputChangeFormChip(e)}
-                                                            id="tenChip`" />
-                                                    </Form.Group>
-                                                </Form>
-                                            </p>
-                                        </Modal>
-
-                                        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-                                            <InputLabel id="demo-simple-select-standard-label-chip" className='inputlabel_of_selection' >Chip</InputLabel>
-                                            <Select
-                                                error={(formSubmitted && !chiTietSanPham.chip) || !!chipError}
-                                                className='selection_custom'
-                                                labelId="demo-simple-select-standard-label-chip"
-                                                id="demo-simple-select-filled"
-                                                // value={tenram}
-                                                onChange={handleChange}>
-                                                {
-                                                    listChip.map((item, index) => {
-                                                        return (
-                                                            <MenuItem value={item.value}>{item.label}</MenuItem>
-                                                        )
-                                                    })
-                                                }
-
-
-                                            </Select>
-                                            <FormHelperText style={{ color: `red` }}>
-                                                {
-                                                    chipError ||
-                                                    (formSubmitted && !chiTietSanPham.chip && `
+                    <FormControl
+                      variant="standard"
+                      sx={{ m: 1, minWidth: 120 }}
+                    >
+                      <InputLabel
+                        id="demo-simple-select-standard-label-chip"
+                        className="inputlabel_of_selection"
+                      >
+                        Chip
+                      </InputLabel>
+                      <Select
+                        error={
+                          (formSubmitted && !chiTietSanPham.chip) || !!chipError
+                        }
+                        className="selection_custom"
+                        labelId="demo-simple-select-standard-label-chip"
+                        id="demo-simple-select-filled"
+                        // value={tenram}
+                        onChange={handleChange}
+                      >
+                        {listChip.map((item, index) => {
+                          return (
+                            <MenuItem value={item.value}>{item.label}</MenuItem>
+                          );
+                        })}
+                      </Select>
+                      <FormHelperText style={{ color: `red` }}>
+                        {chipError ||
+                          (formSubmitted &&
+                            !chiTietSanPham.chip &&
+                            `
                                                   Chip không được để trống
                                                   `)}
                       </FormHelperText>
@@ -1461,215 +1583,272 @@ const ThemSanPham = () => {
                   </Form.Group>
                 </Col>
 
-                                <Col span={8}>
-                                    <Form.Group className="form-group">
-                                        <FontAwesomeIcon
-                                            className='font_awesome_icon_selection_custom'
-                                            icon={faPlus} onClick={showModalFormDongSanPham} />
-                                        <Modal
-                                            title="Thêm dòng sản phẩm"
-                                            open={openFormDongSanPham}
-                                            onOk={handleOkFormDongSanPham}
-                                            confirmLoading={confirmLoading}
-                                            onCancel={handleCancel}
-                                        >
-                                            <p>
-                                                <Form >
-                                                    <Form.Group className="form-group">
-                                                        <Form.Label htmlFor="email">Mã</Form.Label>
-                                                        <Form.Control type="text"
-                                                            placeholder='Nhập mã dòng sản phẩm'
-                                                            name='maDongSanPham'
-                                                            value={maDongSanPham}
-                                                            onChange={(e) => onInputChangeFormDongSanPham(e)}
-                                                            id="maDongSanPham" />
-                                                    </Form.Group>
-                                                    <Form.Group className="form-group">
-                                                        <Form.Label htmlFor="pwd">Tên dòng sản phẩm</Form.Label>
-                                                        <Form.Control type="text"
-                                                            placeholder='Nhập tên nhà sản xuất)'
-                                                            name='tenDongSanPham'
-                                                            value={tenDongSanPham}
-                                                            onChange={(e) => onInputChangeFormDongSanPham(e)}
-                                                            id="ten`" />
-                                                    </Form.Group>
-                                                </Form>
-                                            </p>
-                                        </Modal>
+                <Col span={8}>
+                  <Form.Group className="form-group">
+                    <FontAwesomeIcon
+                      className="font_awesome_icon_selection_custom"
+                      icon={faPlus}
+                      onClick={showModalFormDongSanPham}
+                    />
+                    <Modal
+                      title="Thêm dòng sản phẩm"
+                      open={openFormDongSanPham}
+                      onOk={handleOkFormDongSanPham}
+                      confirmLoading={confirmLoading}
+                      onCancel={handleCancel}
+                    >
+                      <p>
+                        <Form>
+                          <Form.Group className="form-group">
+                            <Form.Label htmlFor="email">Mã</Form.Label>
+                            <Form.Control
+                              type="text"
+                              placeholder="Nhập mã dòng sản phẩm"
+                              name="maDongSanPham"
+                              value={maDongSanPham}
+                              onChange={(e) => onInputChangeFormDongSanPham(e)}
+                              id="maDongSanPham"
+                            />
+                          </Form.Group>
+                          <Form.Group className="form-group">
+                            <Form.Label htmlFor="pwd">
+                              Tên dòng sản phẩm
+                            </Form.Label>
+                            <Form.Control
+                              type="text"
+                              placeholder="Nhập tên nhà sản xuất)"
+                              name="tenDongSanPham"
+                              value={tenDongSanPham}
+                              onChange={(e) => onInputChangeFormDongSanPham(e)}
+                              id="ten`"
+                            />
+                          </Form.Group>
+                        </Form>
+                      </p>
+                    </Modal>
 
-                                        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-                                            <InputLabel id="demo-simple-select-standard-label-chip" className='inputlabel_of_selection' >Dòng sản phẩm</InputLabel>
-                                            <Select
-                                                error={(formSubmitted && !chiTietSanPham.dongSanPham) || !!dongSanPhamError}
-                                                className='selection_custom'
-                                                labelId="demo-simple-select-standard-label-chip"
-                                                id="demo-simple-select-filled"
-                                                // value={tenram}
-                                                onChange={handleChange}>
-                                                {
-                                                    listDongSanPham.map((item, index) => {
-                                                        return (
-                                                            <MenuItem value={item.value}>{item.label}</MenuItem>
-                                                        )
-                                                    })
-                                                }
-                                            </Select>
-                                            <FormHelperText style={{ color: `red` }}>
-                                                {
-                                                    dongSanPhamError ||
-                                                    (formSubmitted && !chiTietSanPham.dongSanPham && `
+                    <FormControl
+                      variant="standard"
+                      sx={{ m: 1, minWidth: 120 }}
+                    >
+                      <InputLabel
+                        id="demo-simple-select-standard-label-chip"
+                        className="inputlabel_of_selection"
+                      >
+                        Dòng sản phẩm
+                      </InputLabel>
+                      <Select
+                        error={
+                          (formSubmitted && !chiTietSanPham.dongSanPham) ||
+                          !!dongSanPhamError
+                        }
+                        className="selection_custom"
+                        labelId="demo-simple-select-standard-label-chip"
+                        id="demo-simple-select-filled"
+                        // value={tenram}
+                        onChange={handleChange}
+                      >
+                        {listDongSanPham.map((item, index) => {
+                          return (
+                            <MenuItem value={item.value}>{item.label}</MenuItem>
+                          );
+                        })}
+                      </Select>
+                      <FormHelperText style={{ color: `red` }}>
+                        {dongSanPhamError ||
+                          (formSubmitted &&
+                            !chiTietSanPham.dongSanPham &&
+                            `
                                                     Dòng sản phẩm không được để trống
-                                                  `)
-                                                }
-                                            </FormHelperText>
-                                        </FormControl>
-                                    </Form.Group>
-                                </Col>
+                                                  `)}
+                      </FormHelperText>
+                    </FormControl>
+                  </Form.Group>
+                </Col>
+              </Row>
+              <br />
+              <Row style={{ color: "black" }}>
+                <Col span={8}>
+                  <Form.Group className="form-group">
+                    <FontAwesomeIcon
+                      className="font_awesome_icon_selection_custom"
+                      icon={faPlus}
+                      onClick={showModalFormmanHinh}
+                    />
+                    <Modal
+                      title="Thêm màn hình"
+                      open={openFormmanHinh}
+                      onOk={handleOkFormmanHinh}
+                      confirmLoading={confirmLoading}
+                      onCancel={handleCancel}
+                    >
+                      <p>
+                        <Form>
+                          <Form.Group className="form-group">
+                            <Form.Label htmlFor="email">Mã</Form.Label>
+                            <Form.Control
+                              type="text"
+                              name="mamanHinh"
+                              value={mamanHinh}
+                              id="mamanHinh"
+                            />
+                          </Form.Group>
+                          <Form.Group className="form-group">
+                            <Form.Label htmlFor="pwd">
+                              Kích thước màn hình:
+                            </Form.Label>
+                            <Form.Control
+                              type="text"
+                              placeholder="Nhập kích cỡ màn hình"
+                              name="tenmanHinh"
+                              value={tenmanHinh}
+                              onChange={(e) => onInputChangeFormmanHinh(e)}
+                              id="ten`"
+                            />
+                          </Form.Group>
+                        </Form>
+                      </p>
+                    </Modal>
 
-                            </Row>
-                            <br />
-                            <Row style={{ color: 'black' }}>
-                                <Col span={8} >
-                                    <Form.Group className="form-group">
-                                        <FontAwesomeIcon
-                                            className='font_awesome_icon_selection_custom'
-                                            icon={faPlus} onClick={showModalFormmanHinh} />
-                                        <Modal
-                                            title="Thêm màn hình"
-                                            open={openFormmanHinh}
-                                            onOk={handleOkFormmanHinh}
-                                            confirmLoading={confirmLoading}
-                                            onCancel={handleCancel}
-                                        >
-                                            <p>
-                                                <Form >
-                                                    <Form.Group className="form-group">
-                                                        <Form.Label htmlFor="email">Mã</Form.Label>
-                                                        <Form.Control type="text"
-
-                                                            name='mamanHinh'
-                                                            value={mamanHinh}
-                                                            id="mamanHinh" />
-                                                    </Form.Group>
-                                                    <Form.Group className="form-group">
-                                                        <Form.Label htmlFor="pwd">Kích thước màn hình:</Form.Label>
-                                                        <Form.Control type="text"
-                                                            placeholder='Nhập kích cỡ màn hình'
-                                                            name='tenmanHinh'
-                                                            value={tenmanHinh}
-                                                            onChange={(e) => onInputChangeFormmanHinh(e)}
-                                                            id="ten`" />
-                                                    </Form.Group>
-                                                </Form>
-                                            </p>
-                                        </Modal>
-
-                                        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-                                            <InputLabel id="demo-simple-select-standard-label-chip" className='inputlabel_of_selection' >Màn hình</InputLabel>
-                                            <Select
-                                                error={(formSubmitted && !chiTietSanPham.manHinh) || !!manHinhError}
-                                                helperText={
-                                                    manHinhError ||
-                                                    (formSubmitted && !chiTietSanPham.manHinh && "Màn hình không được để trống")
-                                                }
-                                                className='selection_custom'
-                                                labelId="demo-simple-select-standard-label-chip"
-                                                id="demo-simple-select-filled"
-                                                // value={tenram}
-                                                onChange={handleChange}>
-                                                {
-                                                    listManHinh.map((item, index) => {
-                                                        return (
-                                                            <MenuItem value={item.value}>{item.label}</MenuItem>
-                                                        )
-                                                    })
-                                                }
-
-
-                                            </Select>
-                                            <FormHelperText style={{ color: `red` }}>
-                                                {
-                                                    manHinhError ||
-                                                    (formSubmitted && !chiTietSanPham.manHinh && `
+                    <FormControl
+                      variant="standard"
+                      sx={{ m: 1, minWidth: 120 }}
+                    >
+                      <InputLabel
+                        id="demo-simple-select-standard-label-chip"
+                        className="inputlabel_of_selection"
+                      >
+                        Màn hình
+                      </InputLabel>
+                      <Select
+                        error={
+                          (formSubmitted && !chiTietSanPham.manHinh) ||
+                          !!manHinhError
+                        }
+                        helperText={
+                          manHinhError ||
+                          (formSubmitted &&
+                            !chiTietSanPham.manHinh &&
+                            "Màn hình không được để trống")
+                        }
+                        className="selection_custom"
+                        labelId="demo-simple-select-standard-label-chip"
+                        id="demo-simple-select-filled"
+                        // value={tenram}
+                        onChange={handleChange}
+                      >
+                        {listManHinh.map((item, index) => {
+                          return (
+                            <MenuItem value={item.value}>{item.label}</MenuItem>
+                          );
+                        })}
+                      </Select>
+                      <FormHelperText style={{ color: `red` }}>
+                        {manHinhError ||
+                          (formSubmitted &&
+                            !chiTietSanPham.manHinh &&
+                            `
                                                   Màn hình không được để trống
-                                                  `)
-                                                }
-                                            </FormHelperText>
-                                        </FormControl>
+                                                  `)}
+                      </FormHelperText>
+                    </FormControl>
+                  </Form.Group>
+                </Col>
+                <Col span={8}>
+                  <Form.Group className="form-group">
+                    <FontAwesomeIcon
+                      className="font_awesome_icon_selection_custom"
+                      icon={faPlus}
+                      onClick={showModalFormpin}
+                    />
+                    <Modal
+                      title="Thêm dung lượng pin"
+                      open={openFormpin}
+                      onOk={handleOkFormpin}
+                      confirmLoading={confirmLoading}
+                      onCancel={handleCancel}
+                    >
+                      <p>
+                        <Form>
+                          <Form.Group className="form-group">
+                            <Form.Label htmlFor="email">Mã pin</Form.Label>
+                            <Form.Control
+                              type="text"
+                              placeholder="Nhập pin"
+                              name="mapin"
+                              value={mapin}
+                              id="mapin"
+                            />
+                          </Form.Group>
+                          <Form.Group className="form-group">
+                            <Form.Label htmlFor="pwd">
+                              Dung luợng pin
+                            </Form.Label>
+                            <Form.Control
+                              type="text"
+                              placeholder="Nhập dung lượng pin)"
+                              name="tenpin"
+                              value={tenpin}
+                              onChange={(e) => onInputChangeFormpin(e)}
+                              id="ten`"
+                            />
+                          </Form.Group>
+                        </Form>
+                      </p>
+                    </Modal>
 
-                                    </Form.Group>
-                                </Col>
-                                <Col span={8}>
-                                    <Form.Group className="form-group">
-                                        <FontAwesomeIcon
-                                            className='font_awesome_icon_selection_custom'
-                                            icon={faPlus} onClick={showModalFormpin} />
-                                        <Modal
-                                            title="Thêm dung lượng pin"
-                                            open={openFormpin}
-                                            onOk={handleOkFormpin}
-                                            confirmLoading={confirmLoading}
-                                            onCancel={handleCancel}
-                                        >
-                                            <p>
-                                                <Form >
-                                                    <Form.Group className="form-group">
-                                                        <Form.Label htmlFor="email">Mã pin</Form.Label>
-                                                        <Form.Control type="text"
-                                                            placeholder='Nhập pin'
-                                                            name='mapin'
-                                                            value={mapin}
-
-                                                            id="mapin" />
-                                                    </Form.Group>
-                                                    <Form.Group className="form-group">
-                                                        <Form.Label htmlFor="pwd">Dung luợng pin</Form.Label>
-                                                        <Form.Control type="text"
-                                                            placeholder='Nhập dung lượng pin)'
-                                                            name='tenpin'
-                                                            value={tenpin}
-                                                            onChange={(e) => onInputChangeFormpin(e)}
-                                                            id="ten`" />
-                                                    </Form.Group>
-                                                </Form>
-                                            </p>
-                                        </Modal>
-
-                                        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-                                            <InputLabel id="demo-simple-select-standard-label-pin" className='inputlabel_of_selection' >Pin</InputLabel>
-                                            <Select
-                                                error={(formSubmitted && !chiTietSanPham.pin) || !!pinError}
-                                                className='selection_custom'
-                                                labelId="demo-simple-select-standard-label-pin"
-                                                id="demo-simple-select-filled"
-                                                // value={tenram}
-                                                onChange={handleChange}>
-                                                {
-                                                    listPin.map((item, index) => {
-                                                        return (
-                                                            <MenuItem value={item.value}>{item.label}</MenuItem>
-                                                        )
-                                                    })
-                                                }
-
-
-                                            </Select>
-                                            <FormHelperText style={{ color: `red` }}>
-                                                {
-                                                    pinError ||
-                                                    (formSubmitted && !chiTietSanPham.pin && `
+                    <FormControl
+                      variant="standard"
+                      sx={{ m: 1, minWidth: 120 }}
+                    >
+                      <InputLabel
+                        id="demo-simple-select-standard-label-pin"
+                        className="inputlabel_of_selection"
+                      >
+                        Pin
+                      </InputLabel>
+                      <Select
+                        error={
+                          (formSubmitted && !chiTietSanPham.pin) || !!pinError
+                        }
+                        className="selection_custom"
+                        labelId="demo-simple-select-standard-label-pin"
+                        id="demo-simple-select-filled"
+                        // value={tenram}
+                        onChange={handleChange}
+                      >
+                        {listPin.map((item, index) => {
+                          return (
+                            <MenuItem value={item.value}>{item.label}</MenuItem>
+                          );
+                        })}
+                      </Select>
+                      <FormHelperText style={{ color: `red` }}>
+                        {pinError ||
+                          (formSubmitted &&
+                            !chiTietSanPham.pin &&
+                            `
                                                      Pin không được để trống
-                                                  `)
-                                                }
-                                            </FormHelperText>
-                                        </FormControl>
-                                    </Form.Group>
-                                </Col>
-                            </Row>
-                            <br />
-                            <Button variant="contained" endIcon={<ArrowRightOutlined />} style={{ width: `14%`, fontSize: `89%`, transform: `translateX(280%)`, marginBottom: `2%` }} onClick={() => handleClickStepTwo()}>
-                                Tiếp theo
-                            </Button>
+                                                  `)}
+                      </FormHelperText>
+                    </FormControl>
+                  </Form.Group>
+                </Col>
+              </Row>
+              <br />
+              <Button
+                variant="contained"
+                endIcon={<ArrowRightOutlined />}
+                style={{
+                  width: `15%`,
+                  fontSize: `89%`,
+                  transform: `translateX(280%)`,
+                  marginBottom: `2%`,
+                }}
+                onClick={() => handleClickStepTwo()}
+              >
+                Tiếp theo
+              </Button>
 
               <br />
             </div>
@@ -1751,33 +1930,193 @@ const ThemSanPham = () => {
                                     //     }
                                     // }
 
-                                                                            return (
-                                                                                <Card
-                                                                                    title={title_custom}
-                                                                                    bordered={false}
-                                                                                    style={{
-                                                                                        width: '100%', marginBottom: `3%`, border: `1px solid ${item.mauSac}`
-                                                                                    }}>
-                                                                                    <p>
-                                                                                        <CloseOutlined className='button_exit_form_config' onClick={(event) => handleClickExitForm(item.id)} />
-                                                                                        <Form.Label htmlFor="pwd" style={{ width: 150, color: 'black', transform: `translate(-26px, -1px)` }} >Thêm ảnh</Form.Label>
-                                                                                        <div style={{ display: 'flex', justifyContent: 'center', height: 100 }}>
-                                                                                            <div class="image-upload">
-                                                                                                {urlImage.get(`image1${index}`) ?
-                                                                                                    <FontAwesomeIcon style={{ color: `${pinImage.get(`image1${index}`) == true ? 'rgb(5 128 215)' : '#1b1b1b6b'}` }} className='icon_pin_image' icon={faThumbtack} onClick={(event) => clickPinImage(event, `image1${index}`)} />
-                                                                                                    : <FontAwesomeIcon className='icon_pin_image' style={{ border: 0, color: 'white' }} icon={faThumbtack} />
-                                                                                                }
-                                                                                                <label for={id1}>
-                                                                                                    <div class="upload-icon" style={{ backgroundImage: `url(${urlImage.get(`image1${index}`)}`, backgroundSize: 'cover' }}>
-                                                                                                        {urlImage.get(`image1${index}`) ?
-                                                                                                            <FontAwesomeIcon className='upload-icon-minus' icon={faMinus} onClick={(event) => confirmDelete(event, `image1${index}`)} />
-                                                                                                            :
-                                                                                                            <FontAwesomeIcon className='upload-icon-img' icon={faPlus} />
-                                                                                                        }
-                                                                                                    </div>
-                                                                                                </label>
-                                                                                                <input id={id1} type="file" onChange={(event) => handleFileChangeImage(event, `image1${index}`)} />
-                                                                                            </div>
+                                    return (
+                                      <Card
+                                        title={title_custom}
+                                        bordered={false}
+                                        style={{
+                                          width: "100%",
+                                          marginBottom: `3%`,
+                                          border: `1px solid ${item.mauSac}`,
+                                        }}
+                                      >
+                                        <p>
+                                          <CloseOutlined
+                                            className="button_exit_form_config"
+                                            onClick={(event) =>
+                                              handleClickExitForm(item.id)
+                                            }
+                                          />
+
+                                          {/* price of products */}
+                                          <Row>
+                                            <Col span={4}>
+                                              <Form.Label
+                                                htmlFor="pwd"
+                                                style={{
+                                                  width: 150,
+                                                  color: "black",
+                                                }}
+                                              >
+                                                Đơn giá
+                                              </Form.Label>
+                                            </Col>
+                                            <Col span={20}>
+                                              <CurrencyInput
+                                                id="input-example"
+                                                name="input-name"
+                                                suffix=" VND"
+                                                className=" form-control d-inline-block"
+                                                style={{ width: `100%` }}
+                                                placeholder="Vui lòng nhập số tiền "
+                                                defaultValue={1000}
+                                                decimalsLimit={2}
+                                                onValueChange={(
+                                                  value,
+                                                  name
+                                                ) => {
+                                                  item.donGia = value;
+                                                }}
+                                              />
+                                            </Col>
+                                          </Row>
+
+                                          {/* quantity of products */}
+                                          <Row style={{ marginTop: 20 }}>
+                                            <Col span={4}>
+                                              <Form.Label
+                                                htmlFor="pwd"
+                                                style={{
+                                                  width: 150,
+                                                  color: "black",
+                                                }}
+                                              >
+                                                {" "}
+                                                Số lượng{" "}
+                                              </Form.Label>
+                                            </Col>
+                                            <Col span={20}>
+                                              <Form.Control
+                                                type="number"
+                                                className=" form-control d-inline-block"
+                                                style={{ width: `50%` }}
+                                                placeholder="Nhập số lượng sản phẩm"
+                                                name=""
+                                                onBlur={(value) => {
+                                                  item.soLuong =
+                                                    value.target.value;
+                                                }}
+                                                id="quantity`"
+                                              />
+                                              <Button
+                                                className="btn-them-tu-file"
+                                                variant="contained"
+                                                style={{
+                                                  height: "39px",
+                                                  width: "auto",
+                                                  fontSize: "15px",
+                                                  marginLeft: 20,
+                                                  transform: `translateY(-3px)`,
+                                                }}
+                                              >
+                                                {/* <ExcelExportHelper data={listMauSac} /> */}{" "}
+                                                + Thêm imei
+                                              </Button>
+                                            </Col>
+                                          </Row>
+
+                                          <Form.Label
+                                            htmlFor="pwd"
+                                            style={{
+                                              width: 150,
+                                              color: "black",
+                                              transform: `translate(0px, 24px)`,
+                                            }}
+                                          >
+                                            Thêm ảnh
+                                          </Form.Label>
+                                          <div
+                                            style={{
+                                              display: "flex",
+                                              justifyContent: "center",
+                                              height: 100,
+                                            }}
+                                          >
+                                            <div class="image-upload">
+                                              {urlImage.get(
+                                                `image1${index}`
+                                              ) ? (
+                                                <FontAwesomeIcon
+                                                  style={{
+                                                    color: `${
+                                                      pinImage.get(
+                                                        `image1${index}`
+                                                      ) == true
+                                                        ? "rgb(5 128 215)"
+                                                        : "#1b1b1b6b"
+                                                    }`,
+                                                  }}
+                                                  className="icon_pin_image"
+                                                  icon={faThumbtack}
+                                                  onClick={(event) =>
+                                                    clickPinImage(
+                                                      event,
+                                                      `image1${index}`
+                                                    )
+                                                  }
+                                                />
+                                              ) : (
+                                                <FontAwesomeIcon
+                                                  className="icon_pin_image"
+                                                  style={{
+                                                    border: 0,
+                                                    color: "white",
+                                                  }}
+                                                  icon={faThumbtack}
+                                                />
+                                              )}
+                                              <label for={id1}>
+                                                <div
+                                                  class="upload-icon"
+                                                  style={{
+                                                    backgroundImage: `url(${urlImage.get(
+                                                      `image1${index}`
+                                                    )}`,
+                                                    backgroundSize: "cover",
+                                                  }}
+                                                >
+                                                  {urlImage.get(
+                                                    `image1${index}`
+                                                  ) ? (
+                                                    <FontAwesomeIcon
+                                                      className="upload-icon-minus"
+                                                      icon={faMinus}
+                                                      onClick={(event) =>
+                                                        confirmDelete(
+                                                          event,
+                                                          `image1${index}`
+                                                        )
+                                                      }
+                                                    />
+                                                  ) : (
+                                                    <FontAwesomeIcon
+                                                      className="upload-icon-img"
+                                                      icon={faPlus}
+                                                    />
+                                                  )}
+                                                </div>
+                                              </label>
+                                              <input
+                                                id={id1}
+                                                type="file"
+                                                onChange={(event) =>
+                                                  handleFileChangeImage(
+                                                    event,
+                                                    `image1${index}`
+                                                  )
+                                                }
+                                              />
+                                            </div>
 
                                             <div class="image-upload">
                                               {urlImage.get(
@@ -2086,98 +2425,75 @@ const ThemSanPham = () => {
                                         </p>
                                         {/* nhập số lượng và giá của từng sp */}
 
-                                                                                    <Row>
+                                        <Row>
+                                          {/* modal quantity */}
 
-                                                                                        <Col span={12}>
-                                                                                            <Form.Group className="form-group">
+                                          <Modal
+                                            title="Thêm imei"
+                                            open={openFormQuantityProduct}
+                                            onOk={handleOk}
+                                            confirmLoading={confirmLoading}
+                                            onCancel={handleCancel}
+                                          >
+                                            <p>
+                                              <Form>
+                                                <Form.Group className="form-group">
+                                                  {item.imei &&
+                                                    item.imei.map(
+                                                      (value, index) => {
+                                                        return (
+                                                            <></>
+                                                        //   <Row>
+                                                        //     <Col span="8">
+                                                        //       <Form.Label htmlFor="stt">
+                                                        //         Imei số {index}
+                                                        //       </Form.Label>
+                                                        //     </Col>
+                                                        //     <Col span="16">
+                                                        //       <Form.Control
+                                                        //         type="text"
+                                                        //         placeholder="Nhập imei "
+                                                        //         name="maNhaSanXuat"
+                                                        //         value={
+                                                        //           maNhaSanXuat
+                                                        //         }
+                                                        //         id="maNhaSanXuat"
+                                                        //       />
+                                                        //     </Col>
+                                                        //   </Row>
+                                                        );
+                                                      }
+                                                    )}
+                                                </Form.Group>
+                                              </Form>
+                                            </p>
+                                          </Modal>
 
-                                                                                                <Form.Label htmlFor="pwd" style={{ width: 150, color: 'black' }} >Số lượng</Form.Label>
-                                                                                                <Form.Control type="number"
-                                                                                                    className=" form-control d-inline-block"
-                                                                                                    style={{ width: 400 }}
-                                                                                                    placeholder='Nhập số lượng sản phẩm'
-                                                                                                    name=''
-                                                                                                    onBlur={
-                                                                                                        (value) => {
-                                                                                                            item.soLuong = value.target.value
-                                                                                                        }
-                                                                                                    }
-                                                                                                    id="quantity`" />
-                                                                                            </Form.Group>
-                                                                                        </Col>
-
-                                                                                        {/* modal quantity */}
-
-                                                                                        <Modal
-                                                                                            title="Thêm imei"
-                                                                                            open={openFormQuantityProduct}
-                                                                                            onOk={handleOk}
-                                                                                            confirmLoading={confirmLoading}
-                                                                                            onCancel={handleCancel}
-                                                                                        >
-                                                                                            <p>
-                                                                                                <Form >
-                                                                                                    <Form.Group className="form-group">
-                                                                                                        {
-                                                                                                            item.imei && item.imei.map((value, index) => {
-                                                                                                                return (<Row>
-                                                                                                                    <Col span="8">
-                                                                                                                        <Form.Label htmlFor="stt">Imei số {index}</Form.Label>
-                                                                                                                    </Col>
-                                                                                                                    <Col span="16">
-                                                                                                                        <Form.Control type="text"
-                                                                                                                            placeholder='Nhập imei '
-                                                                                                                            name='maNhaSanXuat'
-                                                                                                                            value={maNhaSanXuat}
-
-                                                                                                                            id="maNhaSanXuat" />
-                                                                                                                    </Col>
-                                                                                                                </Row>
-                                                                                                                )
-                                                                                                            })
-                                                                                                        }
-
-                                                                                                    </Form.Group>
-                                                                                                </Form>
-                                                                                            </p>
-                                                                                        </Modal>
-
-
-                                                                                        <Col span={12}>
-                                                                                            <Form.Group className="form-group">
-
-                                                                                                <Form.Label htmlFor="pwd" style={{ width: 150, color: 'black' }} >Đơn giá </Form.Label>
-
-                                                                                                <CurrencyInput
-                                                                                                    id="input-example"
-                                                                                                    name="input-name"
-                                                                                                    suffix=" VND"
-                                                                                                    className=" form-control d-inline-block"
-                                                                                                    style={{ width: 400 }}
-                                                                                                    placeholder="Vui lòng nhập số tiền "
-                                                                                                    defaultValue={1000}
-                                                                                                    decimalsLimit={2}
-                                                                                                    onValueChange={
-                                                                                                        (value, name) => {
-                                                                                                            item.donGia = value
-                                                                                                        }
-                                                                                                    }
-                                                                                                />
-
-                                                                                            </Form.Group>
-                                                                                        </Col>
-                                                                                    </Row>
-                                                                                    <br />
-                                                                                    {/* table */}
-                                                                                </Card>
-                                                                            )
-                                                                        }
-                                                                        )
-                                                                        }
-                                                                        <Button variant="outlined" style={{ fontSize: 16, fontWeight: 600, marginLeft: `40%`, marginBottom: `1%` }} onClick={showModalFormCauHinh}>
-                                                                            <FontAwesomeIcon style={{ marginRight: 10 }}
-                                                                                icon={faPlus} /> Thêm cấu hình
-                                                                        </Button>
+                                          <Col span={12}>
+                                            <Form.Group className="form-group"></Form.Group>
+                                          </Col>
+                                        </Row>
+                                        <br />
+                                        {/* table */}
+                                      </Card>
+                                    );
+                                  })}
+                                  <Button
+                                    variant="outlined"
+                                    style={{
+                                      fontSize: 16,
+                                      fontWeight: 600,
+                                      marginLeft: `40%`,
+                                      marginBottom: `1%`,
+                                    }}
+                                    onClick={showModalFormCauHinh}
+                                  >
+                                    <FontAwesomeIcon
+                                      style={{ marginRight: 10 }}
+                                      icon={faPlus}
+                                    />{" "}
+                                    Thêm cấu hình
+                                  </Button>
 
                                   <Divider style={{ marginTop: `2%` }} />
 
@@ -2194,135 +2510,211 @@ const ThemSanPham = () => {
                                     Trở lại
                                   </Button>
 
-                                                                        <Button variant="contained" color="success" endIcon={<CheckOutlined />} style={{
-                                                                            transform: `translate(404%, -1%)`,
-                                                                            fontSize: `16px`,
-                                                                            marginBottom: `2%`
-                                                                        }}
-                                                                            onClick={() => handleClickStepThree()}>
-                                                                            Hoàn thành
-                                                                        </Button>
+                                  <Button
+                                    variant="contained"
+                                    color="success"
+                                    endIcon={<CheckOutlined />}
+                                    style={{
+                                      transform: `translate(358%, -1%)`,
+                                      fontSize: `16px`,
+                                      marginBottom: `2%`,
+                                    }}
+                                    onClick={() => handleClickStepThree()}
+                                  >
+                                    Hoàn thành
+                                  </Button>
+                                </>
+                              )}
+                              {/* modal */}
+                              <Modal
+                                title="Chọn cấu hình"
+                                style={{ width: "700" }}
+                                open={openFormCauHinh}
+                                onOk={handleOkFormCauHinh}
+                                confirmLoading={confirmLoading}
+                                onCancel={handleCancelFromCauHinh}
+                              >
+                                <div>
+                                  <div style={{ marginBottom: `3%` }}>
+                                    {hiddenConfig ? (
+                                      <>
+                                        <Row style={{ marginTop: "30" }}>
+                                          <Col span={8}>
+                                            <Form.Group className="form-group">
+                                              <FontAwesomeIcon
+                                                className="font_awesome_icon_selection_custom"
+                                                icon={faPlus}
+                                                onClick={showModalFormrom}
+                                              />
+                                              <Modal
+                                                title="Thêm rom"
+                                                open={openFormrom}
+                                                confirmLoading={confirmLoading}
+                                                footer={[
+                                                  <Button
+                                                    type="danger"
+                                                    style={{
+                                                      height: 40,
+                                                      marginRight: `3%`,
+                                                    }}
+                                                    onClick={handleCancel}
+                                                  >
+                                                    Huỷ
+                                                  </Button>,
+                                                  <Button
+                                                    type="primary"
+                                                    loading={loading}
+                                                    style={{
+                                                      height: 40,
+                                                      marginRight: `36%`,
+                                                    }}
+                                                    onClick={handleOkFormrom}
+                                                  >
+                                                    + Thêm mới
+                                                  </Button>,
+                                                ]}
+                                              >
+                                                <p>
+                                                  <h2
+                                                    style={{
+                                                      marginBottom: `2%`,
+                                                      textAlign: `center`,
+                                                      fontSize: `27px`,
+                                                    }}
+                                                  >
+                                                    Thêm rom
+                                                  </h2>
 
-                                                                    </>
-                                                            }
-                                                            {/* modal */}
-                                                            <Modal title="Chọn cấu hình"
-                                                                style={{ width: '700' }}
-                                                                open={openFormCauHinh}
-                                                                onOk={handleOkFormCauHinh}
-                                                                confirmLoading={confirmLoading}
-                                                                onCancel={handleCancelFromCauHinh} >
-                                                                <div>
-                                                                    <div style={{ marginBottom: `3%` }}>
-                                                                        {
-                                                                            hiddenConfig ?
-                                                                                <>
-                                                                                    <Row style={{ marginTop: '30' }} >
+                                                  <FormLabel
+                                                    style={{
+                                                      marginLeft: `9px`,
+                                                      fontSize: `14px`,
+                                                    }}
+                                                  >
+                                                    {" "}
+                                                    Kích thuớc rom{" "}
+                                                  </FormLabel>
+                                                  <TextField
+                                                    label=""
+                                                    id="fullWidth"
+                                                    name="capacityRom"
+                                                    value={romForm.capacityRom}
+                                                    onChange={(e) =>
+                                                      onInputChangeFormrom
+                                                    }
+                                                    error={
+                                                      (formSubmitted &&
+                                                        !romForm.capacityRom) ||
+                                                      !!capacityRomError
+                                                    }
+                                                    helperText={
+                                                      capacityRomError ||
+                                                      (formSubmitted &&
+                                                        !romForm.capacityRom &&
+                                                        "Kích thước rom không được trống")
+                                                    }
+                                                    style={{ width: "100%" }}
+                                                  />
+                                                </p>
+                                              </Modal>
 
-                                                                                        <Col span={8}>
-                                                                                            <Form.Group className="form-group">
-
-                                                                                                <FontAwesomeIcon
-                                                                                                    className='font_awesome_icon_selection_custom'
-                                                                                                    icon={faPlus} onClick={showModalFormrom} />
-                                                                                                <Modal
-                                                                                                    title="Thêm rom"
-                                                                                                    open={openFormrom}
-                                                                                                    onOk={handleOkFormrom}
-                                                                                                    confirmLoading={confirmLoading}
-                                                                                                    onCancel={handleCancel}
-                                                                                                >
-                                                                                                    <p>
-                                                                                                        <Form >
-                                                                                                            <Form.Group className="form-group">
-                                                                                                                <Form.Label htmlFor="email">Mã</Form.Label>
-                                                                                                                <Form.Control type="text"
-                                                                                                                    name='marom'
-                                                                                                                    value={marom}
-
-                                                                                                                    id="marom" />
-                                                                                                            </Form.Group>
-                                                                                                            <Form.Group className="form-group">
-                                                                                                                <Form.Label htmlFor="pwd">Dung lượng ROM</Form.Label>
-                                                                                                                <Form.Control type="text"
-                                                                                                                    placeholder='Nhập dung lượng rom'
-                                                                                                                    name='tenrom'
-                                                                                                                    value={tenrom}
-                                                                                                                    onChange={(e) => onInputChangeFormrom(e)}
-                                                                                                                    id="ten`" />
-                                                                                                            </Form.Group>
-                                                                                                        </Form>
-                                                                                                    </p>
-                                                                                                </Modal>
-
-                                                                                                <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-                                                                                                    <InputLabel id="demo-simple-select-standard-label-rom" className='inputlabel_of_selection' >ROM</InputLabel>
-                                                                                                    <Select
-                                                                                                        error={(formSubmitted && !cauHinh.rom) || !!romError}
-                                                                                                        className='selection_custom'
-                                                                                                        labelId="demo-simple-select-standard-label-rom"
-                                                                                                        id="demo-simple-select-filled"
-                                                                                                        // value={cauHinh.rom}
-                                                                                                        onChange={handleChangeFormCauHinh}>
-                                                                                                        {
-                                                                                                            listRom.map((item, index) => {
-                                                                                                                return (
-                                                                                                                    <MenuItem value={item.value}>{item.label}</MenuItem>
-                                                                                                                )
-                                                                                                            })
-                                                                                                        }
-
-
-                                                                                                    </Select>
-                                                                                                    <FormHelperText style={{ color: `red` }}>
-                                                                                                        {
-                                                                                                            romError ||
-                                                                                                            (formSubmitted && !cauHinh.rom && `
+                                              <FormControl
+                                                variant="standard"
+                                                sx={{ m: 1, minWidth: 120 }}
+                                              >
+                                                <InputLabel
+                                                  id="demo-simple-select-standard-label-rom"
+                                                  className="inputlabel_of_selection"
+                                                >
+                                                  ROM
+                                                </InputLabel>
+                                                <Select
+                                                  error={
+                                                    (formSubmitted &&
+                                                      !cauHinh.rom) ||
+                                                    !!romError
+                                                  }
+                                                  className="selection_custom"
+                                                  labelId="demo-simple-select-standard-label-rom"
+                                                  id="demo-simple-select-filled"
+                                                  // value={cauHinh.rom}
+                                                  onChange={
+                                                    handleChangeFormCauHinh
+                                                  }
+                                                >
+                                                  {listRom.map(
+                                                    (item, index) => {
+                                                      return (
+                                                        <MenuItem
+                                                          value={item.value}
+                                                        >
+                                                          {item.label}
+                                                        </MenuItem>
+                                                      );
+                                                    }
+                                                  )}
+                                                </Select>
+                                                <FormHelperText
+                                                  style={{ color: `red` }}
+                                                >
+                                                  {romError ||
+                                                    (formSubmitted &&
+                                                      !cauHinh.rom &&
+                                                      `
                                                                                                               Bạn phải chọn một rom
-                                                                                                               `)
-                                                                                                        }
-                                                                                                    </FormHelperText>
-                                                                                                </FormControl>
+                                                                                                               `)}
+                                                </FormHelperText>
+                                              </FormControl>
+                                            </Form.Group>
+                                          </Col>
 
-                                                                                            </Form.Group>
-                                                                                        </Col>
-
-
-                                                                                        <Col span={8}>
-                                                                                            <Form.Group className="form-group">
-
-                                                                                                <FontAwesomeIcon
-                                                                                                    className='font_awesome_icon_selection_custom'
-                                                                                                    icon={faPlus} onClick={showModalFormram} />
-                                                                                                <Modal
-                                                                                                    title="Thêm dung lượng ram"
-                                                                                                    open={openFormram}
-                                                                                                    onOk={handleOkFormram}
-                                                                                                    confirmLoading={confirmLoading}
-                                                                                                    onCancel={handleCancel}
-                                                                                                >
-                                                                                                    <p>
-                                                                                                        <Form >
-                                                                                                            <Form.Group className="form-group">
-                                                                                                                <Form.Label htmlFor="email">Mã</Form.Label>
-                                                                                                                <Form.Control type="text"
-                                                                                                                    name='maram'
-                                                                                                                    value={maram}
-
-                                                                                                                    id="maram" />
-                                                                                                            </Form.Group>
-                                                                                                            <Form.Group className="form-group">
-                                                                                                                <Form.Label htmlFor="pwd">Dung lượng ram</Form.Label>
-                                                                                                                <Form.Control type="text"
-                                                                                                                    placeholder='Nhập dung lượng ram'
-                                                                                                                    name='tenram'
-                                                                                                                    value={tenram}
-                                                                                                                    onChange={(e) => onInputChangeFormram(e)}
-                                                                                                                    id="ten`" />
-                                                                                                            </Form.Group>
-                                                                                                        </Form>
-                                                                                                    </p>
-                                                                                                </Modal>
+                                          <Col span={8}>
+                                            <Form.Group className="form-group">
+                                              <FontAwesomeIcon
+                                                className="font_awesome_icon_selection_custom"
+                                                icon={faPlus}
+                                                onClick={showModalFormram}
+                                              />
+                                              <Modal
+                                                title="Thêm dung lượng ram"
+                                                open={openFormram}
+                                                onOk={handleOkFormram}
+                                                confirmLoading={confirmLoading}
+                                                onCancel={handleCancel}
+                                              >
+                                                <p>
+                                                  <Form>
+                                                    <Form.Group className="form-group">
+                                                      <Form.Label htmlFor="email">
+                                                        Mã
+                                                      </Form.Label>
+                                                      <Form.Control
+                                                        type="text"
+                                                        name="maram"
+                                                        value={maram}
+                                                        id="maram"
+                                                      />
+                                                    </Form.Group>
+                                                    <Form.Group className="form-group">
+                                                      <Form.Label htmlFor="pwd">
+                                                        Dung lượng ram
+                                                      </Form.Label>
+                                                      <Form.Control
+                                                        type="text"
+                                                        placeholder="Nhập dung lượng ram"
+                                                        name="tenram"
+                                                        value={tenram}
+                                                        onChange={(e) =>
+                                                          onInputChangeFormram(
+                                                            e
+                                                          )
+                                                        }
+                                                        id="ten`"
+                                                      />
+                                                    </Form.Group>
+                                                  </Form>
+                                                </p>
+                                              </Modal>
 
                                               <FormControl
                                                 variant="standard"
@@ -2374,41 +2766,53 @@ const ThemSanPham = () => {
                                             </Form.Group>
                                           </Col>
 
-                                                                                        <Col span={8}>
-                                                                                            <Form.Group className="form-group">
-
-                                                                                                <FontAwesomeIcon
-                                                                                                    className='font_awesome_icon_selection_custom'
-                                                                                                    icon={faPlus} onClick={showModalFormmauSac} />
-                                                                                                <Modal
-                                                                                                    title="Thêm màu sắc"
-                                                                                                    open={openFormmauSac}
-                                                                                                    onOk={handleOkFormmauSac}
-                                                                                                    confirmLoading={confirmLoading}
-                                                                                                    onCancel={handleCancel}
-                                                                                                >
-                                                                                                    <p>
-                                                                                                        <Form >
-                                                                                                            <Form.Group className="form-group">
-                                                                                                                <Form.Label htmlFor="email">Mã</Form.Label>
-                                                                                                                <Form.Control type="text"
-
-                                                                                                                    name='mamauSac'
-                                                                                                                    value={mamauSac}
-                                                                                                                    id="mamauSac" />
-                                                                                                            </Form.Group>
-                                                                                                            <Form.Group className="form-group">
-                                                                                                                <Form.Label htmlFor="pwd">Tên màu sắc </Form.Label>
-                                                                                                                <Form.Control type="text"
-                                                                                                                    placeholder='Nhập tên màu sắc'
-                                                                                                                    name='tenmauSac'
-                                                                                                                    value={tenmauSac}
-                                                                                                                    onChange={(e) => onInputChangeFormmauSac(e)}
-                                                                                                                    id="ten`" />
-                                                                                                            </Form.Group>
-                                                                                                        </Form>
-                                                                                                    </p>
-                                                                                                </Modal>
+                                          <Col span={8}>
+                                            <Form.Group className="form-group">
+                                              <FontAwesomeIcon
+                                                className="font_awesome_icon_selection_custom"
+                                                icon={faPlus}
+                                                onClick={showModalFormmauSac}
+                                              />
+                                              <Modal
+                                                title="Thêm màu sắc"
+                                                open={openFormmauSac}
+                                                onOk={handleOkFormmauSac}
+                                                confirmLoading={confirmLoading}
+                                                onCancel={handleCancel}
+                                              >
+                                                <p>
+                                                  <Form>
+                                                    <Form.Group className="form-group">
+                                                      <Form.Label htmlFor="email">
+                                                        Mã
+                                                      </Form.Label>
+                                                      <Form.Control
+                                                        type="text"
+                                                        name="mamauSac"
+                                                        value={mamauSac}
+                                                        id="mamauSac"
+                                                      />
+                                                    </Form.Group>
+                                                    <Form.Group className="form-group">
+                                                      <Form.Label htmlFor="pwd">
+                                                        Tên màu sắc{" "}
+                                                      </Form.Label>
+                                                      <Form.Control
+                                                        type="text"
+                                                        placeholder="Nhập tên màu sắc"
+                                                        name="tenmauSac"
+                                                        value={tenmauSac}
+                                                        onChange={(e) =>
+                                                          onInputChangeFormmauSac(
+                                                            e
+                                                          )
+                                                        }
+                                                        id="ten`"
+                                                      />
+                                                    </Form.Group>
+                                                  </Form>
+                                                </p>
+                                              </Modal>
 
                                               <FormControl
                                                 variant="standard"
@@ -2516,52 +2920,48 @@ const ThemSanPham = () => {
                                           Thêm mới
                                         </Button>
 
-                                                                                    <Table
-                                                                                        rowSelection={{
-                                                                                            type: `checkbox`,
-                                                                                            ...rowSelection,
-                                                                                        }}
-                                                                                        columns={columns}
-                                                                                        pagination={false}
-                                                                                        dataSource={listCauHinh}
-                                                                                    />
-                                                                                    <Pagination
-                                                                                        style={{ marginLeft: `40%`, marginTop: `3%` }}
-                                                                                        simplecurrent={currentPage + 1}
-                                                                                        onChange={(value) => {
-                                                                                            setCurrentPage(value - 1);
-                                                                                        }}
-                                                                                        total={totalPages * 10}
-                                                                                    />
-                                                                                </>
-
-
-                                                                        }
-
-                                                                    </div>
-
-
-                                                                </div>
-                                                            </Modal>
-                                                            <br />
-                                                        </div>
-                                                        :
-                                                        <div></div>
-                                                ,
-                                            };
-                                        })}
-                                    />
-                                </Col>
-                            </Row>
-                        </div>
-                }
-                </>
-                <br />
-
-
-
-            </Form>
-        </div >
-    );
+                                        <Table
+                                          rowSelection={{
+                                            type: `checkbox`,
+                                            ...rowSelection,
+                                          }}
+                                          columns={columns}
+                                          pagination={false}
+                                          dataSource={listCauHinh}
+                                        />
+                                        <Pagination
+                                          style={{
+                                            marginLeft: `40%`,
+                                            marginTop: `3%`,
+                                          }}
+                                          simplecurrent={currentPage + 1}
+                                          onChange={(value) => {
+                                            setCurrentPage(value - 1);
+                                          }}
+                                          total={totalPages * 10}
+                                        />
+                                      </>
+                                    )}
+                                  </div>
+                                </div>
+                              </Modal>
+                              <br />
+                            </div>
+                          ) : (
+                            <div></div>
+                          ),
+                      };
+                    })}
+                  />
+                </Col>
+              </Row>
+            </div>
+          )}
+        </>
+        <br />
+      </Form>
+    </div>
+  );
+};
 
 export default ThemSanPham;

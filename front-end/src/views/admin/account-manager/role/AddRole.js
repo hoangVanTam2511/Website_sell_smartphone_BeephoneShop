@@ -8,14 +8,16 @@ import { apiURLRole } from "../../../../service/api";
 import TextField from "@mui/material/TextField";
 import "../../../../assets/scss/HienThiNV.scss";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const AddNV = () => {
   let [listRole, setListRole] = useState([]);
   let [ten, setTen] = useState("");
   let [ma, setMa] = useState("");
+  const navigate = useNavigate();
 
   const redirectToHienThi = () => {
-    window.location.href = "/chuc-vu";
+    navigate("/chuc-vu");
   };
   const addRole = () => {
     let obj = {

@@ -12,6 +12,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import * as dayjs from "dayjs";
+import { request } from '../../../store/helpers/axios_helper'
 
 const OrdersPending = () => {
   const [orders, setOrders] = useState([]);
@@ -23,8 +24,7 @@ const OrdersPending = () => {
   const navigate = useNavigate();
 
   const findOrdersByKeywordWithPagination = (page) => {
-    axios
-      .get(`http://localhost:8080/api/orders`, {
+    request('GET',`/api/orders`, {
         params: {
           currentPage: page,
           keyword: keyword,
@@ -41,7 +41,7 @@ const OrdersPending = () => {
   }
 
   const handleDeleteOrderPendingById = (id) => {
-    axios.delete(`http://localhost:8080/api/orders/${id}`)
+    request('DELETE',`/api/orders/${id}`)
       .then(response => {
         findOrdersByKeywordWithPagination(currentPage);
       }).catch(error => {

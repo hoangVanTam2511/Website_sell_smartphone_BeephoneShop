@@ -11,7 +11,7 @@ import axios from "axios";
 import { apiURLVoucher } from "../../../service/api";
 import TextField from "@mui/material/TextField";
 import "../../../assets/scss/HienThiNV.scss";
-import { InputAdornment } from "@mui/material";
+import { Alert, InputAdornment } from "@mui/material";
 import "../voucher-manager/style.css";
 import { useParams } from "react-router-dom";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
@@ -26,17 +26,25 @@ import Radio, { radioClasses } from "@mui/joy/Radio";
 import RadioGroup from "@mui/joy/RadioGroup";
 import {
   Notistack,
+  StatusDiscount,
+  StatusDiscountNumber,
   TypeDiscountNumber,
   TypeDiscountString,
 } from "../order-manager/enum";
 import useCustomSnackbar from "../../../utilities/notistack";
+import LoadingIndicator from "../../../utilities/loading";
+import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
+import { useNavigate } from "react-router-dom";
+import { request } from '../../../store/helpers/axios_helper'
 
 const UpdateVoucher = () => {
+  const [voucher, setVoucher] = useState({});
   const [ma, setMa] = useState("");
   const [ten, setTen] = useState("");
   const [soLuong, setSoLuong] = useState("");
-  const [ngayBatDau, setNgayBatDau] = useState("");
-  const [ngayKetThuc, setNgayKetThuc] = useState("");
+  const [status, setStatus] = useState("");
+  const [ngayBatDau, setNgayBatDau] = useState(null);
+  const [ngayKetThuc, setNgayKetThuc] = useState(null);
   // const [giaTriVoucherConvert, setGiaTriVoucherConvert] = useState(0);
   const [value, setValue] = React.useState();
   const [value1, setValue1] = React.useState();
@@ -47,10 +55,36 @@ const UpdateVoucher = () => {
   const [selectDiscount, setSelectDiscount] = useState("");
   const [giaTriToiDa, setGiaTriToiDa] = useState(0);
   const [valueToiDa, setValueToiDa] = React.useState();
+  const [isLoading, setIsLoading] = useState(true);
   const { handleOpenAlertVariant } = useCustomSnackbar();
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const navigate = useNavigate();
 
   const redirectToHienThiVoucher = () => {
-    window.location.href = "/dashboard/voucher";
+    navigate("/dashboard/voucher");
+  };
+
+  const handleOpenDialogConfirmUpdate = () => {
+    setOpenConfirm(true);
+  };
+
+  const handleCloseDialogConfirmUpdate = () => {
+    setOpenConfirm(false);
+  };
+
+  const Header = () => {
+    return (
+      <>
+        <span className="">Chỉnh sửa voucher</span>
+      </>
+    );
+  };
+  const Title = () => {
+    return (
+      <>
+        <span>Bạn có chắc chắc muốn chỉnh sửa voucher không ?</span>
+      </>
+    );
   };
 
   const handleChange = (event) => {
@@ -80,25 +114,35 @@ const UpdateVoucher = () => {
 
   const detailVoucher = async () => {
     try {
-      const response = await axios.get(apiURLVoucher + "/get-by-id/" + id);
-      setMa(response.data.data.ma);
-      setTen(response.data.data.ten);
-      setSoLuong(response.data.data.soLuong);
-      setNgayBatDau(response.data.data.ngayBatDau);
-      setNgayKetThuc(response.data.data.ngayKetThuc);
-      setValueToiDa(response.data.data.giaTriToiDa);
-      setValue1(response.data.data.dieuKienApDung);
-      setValue(response.data.data.giaTriVoucher);
-      setSelectDiscount(
-        response.data.data.loaiVoucher === TypeDiscountNumber.VND
-          ? TypeDiscountString.VND
-          : TypeDiscountString.PERCENT
-      );
-      convertTien(
-        response.data.data.dieuKienApDung,
-        response.data.data.giaTriVoucher,
-        response.data.data.giaTriToiDa
-      );
+      console.log(id);
+      request('GET', apiURLVoucher + "/get-by-id/" + id).then((res) => {
+        if(res.status === 200 ){
+            var response = res
+            setMa(response.data.data.ma);
+            setTen(response.data.data.ten);
+            setSoLuong(response.data.data.soLuong);
+            setNgayBatDau(response.data.data.ngayBatDau);
+            setNgayKetThuc(response.data.data.ngayKetThuc);
+            setValueToiDa(response.data.data.giaTriToiDa);
+            setValue1(response.data.data.dieuKienApDung);
+            setValue(response.data.data.giaTriVoucher);
+            setStatus(response.data.data.trangThai);
+            setSelectDiscount(
+              response.data.data.loaiVoucher === TypeDiscountNumber.VND
+                ? TypeDiscountString.VND
+                : TypeDiscountString.PERCENT
+            );
+            convertTien(
+              response.data.data.dieuKienApDung,
+              response.data.data.giaTriVoucher,
+              response.data.data.giaTriToiDa
+            );
+            setVoucher(response.data.data);
+              }
+              console.log(response);
+      });
+      
+      // console.log(response.data.data);
     } catch (error) {
       // Xử lý lỗi nếu cần
       handleOpenAlertVariant(
@@ -106,6 +150,19 @@ const UpdateVoucher = () => {
         Notistack.ERROR
       );
     }
+  };
+
+  const handleInputNumberVoucher = (e) => {
+    // Loại bỏ tất cả các ký tự không phải số sử dụng regex
+    const sanitizedValue = e.target.value.replace(/[^0-9]/g, "");
+    setSoLuong(sanitizedValue);
+  };
+
+  const handleInputCodeVoucher = (e) => {
+    // Sử dụng regex để chỉ cho phép chữ cái và số, loại bỏ ký tự đặc biệt
+    let inputValue = e.target.value;
+    let sanitizedValue = inputValue.toUpperCase();
+    setMa(sanitizedValue);
   };
 
   const handleChange1 = (event) => {
@@ -118,32 +175,37 @@ const UpdateVoucher = () => {
     setDieuKienApDung(numericValue);
   };
 
-  const handleChangeGiaTriToiDa = (event) => {
-    const inputValue = event.target.value;
-    const numericValue = parseFloat(inputValue.replace(/[^0-9.-]+/g, ""));
-    const formattedValue = inputValue
-      .replace(/[^0-9]+/g, "")
-      .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    setValueToiDa(formattedValue);
-    setGiaTriToiDa(numericValue);
-  };
+  // const handleChangeGiaTriToiDa = (event) => {
+  //   const inputValue = event.target.value;
+  //   if (selectDiscount === TypeDiscountString.VND) {
+  //     setGiaTriToiDa(null);
+  //     setValueToiDa(null);
+  //   }
+  //   const numericValue = parseFloat(inputValue.replace(/[^0-9.-]+/g, ""));
+  //   const formattedValue = inputValue
+  //     .replace(/[^0-9]+/g, "")
+  //     .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  //   setValueToiDa(formattedValue);
+  //   setGiaTriToiDa(numericValue);
+  // };
 
-  const handleChangeToggleButtonDiscount = (event) => {
-    const newAlignment = event.target.value;
-    if (newAlignment != null) {
-      setSelectDiscount(newAlignment);
-    }
+  // const handleChangeToggleButtonDiscount = (event) => {
+  //   const newAlignment = event.target.value;
+  //   handleReset();
+  //   if (newAlignment != null) {
+  //     setSelectDiscount(newAlignment);
+  //   }
 
-    if (newAlignment == null) {
-      setSelectDiscount(null);
-    }
-    handleReset();
-  };
+  //   if (newAlignment == null) {
+  //     setSelectDiscount(null);
+  //   }
+  //   handleReset();
+  // };
 
-  const handleReset = () => {
-    setValue("");
-    setValueToiDa("");
-  };
+  // const handleReset = () => {
+  //   setValue("");
+  //   setValueToiDa("");
+  // };
 
   const convertTien = (value1, value, valueToiDa) => {
     const numericValue = parseFloat(String(value1).replace(/[^0-9.-]+/g, ""));
@@ -175,13 +237,8 @@ const UpdateVoucher = () => {
     detailVoucher();
   }, []);
 
-  let isToastVisible = false;
-
   const updateVoucher = () => {
-    if (isToastVisible) {
-      return;
-    }
-
+    setIsLoading(true);
     let obj = {
       ma: ma,
       ten: ten,
@@ -193,51 +250,43 @@ const UpdateVoucher = () => {
       giaTriToiDa: giaTriToiDa,
       loaiVoucher: selectDiscount,
     };
-    axios
-      .put(apiURLVoucher + "/updateVoucher/" + id, obj)
+    request('PUT', apiURLVoucher + "/updateVoucher/" + id, obj)
       .then((response) => {
         handleOpenAlertVariant("Cập nhật thành công!!!", Notistack.SUCCESS);
-
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 1000);
         setTimeout(() => {
           redirectToHienThiVoucher();
-        }, 2000);
+        }, 1000);
       })
       .catch((error) => {
         handleOpenAlertVariant(error.response.data.message, Notistack.ERROR);
       });
   };
+
   const validationAll = () => {
     const msg = {};
     if (!ten.trim("")) {
-      msg.ten = "Tên không được để trống !!!";
+      msg.ten = "Tên không được trống !!!";
     }
 
-    // if (/^\s+|\s+$/.test(ten)) {
-    //   msg.ten = "Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi";
-    // }
     if (soLuong == null || soLuong === "") {
-      msg.soLuong = "Số lượng không được để trống !!!";
+      msg.soLuong = "Số lượng không được trống !!!";
     }
-    // if (/^\s+|\s+$/.test(soLuong)) {
-    //   msg.soLuong = "Số lượng không chứa ký tự khoảng trống ở đầu và cuối chuỗi";
-    // }
 
     if (soLuong <= 0 || soLuong > 10000) {
-      msg.soLuong = "Số lượng cho phép từ 1 đến 10000";
+      msg.soLuong = "Số lượng cho phép từ 1 - 10000";
     }
 
     const numericValue1 = parseFloat(value1?.replace(/[^0-9.-]+/g, ""));
     if (value1 == null || value1 === "") {
-      msg.value1 = "Điều kiện áp dụng không được để trống !!!";
+      msg.value1 = "Điều kiện áp dụng không được trống !!!";
     }
 
     if (numericValue1 <= 0 || numericValue1 > 100000000) {
-      msg.value1 = "Điều kiện áp dụng từ 1đ đến 100.000.000đ";
+      msg.value1 = "Điều kiện áp dụng từ 1đ - 100.000.000đ";
     }
-
-    // if (ngayBatDau.isAfter(ngayKetThuc)) {
-    //   msg.ngayBatDau = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc !!!";
-    // }
 
     const numericValue2 = parseFloat(value?.replace(/[^0-9.-]+/g, ""));
     if (value == null || value === "") {
@@ -248,7 +297,11 @@ const UpdateVoucher = () => {
       (selectDiscount === TypeDiscountString.VND && numericValue2 <= 0) ||
       (selectDiscount === TypeDiscountString.VND && numericValue2 > 100000000)
     ) {
-      msg.value = "Giá trị voucher từ 1đ đến 100.000.000đ";
+      msg.value = "Giá trị voucher từ 1đ - 100.000.000đ";
+    }
+
+    if (selectDiscount === TypeDiscountString.PERCENT && value <= 0) {
+      msg.value = "Giá trị voucher trong khoảng 1% - 100% !!!";
     }
 
     const numericValue3 = parseFloat(valueToiDa?.replace(/[^0-9.-]+/g, ""));
@@ -256,7 +309,7 @@ const UpdateVoucher = () => {
       (selectDiscount === TypeDiscountString.PERCENT && valueToiDa === null) ||
       (selectDiscount === TypeDiscountString.PERCENT && valueToiDa === "")
     ) {
-      msg.valueToiDa = "Giá trị tối đa không được để trống !!!";
+      msg.valueToiDa = "Giá trị tối đa không được trống !!!";
     }
 
     if (
@@ -264,11 +317,20 @@ const UpdateVoucher = () => {
       (selectDiscount === TypeDiscountString.PERCENT &&
         numericValue3 > 100000000)
     ) {
-      msg.valueToiDa = "Giá trị tối đa từ 1đ đến 100.000.000đ";
+      msg.valueToiDa = "Giá trị tối đa từ 1đ - 100.000.000đ";
     }
-    // if (ngayKetThuc.isBefore(ngayBatDau)) {
-    //   msg.ngayKetThuc = "Ngày kết thúc phải lớn hơn ngày bắt đầu !!!";
-    //   msg.ngayBatDau = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc !!!";
+
+    if (!dayjs(ngayBatDau).isBefore(ngayKetThuc)) {
+      msg.ngayBatDau = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc !!!";
+      msg.ngayKetThuc = "Ngày kết thúc phải lớn hơn ngày bắt đầu !!!";
+    }
+
+    // if (
+    //   dayjs(ngayBatDau).isBefore(voucher.ngayBatDau) ||
+    //   dayjs(ngayBatDau).isBefore(dayjs()) ||
+    //   dayjs(ngayBatDau).isAfter(voucher.ngayKetThuc)
+    // ) {
+    //   msg.ngayBatDau = "Không thể chọn ngày quá khứ !!!";
     // }
 
     setValidationMsg(msg);
@@ -279,382 +341,209 @@ const UpdateVoucher = () => {
   const handleSubmit = () => {
     const isValid = validationAll();
     if (!isValid) return;
-    updateVoucher();
+    handleOpenDialogConfirmUpdate();
   };
 
   return (
     <>
       <div className="add-voucher-container mt-4">
-        <h4
-          style={{
-            marginBottom: "20px",
-            marginLeft: "40px",
-            marginTop: "15px",
-            display: "flex",
-            justifyContent: "flex-start",
-          }}
-        >
-          Sửa Voucher
-        </h4>
+        <div className="mx-auto" style={{ maxWidth: "70%" }}>
+          <div className="text-center pt-3 mb-3">
+            <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>
+              SỬA VOUCHER
+            </span>
+          </div>
 
-        <div className="text-center">
-          <div
-            className="d-flex"
-            style={{ marginLeft: "40px", marginBottom: "15px" }}
-          >
-            <div>
+          <div className="text-center">
+            <div
+              className="d-flex"
+              style={{ marginLeft: "30px", marginBottom: "15px" }}
+            >
               <TextField
-                label="Mã Voucher"
-                placeholder="Nhập hoặc để mã tự động"
-                value={ma}
-                id="fullWidth"
-                onChange={(e) => {
-                  setMa(e.target.value);
-                }}
-                style={{ width: "330px" }}
-                inputProps={{
-                  maxLength: 100, // Giới hạn tối đa 10 ký tự
-                }}
-              />
-              <span className="validate" style={{ color: "red" }}>
-                {validationMsg.ma}
-              </span>
-            </div>
-            <div className="ms-4">
-              <TextField
+                className="custom"
                 label="Tên Voucher"
                 value={ten}
                 id="fullWidth"
                 onChange={(e) => {
                   setTen(e.target.value);
                 }}
-                style={{ width: "330px" }}
+                style={{ width: "780px" }}
                 inputProps={{
                   maxLength: 100, // Giới hạn tối đa 10 ký tự
                 }}
+                error={validationMsg.ten !== undefined}
+                helperText={validationMsg.ten}
               />
-              <span className="validate" style={{ color: "red" }}>
-                {validationMsg.ten}
-              </span>
             </div>
-          </div>
-          <div
-            className="d-flex"
-            style={{ marginLeft: "40px", marginBottom: "15px" }}
-          >
-            <div>
-              <TextField
-                label="Số Lượng"
-                value={soLuong}
-                id="fullWidth"
-                onChange={(e) => {
-                  setSoLuong(e.target.value);
-                }}
-                style={{ width: "330px" }}
-                inputProps={{
-                  maxLength: 10, // Giới hạn tối đa 10 ký tự
-                }}
-              />
-              <span className="validate" style={{ color: "red" }}>
-                {validationMsg.soLuong}
-              </span>
-            </div>
-            <div className="ms-4">
-              {" "}
-              <TextField
-                label="Điều kiện áp dụng khi đơn hàng đạt"
-                value={value1}
-                onChange={handleChange1}
-                id="outlined-start-adornment"
-                InputProps={{
-                  inputMode: "numeric",
-                  startAdornment: (
-                    <InputAdornment position="start">VND</InputAdornment>
-                  ),
-                }}
-                style={{ width: "330px" }}
-                inputProps={{
-                  maxLength: 20, // Giới hạn tối đa 10 ký tự
-                }}
-              />
-              <span className="validate" style={{ color: "red" }}>
-                {validationMsg.value1}
-              </span>
-            </div>
-          </div>
-
-          <div className="d-flex" style={{ marginLeft: "40px" }}>
-            <div>
-              <RadioGroup
-                orientation="horizontal"
-                aria-label="Alignment"
-                name="alignment"
-                variant="outlined"
-                value={selectDiscount}
-                onChange={handleChangeToggleButtonDiscount}
-                sx={{ borderRadius: "12px" }}
-                defaultValue={"VND"}
-              >
-                {[TypeDiscountString.VND, TypeDiscountString.PERCENT].map(
-                  (item) => (
-                    <Box
-                      key={item}
-                      sx={(theme) => ({
-                        position: "relative",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        width: 55,
-                        height: 54,
-                        "&:not([data-first-child])": {
-                          borderLeft: "1px solid",
-                          borderdivor: "divider",
-                        },
-                        [`&[data-first-child] .${radioClasses.action}`]: {
-                          borderTopLeftRadius: `calc(${theme.vars.radius.sm} + 5px)`,
-                          borderBottomLeftRadius: `calc(${theme.vars.radius.sm} + 5px)`,
-                        },
-                        [`&[data-last-child] .${radioClasses.action}`]: {
-                          borderTopRightRadius: `calc(${theme.vars.radius.sm} + 5px)`,
-                          borderBottomRightRadius: `calc(${theme.vars.radius.sm} + 5px)`,
-                        },
-                      })}
-                    >
-                      <Radio
-                        value={
-                          item === TypeDiscountString.VND
-                            ? TypeDiscountString.VND
-                            : TypeDiscountString.PERCENT
-                        }
-                        disableIcon
-                        overlay
-                        label={[
-                          item === TypeDiscountString.VND
-                            ? "VND"
-                            : item === TypeDiscountString.PERCENT
-                            ? "%"
-                            : "",
-                        ]}
-                        variant={selectDiscount === item ? "solid" : "plain"}
-                        slotProps={{
-                          input: { "aria-label": item },
-                          action: {
-                            sx: { borderRadius: 0, transition: "none" },
-                          },
-                          label: { sx: { lineHeight: 0 } },
-                        }}
-                      />
-                    </Box>
-                  )
-                )}
-              </RadioGroup>
-            </div>
-            <div className="ms-4">
-              <TextField
-                label="Nhập Giá Trị Voucher"
-                value={value}
-                onChange={handleChange}
-                id="outlined-start-adornment"
-                InputProps={{
-                  inputMode: "numeric",
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      {selectDiscount === TypeDiscountString.VND
-                        ? TypeDiscountString.VND
-                        : TypeDiscountString.PERCENT
-                        ? "%"
-                        : ""}
-                    </InputAdornment>
-                  ),
-                }}
-                style={{
-                  width: "262px",
-                }}
-                inputProps={{
-                  maxLength: 20, // Giới hạn tối đa 10 ký tự
-                }}
-              />
-              <span
-                className="validate"
-                style={{
-                  color: "red",
-                }}
-              >
-                {validationMsg.value}
-              </span>
-            </div>
-            <div className="ms-4">
-              <TextField
-                label="Giá Trị Tối Đa"
-                value={valueToiDa}
-                id="outlined-start-adornment"
-                onChange={handleChangeGiaTriToiDa}
-                InputProps={{
-                  inputMode: "numeric",
-                  startAdornment: (
-                    <InputAdornment position="start">VND</InputAdornment>
-                  ),
-                }}
-                disabled={
-                  selectDiscount === TypeDiscountString.VND ? true : false
-                }
-                style={{
-                  width: "262px",
-                }}
-                inputProps={{
-                  maxLength: 20, // Giới hạn tối đa 10 ký tự
-                }}
-              />
-              <span
-                className="validate"
-                style={{
-                  color: "red",
-                }}
-              >
-                {validationMsg.valueToiDa}
-              </span>
-            </div>
-          </div>
-          <div className="d-flex" style={{ marginLeft: "40px" }}>
-            <div>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DemoContainer components={["DateTimePicker"]}>
-                  <DateTimePicker
-                    ampm={true}
-                    disablePast={true}
-                    label="Ngày Bắt Đầu"
-                    format="HH:mm DD/MM/YYYY"
-                    value={dayjs(ngayBatDau)}
-                    onChange={(e) => {
-                      setNgayBatDau(e);
-                    }}
-                    sx={{ width: "330px" }}
-                  />
-                </DemoContainer>
-              </LocalizationProvider>
-              <span className="validate-date" style={{ color: "red" }}>
-                {validationMsg.ngayBatDau}
-              </span>
-            </div>
-            <div className="ms-4" style={{ marginLeft: "15px" }}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DemoContainer components={["DateTimePicker"]}>
-                  <DateTimePicker
-                    ampm={true}
-                    label="Ngày Kết Thúc"
-                    value={dayjs(ngayKetThuc)}
-                    format="HH:mm DD/MM/YYYY"
-                    disablePast={true}
-                    onChange={(e) => {
-                      setNgayKetThuc(e);
-                    }}
-                    sx={{ width: "330px" }}
-                  />
-                </DemoContainer>
-              </LocalizationProvider>
-              <span className="validate-date" style={{ color: "red" }}>
-                {validationMsg.ngayKetThuc}
-              </span>
-            </div>
-          </div>
-        </div>
-        <div className="btn-accept mt-3">
-          <Button
-            className="rounded-2 button-mui"
-            type="primary"
-            style={{ height: "35px", width: "120px", fontSize: "15px" }}
-            onClick={() => {
-              handleSubmit();
-            }}
-          >
-            <ToastContainer />
-            <FontAwesomeIcon icon={faCheck} />
-            <span
-              className="ms-2 ps-1"
-              style={{ marginBottom: "3px", fontWeight: "500" }}
+            <div
+              className="d-flex"
+              style={{
+                marginLeft: "30px",
+                marginBottom: "15px",
+                marginTop: "15px",
+              }}
             >
-              Xác nhận
-            </span>
-          </Button>
-          <Button
-            className="rounded-2 button-mui ms-2"
-            type="primary"
-            style={{ height: "35px", width: "120px", fontSize: "15px" }}
-            onClick={() => {
-              redirectToHienThiVoucher();
-            }}
-          >
-            <FontAwesomeIcon icon={faArrowLeft} />
-            <span
-              className="ms-2 ps-1"
-              style={{ marginBottom: "3px", fontWeight: "500" }}
-            >
-              Quay về
-            </span>
-          </Button>
-        </div>
-      </div>
-      {/* <div className="add-voucher-container">
-        
-        
-          <div className="row-input">
-            <div className="select-value">
-              <div className="">
-                <ToggleButtonGroup
-                  color="primary"
-                  value={selectDiscount}
-                  exclusive
-                  onChange={handleChangeToggleButtonDiscount}
-                  aria-label="Platform"
-                >
-                  <ToggleButton
-                    style={{
-                      height: "55px",
-                      borderRadius: "10px",
-                      width: "40px",
-                    }}
-                    value="1"
-                    onClick={() => handleReset()}
-                  >
-                    VND
-                  </ToggleButton>
-                  <ToggleButton
-                    style={{
-                      height: "55px",
-                      borderRadius: "10px",
-                      width: "40px",
-                    }}
-                    value="2"
-                    onClick={() => handleReset()}
-                  >
-                    %
-                  </ToggleButton>
-                </ToggleButtonGroup>
-              </div>
-              <div className="">
+              <div>
                 <TextField
+                  className="custom"
+                  label="Nhập mã hoặc mã tự động"
+                  value={ma}
+                  id="fullWidth"
+                  onChange={handleInputCodeVoucher}
+                  style={{ width: "380px" }}
+                  inputProps={{
+                    maxLength: 20, // Giới hạn tối đa 10 ký tự
+                  }}
+                  error={validationMsg.ma !== undefined}
+                  helperText={validationMsg.ma}
+                />
+              </div>
+              <div className="ms-4">
+                <TextField
+                  className="custom"
+                  label="Số Lượng"
+                  value={soLuong}
+                  id="fullWidth"
+                  onChange={handleInputNumberVoucher}
+                  style={{ width: "380px" }}
+                  inputProps={{
+                    maxLength: 10, // Giới hạn tối đa 10 ký tự
+                  }}
+                  error={validationMsg.soLuong !== undefined}
+                  helperText={validationMsg.soLuong}
+                />
+              </div>
+            </div>
+
+            <div
+              className="d-flex"
+              style={{
+                marginLeft: "30px",
+                marginBottom: "5px",
+                marginTop: "15px",
+              }}
+            >
+              {/* <div>
+                <RadioGroup
+                  orientation="horizontal"
+                  aria-label="Alignment"
+                  name="alignment"
+                  variant="outlined"
+                  value={selectDiscount}
+                  onChange={handleChangeToggleButtonDiscount}
+                  sx={{ borderRadius: "12px" }}
+                  defaultValue={"VND"}
+                >
+                  {[TypeDiscountString.VND, TypeDiscountString.PERCENT].map(
+                    (item) => (
+                      <Box
+                        key={item}
+                        sx={(theme) => ({
+                          position: "relative",
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          width: 55,
+                          height: 54,
+                          "&:not([data-first-child])": {
+                            borderLeft: "1px solid",
+                            borderdivor: "divider",
+                          },
+                          [`&[data-first-child] .${radioClasses.action}`]: {
+                            borderTopLeftRadius: `calc(${theme.vars.radius.sm} + 2px)`,
+                            borderBottomLeftRadius: `calc(${theme.vars.radius.sm} + 2px)`,
+                          },
+                          [`&[data-last-child] .${radioClasses.action}`]: {
+                            borderTopRightRadius: `calc(${theme.vars.radius.sm} + 2px)`,
+                            borderBottomRightRadius: `calc(${theme.vars.radius.sm} + 2px)`,
+                          },
+                        })}
+                      >
+                        <Radio
+                          value={
+                            item === TypeDiscountString.VND
+                              ? TypeDiscountString.VND
+                              : TypeDiscountString.PERCENT
+                          }
+                          disableIcon
+                          overlay
+                          label={[
+                            item === TypeDiscountString.VND
+                              ? "VND"
+                              : item === TypeDiscountString.PERCENT
+                              ? "%"
+                              : "",
+                          ]}
+                          variant={selectDiscount === item ? "solid" : "plain"}
+                          slotProps={{
+                            input: { "aria-label": item },
+                            action: {
+                              sx: { borderRadius: 0, transition: "none" },
+                            },
+                            label: { sx: { lineHeight: 0 } },
+                          }}
+                        />
+                      </Box>
+                    )
+                  )}
+                </RadioGroup>
+              </div> */}
+              <div>
+                <TextField
+                  className="custom"
                   label="Nhập Giá Trị Voucher"
-                  value={giaTriVoucher}
+                  value={value}
                   onChange={handleChange}
                   id="outlined-start-adornment"
                   InputProps={{
                     inputMode: "numeric",
                     startAdornment: (
                       <InputAdornment position="start">
-                        {selectDiscount === "1" ? "VND" : "%"}
+                        {selectDiscount === TypeDiscountString.VND
+                          ? TypeDiscountString.VND
+                          : TypeDiscountString.PERCENT
+                          ? "%"
+                          : ""}
                       </InputAdornment>
                     ),
                   }}
                   style={{
-                    marginLeft: "18px",
-                    width: selectDiscount === "1" ? "670px" : "390px",
+                    width: "380px",
                   }}
+                  inputProps={{
+                    maxLength: 20, // Giới hạn tối đa 10 ký tự
+                  }}
+                  error={validationMsg.value !== undefined}
+                  helperText={validationMsg.value}
                 />
               </div>
               <div className="ms-4">
+                {" "}
                 <TextField
-                  label="Giá Trị Tối Đa:"
-                  value={giaTriToiDa}
+                  className="custom"
+                  label="Điều kiện áp dụng khi đơn hàng đạt"
+                  value={value1}
+                  onChange={handleChange1}
+                  id="outlined-start-adornment"
+                  InputProps={{
+                    inputMode: "numeric",
+                    startAdornment: (
+                      <InputAdornment position="start">VND</InputAdornment>
+                    ),
+                  }}
+                  style={{ width: "380px" }}
+                  inputProps={{
+                    maxLength: 20, // Giới hạn tối đa 10 ký tự
+                  }}
+                  error={validationMsg.value1 !== undefined}
+                  helperText={validationMsg.value1}
+                />
+              </div>
+              {/* <div className="ms-4">
+                <TextField
+                  className="custom"
+                  label="Giá Trị Tối Đa"
+                  value={valueToiDa}
                   id="outlined-start-adornment"
                   onChange={handleChangeGiaTriToiDa}
                   InputProps={{
@@ -663,74 +552,152 @@ const UpdateVoucher = () => {
                       <InputAdornment position="start">VND</InputAdornment>
                     ),
                   }}
+                  disabled={
+                    selectDiscount === TypeDiscountString.VND ? true : false
+                  }
                   style={{
-                    width: "250px",
-                    display: selectDiscount === "2" ? "block" : "none",
+                    width: "312px",
                   }}
+                  inputProps={{
+                    maxLength: 20, // Giới hạn tối đa 10 ký tự
+                  }}
+                  error={validationMsg.valueToiDa !== undefined}
+                  helperText={validationMsg.valueToiDa}
                 />
+              </div> */}
+            </div>
+            <div
+              className="d-flex"
+              style={{
+                marginLeft: "30px",
+                marginBottom: "10px",
+                marginTop: "15px",
+              }}
+            >
+              <div>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DemoContainer components={["DateTimePicker"]}>
+                    <DateTimePicker
+                      className="custom"
+                      ampm={true}
+                      disablePast={true}
+                      label="Ngày Bắt Đầu"
+                      format="HH:mm DD/MM/YYYY"
+                      value={dayjs(ngayBatDau)}
+                      onChange={(e) => {
+                        setNgayBatDau(e);
+                      }}
+                      sx={{ width: "380px" }}
+                      slotProps={{
+                        textField: {
+                          error: validationMsg.ngayBatDau !== undefined,
+                          helperText:
+                            !!validationMsg.ngayBatDau !== undefined
+                              ? validationMsg.ngayBatDau
+                              : "",
+                        },
+                      }}
+                    />
+                  </DemoContainer>
+                </LocalizationProvider>
+              </div>
+              <div className="ms-4" style={{ marginLeft: "15px" }}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DemoContainer components={["DateTimePicker"]}>
+                    <DateTimePicker
+                      className="custom"
+                      ampm={true}
+                      label="Ngày Kết Thúc"
+                      value={dayjs(ngayKetThuc)}
+                      format="HH:mm DD/MM/YYYY"
+                      disablePast={true}
+                      onChange={(e) => {
+                        setNgayKetThuc(e);
+                      }}
+                      sx={{ width: "380px" }}
+                      slotProps={{
+                        textField: {
+                          error: validationMsg.ngayKetThuc !== undefined,
+                          helperText:
+                            !!validationMsg.ngayKetThuc !== undefined
+                              ? validationMsg.ngayKetThuc
+                              : "",
+                        },
+                      }}
+                    />
+                  </DemoContainer>
+                </LocalizationProvider>
               </div>
             </div>
           </div>
         </div>
-        <div
-          className="row-input"
-          style={{ display: "flex", justifyContent: "center" }}
-        >
-          <div className="input-container">
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DemoContainer components={["DateTimePicker"]}>
-                <DateTimePicker
-                  ampm={true}
-                  disablePast={true}
-                  label="Ngày Bắt Đầu"
-                  value={dayjs(ngayBatDau)}
-                  format="HH:mm DD/MM/YYYY"
-                  onChange={(e) => {
-                    setNgayBatDau(e);
-                  }}
-                  sx={{
-                    width: "368px",
-                  }}
-                />
-              </DemoContainer>
-            </LocalizationProvider>
-          </div>
-          <div className="input-container">
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DemoContainer components={["DateTimePicker"]}>
-                <DateTimePicker
-                  ampm={true}
-                  label="Ngày Kết Thúc"
-                  value={dayjs(ngayKetThuc)}
-                  disablePast={true}
-                  format="HH:mm DD/MM/YYYY"
-                  onChange={(e) => {
-                    setNgayKetThuc(e);
-                  }}
-                  sx={{
-                    width: "368px",
-                  }}
-                />
-              </DemoContainer>
-            </LocalizationProvider>
-          </div>
+        <div>
+          {status === StatusDiscountNumber.HOAT_DONG ? (
+            <Alert
+              severity="warning"
+              className="mx-auto"
+              style={{ maxWidth: "65%" }}
+            >
+              Không thể sửa khi voucher ĐANG HOẠT ĐỘNG, hãy đổi trạng thái thành
+              tạm dừng!
+            </Alert>
+          ) : status === StatusDiscountNumber.DA_HUY ? (
+            <Alert
+              severity="warning"
+              className="mx-auto"
+              style={{ maxWidth: "65%" }}
+            >
+              Không thể sửa khi voucher ĐÃ HỦY!
+            </Alert>
+          ) : (
+            ""
+          )}
         </div>
-
-        <div className="btn-accept">
-          <Button type="primary" onClick={handleSubmit} htmlType="submit">
-            <FontAwesomeIcon icon={faCheck} />
-            &nbsp; Xác nhận{" "}
+        <div className="btn-accept-update mt-3">
+          <Button
+            className="rounded-2 button-mui"
+            type="primary"
+            style={{ height: "40px", width: "auto", fontSize: "15px" }}
+            disabled={
+              status === StatusDiscountNumber.HOAT_DONG
+                ? true
+                : status === StatusDiscountNumber.DA_HUY
+                ? true
+                : false
+            }
+            onClick={() => {
+              handleSubmit();
+            }}
+          >
+            <span style={{ marginBottom: "2px", fontWeight: "500" }}>
+              Xác nhận
+            </span>
           </Button>
-          <ToastContainer />
-          &nbsp; &nbsp;
-          <Link to="/dashboard/voucher">
-            <Button type="primary" htmlType="submit">
-              <FontAwesomeIcon icon={faArrowLeft} />
-              &nbsp; Quay Về{" "}
-            </Button>
-          </Link>
+          <Button
+            className="rounded-2 button-mui ms-2"
+            type="primary"
+            style={{ height: "40px", width: "auto", fontSize: "15px" }}
+            onClick={() => {
+              setTimeout(() => {
+                setIsLoading(false);
+                redirectToHienThiVoucher();
+              }, 200);
+            }}
+          >
+            <span style={{ marginBottom: "2px", fontWeight: "500" }}>
+              Quay về
+            </span>
+          </Button>
         </div>
-      </div> */}
+      </div>
+      <ConfirmDialog
+        open={openConfirm}
+        onClose={handleCloseDialogConfirmUpdate}
+        add={updateVoucher}
+        title={<Title />}
+        header={<Header />}
+      />
+      {!isLoading && <LoadingIndicator />}
     </>
   );
 };

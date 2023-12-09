@@ -1,4 +1,4 @@
-import { Button, Modal, Card, message } from "antd";
+import { Button, Modal, Card } from "antd";
 import React from "react";
 import { useState } from "react";
 import axios from "axios";
@@ -8,7 +8,6 @@ import "../../../../assets/scss/HienThiNV.scss";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
-  Box,
   FormControl,
   FormControlLabel,
   Grid,
@@ -16,14 +15,20 @@ import {
   RadioGroup,
 } from "@mui/material";
 import AddressForm from "./DiaChi";
-import ImageUploadComponent from "./Anh";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import * as dayjs from "dayjs";
+import AnhKhachHang from "./AnhKhachHang";
+import useCustomSnackbar from "../../../../utilities/notistack";
+import { Notistack } from "../../order-manager/enum";
+import { useNavigate } from "react-router-dom";
+import { request } from '../../../../store/helpers/axios_helper'
+
 const AddKH = () => {
+  const { handleOpenAlertVariant } = useCustomSnackbar();
   let [listKH, setListKH] = useState([]);
   let [hoVaTen, setTen] = useState("");
   let [ngaySinh, setNgaySinh] = useState("");
@@ -60,6 +65,7 @@ const AddKH = () => {
   const [sdtError, setSDTError] = useState("");
   const [sdtkhError, setSDTKHError] = useState("");
   const [hoTenKHErr, setHoTenKHErr] = useState("");
+  const navigate = useNavigate();
 
   const showConfirm = () => {
     setShowConfirmModal(true);
@@ -75,6 +81,8 @@ const AddKH = () => {
       setHoVaTenError("Họ và tên không được chứa ký tự đặc biệt");
     } else if (trimmedValue.length < 5) {
       setHoVaTenError("Họ và tên phải có ít nhất 5 ký tự");
+    } else if (/^\s+|\s+$/.test(value)) {
+      setHoVaTenError("Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi");
     } else {
       setHoVaTenError("");
     }
@@ -90,18 +98,20 @@ const AddKH = () => {
       setHoTenKHErr("Họ và tên không được chứa ký tự đặc biệt");
     } else if (trimmedValue.length < 5) {
       setHoTenKHErr("Họ và tên phải có ít nhất 5 ký tự");
+    } else if (/^\s+|\s+$/.test(value)) {
+      setHoTenKHErr("Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi");
     } else {
       setHoTenKHErr("");
     }
   };
   const handleEmailChange = (e) => {
     const value = e.target.value.trim();
-    const parn = /^[a-zA-Z0-9._-]+@gmail\.com$/i;
+    const parn = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     setEmail(value);
     if (!value.trim()) {
       setEmailError("Email không được trống");
     } else if (!parn.test(value)) {
-      setEmailError("Email sai định dạng hoặc không phải là Gmail");
+      setEmailError("Email sai định dạng hoặc không phải là email");
     } else {
       setEmailError("");
     }
@@ -143,7 +153,7 @@ const AddKH = () => {
     }
   };
   const redirectToHienThiKH = (generatedMaKhachHang) => {
-    window.location.href = "/update-khach-hang/" + generatedMaKhachHang;
+    navigate("/update-khach-hang/" + generatedMaKhachHang);
   };
   const handleAddressChange = (result) => {
     setDiaChi(result);
@@ -159,7 +169,7 @@ const AddKH = () => {
   const handleWardChange = (value) => {
     setXaPhuong(value);
   };
-  
+
   const handleAnhDaiDienChange = (imageURL) => {
     setAnhDaiDien(imageURL);
   };
@@ -174,48 +184,69 @@ const AddKH = () => {
         ngaySinh: ngaySinh,
         soDienThoai: soDienThoai,
         gioiTinh: gioiTinh,
-        diaChiList: [], // Bạn có thể để trống danh sách địa chỉ ở đây
+        diaChiList: [],
         email: email,
         anhDaiDien: anhDaiDien,
       };
       if (
         !hoVaTen ||
-        ngaySinh == null ||
+        !ngaySinh ||
         !email ||
         !soDienThoai ||
         !diaChi ||
         !xaPhuong
       ) {
-        message.error("Vui lòng điền đủ thông tin");
+        handleOpenAlertVariant(
+          "Vui lòng điền đủ thông tin trước khi lưu.",
+          Notistack.ERROR
+        );
+        setShowConfirmModal(false);
+        return;
+      }
+      if (
+        hoVaTenError ||
+        sdtError ||
+        emailError ||
+        hoTenKHErr ||
+        sdtkhError ||
+        diaChiError
+      ) {
+        handleOpenAlertVariant(
+          "Vui lòng điền đúng thông tin trước khi lưu.",
+          Notistack.ERROR
+        );
         setShowConfirmModal(false);
         return;
       }
       // Gọi API tạo khách hàng mới
-      const khachHangResponse = await axios.post(
+      request('POST',
         apiURLKH + "/add",
         khachHangData
-      );
+      ).then((response) => {
+        if(response.status === 200){
+          var khachHangResponse = response;
 
-      // Lấy mã khách hàng từ response
-      const generatedMaKhachHang = khachHangResponse.data.data.id;
-      addDiaChiList(generatedMaKhachHang);
-      redirectToHienThiKH(generatedMaKhachHang);
+          // Lấy mã khách hàng từ response
+          var generatedMaKhachHang = khachHangResponse.data.data.id;
+          addDiaChiList(generatedMaKhachHang);
+          redirectToHienThiKH(generatedMaKhachHang);
 
-      // Cập nhật danh sách khách hàng và hiển thị thông báo
-      const newKhachHangResponse = {
-        hoVaTen: hoVaTen,
-        ngaySinh: ngaySinh,
-        soDienThoai: soDienThoai,
-        gioiTinh: gioiTinh,
-        diaChiList: [],
-        email: email,
-        anhDaiDien: anhDaiDien,
-      };
+          // Cập nhật danh sách khách hàng và hiển thị thông báo
+          const newKhachHangResponse = {
+            hoVaTen: hoVaTen,
+            ngaySinh: ngaySinh,
+            soDienThoai: soDienThoai,
+            gioiTinh: gioiTinh,
+            diaChiList: [],
+            email: email,
+            anhDaiDien: anhDaiDien,
+          };
 
-      setListKH([newKhachHangResponse, ...listKH]);
-      message.success({
-        content: "Thêm khách hàng thành công",
+          setListKH([newKhachHangResponse, ...listKH]);
+          handleOpenAlertVariant("Thêm thành công", Notistack.SUCCESS);
+        }
       });
+     
     } catch (error) {
       // Xử lý lỗi
       alert("Thêm khách hàng thất bại");
@@ -237,8 +268,7 @@ const AddKH = () => {
       account: generatedMaKhachHang,
       trangThai: trangThaiKH,
     };
-    axios
-      .post(`${apiURLKH}/dia-chi/add?id=${generatedMaKhachHang}`, newAddress)
+    request('POST', `${apiURLKH}/dia-chi/add?id=${generatedMaKhachHang}`, newAddress)
       .then((response) => {
         let newKhachHangResponse = {
           diaChi: diaChi,
@@ -273,6 +303,7 @@ const AddKH = () => {
               }
               bordered="false"
               headStyle={{ borderLeft: "4px solid #e2e2e2", borderRadius: 0 }}
+              style={{ borderRadius: 0 }}
             >
               <div style={{ width: "95%", margin: "0 auto" }}>
                 <div
@@ -284,7 +315,7 @@ const AddKH = () => {
                     width: "100%",
                   }}
                 >
-                  <ImageUploadComponent
+                  <AnhKhachHang
                     setAnhDaiDien={handleAnhDaiDienChange}
                     hoten={hoVaTen}
                   />
@@ -324,10 +355,11 @@ const AddKH = () => {
                       <DemoContainer components={["DatePicker"]}>
                         <DatePicker
                           label="Ngày Sinh"
+                          disableFuture
+                          format="DD/MM/YYYY"
                           value={
                             ngaySinh ? dayjs(ngaySinh, "DD/MM/YYYY") : null
                           }
-                          format="DD/MM/YYYY"
                           onChange={handleChangeDate}
                           sx={{
                             position: "relative",

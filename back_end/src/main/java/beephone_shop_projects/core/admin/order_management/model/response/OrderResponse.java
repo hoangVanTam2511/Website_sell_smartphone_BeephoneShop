@@ -12,6 +12,7 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -35,9 +36,21 @@ public class OrderResponse {
 
   private BigDecimal tienKhachTra;
 
+  private BigDecimal tienTraKhach;
+
+  private BigDecimal khachCanTra;
+
+  private BigDecimal tienTraHang;
+
   private OrderType loaiHoaDon;
 
   private OrderStatus trangThai;
+
+  private String hoVaTen;
+
+  private String soDienThoai;
+
+  private String email;
 
   private String tenNguoiNhan;
 
@@ -47,11 +60,19 @@ public class OrderResponse {
 
   private Date createdAt;
 
+  private String maQrCode;
+
   private Date updatedAt;
 
   private String createdBy;
 
   private String updatedBy;
+
+  private String tinhThanhPhoNguoiNhan;
+
+  private String quanHuyenNguoiNhan;
+
+  private String xaPhuongNguoiNhan;
 
   private AccountResponse account;
 
@@ -62,5 +83,7 @@ public class OrderResponse {
   private VoucherResponse voucher;
 
   private List<OrderHistoryResponse> orderHistories;
+
+  private Set<OrderItemResponse> orderItems;
 
 }

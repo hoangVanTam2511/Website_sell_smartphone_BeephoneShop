@@ -33,4 +33,5 @@ public class Anh extends PrimaryEntity implements IsIdentified {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_chi_tiet_san_pham")
   private SanPhamChiTiet sanPhamChiTiet;
+
 }

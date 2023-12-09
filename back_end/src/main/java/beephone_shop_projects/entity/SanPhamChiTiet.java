@@ -1,6 +1,7 @@
 package beephone_shop_projects.entity;
 
 import beephone_shop_projects.entity.base.PrimaryEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
@@ -27,20 +28,45 @@ public class SanPhamChiTiet extends PrimaryEntity implements Serializable {
 
   private String ma;
 
+  private String maCauHinh;
+
   private BigDecimal donGia;
 
   private Integer soLuongTonKho;
+
+  private BigDecimal giaTriKhuyenMai;
+
+  private BigDecimal donGiaSauKhuyenMai;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_san_pham")
   private SanPham sanPham;
 
+  @OneToMany(mappedBy = "sanPhamChiTiet")
+  private Set<Imei> imeis;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_cau_hinh")
   private CauHinh cauHinh;
 
-  @OneToMany(mappedBy = "sanPhamChiTiet")
-  private Set<Anh> images = new HashSet<>();
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_ram")
+  private Ram ram;
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_rom")
+  private Rom rom;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_mau_sac")
+  private MauSac mauSac;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_image")
+  private Image image;
+
+  @JsonIgnore
+  @OneToMany(mappedBy = "idSanPham")
+  private Set<KhuyenMaiChiTiet> promotions = new HashSet<>();
 
 }

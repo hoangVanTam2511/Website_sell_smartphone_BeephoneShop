@@ -1,154 +1,196 @@
-import React, { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import { Button, Table } from "antd";
-import { IconButton, Pagination, TextField, Tooltip, } from "@mui/material";
+import {
+  Box,
+  FormControl,
+  IconButton,
+  MenuItem,
+  Pagination,
+  Select,
+  TextField,
+  Tooltip,
+} from "@mui/material";
 import { PlusOutlined } from "@ant-design/icons";
 import Card from "../../../components/Card";
 import { format } from "date-fns";
 import axios from "axios";
 import { parseInt } from "lodash";
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
-import Zoom from '@mui/material/Zoom';
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
+import Zoom from "@mui/material/Zoom";
 import * as dayjs from "dayjs";
 import { OrderStatusString, OrderTypeString } from "./enum";
+import LoadingIndicator from "../../../utilities/loading";
+import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
+import moment from "moment";
+import { over } from "stompjs";
+import SockJS from "sockjs-client";
+import { FaPencilAlt } from "react-icons/fa";
+import { request } from '../../../store/helpers/axios_helper'
 
 const ManagementOrders = () => {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
   const [orders, setOrders] = useState([]);
   const [totalPages, setTotalPages] = useState();
   const [refreshPage, setRefreshPage] = useState(1);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [keyword, setKeyword] = useState(searchParams.get('keyword'));
-  const [currentPage, setCurrentPage] = useState(searchParams.get('currentPage') || 1);
-  const [fromDate, setFromDate] = useState(searchParams.get('fromDate'));
-  const [toDate, setToDate] = useState(searchParams.get('toDate'));
-  const [state, setState] = useState(searchParams.get('state'));
-  const [type, setType] = useState(searchParams.get('type'));
-  const [sort, setSort] = useState(searchParams.get('sort'));
+  const [keyword, setKeyword] = useState(searchParams.get("keyword"));
+  const [currentPage, setCurrentPage] = useState(
+    searchParams.get("currentPage") || 1
+  );
+  const [fromDate, setFromDate] = useState(searchParams.get("fromDate"));
+  const [toDate, setToDate] = useState(searchParams.get("toDate"));
+  const [state, setState] = useState(searchParams.get("state"));
+  const [type, setType] = useState(searchParams.get("type"));
+  const [sort, setSort] = useState(searchParams.get("sort"));
+  const [changeOfRealtime, setChangeOfRealtime] = useState("");
+  var stompClient = null;
+
+  //connnect
+  const connect = () => {
+    let Sock = new SockJS("http://localhost:8080/ws");
+    stompClient = over(Sock);
+    stompClient.connect({}, onConnected, onError);
+  };
+
+  const onConnected = () => {
+    stompClient.subscribe("/bill/bills", onMessageReceived);
+  };
+
+  const onMessageReceived = (payload) => {
+    var data = JSON.parse(payload.body);
+    setChangeOfRealtime(data.name);
+  };
+
+  const onError = (err) => {
+    console.log(err);
+  };
 
   const findOrdersByMultipleCriteriaWithPagination = (page) => {
-    axios
-      .get(`http://localhost:8080/api/orders`, {
+    request('GET',`/api/orders`, {
         params: {
           currentPage: page,
           keyword: keyword,
           fromDate: fromDate,
           toDate: toDate,
           isPending: false,
-        }
+        },
       })
       .then((response) => {
         setOrders(response.data.data);
         setTotalPages(response.data.totalPages);
+        setIsLoading(false);
+        console.log(response.data.data);
         // localStorage.setItem('orders', response.data.content);
         // localStorage.setItem('totalPages', response.data.totalPages);
       })
       .catch((error) => {
+        setIsLoading(false);
         console.error(error);
       });
-  }
+  };
 
+  const isFirstRender = useRef(true);
   useEffect(() => {
-    // const savedToDate = localStorage.getItem('toDate');
-    // const savedFromDate = localStorage.getItem('fromDate');
-    // const savedKeyword = localStorage.getItem('keyword');
-    // const savedCurrentPage = localStorage.getItem('currentPage');
-    // const savedTotalPages = localStorage.getItem('totalPages');
-    // const savedOrders = localStorage.getItem('orders');
+    if (stompClient === null) {
+      connect();
+    }
+    setIsLoading(true);
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      findOrdersByMultipleCriteriaWithPagination(currentPage);
+    } else {
+      findOrdersByMultipleCriteriaWithPagination(currentPage);
+    }
+  }, [fromDate, toDate, keyword, currentPage, changeOfRealtime]);
 
-    // if (savedToDate) {
-    //   setToDate(savedToDate);
-    // }
-    // if (savedFromDate) {
-    //   setFromDate(savedFromDate);
-    // }
-    // if (savedKeyword) {
-    //   setKeyword(savedKeyword);
-    // }
-    // if (savedCurrentPage) {
-    //   setCurrentPage(savedCurrentPage);
-    // }
-    // if (savedTotalPages) {
-    //   setTotalPages(savedTotalPages);
-    // }
-    // if (savedOrders) {
-    //   setOrders(savedOrders);
-    // }
-
-    findOrdersByMultipleCriteriaWithPagination(currentPage);
-  }, [fromDate, toDate, keyword, currentPage]);
+  // const isMounted = useRef(false);
+  // useEffect(() => {
+  //   if (!isMounted.current) {
+  //     isMounted.current = true;
+  //     setIsLoading(true);
+  //     findOrdersByMultipleCriteriaWithPagination(currentPage);
+  //   }
+  // }, [])
 
   const handleRefreshData = () => {
     navigate(`/dashboard/management-orders`);
     setRefreshPage(refreshPage + 1);
-    setKeyword('');
+    setKeyword("");
     setFromDate(null);
     setToDate(null);
     setCurrentPage(1);
     // findOrdersByMultipleCriteriaWithPagination(1);
     // handleRemoveStorage();
-  }
+  };
 
   const handleRemoveStorage = () => {
     localStorage.clear();
-  }
+  };
 
   const handleSetParamsDate = () => {
-    const fromDateParam = searchParams.get('fromDate');
-    const toDateParam = searchParams.get('toDate');
+    const fromDateParam = searchParams.get("fromDate");
+    const toDateParam = searchParams.get("toDate");
 
     if (fromDateParam && toDateParam) {
-      searchParams.delete('fromDate');
-      searchParams.delete('toDate');
+      searchParams.delete("fromDate");
+      searchParams.delete("toDate");
       setSearchParams(searchParams);
 
-      searchParams.set('fromDate', fromDateParam);
-      searchParams.set('toDate', toDateParam);
+      searchParams.set("fromDate", fromDateParam);
+      searchParams.set("toDate", toDateParam);
       setSearchParams(searchParams);
     }
-  }
+  };
 
   const handleGetValueFromInputTextField = (event) => {
     const value = event.target.value;
     setKeyword(value);
     setCurrentPage(1);
-    searchParams.delete('currentPage');
+    searchParams.delete("currentPage");
     setSearchParams(searchParams);
     // localStorage.setItem('keyword', value);
     // localStorage.removeItem('currentPage');
-  }
+  };
 
   const handleGetToDateFromDatePicker = (newDate) => {
-    const value = newDate.format("DD/MM/YYYY");
+    const value = newDate.format("DD-MM-YYYY");
     setToDate(value);
-    searchParams.set('toDate', newDate.format("DD-MM-YYYY"));
-    searchParams.delete('currentPage');
+    searchParams.set("toDate", newDate.format("DD-MM-YYYY"));
+    searchParams.delete("currentPage");
     setSearchParams(searchParams);
     handleSetParamsDate();
     setCurrentPage(1);
     // localStorage.setItem('toDate', value);
     // localStorage.removeItem('currentPage');
-  }
+  };
 
   const handleGetFromDateFromDatePicker = (newDate) => {
-    const value = newDate.format("DD/MM/YYYY");
+    const value = newDate.format("DD-MM-YYYY");
     setFromDate(value);
-    searchParams.set('fromDate', newDate.format("DD-MM-YYYY"));
-    searchParams.delete('currentPage');
+    searchParams.set("fromDate", newDate.format("DD-MM-YYYY"));
+    searchParams.delete("currentPage");
     setSearchParams(searchParams);
     handleSetParamsDate();
     setCurrentPage(1);
     // localStorage.setItem('fromDate', value);
     // localStorage.removeItem('currentPage');
-  }
+  };
 
   const handlePageChange = (event, page) => {
+    setIsLoading(true);
     setCurrentPage(page);
-    searchParams.set('currentPage', page);
+    searchParams.set("currentPage", page);
     setSearchParams(searchParams);
     // localStorage.setItem('currentPage', page);
   };
@@ -161,6 +203,10 @@ const ManagementOrders = () => {
   const handleCloseNoAction = () => {
     setOpen(false);
   };
+
+  const orderSort = orders.sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  );
 
   const columns = [
     {
@@ -176,7 +222,7 @@ const ManagementOrders = () => {
       title: "Mã Đơn Hàng",
       align: "center",
       key: "ma",
-      width: "15%",
+      width: "10%",
       dataIndex: "ma",
       render: (text, record) => (
         <span style={{ fontWeight: "500" }}>{record.ma}</span>
@@ -185,36 +231,32 @@ const ManagementOrders = () => {
     {
       title: "Khách Hàng",
       align: "center",
-      dataIndex: "tenNguoiNhan",
-      width: "15%",
-      render: (text, record) =>
-        record.tenNguoiNhan == null ? (
-          <div
-            className="rounded-pill mx-auto"
-            style={{
-              height: "35px",
-              width: "92px",
-              padding: "4px",
-              backgroundColor: "#e1e1e1",
-            }}
-          >
-            <span
-              className="text-dark mt-1"
-              style={{ fontSize: "14px" }}
-            >
-              Khách lẻ
-            </span>
-          </div>
-        ) : (
-          <span>{record.tenNguoiNhan}</span>
-        ),
+      width: "10%",
+      render: (text, order) =>
+        order.account === null &&
+        order.loaiHoaDon === OrderTypeString.AT_COUNTER
+          ? order.hoVaTen
+          : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
+            order.account &&
+            order.account.hoVaTen
+          ? order.account.hoVaTen
+          : order.tenNguoiNhan,
     },
     {
       title: "Số Điện Thoại",
       align: "center",
       dataIndex: "soDienThoaiNguoiNhan",
-      render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>{record.soDienThoaiNguoiNhan || "..."}</span>
+      render: (text, order) => (
+        <span style={{ fontWeight: "400" }}>
+          {order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
+          order.account === null
+            ? order.soDienThoai
+            : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
+              order.account &&
+              order.account.soDienThoai
+            ? order.account.soDienThoai
+            : order.soDienThoaiNguoiNhan}
+        </span>
       ),
     },
     {
@@ -232,10 +274,7 @@ const ManagementOrders = () => {
               padding: "4px",
             }}
           >
-            <span
-              className="text-white"
-              style={{ fontSize: "14px" }}
-            >
+            <span className="text-white" style={{ fontSize: "14px" }}>
               Giao hàng
             </span>
           </div>
@@ -244,10 +283,7 @@ const ManagementOrders = () => {
             className="rounded-pill badge-primary mx-auto"
             style={{ height: "35px", width: "91px", padding: "4px" }}
           >
-            <span
-              className="text-white"
-              style={{ fontSize: "14px" }}
-            >
+            <span className="text-white" style={{ fontSize: "14px" }}>
               Tại quầy
             </span>
           </div>
@@ -267,7 +303,7 @@ const ManagementOrders = () => {
             style={{
               height: "35px",
               padding: "4px",
-              width: "auto"
+              width: "auto",
             }}
           >
             <span
@@ -277,106 +313,87 @@ const ManagementOrders = () => {
               Đang chờ xác nhận
             </span>
           </div>
-        )
-          : status == OrderStatusString.CONFIRMED ? (
-            <div
-              className="rounded-pill mx-auto badge-success"
-              style={{
-                height: "35px",
-                width: "115px",
-                padding: "4px",
-              }}
-            >
-              <span
-                className="text-white"
-                style={{ fontSize: "14px" }}
-              >
-                Đã xác nhận
-              </span>
-            </div>
-          )
-            : status == OrderStatusString.PREPARING ? (
-              <div
-                className="rounded-pill mx-auto badge-warning"
-                style={{
-                  height: "35px",
-                  width: "auto",
-                  padding: "4px",
-                }}
-              >
-                <span
-                  className="text-dark"
-                  style={{ fontSize: "14px" }}
-                >
-                  Đang chuẩn bị hàng
-                </span>
-              </div>
-            )
-              : status == OrderStatusString.DELIVERING ?
-                <div
-                  className="rounded-pill mx-auto badge-primary"
-                  style={{
-                    height: "35px",
-                    width: "135px",
-                    padding: "4px",
-                  }}
-                >
-                  <span
-                    className="text-white"
-                    style={{ fontSize: "14px" }}
-                  >
-                    Đang giao hàng
-                  </span>
-                </div>
-                : status == OrderStatusString.SUCCESS_DELIVERY ?
-                  <div
-                    className="rounded-pill mx-auto badge-primary"
-                    style={{
-                      height: "35px",
-                      width: "125px",
-                      padding: "4px",
-                    }}
-                  >
-                    <span
-                      className="text-white"
-                      style={{ fontSize: "14px" }}
-                    >
-                      Đã giao hàng
-                    </span>
-                  </div>
-                  : status == OrderStatusString.CANCELLED ?
-                    <div
-                      className="rounded-pill mx-auto badge-danger"
-                      style={{
-                        height: "35px",
-                        width: "90px",
-                        padding: "4px",
-                      }}
-                    >
-                      <span
-                        className="text-white"
-                        style={{ fontSize: "14px" }}
-                      >
-                        Đã hủy
-                      </span>
-                    </div>
-                    : status == OrderStatusString.HAD_PAID ?
-                      <div
-                        className="rounded-pill mx-auto badge-primary"
-                        style={{
-                          height: "35px",
-                          width: "135px",
-                          padding: "4px",
-                        }}
-                      >
-                        <span
-                          className="text-white"
-                          style={{ fontSize: "14px" }}
-                        >
-                          Đã thanh toán
-                        </span>
-                      </div> : ""
-
+        ) : status == OrderStatusString.CONFIRMED ? (
+          <div
+            className="rounded-pill mx-auto badge-success"
+            style={{
+              height: "35px",
+              width: "115px",
+              padding: "4px",
+            }}
+          >
+            <span className="text-white" style={{ fontSize: "14px" }}>
+              Đã xác nhận
+            </span>
+          </div>
+        ) : status == OrderStatusString.PREPARING ? (
+          <div
+            className="rounded-pill mx-auto badge-warning"
+            style={{
+              height: "35px",
+              width: "150px",
+              padding: "4px",
+            }}
+          >
+            <span className="text-dark" style={{ fontSize: "14px" }}>
+              Đang chuẩn bị hàng
+            </span>
+          </div>
+        ) : status == OrderStatusString.DELIVERING ? (
+          <div
+            className="rounded-pill mx-auto badge-primary"
+            style={{
+              height: "35px",
+              width: "135px",
+              padding: "4px",
+            }}
+          >
+            <span className="text-white" style={{ fontSize: "14px" }}>
+              Đang giao hàng
+            </span>
+          </div>
+        ) : status == OrderStatusString.SUCCESS_DELIVERY ? (
+          <div
+            className="rounded-pill mx-auto badge-primary"
+            style={{
+              height: "35px",
+              width: "115px",
+              padding: "4px",
+            }}
+          >
+            <span className="text-white" style={{ fontSize: "14px" }}>
+              Hoàn thành
+            </span>
+          </div>
+        ) : status == OrderStatusString.CANCELLED ? (
+          <div
+            className="rounded-pill mx-auto badge-danger"
+            style={{
+              height: "35px",
+              width: "90px",
+              padding: "4px",
+            }}
+          >
+            <span className="text-white" style={{ fontSize: "14px" }}>
+              Đã hủy
+            </span>
+          </div>
+        ) : status == OrderStatusString.HAD_PAID ? (
+          <div
+            className="rounded-pill mx-auto badge-primary"
+            style={{
+              height: "35px",
+              width: "115px",
+              padding: "4px",
+            }}
+          >
+            <span className="text-white" style={{ fontSize: "14px" }}>
+              Hoàn thành
+            </span>
+          </div>
+        ) : (
+          ""
+        );
       },
     },
     {
@@ -386,10 +403,12 @@ const ManagementOrders = () => {
       width: "15%",
       render: (text, record) => (
         <span className="txt-danger" style={{ fontWeight: "500" }}>
-          {record && record.tongTien && record.tongTien.toLocaleString("vi-VN", {
-            style: "currency",
-            currency: "VND",
-          })}
+          {record &&
+            record.tongTien &&
+            record.tongTien.toLocaleString("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            })}
         </span>
       ),
     },
@@ -400,7 +419,9 @@ const ManagementOrders = () => {
       width: "5%",
       render: (text, record) => (
         <span style={{ fontWeight: "", whiteSpace: "pre-line" }}>
-          {record && record.createdAt && format(new Date(record.createdAt), "HH:mm:ss, dd/MM/yyyy")}
+          {record &&
+            record.createdAt &&
+            format(new Date(record.createdAt), "HH:mm:ss, dd/MM/yyyy")}
         </span>
       ),
     },
@@ -411,10 +432,10 @@ const ManagementOrders = () => {
       dataIndex: "ma",
       render: (text, record) => (
         <div className="button-container">
-          <Link className="ms-1" to={`/dashboard/order-detail/${record.ma}`}>
+          <Link className="" to={`/dashboard/order-detail/${record.ma}`}>
             <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
               <IconButton size="">
-                <BorderColorOutlinedIcon color="primary" />
+                <FaPencilAlt color="#2f80ed" />
               </IconButton>
             </Tooltip>
           </Link>
@@ -426,7 +447,8 @@ const ManagementOrders = () => {
   const OrderTable = () => {
     return (
       <>
-        <Table className="table-container"
+        <Table
+          className="table-container mt-2"
           columns={columns}
           rowKey="ma"
           dataSource={orders}
@@ -449,7 +471,13 @@ const ManagementOrders = () => {
 
   return (
     <>
-      <div className="mt-4" style={{ backgroundColor: "#ffffff", boxShadow: "0 0.1rem 0.3rem #00000010" }}>
+      <div
+        className="mt-4"
+        style={{
+          backgroundColor: "#ffffff",
+          boxShadow: "0 0.1rem 0.3rem #00000010",
+        }}
+      >
         <Card className="">
           <Card.Header className="d-flex justify-content-between">
             <div className="header-title mt-2">
@@ -488,9 +516,10 @@ const ManagementOrders = () => {
             </div>
             <div className="d-flex">
               <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DemoContainer components={['DatePicker']}>
-                  <DatePicker label="Từ ngày"
-                    slotProps={{ textField: { size: 'small' } }}
+                <DemoContainer components={["DatePicker"]}>
+                  <DatePicker
+                    label="Từ ngày"
+                    slotProps={{ textField: { size: "small" } }}
                     value={fromDate ? dayjs(fromDate, "DD/MM/YYYY") : null}
                     format="DD/MM/YYYY"
                     onChange={(value) => handleGetFromDateFromDatePicker(value)}
@@ -505,10 +534,10 @@ const ManagementOrders = () => {
                 </DemoContainer>
               </LocalizationProvider>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DemoContainer components={['DatePicker']}>
+                <DemoContainer components={["DatePicker"]}>
                   <DatePicker
                     onChange={(value) => handleGetToDateFromDatePicker(value)}
-                    slotProps={{ textField: { size: 'small' } }}
+                    slotProps={{ textField: { size: "small" } }}
                     label={"Đến ngày"}
                     value={toDate ? dayjs(toDate, "DD/MM/YYYY") : null}
                     format={"DD/MM/YYYY"}
@@ -530,7 +559,8 @@ const ManagementOrders = () => {
                 type="primary"
                 style={{ height: "40px", width: "150px", fontSize: "15px" }}
               >
-                <PlusOutlined className="ms-1"
+                <PlusOutlined
+                  className="ms-1"
                   style={{
                     position: "absolute",
                     bottom: "12.5px",
@@ -546,16 +576,252 @@ const ManagementOrders = () => {
               </Button>
             </div>
           </Card.Header>
+          <div className="d-flex mt-4 pt-1 mx-auto">
+            <div
+              className="d-flex"
+              style={{
+                height: "40px",
+                position: "relative",
+                cursor: "pointer",
+              }}
+            >
+              <div
+                // onClick={handleOpenSelect1}
+                className=""
+                style={{ marginTop: "8px" }}
+              >
+                <span
+                  className="ms-2 ps-1"
+                  style={{ fontSize: "15px", fontWeight: "450" }}
+                >
+                  Trạng Thái:{" "}
+                </span>
+              </div>
+              <FormControl
+                sx={{
+                  minWidth: 50,
+                }}
+                size="small"
+              >
+                <Select
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        borderRadius: "7px",
+                      },
+                    },
+                  }}
+                  IconComponent={KeyboardArrowDownOutlinedIcon}
+                  sx={{
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none !important",
+                    },
+                    "& .MuiSelect-select": {
+                      color: "#2f80ed",
+                      fontWeight: "500",
+                    },
+                  }}
+                  // open={openSelect1}
+                  // onClose={handleCloseSelect1}
+                  // onOpen={handleOpenSelect1}
+                  defaultValue={14}
+                >
+                  <MenuItem className="" value={14}>
+                    Tất cả
+                  </MenuItem>
+                  <MenuItem value={15}>Khách hàng mới</MenuItem>
+                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
+            <div
+              className="d-flex ms-3"
+              style={{
+                height: "40px",
+                position: "relative",
+                cursor: "pointer",
+              }}
+            >
+              <div
+                // onClick={handleOpenSelect1}
+                className=""
+                style={{ marginTop: "8px" }}
+              >
+                <span
+                  className="ms-2 ps-1"
+                  style={{ fontSize: "15px", fontWeight: "450" }}
+                >
+                  Loại Đơn Hàng:{" "}
+                </span>
+              </div>
+              <FormControl
+                sx={{
+                  minWidth: 50,
+                }}
+                size="small"
+              >
+                <Select
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        borderRadius: "7px",
+                      },
+                    },
+                  }}
+                  IconComponent={KeyboardArrowDownOutlinedIcon}
+                  sx={{
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none !important",
+                    },
+                    "& .MuiSelect-select": {
+                      color: "#2f80ed",
+                      fontWeight: "500",
+                    },
+                  }}
+                  // open={openSelect1}
+                  // onClose={handleCloseSelect1}
+                  // onOpen={handleOpenSelect1}
+                  defaultValue={14}
+                >
+                  <MenuItem className="" value={14}>
+                    Tất cả
+                  </MenuItem>
+                  <MenuItem value={15}>Khách hàng mới</MenuItem>
+                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
+            <div
+              className="d-flex ms-3"
+              style={{
+                height: "40px",
+                position: "relative",
+                cursor: "pointer",
+              }}
+            >
+              <div
+                // onClick={handleOpenSelect1}
+                className=""
+                style={{ marginTop: "8px" }}
+              >
+                <span
+                  className="ms-2 ps-1"
+                  style={{ fontSize: "15px", fontWeight: "450" }}
+                >
+                  Sắp Xếp:{" "}
+                </span>
+              </div>
+              <FormControl
+                sx={{
+                  minWidth: 50,
+                }}
+                size="small"
+              >
+                <Select
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        borderRadius: "7px",
+                      },
+                    },
+                  }}
+                  IconComponent={KeyboardArrowDownOutlinedIcon}
+                  sx={{
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none !important",
+                    },
+                    "& .MuiSelect-select": {
+                      color: "#2f80ed",
+                      fontWeight: "500",
+                    },
+                  }}
+                  // open={openSelect1}
+                  // onClose={handleCloseSelect1}
+                  // onOpen={handleOpenSelect1}
+                  defaultValue={14}
+                >
+                  <MenuItem className="" value={14}>
+                    Tất cả
+                  </MenuItem>
+                  <MenuItem value={15}>Khách hàng mới</MenuItem>
+                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
+            <div
+              className="d-flex ms-3"
+              style={{
+                height: "40px",
+                position: "relative",
+                cursor: "pointer",
+              }}
+            >
+              <div
+                // onClick={handleOpenSelect1}
+                className=""
+                style={{ marginTop: "8px" }}
+              >
+                <span
+                  className="ms-2 ps-1"
+                  style={{ fontSize: "15px", fontWeight: "450" }}
+                >
+                  Hiển Thị:{""}
+                </span>
+              </div>
+              <FormControl
+                sx={{
+                  minWidth: 50,
+                }}
+                size="small"
+              >
+                <Select
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        borderRadius: "7px",
+                      },
+                    },
+                  }}
+                  IconComponent={KeyboardArrowDownOutlinedIcon}
+                  sx={{
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none !important",
+                    },
+                    "& .MuiSelect-select": {
+                      color: "#2f80ed",
+                      fontWeight: "500",
+                    },
+                  }}
+                  // open={openSelect1}
+                  // onClose={handleCloseSelect1}
+                  // onOpen={handleOpenSelect1}
+                  defaultValue={14}
+                >
+                  <MenuItem className="" value={14}>
+                    Tất cả
+                  </MenuItem>
+                  <MenuItem value={15}>Khách hàng mới</MenuItem>
+                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
+          </div>
           <Card.Body>
             <OrderTable />
           </Card.Body>
-          <div className='mx-auto'>
-            <Pagination color="primary" page={parseInt(currentPage)} key={refreshPage} count={totalPages}
-              onChange={handlePageChange} />
+          <div className="mx-auto">
+            <Pagination
+              color="primary"
+              page={parseInt(currentPage)}
+              key={refreshPage}
+              count={totalPages}
+              onChange={handlePageChange}
+            />
           </div>
           <div className="mt-4"></div>
         </Card>
       </div>
+      {isLoading && <LoadingIndicator />}
     </>
   );
 };

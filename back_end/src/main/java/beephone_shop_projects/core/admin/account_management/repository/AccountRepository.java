@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.admin.account_management.repository;
 
+import beephone_shop_projects.core.admin.account_management.model.request.SearchAccountRequest;
 import beephone_shop_projects.core.admin.account_management.model.response.AccountResponse;
 import beephone_shop_projects.entity.Account;
 import beephone_shop_projects.infrastructure.constant.StatusAccountCus;
@@ -15,10 +16,25 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Repository
-public interface AccountRepository extends IAccountRepository {
+public interface AccountRepository extends IAccountRepository, CustomKhachHangRepository {
+    @Query(value = """
+                SELECT  ac FROM Account ac
+                WHERE :#{#req.hoVaTen} IS NULL 
+                OR :#{#req.ma} IS NULL
+                        OR ac.hoVaTen LIKE CONCAT('%', :#{#req.hoVaTen}, '%')
+                        OR ac.ma LIKE CONCAT('%', :#{#req.ma}, '%')
+      AND ac.idRole.ma='role1'
+            """)
+    Page<Account> findAllHaha(Pageable pageable, @Param("req") SearchAccountRequest request);
+    //                 OR #{#req.email} IS NULL OR #{#req.email} IS NULL OR #{#req.diaChi} IS NULL OR #{#req.email} IS NULL
+//    OR ac.email LIKE CONCAT('%', :tenKH, '%')
+    //                        OR ac.diaChi LIKE CONCAT('%', :tenKH, '%')
+//                        OR ac.xaPhuong LIKE CONCAT('%', :tenKH, '%')
+//                        OR ac.tinhThanhPho LIKE CONCAT('%', :tenKH, '%')
+//                        OR ac.quanHuyen LIKE CONCAT('%', :tenKH, '%')
+//                        OR ac.soDienThoai LIKE CONCAT('%', :tenKH, '%')
     @Query(value = """
                 SELECT  kh FROM Account kh where kh.idRole.ma='role1'
             """)
@@ -66,10 +82,6 @@ public interface AccountRepository extends IAccountRepository {
                         OR ac.hoVaTen LIKE CONCAT('%', :tenKH, '%')
                         OR ac.ma LIKE CONCAT('%', :tenKH, '%')
                         OR ac.email LIKE CONCAT('%', :tenKH, '%')
-                        OR ac.diaChi LIKE CONCAT('%', :tenKH, '%')
-                        OR ac.xaPhuong LIKE CONCAT('%', :tenKH, '%')
-                        OR ac.tinhThanhPho LIKE CONCAT('%', :tenKH, '%')
-                        OR ac.quanHuyen LIKE CONCAT('%', :tenKH, '%')
                         OR ac.soDienThoai LIKE CONCAT('%', :tenKH, '%')
                         OR CAST(ac.ngaySinh AS string) LIKE CONCAT('%', :tenKH, '%')
                         ) AND ac.idRole.ma='role1'
@@ -87,7 +99,12 @@ public interface AccountRepository extends IAccountRepository {
 
     Page<AccountResponse> searchAllKH(@Param("tenKH")Optional<String> tenKH, Pageable pageable);
 
-    @Query("SELECT a FROM Account a WHERE  a.trangThai = :trangThai AND a.idRole.ma='role1' ")
-    Page<Account> filterTrangThai(@RequestParam("trangThai") StatusAccountCus trangThai, Pageable pageable);
+    @Query("SELECT a FROM Account a WHERE  a.trangThai= :trangThai AND a.idRole.ma='role1' ")
+    Page<Account> filterTrangThai(@RequestParam("trangThai")StatusAccountCus trangThai, Pageable pageable);
+
+    @Query(value = """
+            SELECT * FROM account acc WHERE acc.email = :email 
+            """, nativeQuery = true)
+    Account findByEmail(@Param("email") String email);
 
 }

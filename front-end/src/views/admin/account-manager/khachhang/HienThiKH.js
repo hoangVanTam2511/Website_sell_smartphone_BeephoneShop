@@ -1,4 +1,4 @@
-import { Form, Popconfirm, Table, Button, message } from "antd";
+import { Form, Popconfirm, Table, Button } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import Card from "../../../../components/Card";
 import moment from "moment";
@@ -15,6 +15,9 @@ import {
   MenuItem,
   Pagination,
   FormControl,
+  Dialog,
+  DialogContent,
+  Slide,
 } from "@mui/material";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -23,10 +26,25 @@ import {
   faPenToSquare,
 } from "@fortawesome/free-solid-svg-icons";
 import ExcelExportHelper from "../khachhang/ExcelExportHelper";
-import { StatusAccountCus, StatusCusNumber } from "./enum";
+import { StatusCusNumber } from "./enum";
+import * as React from "react";
+import ModalAddKhachHang from "./ModalAddKhachHang";
+import { Notistack } from "../../order-manager/enum";
+import useCustomSnackbar from "../../../../utilities/notistack";
+import { request } from '../../../../store/helpers/axios_helper'
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 //show
 const HienThiKH = () => {
+  const [open, setOpen] = React.useState(false);
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
   const [form] = Form.useForm();
   const [openSelect, setOpenSelect] = useState(false);
 
@@ -39,23 +57,25 @@ const HienThiKH = () => {
   };
 
   let [listKH, setListKH] = useState([]);
+  const { handleOpenAlertVariant } = useCustomSnackbar();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [searchText, setSearchText] = useState("");
-  const [filterStatus, setFilterStatus] = useState(null);
+  const [filterStatus, setFilterStatus] = useState(0);
   const handleFilter = (status) => {
     setFilterStatus(status);
     // setCurrentPage(0); // Reset current page to 1 when applying filters
   };
-
+  const [keySelect, setKeySelect] = useState(0);
   const handleReset = () => {
     loadDataListRole(currentPage);
     setSearchText("");
-    // setCurrentPage(1);
+    setKeySelect(keySelect + 1);
+    // setCurrentPage(targetPage);
   };
 
   useEffect(() => {
-    if (filterStatus == 0) {
+    if (filterStatus === 0) {
       handleReset();
     }
     fetchEmployeeList(currentPage);
@@ -75,10 +95,7 @@ const HienThiKH = () => {
       console.error("Error fetching employee data:", error);
     }
   };
-  const [
-    targetPage,
-    //  setTargetPage
-  ] = useState(1);
+  const [targetPage] = useState(1);
   const handleSearch = async () => {
     try {
       if (!searchText) {
@@ -87,15 +104,17 @@ const HienThiKH = () => {
         loadDataListRole(targetPage); // Tải danh sách từ trang targetPage
         return;
       }
-      const response = await axios.get(apiURLKH + "/search-all", {
-        params: {
-          tenKH: searchText,
-          page: currentPage,
-        },
-      });
-      setListKH(response.data.data);
-      setTotalPages(response.totalPages);
-      setCurrentPage(targetPage);
+      request('GET', apiURLKH + "/search-all", {
+          params: {
+            tenKH: searchText,
+            page: currentPage,
+          },
+        })
+        .then((response) => {
+          setTotalPages(response.data.totalPages);
+          // setCurrentPage(targetPage);
+          setListKH(response.data.data);
+        });
     } catch (error) {
       console.log("Error searching accounts:", error);
     }
@@ -112,7 +131,7 @@ const HienThiKH = () => {
   }, [searchText, currentPage]);
 
   useEffect(() => {
-    if (filterStatus == 0) {
+    if (filterStatus === 0) {
       handleReset();
     }
     fetchEmployeeList(currentPage);
@@ -124,11 +143,10 @@ const HienThiKH = () => {
   }, [currentPage]);
   // load
   const loadDataListRole = (currentPage) => {
-    axios
-      .get(apiURLKH + "/hien-thi?page=" + currentPage)
+    request('GET', apiURLKH + "/hien-thi?page=" + currentPage)
       .then((response) => {
         setListKH(response.data.data);
-        setTotalPages(response.totalPages);
+        setTotalPages(response.data.totalPages);
       })
       .catch(() => {});
   };
@@ -158,11 +176,10 @@ const HienThiKH = () => {
   };
 
   const doChangeTrangThai = (id) => {
-    axios
-      .put(apiURLKH + `/${id}/doi-tt`)
+    request('PUT', apiURLKH + `/${id}/doi-tt`)
       .then((response) => {
         loadDataListRole(currentPage);
-        message.success("Đổi trạng thái thành công");
+        handleOpenAlertVariant("Đổi trạng thái thành công", Notistack.SUCCESS);
       })
       .catch((error) => {
         // Xử lý lỗi
@@ -360,7 +377,27 @@ const HienThiKH = () => {
                   </span>
                 </Button>
               </div>
-
+              {/* <Button
+                onClick={handleClickOpen}
+                className="rounded-2 button-mui"
+                type="primary"
+                style={{ height: "40px", width: "auto", fontSize: "15px" }}
+              >
+                <PlusOutlined
+                  className="ms-1"
+                  style={{
+                    position: "absolute",
+                    bottom: "12.5px",
+                    left: "12px",
+                  }}
+                />
+                <span
+                  className="ms-3 ps-1"
+                  style={{ marginBottom: "3px", fontWeight: "500" }}
+                >
+                  Thêm Khách Hàng
+                </span>
+              </Button> */}
               <div className="mt-2 d-flex">
                 <div
                   className="ms-4 me-5 d-flex"
@@ -409,10 +446,11 @@ const HienThiKH = () => {
                       open={openSelect}
                       onClose={handleCloseSelect}
                       onOpen={handleOpenSelect}
-                      defaultValue={0}
+                      defaultValue={5}
+                      key={keySelect}
                       onChange={(e) => handleFilter(e.target.value)}
                     >
-                      <MenuItem className="" value={0}>
+                      <MenuItem className="" value={5}>
                         Tất cả
                       </MenuItem>
                       <MenuItem value={StatusCusNumber.HOAT_DONG}>
@@ -473,6 +511,7 @@ const HienThiKH = () => {
             </Card.Header>
             <Card.Body>
               <Table
+                className="table-container"
                 dataSource={listKH}
                 columns={columns}
                 pagination={false}
@@ -491,6 +530,27 @@ const HienThiKH = () => {
           </Card>
         </div>
       </Form>
+      <Dialog
+        open={open}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={handleClose}
+        maxWidth={false}
+        sx={{
+          width: "100%",
+          maxWidth: "unset",
+          overflowX: "hidden", // Ngăn việc cuộn ngang
+          "& .MuiDialog-paper": {
+            width: "100%",
+            maxWidth: "84vw",
+            maxHeight: "unset", // Loại bỏ giới hạn chiều cao nếu cần
+          },
+        }}
+      >
+        <DialogContent className="">
+          <ModalAddKhachHang close={handleClose} />
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

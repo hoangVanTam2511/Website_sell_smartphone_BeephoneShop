@@ -30,8 +30,8 @@ public class BrandServiceImpl{
         if(!req.getIdBrand().isEmpty()) update(req);
         else {
             String newCode = this.brandRepository.getNewCode() == null ? "PRODUCER_0" : "PRODUCER_" + this.brandRepository.getNewCode();
-            Hang hang = new Hang(newCode, req.getNameBrand());
-            brandRepository.save(hang);
+//            Hang hang = new Hang(newCode, req.getNameBrand());
+//            brandRepository.save(hang);
         }
     }
 

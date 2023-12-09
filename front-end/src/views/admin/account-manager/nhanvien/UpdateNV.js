@@ -1,11 +1,10 @@
-import { Button, Card, Modal, message } from "antd";
+import { Button, Card, Modal } from "antd";
 import React, { useEffect } from "react"; // , { useEffect }
 import { useState } from "react";
 import axios from "axios";
 import { apiURLNV } from "../../../../service/api";
 import TextField from "@mui/material/TextField";
 import "../../../../assets/scss/HienThiNV.scss";
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import * as dayjs from "dayjs";
 import {
@@ -18,12 +17,17 @@ import {
 } from "@mui/material";
 import ImageUploadComponent from "./AnhUpdate";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
 import { useParams } from "react-router-dom";
 import AddressFormUpdate from "./DiaChiUpdate";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { Notistack } from "../../order-manager/enum";
+import useCustomSnackbar from "../../../../utilities/notistack";
+import { useNavigate } from "react-router-dom";
+import { request } from '../../../../store/helpers/axios_helper'
+
 const UpdateNV = () => {
   const { id } = useParams();
   let [hoVaTen, setTen] = useState("");
@@ -37,6 +41,18 @@ const UpdateNV = () => {
   let [diaChi, setDiaChi] = useState("");
   let [cccd, setCCCD] = useState("");
   let [ma, setMa] = useState("");
+  const { handleOpenAlertVariant } = useCustomSnackbar();
+  const [diaChiList, setDiaChiList] = useState([
+    {
+      diaChi: "",
+      xaPhuong: "",
+      tinhThanhPho: "",
+      quanHuyen: "",
+      account: "",
+      id: id,
+      trangThaiNV: "",
+    },
+  ]);
   let [matKhau, setMatKhau] = useState("");
   let [trangThai, setTrangThai] = useState(1);
   let [anhDaiDien, setAnhDaiDien] = useState("");
@@ -59,16 +75,19 @@ const UpdateNV = () => {
   const [cccdError, setCCCDError] = useState("");
   const [diaChiError, setDiaChiError] = useState("");
   const [sdtError, setSDTError] = useState("");
+  const navigate = useNavigate();
 
   //call KH
   useEffect(() => {
     getKHById(id);
   }, [id]);
   const getKHById = (id) => {
-    axios
-      .get(apiURLNV + `/hien-thi-theo/${id}`)
+    request('GET', apiURLNV + `/hien-thi-theo/${id}`)
       .then((response) => {
         const data = response.data;
+        setXaPhuong(data.diaChiList[0].xaPhuong);
+        setQuanHuyen(data.diaChiList[0].quanHuyen);
+        setTinhThanhPho(data.diaChiList[0].tinhThanhPho);
         setMa(data.ma);
         setCCCD(data.canCuocCongDan);
         setGioiTinh(data.gioiTinh);
@@ -79,10 +98,7 @@ const UpdateNV = () => {
         setAnhDaiDien(data.anhDaiDien);
         setEmail(data.email);
         setSdt(data.soDienThoai);
-        setDiaChi(data.diaChi);
-        setXaPhuong(data.xaPhuong);
-        setQuanHuyen(data.quanHuyen);
-        setTinhThanhPho(data.tinhThanhPho);
+        setDiaChi(data.diaChiList[0].diaChi);
       })
       .catch((error) => {
         console.error("Error fetching customer information:", error);
@@ -100,14 +116,13 @@ const UpdateNV = () => {
     setXaPhuong(value);
   };
   const handleDiaChiChange = (diaChi) => {
-    setDiaChi(diaChi); // Cập nhật giá trị diaChi trong thành phần cha
+    setDiaChi(diaChiList.diaChi); // Cập nhật giá trị diaChi trong thành phần cha
   };
   const handleAnhDaiDienChange = (imageURL) => {
     setAnhDaiDien(imageURL);
   };
   const handleChangeDate = (date) => {
-    const value = date.format("DD/MM/YYYY");
-    setNgaySinh(value);
+    setNgaySinh(date);
   };
   const handleHoVaTenChange = (e) => {
     const value = e.target.value;
@@ -120,13 +135,15 @@ const UpdateNV = () => {
       setHoVaTenError("Họ và tên không được chứa ký tự đặc biệt");
     } else if (trimmedValue.length < 5) {
       setHoVaTenError("Họ và tên phải có ít nhất 5 ký tự");
+    } else if (/^\s+|\s+$/.test(value)) {
+      setHoVaTenError("Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi");
     } else {
       setHoVaTenError("");
     }
   };
   const handleEmailChange = (e) => {
     const value = e.target.value;
-    const parn = /^[a-zA-Z0-9._-]+@gmail\.com$/i;
+    const parn = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     setEmail(value);
     if (!value.trim()) {
       setEmailError("Email không được trống");
@@ -173,33 +190,37 @@ const UpdateNV = () => {
     }
   };
   const save = async (id) => {
-    setSubmitted(true);
-    setFormSubmitted(true);
-    if (
-      !hoVaTen ||
-      !ngaySinh ||
-      !email ||
-      !soDienThoai ||
-      !diaChi ||
-      !tinhThanhPho ||
-      !xaPhuong ||
-      !quanHuyen
-    ) {
-      message.error("Vui lòng điền đủ thông tin trước khi lưu.");
-      setIsConfirmVisible(false);
-      return;
-    }
     try {
-      let updatedItem = {
+      setSubmitted(true);
+      setFormSubmitted(true);
+
+      const requiredFields = [hoVaTen, ngaySinh, email, soDienThoai, diaChi];
+      const errorFields = [
+        hoVaTenError,
+        sdtError,
+        emailError,
+        cccdError,
+        diaChiError,
+      ];
+
+      if (
+        requiredFields.some((field) => !field) ||
+        errorFields.some((error) => error)
+      ) {
+        handleOpenAlertVariant(
+          "Vui lòng điền đủ và đúng thông tin trước khi lưu.",
+          Notistack.ERROR
+        );
+        setIsConfirmVisible(false);
+        return;
+      }
+
+      const updatedEmployee = {
         ma: ma,
         hoVaTen: hoVaTen,
-        ngaySinh: ngaySinh,
+        ngaySinh: ngaySinh === "" ? null : ngaySinh,
         soDienThoai: soDienThoai,
-        xaPhuong: xaPhuong,
-        quanHuyen: quanHuyen,
-        tinhThanhPho: tinhThanhPho,
         gioiTinh: gioiTinh,
-        diaChi: diaChi,
         email: email,
         anhDaiDien: anhDaiDien,
         canCuocCongDan: cccd,
@@ -207,30 +228,88 @@ const UpdateNV = () => {
         matKhau: matKhau,
       };
 
-      axios
-        .put(`${apiURLNV}/update/${id}`, updatedItem)
-        .then((response) => {
-          if (response.status === 200) {
-            if (!tinhThanhPho || !xaPhuong || !quanHuyen) {
-              message.error("Vui lòng điền đủ thông tin trước khi lưu.");
+      request('PUT',
+        `${apiURLNV}/update/${id}`,
+        updatedEmployee
+      ).then(
+        (res) => {
+          if(res.status === 200){
+            var updateEmployeeResponse = res;
+            if (updateEmployeeResponse.status === 200) {
+              if (!tinhThanhPho || !xaPhuong || !quanHuyen) {
+                handleOpenAlertVariant(
+                  "Vui lòng điền đủ thông tin trước khi lưu.",
+                  Notistack.ERROR
+                );
+      
+                setIsConfirmVisible(false);
+                return;
+              }
+      
               setIsConfirmVisible(false);
-              return;
+      
+              const updatedAddress = {
+                diaChi: diaChi,
+                xaPhuong: xaPhuong,
+                quanHuyen: quanHuyen,
+                tinhThanhPho: tinhThanhPho,
+                account: id,
+              };
+      
+              request('PUT',
+                `${apiURLNV}/dia-chi/update?id=` + id,
+                updatedAddress
+              ).then(
+                (res) => {
+                  if(res === 200){
+                    console.log(res)
+                    const updateAddressResponse = res.data
+                    if (updateAddressResponse.status === 200) {
+                      const updatedAddressInfo = {
+                        diaChi: updatedAddress.diaChi,
+                        xaPhuong: updatedAddress.xaPhuong,
+                        quanHuyen: updatedAddress.quanHuyen,
+                        tinhThanhPho: updatedAddress.tinhThanhPho,
+                        account: id,
+                      };
+                      setDiaChiList(updatedAddressInfo);
+                      handleOpenAlertVariant("Sửa thành công", Notistack.SUCCESS);
+                    } else {
+                      handleOpenAlertVariant(
+                        "Đã xảy ra lỗi, vui lòng liên hệ quản trị viên.",
+                        Notistack.ERROR
+                      );
+                    }
+                  }
+                }
+              );
+      
+              
+            } else {
+              handleOpenAlertVariant(
+                "Đã xảy ra lỗi, vui lòng liên hệ quản trị viên.",
+                Notistack.ERROR
+              );
             }
-            setIsConfirmVisible(false);
-            message.success("Sửa thành công");
-          } else {
-            message.error("Sửa thất bại");
           }
-        })
-        .catch((error) => {
-          toast.error("An error occurred while updating customer information.");
-        });
-    } catch (errInfo) {
-      console.error("Validate Failed:", errInfo);
+        
+        }
+      );
+
+     
+    } catch (error) {
+      handleOpenAlertVariant(
+        "Đã xảy ra lỗi, vui lòng liên hệ quản trị viên.",
+        Notistack.ERROR
+      );
     }
   };
-  const today = new Date().toISOString().split("T")[0]; // Get the current date in "yyyy-mm-dd" format
-
+  const redirectTable = () => {
+    navigate("/nhan-vien/");
+  };
+  const showRetable = () => {
+    redirectTable();
+  };
   return (
     <>
       <Card bordered={false} style={{ width: "100%" }}>
@@ -289,7 +368,7 @@ const UpdateNV = () => {
                   className="text-f"
                   style={{
                     marginBottom: "30px",
-                    width: "70%",
+                    width: "50%",
                   }}
                 >
                   {/* Ngày sinh */}
@@ -300,11 +379,12 @@ const UpdateNV = () => {
                         value={dayjs(ngaySinh)}
                         format="DD/MM/YYYY"
                         onChange={handleChangeDate}
+                        disableFuture
                         sx={{
                           position: "relative",
 
                           "& .MuiInputBase-root": {
-                            width: "100%",
+                            width: "348px",
                           },
                         }}
                         slotProps={{
@@ -323,8 +403,9 @@ const UpdateNV = () => {
                 <div
                   className="text-f"
                   style={{
-                    marginBottom: "15px",
-                    marginLeft: "50px",
+                    marginBottom: "30px",
+                    width: "40%",
+                    marginLeft: "20px",
                   }}
                 >
                   {/* Giới tính */}
@@ -352,23 +433,6 @@ const UpdateNV = () => {
                   </FormControl>
                 </div>
               </div>
-
-              <div
-                className="text-f"
-                style={{ textAlign: "center", marginBottom: "30px" }}
-              >
-                <TextField
-                  label="Email"
-                  value={email}
-                  // id="fullWidth"
-                  onChange={handleEmailChange}
-                  error={(formSubmitted && !email) || !!emailError}
-                  helperText={
-                    emailError || (formSubmitted && !email && "Email trống")
-                  }
-                  style={{ width: "100%" }}
-                />
-              </div>
               <div
                 className="text-f"
                 style={{ textAlign: "center", marginBottom: "30px" }}
@@ -385,23 +449,47 @@ const UpdateNV = () => {
                   style={{ width: "100%" }}
                 />
               </div>
-              <div
-                className="text-f"
-                style={{ textAlign: "center", marginBottom: "30px" }}
-              >
-                <TextField
-                  label="Số điện thoại"
-                  id="fullWidth"
-                  value={soDienThoai}
-                  onChange={handleSDT}
-                  error={(formSubmitted && !soDienThoai) || !!sdtError} // Show error if form submitted and hoVaTen is empty
-                  helperText={
-                    sdtError ||
-                    (formSubmitted && !soDienThoai && "Số điện thoại trống")
-                  }
-                  style={{ width: "100%" }}
-                />
-              </div>
+              <Grid container justifyContent="space-between">
+                {/* Left column */}
+                <Grid item xs={5.8}>
+                  <div
+                    className="text-f"
+                    style={{ textAlign: "center", marginBottom: "30px" }}
+                  >
+                    <TextField
+                      label="Số điện thoại"
+                      id="fullWidth"
+                      value={soDienThoai}
+                      onChange={handleSDT}
+                      error={(formSubmitted && !soDienThoai) || !!sdtError} // Show error if form submitted and hoVaTen is empty
+                      helperText={
+                        sdtError ||
+                        (formSubmitted && !soDienThoai && "Số điện thoại trống")
+                      }
+                      style={{ width: "100%" }}
+                    />
+                  </div>
+                </Grid>
+                <Grid item xs={5.8}>
+                  <div
+                    className="text-f"
+                    style={{ textAlign: "center", marginBottom: "30px" }}
+                  >
+                    <TextField
+                      label="Email"
+                      value={email}
+                      // id="fullWidth"
+                      onChange={handleEmailChange}
+                      error={(formSubmitted && !email) || !!emailError}
+                      helperText={
+                        emailError || (formSubmitted && !email && "Email trống")
+                      }
+                      style={{ width: "100%" }}
+                    />
+                  </div>
+                </Grid>
+              </Grid>
+
               <div
                 className="text-f"
                 style={{ textAlign: "center", marginBottom: "30px" }}
@@ -425,7 +513,6 @@ const UpdateNV = () => {
                 }}
               >
                 <AddressFormUpdate
-                  // onDiaChiChange={handleDiaChiChange}
                   onDiaChiChange={handleDiaChiChange}
                   required={true}
                   submitted={submitted}
@@ -438,40 +525,43 @@ const UpdateNV = () => {
                   editing={editing}
                   formSubmitted={formSubmitted}
                 />
-                <div style={{ textAlign: "center", marginTop: "20px" }}>
-                  <Button type="primary" onClick={showConfirm} size={"large"}>
-                    <FontAwesomeIcon
-                      icon={faFloppyDisk}
-                      style={{ paddingRight: "5px" }}
-                    />
-                    Lưu Nhân Viên{" "}
-                  </Button>
-                  <Modal
-                    title="Xác nhận"
-                    open={isConfirmVisible}
-                    onOk={() => save(id)}
-                    onCancel={handleCancel}
-                  >
-                    <p>Bạn có chắc chắn muốn lưu nhân viên?</p>
-                  </Modal>
-                </div>
               </div>
             </div>
           </Grid>
         </Grid>
-
-        <ToastContainer
-          position="top-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="colored"
-        />
+        <div
+          style={{
+            textAlign: "right",
+            marginTop: "20px",
+          }}
+        >
+          <Button
+            size={"large"}
+            onClick={showRetable}
+            style={{ float: "left" }}
+          >
+            <FontAwesomeIcon
+              icon={faArrowLeft}
+              style={{ paddingRight: "5px" }}
+            />
+            Quay lại
+          </Button>{" "}
+          <Button type="primary" onClick={showConfirm} size={"large"}>
+            <FontAwesomeIcon
+              icon={faFloppyDisk}
+              style={{ paddingRight: "5px" }}
+            />
+            Lưu Tài Khoản{" "}
+          </Button>
+          <Modal
+            title="Xác nhận"
+            open={isConfirmVisible}
+            onOk={() => save(id)}
+            onCancel={handleCancel}
+          >
+            <p>Bạn có chắc chắn muốn lưu nhân viên?</p>
+          </Modal>
+        </div>
       </Card>
     </>
   );

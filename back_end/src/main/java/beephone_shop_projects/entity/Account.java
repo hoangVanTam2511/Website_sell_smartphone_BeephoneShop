@@ -27,27 +27,21 @@ public class Account extends PrimaryEntity implements IsIdentified {
 
     private String hoVaTen;
 
+//    @Column(unique = true)
     private String email;
 
     @Temporal(TemporalType.DATE)
     private Date ngaySinh;
 
-    private String diaChi;
-
     private String matKhau;
 
     private String soDienThoai;
-
-    private String xaPhuong;
-
-    private String quanHuyen;
-
-    private String tinhThanhPho;
 
     private Boolean gioiTinh;
 
     private String anhDaiDien;
 
+    @Column(unique = true)
     private String canCuocCongDan;
 
     @Enumerated(EnumType.ORDINAL)

@@ -88,16 +88,22 @@ tr:hover {
 }
 
 .add-voucher-container {
-  width: 64%;
   background-color: #fff;
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  /* text-align: center; */
   padding-top: 10px;
 }
 
-.btn-accept {
-  margin-right: 45px;
+.btn-accept-voucher {
+  margin-right: 210px;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-accept-update {
+  margin-right: 210px;
   padding-bottom: 20px;
   margin-bottom: 20px;
   display: flex;
@@ -124,4 +130,8 @@ tr:hover {
   font-size: 14px;
   color: red;
   display: block;
+}
+.table-container .ant-table-thead .ant-table-cell {
+  background-color: #2e80ed;
+  color: white;
 }

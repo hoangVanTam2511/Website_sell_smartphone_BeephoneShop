@@ -1,6 +1,8 @@
 package beephone_shop_projects.core.admin.order_management.model.response;
 
-import beephone_shop_projects.core.admin.order_management.dto.ProductDetailsDto;
+import beephone_shop_projects.core.admin.order_management.model.response.product_response.ImeiNotSoldResponse;
+import beephone_shop_projects.core.admin.order_management.model.response.product_response.ProductItemResponse;
+import beephone_shop_projects.entity.ImeiChuaBan;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,6 +10,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @AllArgsConstructor
 @Getter
@@ -22,6 +25,8 @@ public class CartItemResponse {
   private BigDecimal donGia;
 
   private Date createdAt;
+
+  private List<ImeiNotSoldResponse> imeisChuaBan;
 
   private ProductItemResponse sanPhamChiTiet;
 

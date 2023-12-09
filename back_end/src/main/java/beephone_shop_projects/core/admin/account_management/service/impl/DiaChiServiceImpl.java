@@ -1,6 +1,7 @@
 package beephone_shop_projects.core.admin.account_management.service.impl;
 
 import beephone_shop_projects.core.admin.account_management.model.request.DiaChiKhachHangRequest;
+import beephone_shop_projects.core.admin.account_management.model.request.DiaChiNhanVienRequest;
 import beephone_shop_projects.core.admin.account_management.repository.AccountRepository;
 import beephone_shop_projects.core.admin.account_management.repository.DiaChiRepository;
 import beephone_shop_projects.core.admin.account_management.service.DiaChiService;
@@ -55,6 +56,38 @@ public class DiaChiServiceImpl implements DiaChiService {
                 .soDienThoaiKhachHang(diaChiKhachHangRequest.getSoDienThoaiKhachHang())
                 .diaChi(diaChiKhachHangRequest.getDiaChi())
                 .hoTenKH(diaChiKhachHangRequest.getHoTenKH())
+                .build();
+
+        DiaChi addedDiaChi = diaChiRepository.save(newDC);
+
+        if (newTrangThai == 1) {
+            diaChiRepository.updateTrangThaiAndAddDiaChi(addedDiaChi.getId(), newTrangThai, id);
+        }
+
+        return addedDiaChi;
+    }
+
+    @Override
+    public DiaChi addDiaChiNhanVien(DiaChiNhanVienRequest diaChiNhanVienRequest, String id) {
+        Account account = accountRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Không tìm thấy tài khoản"));
+
+        Integer newTrangThai = 1;
+
+        if (newTrangThai == null || newTrangThai != 1) {
+            newTrangThai = 0;
+        } else {
+            for (DiaChi existingDiaChi : account.getDiaChiList()) {
+                existingDiaChi.setTrangThai(0);
+            }
+        }
+
+        DiaChi newDC = DiaChi.builder()
+                .trangThai(newTrangThai)
+                .tinhThanhPho(diaChiNhanVienRequest.getTinhThanhPho())
+                .account(account)
+                .xaPhuong(diaChiNhanVienRequest.getXaPhuong())
+                .quanHuyen(diaChiNhanVienRequest.getQuanHuyen())
+                .diaChi(diaChiNhanVienRequest.getDiaChi())
                 .build();
 
         DiaChi addedDiaChi = diaChiRepository.save(newDC);
@@ -136,8 +169,36 @@ public class DiaChiServiceImpl implements DiaChiService {
     }
 
     @Override
+    public DiaChi updateDiaChiNhanVien(DiaChiNhanVienRequest diaChiNhanVien, String id) {
+        Optional<DiaChi> optional = Optional.ofNullable(diaChiRepository.findByAccount_Id(id));
+
+        if (optional.isPresent()) {
+            DiaChi diaChiToUpdate = optional.get();
+            if (diaChiNhanVien.getDiaChi() != null) {
+                diaChiToUpdate.setDiaChi(diaChiNhanVien.getDiaChi());
+            }
+            if (diaChiNhanVien.getAccount() != null) {
+                diaChiToUpdate.setAccount(accountRepository.findById(diaChiNhanVien.getAccount()).orElse(null));
+            }
+            if (diaChiNhanVien.getTinhThanhPho() != null) {
+                diaChiToUpdate.setTinhThanhPho(diaChiNhanVien.getTinhThanhPho());
+            }
+            if (diaChiNhanVien.getXaPhuong() != null) {
+                diaChiToUpdate.setXaPhuong(diaChiNhanVien.getXaPhuong());
+            }
+            if (diaChiNhanVien.getQuanHuyen() != null) {
+                diaChiToUpdate.setQuanHuyen(diaChiNhanVien.getQuanHuyen());
+            }
+
+            diaChiRepository.save(diaChiToUpdate);
+            return diaChiToUpdate;
+        }
+        return null;
+    }
+
+    @Override
     public DiaChi getOneDiaChi(String id, String account) {
-        return diaChiRepository.getOneDiaChi(id,account);
+        return diaChiRepository.getOneDiaChi(id, account);
     }
 
 

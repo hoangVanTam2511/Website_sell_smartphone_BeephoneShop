@@ -89,12 +89,70 @@ tr:hover {
 
 .add-promotion-container {
   width: 100%;
+  height: 500px;
   background-color: #fff;
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.add-promotion-inProduct-container {
+  width: 100%;
+  height: 500px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.add-promotion-inProduct-detail-container {
+  width: 100%;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-left: 1px;
+}
+
+.button-add-promotion {
+  display: flex;
+  justify-content: flex-end;
+  padding-bottom: 20px;
+  padding-right: 40px;
+}
+.title-promotion {
+  padding-top: 15px;
+}
+
+.title-product {
+  padding-left: 30px;
+  padding-top: 15px;
+  padding-bottom: 10px;
+}
+
+.btn-accept {
+  margin-right: 30px;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
 /* .validate {
   margin-top: 15px;
   margin-bottom: 10px;
+} */
+.table-container .ant-table-thead .ant-table-cell {
+  background-color: #2e80ed;
+  color: white;
+}
+/* .image-container {
+  position: relative;
+}
+
+.discount-value {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(247, 28, 28, 0.8);
+  padding: 5px;
+  border-radius: 5px;
+  font-weight: bold;
+  font-size: 14px;
 } */

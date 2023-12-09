@@ -1,7 +1,5 @@
 package beephone_shop_projects.core.admin.order_management.model.request;
 
-import beephone_shop_projects.core.admin.order_management.model.response.PaymentMethodResponse;
-import beephone_shop_projects.core.admin.order_management.model.response.VoucherResponse;
 import beephone_shop_projects.infrastructure.constant.OrderStatus;
 import beephone_shop_projects.infrastructure.constant.OrderType;
 import lombok.AllArgsConstructor;
@@ -11,7 +9,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -31,11 +29,23 @@ public class OrderRequest {
 
   private BigDecimal tienKhachTra;
 
+  private BigDecimal tienTraKhach;
+
+  private BigDecimal khachCanTra;
+
   private OrderType loaiHoaDon;
+
+  private BigDecimal tienTraHang;
 
   private OrderStatus trangThai;
 
   private String ghiChu;
+
+  private String hoVaTen;
+
+  private String soDienThoai;
+
+  private String email;
 
   private BigDecimal phiShip;
 
@@ -44,6 +54,12 @@ public class OrderRequest {
   private String soDienThoaiNguoiNhan;
 
   private String diaChiNguoiNhan;
+
+  private String tinhThanhPhoNguoiNhan;
+
+  private String quanHuyenNguoiNhan;
+
+  private String xaPhuongNguoiNhan;
 
   private Date createdAt;
 
@@ -65,7 +81,37 @@ public class OrderRequest {
 
   private OrderHistoryRequest orderHistory;
 
+  private List<OrderHistoryRequest> orderHistories;
+
   private Boolean isPayment;
+
+  private Boolean isUpdateAccount;
+
+  private Boolean isUpdateVoucher;
+
+  private Boolean isUpdateInfoShip;
+
+  private Boolean isUpdateInfoShipByCustomer;
+
+  private Boolean isUpdateNameShip;
+
+  private Boolean isUpdatePhoneShip;
+
+  private Boolean isUpdateAddressShip;
+
+  private Boolean isUpdateNoteShip;
+
+  private Boolean isUpdateType;
+
+  private String hinhThucThanhToan;
+
+  private String hoanTien;
+
+  private Boolean isUpdateFullName;
+
+  private Boolean isUpdateEmail;
+
+  private Boolean isUpdateSdt;
 
 
 }

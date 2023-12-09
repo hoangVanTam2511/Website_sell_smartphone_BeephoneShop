@@ -1,10 +1,14 @@
 package beephone_shop_projects.core.admin.account_management.controller;
 
+import beephone_shop_projects.core.admin.account_management.model.request.AddKhachHangRequest;
 import beephone_shop_projects.core.admin.account_management.model.request.CreateKhachHangRequest;
 import beephone_shop_projects.core.admin.account_management.model.request.DiaChiKhachHangRequest;
+import beephone_shop_projects.core.admin.account_management.model.request.FindAccountRequest;
 import beephone_shop_projects.core.admin.account_management.model.response.AccountResponse;
+
 import beephone_shop_projects.core.admin.account_management.service.impl.DiaChiServiceImpl;
 import beephone_shop_projects.core.admin.account_management.service.impl.KhachHangServiceImpl;
+import beephone_shop_projects.core.admin.promotion_management.model.request.FindKhuyenMaiRequest;
 import beephone_shop_projects.core.common.base.ResponseObject;
 import beephone_shop_projects.core.common.base.ResponsePage;
 import beephone_shop_projects.entity.Account;
@@ -18,8 +22,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
-
-import java.io.IOException;
 import java.util.*;
 
 @RestController
@@ -31,22 +33,25 @@ public class KhachHangRestcontroller {
     @Autowired
     private DiaChiServiceImpl diaChiService;
 
-    @GetMapping("hien-thi")
-    public ResponsePage<AccountResponse> hienThi(@RequestParam(name = "page", defaultValue = "1") Integer pageNo) throws Exception{
-        Page<AccountResponse> getAll=accService.getAllKH(pageNo);
-        return new ResponsePage(getAll);
-    }
 
+    @GetMapping("hien-thi-custom")
+    public ResponsePage hienThiCustom(@ModelAttribute FindAccountRequest request) {
+        return new ResponsePage(accService.getAll(request));
+    }
+    @GetMapping("hien-thi")
+    public ResponsePage hienThi(@RequestParam(name = "page", defaultValue = "1") Integer pageNo) {
+        return new ResponsePage(accService.getAllKH(pageNo));
+    }
 
     @GetMapping("search-all")
     public ResponsePage<AccountResponse> searchAll(@RequestParam("tenKH") String hoVaTen, @RequestParam(name = "page", defaultValue = "0") Integer pageNo) {
         Optional<String> opTen = Optional.ofNullable(hoVaTen);
-        return new ResponsePage(accService.search(opTen,pageNo));
+        return new ResponsePage(accService.search(opTen, pageNo));
     }
 
 
     @PostMapping("add")
-    public ResponseObject<Account> add(@RequestBody CreateKhachHangRequest request) {
+    public ResponseObject<Account> add(@RequestBody AddKhachHangRequest request) {
         return new ResponseObject(accService.addKH(request));
     }
 
@@ -120,6 +125,7 @@ public class KhachHangRestcontroller {
     public DiaChi getOneDiaChi(@PathVariable("id") String id, @RequestParam String account) {
         return diaChiService.getOneDiaChi(id, account);
     }
+
     @GetMapping("hien-thi-theo/{id}")
     public Account getOne(@PathVariable("id") UUID id) {
         return accService.getOne(id);

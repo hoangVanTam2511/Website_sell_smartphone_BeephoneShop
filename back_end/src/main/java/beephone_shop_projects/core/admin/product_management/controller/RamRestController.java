@@ -1,10 +1,8 @@
 package beephone_shop_projects.core.admin.product_management.controller;
 
 import beephone_shop_projects.core.admin.product_management.model.request.CreateRam;
-import beephone_shop_projects.core.admin.product_management.model.responce.RamResponce;
-import beephone_shop_projects.core.admin.product_management.service.impl.RamServiceImpl;
+import beephone_shop_projects.core.admin.product_management.service.impl.RamServiceImpl1;
 import beephone_shop_projects.entity.Ram;
-import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @RequestMapping("/ram")
@@ -31,7 +28,7 @@ import java.util.List;
 public class RamRestController {
 
     @Autowired
-    private RamServiceImpl ramService;
+    private RamServiceImpl1 ramService;
 
     @GetMapping("/view-all")
     public Page<Ram> viewAll(@RequestParam(value = "page",defaultValue = "1") Integer page) {

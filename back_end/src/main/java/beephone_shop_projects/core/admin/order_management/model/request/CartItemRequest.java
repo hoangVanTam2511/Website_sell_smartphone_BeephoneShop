@@ -1,13 +1,12 @@
 package beephone_shop_projects.core.admin.order_management.model.request;
 
-import beephone_shop_projects.core.admin.order_management.dto.ProductDetailsDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.util.List;
 
 @AllArgsConstructor
 @Getter
@@ -15,14 +14,18 @@ import java.util.Date;
 @NoArgsConstructor
 public class CartItemRequest {
 
+  private String imei;
+
+  private Integer amount;
+
+  private BigDecimal price;
+
+  private CartRequest cart;
+
+  private ProductItemRequest productItem;
+
   private String id;
 
-  private Integer soLuong;
-
-  private BigDecimal donGia;
-
-  private Date createdAt;
-
-  private ProductDetailsDto sanPhamChiTiet;
+  private List<ImeiCustomRequest> imeis;
 
 }

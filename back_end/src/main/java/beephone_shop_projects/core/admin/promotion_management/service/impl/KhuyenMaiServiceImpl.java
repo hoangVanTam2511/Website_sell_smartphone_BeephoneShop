@@ -1,12 +1,16 @@
 package beephone_shop_projects.core.admin.promotion_management.service.impl;
 
 import beephone_shop_projects.core.admin.promotion_management.model.reponse.KhuyenMaiResponse;
+import beephone_shop_projects.core.admin.promotion_management.model.request.ChangeStatusPromotionRequest;
 import beephone_shop_projects.core.admin.promotion_management.model.request.CreateKhuyenMaiRequest;
 import beephone_shop_projects.core.admin.promotion_management.model.request.FindKhuyenMaiRequest;
 import beephone_shop_projects.core.admin.promotion_management.model.request.UpdateKhuyenMaiRequest;
 import beephone_shop_projects.core.admin.promotion_management.repository.KhuyenMaiRepository;
 import beephone_shop_projects.core.admin.promotion_management.service.KhuyenMaiService;
 import beephone_shop_projects.entity.KhuyenMai;
+import beephone_shop_projects.entity.Voucher;
+import beephone_shop_projects.infrastructure.constant.StatusDiscount;
+import beephone_shop_projects.infrastructure.exeption.rest.RestApiException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -33,25 +37,27 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
         Date dateTime = new Date();
         List<KhuyenMai> listToUpdate = new ArrayList<>();
 
-        List<KhuyenMai> list = khuyenMaiRepository.checkToStartAfterAndStatus(dateTime, 3);
-        List<KhuyenMai> list1 = khuyenMaiRepository.checkEndDateAndStatus(dateTime, 2);
-        List<KhuyenMai> list3 = khuyenMaiRepository.checkToStartBeforDateNowAndStatus(dateTime, 1);
-        List<KhuyenMai> list4 = khuyenMaiRepository.checkToStartBeforDateNowAndStatus(dateTime, 4);
+        List<KhuyenMai> list = khuyenMaiRepository.checkToStartAfterAndStatus(dateTime, StatusDiscount.CHUA_DIEN_RA);
+        List<KhuyenMai> list1 = khuyenMaiRepository.checkEndDateAndStatus(dateTime, StatusDiscount.NGUNG_HOAT_DONG);
+        List<KhuyenMai> list3 = khuyenMaiRepository.checkToStartBeforDateNowAndStatus(dateTime, StatusDiscount.HOAT_DONG);
+        List<KhuyenMai> list4 = khuyenMaiRepository.checkToStartBeforDateNowAndStatus(dateTime, StatusDiscount.DA_HUY);
+        List<KhuyenMai> list5 = khuyenMaiRepository.checkToStartBeforDateNowAndStatus(dateTime, StatusDiscount.TAM_DUNG);
 
         listToUpdate.addAll(list);
         listToUpdate.addAll(list1);
         listToUpdate.addAll(list3);
         listToUpdate.addAll(list4);
+        listToUpdate.addAll(list5);
 
         for (KhuyenMai v : listToUpdate) {
-            if (list.contains(v) && list4.contains(v)) {
-                v.setTrangThai(3);
+            if (list.contains(v) && list4.contains(v) && list5.contains(v)) {
+                v.setTrangThai(StatusDiscount.CHUA_DIEN_RA);
             }
             if (list1.contains(v)) {
-                v.setTrangThai(2);
+                v.setTrangThai(StatusDiscount.NGUNG_HOAT_DONG);
             }
-            if (list3.contains(v) && list4.contains(v)) {
-                v.setTrangThai(1);
+            if (list3.contains(v) && list4.contains(v) && list5.contains(v)) {
+                v.setTrangThai(StatusDiscount.HOAT_DONG);
             }
         }
         return khuyenMaiRepository.saveAll(listToUpdate);
@@ -92,16 +98,21 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
 
     @Override
     public KhuyenMai addKhuyenMai(@Valid CreateKhuyenMaiRequest request) {
-        Integer status = 0;
+        List<KhuyenMai> khuyenMaiList = khuyenMaiRepository.findNamePromotion(request.getTenKhuyenMai());
+
+        if(!khuyenMaiList.isEmpty()){
+            throw new RestApiException("Tên giảm giá đã tồn tại!");
+        }
+        StatusDiscount status = StatusDiscount.CHUA_DIEN_RA;
         Date dateTime = new Date();
         if (request.getNgayBatDau().after(dateTime) && request.getNgayKetThuc().before(dateTime)) {
-            status = 1;
+            status = StatusDiscount.HOAT_DONG;
         }
         if (request.getNgayBatDau().before(dateTime)) {
-            status = 2;
+            status = StatusDiscount.NGUNG_HOAT_DONG;
         }
         if (request.getNgayKetThuc().after(dateTime)) {
-            status = 3;
+            status = StatusDiscount.CHUA_DIEN_RA;
         }
         KhuyenMai khuyenMai = KhuyenMai.builder()
                 .ma(generateRandomCode())
@@ -118,12 +129,24 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
     @Override
     public KhuyenMai updateKhuyenMai(@Valid UpdateKhuyenMaiRequest request, String ma) {
         KhuyenMai khuyenMai = khuyenMaiRepository.findById(ma).get();
+        StatusDiscount status = StatusDiscount.CHUA_DIEN_RA;
+        Date dateTime = new Date();
+        if (request.getNgayBatDau().after(dateTime) && request.getNgayKetThuc().before(dateTime)) {
+            status = StatusDiscount.HOAT_DONG;
+        }
+        if (request.getNgayBatDau().before(dateTime)) {
+            status = StatusDiscount.NGUNG_HOAT_DONG;
+        }
+        if (request.getNgayKetThuc().after(dateTime)) {
+            status = StatusDiscount.CHUA_DIEN_RA;
+        }
         if (khuyenMai != null) {
             khuyenMai.setTenKhuyenMai(request.getTenKhuyenMai());
             khuyenMai.setNgayBatDau(request.getNgayBatDau());
             khuyenMai.setNgayKetThuc(request.getNgayKetThuc());
             khuyenMai.setGiaTriKhuyenMai(request.getGiaTriKhuyenMai());
             khuyenMai.setLoaiKhuyenMai(request.getLoaiKhuyenMai());
+            khuyenMai.setTrangThai(status);
             return khuyenMaiRepository.save(khuyenMai);
         } else {
             return null;
@@ -142,17 +165,41 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
     }
 
     @Override
-    public KhuyenMai doiTrangThai(String id) {
+    public KhuyenMai doiTrangThai(ChangeStatusPromotionRequest request, String id) {
         KhuyenMai findKhuyenMai = khuyenMaiRepository.findById(id).get();
-        if (findKhuyenMai.getTrangThai() == 1 || findKhuyenMai.getTrangThai() == 3) {
-            findKhuyenMai.setTrangThai(4);
-        } else if (findKhuyenMai.getTrangThai() == 4) {
-            if (findKhuyenMai.getNgayBatDau().after(new Date())) {
-                findKhuyenMai.setTrangThai(3);
-            } else if (findKhuyenMai.getNgayKetThuc().after(new Date())) {
-                findKhuyenMai.setTrangThai(1);
-            }
+//        if (findKhuyenMai.getTrangThai() == StatusDiscount.HOAT_DONG || findKhuyenMai.getTrangThai() == StatusDiscount.CHUA_DIEN_RA) {
+//            findKhuyenMai.setTrangThai(StatusDiscount.DA_HUY);
+//        } else if (findKhuyenMai.getTrangThai() == StatusDiscount.DA_HUY) {
+//            if (findKhuyenMai.getNgayBatDau().after(new Date())) {
+//                findKhuyenMai.setTrangThai(StatusDiscount.CHUA_DIEN_RA);
+//            } else if (findKhuyenMai.getNgayKetThuc().after(new Date())) {
+//                findKhuyenMai.setTrangThai(StatusDiscount.HOAT_DONG);
+//            }
+//        }
+        if (findKhuyenMai != null) {
+            findKhuyenMai.setTrangThai(request.getStatus());
         }
         return khuyenMaiRepository.save(findKhuyenMai);
+    }
+
+    @Override
+    public KhuyenMai kichHoatKhuyenMai(String id) {
+        KhuyenMai khuyenMai = khuyenMaiRepository.findById(id).get();
+        StatusDiscount status = null;
+        Date dateTime = new Date();
+        if (khuyenMai.getNgayBatDau().after(dateTime) && khuyenMai.getNgayKetThuc().before(dateTime)) {
+            status = StatusDiscount.HOAT_DONG;
+        }
+        if (khuyenMai.getNgayBatDau().before(dateTime)) {
+            status = StatusDiscount.NGUNG_HOAT_DONG;
+        }
+        if (khuyenMai.getNgayKetThuc().after(dateTime)) {
+            status = StatusDiscount.CHUA_DIEN_RA;
+        }
+        if (khuyenMai != null) {
+            khuyenMai.setTrangThai(status);
+            return khuyenMaiRepository.save(khuyenMai);
+        }
+        return null;
     }
 }

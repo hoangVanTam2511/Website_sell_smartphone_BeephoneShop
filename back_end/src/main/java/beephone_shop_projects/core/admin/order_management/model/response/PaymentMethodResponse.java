@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 @AllArgsConstructor
 @Getter
@@ -17,10 +18,18 @@ public class PaymentMethodResponse {
 
   private String ma;
 
+  private Integer loaiThanhToan;
+
   private Integer hinhThucThanhToan;
 
   private BigDecimal soTienThanhToan;
 
   private String ghiChu;
+
+  private Date createdAt;
+
+  private Integer trangThai;
+
+  private String nguoiXacNhan;
 
 }

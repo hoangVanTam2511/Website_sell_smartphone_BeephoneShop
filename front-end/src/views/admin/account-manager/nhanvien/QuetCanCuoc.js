@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button, Modal } from "antd";
 import React, { useState, useEffect } from "react";
 import QrScanner from "react-qr-scanner";
-// import AddNV from "./AddNV";
 
 const IDScan = ({ onScanData }) => {
   const [qrData, setQRData] = useState("");
@@ -41,7 +40,7 @@ const IDScan = ({ onScanData }) => {
     const formattedMonth = parseInt(month) <= 12 ? month : day;
     const formattedDay = parseInt(month) <= 12 ? day : month;
 
-    return `${year}-${formattedMonth}-${formattedDay}`;
+    return `${formattedDay}/${formattedMonth}/${year}`;
   };
   const renderInfo = () => {
     if (!qrData) {

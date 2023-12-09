@@ -34,14 +34,14 @@ public class ColorServiceImpl{
         if(!req.getIdColor().isEmpty()) update(req);
         else {
             String newCode = this.colorRepository.getNewCode() == null ? "COLOR_0" + "_" : "COLOR_" + this.colorRepository.getNewCode();
-            MauSac mauSac = new MauSac(newCode, req.getNameColor());
-            colorRepository.save(mauSac);
+//            MauSac mauSac = new MauSac(newCode, req.getNameColor());
+//            colorRepository.save(mauSac);
         }
     }
 
     public void update(CreateColor req) {
         MauSac mauSac = this.colorRepository.findById(req.getIdColor()).get();
-        mauSac.setTenMauSac(req.getNameColor());
+//        mauSac.setTenMauSac(req.getNameColor());
         colorRepository.save(mauSac);
     }
 

@@ -14,7 +14,7 @@ public interface SanPhamChiTietKhuyenMaiResponse {
     @Value("#{target.id}")
     String getId();
 
-    @Value("#{target.duong_dan}")
+    @Value("#{target.path}")
     String getDuongDan();
 
     @Value("#{target.ten_san_pham}")
@@ -34,4 +34,7 @@ public interface SanPhamChiTietKhuyenMaiResponse {
 
     @Value("#{target.delected}")
     Boolean getDelected();
+
+    @Value("#{target.id_san_pham}")
+    String getIdSanPham();
 }

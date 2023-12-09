@@ -6,5 +6,6 @@ public enum StatusDiscount {
   HOAT_DONG,
   NGUNG_HOAT_DONG,
   DA_HUY,
+  TAM_DUNG,
 
 }

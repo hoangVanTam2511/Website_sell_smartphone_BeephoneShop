@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.admin.voucher_management.service;
 
+import beephone_shop_projects.core.admin.voucher_management.model.request.ChangeStatusVoucherRequest;
 import beephone_shop_projects.core.admin.voucher_management.model.request.CreateVoucherRequest;
 import beephone_shop_projects.core.admin.voucher_management.model.request.FindVoucherRequest;
 import beephone_shop_projects.core.admin.voucher_management.model.request.UpdateVoucherRequest;
@@ -21,7 +22,9 @@ public interface VoucherService {
 
     Boolean deleteVoucher(String ma);
 
-    Voucher doiTrangThai(String id);
+    Voucher doiTrangThai(ChangeStatusVoucherRequest request, String id);
+
+    Voucher kichHoatVoucher(String id);
 
     Page<Voucher> getAll(FindVoucherRequest request);
 

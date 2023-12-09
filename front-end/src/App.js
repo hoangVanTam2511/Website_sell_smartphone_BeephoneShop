@@ -8,6 +8,8 @@ import "./assets/scss/dark.scss";
 import "./assets/scss/rtl.scss";
 import "./assets/scss/customizer.scss";
 
+import "./App.css"
+
 // Redux Selector / Action
 import { useDispatch } from "react-redux";
 

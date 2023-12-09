@@ -22,13 +22,16 @@ import {
   FormControl,
 } from "@mui/material";
 import { StatusAccountCus } from "../khachhang/enum";
-
+import { Notistack } from "../../order-manager/enum";
+import useCustomSnackbar from "../../../../utilities/notistack";
+import { request } from '../../../../store/helpers/axios_helper'
 //show
 const HienThiNV = () => {
   const [form] = Form.useForm();
   let [listNV, setListNV] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const { handleOpenAlertVariant } = useCustomSnackbar();
   const [
     targetPage,
     //  setTargetPage
@@ -42,15 +45,15 @@ const HienThiNV = () => {
         loadDataListRole(targetPage); // Tải danh sách từ trang targetPage
         return;
       }
-      const response = await axios.get(apiURLNV + "/search-all", {
+      const response = request('GET',apiURLNV + "/search-all", {
         params: {
           tenKH: searchText,
           page: currentPage,
         },
       });
-      setListNV(response.data.content);
-      setTotalPages(response.data.totalPages);
+      setListNV(response.data.data);
       setCurrentPage(targetPage);
+      setTotalPages(response.data.totalPages);
     } catch (error) {
       console.log("Error searching accounts:", error);
     }
@@ -71,19 +74,17 @@ const HienThiNV = () => {
     setFilterStatus(status);
     // setCurrentPage(1); // Set the current page to 1 when the filter changes
   };
-  // const filteredDataSource = listNV.filter((item) => {
-  //   return filterStatus === 0 || item.trangThai === filterStatus;
-  // });
   useEffect(() => {
-    if (filterStatus == 0) {
-      handleReset();
+    if (filterStatus === 0) {
+      loadDataListRole(currentPage);
+      setSearchText("");
     }
     fetchEmployeeList(currentPage);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterStatus, currentPage]);
   const fetchEmployeeList = async (currentPage) => {
     try {
-      const response = await axios.get(apiURLNV + "/filter", {
+      const response =request('GET', apiURLNV + "/filter", {
         params: {
           trangThai: filterStatus,
           page: currentPage,
@@ -91,7 +92,7 @@ const HienThiNV = () => {
       });
       setListNV(response.data.content);
       setTotalPages(response.data.totalPages);
-      // setCurrentPage(currentPage);
+      setCurrentPage(targetPage);
     } catch (error) {
       console.error("Error fetching employee data:", error);
     }
@@ -101,18 +102,20 @@ const HienThiNV = () => {
   }, [currentPage]);
   // load
   const loadDataListRole = (currentPage) => {
-    axios
-      .get(apiURLNV + "/hien-thi?page=" + currentPage)
+    request('GET', apiURLNV + "/hien-thi?page=" + currentPage)
       .then((response) => {
         setListNV(response.data.data);
-        setTotalPages(response.totalPages);
+        setTotalPages(response.data.totalPages);
       })
       .catch(() => {});
   };
+  const [keySelect, setKeySelect] = useState(0);
   const handleReset = () => {
     loadDataListRole(currentPage);
     setSearchText("");
-    // setCurrentPage(1);
+    setCurrentPage(1);
+    handleFilter(0);
+    setKeySelect(keySelect + 1);
   };
   const navigate = useNavigate();
   const [editingKey, setEditingKey] = useState("");
@@ -139,11 +142,10 @@ const HienThiNV = () => {
     setEditingKey(record.id);
   };
   const doChangeTrangThai = (id) => {
-    axios
-      .put(apiURLNV + `/${id}/doi-tt`)
+    request('PUT', apiURLNV + `/${id}/doi-tt`)
       .then((response) => {
         loadDataListRole(currentPage);
-        message.success("Đổi trạng thái thành công");
+        handleOpenAlertVariant("Đổi trạng thái thành công", Notistack.SUCCESS);
       })
       .catch((error) => {
         console.error("Đã xảy ra lỗi khi thay đổi trạng thái", error);
@@ -202,43 +204,70 @@ const HienThiNV = () => {
       editable: true,
       align: "center",
     },
-    {
-      title: "Địa chỉ",
-      width: "10%",
-      editable: true,
-      align: "center",
-      ellipsis: true,
-      render: (text, record) => {
-        return (
-          <span>
-            {record.diaChi} {record.xaPhuong}
-            {record.quanHuyen} {record.tinhThanhPho}
-          </span>
-        );
-      },
-    },
+    // {
+    //   title: "Địa chỉ",
+    //   width: "10%",
+    //   editable: true,
+    //   align: "center",
+    //   ellipsis: true,
+    //   render: (text, record) => {
+    //     return (
+    //       <span>
+    //         {record.diaChiList[0].diaChi} {record.diaChiList[0].xaPhuong}
+    //         {record.diaChiList[0].quanHuyen} {record.diaChiList[0].tinhThanhPho}
+    //       </span>
+    //     );
+    //   },
+    // },
 
     {
       title: "Trạng thái",
       dataIndex: "trangThai",
+      align: "center",
       width: "10%",
-      // eslint-disable-next-line eqeqeq
-      onFilter: (value, record) => record.trangThai == value,
+      // onFilter: (value, record) => record.trangThai == value,
       filterSearch: true,
       render: (text, record) => (
         <span>
           {record.trangThai === StatusAccountCus.LAM_VIEC ? (
-            <Button type="primary" style={{ borderRadius: "30px" }}>
-              Làm việc
-            </Button>
+            <div
+              className="rounded-pill mx-auto badge-primary"
+              style={{
+                height: "35px",
+                width: "96px",
+                padding: "4px",
+              }}
+            >
+              <span className="text-white" style={{ fontSize: "14px" }}>
+                Làm việc
+              </span>
+            </div>
           ) : record.trangThai === StatusAccountCus.DA_NGHI ? (
-            <Button type="primary" danger style={{ borderRadius: "30px" }}>
-              Đã nghỉ
-            </Button>
+            <div
+              className="rounded-pill mx-auto badge-danger"
+              style={{
+                height: "35px",
+                width: "96px",
+                padding: "4px",
+              }}
+            >
+              <span className="text-white" style={{ fontSize: "14px" }}>
+                Đã nghỉ
+              </span>
+            </div>
           ) : (
-            <Button type="primary" style={{ borderRadius: "30px" }}>
-              Không xác định
-            </Button>
+            <div
+              className="rounded-pill mx-auto badge-primary"
+              style={{
+                height: "35px",
+                width: "130px",
+                padding: "4px",
+              }}
+            >
+              <span className="text-white" style={{ fontSize: "14px" }}>
+                Không xác định
+              </span>
+            </div>
           )}
         </span>
       ),
@@ -292,7 +321,7 @@ const HienThiNV = () => {
                     cursor: "pointer",
                     // eslint-disable-next-line eqeqeq
                     color:
-                      record.trangThai == StatusAccountCus.LAM_VIEC
+                      record.trangThai === StatusAccountCus.LAM_VIEC
                         ? "#e5383b"
                         : "#2f80ed",
                   }}
@@ -407,6 +436,7 @@ const HienThiNV = () => {
                         onOpen={handleOpenSelect}
                         defaultValue={0}
                         onChange={(e) => handleFilter(e.target.value)}
+                        key={keySelect}
                       >
                         <MenuItem className="" value={0}>
                           Tất cả
@@ -460,6 +490,7 @@ const HienThiNV = () => {
                   dataSource={listNV}
                   columns={columns}
                   pagination={false}
+                  className="table-container"
                   rowKey="id"
                 />
               </Card.Body>

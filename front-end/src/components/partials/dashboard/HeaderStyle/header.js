@@ -2,7 +2,7 @@ import React, { useEffect, Fragment, memo } from "react";
 import { Navbar, Container, Nav, Dropdown } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import CustomToggle from "../../../dropdowns";
-
+import { request, setAuthHeader } from '../../../../store/helpers/axios_helper'
 //img
 // import flag1 from '../../../../assets/images/Flag/flag001.png'
 // import flag2 from '../../../../assets/images/Flag/flag-02.png'
@@ -33,6 +33,8 @@ import * as SettingSelector from "../../../../store/setting/selectors";
 const Header = memo((props) => {
   const navbarHide = useSelector(SettingSelector.navbar_show); // array
   const headerNavbar = useSelector(SettingSelector.header_navbar);
+  const user = useSelector(state => state.user.user)
+
   useEffect(() => {
     // navbarstylemode
     if (headerNavbar === "navs-sticky" || headerNavbar === "nav-glass") {
@@ -90,7 +92,8 @@ const Header = memo((props) => {
                   id="notification-drop"
                   data-bs-toggle="dropdown"
                 >
-                  <svg color="#8A92A6"
+                  <svg
+                    color="#8A92A6"
                     width="24"
                     viewBox="0 0 24 24"
                     fill="none"
@@ -128,9 +131,9 @@ const Header = memo((props) => {
                             alt=""
                           />
                           <div className="w-100 ms-3">
-                            <h6 className="mb-0 ">New Mail from Fenny</h6>
+                            <h6 className="mb-0 ">Thông báo từ ai đó pro</h6>
                             <div className="d-flex justify-content-between align-items-center">
-                              <p className="mb-0">Cyst Bni</p>
+                              <p className="mb-0">No body for me</p>
                               <small className="float-right font-size-12">
                                 3 days ago
                               </small>
@@ -153,13 +156,13 @@ const Header = memo((props) => {
                   aria-expanded="false"
                 >
                   <img
-                    src={avatars1}
+                    src={user === undefined || user.ma === "" ? '' : user.anhDaiDien}
                     alt="User-Profile"
-                    className="theme-color-default-img img-fluid avatar avatar-45 avatar-rounded"
+                    className="theme-color-default-img img-fluid avatar avatar-50 avatar-rounded"
                   />
                   <div className="caption ms-3 d-none d-md-block ">
-                    <h6 className="mb-0 caption-title">Administrators</h6>
-                    <p className="mb-0 caption-sub-title">Manage</p>
+                    <h6 className="mb-0 caption-title">{user === undefined || user.ma === "" ? '' : user.hoVaTen}</h6>
+                    <p className="mb-0 caption-sub-title">{user === undefined || user.ma === "" ? '' : user.idRole.ten}</p>
                   </div>
                 </Dropdown.Toggle>
                 <Dropdown.Menu
@@ -167,14 +170,18 @@ const Header = memo((props) => {
                   aria-labelledby="navbarDropdown"
                 >
                   <Dropdown.Item href="https://templates.iqonic.design/hope-ui/react/build/dashboard/app/user-profile">
-                    Profile
+                    Thông tin cá nhân
                   </Dropdown.Item>
                   <Dropdown.Item href="https://templates.iqonic.design/hope-ui/react/build/dashboard/app/user-privacy-setting">
-                    Privacy Setting
+                    Cài đặt
                   </Dropdown.Item>
                   <Dropdown.Divider />
-                  <Dropdown.Item href="https://templates.iqonic.design/hope-ui/react/build/auth/sign-in">
-                    Logout
+                  <Dropdown.Item href="http://localhost:3000/login"
+                    onClick={() => {
+                      setAuthHeader(null)
+                    }}
+                  >
+                    Đăng xuất
                   </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>

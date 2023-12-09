@@ -25,7 +25,7 @@ public interface RomRepository extends IRomRepository {
 
     List<Rom> findAllByDelected(Boolean delected);
 
-    Rom findByKichThuoc(Integer kichThuoc);
+    Rom findByDungLuong(Integer kichThuoc);
 
     @Query(value = """
             SELECT SUBSTRING(ma,5) + 1 FROM rom ORDER BY ma DESC LIMIT 0,1

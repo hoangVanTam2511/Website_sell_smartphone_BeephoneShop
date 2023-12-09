@@ -1,8 +1,13 @@
-import { Button, Checkbox, Tooltip } from "antd";
+import { Button, Checkbox } from "antd";
 import React, { useEffect } from "react";
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faCheck, faEye } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowLeft,
+  faBookmark,
+  faCheck,
+  faEye,
+} from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { apiURLKhuyenMai, apiURLSanPham } from "../../../service/api";
 import TextField from "@mui/material/TextField";
@@ -11,10 +16,8 @@ import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import dayjs from "dayjs"; // Import thư viện Day.js
+import dayjs from "dayjs";
 import { Table } from "antd";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import numeral from "numeral";
 import style from "./style.css";
 
@@ -22,10 +25,12 @@ import Box from "@mui/joy/Box";
 import Radio, { radioClasses } from "@mui/joy/Radio";
 import RadioGroup from "@mui/joy/RadioGroup";
 import Badge from "@mui/joy/Badge";
-import Modal from "@mui/joy/Modal";
-import ModalClose from "@mui/joy/ModalClose";
-import Typography from "@mui/joy/Typography";
-import Sheet from "@mui/joy/Sheet";
+import { Notistack, TypeDiscountString } from "../order-manager/enum";
+import useCustomSnackbar from "../../../utilities/notistack";
+import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
+import LoadingIndicator from "../../../utilities/loading";
+import { useNavigate } from "react-router-dom";
+import { request } from '../../../store/helpers/axios_helper'
 
 const AddKhuyenMai = () => {
   //add-khuyen-mai
@@ -33,129 +38,170 @@ const AddKhuyenMai = () => {
   const [giaTriKhuyenMai, setGiaTriKhuyenMai] = useState(0);
   const [ngayBatDau, setNgayBatDau] = useState(dayjs());
   const [ngayKetThuc, setNgayKetThuc] = useState(dayjs());
-  const [selectDiscount, setSeclectDiscount] = useState("VNĐ");
-  const [value, setValue] = React.useState();
+  const [selectDiscount, setSeclectDiscount] = useState(TypeDiscountString.VND);
+  const [value, setValue] = React.useState("0");
   const [value2, setValue2] = React.useState();
 
   //san-pham
   const [listSanPham, setListSanPham] = useState([]);
   const [listSanPhamChiTiet, setlistSanPhamChiTiet] = useState([]);
-  const [dataSanPhamChiTiet, setDataSanPhamChiTiet] = useState([]);
-  const [selectedRow, setSelectedRow] = useState("");
 
   //khuyenmaichitiet
-  const [idSanPhamChiTiet, setIdSanPhamChiTiet] = useState("");
   const [validationMsg, setValidationMsg] = useState({});
   //check-box
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [selectedRows, setSelectedRows] = useState([]);
-  const [selectAll, setSelectAll] = useState(false);
   const [selectedRowKeys1, setSelectedRowKeys1] = useState([]);
-  const [selectedRows1, setSelectedRows1] = useState([]);
-  const [selectAll1, setSelectAll1] = useState(false);
+
   //Lấy id ctsp
   const [selectedProductDetails, setSelectedProductDetails] = useState([]);
   const [sanPhamChiTietKhuyenMai, setSanPhamChiTietKhuyenMai] = useState([]);
   const [isInputChanged, setIsInputChanged] = useState(false);
+  const { handleOpenAlertVariant } = useCustomSnackbar();
 
   const [open, setOpen] = React.useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [openConfirm, setOpenConfirm] = useState(false);
+  let successfulCount = 0;
+  let successfulCount1 = 0;
+  const navigate = useNavigate();
 
   const redirectToHienThiKhuyenMai = () => {
-    window.location.href = "/khuyen-mai";
+    navigate("/khuyen-mai");
+  };
+
+  const handleOpenDialogConfirmAdd = () => {
+    setOpenConfirm(true);
+  };
+
+  const handleCloseDialogConfirmAdd = () => {
+    setOpenConfirm(false);
+  };
+
+  const Header = () => {
+    return (
+      <>
+        <span className="">Xác nhận thêm giảm giá</span>
+      </>
+    );
+  };
+  const Title = () => {
+    return (
+      <>
+        <span>
+          Bạn có chắc chắc muốn thêm giá trị có tên là{" "}
+          <span style={{ color: "red" }}>{tenKhuyenMai}</span> và với giá trị{" "}
+          <span style={{ color: "red" }}>{value}</span>
+          <span style={{ color: "red" }}>
+            {selectDiscount === TypeDiscountString.VND ? "VND" : "%"}
+          </span>{" "}
+          không ?
+        </span>
+      </>
+    );
   };
 
   const loadDatalistSanPham = () => {
-    axios
-      .get("http://localhost:8080/san-pham-1")
+    request('GET',"/san-pham-1")
       .then((response) => {
-        setListSanPham(response.data);
+        setListSanPham(response.data.data);
       })
       .catch((error) => {
-        console.log("Lỗi do hiển thị dữ liệu sản phẩm");
+        handleOpenAlertVariant(
+          "Đã xảy ra lỗi, vui lòng liên hệ quản trị viên.",
+          Notistack.ERROR
+        );
       });
   };
 
   const loadDatalistSanPhamChiTiet = (id, check) => {
-    axios
-      .get("http://localhost:8080/san-pham-chi-tiet-1/" + id + "/" + check)
+    request('GET',`/san-pham-chi-tiet-1/${id}/${check}`)
       .then((response) => {
-        setlistSanPhamChiTiet(response.data);
+        setlistSanPhamChiTiet(response.data.data);
+        const data = response.data.data;
+        const productDetailsIds = data.map((item) => item.id);
+        setSelectedRowKeys1(productDetailsIds);
+        setSelectedProductDetails(response.data.data.map((item) => item.id));
       })
       .catch((error) => {
-        console.log("Lỗi do hiển thị dữ liệu sản phẩm chi tiết");
+        handleOpenAlertVariant(
+          "Đã xảy ra lỗi, vui lòng liên hệ quản trị viên.",
+          Notistack.ERROR
+        );
       });
   };
 
   const clear = () => {
-    axios
-      .get("http://localhost:8080/san-pham-chi-tiet/removeALL")
+    request('GET',"/san-pham-chi-tiet/removeALL")
       .then((response) => {
-        setlistSanPhamChiTiet(response.data);
+        setlistSanPhamChiTiet(response.data.data);
       })
       .catch((error) => {
-        console.log("Lỗi do clear dữ liệu sản phẩm");
+        handleOpenAlertVariant(
+          "Đã xảy ra lỗi, vui lòng liên hệ quản trị viên.",
+          Notistack.ERROR
+        );
       });
   };
 
   useEffect(() => {
     loadDatalistSanPham();
-    clear();
-  }, [dataSanPhamChiTiet]);
+  }, []);
 
   const handleChange = (event) => {
-    if (selectDiscount === "VNĐ") {
-      const inputValue = event.target.value;
-      const numericValue = parseFloat(inputValue.replace(/[^0-9.-]+/g, ""));
-      const formattedValue = inputValue
-        .replace(/[^0-9]+/g, "")
-        .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      setValue(formattedValue);
-      setGiaTriKhuyenMai(numericValue);
-      setIsInputChanged(true);
-    }
-    if (selectDiscount === "%") {
-      let inputValue = event.target.value;
-      // Loại bỏ các ký tự không phải số
-      inputValue = inputValue.replace(/\D/g, "");
-      // Xử lý giới hạn giá trị từ 1 đến 100
-      if (isNaN(inputValue) || inputValue < 1) {
-        inputValue = "0";
-      } else if (inputValue > 100) {
-        inputValue = "100";
-      }
-      setValue(inputValue);
-      setGiaTriKhuyenMai(inputValue);
-    }
+    // if (selectDiscount === TypeDiscountString.VND) {
+    const inputValue = event.target.value;
+    const numericValue = parseFloat(inputValue.replace(/[^0-9.-]+/g, ""));
+    const formattedValue = inputValue
+      .replace(/[^0-9]+/g, "")
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    setValue(formattedValue);
+    setGiaTriKhuyenMai(numericValue);
+    setIsInputChanged(true);
+    // }
+    // if (selectDiscount === TypeDiscountString.PERCENT) {
+    // let inputValue = event.target.value;
+    // inputValue = inputValue.replace(/[^0-9]+/g, "");
+    // inputValue = inputValue || "0";
+    // inputValue = inputValue.replace(/\D/g, "");
+    // if (isNaN(inputValue) || inputValue < 1) {
+    //   inputValue = "0";
+    // } else if (inputValue > 100) {
+    //   inputValue = "100";
+    // }
+    // setValue(inputValue);
+    // setGiaTriKhuyenMai(inputValue);y
+    // }
   };
 
-  const handleChangeToggleButtonDiscount = (event, newAlignment) => {
-    var oldAligment = event.target.value;
+  // const handleChangeToggleButtonDiscount = (event, newAlignment) => {
+  //   var oldAligment = event.target.value;
 
-    if (newAlignment != null) {
-      setSeclectDiscount(newAlignment);
-      setValue2(null);
-    }
+  //   if (newAlignment != null) {
+  //     setSeclectDiscount(newAlignment);
+  //     setValue2(null);
+  //   }
 
-    if (newAlignment == null) {
-      setSeclectDiscount(oldAligment);
-    }
-    handleReset();
-  };
+  //   if (newAlignment == null) {
+  //     setSeclectDiscount(oldAligment);
+  //   }
+  //   handleReset();
+  // };
 
-  const handleReset = () => {
-    setValue("");
-  };
+  // const handleReset = () => {
+  //   setValue("");
+  // };
 
   //Detail sản phẩm chi tiết đã áp dụng khuyến mãi
   const detailSanPhamSauKhuyenMai = (id) => {
-    axios
-      .get("http://localhost:8080/san-pham-chi-tiet-khuyen-mai/detail/" + id)
+    request('GET',"/san-pham-chi-tiet-khuyen-mai/detail/" + id)
       .then((response) => {
-        setSanPhamChiTietKhuyenMai(response.data);
-        // console.log(sanPhamChiTietKhuyenMai);
+        setSanPhamChiTietKhuyenMai(response.data.data);
       })
       .catch((error) => {
-        "Lỗi do hiển thị sản phẩm sau khuyến mãi";
+        handleOpenAlertVariant(
+          "Đã xảy ra lỗi, vui lòng liên hệ quản trị viên.",
+          Notistack.ERROR
+        );
       });
   };
 
@@ -169,32 +215,25 @@ const AddKhuyenMai = () => {
       ngayKetThuc: ngayKetThuc,
     };
 
-    axios
-      .post(apiURLKhuyenMai + "/add-khuyen-mai", obj)
+    request('POST', apiURLKhuyenMai + "/add-khuyen-mai", obj)
       .then((response) => {
-        const khuyenMaiID = response.data.id;
-        toast.success("Thêm thành công!");
+        const khuyenMaiID = response.data.data.id;
         selectedProductDetails.forEach((idSanPhamChiTiet) => {
+          successfulCount++;
           addKhuyenMaiChiTiet(khuyenMaiID, idSanPhamChiTiet);
         });
-        setTenKhuyenMai("");
-        setValue("");
-        setNgayBatDau(dayjs());
-        setNgayKetThuc(dayjs());
-        // clearSelectedItems();
+        // selectedProductDetails.forEach((idSanPhamChiTiet) => {
+        //   updateSanPhamChiTiet(idSanPhamChiTiet);
+        // });
+        handleOpenAlertVariant("Thêm giảm giá thành công.", Notistack.SUCCESS);
+        setTimeout(() => {
+          redirectToHienThiKhuyenMai();
+        }, 1000);
       })
       .catch((error) => {
-        toast.error("Đã xảy ra lỗi khi thêm Khuyến Mãi.");
+        handleOpenAlertVariant(error.response.data.message, Notistack.ERROR);
       });
   };
-
-  // const clearSelectedItems = () => {
-  //   setSelectedRowKeys([]);
-  //   setSelectedRowKeys1([]);
-  //   setSelectedRows([]);
-  //   setSelectedRows1([]);
-  //   setSelectedProductDetails([]);
-  // };
 
   // Hàm thêm vào khuyến mãi chi tiết
   const addKhuyenMaiChiTiet = (khuyenMaiID, idSanPhamChiTiet) => {
@@ -202,23 +241,36 @@ const AddKhuyenMai = () => {
       idKhuyenMai: khuyenMaiID,
       idSanPhamChiTiet: idSanPhamChiTiet,
     };
-    console.log(khuyenMaiID, idSanPhamChiTiet);
-    axios
-      .post(
-        "http://localhost:8080/khuyen-mai-chi-tiet/add",
+    request('POST',"/khuyen-mai-chi-tiet/add",
         objKhuyenMaiChiTiet
       )
       .then((response) => {
-        toast.success("Áp Dụng Thành Công!");
-        setTenKhuyenMai("");
-        setValue("");
-        setNgayBatDau(dayjs());
-        setNgayKetThuc(dayjs());
-        // clearSelectedItems();
-        // detailSanPhamSauKhuyenMai(idSPCTKM);
+        successfulCount1++;
+        if (successfulCount === successfulCount1) {
+          handleOpenAlertVariant(
+            "Áp dụng giảm giá thành công",
+            Notistack.SUCCESS
+          );
+        }
       })
       .catch((error) => {
-        toast.error("Đã xảy ra lỗi khi áp dụng Khuyến Mãi vào sản phẩm.");
+        successfulCount1++;
+        if (successfulCount === successfulCount1) {
+          handleOpenAlertVariant(
+            "Đã xảy ra lỗi khi áp dụng giảm giá.",
+            Notistack.ERROR
+          );
+        }
+      });
+  };
+
+  const updateSanPhamChiTiet = (idSP) => {
+    request('PUT',"/khuyen-mai-chi-tiet/update-san-pham/" + idSP)
+      .then((response) => {
+        console.log("Update thành công ");
+      })
+      .catch((error) => {
+        console.log("Update thất bại");
       });
   };
 
@@ -227,42 +279,42 @@ const AddKhuyenMai = () => {
     const msg = {};
 
     if (!tenKhuyenMai.trim("")) {
-      msg.tenKhuyenMai = "Tên không được để trống !!!";
-    }
-
-    if (/^\s+|\s+$/.test(tenKhuyenMai)) {
+      msg.tenKhuyenMai = "Tên không được để trống!";
+    } else if (/^\s+|\s+$/.test(tenKhuyenMai)) {
       msg.tenKhuyenMai =
-        "Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi";
+        "Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi!";
+    } else if (tenKhuyenMai.length < 5) {
+      msg.tenKhuyenMai = "Tên phải có ít nhất 5 ký tự!";
     }
-    if (ngayBatDau.isAfter(ngayKetThuc)) {
-      msg.ngayBatDau = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc !!!";
-    }
-
     const numericValue2 = parseFloat(value?.replace(/[^0-9.-]+/g, ""));
     if (value == null || value === "") {
-      msg.giaTriKhuyenMai = "Giá trị giảm giá không được để trống !!!";
+      msg.giaTriKhuyenMai = "Giá trị giảm giá không được để trống!";
     }
 
     if (
-      (selectDiscount === "VNĐ" && numericValue2 <= 0) ||
-      (selectDiscount === "VNĐ" && numericValue2 > 100000000)
+      (selectDiscount === TypeDiscountString.VND && numericValue2 <= 0) ||
+      (selectDiscount === TypeDiscountString.VND && numericValue2 > 100000000)
     ) {
-      msg.giaTriKhuyenMai = "Giá trị giảm giá từ 1đ đến 100.000.000đ";
+      msg.giaTriKhuyenMai = "Giá trị giảm giá từ 1đ đến 100.000.000đ!";
     }
 
-    if (ngayKetThuc.isBefore(ngayBatDau)) {
-      msg.ngayKetThuc = "Ngày kết thúc phải lớn hơn ngày bắt đầu !!!";
+    if (selectDiscount === TypeDiscountString.PERCENT && numericValue2 <= 0) {
+      msg.giaTriKhuyenMai = "Giá trị tối đa chỉ nằm trong khoảng 1% - 100%!";
+    }
+
+    if (ngayKetThuc.isBefore(ngayBatDau) | (ngayKetThuc === ngayBatDau)) {
+      msg.ngayKetThuc = "Ngày kết thúc phải lớn hơn ngày bắt đầu!";
+    } else if (ngayBatDau.isAfter(ngayKetThuc)) {
+      msg.ngayBatDau = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc!";
     }
 
     if (ngayBatDau.isBefore(dayjs())) {
-      msg.ngayBatDau = "Ngày bắt đầu phải lớn hơn ngày hiện tại !!!";
+      msg.ngayBatDau = "Ngày bắt đầu phải lớn hơn ngày hiện tại!";
     }
 
     if (ngayKetThuc.isBefore(dayjs())) {
-      msg.ngayKetThuc = "Ngày kết thúc phải lớn hơn ngày hiện tại !!!";
+      msg.ngayKetThuc = "Ngày kết thúc phải lớn hơn ngày hiện tại!";
     }
-
-    console.log(numericValue2);
 
     setValidationMsg(msg);
     if (Object.keys(msg).length > 0) return false;
@@ -272,113 +324,59 @@ const AddKhuyenMai = () => {
   const handleSubmit = () => {
     const isValid = validationAll();
     if (!isValid) return;
-    addKhuyenMai();
+    handleOpenDialogConfirmAdd();
   };
 
-  const handleCheckboxChange = (record, e) => {
-    const id = record.id;
-    if (e.target.checked) {
-      setSelectedRowKeys([...selectedRowKeys, id]);
-      setSelectedRows([...selectedRows, record]);
-      loadDatalistSanPhamChiTiet(record.id, true);
+  //Code check box
+  const onSelectChange = (newSelectedRowKeys) => {
+    setSelectedRowKeys(newSelectedRowKeys);
+    if (newSelectedRowKeys.length === 0) {
+      clear();
     } else {
-      loadDatalistSanPhamChiTiet(record.id, false);
-      setSelectedRowKeys(selectedRowKeys.filter((key) => key !== id));
-      setSelectedRows(selectedRows.filter((row) => row.id !== id));
+      clear();
+      newSelectedRowKeys
+        .reduce((prevPromise, id) => {
+          return prevPromise.then(() => loadDatalistSanPhamChiTiet(id, true));
+        }, Promise.resolve())
+        .catch((error) => {
+          console.log("Đã xảy ra lỗi");
+        });
     }
-  };
-
-  const handleRowClick = (record) => {
-    const id = record.id;
-    const checked = !selectedRowKeys.includes(id);
-    handleCheckboxChange(record, { target: { checked } });
   };
 
   const rowSelection = {
     selectedRowKeys,
-    onChange: (selectedRowKeys, selectedRows) => {
-      setSelectedRowKeys(selectedRowKeys);
-      setSelectedRows(selectedRows);
-    },
+    onChange: onSelectChange,
+    selections: [
+      Table.SELECTION_ALL,
+      Table.SELECTION_INVERT,
+      Table.SELECTION_NONE,
+    ],
   };
 
-  //Xử lý khi checkbox trên tiêu đề cột thay đổi
-  const handleSelectAllChange = (e) => {
-    const checked = e.target.checked;
-    if (checked === true) {
-      setSelectAll(checked);
-      const selectedKeys = checked ? listSanPham.map((item) => item.id) : [];
-      selectedKeys.forEach((id) => {
-        loadDatalistSanPhamChiTiet(id, true);
-      });
-      console.log(listSanPhamChiTiet);
-      setSelectedRowKeys(selectedKeys);
-    } else {
-      clear();
-      setSelectAll(checked);
-      const selectedKeys = checked ? listSanPham.map((item) => item.id) : [];
-      setSelectedRowKeys(selectedKeys);
-    }
-  };
-
-  // Thực hiện checkbox ListChiTietSanPham
-  const handleCheckboxChange1 = (record, e) => {
-    const id = record.id;
-    if (e.target.checked) {
-      setSelectedRowKeys1([...selectedRowKeys1, id]);
-      setSelectedRows1([...selectedRows1, record]);
-      setSelectedProductDetails([...selectedProductDetails, id]);
-    } else {
-      setSelectedRowKeys1(selectedRowKeys1.filter((key) => key !== id));
-      setSelectedRows1(selectedRows1.filter((row) => row.id !== id));
-      setSelectedProductDetails(
-        selectedProductDetails.filter((productId) => productId !== id)
-      );
-    }
-  };
-
-  const handleRowClick1 = (record) => {
-    const id = record.id;
-    const checked = !selectedRowKeys1.includes(id);
-    handleCheckboxChange1(record, { target: { checked } });
+  const onSelectChange1 = (newSelectedRowKeys1) => {
+    console.log("selectedRowKeys changed: ", newSelectedRowKeys1);
+    setSelectedRowKeys1(newSelectedRowKeys1);
+    setSelectedProductDetails(newSelectedRowKeys1);
   };
 
   const rowSelection1 = {
-    selectedRowKeys1,
-    onChange: (selectedRowKeys1, selectedRows1) => {
-      setSelectedRowKeys1(selectedRowKeys1);
-      setSelectedRows1(selectedRows1);
-    },
-  };
-
-  const handleSelectAllChange1 = (e) => {
-    const checked = e.target.checked;
-    setSelectAll1(checked);
-    const selectedKeys1 = checked
-      ? listSanPhamChiTiet.map((item) => item.id)
-      : [];
-    setSelectedProductDetails(selectedKeys1);
-    setSelectedRowKeys1(selectedKeys1);
+    selectedRowKeys: selectedRowKeys1,
+    onChange: onSelectChange1,
+    selections: [
+      Table.SELECTION_ALL,
+      Table.SELECTION_INVERT,
+      Table.SELECTION_NONE,
+    ],
   };
 
   //Column bảng Sản Phẩm
   const columns = [
     {
-      title: <Checkbox onChange={handleSelectAllChange} checked={selectAll} />,
-      dataIndex: "selection",
-      width: "5%",
-      render: (_, record) => (
-        <Checkbox
-          onChange={(e) => handleCheckboxChange(record, e)}
-          checked={selectedRowKeys.includes(record.id)}
-        />
-      ),
-      align: "center",
-    },
-    {
       title: "STT",
       dataIndex: "stt",
-      width: "5%",
+      key: "stt",
+      width: "10%",
       render: (text, record, index) => (
         <span>{listSanPham.indexOf(record) + 1}</span>
       ),
@@ -387,13 +385,23 @@ const AddKhuyenMai = () => {
     {
       title: "Mã",
       dataIndex: "maSanPham",
-      width: "10%",
+      key: "maSanPham",
+      width: "30%",
       align: "center",
     },
     {
       title: "Tên sản phẩm ",
       dataIndex: "tenSanPham",
-      width: "15%",
+      key: "tenSanPham",
+      width: "30%",
+      editable: true,
+      align: "center",
+    },
+    {
+      title: "Hãng ",
+      dataIndex: "tenHang",
+      key: "tenHang",
+      width: "30%",
       editable: true,
       align: "center",
     },
@@ -402,22 +410,9 @@ const AddKhuyenMai = () => {
   //Column bảng Sản Phẩm Chi Tiết
   const columns1 = [
     {
-      title: (
-        <Checkbox onChange={handleSelectAllChange1} checked={selectAll1} />
-      ),
-      dataIndex: "selection1",
-      width: "5%",
-      render: (_, record) => (
-        <Checkbox
-          onChange={(e) => handleCheckboxChange1(record, e)}
-          checked={selectedRowKeys1.includes(record.id)}
-        />
-      ),
-      align: "center",
-    },
-    {
       title: "STT",
       dataIndex: "stt",
+      key: "stt",
       width: "5%",
       render: (text, record, index) => (
         <span>{listSanPhamChiTiet.indexOf(record) + 1}</span>
@@ -427,7 +422,8 @@ const AddKhuyenMai = () => {
     {
       title: "Ảnh",
       dataIndex: "duongDan",
-      width: "10%",
+      key: "duongDan",
+      width: "15%",
       align: "center",
       render: (text, record) => (
         <Badge
@@ -436,225 +432,116 @@ const AddKhuyenMai = () => {
           badgeContent={record.size}
           color="primary"
         >
-          <img
-            src={record.duongDan}
-            alt="Ảnh"
-            style={{ width: "100px", height: "100px" }}
-          />
+          <div className="image-container" style={{ position: "relative" }}>
+            <img
+              src={record.duongDan}
+              alt="Ảnh"
+              style={{ width: "130px", height: "130px" }}
+            />
+            {/* {record.giaTriKhuyenMai !== null && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
+              >
+                <FontAwesomeIcon
+                  icon={faBookmark}
+                  style={{
+                    fontSize: "2.7em",
+                    color: record.giaTriKhuyenMai > 5000000 ? "red" : "#ffcc00",
+                    zIndex: 1,
+                    position: "relative",
+                  }}
+                />
+                <span
+                  style={{
+                    position: "absolute",
+                    top: "43%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    fontSize: "11px",
+                    color: record.giaTriKhuyenMai > 50 ? "white" : "black",
+                    zIndex: 2,
+                  }}
+                >
+                  <strong>
+                    Giảm
+                    <br /> {record.giaTriKhuyenMai}đ
+                  </strong>
+                </span>
+              </div>
+            )} */}
+
+            {record.giaTriKhuyenMai !== null && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
+              >
+                <span
+                  style={{
+                    position: "absolute",
+                    top: "43%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    fontSize: "11px",
+                    color:
+                      record.giaTriKhuyenMai > 10000000 ? "white" : "black",
+                    zIndex: 2,
+                  }}
+                >
+                  <div
+                    className="category"
+                    style={{
+                      backgroundColor:
+                        record.giaTriKhuyenMai > 10000000 ? "red" : "#ffcc00",
+                      position: "relative",
+                      top: "1px",
+                      borderTopLeftRadius: `8px`,
+                      borderTopRightRadius: `20px`,
+                      borderBottomRightRadius: `20px`,
+                      fontWeight: "600",
+                      opacity: 1, // Change opacity to 1 to make it visible
+                      padding: "4px 8px", // Add padding for better visibility
+                      marginLeft: "100px",
+                      marginTop: "25px",
+                    }}
+                  >
+                    Giảm{" "}
+                    {numeral(record.giaTriKhuyenMai).format("0,0 VND") + " ₫"}
+                  </div>
+                </span>
+              </div>
+            )}
+          </div>
         </Badge>
       ),
     },
+
     {
       title: "Tên sản phẩm",
       dataIndex: "tenSanPham",
-      width: "10%",
+      key: "tenSanPham",
+      width: "20%",
       align: "center",
-      maxWidth: "10%",
+      maxWidth: "20%",
       render: (value, record) => {
-        let tenSanPham = value;
-        return <span style={{ whiteSpace: "pre-line" }}> {tenSanPham}</span>;
-      },
-    },
-    {
-      title: "ROM",
-      dataIndex: "kichThuocRom",
-      width: "10%",
-      align: "center",
-      render: (value, record) => {
-        let formattedValue = value;
-        formattedValue = `${record.kichThuocRom} GB`;
-        return <span>{formattedValue}</span>;
-      },
-    },
-    {
-      title: "RAM ",
-      dataIndex: "kichThuocRam",
-      width: "10%",
-      editable: true,
-      align: "center",
-      render: (value, record) => {
-        let formattedValue = value;
-        formattedValue = `${record.kichThuocRam} GB`;
-        return <span>{formattedValue}</span>;
-      },
-    },
-    {
-      title: "Màu Sắc ",
-      dataIndex: "tenMauSac",
-      width: "10%",
-      editable: true,
-      align: "center",
-    },
-    {
-      title: "Đơn giá ",
-      dataIndex: "donGia",
-      width: "10%",
-      editable: true,
-      align: "center",
-      render: (value, record) => {
-        let formattedValue = value;
-        formattedValue = numeral(record.donGia).format("0,0 VND") + " VNĐ";
-        return <span>{formattedValue}</span>;
-      },
-    },
-
-    {
-      title: "Giảm giá",
-      dataIndex: "giaTriKhuyenMai",
-      width: "10%",
-      editable: true,
-      align: "center",
-      render: (_, record) => {
-        let formattedValue = value;
-        if (selectDiscount === "VNĐ") {
-          formattedValue = numeral(value).format("0,0 VND") + " VNĐ";
-        } else if (selectDiscount === "%") {
-          formattedValue = value + " %";
-        }
-        return <span>{formattedValue}</span>;
-      },
-    },
-
-    {
-      title: "Đơn giá khuyến mãi",
-      dataIndex: "donGiaSauKhuyenMai",
-      width: "10%",
-      editable: true,
-      align: "center",
-      whiteSpace: "pre-line",
-      render: (_, record) => {
-        if (isInputChanged) {
-          const numericValue2 = parseFloat(value?.replace(/[^0-9.-]+/g, ""));
-          let giaTriKhuyenMai = record.donGia;
-          if (selectDiscount === "VNĐ") {
-            giaTriKhuyenMai = record.donGia - numericValue2;
-            return (
-              <span>{numeral(giaTriKhuyenMai).format("0,0 VND") + " VNĐ"}</span>
-            );
-          } else if (selectDiscount === "%") {
-            giaTriKhuyenMai =
-              record.donGia - (record.donGia * numericValue2) / 100;
-            return (
-              <span>{numeral(giaTriKhuyenMai).format("0,0 VND") + " VNĐ"}</span>
-            );
-          }
-        } else {
-          let formattedValue = record.donGia;
-          formattedValue = numeral(record.donGia).format("0,0 VND") + " VNĐ";
-          return <span>{formattedValue}</span>;
-        }
-      },
-    },
-    {
-      title: "Tình trạng",
-      dataIndex: "tinhTrang",
-      width: "10%",
-      align: "center",
-      render: (_, record) => {
         return (
-          <>
-            <div style={{ textAlign: "center" }}>
-              <Tooltip title="Change">
-                <Button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setOpen(true);
-                    detailSanPhamSauKhuyenMai(record.id);
-                  }}
-                  style={{ border: "none", background: "none" }}
-                >
-                  <FontAwesomeIcon icon={faEye} />
-                </Button>{" "}
-              </Tooltip>
-            </div>
-          </>
-        );
-      },
-    },
-  ];
-
-  const columns2 = [
-    {
-      title: "Ảnh",
-      dataIndex: "duongDan",
-      width: "10%",
-      render: (text, record) => (
-        <img
-          src={record.duongDan}
-          style={{ width: "100px", height: "100px" }}
-        />
-      ),
-      align: "center",
-    },
-    {
-      title: "Tên sản phẩm",
-      dataIndex: "tenSanPham",
-      width: "10%",
-      align: "center",
-    },
-    {
-      title: "ROM",
-      dataIndex: "kichThuocRom",
-      width: "10%",
-      align: "center",
-      render: (value, record) => {
-        let formattedValue = value;
-        formattedValue = `${record.kichThuocRom} GB`;
-        return <span>{formattedValue}</span>;
-      },
-    },
-    {
-      title: "RAM ",
-      dataIndex: "kichThuocRam",
-      width: "10%",
-      editable: true,
-      align: "center",
-      render: (value, record) => {
-        let formattedValue = value;
-        formattedValue = `${record.kichThuocRam} GB`;
-        return <span>{formattedValue}</span>;
-      },
-    },
-    {
-      title: "Màu Sắc ",
-      dataIndex: "tenMauSac",
-      width: "10%",
-      editable: true,
-      align: "center",
-    },
-    {
-      title: "Tên Khuyến Mãi",
-      dataIndex: "tenKhuyenMaiSPCT",
-      width: "15%",
-      align: "center",
-      render: (text, record) => (
-        <span
-          style={{
-            maxWidth: "15%",
-            whiteSpace: "pre-line",
-            overflow: "hidden",
-          }}
-        >
-          {record.tenKhuyenMaiSPCT}
-        </span>
-      ),
-    },
-    {
-      title: "Giảm Giá",
-      dataIndex: "loaiGiamGia",
-      width: "10%",
-      align: "center",
-      render: (value, record) => {
-        let formattedValue = value;
-        if (record.loaiKhuyenMai === "VNĐ") {
-          formattedValue =
-            numeral(record.giaTriKhuyenMai).format("0,0 VND") + " VNĐ";
-        } else if (record.loaiKhuyenMai === "%") {
-          formattedValue = `${record.giaTriKhuyenMai} %`;
-        }
-        return (
-          <span className="txt-danger" style={{ fontWeight: "400" }}>
-            {formattedValue}
+          <span style={{ whiteSpace: "pre-line" }}>
+            {record.tenSanPham} {record.kichThuocRam}GB/{record.kichThuocRom}GB{" "}
+            {"("}
+            {record.tenMauSac}
+            {")"}
           </span>
         );
       },
@@ -662,359 +549,345 @@ const AddKhuyenMai = () => {
     {
       title: "Đơn giá ",
       dataIndex: "donGia",
-      width: "10%",
+      key: "donGia",
+      width: "20%",
       editable: true,
       align: "center",
       render: (value, record) => {
         let formattedValue = value;
-        formattedValue = numeral(record.donGia).format("0,0 VND") + " VNĐ";
+        formattedValue = numeral(record.donGia).format("0,0 VND") + " ₫";
         return <span>{formattedValue}</span>;
       },
     },
 
     {
-      title: "Đơn giá sau khuyến mãi",
-      dataIndex: "donGiaSauKhuyenMai",
+      title: "Giảm giá",
+      dataIndex: "giaTriKhuyenMai",
+      key: "giaTriKhuyenMai",
       width: "10%",
       editable: true,
       align: "center",
-      render: (value, record) => {
-        let formattedValue = value;
-        formattedValue =
-          numeral(record.donGiaSauKhuyenMai).format("0,0 VND") + " VNĐ";
+      render: (_, record) => {
+        let formattedValue;
+        const numericValue2 = parseFloat(value?.replace(/[^0-9.-]+/g, ""));
+        if (record.giaTriKhuyenMai === null) {
+          formattedValue = numeral(numericValue2).format("0,0 VND") + " ₫";
+        } else {
+          if (value === "0" || value === "" || value === null) {
+            formattedValue =
+              numeral(record.giaTriKhuyenMai).format("0,0 VND") + " ₫";
+          } else {
+            const total = record.tong === null ? 0 : record.tong;
+            formattedValue = Math.round(
+              (total + parseInt(numericValue2)) / (record.size + 1)
+            );
+            formattedValue = numeral(formattedValue).format("0,0 VND") + " ₫";
+          }
+        }
         return <span>{formattedValue}</span>;
+      },
+    },
+
+    {
+      title: "Đơn giá sau giảm giá",
+      dataIndex: "donGiaSauKhuyenMai",
+      key: "donGiaSauKhuyenMai",
+      width: "20%",
+      editable: true,
+      align: "center",
+      whiteSpace: "pre-line",
+      render: (_, record) => {
+        const numericValue2 = parseFloat(value?.replace(/[^0-9.-]+/g, ""));
+        let formattedValue = record.donGia;
+        const validNumericValue2 = isNaN(numericValue2) ? 0 : numericValue2;
+        if (record.giaTriKhuyenMai === null) {
+          formattedValue = record.donGia - validNumericValue2;
+        } else {
+          if (value === "0" || value === "" || value == null) {
+            formattedValue = record.donGia - record.giaTriKhuyenMai;
+          } else {
+            const total = record.tong === null ? 0 : record.tong;
+            formattedValue =
+              record.donGia -
+              Math.round((total + numericValue2) / (record.size + 1));
+          }
+        }
+        return <span>{numeral(formattedValue).format("0,0 VND") + " ₫"}</span>;
       },
     },
   ];
 
-  const mergedColumns = columns.map((col) => {
-    if (!col.editable) {
-      return col;
-    }
-    return {
-      ...col,
-      onCell: (record) => ({
-        record,
-        dataIndex: col.dataIndex,
-        title: col.title,
-      }),
-    };
-  });
-
-  const mergedColumns1 = columns1.map((col1) => {
-    if (!col1.editable) {
-      return col1;
-    }
-    return {
-      ...col1,
-      onCell: (record) => ({
-        record,
-        dataIndex: col1.dataIndex,
-        title: col1.title,
-      }),
-    };
-  });
-
-  const mergedColumns2 = columns2.map((col2) => {
-    if (!col2.editable) {
-      return col2;
-    }
-    return {
-      ...col2,
-      onCell: (record) => ({
-        record,
-        dataIndex: col2.dataIndex,
-        title: col2.title,
-      }),
-    };
-  });
-
   return (
     <>
-      <div className="row mt-4 add-promotion-container">
-        <div
-          className="col-md-5 mt-3"
-          style={{ borderRight: "1px solid black" }}
-        >
-          <h5 className="title-promotion ms-4">Thêm Khuyến Mãi</h5>
-          <div className="row-input ms-3 mb-3">
-            <div className="input-container">
-              <TextField
-                label="Tên Khuyến Mãi:"
-                value={tenKhuyenMai}
-                id="fullWidth"
-                onChange={(e) => {
-                  setTenKhuyenMai(e.target.value);
-                }}
-                style={{ width: "430px", marginTop: "10px" }}
-                inputProps={{
-                  maxLength: 100, // Giới hạn tối đa 10 ký tự
-                }}
-              />
+      <div className="row">
+        <div className="col-5">
+          <div className="mt-3 add-promotion-container">
+            <h5
+              className="title-promotion ms-3"
+              style={{ paddingBottom: "2px", paddingLeft: "10px" }}
+            >
+              Thêm Giảm Giá
+            </h5>
+            <div className="ms-3 mb-3 mt-2">
+              <div className="input-container">
+                <TextField
+                  label="Tên Giảm Giá:"
+                  value={tenKhuyenMai}
+                  id="fullWidth"
+                  onChange={(e) => {
+                    setTenKhuyenMai(e.target.value);
+                  }}
+                  style={{ width: "430px", marginTop: "10px" }}
+                  inputProps={{
+                    maxLength: 255, // Giới hạn tối đa 10 ký tự
+                  }}
+                  error={validationMsg.tenKhuyenMai !== undefined}
+                  helperText={validationMsg.tenKhuyenMai}
+                />
+              </div>
             </div>
-            <span className="validate" style={{ color: "red" }}>
-              {validationMsg.tenKhuyenMai}
-            </span>
-          </div>
 
-          <div className="d-flex ms-3" style={{ marginBottom: "5px" }}>
-            <div>
-              <RadioGroup
-                orientation="horizontal"
-                aria-label="Alignment"
-                name="alignment"
-                variant="outlined"
-                value={selectDiscount}
-                onChange={handleChangeToggleButtonDiscount}
-                sx={{ borderRadius: "12px" }}
-              >
-                {["VNĐ", "%"].map((item) => (
-                  <Box
-                    key={item}
-                    sx={(theme) => ({
-                      position: "relative",
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      width: 47,
-                      height: 54,
-                      "&:not([data-first-child])": {
-                        borderLeft: "1px solid",
-                        borderdivor: "divider",
-                      },
-                      [`&[data-first-child] .${radioClasses.action}`]: {
-                        borderTopLeftRadius: `calc(${theme.vars.radius.sm} + 5px)`,
-                        borderBottomLeftRadius: `calc(${theme.vars.radius.sm} + 5px)`,
-                      },
-                      [`&[data-last-child] .${radioClasses.action}`]: {
-                        borderTopRightRadius: `calc(${theme.vars.radius.sm} + 5px)`,
-                        borderBottomRightRadius: `calc(${theme.vars.radius.sm} + 5px)`,
-                      },
-                    })}
-                  >
-                    <Radio
-                      value={item}
-                      disableIcon
-                      overlay
-                      label={[item]}
-                      variant={selectDiscount === item ? "solid" : "plain"}
+            <div className="d-flex ms-3">
+              {/* <div>
+                <RadioGroup
+                  orientation="horizontal"
+                  aria-label="Alignment"
+                  name="alignment"
+                  variant="outlined"
+                  value={selectDiscount}
+                  onChange={handleChangeToggleButtonDiscount}
+                  sx={{ borderRadius: "12px" }}
+                >
+                  {[TypeDiscountString.PERCENT, TypeDiscountString.VND].map(
+                    (item) => (
+                      <Box
+                        key={item}
+                        sx={(theme) => ({
+                          position: "relative",
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          width: 47,
+                          height: 54,
+                          "&:not([data-first-child])": {
+                            borderLeft: "1px solid",
+                            borderdivor: "divider",
+                          },
+                          [`&[data-first-child] .${radioClasses.action}`]: {
+                            borderTopLeftRadius: `calc(${theme.vars.radius.sm} + 5px)`,
+                            borderBottomLeftRadius: `calc(${theme.vars.radius.sm} + 5px)`,
+                          },
+                          [`&[data-last-child] .${radioClasses.action}`]: {
+                            borderTopRightRadius: `calc(${theme.vars.radius.sm} + 5px)`,
+                            borderBottomRightRadius: `calc(${theme.vars.radius.sm} + 5px)`,
+                          },
+                        })}
+                      >
+                        <Radio
+                          value={item}
+                          disableIcon
+                          overlay
+                          label={[
+                            item === TypeDiscountString.VND
+                              ? "VND"
+                              : item === TypeDiscountString.PERCENT
+                              ? "%"
+                              : "",
+                          ]}
+                          variant={selectDiscount === item ? "solid" : "plain"}
+                          slotProps={{
+                            input: { "aria-label": item },
+                            action: {
+                              sx: { borderRadius: 0, transition: "none" },
+                            },
+                            label: { sx: { lineHeight: 0 } },
+                          }}
+                        />
+                      </Box>
+                    )
+                  )}
+                </RadioGroup>
+              </div> */}
+              <div>
+                <TextField
+                  label="Nhập Giá Trị Giảm Giá"
+                  value={value}
+                  onChange={handleChange}
+                  id="outlined-start-adornment"
+                  InputProps={{
+                    inputMode: "numeric",
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        {/* {selectDiscount === TypeDiscountString.VND
+                          ? TypeDiscountString.VND
+                          : TypeDiscountString.PERCENT
+                          ? "%"
+                          : ""} */}
+                        đ
+                      </InputAdornment>
+                    ),
+                  }}
+                  style={{
+                    width: "430px",
+                  }}
+                  inputProps={{
+                    maxLength: 20, // Giới hạn tối đa 10 ký tự
+                  }}
+                  error={validationMsg.giaTriKhuyenMai !== undefined}
+                  helperText={validationMsg.giaTriKhuyenMai}
+                />
+              </div>
+            </div>
+            <div className="row-input-date ms-3 mt-2">
+              <div className="input-container">
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DemoContainer components={["DateTimePicker"]}>
+                    <DateTimePicker
+                      ampm={true}
+                      disablePast={true}
+                      label="Ngày Bắt Đầu"
+                      value={ngayBatDau}
+                      format="HH:mm DD/MM/YYYY"
+                      onChange={(e) => {
+                        setNgayBatDau(e);
+                        setNgayKetThuc(e);
+                      }}
+                      sx={{ width: "430px" }}
                       slotProps={{
-                        input: { "aria-label": item },
-                        action: {
-                          sx: { borderRadius: 0, transition: "none" },
+                        textField: {
+                          error: validationMsg.ngayBatDau !== undefined,
+                          helperText:
+                            !!validationMsg.ngayBatDau !== undefined
+                              ? validationMsg.ngayBatDau
+                              : "",
                         },
-                        label: { sx: { lineHeight: 0 } },
                       }}
                     />
-                  </Box>
-                ))}
-              </RadioGroup>
+                  </DemoContainer>
+                </LocalizationProvider>
+              </div>
             </div>
-            <div>
-              <TextField
-                label="Nhập Giá Trị Khuyến Mãi"
-                value={value}
-                onChange={handleChange}
-                id="outlined-start-adornment"
-                InputProps={{
-                  inputMode: "numeric",
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      {selectDiscount === "VNĐ" ? "VND" : "%"}
-                    </InputAdornment>
-                  ),
-                }}
-                style={{
-                  marginLeft: "15px",
-                  width: "320px",
-                }}
-                inputProps={{
-                  maxLength: 20, // Giới hạn tối đa 10 ký tự
-                }}
-              />
-
-              <span
-                className="validate"
-                style={{ color: "red", paddingLeft: "15px" }}
+            <div className="row-input-date ms-3 mt-2">
+              <div className="input-container">
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DemoContainer components={["DateTimePicker"]}>
+                    <DateTimePicker
+                      ampm={true}
+                      disablePast={true}
+                      label="Ngày Kết Thúc"
+                      value={ngayKetThuc}
+                      format="HH:mm DD/MM/YYYY"
+                      onChange={(e) => {
+                        setNgayKetThuc(e);
+                      }}
+                      sx={{ width: "430px", marginTop: "20px" }}
+                      slotProps={{
+                        textField: {
+                          error: validationMsg.ngayKetThuc !== undefined,
+                          helperText:
+                            !!validationMsg.ngayKetThuc !== undefined
+                              ? validationMsg.ngayKetThuc
+                              : "",
+                        },
+                      }}
+                    />
+                  </DemoContainer>
+                </LocalizationProvider>
+              </div>
+            </div>
+            <div className="btn-accept mt-3">
+              <Button
+                className="rounded-2 button-mui"
+                type="primary"
+                style={{ height: "35px", width: "100px", fontSize: "15px" }}
+                onClick={handleSubmit}
               >
-                {validationMsg.giaTriKhuyenMai}
-              </span>
+                <FontAwesomeIcon icon={faCheck} />
+                <span
+                  className="ms-1"
+                  style={{ marginBottom: "3px", fontWeight: "500" }}
+                >
+                  Áp dụng
+                </span>
+              </Button>
+              &nbsp;&nbsp;
+              <Button
+                className="rounded-2 button-mui"
+                type="primary"
+                style={{ height: "35px", width: "100px", fontSize: "15px" }}
+                onClick={() => {
+                  setTimeout(() => {
+                    setIsLoading(false);
+                    redirectToHienThiKhuyenMai();
+                  }, 200);
+                }}
+                htmlType="submit"
+              >
+                <FontAwesomeIcon icon={faArrowLeft} />
+                <span
+                  className="ms-1"
+                  style={{ marginBottom: "3px", fontWeight: "500" }}
+                >
+                  Quay về
+                </span>
+              </Button>
             </div>
-          </div>
-          <div className="row-input-date ms-3 mt-3">
-            <div className="input-container">
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DemoContainer components={["DateTimePicker"]}>
-                  <DateTimePicker
-                    ampm={true}
-                    disablePast={true}
-                    label="Ngày Bắt Đầu"
-                    value={ngayBatDau}
-                    format="HH:mm DD/MM/YYYY"
-                    onChange={(e) => {
-                      setNgayBatDau(e);
-                    }}
-                    sx={{ width: "430px" }}
-                  />
-                </DemoContainer>
-              </LocalizationProvider>
-            </div>
-            <div className="row-input">
-              <span className="validate" style={{ color: "red" }}>
-                {validationMsg.ngayBatDau}
-              </span>
-            </div>
-          </div>
-          <div className="row-input-date ms-3 mt-3">
-            <div className="input-container">
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DemoContainer components={["DateTimePicker"]}>
-                  <DateTimePicker
-                    ampm={true}
-                    disablePast={true}
-                    label="Ngày Kết Thúc"
-                    value={ngayKetThuc}
-                    format="HH:mm DD-MM-YYYY"
-                    onChange={(e) => {
-                      setNgayKetThuc(e);
-                    }}
-                    sx={{ width: "430px", marginTop: "20px" }}
-                  />
-                </DemoContainer>
-              </LocalizationProvider>
-            </div>
-            <div className="row-input">
-              <span className="validate" style={{ color: "red" }}>
-                {validationMsg.ngayKetThuc}
-              </span>
-            </div>
-          </div>
-          <div className="btn-accept mt-3">
-            <Button type="primary" onClick={handleSubmit}>
-              Áp Dụng{" "}
-              <FontAwesomeIcon icon={faCheck} style={{ paddingLeft: "10px" }} />
-            </Button>
-            <ToastContainer />
-            &nbsp;&nbsp;
-            <Button
-              type="primary"
-              onClick={() => {
-                redirectToHienThiKhuyenMai();
-              }}
-              htmlType="submit"
-            >
-              Quay Về{" "}
-              <FontAwesomeIcon
-                icon={faArrowLeft}
-                style={{ paddingLeft: "10px" }}
-              />
-            </Button>
           </div>
         </div>
-
-        <div className="col-7 mt-3">
-          <div className="table-container">
-            <h5 className="title-promotion" style={{ marginBottom: "2%" }}>
-              Danh sách sản Phẩm
+        <div className="col-7">
+          <div className="mt-3 add-promotion-inProduct-container">
+            <h5
+              className="title-product mb-2"
+              style={{ paddingBottom: "10px" }}
+            >
+              Danh sách sản phẩm
             </h5>
             <Table
+              className="table-container"
+              style={{
+                margin: "0 18px",
+              }}
+              rowSelection={rowSelection}
+              columns={columns}
               dataSource={listSanPham}
-              columns={mergedColumns}
-              pagination={{ pageSize: 3 }}
               rowKey="id"
-              style={{ marginBottom: "20px" }}
-              onRow={(record) => {
-                return {
-                  onClick: () => {
-                    if (selectedRow === record) {
-                      handleRowClick(record);
-                    } else {
-                      handleRowClick(record);
-                      setSelectedRow(record);
-                    }
-                  },
-                  className: selectedRow === record ? "selected-row" : "",
-                };
+              pagination={{
+                pageSize: 4,
+                position: ["bottomCenter"],
               }}
             />
           </div>
         </div>
-        <hr style={{ width: "97.3%", border: "1px solid black " }} />
-        <div className="row mt-3">
-          <h5 style={{ marginTop: "20px", marginBottom: "10px" }}>
-            Danh sách chi tiết sản phẩm
-          </h5>
-          <Table
-            dataSource={listSanPhamChiTiet}
-            columns={mergedColumns1}
-            pagination={{ pageSize: 5 }}
-            rowKey="id"
-            style={{ marginBottom: "20px" }}
-            onRow={(record) => {
-              return {
-                onClick: () => {
-                  handleRowClick1(record);
-                  setSelectedRows1([record]);
-                  setIdSanPhamChiTiet(record.id);
-                  detailSanPhamSauKhuyenMai(record.id);
-                },
-                className: selectedRow === record.index ? "selected-row" : "",
-              };
-            }}
-          />
-        </div>
       </div>
-      <React.Fragment>
-        <Modal
-          aria-labelledby="modal-title"
-          aria-describedby="modal-desc"
-          open={open}
-          onClose={() => setOpen(false)}
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
+
+      <div className="row mt-3 ms-1 mb-3 add-promotion-inProduct-detail-container">
+        <h5
+          style={{
+            margin: "15px",
           }}
         >
-          <div className="modal-container">
-            <Sheet
-              variant="outlined"
-              sx={{
-                maxWidth: 1300,
-                borderRadius: "md",
-                p: 3,
-                boxShadow: "lg",
-              }}
-            >
-              <ModalClose variant="plain" sx={{ m: 1 }} />
-              <Typography
-                component="h2"
-                id="modal-title"
-                level="h4"
-                textColor="inherit"
-                fontWeight="lg"
-                mb={1}
-                textAlign="center"
-              >
-                Sản phẩm đang được áp dụng khuyến mãi
-              </Typography>
-              <Typography id="modal-desc" textColor="text.tertiary">
-                {sanPhamChiTietKhuyenMai.length === 0 ? (
-                  <p>Sản phẩm chưa được áp dụng khuyến mãi !!!</p>
-                ) : (
-                  <Table
-                    dataSource={sanPhamChiTietKhuyenMai}
-                    columns={mergedColumns2}
-                    pagination={false}
-                    rowKey="id"
-                    style={{ marginBottom: "20px" }}
-                  />
-                )}
-              </Typography>
-            </Sheet>
-          </div>
-        </Modal>
-      </React.Fragment>
+          Danh sách sản phẩm chi tiết
+        </h5>
+        <Table
+          className="table-container"
+          rowSelection={rowSelection1}
+          columns={columns1}
+          dataSource={listSanPhamChiTiet}
+          rowKey="id"
+          pagination={{
+            pageSize: 5,
+            position: ["bottomCenter"],
+          }}
+        />
+      </div>
+      <ConfirmDialog
+        open={openConfirm}
+        onClose={handleCloseDialogConfirmAdd}
+        add={addKhuyenMai}
+        title={<Title />}
+        header={<Header />}
+      />
+      {!isLoading && <LoadingIndicator />}
     </>
   );
 };

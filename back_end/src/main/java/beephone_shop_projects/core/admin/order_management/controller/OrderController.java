@@ -46,7 +46,7 @@ public class OrderController {
   }
 
   @GetMapping("/pending")
-  public ResponseObject<OrderResponse> getOrdersPending() {
+  public ResponseObject<OrderResponse> getOrdersPending() throws Exception {
     List<OrderResponse> ordersPending = hoaDonService.getOrdersPending();
     return new ResponseObject(ordersPending);
   }
@@ -64,13 +64,13 @@ public class OrderController {
   }
 
   @PostMapping
-  public ResponseObject<OrderResponse> createOrder(Account account, Voucher voucher, @RequestParam(value = "isPending", required = true) Boolean isPending) throws Exception {
-    if (!isPending) {
-      OrderResponse placedOrder = hoaDonService.placeOrder(account, voucher);
-      return new ResponseObject(placedOrder);
+  public ResponseObject<OrderResponse> createOrder(@RequestBody OrderRequest orderRequest, @RequestParam(value = "isPending", required = true) Boolean isPending) throws Exception {
+    if (isPending) {
+      OrderResponse createdOrderPending = hoaDonService.createOrderPending();
+      return new ResponseObject(createdOrderPending);
     }
-    OrderResponse createdOrderPending = hoaDonService.createOrderPending();
-    return new ResponseObject(createdOrderPending);
+    OrderResponse placedOrder = hoaDonService.placeOrder(orderRequest);
+    return new ResponseObject(placedOrder);
   }
 
   @PutMapping("/{id}")

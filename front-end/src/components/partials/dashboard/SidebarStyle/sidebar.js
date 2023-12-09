@@ -75,9 +75,8 @@ const Sidebar = memo((props) => {
       <aside
         className={` ${sidebarColor} ${sidebarType.join(
           " "
-        )} ${sidebarMenuStyle} ${
-          sidebarHide.join(" ") ? "sidebar-none" : "sidebar"
-        }   sidebar-base  `}
+        )} ${sidebarMenuStyle} ${sidebarHide.join(" ") ? "sidebar-none" : "sidebar"
+          }   sidebar-base  `}
         data-sidebar="responsive"
       >
         <div className="sidebar-header d-flex align-items-center justify-content-start">
