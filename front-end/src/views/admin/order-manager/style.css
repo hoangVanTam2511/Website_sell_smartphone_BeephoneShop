@@ -999,14 +999,17 @@ input[type="number"]::-ms-outer-spin-button {
 	width: 8%;
 }
 .col-name{
-  width: 45%;
+  width: 35%;
 }
 
 .col-quantity{
 	width: 10%;
 }
-.col-price, .col-total {
-	width: 15%;
+.col-price {
+	width: 20%;
+}
+.col-imei {
+	width: 25%;
 }
 
 .table-pdf th {

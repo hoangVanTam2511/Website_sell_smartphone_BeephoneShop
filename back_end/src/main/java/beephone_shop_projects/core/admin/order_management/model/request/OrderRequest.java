@@ -63,11 +63,11 @@ public class OrderRequest {
 
   private Date createdAt;
 
-//  private Date updatedAt;
+  private Date updatedAt;
 //
-//  private String createdBy;
+  private String createdBy;
 //
-//  private String updatedBy;
+  private String updatedBy;
 
   private AccountRequest account;
 
@@ -116,6 +116,8 @@ public class OrderRequest {
   private String createdByPayment;
 
   private String statusOrder;
+
+  private String note;
 
 
 }

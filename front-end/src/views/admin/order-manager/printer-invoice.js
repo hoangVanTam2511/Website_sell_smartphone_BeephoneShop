@@ -251,18 +251,29 @@ export const PrintBillAtTheCounterAuto = React.forwardRef((ref, props) => {
 export const PrintBillAtTheCounter = React.forwardRef((props, ref) => {
 
 
-  let createdAt = props.data.createdAt instanceof Date ? props.data.createdAt : new Date();
 
-  let orderItems = props.data.orderItems ? props.data.orderItems : [];
+  const createdAt = props.data.createdAt instanceof Date ? props.data.createdAt : new Date();
 
-  let account = props.data.account ? props.data.account : null;
+  const orderItems = props.data.orderItems ? props.data.orderItems : [];
 
-  let tongTien = props.data.tongTien ? props.data.tongTien : 0;
-  let phiShip = props.data.phiShip ? props.data.phiShip : 0;
-  let discount = props.data && props.data.voucher && props.data.voucher.giaTriVoucher || 0;
-  let khachPhaiTra = tongTien - discount + phiShip;
-  let tienKhachDua = props.data.tienKhachTra || 0;
-  let tienThua = props.data.tienThua || 0;
+  const orderImeis = orderItems.flatMap((order) => {
+    return order.imeisDaBan.map((item) => {
+      return {
+        ...order,
+        soLuong: 1,
+        imei: item,
+      };
+    });
+  });
+
+  const account = props.data.account ? props.data.account : null;
+
+  const tongTien = props.data.tongTien ? props.data.tongTien : 0;
+  const phiShip = props.data.phiShip ? props.data.phiShip : 0;
+  const discount = props.data && props.data.voucher && props.data.voucher.giaTriVoucher || 0;
+  const khachPhaiTra = tongTien - discount + phiShip;
+  const tienKhachDua = props.data.tienKhachTra || 0;
+  const tienThua = props.data.tienThua || 0;
 
 
 
@@ -361,33 +372,38 @@ export const PrintBillAtTheCounter = React.forwardRef((props, ref) => {
             <tr>
               <th align="center" class="col-stt">STT</th>
               <th align="center" class="col-name">Sản phẩm</th>
+              <th align="center" class="col-imei">Số Imei</th>
               <th align="center" class="col-quantity">Số lượng</th>
               <th align="center" class="col-price">Đơn giá</th>
-              <th align="center" class="col-total">Thành tiền</th>
             </tr>
           </thead>
           <tbody>
-            {orderItems.map((item, index) => {
+            {orderImeis.map((item, index) => {
               return (
                 <tr>
                   <td align='center'>{index + 1}</td>
-                  <td align="center">{item.sanPhamChiTiet.sanPham.tenSanPham + " " + item.sanPhamChiTiet.ram.dungLuong + "/" + item.sanPhamChiTiet.rom.dungLuong + "GB " + item.sanPhamChiTiet.mauSac.tenMauSac}</td>
-                  <td align="center">{item.soLuong}</td>
-                  {item.donGiaSauGiam !== null && item.donGiaSauGiam !== 0 ?
-                    <td align="center">{item.donGiaSauGiam.toLocaleString("vi-VN", {
+                  <td align="center">
+                    {item.sanPhamChiTiet && item.sanPhamChiTiet.sanPham && item.sanPhamChiTiet.sanPham.tenSanPham}
+                    {" "}
+                    {item.sanPhamChiTiet && item.sanPhamChiTiet.ram && item.sanPhamChiTiet.ram.dungLuong}
+                    {"/"}
+                    {item.sanPhamChiTiet && item.sanPhamChiTiet.rom && item.sanPhamChiTiet.rom.dungLuong}
+                    {"GB "}
+                    {item.sanPhamChiTiet && item.sanPhamChiTiet.mauSac && item.sanPhamChiTiet.mauSac.tenMauSac}
+                  </td>
+                  <td align='center'>{item.imei ? item.imei.soImei : ""}</td>
+                  <td align="center">{item.soLuong ? item.soLuong : ""}</td>
+                  {item.donGiaSauGiam && item.donGiaSauGiam !== null && item.donGiaSauGiam && item.donGiaSauGiam !== 0 ?
+                    <td align="center">{item.donGiaSauGiam && item.donGiaSauGiam.toLocaleString("vi-VN", {
                       style: "currency",
                       currency: "VND"
                     })}</td>
                     :
-                    <td align="center">{item.donGia.toLocaleString("vi-VN", {
+                    <td align="center">{item.donGia && item.donGia.toLocaleString("vi-VN", {
                       style: "currency",
                       currency: "VND"
                     })}</td>
                   }
-                  <td align="center">{total(item.donGiaSauGiam !== null && item.donGiaSauGiam !== 0 ? item.donGiaSauGiam : item.donGia, item.soLuong).toLocaleString("vi-VN", {
-                    style: "currency",
-                    currency: "VND"
-                  })}</td>
                 </tr>
               )
             })}
@@ -469,7 +485,7 @@ export const PrintBillAtTheCounter = React.forwardRef((props, ref) => {
   );
 })
 
-export const Print = ({ data }) => {
+export const Print = ({ data, imeis }) => {
   const componentRef = useRef();
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
@@ -477,7 +493,7 @@ export const Print = ({ data }) => {
 
   return (
     <div className=''>
-      <PrintBillAtTheCounter ref={componentRef} data={data} />
+      <PrintBillAtTheCounter ref={componentRef} data={data} imeis={imeis} />
       <Button
         onClick={handlePrint}
         className="rounded-2 me-2"
