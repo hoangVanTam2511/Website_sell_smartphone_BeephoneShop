@@ -1660,8 +1660,6 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
                             return newCauHinhs.some((cauHinh) => cauHinh.rom.id === rom);
                           });
                           setSelectedRom(newRoms);
-
-
                           setSelectedCauHinhs([]);
                           handleOpenAlertVariant("Xóa phiên bản thành công!", Notistack.SUCCESS);
                         }}
@@ -1861,7 +1859,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
 
                                 let removeRom = true;
                                 newCauHinhs && newCauHinhs.forEach((cauHinh) => {
-                                  if (cauHinh.rom.id === item.rom.id) {
+                                  if (cauHinh.rom && cauHinh.rom.id && cauHinh.rom.id === item.rom && item.rom.id && item.rom.id) {
                                     removeRom = false;
                                   }
                                 })
@@ -1871,13 +1869,9 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
                                 }
                               }
 
-                              selectedCauHinhs.forEach((s) => {
-                                if (item.id === s.id) {
-                                  const newSelectedCauHinhs = selectedCauHinhs.filter((cauHinh) => cauHinh.id !== item.id);
-                                  setSelectedCauHinhs(newSelectedCauHinhs);
-                                }
-                              })
-
+                              const newSelectedCauHinhs = selectedCauHinhs.filter((cauHinh) => cauHinh.id !== item.id);
+                              console.log(newSelectedCauHinhs);
+                              setSelectedCauHinhs(newSelectedCauHinhs);
 
                               handleOpenAlertVariant("Xóa phiên bản thành công!", Notistack.SUCCESS)
                             }}

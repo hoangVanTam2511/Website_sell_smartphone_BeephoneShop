@@ -250,8 +250,6 @@ export const PrintBillAtTheCounterAuto = React.forwardRef((ref, props) => {
 })
 export const PrintBillAtTheCounter = React.forwardRef((props, ref) => {
 
-
-
   const createdAt = props.data.createdAt instanceof Date ? props.data.createdAt : new Date();
 
   const orderItems = props.data.orderItems ? props.data.orderItems : [];
@@ -373,7 +371,6 @@ export const PrintBillAtTheCounter = React.forwardRef((props, ref) => {
               <th align="center" class="col-stt">STT</th>
               <th align="center" class="col-name">Sản phẩm</th>
               <th align="center" class="col-imei">Số Imei</th>
-              <th align="center" class="col-quantity">Số lượng</th>
               <th align="center" class="col-price">Đơn giá</th>
             </tr>
           </thead>
@@ -392,7 +389,6 @@ export const PrintBillAtTheCounter = React.forwardRef((props, ref) => {
                     {item.sanPhamChiTiet && item.sanPhamChiTiet.mauSac && item.sanPhamChiTiet.mauSac.tenMauSac}
                   </td>
                   <td align='center'>{item.imei ? item.imei.soImei : ""}</td>
-                  <td align="center">{item.soLuong ? item.soLuong : ""}</td>
                   {item.donGiaSauGiam && item.donGiaSauGiam !== null && item.donGiaSauGiam && item.donGiaSauGiam !== 0 ?
                     <td align="center">{item.donGiaSauGiam && item.donGiaSauGiam.toLocaleString("vi-VN", {
                       style: "currency",
@@ -411,8 +407,19 @@ export const PrintBillAtTheCounter = React.forwardRef((props, ref) => {
         </table>
       </div>
 
+
       <div className='d-flex justify-content-end'>
-        <div className="d-flex  mt-3">
+        <div className="d-flex mt-3">
+          <span className="me-5 pe-5" style={{ fontSize: "15px", color: "", fontWeight: "500" }}>
+            Tổng số lượng:
+          </span>
+          <span className="text-dark" style={{ fontSize: "15px", fontWeight: "500", width: "100px" }}>
+            {orderImeis.length}
+          </span>
+        </div>
+      </div>
+      <div className='d-flex justify-content-end'>
+        <div className="d-flex  mt-1">
           <span className="me-5 pe-5" style={{ fontSize: "15px", color: "", fontWeight: "500" }}>
             Tổng tiền hàng:
           </span>
