@@ -24,6 +24,7 @@ import {
 import { StatusAccountCus, StatusCusNumber } from "../khachhang/enum";
 import { Notistack } from "../../order-manager/enum";
 import useCustomSnackbar from "../../../../utilities/notistack";
+import { request } from '../../../../store/helpers/axios_helper'
 
 //show
 const HienThiNV = () => {
@@ -42,7 +43,7 @@ const HienThiNV = () => {
         loadDataListRole(targetPage);
         return;
       }
-      const response = await axios.get(apiURLNV + "/search-all", {
+      const response = request('GET',apiURLNV + "/search-all", {
         params: {
           tenKH: searchText,
           page: page,
@@ -64,8 +65,7 @@ const HienThiNV = () => {
   }, [searchText]);
   // load
   const loadDataListRole = (currentPage) => {
-    axios
-      .get(
+    request('GET',
         apiURLNV +
           "/search-all?page=" +
           currentPage +
@@ -138,8 +138,7 @@ const HienThiNV = () => {
     setEditingKey(record.id);
   };
   const doChangeTrangThai = (id) => {
-    axios
-      .put(apiURLNV + `/${id}/doi-tt`)
+    request('PUT', apiURLNV + `/${id}/doi-tt`)
       .then((response) => {
         loadDataListRole(currentPage);
         handleOpenAlertVariant("Đổi trạng thái thành công", Notistack.SUCCESS);

@@ -40,3 +40,19 @@ export const requestParam = (method, url, data) => {
         params: data,
     })
 };
+
+export const requestBodyParam = (method, url, data, params) => {
+
+    let headers = {};
+    if (getAuthToken() !== null && getAuthToken() !== "null") {
+        headers = { 'Authorization': `Bearer ${getAuthToken()}`}
+    }
+
+    return axios({
+        method: method,
+        url: url,
+        headers: headers,
+        data: data,
+        params: params,
+    })
+};

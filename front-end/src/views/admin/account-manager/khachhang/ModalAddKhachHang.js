@@ -26,6 +26,8 @@ import { Notistack } from "../../order-manager/enum";
 import useCustomSnackbar from "../../../../utilities/notistack";
 import { useNavigate } from "react-router-dom";
 import { ConfirmDialog } from "../../../../utilities/confirmModalDialoMui";
+import { request } from '../../../../store/helpers/axios_helper'
+
 const ModalAddKhachHang = ({ close }) => {
   let [listKH, setListKH] = useState([]);
   let [hoVaTen, setTen] = useState("");
@@ -267,31 +269,39 @@ const ModalAddKhachHang = ({ close }) => {
         return;
       }
       // Gọi API tạo khách hàng mới
-      const khachHangResponse = await axios.post(
+      
+      request('POST',
         apiURLKH + "/add",
         khachHangData
-      );
+      ).then((res) => {
+        const khachHangResponse = res;
 
-      // Lấy mã khách hàng từ response
-      const generatedMaKhachHang = khachHangResponse.data.data.id;
-      addDiaChiList(generatedMaKhachHang);
+        // Lấy mã khách hàng từ response
+        const generatedMaKhachHang = khachHangResponse.data.data.id;
+        addDiaChiList(generatedMaKhachHang);
 
-      // Cập nhật danh sách khách hàng và hiển thị thông báo
-      const newKhachHangResponse = {
-        hoVaTen: hoVaTen,
-        ngaySinh: ngaySinh,
-        soDienThoai: soDienThoai,
-        gioiTinh: gioiTinh,
-        diaChiList: [],
-        email: email,
-        anhDaiDien: anhDaiDien,
-      };
+        // Cập nhật danh sách khách hàng và hiển thị thông báo
+        const newKhachHangResponse = {
+          hoVaTen: hoVaTen,
+          ngaySinh: ngaySinh,
+          soDienThoai: soDienThoai,
+          gioiTinh: gioiTinh,
+          diaChiList: [],
+          email: email,
+          anhDaiDien: anhDaiDien,
+        };
 
-      setListKH([newKhachHangResponse, ...listKH]);
-      close();
-      handleResetForm();
-      handleOpenAlertVariant("Thêm thành công", Notistack.SUCCESS);
+        setListKH([newKhachHangResponse, ...listKH]);
+        close();
+        handleResetForm();
+        handleOpenAlertVariant("Thêm thành công", Notistack.SUCCESS);
+      }).catch((error) => {
+        console.log(error)
+      })
+
+     
     } catch (error) {
+      console.log(error)
       handleOpenAlertVariant("Lỗi khi thêm khách hàng", Notistack.ERROR);
     }
   };
@@ -310,8 +320,7 @@ const ModalAddKhachHang = ({ close }) => {
       account: generatedMaKhachHang,
       trangThai: trangThaiKH,
     };
-    axios
-      .post(`${apiURLKH}/dia-chi/add?id=${generatedMaKhachHang}`, newAddress)
+    request('POST', `${apiURLKH}/dia-chi/add?id=${generatedMaKhachHang}`, newAddress)
       .then((response) => {
         let newKhachHangResponse = {
           diaChi: diaChi,

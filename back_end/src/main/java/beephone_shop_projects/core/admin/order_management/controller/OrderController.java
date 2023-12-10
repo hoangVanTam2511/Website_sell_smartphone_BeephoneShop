@@ -81,6 +81,7 @@ public class OrderController {
   public ResponseObject<OrderResponse> updateOrder(@RequestBody OrderRequest req, @PathVariable String id,
                                                    @RequestParam("isUpdateStatusOrderDelivery") Boolean isUpdateStatusOrderDelivery) throws Exception {
     if (isUpdateStatusOrderDelivery) {
+      System.out.println(isUpdateStatusOrderDelivery);
       OrderResponse updatedStatusOrderDelivery = hoaDonService.updateStatusOrderDelivery(req, id);
       return new ResponseObject(updatedStatusOrderDelivery);
     }

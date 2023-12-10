@@ -881,21 +881,21 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
     setIsLoadingInside(true);
     getOverplay(true);
     const storeItem = localStorage.getItem('cauHinhsFinal');
-    const request = {
+    const products = {
       product: getProduct,
       productItems: JSON.parse(storeItem),
     }
-    // check product
-    console.log(request)
+    // check product  
+    console.log(products)
     try {
-      request('POST',`/api/products`, request, {
+      request('POST',`/api/products`, products, {
         headers: {
           "Content-Type": "application/json",
         }
       })
       const isMissingImage = cauHinhsFinal.some((cauHinh) => !cauHinh.image);
       if (!isMissingImage) {
-        await addFiles(request.product.ma);
+        await addFiles(products.product.ma);
       }
       handleOpenAlertVariant("Thêm sản phẩm thành công!", Notistack.SUCCESS);
       setIsLoadingInside(false);

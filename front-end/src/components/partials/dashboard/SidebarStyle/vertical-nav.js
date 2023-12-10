@@ -1,4 +1,4 @@
-import React, { useState, useContext, memo, Fragment } from "react";
+import React, { useState, useContext, memo, Fragment, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Accordion,
@@ -36,9 +36,8 @@ const VerticalNav = memo((props) => {
   const [active, setActive] = useState("");
   //location
   let location = useLocation();
-  const user =  window.localStorage.getItem('user')
+  const user =  JSON.parse(window.localStorage.getItem('user'))
 
-  
 
   return (
     <Fragment>
@@ -838,10 +837,7 @@ const VerticalNav = memo((props) => {
             <Accordion.Collapse eventKey="sidebar-user">
               <ul className="sub-nav">
                 {
-                  user === "" || user === null ? 
-                  <>
-
-                  </>: user.idRole === 'role3'?
+                  user.idRole === 'role3'?
                   <>
                     <li className="nav-item">
                   <Link
@@ -870,9 +866,10 @@ const VerticalNav = memo((props) => {
                     <i className="sidenav-mini-icon"> L </i>
                     <span className="item-name">Nhân Viên</span>
                   </Link>
-                </li>
+                  </li>
                   </>:
-                  <></>
+                  <>
+                  </>
                 }
               
 

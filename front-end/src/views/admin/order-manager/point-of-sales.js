@@ -85,6 +85,7 @@ import AppBarCode from "./App";
 import Html5QrcodePlugin from "./Html5QrcodePlugin";
 import { PrintBillAtTheCounter, PrintBillAtTheCounterAuto } from "./printer-invoice";
 import { useReactToPrint } from "react-to-print";
+import { request, requestBodyParam   } from "../../../store/helpers/axios_helper";
 
 const IOSSwitch = styled((props) => (
   <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
@@ -243,14 +244,8 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      await axios
-        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          params: {
+      request("PUT",`/api/orders/${order.id}`, orderRequest, {
             isUpdateStatusOrderDelivery: false,
-          },
         })
         .then((response) => {
           const data = response.data.data;
@@ -258,7 +253,7 @@ const PointOfSales = () => {
           setSdt(data.soDienThoai === null ? "" : data.soDienThoai);
           getAllOrdersPending();
         });
-    } catch (error) { }
+    } catch (error) { console.log(error) }
   };
   const updateEmail = async (email) => {
     const orderRequest = {
@@ -278,14 +273,8 @@ const PointOfSales = () => {
       isUpdateEmail: true,
     };
     try {
-      await axios
-        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          params: {
+      request("PUT",`/api/orders/${order.id}`, orderRequest, {
             isUpdateStatusOrderDelivery: false,
-          },
         })
         .then((response) => {
           const data = response.data.data;
@@ -293,7 +282,7 @@ const PointOfSales = () => {
           setEmail(data.email === null ? "" : data.email);
           getAllOrdersPending();
         });
-    } catch (error) { }
+    } catch (error) { console.log(error) }
   };
 
   const updateFullName = async (name) => {
@@ -314,14 +303,8 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      await axios
-        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          params: {
+      request("PUT",`/api/orders/${order.id}`, orderRequest, {
             isUpdateStatusOrderDelivery: false,
-          },
         })
         .then((response) => {
           const data = response.data.data;
@@ -329,7 +312,7 @@ const PointOfSales = () => {
           setFullName(data.hoVaTen === null ? "" : data.hoVaTen);
           getAllOrdersPending();
         });
-    } catch (error) { }
+    } catch (error) { console.log(error) }
   };
 
   const [selectedValuePaymentMethod, setSelectedValuePaymentMethod] =
@@ -414,14 +397,8 @@ const PointOfSales = () => {
         isUpdateEmail: false,
       };
       try {
-        await axios
-          .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
-            headers: {
-              "Content-Type": "application/json",
-            },
-            params: {
+        request("PUT",`/api/orders/${order.id}`, orderRequest, {
               isUpdateStatusOrderDelivery: false,
-            },
           })
           .then((response) => {
             const data = response.data.data;
@@ -434,6 +411,7 @@ const PointOfSales = () => {
             setCustomerDistrictShip(data && data.quanHuyenNguoiNhan);
           });
       } catch (error) {
+        console.log(error)
         setIsLoading(false);
       }
     }
@@ -467,14 +445,8 @@ const PointOfSales = () => {
         isUpdateEmail: false,
       };
       try {
-        await axios
-          .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
-            headers: {
-              "Content-Type": "application/json",
-            },
-            params: {
+        request("PUT",`/api/orders/${order.id}`, orderRequest, {
               isUpdateStatusOrderDelivery: false,
-            },
           })
           .then((response) => {
             const data = response.data.data;
@@ -487,6 +459,7 @@ const PointOfSales = () => {
             setCustomerDistrictShip(data && data.quanHuyenNguoiNhan);
           });
       } catch (error) {
+        console.log(error)
         setIsLoading(false);
       }
 
@@ -531,14 +504,8 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      await axios
-        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          params: {
+      request("PUT",`/api/orders/${order.id}`, orderRequest, {
             isUpdateStatusOrderDelivery: false,
-          },
         })
         .then((response) => {
           const data = response.data.data;
@@ -558,6 +525,7 @@ const PointOfSales = () => {
           );
         });
     } catch (error) {
+      console.log(error)
       setIsLoading(false);
     }
   };
@@ -579,14 +547,8 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      await axios
-        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          params: {
+      request("PUT",`/api/orders/${order.id}`, orderRequest, {
             isUpdateStatusOrderDelivery: false,
-          },
         })
         .then((response) => {
           const data = response.data.data;
@@ -594,7 +556,7 @@ const PointOfSales = () => {
           setCustomerPhoneShip(data && data.soDienThoaiNguoiNhan);
           getAllOrdersPending();
         });
-    } catch (error) { }
+    } catch (error) {  console.log(error)}
   };
   const updateAddressShipOrder = async (address) => {
     const orderRequest = {
@@ -614,14 +576,8 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      await axios
-        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          params: {
+      request("PUT",`/api/orders/${order.id}`, orderRequest, {
             isUpdateStatusOrderDelivery: false,
-          },
         })
         .then((response) => {
           const data = response.data.data;
@@ -629,7 +585,7 @@ const PointOfSales = () => {
           setCustomerAddressShip(data && data.diaChiNguoiNhan);
           getAllOrdersPending();
         });
-    } catch (error) { }
+    } catch (error) { console.log(error) }
   };
   const updateNoteShipOrder = async (note) => {
     const orderRequest = {
@@ -649,14 +605,8 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      await axios
-        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          params: {
+      request("PUT",`/api/orders/${order.id}`, orderRequest, {
             isUpdateStatusOrderDelivery: false,
-          },
         })
         .then((response) => {
           const data = response.data.data;
@@ -664,7 +614,7 @@ const PointOfSales = () => {
           setCustomerNoteShip(data && data.ghiChu);
           getAllOrdersPending();
         });
-    } catch (error) { }
+    } catch (error) { console.log(error) }
   };
 
   const updateTypeOrder = async (type) => {
@@ -686,14 +636,8 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      await axios
-        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          params: {
+      request("PUT",`/api/orders/${order.id}`, orderRequest, {
             isUpdateStatusOrderDelivery: false,
-          },
         })
         .then((response) => {
           const order = response.data.data;
@@ -784,14 +728,8 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      await axios
-        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          params: {
+      request("PUT",`/api/orders/${order.id}`, orderRequest, {
             isUpdateStatusOrderDelivery: false,
-          },
         })
         .then((response) => {
           const data = response.data.data;
@@ -799,7 +737,7 @@ const PointOfSales = () => {
           setCustomerNameShip(data && data.tenNguoiNhan);
           getAllOrdersPending();
         });
-    } catch (error) { }
+    } catch (error) { console.log(error) }
   };
 
   const updateInfoShipOrder = async (
@@ -830,14 +768,8 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      await axios
-        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          params: {
+      requestBodyParam("PUT",`/api/orders/${order.id}`, orderRequest, {
             isUpdateStatusOrderDelivery: false,
-          },
         })
         .then((response) => {
           const data = response.data.data;
@@ -847,17 +779,17 @@ const PointOfSales = () => {
           setCustomerDistrictShip(data && data.quanHuyenNguoiNhan);
           getAllOrdersPending();
         });
-    } catch (error) { }
+    } catch (error) { console.log(error)}
   };
 
   const getCustomerById = async (id) => {
     setIsLoading(true);
     if (id !== null) {
-      await axios
-        .get(`http://localhost:8080/khach-hang/hien-thi-theo/${id}`)
+      request("GET",`/khach-hang/hien-thi-theo/${id}`)
         .then(async (response) => {
           const data = response.data;
           await updateAccount(id);
+          console.log(data)
           setCustomer(data);
           setCustomerName(data.hoVaTen);
           setCustomerPhone(data.soDienThoai);
@@ -1023,14 +955,8 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      await axios
-        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          params: {
+      request("PUT",`/api/orders/${order.id}`, orderRequest, {
             isUpdateStatusOrderDelivery: false,
-          },
         })
         .then((response) => {
           setOrder(response.data.data);
@@ -1046,7 +972,7 @@ const PointOfSales = () => {
           // handlePrint();
           console.log(orderRequest);
         });
-    } catch (error) { }
+    } catch (error) { console.log(error) }
   };
 
   const updateAccount = async (id) => {
@@ -1070,13 +996,8 @@ const PointOfSales = () => {
     };
 
     try {
-      const response = await axios.put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        params: {
+      const response = request("PUT",`/api/orders/${order.id}`, orderRequest, {
           isUpdateStatusOrderDelivery: false,
-        },
       });
 
       const data = response.data.data;
@@ -1129,14 +1050,8 @@ const PointOfSales = () => {
       setLoadingChild(true);
       setTimeout(() => {
         try {
-          axios
-            .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
-              headers: {
-                "Content-Type": "application/json",
-              },
-              params: {
+          request("PUT",`/api/orders/${order.id}`, orderRequest, {
                 isUpdateStatusOrderDelivery: false,
-              },
             })
             .then((response) => {
               setOrder(response.data.data);
@@ -1154,14 +1069,8 @@ const PointOfSales = () => {
       }, 1000);
     } else if (idVoucher === null && !loading) {
       try {
-        axios
-          .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
-            headers: {
-              "Content-Type": "application/json",
-            },
-            params: {
+        request("PUT",`/api/orders/${order.id}`, orderRequest, {
               isUpdateStatusOrderDelivery: false,
-            },
           })
           .then((response) => {
             setOrder(response.data.data);
@@ -1180,14 +1089,8 @@ const PointOfSales = () => {
       setLoadingChild(true);
       setTimeout(() => {
         try {
-          axios
-            .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
-              headers: {
-                "Content-Type": "application/json",
-              },
-              params: {
+          request("PUT",`/api/orders/${order.id}`, orderRequest, {
                 isUpdateStatusOrderDelivery: false,
-              },
             })
             .then((response) => {
               setOrder(response.data.data);
@@ -1205,14 +1108,8 @@ const PointOfSales = () => {
       }, 1000);
     } else {
       try {
-        await axios
-          .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
-            headers: {
-              "Content-Type": "application/json",
-            },
-            params: {
+        request("PUT",`/api/orders/${order.id}`, orderRequest, {
               isUpdateStatusOrderDelivery: false,
-            },
           })
           .then((response) => {
             setOrder(response.data.data);
@@ -1241,7 +1138,7 @@ const PointOfSales = () => {
       },
     };
     try {
-      await axios.put(`http://localhost:8080/api/carts/amount`, request, {
+      request("PUT",`/api/carts/amount`, request, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -1331,8 +1228,7 @@ const PointOfSales = () => {
   };
 
   const getAllOrdersPending = async () => {
-    await axios
-      .get(`http://localhost:8080/api/orders/pending`, {})
+    request("GET",`/api/orders/pending`, {})
       .then((response) => {
         setOrders(response.data.data);
       })
@@ -1346,8 +1242,7 @@ const PointOfSales = () => {
   };
 
   const getOrderPendingDefaultFirst = async () => {
-    await axios
-      .get(`http://localhost:8080/api/orders/pending`, {})
+    request("GET",`/api/orders/pending`, {})
       .then((response) => {
         const order = response && response.data.data[0];
         navigate(`/dashboard/point-of-sales/${order.ma}`);
@@ -1484,8 +1379,7 @@ const PointOfSales = () => {
   };
 
   const getOrderPendingById = async () => {
-    await axios
-      .get(`http://localhost:8080/api/orders/pending`, {})
+    request("GET",`/api/orders/pending`, {})
       .then((response) => {
         const data = response && response.data.data;
         const order = data.find((item) => item.ma === id);
@@ -1630,8 +1524,7 @@ const PointOfSales = () => {
         code: order.ma,
       };
       try {
-        await axios
-          .post(`http://localhost:8080/api/vnpay/payment`, vnpayReq, {
+        request("POST",`/api/vnpay/payment`, vnpayReq, {
             headers: {
               "Content-Type": "application/json",
             },
@@ -1656,8 +1549,7 @@ const PointOfSales = () => {
         createdByPayment: userId,
       };
       try {
-        await axios
-          .put(`http://localhost:8080/api/vnpay/payment/cash`, orderRequest, {
+        request("PUT",`/api/vnpay/payment/cash`, orderRequest, {
             headers: {
               "Content-Type": "application/json",
             },
@@ -1689,8 +1581,7 @@ const PointOfSales = () => {
   const [totalPagesVoucher, setTotalPagesVoucher] = useState();
 
   const getVouchersIsActive = (page, keyword) => {
-    axios
-      .get(`http://localhost:8080/voucher/voucherActive`, {
+    request("GET",`/voucher/voucherActive`, {
         params: {
           pageNo: page,
           keyword: keyword,
@@ -1720,8 +1611,7 @@ const PointOfSales = () => {
   }, [cartItems, discountValue, shipFee]);
 
   const getCartItems = async () => {
-    await axios
-      .get(`http://localhost:8080/api/orders/pending/${order.id}`)
+    request("GET",`/api/orders/pending/${order.id}`)
       .then((response) => {
         const data = response.data.data;
         setOrder(data);
@@ -1746,8 +1636,7 @@ const PointOfSales = () => {
   };
 
   const getPaymentsOfOrder = async () => {
-    await axios
-      .get(`http://localhost:8080/api/orders/pending/${order.id}`)
+    request("GET",`/api/orders/pending/${order.id}`)
       .then((response) => {
         const data = response.data.data;
         setOrder(data);
@@ -1769,8 +1658,7 @@ const PointOfSales = () => {
 
   const getOrderPendingLastRemove = async () => {
     // setIsLoading(true);
-    await axios
-      .get(`http://localhost:8080/api/orders/pending`, {})
+    request("GET",`/api/orders/pending`, {})
       .then((response) => {
         const orders = response.data.data;
         setOrders(orders);
@@ -1899,8 +1787,7 @@ const PointOfSales = () => {
         id: order.id,
       };
       try {
-        const response = await axios.post(
-          `http://localhost:8080/api/orders?isPending=true`,
+        const response = request("POST",`/api/orders?isPending=true`,
           data
         );
         await getAllOrdersPending();
@@ -1947,7 +1834,7 @@ const PointOfSales = () => {
   const handleDeletePaymentById = async (id) => {
     setIsLoading(true);
     try {
-      await axios.delete(`http://localhost:8080/api/payment/${id}`, {
+      request("DELETE",`/api/payment/${id}`, {
         params: {
           orderId: order.id,
         },
@@ -1965,7 +1852,7 @@ const PointOfSales = () => {
   const handleDeleteCartItemById = async (id) => {
     setIsLoading(true);
     try {
-      await axios.delete(`http://localhost:8080/api/carts/${id}`);
+      request("DELETE",`/api/carts/${id}`);
       await getCartItems();
       await getAllOrdersPending();
       setIsLoading(false);
@@ -1990,7 +1877,7 @@ const PointOfSales = () => {
         setIsLoading(true);
       }
       try {
-        await axios.delete(`http://localhost:8080/api/orders/${id}`);
+        request("DELETE",`/api/orders/${id}`);
         await getOrderPendingLastRemove();
         if (sizeCartItems > 0) {
           setIsLoading(false);
@@ -2126,8 +2013,7 @@ const PointOfSales = () => {
 
   const [totalPagesCustomer, setTotalPagesCustomer] = useState();
   const getAllCustomers = (page, keyword) => {
-    axios
-      .get(`http://localhost:8080/khach-hang/hien-thi`, {
+    request("GET",`/khach-hang/hien-thi`, {
         params: {
           pageNo: page,
           keyword: keyword,
@@ -2145,8 +2031,7 @@ const PointOfSales = () => {
   const handleCheckVoucher = (value) => {
     setLoadingChild(true);
     setTimeout(() => {
-      axios
-        .get(`http://localhost:8080/voucher/findVoucher`, {
+      request("GET",`/voucher/findVoucher`, {
           params: {
             input: value,
             tongTien: handleCountTotalMoney(),
@@ -2404,7 +2289,7 @@ const PointOfSales = () => {
       imei: imei,
     };
     try {
-      await axios.put(`http://localhost:8080/api/carts/scanner`, data, {
+      request("PUT",`/api/carts/scanner`, data, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -2442,7 +2327,7 @@ const PointOfSales = () => {
     };
     console.log(data);
     try {
-      await axios.put(`http://localhost:8080/api/carts`, data, {
+      request("PUT",`/api/carts`, data, {
         headers: {
           "Content-Type": "application/json",
         },
