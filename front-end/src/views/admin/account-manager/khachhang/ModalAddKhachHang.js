@@ -1,5 +1,5 @@
 import { Button, Modal } from "antd";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
 import { apiURLKH } from "../../../../service/api";
@@ -26,7 +26,7 @@ import { Notistack } from "../../order-manager/enum";
 import useCustomSnackbar from "../../../../utilities/notistack";
 import { useNavigate } from "react-router-dom";
 import { ConfirmDialog } from "../../../../utilities/confirmModalDialoMui";
-const ModalAddKhachHang = ({ close }) => {
+const ModalAddKhachHang = ({ close, openCustomer, setOP }) => {
   let [listKH, setListKH] = useState([]);
   let [hoVaTen, setTen] = useState("");
   let [ngaySinh, setNgaySinh] = useState("");
@@ -64,8 +64,8 @@ const ModalAddKhachHang = ({ close }) => {
   const [diaChiError, setDiaChiError] = useState("");
   const [sdtError, setSDTError] = useState("");
   const [sdtkhError, setSDTKHError] = useState("");
-  const [hoTenKHErr, setHoTenKHErr] = useState("");
-  let [huy, setHuy] = useState(false);
+  const [hoTenkhError, sethoTenKHError] = useState("");
+  const [huy, setHuy] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
 
   const handleOpenDialogConfirmAdd = () => {
@@ -118,15 +118,15 @@ const ModalAddKhachHang = ({ close }) => {
     const trimmedValue = value.replace(/\s/g, "");
     setHoTenKH(value);
     if (!value.trim()) {
-      setHoTenKHErr("Họ và tên không được trống");
+      sethoTenKHError("Họ và tên không được trống");
     } else if (specialCharPattern.test(value)) {
-      setHoTenKHErr("Họ và tên không được chứa ký tự đặc biệt");
+      sethoTenKHError("Họ và tên không được chứa ký tự đặc biệt");
     } else if (trimmedValue.length < 5) {
-      setHoTenKHErr("Họ và tên phải có ít nhất 5 ký tự");
+      sethoTenKHError("Họ và tên phải có ít nhất 5 ký tự");
     } else if (/^\s+|\s+$/.test(value)) {
-      setHoTenKHErr("Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi");
+      sethoTenKHError("Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi");
     } else {
-      setHoTenKHErr("");
+      sethoTenKHError("");
     }
   };
 
@@ -214,10 +214,12 @@ const ModalAddKhachHang = ({ close }) => {
     setEmail("");
     setGioiTinh(true);
     setSoDienThoaiKhachHang("");
+    setFormSubmitted(false);
     setAnhDaiDien("");
-    setXaPhuong("");
-    setQuanHuyen("");
-    setTinhThanhPho("");
+    sethoTenKHError("");
+    setSDTKHError("");
+    setHoVaTenError("");
+    setDiaChiError("");
     setDiaChi("");
     setHuy(true);
   };
@@ -255,7 +257,7 @@ const ModalAddKhachHang = ({ close }) => {
         hoVaTenError ||
         sdtError ||
         emailError ||
-        hoTenKHErr ||
+        hoTenkhError ||
         sdtkhError ||
         diaChiError
       ) {
@@ -264,6 +266,7 @@ const ModalAddKhachHang = ({ close }) => {
           Notistack.ERROR
         );
         setShowConfirmModal(false);
+        console.log("hi" + openCustomer);
         return;
       }
       // Gọi API tạo khách hàng mới
@@ -286,16 +289,22 @@ const ModalAddKhachHang = ({ close }) => {
         email: email,
         anhDaiDien: anhDaiDien,
       };
-
       setListKH([newKhachHangResponse, ...listKH]);
       close();
       handleResetForm();
       handleOpenAlertVariant("Thêm thành công", Notistack.SUCCESS);
+      return;
     } catch (error) {
       handleOpenAlertVariant("Lỗi khi thêm khách hàng", Notistack.ERROR);
     }
   };
-
+  useEffect(() => {
+    if (!openCustomer) {
+      handleResetForm();
+      // setHuy(false);
+      close();
+    }
+  }, [close, openCustomer]);
   const addDiaChiList = (generatedMaKhachHang) => {
     //day
     setSubmitted(true);
@@ -404,14 +413,6 @@ const ModalAddKhachHang = ({ close }) => {
                 </div>
               </Grid>
               <Grid item xs={8} style={{ marginTop: "30px" }}>
-                {/* <b style={{ fontSize: "16px" }}>{hoVaTen}</b>{" "}
-                {gioiTinh === true ? (
-                  <FontAwesomeIcon icon={faMars} />
-                ) : gioiTinh === false ? (
-                  <FontAwesomeIcon icon={faVenus} />
-                ) : null}{" "}
-                <br />
-                {email} */}
                 <div style={{ width: "95.7%" }}>
                   <div
                     className="text-f"
@@ -559,79 +560,68 @@ const ModalAddKhachHang = ({ close }) => {
               color: "gray",
             }}
           >
-            {/* <span
-              style={{
-                color: "gray",
-                display: "block",
-                padding: "15px",
-                borderBottom: "1px solid #e2e2e2",
-                flex: "1",
-                margin: "0",
-              }}
-            >
-              Thông tin Địa Chỉ Mặc định
-            </span> */}
-          </div>
-          {/* <h4 style={{ color: "gray" }}>Địa chỉ mặc định</h4> */}
-
-          <div style={{ width: "95%", margin: "0 auto", marginTop: "30px" }}>
-            <div
-              className="text-f"
-              style={{ marginBottom: "30px", marginTop: "13px" }}
-            >
-              <TextField
-                label="Họ và tên khách hàng (cho địa chỉ)"
-                value={hoTenKH}
-                id="fullWidth"
-                onChange={handleHoVaTenKH}
-                error={(formSubmitted && !hoTenKH) || !!hoTenKHErr}
-                helperText={
-                  hoTenKHErr || (formSubmitted && !hoTenKH && "Họ và tên trống")
-                }
-                style={{ width: "100%" }}
-              />
-            </div>
-            <div className="text-f" style={{ marginBottom: "30px" }}>
-              <TextField
-                label="Số điện thoại khách hàng"
-                id="fullWidth"
-                value={soDienThoaiKhachHang}
-                onChange={handleSDTKH}
-                error={(formSubmitted && !soDienThoaiKhachHang) || !!sdtkhError}
-                helperText={
-                  sdtkhError ||
-                  (formSubmitted &&
-                    !soDienThoaiKhachHang &&
-                    "Số điện thoại khách hàng trống")
-                }
-                style={{ width: "100%" }}
-              />
-            </div>
-            <div className="text-f" style={{ marginBottom: "30px" }}>
-              <TextField
-                label="Địa chỉ"
-                id="fullWidth"
-                value={diaChi}
-                onChange={handleDiaChi}
-                error={(formSubmitted && !diaChi) || !!diaChiError}
-                helperText={
-                  diaChiError || (formSubmitted && !diaChi && "Địa chỉ trống")
-                }
-                style={{ width: "100%" }}
-              />
-            </div>
-            <div style={{ marginBottom: "20px" }}>
-              <ModalAddDiaChiKhachHang
-                onDiaChiChange={handleAddressChange}
-                required={true}
-                submitted={submitted}
-                onProvinceChange={handleProvinceChange}
-                onDistrictChange={handleDistrictChange}
-                onWardChange={handleWardChange}
-                formSubmitted={formSubmitted}
-                huy={huy}
-                set={setHuy}
-              />
+            <div style={{ width: "95%", margin: "0 auto", marginTop: "30px" }}>
+              <div
+                className="text-f"
+                style={{ marginBottom: "30px", marginTop: "13px" }}
+              >
+                <TextField
+                  label="Họ và tên khách hàng (cho địa chỉ)"
+                  value={hoTenKH}
+                  id="fullWidth"
+                  onChange={handleHoVaTenKH}
+                  error={(formSubmitted && !hoTenKH) || !!hoTenkhError}
+                  helperText={
+                    hoTenkhError ||
+                    (formSubmitted && !hoTenKH && "Họ và tên trống")
+                  }
+                  style={{ width: "100%" }}
+                />
+              </div>
+              <div className="text-f" style={{ marginBottom: "30px" }}>
+                <TextField
+                  label="Số điện thoại khách hàng"
+                  id="fullWidth"
+                  value={soDienThoaiKhachHang}
+                  onChange={handleSDTKH}
+                  error={
+                    (formSubmitted && !soDienThoaiKhachHang) || !!sdtkhError
+                  }
+                  helperText={
+                    sdtkhError ||
+                    (formSubmitted &&
+                      !soDienThoaiKhachHang &&
+                      "Số điện thoại khách hàng trống")
+                  }
+                  style={{ width: "100%" }}
+                />
+              </div>
+              <div className="text-f" style={{ marginBottom: "30px" }}>
+                <TextField
+                  label="Địa chỉ"
+                  id="fullWidth"
+                  value={diaChi}
+                  onChange={handleDiaChi}
+                  error={(formSubmitted && !diaChi) || !!diaChiError}
+                  helperText={
+                    diaChiError || (formSubmitted && !diaChi && "Địa chỉ trống")
+                  }
+                  style={{ width: "100%" }}
+                />
+              </div>
+              <div style={{ marginBottom: "20px" }}>
+                <ModalAddDiaChiKhachHang
+                  onDiaChiChange={handleAddressChange}
+                  required={true}
+                  submitted={submitted}
+                  onProvinceChange={handleProvinceChange}
+                  onDistrictChange={handleDistrictChange}
+                  onWardChange={handleWardChange}
+                  formSubmitted={formSubmitted}
+                  huy={huy}
+                  set={setHuy}
+                />
+              </div>
             </div>
           </div>
         </Grid>{" "}

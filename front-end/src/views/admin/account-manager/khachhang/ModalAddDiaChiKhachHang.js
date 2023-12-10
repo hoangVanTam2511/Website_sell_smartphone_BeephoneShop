@@ -54,7 +54,7 @@ const ModalAddDiaChiKhachHang = ({
     }
     // huyCallBack();
     set(false);
-  }, [huy]);
+  }, [huy, set]);
   const fetchDistricts = (provinceCode) => {
     callAPI(host + "district?province_id=" + provinceCode)
       .then((data) => {

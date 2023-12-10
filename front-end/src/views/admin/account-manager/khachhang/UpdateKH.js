@@ -312,6 +312,7 @@ const UpdateKH = () => {
 
   const save = async (id) => {
     setSubmitted(true);
+
     setFormSubmitted(true);
     if (!hoVaTen || !ngaySinh || !email || !soDienThoai) {
       handleOpenAlertVariant(

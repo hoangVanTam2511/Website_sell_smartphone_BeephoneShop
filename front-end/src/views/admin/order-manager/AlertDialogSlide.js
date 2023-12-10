@@ -361,45 +361,45 @@ export function UpdateRecipientOrderDialog(props) {
     setCustomerWard(ward);
   };
 
-  const getAllDistrictGhnByIdProvinceByCustomer = async (
-    provinceId,
-    districtName,
-    wardName
-  ) => {
-    try {
-      const response = await axios.get(
-        `https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district`,
-        {
-          params: {
-            province_id: provinceId,
-          },
-          headers: {
-            token: tokenGhn,
-            Accept: "application/json",
-          },
-        }
-      );
+  // const getAllDistrictGhnByIdProvinceByCustomer = async (
+  //   provinceId,
+  //   districtName,
+  //   wardName
+  // ) => {
+  //   try {
+  //     const response = await axios.get(
+  //       `https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district`,
+  //       {
+  //         params: {
+  //           province_id: provinceId,
+  //         },
+  //         headers: {
+  //           token: tokenGhn,
+  //           Accept: "application/json",
+  //         },
+  //       }
+  //     );
 
-      const data = response.data.data;
-      setDistricts(data);
+  //     const data = response.data.data;
+  //     setDistricts(data);
 
-      if (districtName === "") {
-        setSelectedProvince(provinceId);
-        setSelectedDistrict("");
-        setSelectedWard("");
-        setWards([]);
-      } else {
-        const district = data.find(
-          (item) => item.DistrictName === districtName
-        );
-        await getAllWardGhnByIdDistrictByCustomer(
-          provinceId,
-          district.DistrictID,
-          wardName
-        );
-      }
-    } catch (error) {}
-  };
+  //     if (districtName === "") {
+  //       setSelectedProvince(provinceId);
+  //       setSelectedDistrict("");
+  //       setSelectedWard("");
+  //       setWards([]);
+  //     } else {
+  //       const district = data.find(
+  //         (item) => item.DistrictName === districtName
+  //       );
+  //       await getAllWardGhnByIdDistrictByCustomer(
+  //         provinceId,
+  //         district.DistrictID,
+  //         wardName
+  //       );
+  //     }
+  //   } catch (error) {}
+  // };
 
   return (
     <div className="rounded-pill">
@@ -2811,6 +2811,8 @@ export function CustomersDialog(props) {
             close={() => {
               handleClose();
             }}
+            openCustomer={openCustomer}
+            setOP={setOpenCustomer}
           />
         </DialogContent>
       </Dialog>
