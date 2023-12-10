@@ -71,6 +71,12 @@ public class OrderController {
     return new ResponseObject(placedOrder);
   }
 
+  @PutMapping("/update-info-delivery")
+  public ResponseObject<OrderResponse> updateInfoOrderDelivery(@RequestBody OrderRequest req) throws Exception {
+    OrderResponse updateInfoOrder = hoaDonService.updateInfoOrderDelivery(req);
+    return new ResponseObject(updateInfoOrder);
+  }
+
   @PutMapping("/roll-back-status")
   public ResponseObject<OrderResponse> rollBackStatusOrder(@RequestBody OrderRequest req) throws Exception {
     OrderResponse rollBack = hoaDonService.rollBackStatusOrder(req);

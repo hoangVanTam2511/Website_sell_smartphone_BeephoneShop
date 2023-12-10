@@ -71,6 +71,8 @@ public class OrderRequest {
 
   private AccountRequest account;
 
+  private AccountRequest employee;
+
   private CartRequest cart;
 
 //  private Set<PaymentMethodResponse> paymentMethods;
