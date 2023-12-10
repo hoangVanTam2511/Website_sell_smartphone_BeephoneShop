@@ -66,21 +66,28 @@ const DeliveryShipInfo = ({
   const fetchDataFirst = async () => {
     if (customerWardShip && customerProvinceShip && customerDistrictShip) {
       const province = provinces.find((item) => item.ProvinceName === customerProvinceShip);
+      if (province){
       await Promise.all([
         getAllDistrictGhnByIdProvinceByCustomer(province.ProvinceID, customerDistrictShip, customerWardShip),
       ]);
+      }
     }
     else if (!customerWardShip && customerProvinceShip && customerDistrictShip) {
       const province = provinces.find((item) => item.ProvinceName === customerProvinceShip);
+      if (province){
       await Promise.all([
         getAllDistrictGhnByIdProvinceByCustomer(province.ProvinceID, customerDistrictShip, ""),
       ]);
+      }
     }
     else if (!customerWardShip && customerProvinceShip && !customerDistrictShip) {
       const province = provinces.find((item) => item.ProvinceName === customerProvinceShip);
+      if (province){
       await Promise.all([
         getAllDistrictGhnByIdProvinceByCustomer(province.ProvinceID, "", ""),
       ]);
+
+      }
     }
     else if (!customerWardShip && !customerProvinceShip && !customerDistrictShip) {
       getAllProvinceGhn();

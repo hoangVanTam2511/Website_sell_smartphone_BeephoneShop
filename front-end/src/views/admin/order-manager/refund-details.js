@@ -1087,15 +1087,20 @@ const RefundDetail = () => {
     );
   };
 
-  const handleRefund = async () => {
+  const handleRefund = async (note) => {
     console.log(order.id);
     setIsLoading(true);
     const request = {
       orderItemRefunds: orderRefunds,
       tongTien: totalRefundFinal(),
       id: order.id,
-      amount: totalSizeRefundFinal(),
+      amount: totalSizeRefundFinal().toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    }) ||
+                    0,
       createdByRefund: userId,
+      ghiChu: note,
     };
     try {
       await axios.put(`http://localhost:8080/api/carts/order/refund`, request, {

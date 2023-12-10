@@ -128,7 +128,7 @@ const PriceSlider = ({ getPrice }) => {
   return (
     <>
       <div
-        className="d-flex ms-3"
+        className="d-flex"
         style={{ height: "40px", cursor: "pointer" }}
       >
         <div onClick={handleOpenSelect4} className="mt-2">

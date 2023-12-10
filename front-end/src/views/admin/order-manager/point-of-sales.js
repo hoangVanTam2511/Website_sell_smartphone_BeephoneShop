@@ -376,6 +376,123 @@ const PointOfSales = () => {
     setCustomerNoteShip(data);
   };
 
+  const updateInfoShipDefault = async (data) => {
+    setIsShow(true);
+    if (data !== null) {
+      const orderRequest = {
+        soDienThoaiNguoiNhan:
+          data.soDienThoaiKhachHang !== "" || data.soDienThoaiKhachHang !== null
+            ? data.soDienThoaiKhachHang
+            : "",
+        tenNguoiNhan:
+          data.hoTenKH !== "" || data.hoTenKH !== null ? data.hoTenKH : "",
+        diaChiNguoiNhan:
+          data.diaChi !== "" || data.diaChi !== null ? data.diaChi : "",
+        tinhThanhPhoNguoiNhan:
+          data.tinhThanhPho !== "" || data.tinhThanhPho !== null
+            ? data.tinhThanhPho
+            : "",
+        quanHuyenNguoiNhan:
+          data.quanHuyen !== "" || data.quanHuyen !== null
+            ? data.quanHuyen
+            : "",
+        xaPhuongNguoiNhan:
+          data.xaPhuong !== "" || data.xaPhuong !== null ? data.xaPhuong : "",
+        // loaiHoaDon: delivery ? OrderTypeString.DELIVERY : OrderTypeString.AT_COUNTER,
+        isPayment: false,
+        isUpdateType: false,
+        isUpdateAccount: false,
+        isUpdateVoucher: false,
+        isUpdateInfoShipByCustomer: true,
+        isUpdateInfoShip: false,
+        isUpdateNoteShip: false,
+        isUpdateNameShip: false,
+        isUpdateAddressShip: false,
+        isUpdatePhoneShip: false,
+        isUpdateSdt: false,
+        isUpdateFullName: false,
+        isUpdateEmail: false,
+      };
+      try {
+        await axios
+          .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+            headers: {
+              "Content-Type": "application/json",
+            },
+            params: {
+              isUpdateStatusOrderDelivery: false,
+            },
+          })
+          .then((response) => {
+            const data = response.data.data;
+            setOrder(data);
+            setCustomerNameShip(data && data.tenNguoiNhan);
+            setCustomerPhoneShip(data && data.soDienThoaiNguoiNhan);
+            setCustomerAddressShip(data && data.diaChiNguoiNhan);
+            setCustomerWardShip(data && data.xaPhuongNguoiNhan);
+            setCustomerProvinceShip(data && data.tinhThanhPhoNguoiNhan);
+            setCustomerDistrictShip(data && data.quanHuyenNguoiNhan);
+          });
+      } catch (error) {
+        setIsLoading(false);
+      }
+    }
+    else {
+      const orderRequest = {
+        soDienThoaiNguoiNhan:
+          "",
+        tenNguoiNhan:
+          "",
+        diaChiNguoiNhan:
+          "",
+        tinhThanhPhoNguoiNhan:
+          "",
+        quanHuyenNguoiNhan:
+          "",
+        xaPhuongNguoiNhan:
+          "",
+        // loaiHoaDon: delivery ? OrderTypeString.DELIVERY : OrderTypeString.AT_COUNTER,
+        isPayment: false,
+        isUpdateType: false,
+        isUpdateAccount: false,
+        isUpdateVoucher: false,
+        isUpdateInfoShipByCustomer: true,
+        isUpdateInfoShip: false,
+        isUpdateNoteShip: false,
+        isUpdateNameShip: false,
+        isUpdateAddressShip: false,
+        isUpdatePhoneShip: false,
+        isUpdateSdt: false,
+        isUpdateFullName: false,
+        isUpdateEmail: false,
+      };
+      try {
+        await axios
+          .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+            headers: {
+              "Content-Type": "application/json",
+            },
+            params: {
+              isUpdateStatusOrderDelivery: false,
+            },
+          })
+          .then((response) => {
+            const data = response.data.data;
+            setOrder(data);
+            setCustomerNameShip(data && data.tenNguoiNhan);
+            setCustomerPhoneShip(data && data.soDienThoaiNguoiNhan);
+            setCustomerAddressShip(data && data.diaChiNguoiNhan);
+            setCustomerWardShip(data && data.xaPhuongNguoiNhan);
+            setCustomerProvinceShip(data && data.tinhThanhPhoNguoiNhan);
+            setCustomerDistrictShip(data && data.quanHuyenNguoiNhan);
+          });
+      } catch (error) {
+        setIsLoading(false);
+      }
+
+    }
+  };
+
   const updateInfoShip = async (data) => {
     setIsLoading(true);
     setIsShow(true);
@@ -856,14 +973,14 @@ const PointOfSales = () => {
         if (handleCountTotalMoney() < dieuKien) {
           handleCheckVoucher(discount);
         }
-        else if (sortedVouchers.length > 0) {
+        else {
           const maxVoucher = sortedVouchers[0];
           if (maxVoucher) {
             handleCheckVoucher(maxVoucher.ma);
           }
         }
       }
-      else if (sortedVouchers.length > 0) {
+      else {
         const maxVoucher = sortedVouchers[0];
         if (maxVoucher) {
           handleCheckVoucher(maxVoucher.ma);
@@ -951,25 +1068,40 @@ const PointOfSales = () => {
         id: id,
       },
     };
+
     try {
-      await axios
-        .put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          params: {
-            isUpdateStatusOrderDelivery: false,
-          },
-        })
-        .then((response) => {
-          setOrder(response.data.data);
-          // setShipFee(response.data.data.phiShip);
-          getAllOrdersPending();
-          // setIsLoading(false);
-          // handleOpenAlertVariant(message, Notistack.SUCCESS);
-        });
-    } catch (error) { }
+      const response = await axios.put(`http://localhost:8080/api/orders/${order.id}`, orderRequest, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        params: {
+          isUpdateStatusOrderDelivery: false,
+        },
+      });
+
+      const data = response.data.data;
+      setOrder(data);
+
+      const account = data && data.account && data.account;
+      const listAddress = data.account && data.account.diaChiList && data.account.diaChiList;
+      const addressActive = listAddress && listAddress.find((item) => item.trangThai === 1);
+      console.log(addressActive);
+
+      if (account) {
+        updateInfoShipDefault(addressActive);
+      }
+      else {
+        updateInfoShipDefault(null);
+      }
+
+      getAllOrdersPending();
+      // setIsLoading(false);
+      // handleOpenAlertVariant(message, Notistack.SUCCESS);
+    } catch (error) {
+      // Xử lý lỗi tại đây (nếu cần)
+    }
   };
+
   const handleAddOrRemoveVoucher = async (idVoucher, loading, keep) => {
     const message = `${idVoucher === null
       ? "Mã giảm giá đã được gỡ bỏ thành công!"
@@ -1158,7 +1290,7 @@ const PointOfSales = () => {
           thaoTac: "Thanh Toán Thành Công",
           loaiThaoTac: 6,
           moTa: "Khách hàng đã thanh toán đơn hàng",
-          createdAt: new Date(),
+          createdAt: new Date(new Date().getTime() - 2000), // Giảm 2 giây so với thời gian hiện tại
           createdBy: userId,
           hoaDon: {
             id: order.id,
@@ -1182,7 +1314,7 @@ const PointOfSales = () => {
           thaoTac: "Chờ Giao Hàng",
           loaiThaoTac: 1,
           moTa: "Thông tin đơn hàng đã được xác nhận và đang trong quá trình chờ giao hàng",
-          createdAt: new Date(),
+          createdAt: new Date(new Date().getTime() - 2000), // Giảm 2 giây so với thời gian hiện tại
           createdBy: userId,
           hoaDon: {
             id: order.id,
@@ -1542,6 +1674,7 @@ const PointOfSales = () => {
             setPaymentWhenReceive(false);
             getAllOrdersPending();
             handleOpenAlertVariant("Xác nhận thành công", Notistack.SUCCESS);
+            handleCloseModalpaymentMultipleCounter();
             setIsLoading(false);
           });
       } catch (error) {
@@ -1677,44 +1810,44 @@ const PointOfSales = () => {
 
         setConfirm(false);
         setCustomerNameShip(
-          order.loaiHoaDon === OrderTypeString.DELIVERY &&
-            order.tenNguoiNhan !== null
-            ? order.tenNguoiNhan
+          lastOrder.loaiHoaDon === OrderTypeString.DELIVERY &&
+            lastOrder.tenNguoiNhan !== null
+            ? lastOrder.tenNguoiNhan
             : ""
         );
         setCustomerPhoneShip(
-          order.loaiHoaDon === OrderTypeString.DELIVERY &&
-            order.soDienThoaiNguoiNhan !== null
-            ? order.soDienThoaiNguoiNhan
+          lastOrder.loaiHoaDon === OrderTypeString.DELIVERY &&
+            lastOrder.soDienThoaiNguoiNhan !== null
+            ? lastOrder.soDienThoaiNguoiNhan
             : ""
         );
         setCustomerAddressShip(
-          order.loaiHoaDon === OrderTypeString.DELIVERY &&
-            order.diaChiNguoiNhan !== null
-            ? order.diaChiNguoiNhan
+          lastOrder.loaiHoaDon === OrderTypeString.DELIVERY &&
+            lastOrder.diaChiNguoiNhan !== null
+            ? lastOrder.diaChiNguoiNhan
             : ""
         );
         setCustomerWardShip(
-          order.loaiHoaDon === OrderTypeString.DELIVERY &&
-            order.xaPhuongNguoiNhan !== null
-            ? order.xaPhuongNguoiNhan
+          lastOrder.loaiHoaDon === OrderTypeString.DELIVERY &&
+            lastOrder.xaPhuongNguoiNhan !== null
+            ? lastOrder.xaPhuongNguoiNhan
             : ""
         );
         setCustomerProvinceShip(
-          order.loaiHoaDon === OrderTypeString.DELIVERY &&
-            order.tinhThanhPhoNguoiNhan !== null
-            ? order.tinhThanhPhoNguoiNhan
+          lastOrder.loaiHoaDon === OrderTypeString.DELIVERY &&
+            lastOrder.tinhThanhPhoNguoiNhan !== null
+            ? lastOrder.tinhThanhPhoNguoiNhan
             : ""
         );
         setCustomerDistrictShip(
-          order.loaiHoaDon === OrderTypeString.DELIVERY &&
-            order.quanHuyenNguoiNhan != null
-            ? order.quanHuyenNguoiNhan
+          lastOrder.loaiHoaDon === OrderTypeString.DELIVERY &&
+            lastOrder.quanHuyenNguoiNhan != null
+            ? lastOrder.quanHuyenNguoiNhan
             : ""
         );
         setCustomerNoteShip(
-          order.loaiHoaDon === OrderTypeString.DELIVERY && order.ghiChu != null
-            ? order.ghiChu
+          lastOrder.loaiHoaDon === OrderTypeString.DELIVERY && lastOrder.ghiChu != null
+            ? lastOrder.ghiChu
             : ""
         );
         setEmail(lastOrder.email != null ? lastOrder.email : "");
