@@ -31,6 +31,8 @@ import { Navigate, useNavigate } from "react-router-dom";
 const AddVoucher = () => {
   const navigate = useNavigate();
   const [ma, setMa] = useState("");
+  const [maSauAdd, setMaSauAdd] = useState("");
+  const [sendMail, setSendMail] = useState([]);
   const [ten, setTen] = useState("");
   const [ngayBatDau, setNgayBatDau] = useState(dayjs());
   const [ngayKetThuc, setNgayKetThuc] = useState(dayjs());
@@ -138,6 +140,24 @@ const AddVoucher = () => {
     navigate(`/dashboard/update-voucher/${id}`);
   };
 
+  const sendMailVoucher = (maVoucher) => {
+    let obj = {
+      subject: "ok",
+      ma: maVoucher,
+      ten: ten,
+      dieuKienApDung: dieuKienApDungConvert,
+      giaTriVoucher: giaTriVoucherConvert,
+      startTime: ngayBatDau,
+      endTime: ngayKetThuc,
+    };
+    axios
+      .post(`http://localhost:8080/send-html-email/voucher`, obj)
+      .then((response) => {})
+      .catch((error) => {
+        handleOpenAlertVariant("Đã xảy ra lỗi", Notistack.ERROR);
+      });
+  };
+
   const addVoucher = () => {
     setIsLoading(false);
     let obj = {
@@ -156,14 +176,22 @@ const AddVoucher = () => {
       .post(apiURLVoucher + "/addVoucher", obj)
       .then((response) => {
         setTimeout(() => {
+          // setSendMail(response.data.data);
           setIsLoading(true);
           handleUpdateVoucher(response.data.data.id);
+          // setMaSauAdd(response.data.data.ma);
           handleOpenAlertVariant("Thêm thành công!!!", Notistack.SUCCESS);
+          sendMailVoucher(response.data.data.ma);
         }, 1000);
       })
       .catch((error) => {
         handleOpenAlertVariant(error.response.data.message, Notistack.ERROR);
       });
+    // if (sendMail == null) {
+    //   console.log("Send Mail Failed");
+    // } else {
+    //   sendMailVoucher(maSauAdd);
+    // }
   };
 
   const validationAll = () => {

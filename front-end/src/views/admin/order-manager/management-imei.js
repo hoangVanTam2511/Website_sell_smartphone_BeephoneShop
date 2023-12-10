@@ -2,8 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Empty, Table } from "antd";
 import {
+  Autocomplete,
+  Dialog,
+  DialogContent,
   FormControl,
   IconButton,
+  InputLabel,
   MenuItem,
   Pagination,
   Select,
@@ -11,6 +15,7 @@ import {
   TextField,
   Tooltip,
 } from "@mui/material";
+import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import Card from "../../../components/Card";
 import axios from "axios";
@@ -35,9 +40,7 @@ const ManagementImei = () => {
   const [searchTrangThai, setSearchTrangThai] = useState("");
   const [open, setOpen] = React.useState(false);
   const [open1, setOpen1] = React.useState(false);
-  const [imeiCode, setImeiCode] = useState("");
   const [trangThai, setTrangThai] = React.useState("");
-  const [imeiName, setImeiName] = useState("");
   const [idImei, setIdImei] = useState("");
   const [openConfirm, setOpenConfirm] = useState(false);
   const { handleOpenAlertVariant } = useCustomSnackbar();
@@ -67,6 +70,8 @@ const ManagementImei = () => {
         },
       })
       .then((response) => {
+        // const data = response.data.data;
+        // data.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
         setImeiPages(response.data.data);
         setTotalPages(response.data.totalPages);
         // setIsLoading(true);
@@ -216,6 +221,18 @@ const ManagementImei = () => {
       render: (text, record) => (
         <div className="d-flex justify-content-center">
           <div className="button-container">
+            <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
+              <IconButton
+                size=""
+                onClick={() => {
+                  setIdImei(record.id);
+                  handleClickOpen1(record.id);
+                }}
+              >
+                <BorderColorOutlinedIcon color="primary" />
+              </IconButton>
+            </Tooltip>
+
             {/* Hàm đổi trạng thái */}
 
             <Tooltip
@@ -249,6 +266,77 @@ const ManagementImei = () => {
       ),
     },
   ];
+
+  const [soImei, setSoImei] = useState("");
+  const [idSanPhamChiTiet, setIdSanPhamChiTiet] = useState("");
+  const [barcode, setBarcode] = useState("");
+  const [validationMsg, setValidationMsg] = useState({});
+
+  const validationAll = () => {
+    const msg = {};
+
+    if (!soImei.trim("")) {
+      msg.soImei = "Số imei không được trống.";
+    }
+
+    setValidationMsg(msg);
+    if (Object.keys(msg).length > 0) return false;
+    return true;
+  };
+
+  const handleSubmit = () => {
+    const isValid = validationAll();
+    if (!isValid) return;
+    updateImei();
+  };
+
+  const detailImei = async (id) => {
+    await axios
+      .get(`http://localhost:8080/api/imeis/${id}`)
+      .then((response) => {
+        setIdImei(response.data.data.id);
+        setIdSanPhamChiTiet(response.data.data.sanPhamChiTiet.id);
+        setBarcode(response.data.data.barcode);
+        setSoImei(response.data.data.soImei);
+        setTrangThai(response.data.data.trangThai);
+      })
+      .catch((error) => {});
+  };
+
+  const updateImei = () => {
+    let obj = {
+      id: idImei,
+      soImei: soImei,
+      trangThai: trangThai,
+      sanPhamChiTiet: { id: idSanPhamChiTiet },
+      barcode: barcode,
+    };
+    axios
+      .put(`http://localhost:8080/api/imeis`, obj)
+      .then((response) => {
+        console.log(response);
+        getListImeiSearchAndPage();
+        handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
+        setOpen1(false);
+      })
+      .catch((error) => {
+        handleOpenAlertVariant(error.response.data.message, Notistack.ERROR);
+      });
+  };
+
+  const handleChangeSoImei = (event) => {
+    setSoImei(event.target.value);
+  };
+
+  const handleClickOpen1 = (id) => {
+    detailImei(id);
+    setOpen1(true);
+  };
+
+  const handleClose1 = () => {
+    setOpen1(false);
+    setValidationMsg({});
+  };
 
   return (
     <>
@@ -371,7 +459,65 @@ const ManagementImei = () => {
           <div className="mt-4"></div>
         </Card>
       </div>
-
+      <Dialog
+        open={open1}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={handleClose1}
+        maxWidth="md"
+        maxHeight="md"
+        sx={{
+          marginBottom: "170px",
+        }}
+      >
+        <DialogContent>
+          <div className="mt-4" style={{ width: "700px" }}>
+            <div className="container">
+              <div className="text-center">
+                <span
+                  className=""
+                  style={{ fontWeight: "550", fontSize: "29px" }}
+                >
+                  SỬA SỐ IMEI
+                </span>
+              </div>
+              <div className="mx-auto mt-3 pt-2">
+                <div style={{ display: "flex" }}>
+                  <TextField
+                    className="custom"
+                    fullWidth
+                    label="Số Imei"
+                    value={soImei}
+                    id="fullWidth"
+                    onChange={handleChangeSoImei}
+                    inputProps={{
+                      maxLength: 14, // Giới hạn tối đa 10 ký tự
+                    }}
+                    error={validationMsg.soImei !== undefined}
+                    helperText={validationMsg.soImei}
+                  />
+                </div>
+                <div className="mt-4 pt-1 d-flex justify-content-end">
+                  <Button
+                    onClick={() => handleSubmit()}
+                    className="rounded-2 button-mui"
+                    type="primary"
+                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                  >
+                    <span
+                      className=""
+                      style={{ marginBottom: "2px", fontWeight: "500" }}
+                    >
+                      Xác Nhận
+                    </span>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+        <div className="mt-3"></div>
+      </Dialog>
       {/* {!isLoading && <LoadingIndicator />} */}
     </>
   );

@@ -9,6 +9,8 @@ import org.springframework.data.domain.Page;
 
 public interface ImeiProductService extends GenericService<ImeiProductResponse, ImeiProductRequest, String> {
 
+    Imei getOneImei(String id);
+
     Page<ImeiProductResponse> findAllImei(FindFilterImeisRequest findFilterImeisRequest);
 
     Imei doiTrangThai(String id) throws Exception;
