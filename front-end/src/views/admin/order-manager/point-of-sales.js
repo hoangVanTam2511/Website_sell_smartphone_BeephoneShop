@@ -244,9 +244,8 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      request("PUT",`/api/orders/${order.id}`, orderRequest, {
-            isUpdateStatusOrderDelivery: false,
-        })
+      request("PUT",`/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
+        )
         .then((response) => {
           const data = response.data.data;
           setOrder(data);
@@ -273,9 +272,7 @@ const PointOfSales = () => {
       isUpdateEmail: true,
     };
     try {
-      request("PUT",`/api/orders/${order.id}`, orderRequest, {
-            isUpdateStatusOrderDelivery: false,
-        })
+      request("PUT",`/api/orders/${order.id}?isUpdateStatusOrderDelivery=true`, orderRequest)
         .then((response) => {
           const data = response.data.data;
           setOrder(data);
@@ -303,9 +300,8 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      request("PUT",`/api/orders/${order.id}`, orderRequest, {
-            isUpdateStatusOrderDelivery: false,
-        })
+      request("PUT",`/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
+        )
         .then((response) => {
           const data = response.data.data;
           setOrder(data);
@@ -397,9 +393,8 @@ const PointOfSales = () => {
         isUpdateEmail: false,
       };
       try {
-        request("PUT",`/api/orders/${order.id}`, orderRequest, {
-              isUpdateStatusOrderDelivery: false,
-          })
+        request("PUT",`/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
+          )
           .then((response) => {
             const data = response.data.data;
             setOrder(data);
@@ -411,7 +406,6 @@ const PointOfSales = () => {
             setCustomerDistrictShip(data && data.quanHuyenNguoiNhan);
           });
       } catch (error) {
-        console.log(error)
         setIsLoading(false);
       }
     }
@@ -445,9 +439,8 @@ const PointOfSales = () => {
         isUpdateEmail: false,
       };
       try {
-        request("PUT",`/api/orders/${order.id}`, orderRequest, {
-              isUpdateStatusOrderDelivery: false,
-          })
+        request("PUT",`/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
+          )
           .then((response) => {
             const data = response.data.data;
             setOrder(data);
@@ -459,7 +452,6 @@ const PointOfSales = () => {
             setCustomerDistrictShip(data && data.quanHuyenNguoiNhan);
           });
       } catch (error) {
-        console.log(error)
         setIsLoading(false);
       }
 
@@ -504,9 +496,8 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      request("PUT",`/api/orders/${order.id}`, orderRequest, {
-            isUpdateStatusOrderDelivery: false,
-        })
+      request("PUT",`/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
+        )
         .then((response) => {
           const data = response.data.data;
           setOrder(data);
@@ -525,7 +516,6 @@ const PointOfSales = () => {
           );
         });
     } catch (error) {
-      console.log(error)
       setIsLoading(false);
     }
   };
@@ -547,16 +537,15 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      request("PUT",`/api/orders/${order.id}`, orderRequest, {
-            isUpdateStatusOrderDelivery: false,
-        })
+      request("PUT",`/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
+        )
         .then((response) => {
           const data = response.data.data;
           setOrder(data);
           setCustomerPhoneShip(data && data.soDienThoaiNguoiNhan);
           getAllOrdersPending();
         });
-    } catch (error) {  console.log(error)}
+    } catch (error) { }
   };
   const updateAddressShipOrder = async (address) => {
     const orderRequest = {
@@ -576,16 +565,15 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      request("PUT",`/api/orders/${order.id}`, orderRequest, {
-            isUpdateStatusOrderDelivery: false,
-        })
+      request("PUT",`/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
+        )
         .then((response) => {
           const data = response.data.data;
           setOrder(data);
           setCustomerAddressShip(data && data.diaChiNguoiNhan);
           getAllOrdersPending();
         });
-    } catch (error) { console.log(error) }
+    } catch (error) { }
   };
   const updateNoteShipOrder = async (note) => {
     const orderRequest = {
@@ -605,9 +593,8 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      request("PUT",`/api/orders/${order.id}`, orderRequest, {
-            isUpdateStatusOrderDelivery: false,
-        })
+      request("PUT",`/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
+        )
         .then((response) => {
           const data = response.data.data;
           setOrder(data);
@@ -636,9 +623,8 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      request("PUT",`/api/orders/${order.id}`, orderRequest, {
-            isUpdateStatusOrderDelivery: false,
-        })
+      request("PUT",`/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
+        )
         .then((response) => {
           const order = response.data.data;
           setOrder(order);
@@ -728,16 +714,15 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      request("PUT",`/api/orders/${order.id}`, orderRequest, {
-            isUpdateStatusOrderDelivery: false,
-        })
+      request("PUT",`/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
+        )
         .then((response) => {
           const data = response.data.data;
           setOrder(data);
           setCustomerNameShip(data && data.tenNguoiNhan);
           getAllOrdersPending();
         });
-    } catch (error) { console.log(error) }
+    } catch (error) { }
   };
 
   const updateInfoShipOrder = async (
@@ -768,9 +753,8 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      requestBodyParam("PUT",`/api/orders/${order.id}`, orderRequest, {
-            isUpdateStatusOrderDelivery: false,
-        })
+      requestBodyParam("PUT",`/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
+        )
         .then((response) => {
           const data = response.data.data;
           setOrder(data);
@@ -779,7 +763,7 @@ const PointOfSales = () => {
           setCustomerDistrictShip(data && data.quanHuyenNguoiNhan);
           getAllOrdersPending();
         });
-    } catch (error) { console.log(error)}
+    } catch (error) { }
   };
 
   const getCustomerById = async (id) => {
@@ -955,9 +939,8 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      request("PUT",`/api/orders/${order.id}`, orderRequest, {
-            isUpdateStatusOrderDelivery: false,
-        })
+      request("PUT",`/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
+        )
         .then((response) => {
           setOrder(response.data.data);
           setIsLoading(false);
@@ -972,7 +955,7 @@ const PointOfSales = () => {
           // handlePrint();
           console.log(orderRequest);
         });
-    } catch (error) { console.log(error) }
+    } catch (error) { }
   };
 
   const updateAccount = async (id) => {
@@ -996,9 +979,8 @@ const PointOfSales = () => {
     };
 
     try {
-      const response = request("PUT",`/api/orders/${order.id}`, orderRequest, {
-          isUpdateStatusOrderDelivery: false,
-      });
+      const response = request("PUT",`/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
+      );
 
       const data = response.data.data;
       setOrder(data);
@@ -1050,9 +1032,8 @@ const PointOfSales = () => {
       setLoadingChild(true);
       setTimeout(() => {
         try {
-          request("PUT",`/api/orders/${order.id}`, orderRequest, {
-                isUpdateStatusOrderDelivery: false,
-            })
+          request("PUT",`/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
+            )
             .then((response) => {
               setOrder(response.data.data);
               setDiscount("");
@@ -1069,9 +1050,8 @@ const PointOfSales = () => {
       }, 1000);
     } else if (idVoucher === null && !loading) {
       try {
-        request("PUT",`/api/orders/${order.id}`, orderRequest, {
-              isUpdateStatusOrderDelivery: false,
-          })
+        request("PUT",`/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
+          )
           .then((response) => {
             setOrder(response.data.data);
             setIdVoucher("");
@@ -1089,9 +1069,8 @@ const PointOfSales = () => {
       setLoadingChild(true);
       setTimeout(() => {
         try {
-          request("PUT",`/api/orders/${order.id}`, orderRequest, {
-                isUpdateStatusOrderDelivery: false,
-            })
+          request("PUT",`/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
+          )
             .then((response) => {
               setOrder(response.data.data);
               setDiscount(response.data.data.voucher.ma);
@@ -1108,9 +1087,8 @@ const PointOfSales = () => {
       }, 1000);
     } else {
       try {
-        request("PUT",`/api/orders/${order.id}`, orderRequest, {
-              isUpdateStatusOrderDelivery: false,
-          })
+        request("PUT",`/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
+          )
           .then((response) => {
             setOrder(response.data.data);
             setIdVoucher(response.data.data.voucher.id);

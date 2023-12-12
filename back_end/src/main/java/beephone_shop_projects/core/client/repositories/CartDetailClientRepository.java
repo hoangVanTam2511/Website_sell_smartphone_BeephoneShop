@@ -21,7 +21,7 @@ public interface CartDetailClientRepository extends IGioHangChiTietRepository {
     GioHangChiTiet getGioHangByIDKhachHangAndIdGioHang(@Param("id_chi_tiet_san_pham")String idChiTietSanPham, @Param("id_gio_hang")String idGioHang);
 
     @Query(value = """
-            SELECT COUNT(*) FROM gio_hang_chi_tiet
+            SELECT  IF(SUM(ghct.so_luong) is null, 0, SUM(ghct.so_luong)) FROM gio_hang_chi_tiet ghct
             WHERE id_gio_hang = :id_gio_hang
     """, nativeQuery = true)
     Integer getGioHangChiTietByIDGioHang(@Param("id_gio_hang")String idGioHang);

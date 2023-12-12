@@ -2,6 +2,7 @@ package beephone_shop_projects.entity;
 
 import beephone_shop_projects.entity.base.IsIdentified;
 import beephone_shop_projects.entity.base.PrimaryEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -29,10 +30,12 @@ public class GioHang extends PrimaryEntity implements IsIdentified {
 
   private String ma;
 
+  @JsonIgnore
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_khach_hang")
   private Account account;
 
+  @JsonIgnore
   @OneToMany(mappedBy = "gioHang", cascade = CascadeType.REMOVE)
   private Set<GioHangChiTiet> cartItems;
 

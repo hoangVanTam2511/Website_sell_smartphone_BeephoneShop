@@ -22,10 +22,15 @@ export const loginUser = createAsyncThunk('user/login', async data => {
   return user
 })
 
+export const getUser = () => {
+  var user = localStorage.getItem('user')
+  return JSON.parse(user)
+};
+
 export const changeInformationUser = createAsyncThunk(
   'user/changeInformationUser',
   async data => {
-    localStorage.setItem('user', JSON.stringify(data))
+    localStorage.setItem('user',  JSON.stringify(data))
     return data
   }
 )

@@ -80,7 +80,7 @@ public class OrderController {
   @PutMapping("/{id}")
   public ResponseObject<OrderResponse> updateOrder(@RequestBody OrderRequest req, @PathVariable String id,
                                                    @RequestParam("isUpdateStatusOrderDelivery") Boolean isUpdateStatusOrderDelivery) throws Exception {
-    if (isUpdateStatusOrderDelivery) {
+      if (isUpdateStatusOrderDelivery) {
       System.out.println(isUpdateStatusOrderDelivery);
       OrderResponse updatedStatusOrderDelivery = hoaDonService.updateStatusOrderDelivery(req, id);
       return new ResponseObject(updatedStatusOrderDelivery);

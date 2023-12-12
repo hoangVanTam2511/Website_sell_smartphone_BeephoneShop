@@ -39,4 +39,6 @@ public class AccountDto {
 
     private String token;
 
+    private String tenChucVu;
+
 }

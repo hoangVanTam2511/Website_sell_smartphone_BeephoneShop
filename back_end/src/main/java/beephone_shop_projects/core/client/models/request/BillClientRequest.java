@@ -55,4 +55,6 @@ public class BillClientRequest {
     private Integer paymentMethod;
 
     private String ngayNhanHang;
+
+    private String email;
 }

@@ -15,7 +15,7 @@
   </div>
   <div class='' style="margin-top: 10px; margin: 0 auto; width: 86%">
     <span style="font-size: 20px">
-    Xin chào <span class='' style="font-weight: bold">Thúy Hằng</span>
+    Xin chào <span class='' style="font-weight: bold"  th:text="${bill.getTenNguoiNhan()}">Thúy Hằng</span>
     </span>
   </div>
   <div class='' style="margin-top: 5px">
@@ -54,7 +54,7 @@ background-color: #e1e1e1; color: black" class="">Thông tin đơn hàng
           <span style="font-weight: bold">
           Mã đơn hàng:
           </span>
-            <span class='' style="font-weight: bold">
+            <span class='' style="font-weight: bold"  th:text="${bill.getMa()}">
           #200392032093
           </span>
           </div>
@@ -62,7 +62,7 @@ background-color: #e1e1e1; color: black" class="">Thông tin đơn hàng
           <span style="font-weight: bold">
           Ngày đặt hàng:
           </span>
-            <span class=''>
+            <span class='' th:text="${bill.getCreatedAt()}">
                     200392032093
                   </span>
           </div>
@@ -88,7 +88,7 @@ background-color: #e1e1e1; color: black" class="">Thông tin đơn hàng
           <span style="font-weight: bold">
           Họ và tên:
           </span>
-            <span class=''>
+            <span class=''  th:text="${bill.getTenNguoiNhan()}">
                     Trần Quang Hà
                   </span>
           </div>
@@ -96,7 +96,7 @@ background-color: #e1e1e1; color: black" class="">Thông tin đơn hàng
           <span style="font-weight: bold">
           Số điện thoại:
           </span>
-            <span class=''>
+            <span class=''  th:text="${bill.getSoDienThoaiNguoiNhan()}">
                     09018239831
                   </span>
           </div>
@@ -104,7 +104,7 @@ background-color: #e1e1e1; color: black" class="">Thông tin đơn hàng
           <span style="font-weight: bold">
           Email:
           </span>
-            <span class=''>
+            <span class=''  th:text="${bill.getEmail()}">
                     haog@gmail.com
                   </span>
           </div>
@@ -134,7 +134,7 @@ background-color: #e1e1e1; color: black" colSpan="2" class="">Địa chỉ nhậ
       </thead>
       <tbody>
       <tr class=''>
-        <td style="border: 1px solid #d1d1d1; vertical-align: top" class="">
+        <td style="border: 1px solid #d1d1d1; vertical-align: top" class=""  th:text="${bill.getDiaChiNguoiNhan() + ', ' + bill.getXaPhuongNguoiNhan() + ', ' + bill.getQuanHuyenNguoiNhan() + ', ' + bill.getTinhThanhPhoNguoiNhan()}">
           Trần Quang Hà - 09787444387 - SN 12 Ngõ 40 Phú Kiều, Kiều mai, bắc từ Liêm Hà nỘi
         </td>
       </tr>
@@ -162,11 +162,11 @@ background-color: #e1e1e1; color: black; text-align: center"  class="">Thành ti
       </tr>
       </thead>
       <tbody>
-      <tr class=''>
+      <tr class='' th:each="product : ${billDetails}">
         <td class='' style="text-align: center; border: 1px solid #d1d1d1; vertical-align: top; padding: 10px">
           <div class="" style="display: flex">
             <div class="product-img">
-              <img src="https://res.cloudinary.com/dj9e1otbm/image/upload/v1700643568/oeojgihz3v9gtovoijjg.png"
+              <img th:src="${product.getDuongDan()}"
                    class=""
                    alt=""
                    style="width: 155px; height: 155px"
@@ -174,20 +174,20 @@ background-color: #e1e1e1; color: black; text-align: center"  class="">Thành ti
             </div>
             <div class="product" title='Xem sản phẩm' style="margin-left: 10px">
               <div class="product-name" style="cursor: pointer">
-            <span class="" style="font-weight: bold">
+            <span class="" style="font-weight: bold" th:text="${product.getTenSanPham() + ' ' + product.getRam() + ' GB ' + product.getRom() + ' GB '+ product.getTenMauSac() }">
             Iphone 14 Pro Max 256GB BLUE
             </span>
               </div>
             </div>
           </div>
         </td>
-        <td class='' style="text-align: center; border: 1px solid #d1d1d1; vertical-align: top; width: 15%; padding: 10px">
+        <td class='' style="text-align: center; border: 1px solid #d1d1d1; vertical-align: top; width: 15%; padding: 10px" th:text="${product.getSoLuong()}">
           1
         </td>
-        <td class='' style="text-align: center; border: 1px solid #d1d1d1; vertical-align: top; padding: 10px">
+        <td class='' style="text-align: center; border: 1px solid #d1d1d1; vertical-align: top; padding: 10px" th:text="${product.getDonGiaSauGiam() == 0 ? product.getDonGia() : product.getDonGiaSauGiam()}">
           500,000,000
         </td>
-        <td class='' style="text-align: center; border: 1px solid #d1d1d1; vertical-align: top; padding: 10px">
+        <td class='' style="text-align: center; border: 1px solid #d1d1d1; vertical-align: top; padding: 10px" th:text="${product.getSoLuong() * product.getDonGiaSauGiam() == 0 ? product.getDonGia() : product.getDonGiaSauGiam()}">
           500,000,000
         </td>
       </tr>
@@ -195,7 +195,7 @@ background-color: #e1e1e1; color: black; text-align: center"  class="">Thành ti
         <td class='' colSpan="3" style="text-align: end; font-weight: bold; border: 1px solid #d1d1d1; vertical-align: top">
           Tổng tiền hàng:
         </td>
-        <td class='' colSpan="1" style="text-align: center; border: 1px solid #d1d1d1; vertical-align: top">
+        <td class='' colSpan="1" style="text-align: center; border: 1px solid #d1d1d1; vertical-align: top" th:text="${bill.getTongTien()}">
           500,000,000
         </td>
       </tr>
@@ -203,7 +203,7 @@ background-color: #e1e1e1; color: black; text-align: center"  class="">Thành ti
         <td class='' colSpan="3" style="text-align: end; font-weight: bold; border: 1px solid #d1d1d1; vertical-align: top">
           Giảm giá:
         </td>
-        <td class='' colSpan="1" style="text-align: center; border: 1px solid #d1d1d1; vertical-align: top">
+        <td class='' colSpan="1" style="text-align: center; border: 1px solid #d1d1d1; vertical-align: top" th:text="${bill.getTongTien() - bill.getTongTienSauKhiGiam()}">
           50,000
         </td>
       </tr>
@@ -211,7 +211,7 @@ background-color: #e1e1e1; color: black; text-align: center"  class="">Thành ti
         <td class='' colSpan="3" style="text-align: end; font-weight: bold; border: 1px solid #d1d1d1; vertical-align: top">
           Phí vận chuyển:
         </td>
-        <td class='' colSpan="1" style="text-align: center; border: 1px solid #d1d1d1; vertical-align: top">
+        <td class='' colSpan="1" style="text-align: center; border: 1px solid #d1d1d1; vertical-align: top" th:text="${bill.getPhiShip()}">
           50,000
         </td>
       </tr>
@@ -219,7 +219,7 @@ background-color: #e1e1e1; color: black; text-align: center"  class="">Thành ti
         <td class='' colSpan="3" style="text-align: end; font-weight: bold; border: 1px solid #d1d1d1; vertical-align: top">
           Tổng cần thanh toán:
         </td>
-        <td class='' colSpan="1" style="text-align: center; border: 1px solid #d1d1d1; vertical-align: top">
+        <td class='' colSpan="1" style="text-align: center; border: 1px solid #d1d1d1; vertical-align: top" th:text="${bill.getTongTienSauKhiGiam() + bill.getPhiShip()}">
           50,000,000
         </td>
       </tr>
@@ -244,7 +244,5 @@ background-color: #e1e1e1; color: black; text-align: center"  class="">Thành ti
 
 </div>
 
-<h1 style="width: 200px; height: 200px">Greetings from myproject!</h1>
-<p style="width: 100px; height: 150px" th:text="${message}">Default message</p>
 </body>
 </html>

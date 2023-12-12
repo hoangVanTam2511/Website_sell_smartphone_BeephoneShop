@@ -6,6 +6,7 @@ import {
   AccordionContext,
 } from "react-bootstrap";
 import { useSelector } from "react-redux";
+import { getUser } from "../../../../store/user/userSlice";
 
 function CustomToggle({ children, eventKey, onClick }) {
   const { activeEventKey } = useContext(AccordionContext);
@@ -36,8 +37,12 @@ const VerticalNav = memo((props) => {
   const [active, setActive] = useState("");
   //location
   let location = useLocation();
-  const user =  JSON.parse(window.localStorage.getItem('user'))
+  const user =  getUser()
 
+  useEffect(() => {
+    // user = getUser();
+    console.log(user)
+  },[])
 
   return (
     <Fragment>

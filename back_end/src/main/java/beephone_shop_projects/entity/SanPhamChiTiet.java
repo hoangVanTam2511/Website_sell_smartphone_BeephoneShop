@@ -40,6 +40,7 @@ public class SanPhamChiTiet extends PrimaryEntity implements Serializable {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_san_pham")
+  @JsonIgnore
   private SanPham sanPham;
 
   @OneToMany(mappedBy = "sanPhamChiTiet")
@@ -51,18 +52,22 @@ public class SanPhamChiTiet extends PrimaryEntity implements Serializable {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_ram")
+  @JsonIgnore
   private Ram ram;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_rom")
+  @JsonIgnore
   private Rom rom;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_mau_sac")
+  @JsonIgnore
   private MauSac mauSac;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_image")
+  @JsonIgnore
   private Image image;
 
   @JsonIgnore
