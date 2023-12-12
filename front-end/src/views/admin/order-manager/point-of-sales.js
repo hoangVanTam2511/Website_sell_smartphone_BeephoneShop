@@ -991,14 +991,11 @@ const PointOfSales = () => {
 
   const paymentOrder = async (data) => {
     setIsLoading(true);
-    // const sortOrderHistories = data.orderHistories && data.orderHistories.sort((a, b) => a.stt - b.stt);
     const orderRequest = {
-      // isDelivery: delivery,
       tongTien: handleCountTotalMoney(),
       tienThua: paymentWhenReceive === true ? 0 : handleCountTotalSurplus(),
       tongTienSauKhiGiam: handleCountTotalMoney() - discountValue,
       khachCanTra: handleCountTotalMoneyCustomerNeedPay(),
-      // tienKhachTra: paymentWhenReceive === true ? null : customerPayment,
       trangThai: data.trangThai,
       hoVaTen: order.account !== null ? order.account.hoVaTen : fullName,
       soDienThoai: order.account !== null ? order.account.soDienThoai : sdt,
@@ -1007,6 +1004,9 @@ const PointOfSales = () => {
       phiShip: delivery === true ? shipFee : null,
       orderHistories: data.orderHistories,
       hinhThucThanhToan: selectedValuePaymentMethod,
+      employee: {
+        id: userId,
+      },
       cart: order.cart,
       isPayment: true,
       isUpdateType: false,
@@ -1313,7 +1313,7 @@ const PointOfSales = () => {
           stt: 2,
           thaoTac: "Chờ Giao Hàng",
           loaiThaoTac: 1,
-          moTa: "Thông tin đơn hàng đã được xác nhận và đang trong quá trình chờ giao hàng",
+          moTa: "Thông tin đơn hàng đã được xác nhận bởi nhân viên và đang trong quá trình chờ giao hàng",
           createdAt: new Date(new Date().getTime() - 2000), // Giảm 2 giây so với thời gian hiện tại
           createdBy: userId,
           hoaDon: {

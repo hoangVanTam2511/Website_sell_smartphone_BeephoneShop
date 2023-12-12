@@ -30,6 +30,7 @@ import {
   FormControlLabel,
   Pagination,
   ListItemText,
+  FormHelperText,
 } from "@mui/material";
 import Checkbox from "@mui/joy/Checkbox";
 import styleCss from "./style.css";
@@ -277,53 +278,11 @@ export function OrderPendingConfirmCloseDialog(props) {
 }
 
 export function UpdateRecipientOrderDialog(props) {
-  const ITEM_HEIGHT = 98;
-  const ITEM_PADDING_TOP = 8;
-  const MenuProps = {
-    PaperProps: {
-      style: {
-        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-        width: 250,
-      },
-    },
-  };
-
-  const names = [
-    "Oliver Hansen",
-    "Van Henry",
-    "April Tucker",
-    "Ralph Hubbard",
-    "Omar Alexander",
-    "Carlos Abbott",
-    "Miriam Wagner",
-    "Bradley Wilkerson",
-    "Virginia Andrews",
-    "Kelly Snyder",
-  ];
-
-  function getStyles(name, personName, theme) {
-    return {
-      fontWeight:
-        personName.indexOf(name) === -1
-          ? theme.typography.fontWeightRegular
-          : theme.typography.fontWeightMedium,
-    };
-  }
-
-  const theme = useTheme();
-  const [personName, setPersonName] = React.useState([]);
-
-  const handleChange = (event) => {
-    const {
-      target: { value },
-    } = event;
-    setPersonName(typeof value === "string" ? value.split(",") : value);
-  };
-
   const {
     open,
     onClose,
     onCloseNoAction,
+    update,
     name,
     phone,
     address,
@@ -339,25 +298,154 @@ export function UpdateRecipientOrderDialog(props) {
   const [customerProvince, setCustomerProvince] = useState(province);
   const [customerDistrict, setCustomerDistrict] = useState(district);
   const [customerWard, setCustomerWard] = useState(ward);
+  const [provinces, setProvinces] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [wards, setWards] = useState([]);
+  const [selectedProvince, setSelectedProvince] = useState('');
+  const [selectedWard, setSelectedWard] = useState("");
+  const [selectedDistrict, setSelectedDistrict] = useState("");
+  const [feeShip, setFeeShip] = useState(0);
+  const [isConfirm, setIsConfirm] = useState(false);
 
   useEffect(() => {
     setCustomerName(name);
     setCustomerPhone(phone);
     setCustomerAddress(address);
     setCustomerNote(note);
-    setCustomerProvince(province);
-    setCustomerDistrict(district);
-    setCustomerWard(ward);
+    fetchDataFirst();
   }, [name, phone, address, province, district, ward, note]);
+
+  const isValidation = () => {
+    let isValid = true;
+    if (customerName.trim() === "") {
+      isValid = false;
+    }
+    if (customerPhone.trim() === "") {
+      isValid = false;
+    }
+    if (customerAddress.trim() === "") {
+      isValid = false;
+    }
+    if (selectedProvince === "") {
+      isValid = false;
+    }
+    if (selectedDistrict === "") {
+      isValid = false;
+    }
+    if (selectedWard === "") {
+      isValid = false;
+    }
+    return isValid;
+  }
+
+  const handleUpdateInfo = () => {
+    setIsConfirm(true);
+    if (isValidation()) {
+      const province = provinces.find((item) => item.ProvinceID === selectedProvince);
+      const district = districts.find((item) => item.DistrictID === selectedDistrict);
+      const ward = wards.find((item) => item.WardCode === selectedWard);
+      update(customerName, customerPhone, customerAddress, province.ProvinceName, district.DistrictName, ward.WardName, customerNote, feeShip);
+    }
+  }
+
+  const fetchDataFirst = async () => {
+    if (ward && province && district) {
+      const getProvince = provinces.find((item) => item.ProvinceName === province);
+      if (getProvince) {
+        await Promise.all([
+          getAllDistrictGhnByIdProvinceByCustomer(getProvince.ProvinceID, district, ward),
+        ]);
+      }
+    }
+    else if (!ward && province && district) {
+      const getProvince = provinces.find((item) => item.ProvinceName === province);
+      if (getProvince) {
+        await Promise.all([
+          getAllDistrictGhnByIdProvinceByCustomer(getProvince.ProvinceID, district, ""),
+        ]);
+      }
+    }
+    else if (!ward && province && !district) {
+      const getProvince = provinces.find((item) => item.ProvinceName === province);
+      if (getProvince) {
+        await Promise.all([
+          getAllDistrictGhnByIdProvinceByCustomer(getProvince.ProvinceID, "", ""),
+        ]);
+
+      }
+    }
+    else if (!ward && !province && !district) {
+      getAllProvinceGhn();
+      setSelectedProvince("");
+      setSelectedDistrict("");
+      setSelectedWard("");
+      setDistricts([]);
+      setWards([]);
+    }
+  };
+
+  const tokenGhn = "62124d79-4ffa-11ee-b1d4-92b443b7a897";
+
+  useEffect(() => {
+    if (selectedProvince != "" && selectedDistrict != "" && selectedWard != "") {
+      getShipFeeGhn();
+    }
+    else {
+      setFeeShip(0);
+    }
+  }, [selectedWard, selectedDistrict, selectedProvince])
+
+  const shopID = 189389;
+  const serviceID = 53320;
+  const shopDistrictId = 1482;
+  const shopWardCode = 11007;
+
+  const getShipFeeGhn = () => {
+    axios.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee`, {
+      params: {
+        from_district_id: shopDistrictId,
+        from_ward_code: shopWardCode,
+        service_id: serviceID,
+        to_district_id: selectedDistrict,
+        to_ward_code: selectedWard,
+        weight: 240,
+      },
+      headers: {
+        token: tokenGhn,
+        Accept: 'application/json',
+      }
+    }).then(
+      (response) => {
+        setFeeShip(response.data.data.total);
+        console.log(response.data.data.total);
+      }
+    )
+  }
+
+
+  const getAllProvinceGhn = async () => {
+    axios.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province`, {
+      headers: {
+        token: tokenGhn,
+        Accept: 'application/json',
+      }
+    }).then(
+      (response) => {
+        setProvinces(response.data.data);
+      }
+    )
+  }
+
+  useEffect(() => {
+    getAllProvinceGhn();
+  }, []);
 
   const resetData = () => {
     setCustomerName(name);
     setCustomerPhone(phone);
     setCustomerAddress(address);
     setCustomerNote(note);
-    setCustomerProvince(province);
-    setCustomerDistrict(district);
-    setCustomerWard(ward);
+    fetchDataFirst();
   };
 
   const getAllDistrictGhnByIdProvinceByCustomer = async (
@@ -400,6 +488,84 @@ export function UpdateRecipientOrderDialog(props) {
     } catch (error) { }
   };
 
+  const getAllWardGhnByIdDistrictByCustomer = async (provinceId, districtId, wardName) => {
+    await axios.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward`, {
+      params: {
+        district_id: districtId,
+      },
+      headers: {
+        token: tokenGhn,
+        Accept: 'application/json',
+      }
+    }).then(
+      (response) => {
+        const data = response.data.data;
+        setWards(data);
+        const ward = data.find((item) => item.WardName === wardName);
+
+        setSelectedProvince(provinceId);
+        setSelectedDistrict(districtId);
+
+        if (wardName === "") {
+          setSelectedWard("");
+        }
+        else {
+          setSelectedWard(ward.WardCode);
+        }
+      }
+    )
+  }
+  const getAllDistrictGhnByIdProvince = async (provinceId) => {
+    await axios.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district`, {
+      params: {
+        province_id: provinceId,
+      },
+      headers: {
+        token: tokenGhn,
+        Accept: 'application/json',
+      }
+    }).then(
+      (response) => {
+        setDistricts(response.data.data);
+      }
+    )
+  }
+  const getAllWardGhnByIdDistrict = async (districtId) => {
+    await axios.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward`, {
+      params: {
+        district_id: districtId,
+      },
+      headers: {
+        token: tokenGhn,
+        Accept: 'application/json',
+      }
+    }).then(
+      (response) => {
+        setWards(response.data.data);
+      }
+    )
+  }
+  const handleChangeProvince = (event) => {
+    const value = event.target.value;
+    setSelectedProvince(value);
+    getAllDistrictGhnByIdProvince(value);
+    getAllWardGhnByIdDistrict(3450);
+    setSelectedDistrict("");
+    setSelectedWard("");
+  };
+
+  const handleChangeWard = (event) => {
+    const value = event.target.value;
+    setSelectedWard(value);
+  };
+
+  const handleChangeDistrict = (event) => {
+    const value = event.target.value;
+    setSelectedDistrict(value);
+    getAllWardGhnByIdDistrict(value);
+    setSelectedWard("");
+  };
+
   return (
     <div className="rounded-pill">
       <Dialog
@@ -431,6 +597,8 @@ export function UpdateRecipientOrderDialog(props) {
                   width: "755px",
                 },
               }}
+              helperText={isConfirm === true && (customerName !== null && customerName.trim() === "") ? "Bạn chưa nhập họ và tên" : ""}
+              error={isConfirm === true && (customerName !== null && customerName.trim() === "")}
               size="medium"
               className="mt-2 custom"
             />
@@ -445,77 +613,77 @@ export function UpdateRecipientOrderDialog(props) {
                   width: "755px",
                 },
               }}
+              helperText={isConfirm === true && (customerPhone !== null && customerPhone.trim() === "") ? "Bạn chưa nhập số điện thoại" : ""}
+              error={isConfirm === true && (customerPhone !== null && customerPhone.trim() === "")}
               size="medium"
               className="mt-3 custom"
             />
           </div>
           <div className="d-flex mt-3">
-            <FormControl sx={{ width: 250 }}>
-              <InputLabel id="demo-multiple-name-label">
-                Tỉnh / Thành Phố
-              </InputLabel>
+            <FormControl error={isConfirm && selectedProvince === ""} style={{ width: "100%" }}>
+              <InputLabel >Tỉnh / Thành Phố</InputLabel>
               <SelectMui
-                labelId="demo-multiple-name-label"
-                className="custom"
-                id="demo-multiple-name"
-                onChange={handleChange}
+                className='custom'
+                onChange={handleChangeProvince}
                 input={<OutlinedInput label="Tỉnh / Thành Phố" />}
-                MenuProps={MenuProps}
+                value={selectedProvince}
               >
-                {names.map((name) => (
+                {provinces && provinces.map((province) => (
                   <MenuItem
-                    key={name}
-                    value={name}
-                    style={getStyles(name, personName, theme)}
+                    key={province.ProvinceID}
+                    value={province.ProvinceID}
                   >
-                    {name}
+                    {province.ProvinceName}
                   </MenuItem>
                 ))}
               </SelectMui>
+              {isConfirm && selectedProvince === "" &&
+                <FormHelperText>Bạn chưa chọn Tỉnh / Thành Phố!</FormHelperText>
+              }
             </FormControl>
-            <FormControl sx={{ width: 250 }} className="ms-3">
-              <InputLabel id="demo-multiple-name-label">
-                Quận / Huyện
-              </InputLabel>
+            <FormControl error={isConfirm && selectedDistrict === ""} style={{ width: "100%" }} className='ms-3'>
+              <InputLabel >Quận / Huyện</InputLabel>
               <SelectMui
-                className="custom"
-                labelId="demo-multiple-name-label"
-                id="demo-multiple-name"
-                onChange={handleChange}
+                className='custom'
+                label="Quận / Huyện"
                 input={<OutlinedInput label="Quận / Huyện" />}
-                MenuProps={MenuProps}
+                value={selectedDistrict}
+                onChange={handleChangeDistrict}
               >
-                {names.map((name) => (
-                  <MenuItem
-                    key={name}
-                    value={name}
-                    style={getStyles(name, personName, theme)}
-                  >
-                    {name}
-                  </MenuItem>
-                ))}
+                {districts && districts
+                  .map((district) => (
+                    <MenuItem
+                      key={districts.DistrictID}
+                      value={district.DistrictID}
+                    >
+                      {district.DistrictName}
+                    </MenuItem>
+                  ))}
               </SelectMui>
+              {isConfirm && selectedDistrict === "" &&
+                <FormHelperText>Bạn chưa chọn Quận / Huyện!</FormHelperText>
+              }
             </FormControl>
-            <FormControl sx={{ width: 250 }} className="ms-3">
-              <InputLabel id="demo-multiple-name-label">Phường / Xã</InputLabel>
+            <FormControl error={isConfirm && selectedWard === ""} style={{ width: "100%" }} className='ms-3'>
+              <InputLabel>Phường / Xã</InputLabel>
               <SelectMui
-                className="custom"
-                labelId="demo-multiple-name-label"
-                id="demo-multiple-name"
-                onChange={handleChange}
+                className='custom'
+                onChange={handleChangeWard}
                 input={<OutlinedInput label="Phường / Xã" />}
-                MenuProps={MenuProps}
+                value={selectedWard}
               >
-                {names.map((name) => (
+                {wards && wards.map((ward) => (
                   <MenuItem
-                    key={name}
-                    value={name}
-                    style={getStyles(name, personName, theme)}
+                    key={ward.WardCode}
+                    value={ward.WardCode}
                   >
-                    {name}
+                    {ward.WardName}
                   </MenuItem>
                 ))}
               </SelectMui>
+              {isConfirm && selectedWard === "" &&
+                <FormHelperText>Bạn chưa chọn Phường / Xã!</FormHelperText>
+              }
             </FormControl>
           </div>
           <div>
@@ -528,6 +696,8 @@ export function UpdateRecipientOrderDialog(props) {
                   width: "755px",
                 },
               }}
+              helperText={isConfirm === true && (customerAddress !== null && customerAddress.trim() === "") ? "Bạn chưa nhập số điện thoại" : ""}
+              error={isConfirm === true && (customerAddress !== null && customerAddress.trim() === "")}
               size="medium"
               className="mt-3 custom"
             />
@@ -550,7 +720,7 @@ export function UpdateRecipientOrderDialog(props) {
           </div>
           <div className="d-flex justify-content-end mt-4">
             <Button
-              // onClick={handleOpenDialogProducts}
+              onClick={handleUpdateInfo}
               className="rounded-2 me-2"
               type="primary"
               style={{ height: "40px", width: "110px", fontSize: "16px" }}
@@ -3148,6 +3318,7 @@ export function ConfirmPaymentDialog(props) {
   );
 }
 export function ConfirmDialog(props) {
+  const { handleOpenAlertVariant } = useCustomSnackbar();
   const {
     open,
     status,
@@ -3175,9 +3346,19 @@ export function ConfirmDialog(props) {
     } else if (status === OrderStatusString.CONFIRMED) {
       confirmDelivery(description);
     } else if (status === OrderStatusString.DELIVERING) {
-      confirmFinish(description);
+      if (description !== null && description.trim() === "") {
+        handleOpenAlertVariant("Bạn chưa nhập ghi chú! ", Notistack.ERROR);
+      }
+      else {
+        confirmFinish(description);
+      }
     } else if (status === OrderStatusString.CANCELLED) {
-      confirmCancel(description);
+      if (description !== null && description.trim() === "") {
+        handleOpenAlertVariant("Bạn chưa nhập lí do hủy đơn! ", Notistack.ERROR);
+      }
+      else {
+        confirmCancel(description);
+      }
     }
     setDescription("");
   };
@@ -6179,6 +6360,7 @@ export function ConfirmRefund({ open, close, confirm, total, size }) {
 
 export function ConfirmRollBack({ open, close, confirm }) {
   const [description, setDescription] = useState("");
+  const { handleOpenAlertVariant } = useCustomSnackbar();
 
   const handleGetValueFromInputTextField = (event) => {
     const value = event.target.value;
@@ -6226,7 +6408,12 @@ export function ConfirmRollBack({ open, close, confirm }) {
         <DialogActions>
           <Button
             onClick={() => {
-              confirm(description);
+              if (description !== null && description.trim() === "") {
+                handleOpenAlertVariant("Bạn chưa nhập lí do hoàn tác! ", Notistack.ERROR);
+              }
+              else {
+                confirm(description);
+              }
               setDescription("");
             }}
             className="rounded-2 me-2"

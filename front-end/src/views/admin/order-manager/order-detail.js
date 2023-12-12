@@ -10,6 +10,7 @@ import {
   FaRegFileAlt,
   FaRegCalendarTimes,
   FaBusinessTime,
+  FaPencilAlt,
 } from "react-icons/fa";
 import { FaArrowRotateLeft, FaArrowsRotate } from "react-icons/fa6";
 import { Tooltip, Zoom } from "@mui/material";
@@ -106,6 +107,40 @@ const OrderDetail = (props) => {
           : "";
   };
 
+  const updateInfoOrderDelivery = async (name, phone, address, province, district, ward, note, ship) => {
+    setIsLoading(true);
+    const data = {
+      id: id,
+      tenNguoiNhan: name,
+      soDienThoaiNguoiNhan: phone,
+      diaChiNguoiNhan: address,
+      tinhThanhPhoNguoiNhan: province,
+      quanHuyenNguoiNhan: district,
+      xaPhuongNguoiNhan: ward,
+      phiShip: ship,
+      ghiChu: note,
+      createdBy: userId,
+    };
+    try {
+      await axios.put(
+        `http://localhost:8080/api/orders/update-info-delivery`,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      await getOrderItemsById();
+      handleOpenAlertVariant("Cập nhật thông tin đơn hàng thành công ", Notistack.SUCCESS);
+      handleCloseDialogUpdateRecipientOrder();
+      setIsLoading(false);
+    } catch (error) {
+      handleOpenAlertVariant(error.response.data.message, "warning");
+      setIsLoading(false);
+    }
+  };
+
   const rollBackStatus = async (note) => {
     setIsLoading(true);
     const data = {
@@ -131,7 +166,6 @@ const OrderDetail = (props) => {
       setIsLoading(false);
     } catch (error) {
       handleOpenAlertVariant(error.response.data.message, "warning");
-      handleCloseOpenRollback();
       setIsLoading(false);
     }
   };
@@ -371,39 +405,7 @@ const OrderDetail = (props) => {
             (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
           );
         setPaymentHistorys(sortPayments);
-        // const sortOrderItems = data.paymentMethods && data.paymentMethods.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-        // const sortOrderItems =
-        //   data &&
-        //   data.orderItems.flatMap((orderItem) => {
-        //     const imeisWithRefund = orderItem.imeisDaBan.filter(
-        //       (imei) => imei.trangThai === StatusImei.REFUND
-        //     );
-        //     if (imeisWithRefund.length > 0) {
-        //       const imeisWithoutRefund = orderItem.imeisDaBan.filter(
-        //         (imei) => imei.trangThai !== StatusImei.REFUND
-        //       );
-        //       const orderItemWithoutRefundImei = {
-        //         ...orderItem,
-        //         imeisDaBan: imeisWithoutRefund,
-        //         soLuong: imeisWithoutRefund.length,
-        //       };
-        //       const orderItemsWithRefundImei = imeisWithRefund.map((imei) => ({
-        //         ...orderItem,
-        //         imeisDaBan: [imei],
-        //         trangThai: StatusImei.REFUND,
-        //         soLuong: 1,
-        //       }));
-        //       return [orderItemWithoutRefundImei, ...orderItemsWithRefundImei];
-        //     }
-        //     return orderItem;
-        //   });
-        //
-        // console.log(sortOrderItems.filter((item) => item.soLuong > 0));
-
-        // setOrderItems(sortOrderItems.filter((item) => item.soLuong > 0));
         setOrderItems(data.orderItems);
-        // setOrderItemRefund(sortOrderItemRefund);
 
         const address =
           data &&
@@ -456,7 +458,7 @@ const OrderDetail = (props) => {
       });
   };
 
-    const orderImeis = orderItems.map((order) => {
+  const orderImeis = orderItems.map((order) => {
     return order.imeisDaBan.map((item) => {
       return {
         ...order,
@@ -651,8 +653,8 @@ const OrderDetail = (props) => {
               </>
             ) : item.loaiThaoTac == 1 ? (
               <>
-                <FaBusinessTime
-                  color="#ffd500"
+                <FaMoneyCheckDollar
+                  color="#09a129"
                   size={"40px"}
                   style={{ marginBottom: "5px" }}
                 />
@@ -707,7 +709,7 @@ const OrderDetail = (props) => {
               : item.loaiThaoTac == 8 ? (
                 <>
                   <FaArrowRotateLeft
-                    color="#ffd500"
+                    color="#e5383b"
                     size={"40px"}
                     style={{ marginBottom: "5px" }}
                   />
@@ -715,12 +717,17 @@ const OrderDetail = (props) => {
                 </>
               ) : item.loaiThaoTac == 9 ? (
                 <>
-                  <FaMoneyCheckDollar
-                    color="#ffd500"
-                    size={"40px"}
-                    style={{ marginBottom: "5px" }}
-                  />
-                  <span className="ms-4">{item.thaoTac}</span>
+                                <div className="d-flex"                       style={{ marginBottom: "5px" }}>
+                  <div className="" style={{ backgroundColor: "#ffd500", width: "40px", height: "35px", borderRadius: "5px", position: "relative" }}>
+                                    <div style={{position: "absolute", left: "9px", top: "4px"}}>
+                    <FaPencilAlt
+                      color="#ffffff"
+                      size={"22px"}
+                    />
+                                    </div>
+                  </div>
+                    <span style={{marginTop: "5px"}} className="ms-4">{item.thaoTac}</span>
+                                </div>
                 </>
               )
                 : (
@@ -1080,7 +1087,7 @@ const OrderDetail = (props) => {
                   item.loaiThaoTac == 0
                     ? FaRegFileAlt
                     : item.loaiThaoTac == 1
-                      ? FaBusinessTime
+                      ? FaMoneyCheckDollar
                       : item.loaiThaoTac == 3
                         ? FaTruck
                         : item.loaiThaoTac == 4
@@ -1094,7 +1101,7 @@ const OrderDetail = (props) => {
                                 : item.loaiThaoTac == 8
                                   ? FaArrowRotateLeft
                                   : item.loaiThaoTac == 9
-                                    ? FaMoneyCheckDollar
+                                    ? FaPencilAlt
                                     : ""
                 }
                 title={
@@ -1112,7 +1119,7 @@ const OrderDetail = (props) => {
                   item.loaiThaoTac == 0
                     ? "#09a129"
                     : item.loaiThaoTac == 1
-                      ? "#ffd500"
+                      ? "#09a129"
                       : item.loaiThaoTac == 3
                         ? "#09a129"
                         : item.loaiThaoTac == 4
@@ -1124,7 +1131,7 @@ const OrderDetail = (props) => {
                               : item.loaiThaoTac == 7
                                 ? "#e5383b"
                                 : item.loaiThaoTac == 8
-                                  ? "#ffd500"
+                                  ? "#e5383b"
                                   : item.loaiThaoTac == 9
                                     ? "#ffd500"
                                     : ""
@@ -1225,8 +1232,7 @@ const OrderDetail = (props) => {
             ""
           )}
           {(order.trangThai === OrderStatusString.CONFIRMED ||
-            order.trangThai === OrderStatusString.DELIVERING ||
-            order.trangThai === OrderStatusString.SUCCESS_DELIVERY) &&
+            order.trangThai === OrderStatusString.DELIVERING) &&
             order.loaiHoaDon === OrderTypeString.DELIVERY ? (
             <div>
               <Button
@@ -1280,7 +1286,7 @@ const OrderDetail = (props) => {
           )}
         </div>
         <div className="d-flex">
-          <Print data={order} imeis={orderImeis}/>
+          <Print data={order} imeis={orderImeis} />
           {order.loaiHoaDon === OrderTypeString.DELIVERY && (
             <PrintDelivery data={order} />
           )}
@@ -1431,7 +1437,7 @@ const OrderDetail = (props) => {
                     className="rounded-pill badge-warning text-center"
                     style={{
                       height: "35px",
-                      width: "158px",
+                      width: "125px",
                       padding: "5px",
                     }}
                   >
@@ -1439,7 +1445,7 @@ const OrderDetail = (props) => {
                       className="text-dark p-2"
                       style={{ fontSize: "14px" }}
                     >
-                      Đang chờ xác nhận
+                      Chờ xác nhận
                     </span>
                   </div>
                 ) : order.trangThai == OrderStatusString.CONFIRMED ? (
@@ -2470,6 +2476,7 @@ const OrderDetail = (props) => {
           district={customerDistrict}
           ward={customerWard}
           note={customerNote}
+          update={updateInfoOrderDelivery}
         />
 
         <MultiplePaymentMethodsDelivery

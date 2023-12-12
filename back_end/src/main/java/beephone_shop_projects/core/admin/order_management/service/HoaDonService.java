@@ -31,4 +31,6 @@ public interface HoaDonService extends GenericService<OrderResponse, OrderReques
 
   OrderResponse rollBackStatusOrder(OrderRequest req) throws Exception;
 
+  OrderResponse updateInfoOrderDelivery(OrderRequest req) throws Exception;
+
 }

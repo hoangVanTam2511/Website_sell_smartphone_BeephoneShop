@@ -2,6 +2,7 @@ package beephone_shop_projects.core.admin.order_management.model.response;
 
 import beephone_shop_projects.core.admin.order_management.model.request.AccountRequest;
 import beephone_shop_projects.core.admin.order_management.model.request.VoucherRequest;
+import beephone_shop_projects.entity.Account;
 import beephone_shop_projects.infrastructure.constant.OrderStatus;
 import beephone_shop_projects.infrastructure.constant.OrderType;
 import lombok.AllArgsConstructor;
@@ -75,6 +76,8 @@ public class OrderResponse {
   private String xaPhuongNguoiNhan;
 
   private AccountResponse account;
+
+  private AccountResponse accountEmployee;
 
   private CartResponse cart;
 
