@@ -119,12 +119,7 @@ const OrderDetail = (props) => {
     try {
       await axios.put(
         `http://localhost:8080/api/orders/roll-back-status`,
-        data,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+        data
       );
       await getOrderItemsById();
       handleOpenAlertVariant("Hoàn tác thành công ", Notistack.SUCCESS);
@@ -147,11 +142,10 @@ const OrderDetail = (props) => {
       imei: imei,
     };
     try {
-      request('PUT',`/api/carts/order/scanner`, data, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      request('PUT',`/api/carts/order/scanner`, data
+      ).then((res) =>{
+
+      })
       await getOrderItemsById();
       handleCloseOpenScanner();
       handleOpenAlertVariant("Thêm sản phẩm thành công ", Notistack.SUCCESS);
@@ -276,11 +270,7 @@ const OrderDetail = (props) => {
       imeis: cartItems.imeis,
     };
     try {
-      request('PUT',`/api/carts/order`, data, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      request('PUT',`/api/carts/order`, data);
       await getOrderItemsById();
       handleCloseOpenModalImei();
       handleCloseOpenProducts();
@@ -333,11 +323,11 @@ const OrderDetail = (props) => {
       },
     };
     try {
-      request('PUT',`/api/carts/order/amount`, request, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      request('PUT',`/api/carts/order/amount`, request).then(
+        (res) => {
+
+        }
+      )
       await getOrderItemsById();
       handleCloseOpenModalUpdateImei();
       handleOpenAlertVariant(
@@ -491,11 +481,11 @@ const OrderDetail = (props) => {
       tongTienString: totalString,
     };
     try {
-      request('PUT',`/api/carts/order/refund`, request, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      request('PUT',`/api/carts/order/refund`, request).then(
+        (res) => {
+
+        }
+      )
       await getOrderItemsById();
       handleCloseOpenModalRefund();
       handleOpenAlertVariant(
@@ -532,14 +522,7 @@ const OrderDetail = (props) => {
   const updateStatusOrderDelivery = async (orderRequest) => {
     setIsLoading(true);
     try {
-      request('PUT',`/api/orders/${id}`, orderRequest, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          params: {
-            isUpdateStatusOrderDelivery: true,
-          },
-        })
+      request('PUT',`/api/orders/${id}?isUpdateStatusOrderDelivery=true`, orderRequest)
         .then((response) => {
           getOrderItemsById();
           var test = {
@@ -570,11 +553,7 @@ const OrderDetail = (props) => {
       createdByPayment: userId,
     };
     try {
-      request('PUT',`/api/vnpay/payment/delivery`, orderRequest, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        })
+      request('PUT',`/api/vnpay/payment/delivery`, orderRequest)
         .then((response) => {
           const order = response.data.data;
           setOrder(order);

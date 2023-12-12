@@ -24,6 +24,7 @@ import avatars5 from "../../../../assets/images/avatars/avtar_4.png";
 import avatars6 from "../../../../assets/images/avatars/avtar_5.png";
 // logo
 import Logo from "../../components/logo";
+import { getUser } from '../../../../store/user/userSlice'
 
 // Redux Selector / Action
 import { useSelector } from "react-redux";
@@ -34,7 +35,7 @@ import * as SettingSelector from "../../../../store/setting/selectors";
 const Header = memo((props) => {
   const navbarHide = useSelector(SettingSelector.navbar_show); // array
   const headerNavbar = useSelector(SettingSelector.header_navbar);
-  const user = useSelector(state => state.user.user)
+  const user = getUser()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -164,7 +165,7 @@ const Header = memo((props) => {
                   />
                   <div className="caption ms-3 d-none d-md-block ">
                     <h6 className="mb-0 caption-title">{user === undefined || user.ma === "" ? '' : user.hoVaTen}</h6>
-                    <p className="mb-0 caption-sub-title">{user === undefined || user.ma === "" ? '' : user.idRole}</p>
+                    <p className="mb-0 caption-sub-title">{user === undefined || user.ma === "" ? '' : user.tenChucVu}</p>
                   </div>
                 </Dropdown.Toggle>
                 <Dropdown.Menu

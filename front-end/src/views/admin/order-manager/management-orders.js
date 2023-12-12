@@ -35,7 +35,7 @@ import moment from "moment";
 import { over } from "stompjs";
 import SockJS from "sockjs-client";
 import { FaPencilAlt } from "react-icons/fa";
-import { request } from '../../../store/helpers/axios_helper'
+import { request, requestParam } from '../../../store/helpers/axios_helper'
 
 const ManagementOrders = () => {
   const navigate = useNavigate();
@@ -77,14 +77,12 @@ const ManagementOrders = () => {
   };
 
   const findOrdersByMultipleCriteriaWithPagination = (page) => {
-    request('GET',`/api/orders`, {
-        params: {
+    requestParam('GET',`/api/orders`, {
           currentPage: page,
           keyword: keyword,
           fromDate: fromDate,
           toDate: toDate,
           isPending: false,
-        },
       })
       .then((response) => {
         setOrders(response.data.data);
