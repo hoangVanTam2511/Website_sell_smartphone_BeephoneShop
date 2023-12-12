@@ -10,6 +10,7 @@ import beephone_shop_projects.core.admin.order_management.model.request.CartRequ
 import beephone_shop_projects.core.admin.order_management.model.request.OrderHistoryRequest;
 import beephone_shop_projects.core.admin.order_management.model.request.OrderRequest;
 import beephone_shop_projects.core.admin.order_management.model.request.SearchFilterOrderDto;
+import beephone_shop_projects.core.admin.order_management.model.response.AccountResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.CartItemResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.OrderHistoryResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.OrderItemResponse;
@@ -182,7 +183,7 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
       searchFilter.setCurrentPage(1);
     }
     if (searchFilter.getPageSize() == null) {
-      searchFilter.setPageSize(5);
+      searchFilter.setPageSize(10);
     }
     Pageable pageable = PageRequest.of(searchFilter.getCurrentPage() - 1, searchFilter.getPageSize(), Sort.by("createdAt").descending());
     Page<HoaDon> orders = hoaDonRepository.findOrdersByMultipleCriteriaWithPagination(pageable, searchFilter);
@@ -348,9 +349,17 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
       orderCurrent.setHoVaTen(req.getHoVaTen());
       orderCurrent.setEmail(req.getEmail());
       orderCurrent.setSoDienThoai(req.getSoDienThoai());
-
       String uri = barcodeGenerator.generateBarcodeImageBase64Url(orderCurrent.getMa(), BarcodeFormat.QR_CODE);
       orderCurrent.setMaQrCode(uri);
+
+      if (req.getEmployee().getId() != null) {
+        AccountResponse accountEmp = new AccountResponse();
+        accountEmp.setId(req.getEmployee().getId());
+        orderCurrent.setAccountEmployee(accountEmp);
+      } else {
+        throw new RestApiException("Account nhân viên không tồn tại!");
+      }
+
 
       if (req.getLoaiHoaDon().equals(OrderType.AT_COUNTER)) {
         orderCurrent.setTenNguoiNhan(null);
@@ -590,10 +599,37 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
     LichSuHoaDon lichSuHoaDon = new LichSuHoaDon();
     lichSuHoaDon.setCreatedBy(req.getCreatedBy());
     lichSuHoaDon.setCreatedAt(new Date());
-    lichSuHoaDon.setMoTa(req.getNote());
+    lichSuHoaDon.setMoTa("Hoàn tác trạng thái đơn hàng. " + req.getNote());
     lichSuHoaDon.setHoaDon(updatedOrderCurrent);
     lichSuHoaDon.setLoaiThaoTac(8);
     lichSuHoaDon.setThaoTac("Hoàn Tác");
+    lichSuHoaDonRepository.save(lichSuHoaDon);
+    return orderConverter.convertEntityToResponse(updatedOrderCurrent);
+  }
+
+  @Override
+  public OrderResponse updateInfoOrderDelivery(OrderRequest req) throws Exception {
+    OrderResponse orderCurrent = getOrderDetailsById(req.getId());
+    if (orderCurrent == null) {
+      throw new RestApiException("Đơn hàng không tồn tại!");
+    }
+
+    orderCurrent.setTenNguoiNhan(req.getTenNguoiNhan());
+    orderCurrent.setSoDienThoaiNguoiNhan(req.getSoDienThoaiNguoiNhan());
+    orderCurrent.setDiaChiNguoiNhan(req.getDiaChiNguoiNhan());
+    orderCurrent.setPhiShip(req.getPhiShip());
+    orderCurrent.setTinhThanhPhoNguoiNhan(req.getTinhThanhPhoNguoiNhan());
+    orderCurrent.setQuanHuyenNguoiNhan(req.getQuanHuyenNguoiNhan());
+    orderCurrent.setXaPhuongNguoiNhan(req.getXaPhuongNguoiNhan());
+
+    HoaDon updatedOrderCurrent = hoaDonRepository.save(orderConverter.convertResponseToEntity(orderCurrent));
+    LichSuHoaDon lichSuHoaDon = new LichSuHoaDon();
+    lichSuHoaDon.setCreatedBy(req.getCreatedBy());
+    lichSuHoaDon.setCreatedAt(new Date());
+    lichSuHoaDon.setMoTa("Cập nhật thông tin đơn hàng. " + req.getGhiChu());
+    lichSuHoaDon.setHoaDon(updatedOrderCurrent);
+    lichSuHoaDon.setLoaiThaoTac(9);
+    lichSuHoaDon.setThaoTac("Cập Nhật Đơn Hàng");
     lichSuHoaDonRepository.save(lichSuHoaDon);
     return orderConverter.convertEntityToResponse(updatedOrderCurrent);
   }

@@ -103,13 +103,7 @@ const ManagementOrders = () => {
     if (stompClient === null) {
       connect();
     }
-    setIsLoading(true);
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      findOrdersByMultipleCriteriaWithPagination(currentPage);
-    } else {
-      findOrdersByMultipleCriteriaWithPagination(currentPage);
-    }
+    findOrdersByMultipleCriteriaWithPagination(currentPage);
   }, [fromDate, toDate, keyword, currentPage, changeOfRealtime]);
 
   // const isMounted = useRef(false);
@@ -232,13 +226,13 @@ const ManagementOrders = () => {
       width: "10%",
       render: (text, order) =>
         order.account === null &&
-        order.loaiHoaDon === OrderTypeString.AT_COUNTER
+          order.loaiHoaDon === OrderTypeString.AT_COUNTER
           ? order.hoVaTen
           : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
             order.account &&
             order.account.hoVaTen
-          ? order.account.hoVaTen
-          : order.tenNguoiNhan,
+            ? order.account.hoVaTen
+            : order.tenNguoiNhan,
     },
     {
       title: "Số Điện Thoại",
@@ -247,13 +241,13 @@ const ManagementOrders = () => {
       render: (text, order) => (
         <span style={{ fontWeight: "400" }}>
           {order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
-          order.account === null
+            order.account === null
             ? order.soDienThoai
             : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
               order.account &&
               order.account.soDienThoai
-            ? order.account.soDienThoai
-            : order.soDienThoaiNguoiNhan}
+              ? order.account.soDienThoai
+              : order.soDienThoaiNguoiNhan}
         </span>
       ),
     },
@@ -308,7 +302,7 @@ const ManagementOrders = () => {
               className="text-dark"
               style={{ fontSize: "14px", padding: "13px" }}
             >
-              Đang chờ xác nhận
+              Chờ xác nhận
             </span>
           </div>
         ) : status == OrderStatusString.CONFIRMED ? (
@@ -431,7 +425,7 @@ const ManagementOrders = () => {
       render: (text, record) => (
         <div className="button-container">
           <Link className="" to={`/dashboard/order-detail/${record.ma}`}>
-            <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
+            <Tooltip title="Chi Tiết" TransitionComponent={Zoom}>
               <IconButton size="">
                 <FaPencilAlt color="#2f80ed" />
               </IconButton>
