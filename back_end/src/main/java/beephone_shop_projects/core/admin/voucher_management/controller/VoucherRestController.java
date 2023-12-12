@@ -4,6 +4,7 @@ import beephone_shop_projects.core.admin.voucher_management.model.request.Change
 import beephone_shop_projects.core.admin.voucher_management.model.request.CreateVoucherRequest;
 import beephone_shop_projects.core.admin.voucher_management.model.request.FindVoucherRequest;
 import beephone_shop_projects.core.admin.voucher_management.model.request.UpdateVoucherRequest;
+import beephone_shop_projects.core.admin.voucher_management.repository.VoucherRepository;
 import beephone_shop_projects.core.admin.voucher_management.service.VoucherService;
 import beephone_shop_projects.core.common.base.ResponseObject;
 import beephone_shop_projects.core.common.base.ResponsePage;
@@ -31,6 +32,9 @@ public class VoucherRestController {
 
     @Autowired
     private VoucherService voucherService;
+
+    @Autowired
+    private VoucherRepository voucherRepository;
 
     @Autowired
     private EmailUtils emailUtils;
@@ -73,6 +77,11 @@ public class VoucherRestController {
     @GetMapping("/vouchers")
     public ResponsePage hienThiVoucher(@ModelAttribute FindVoucherRequest request) {
         return new ResponsePage(voucherService.getAll(request));
+    }
+
+    @GetMapping("/vouchers1")
+    public ResponseObject hienThiVoucher1() {
+        return new ResponseObject(voucherRepository.getSttVoucher().size());
     }
 
     @GetMapping("/findVoucher")

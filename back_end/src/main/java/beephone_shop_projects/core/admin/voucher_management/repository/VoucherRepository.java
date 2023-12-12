@@ -20,6 +20,9 @@ public interface VoucherRepository extends IVoucherRepository, CustomVoucherRepo
     @Query("SELECT V FROM Voucher V WHERE V.trangThai  = 1 AND  V.soLuong > 0")
     List<Voucher> getAllVoucherList();
 
+    @Query(value = "SELECT v FROM Voucher v")
+    List<Voucher> getSttVoucher();
+
     @Query(value = """
              SELECT v.id, v.ma, v.ten, v.so_luong as soLuong,
                  v.gia_tri_toi_da as giaTriToiDa, 

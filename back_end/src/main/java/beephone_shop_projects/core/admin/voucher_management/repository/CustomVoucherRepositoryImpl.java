@@ -84,12 +84,12 @@ public class CustomVoucherRepositoryImpl implements CustomVoucherRepository {
             Expression<Date> expression3 = criteriaBuilder.function("DATE", Date.class, countRoot.get("ngayKetThuc"));
             Expression<Date> expression = criteriaBuilder.function("DATE", Date.class, root.get("ngayBatDau"));
             Expression<Date> expression1 = criteriaBuilder.function("DATE", Date.class, root.get("ngayKetThuc"));
-//            if (request.getNgayBatDau() != null && request.getNgayKetThuc() != null) {
-//                predicates.add(criteriaBuilder.greaterThanOrEqualTo(expression, request.getNgayBatDau()));
-//                predicates.add(criteriaBuilder.lessThanOrEqualTo(expression1, request.getNgayKetThuc()));
-//                countPredicates.add(criteriaBuilder.greaterThanOrEqualTo(expression2, request.getNgayBatDau()));
-//                countPredicates.add(criteriaBuilder.lessThanOrEqualTo(expression3, request.getNgayKetThuc()));
-//            } else
+            if (request.getNgayBatDau() != null && request.getNgayKetThuc() != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(expression, request.getNgayBatDau()));
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(expression1, request.getNgayKetThuc()));
+                countPredicates.add(criteriaBuilder.greaterThanOrEqualTo(expression2, request.getNgayBatDau()));
+                countPredicates.add(criteriaBuilder.lessThanOrEqualTo(expression3, request.getNgayKetThuc()));
+            } else
                 if (request.getNgayBatDau() != null) {
                 predicates.add(criteriaBuilder.greaterThanOrEqualTo(expression, request.getNgayBatDau()));
                 countPredicates.add(criteriaBuilder.greaterThanOrEqualTo(expression2, request.getNgayBatDau()));

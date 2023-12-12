@@ -33,7 +33,7 @@ const CreateCameraSau = ({ open, close, getAll, cameraRear }) => {
   const [cameraType, setCameraType] = React.useState(
     TypeCameraNumber.STANDARD_CAMERA
   );
-  const [doPhanGiai, setDoPhanGiai] = React.useState("");
+  const [doPhanGiai, setDoPhanGiai] = React.useState();
   const [status, setStatus] = React.useState(StatusCommonProductsNumber.ACTIVE);
   const { handleOpenAlertVariant } = useCustomSnackbar();
 
@@ -42,7 +42,8 @@ const CreateCameraSau = ({ open, close, getAll, cameraRear }) => {
   };
 
   const handleChangeDoPhanGiai = (event, value) => {
-    setDoPhanGiai(value);
+    const cleanedValue = value.replace(/\D/g, "");
+    setDoPhanGiai(cleanedValue);
   };
 
   const handleChangeCameraType = (event) => {
@@ -54,6 +55,21 @@ const CreateCameraSau = ({ open, close, getAll, cameraRear }) => {
   const validationAll = () => {
     const msg = {};
 
+    let isDuplicate = false;
+
+    cameraRear.forEach((camera) => {
+      if (camera.doPhanGiai === doPhanGiai) {
+        isDuplicate = true;
+      }
+    });
+
+    if (isDuplicate) {
+      msg.doPhanGiai = "Camera đã tồn tại";
+    }
+
+    if (isNaN(doPhanGiai) || doPhanGiai < 1 || doPhanGiai > 1000) {
+      msg.doPhanGiai = "Độ phân giải phải là số và từ 1 đến 1000 Megapixels";
+    }
     if (!doPhanGiai.trim("")) {
       msg.doPhanGiai = "Độ phân giải không được trống.";
     }
@@ -96,7 +112,7 @@ const CreateCameraSau = ({ open, close, getAll, cameraRear }) => {
   };
 
   const uniqueDoPhanGiai = cameraRear
-    .map((option) => option.doPhanGiai)
+    .map((option) => option.doPhanGiai.toString())
     .filter((value, index, self) => {
       return self.indexOf(value) === index;
     });

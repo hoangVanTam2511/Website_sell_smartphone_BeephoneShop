@@ -109,8 +109,6 @@ const ManagementProductItems = (
       .get(`http://localhost:8080/api/products/product-items/${id}`)
       .then((response) => {
         setProducts(response.data.data);
-
-        console.log(data);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -775,113 +773,6 @@ const ManagementProductItems = (
         productName={productName}
         view={false}
       />
-      {/* Cập nhật sản phẩm */}
-      <Dialog
-        open={open1}
-        TransitionComponent={Transition}
-        keepMounted
-        onClose={handleClose1}
-        maxWidth="md"
-        maxHeight="md"
-        sx={{
-          marginBottom: "170px",
-        }}
-      >
-        <DialogContent>
-          <div className="mt-4" style={{ width: "700px" }}>
-            <div className="container">
-              <div className="text-center">
-                <span
-                  className=""
-                  style={{ fontWeight: "550", fontSize: "29px" }}
-                >
-                  SỬA PHIÊN BẢN SẢN PHẨM
-                </span>
-              </div>
-              <div className="mx-auto mt-3 pt-2">
-                <div style={{ display: "flex" }}>
-                  <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">RAM</InputLabel>
-                    <Select
-                      className="custom"
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      value={status}
-                      label="Trạng Thái"
-                      onChange={handleChangeStatus}
-                    >
-                      <MenuItem value={StatusCommonProducts.ACTIVE}>
-                        Hoạt Động
-                      </MenuItem>
-                      <MenuItem value={StatusCommonProducts.IN_ACTIVE}>
-                        Ngừng Hoạt Động
-                      </MenuItem>
-                    </Select>
-                  </FormControl>
-                </div>
-                <div style={{ display: "flex" }}>
-                  <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">ROM</InputLabel>
-                    <Select
-                      className="custom"
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      value={status}
-                      label="Trạng Thái"
-                      onChange={handleChangeStatus}
-                    >
-                      <MenuItem value={StatusCommonProducts.ACTIVE}>
-                        Hoạt Động
-                      </MenuItem>
-                      <MenuItem value={StatusCommonProducts.IN_ACTIVE}>
-                        Ngừng Hoạt Động
-                      </MenuItem>
-                    </Select>
-                  </FormControl>
-                </div>
-                <div style={{ display: "flex" }}>
-                  <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">
-                      MÀU SẮC
-                    </InputLabel>
-                    <Select
-                      className="custom"
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      value={status}
-                      label="Trạng Thái"
-                      onChange={handleChangeStatus}
-                    >
-                      <MenuItem value={StatusCommonProducts.ACTIVE}>
-                        Hoạt Động
-                      </MenuItem>
-                      <MenuItem value={StatusCommonProducts.IN_ACTIVE}>
-                        Ngừng Hoạt Động
-                      </MenuItem>
-                    </Select>
-                  </FormControl>
-                </div>
-                <div className="mt-4 pt-1 d-flex justify-content-end">
-                  <Button
-                    onClick={() => handleSubmit()}
-                    className="rounded-2 button-mui"
-                    type="primary"
-                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
-                  >
-                    <span
-                      className=""
-                      style={{ marginBottom: "2px", fontWeight: "500" }}
-                    >
-                      Xác Nhận
-                    </span>
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </DialogContent>
-        <div className="mt-3"></div>
-      </Dialog>
     </>
   );
 };

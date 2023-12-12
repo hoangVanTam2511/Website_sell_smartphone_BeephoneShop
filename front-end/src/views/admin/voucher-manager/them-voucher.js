@@ -122,16 +122,6 @@ const AddVoucher = () => {
     setDieuKienApDungConvert(numericValue);
   };
 
-  // const handleChangeGiaTriToiDa = (event) => {
-  //   const inputValue = event.target.value;
-  //   const numericValue = parseFloat(inputValue.replace(/[^0-9.-]+/g, ""));
-  //   const formattedValue = inputValue
-  //     .replace(/[^0-9]+/g, "")
-  //     .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  //   setValueToiDa(formattedValue);
-  //   setGiaTriToiDa(numericValue);
-  // };
-
   const redirectToHienThiVoucher = () => {
     navigate("/dashboard/voucher");
   };
@@ -176,10 +166,8 @@ const AddVoucher = () => {
       .post(apiURLVoucher + "/addVoucher", obj)
       .then((response) => {
         setTimeout(() => {
-          // setSendMail(response.data.data);
           setIsLoading(true);
           handleUpdateVoucher(response.data.data.id);
-          // setMaSauAdd(response.data.data.ma);
           handleOpenAlertVariant("Thêm thành công!!!", Notistack.SUCCESS);
           sendMailVoucher(response.data.data.ma);
         }, 1000);
@@ -187,11 +175,6 @@ const AddVoucher = () => {
       .catch((error) => {
         handleOpenAlertVariant(error.response.data.message, Notistack.ERROR);
       });
-    // if (sendMail == null) {
-    //   console.log("Send Mail Failed");
-    // } else {
-    //   sendMailVoucher(maSauAdd);
-    // }
   };
 
   const validationAll = () => {
@@ -199,6 +182,10 @@ const AddVoucher = () => {
 
     if (!ten.trim("")) {
       msg.ten = "Tên không được trống.";
+    }
+
+    if (!(ma.trim().length === 0 || (ma.length >= 10 && ma.length <= 15))) {
+      msg.ma = "Mã giảm giá phải từ 10 đến 15 ký tự.";
     }
 
     if (soLuong == null || soLuong === "") {
@@ -221,8 +208,9 @@ const AddVoucher = () => {
     const numericValue2 = parseFloat(value?.replace(/[^0-9.-]+/g, ""));
     if (value == null || value === "") {
       msg.value = "Giá trị voucher không được trống.";
-    } else if (selectDiscount === TypeDiscountString.PERCENT && value <= 0) {
-      msg.value = "Giá trị voucher trong khoảng 1% - 100%.";
+    }
+    if (numericValue2 > numericValue1) {
+      msg.value = "Giá trị voucher không được lớn hơn điều kiện áp dụng.";
     }
 
     if (

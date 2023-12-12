@@ -107,8 +107,8 @@ public class VoucherServiceImpl implements VoucherService {
         String codeVoucher = request.getMa().trim();
         if (request.getMa().isBlank()) {
             codeVoucher = "BEE" + generateRandomCode();
-        } else if (request.getMa().length() < 10) {
-            throw new RestApiException("Mã voucher phải đủ 10 ký tự!!!");
+        } else if (!(request.getMa().isBlank() || (request.getMa().length() >=10 && request.getMa().length() <= 15))) {
+            throw new RestApiException("Mã voucher phải đủ 10 ký tự và nhỏ hơn 15 ký từ!!!");
         }
         Voucher voucher = Voucher.builder()
                 .ma(codeVoucher)

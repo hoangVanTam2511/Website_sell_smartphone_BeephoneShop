@@ -142,8 +142,10 @@ const HienThiVoucher = () => {
         },
       })
       .then((response) => {
+        let stt = response.data.data;
         setListVoucher(response.data.data);
         setTotalPages(response.data.totalPages);
+        console.log(stt.length);
       })
       .catch((error) => {
         handleOpenAlertVariant(
