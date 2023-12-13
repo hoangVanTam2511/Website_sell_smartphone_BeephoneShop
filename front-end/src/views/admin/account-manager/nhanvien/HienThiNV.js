@@ -460,19 +460,19 @@ const HienThiNV = () => {
                     // onClick={handleCreateNewOrderPending}
                     className="rounded-2 button-mui"
                     type="primary"
-                    style={{ height: "40px", width: "auto", fontSize: "15px", marginRight: '15px' }}
+                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
                   >
                      <ExcelExportHelper data={listNV} />
                   </Button>
 
-                  <Button
+                  {/* <Button
                     // onClick={handleCreateNewOrderPending}
                     className="rounded-2 button-mui"
                     type="primary"
                     style={{ height: "40px", width: "auto", fontSize: "15px" }}
                   >
                     <NhapTuFile />
-                  </Button>
+                  </Button> */}
                 </div>
               </Card.Header>
               <Card.Body>
