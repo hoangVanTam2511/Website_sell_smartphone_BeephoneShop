@@ -497,7 +497,7 @@ const HienThiKhuyenMai = () => {
         return (
           <>
             <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
-              <Link to={`/sua-khuyen-mai/${record.id}`}>
+              <Link to={`/dashboard/update-discount/${record.id}`}>
                 <IconButton size="">
                   <BorderColorOutlinedIcon color="primary" />
                 </IconButton>
@@ -797,7 +797,7 @@ const HienThiKhuyenMai = () => {
               </LocalizationProvider>
             </div>
             <div className="mt-2">
-              <Link to="/them-khuyen-mai">
+              <Link to="/dashboard/create-discount">
                 <Button
                   className="rounded-2 button-mui"
                   type="primary"
