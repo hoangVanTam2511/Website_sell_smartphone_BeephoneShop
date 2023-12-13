@@ -88,4 +88,14 @@ public class CartDetailServiceImpl {
             throw new RuntimeException("Đã có lỗi khi chạy chương trình");
         }
     }
+
+    public String deleteAllCartByIDCustomer(String idCustomer){
+        GioHang gioHang = cartClientRepository.getGioHangByIDKhachHang(idCustomer);
+        if (gioHang == null) {
+            throw new RuntimeException("Không tìm thấy giỏ hàng");
+        }
+
+        cartDetailClientRepository.deleteGioHangChiTietByIdGioHang(gioHang.getId());
+        return "You have deleted all cart detal. Congrulation";
+    }
 }

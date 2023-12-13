@@ -1,9 +1,6 @@
 package beephone_shop_projects.core.admin.account_management.controller;
 
-import beephone_shop_projects.core.admin.account_management.model.request.AddKhachHangRequest;
-import beephone_shop_projects.core.admin.account_management.model.request.CreateKhachHangRequest;
-import beephone_shop_projects.core.admin.account_management.model.request.DiaChiKhachHangRequest;
-import beephone_shop_projects.core.admin.account_management.model.request.FindAccountRequest;
+import beephone_shop_projects.core.admin.account_management.model.request.*;
 import beephone_shop_projects.core.admin.account_management.model.response.AccountResponse;
 
 import beephone_shop_projects.core.admin.account_management.service.impl.DiaChiServiceImpl;
@@ -13,16 +10,23 @@ import beephone_shop_projects.core.common.base.ResponseObject;
 import beephone_shop_projects.core.common.base.ResponsePage;
 import beephone_shop_projects.entity.Account;
 import beephone_shop_projects.entity.DiaChi;
+import beephone_shop_projects.utils.ReadFileExcelUtils;
 import jakarta.validation.Valid;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.repository.query.Param;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.*;
 
 @RestController
@@ -31,6 +35,7 @@ import java.util.*;
 public class KhachHangRestcontroller {
     @Autowired
     private KhachHangServiceImpl accService;
+
     @Autowired
     private DiaChiServiceImpl diaChiService;
 
@@ -50,10 +55,14 @@ public class KhachHangRestcontroller {
         return new ResponsePage(accService.search(opTen, pageNo));
     }
 
-
     @PostMapping("add")
     public ResponseObject<Account> add(@RequestBody AddKhachHangRequest request) {
         return new ResponseObject(accService.addKH(request));
+    }
+
+    @PostMapping("/add-with-excel")
+    public ResponseObject<Account> add(@RequestBody AddKhachHangExcelRequest request) {
+        return new ResponseObject(accService.addKHByImportExcel(request));
     }
 
     @PutMapping("update/{id}")
@@ -130,6 +139,80 @@ public class KhachHangRestcontroller {
     @GetMapping("hien-thi-theo/{id}")
     public Account getOne(@PathVariable("id") UUID id) {
         return accService.getOne(id);
+    }
+
+    @PostMapping("/get-excel-template")
+    public ResponseEntity<byte[]> createExcelTemplate() throws IOException {
+        String templateFilePath = "static/assets/excel-template/import-customer.xlsx";
+        Workbook templateWorkbook = new ReadFileExcelUtils().readExcelTemplate(templateFilePath);
+        Workbook newWorkbook = new XSSFWorkbook();
+
+        for (int i = 0; i < templateWorkbook.getNumberOfSheets(); i++) {
+            Sheet templateSheet = templateWorkbook.getSheetAt(i);
+            Sheet newSheet = newWorkbook.createSheet(templateSheet.getSheetName());
+            newSheet.addMergedRegion(CellRangeAddress.valueOf("B1:C3"));
+
+            for (Row templateRow : templateSheet) {
+                Row newRow = newSheet.createRow(templateRow.getRowNum());
+                newRow.setHeight(templateRow.getHeight());
+
+                // Đọc độ dài và độ rộng của các cột từ tệp mẫu
+                for (int j = 0; j < templateRow.getLastCellNum(); j++) {
+                    Cell templateCell = templateRow.getCell(j);
+                    if (templateCell != null) {
+                        // Lấy độ dài cột từ tệp mẫu
+                        int columnWidth = templateSheet.getColumnWidth(j);
+                        // Sao chép độ rộng cột cho tệp mới
+                        newSheet.setColumnWidth(j, columnWidth);
+                    }
+                }
+
+                for (int j = 0; j < templateRow.getLastCellNum(); j++) {
+                    Cell templateCell = templateRow.getCell(j);
+                    if (templateCell != null) {
+                        Cell newCell = newRow.createCell(j);
+                        CellStyle newCellStyle = newWorkbook.createCellStyle();
+                        newCellStyle.cloneStyleFrom(templateCell.getCellStyle());
+                        newCell.setCellStyle(newCellStyle);
+
+                        switch (templateCell.getCellType()) {
+                            case STRING:
+                                newCell.setCellValue(templateCell.getStringCellValue());
+                                break;
+                            case NUMERIC:
+                                newCell.setCellValue(templateCell.getNumericCellValue());
+                                break;
+                            default:
+                                newCell.setCellValue(templateCell.getStringCellValue());
+                        }
+                    }
+                }
+            }
+        }
+
+        // Bước 4: Tạo tệp Excel mới trong bộ nhớ
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        newWorkbook.write(byteArrayOutputStream);
+
+        // Trả về dữ liệu Excel dưới dạng mảng byte
+        byte[] excelBytes = byteArrayOutputStream.toByteArray();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Disposition", "attachment; filename=exported.xlsx");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .body(excelBytes);
+    }
+
+    @GetMapping("hien-thi-tat-ca")
+    public ResponseEntity<?> hienThiTatCa() {
+        try{
+            return new ResponseEntity<>(accService.getAllKhachHangNoPageable(), HttpStatus.OK);
+        }catch (Exception ex){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 }

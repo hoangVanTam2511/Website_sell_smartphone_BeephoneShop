@@ -31,7 +31,7 @@ import * as React from "react";
 import ModalAddKhachHang from "./ModalAddKhachHang";
 import { Notistack } from "../../order-manager/enum";
 import useCustomSnackbar from "../../../../utilities/notistack";
-import { request } from '../../../../store/helpers/axios_helper'
+import { request, requestParam } from '../../../../store/helpers/axios_helper'
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -104,11 +104,9 @@ const HienThiKH = () => {
         loadDataListRole(targetPage); // Tải danh sách từ trang targetPage
         return;
       }
-      request('GET', apiURLKH + "/search-all", {
-          params: {
+      requestParam('GET', apiURLKH + "/search-all", {
             tenKH: searchText,
             page: currentPage,
-          },
         })
         .then((response) => {
           setTotalPages(response.data.totalPages);
@@ -146,6 +144,7 @@ const HienThiKH = () => {
     request('GET', apiURLKH + "/hien-thi?page=" + currentPage)
       .then((response) => {
         setListKH(response.data.data);
+        console.log(response.data.data)
         setTotalPages(response.data.totalPages);
       })
       .catch(() => {});

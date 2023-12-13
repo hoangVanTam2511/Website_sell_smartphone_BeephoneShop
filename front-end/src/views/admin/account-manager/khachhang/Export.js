@@ -5,18 +5,25 @@ import "../../../../assets/scss/NhapTuFile.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import "../../../../assets/scss/HienThiNV.scss";
+import { request } from "../../../../store/helpers/axios_helper"
 const ExportButton = () => {
   const handleExport = () => {
-    fetch(apiURLKH + "/export")
-      .then((response) => response.blob())
-      .then((blob) => {
-        // Tạo một URL đối tượng để tải xuống file
-        const url = window.URL.createObjectURL(new Blob([blob]));
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "Thông tin khách hàng.xlsx";
-        a.click();
-      });
+    request(
+      "POST", 
+      apiURLKH + "/get-excel-template",
+      {}, { responseType: 'blob' }
+      )
+      .then((response) => {
+        // console.log(response)
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'Mẫu Import Khách Hàng.xlsx');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      })
+     
   };
 
   return (

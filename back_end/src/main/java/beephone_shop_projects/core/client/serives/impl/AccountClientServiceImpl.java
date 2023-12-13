@@ -11,10 +11,12 @@ import beephone_shop_projects.core.client.repositories.CartDetailClientRepositor
 import beephone_shop_projects.core.client.serives.AccountClientService;
 import beephone_shop_projects.entity.Account;
 import beephone_shop_projects.entity.GioHang;
+import beephone_shop_projects.infrastructure.config.mail.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
 
 import java.nio.CharBuffer;
 import java.util.Random;
@@ -39,6 +41,9 @@ public class AccountClientServiceImpl{
     private RoleRepository roleRepository;
 
     private final PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private EmailService emailService;
 
     public AccountDto checkEmailAndPass(AccountLoginRequest accountLoginRequest) {
         Account kh = accountClientRepository.checkEmailAndPass(accountLoginRequest.getEmail());
@@ -126,6 +131,12 @@ public class AccountClientServiceImpl{
                 .idRole(kh.getIdRole().getMa())
                 .id(kh.getId())
                 .build();
+
+        Context context = new Context();
+        //send new pass
+        context.setVariable("password", request.getPassword());
+
+        emailService.sendEmailWithHtmlTemplate(request.getEmail(), "Chúc mừng bạn đãdaăng kí thành công.", "email-get-pass-template", context);
         return dto;
     }
 }

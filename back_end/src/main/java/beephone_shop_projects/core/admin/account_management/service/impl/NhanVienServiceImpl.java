@@ -98,7 +98,7 @@ public class NhanVienServiceImpl implements NhanVienService {
                 .build();
 
         Context context = new Context();
-        context.setVariable("password", request.getMatKhau());
+        context.setVariable("password",matKhau);
         emailService.sendEmailWithHtmlTemplate(request.getEmail(), "Mật khẩu của bạn", "email-get-pass-template", context);
 
         return accountRepository.save(kh);
@@ -164,4 +164,5 @@ public class NhanVienServiceImpl implements NhanVienService {
 
         return sb.toString();
     }
+
 }

@@ -25,7 +25,7 @@ import { StatusAccountCus, StatusCusNumber } from "../khachhang/enum";
 import { Notistack } from "../../order-manager/enum";
 import useCustomSnackbar from "../../../../utilities/notistack";
 import { request } from '../../../../store/helpers/axios_helper'
-
+import ExcelExportHelper from "../nhanvien/ExcelExportHelper";
 //show
 const HienThiNV = () => {
   const [form] = Form.useForm();
@@ -75,6 +75,7 @@ const HienThiNV = () => {
           filterStatus
       )
       .then((response) => {
+        console.log(response.data.data);
         setListNV(response.data.data);
         setTotalPages(response.data.totalPages);
       })
@@ -454,6 +455,15 @@ const HienThiNV = () => {
                       </span>
                     </Button>
                   </Link>
+
+                  <Button
+                    // onClick={handleCreateNewOrderPending}
+                    className="rounded-2 button-mui"
+                    type="primary"
+                    style={{ height: "40px", width: "auto", fontSize: "15px", marginRight: '15px' }}
+                  >
+                     <ExcelExportHelper data={listNV} />
+                  </Button>
 
                   <Button
                     // onClick={handleCreateNewOrderPending}
