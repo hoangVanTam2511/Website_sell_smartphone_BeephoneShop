@@ -942,7 +942,7 @@ const HienThiVoucher = () => {
               </LocalizationProvider>
             </div>
             <div className="mt-2">
-              <Link to="/dashboard/add-voucher">
+              <Link to="/dashboard/create-voucher">
                 <Button
                   className="rounded-2 button-mui"
                   type="primary"

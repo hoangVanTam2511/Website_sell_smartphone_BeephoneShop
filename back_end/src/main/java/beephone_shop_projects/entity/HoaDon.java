@@ -13,6 +13,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.SqlResultSetMapping;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -113,4 +114,8 @@ public class HoaDon extends PrimaryEntity implements IsIdentified {
   @OneToMany(mappedBy = "hoaDon")
   private Set<HoaDonChiTiet> orderItems;
 
+  public HoaDon(String ma, Account account) {
+    this.ma = ma;
+    this.account = account;
+  }
 }

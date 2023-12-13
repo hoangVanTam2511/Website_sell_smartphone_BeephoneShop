@@ -13,6 +13,7 @@ import lombok.Setter;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -47,11 +48,11 @@ public class Account extends PrimaryEntity implements IsIdentified {
     @Enumerated(EnumType.ORDINAL)
     private StatusAccountCus trangThai;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_role")
     private Role idRole;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "account")
-    private List<DiaChi> diaChiList;
+    private Set<DiaChi> diaChiList;
 
 }

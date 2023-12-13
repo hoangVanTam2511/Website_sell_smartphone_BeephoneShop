@@ -3,6 +3,7 @@ package beephone_shop_projects.core.admin.order_management.service.impl;
 import beephone_shop_projects.core.admin.order_management.converter.AccountConverter;
 import beephone_shop_projects.core.admin.order_management.converter.ImeiNotSoldConverter;
 import beephone_shop_projects.core.admin.order_management.converter.OrderConverter;
+import beephone_shop_projects.core.admin.order_management.converter.OrderCustomConverter;
 import beephone_shop_projects.core.admin.order_management.converter.OrderHistoryConverter;
 import beephone_shop_projects.core.admin.order_management.converter.ProductItemConverter;
 import beephone_shop_projects.core.admin.order_management.converter.VoucherConverter;
@@ -14,6 +15,7 @@ import beephone_shop_projects.core.admin.order_management.model.response.Account
 import beephone_shop_projects.core.admin.order_management.model.response.CartItemResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.OrderHistoryResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.OrderItemResponse;
+import beephone_shop_projects.core.admin.order_management.model.response.OrderPaginationCustomResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.OrderResponse;
 import beephone_shop_projects.core.admin.order_management.repository.ImeiChuaBanCustomRepository;
 import beephone_shop_projects.core.admin.order_management.repository.ImeiDaBanCustomRepository;
@@ -44,11 +46,11 @@ import beephone_shop_projects.infrastructure.exeption.rest.RestApiException;
 import beephone_shop_projects.utils.BarcodeGenerator;
 import beephone_shop_projects.utils.RandomCodeGenerator;
 import com.google.zxing.BarcodeFormat;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -77,6 +79,9 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
 
   @Autowired
   private OrderConverter orderConverter;
+
+  @Autowired
+  private OrderCustomConverter orderCustomConverter;
 
   @Autowired
   private CartServiceImpl gioHangService;
@@ -119,6 +124,9 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
 
   @Autowired
   private BarcodeGenerator barcodeGenerator;
+
+  @Autowired
+  private ModelMapper modelMapper;
 
   public HoaDonServiceImpl(OrderRepositoryImpl repo, OrderConverter converter) {
     super(repo, converter);
@@ -175,7 +183,7 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
   }
 
   @Override
-  public Page<OrderResponse> findOrdersByMultipleCriteriaWithPagination(SearchFilterOrderDto searchFilter) throws Exception {
+  public Page<OrderPaginationCustomResponse> findOrdersByMultipleCriteriaWithPagination(SearchFilterOrderDto searchFilter) throws Exception {
     if (searchFilter.getKeyword() == null) {
       searchFilter.setKeyword("");
     }
@@ -185,9 +193,15 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
     if (searchFilter.getPageSize() == null) {
       searchFilter.setPageSize(10);
     }
-    Pageable pageable = PageRequest.of(searchFilter.getCurrentPage() - 1, searchFilter.getPageSize(), Sort.by("createdAt").descending());
-    Page<HoaDon> orders = hoaDonRepository.findOrdersByMultipleCriteriaWithPagination(pageable, searchFilter);
-    return orderConverter.convertToPageResponse(orders);
+
+    Pageable pageable = PageRequest.of(searchFilter.getCurrentPage() - 1, searchFilter.getPageSize());
+    Page<OrderPaginationCustomResponse> orders = hoaDonRepository.findOrdersByMultipleCriteriaWithPagination(pageable, searchFilter);
+    while (orders.isEmpty() && pageable.getPageNumber() > 0) {
+      pageable = pageable.previousOrFirst();
+      orders = hoaDonRepository.findOrdersByMultipleCriteriaWithPagination(pageable, searchFilter);
+    }
+    return orders;
+//    return orderCustomConverter.convertToPageResponse(orders);
   }
 
   @Override

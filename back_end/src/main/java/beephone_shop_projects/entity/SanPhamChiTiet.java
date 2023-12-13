@@ -65,8 +65,8 @@ public class SanPhamChiTiet extends PrimaryEntity implements Serializable {
   @JoinColumn(name = "id_image")
   private Image image;
 
-  @JsonIgnore
-  @OneToMany(mappedBy = "idSanPham")
-  private Set<KhuyenMaiChiTiet> promotions = new HashSet<>();
+//  @JsonIgnore
+//  @OneToMany(mappedBy = "idSanPham")
+//  private Set<KhuyenMaiChiTiet> promotions = new HashSet<>();
 
 }

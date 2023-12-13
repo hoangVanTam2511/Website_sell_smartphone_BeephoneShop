@@ -2,11 +2,16 @@ package beephone_shop_projects.core.admin.order_management.controller;
 
 import beephone_shop_projects.core.admin.order_management.model.request.OrderRequest;
 import beephone_shop_projects.core.admin.order_management.model.request.SearchFilterOrderDto;
+import beephone_shop_projects.core.admin.order_management.model.response.OrderCustomResponse;
+import beephone_shop_projects.core.admin.order_management.model.response.OrderPaginationCustomResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.OrderResponse;
+import beephone_shop_projects.core.admin.order_management.model.response.OrderView;
+import beephone_shop_projects.core.admin.order_management.repository.OrderCustomRepository;
 import beephone_shop_projects.core.admin.order_management.service.impl.HoaDonServiceImpl;
 import beephone_shop_projects.core.admin.order_management.service.impl.LichSuHoaDonServiceImpl;
 import beephone_shop_projects.core.common.base.ResponseObject;
 import beephone_shop_projects.core.common.base.ResponsePage;
+import beephone_shop_projects.entity.HoaDon;
 import beephone_shop_projects.infrastructure.constant.ApiConstants;
 import beephone_shop_projects.infrastructure.constant.HttpStatus;
 import beephone_shop_projects.infrastructure.constant.Message;
@@ -35,11 +40,20 @@ public class OrderController {
   private HoaDonServiceImpl hoaDonService;
 
   @Autowired
+  private OrderCustomRepository orderCustomRepository;
+
+  @Autowired
   private LichSuHoaDonServiceImpl lichSuHoaDonService;
 
+  @GetMapping("/test")
+  public ResponseObject<List<HoaDon>> getOrders() throws Exception {
+    List<HoaDon> orders = orderCustomRepository.getAll();
+    return new ResponseObject<>(orders);
+  }
+
   @GetMapping
-  public ResponsePage<OrderResponse> getOrders(@ModelAttribute SearchFilterOrderDto searchFilter) throws Exception {
-    Page<OrderResponse> orders = hoaDonService.findOrdersByMultipleCriteriaWithPagination(searchFilter);
+  public ResponsePage<OrderPaginationCustomResponse> getOrders(@ModelAttribute SearchFilterOrderDto searchFilter) throws Exception {
+    Page<OrderPaginationCustomResponse> orders = hoaDonService.findOrdersByMultipleCriteriaWithPagination(searchFilter);
     return new ResponsePage(orders);
   }
 
