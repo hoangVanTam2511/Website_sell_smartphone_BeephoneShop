@@ -34,6 +34,13 @@ const CreateChip = ({ open, close, getAll, chips }) => {
   const validationAll = () => {
     const msg = {};
 
+    const isDuplicate = chips.some((chip) => chip.tenChip === tenChip);
+
+    if (isDuplicate) {
+      handleOpenAlertVariant("Chip đã tồn tại", Notistack.ERROR);
+      msg = "Đã tồn tại";
+    }
+
     if (!tenChip.trim("")) {
       msg.tenChip = "Tên chip không được trống.";
     }

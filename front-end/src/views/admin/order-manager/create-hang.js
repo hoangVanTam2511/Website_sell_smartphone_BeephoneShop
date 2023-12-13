@@ -34,6 +34,13 @@ const CreateHang = ({ open, close, getAll, hangs }) => {
   const validationAll = () => {
     const msg = {};
 
+    const isDuplicate = hangs.some((products) => products.tenHang === tenHang);
+
+    if (isDuplicate) {
+      handleOpenAlertVariant("Tên danh mục đã tồn tại", Notistack.ERROR);
+      msg = "Đã tồn tại";
+    }
+
     if (!tenHang.trim("")) {
       msg.tenHang = "Tên hãng không được trống.";
     }

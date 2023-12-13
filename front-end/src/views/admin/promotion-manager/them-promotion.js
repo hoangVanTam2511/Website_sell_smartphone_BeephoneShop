@@ -627,7 +627,7 @@ const AddKhuyenMai = () => {
   return (
     <>
       <div className="row">
-        <div className="col-5">
+        <div className="col-4">
           <div className="mt-3 add-promotion-container">
             <h5
               className="title-promotion ms-3"
@@ -644,7 +644,7 @@ const AddKhuyenMai = () => {
                   onChange={(e) => {
                     setTenKhuyenMai(e.target.value);
                   }}
-                  style={{ width: "430px", marginTop: "10px" }}
+                  style={{ width: "330px", marginTop: "10px" }}
                   inputProps={{
                     maxLength: 255, // Giới hạn tối đa 10 ký tự
                   }}
@@ -735,7 +735,7 @@ const AddKhuyenMai = () => {
                     ),
                   }}
                   style={{
-                    width: "430px",
+                    width: "330px",
                   }}
                   inputProps={{
                     maxLength: 20, // Giới hạn tối đa 10 ký tự
@@ -759,7 +759,7 @@ const AddKhuyenMai = () => {
                         setNgayBatDau(e);
                         setNgayKetThuc(e);
                       }}
-                      sx={{ width: "430px" }}
+                      sx={{ width: "330px" }}
                       slotProps={{
                         textField: {
                           error: validationMsg.ngayBatDau !== undefined,
@@ -787,7 +787,7 @@ const AddKhuyenMai = () => {
                       onChange={(e) => {
                         setNgayKetThuc(e);
                       }}
-                      sx={{ width: "430px", marginTop: "20px" }}
+                      sx={{ width: "330px", marginTop: "20px" }}
                       slotProps={{
                         textField: {
                           error: validationMsg.ngayKetThuc !== undefined,
@@ -841,7 +841,7 @@ const AddKhuyenMai = () => {
             </div>
           </div>
         </div>
-        <div className="col-7">
+        <div className="col-8">
           <div className="mt-3 add-promotion-inProduct-container">
             <h5
               className="title-product mb-2"

@@ -369,6 +369,11 @@ const Transaction = () => {
       dataIndex: "nguoiXacNhan",
       width: "10%",
       align: "center",
+      render: (text, record) => (
+        <a>
+          <span className="gach-chan">{record.nguoiXacNhan}</span>
+        </a>
+      ),
     },
   ];
 

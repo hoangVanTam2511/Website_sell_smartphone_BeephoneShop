@@ -3,6 +3,8 @@ import {
   StatusCommonProductsNumber,
   StatusDiscount,
   StatusDiscountNumber,
+  TypeCamera,
+  TypeCameraNumber,
   TypeDiscountNumber,
   TypeDiscountString,
 } from "../views/admin/order-manager/enum";
@@ -86,6 +88,38 @@ export const ConvertStatusToString = (EnumNumber) => {
       break;
     case StatusDiscountNumber.DA_NGHI:
       statusNumber = StatusCusNumber.DA_NGHI;
+      break;
+    default:
+      statusNumber = ""; // Nếu giá trị không khớp với bất kỳ trạng thái nào.
+  }
+
+  return statusNumber;
+};
+
+export const ConvertCameraTypeToString = (EnumNumber) => {
+  let statusNumber;
+
+  switch (EnumNumber) {
+    case TypeCameraNumber.STANDARD_CAMERA:
+      statusNumber = TypeCamera.STANDARD_CAMERA;
+      break;
+    case TypeCameraNumber.WIDE_CAMERA:
+      statusNumber = TypeCamera.WIDE_CAMERA;
+      break;
+    case TypeCameraNumber.ULTRA_WIDE_CAMERA:
+      statusNumber = TypeCamera.ULTRA_WIDE_CAMERA;
+      break;
+    case TypeCameraNumber.TELEPHOTO_CAMERA:
+      statusNumber = TypeCamera.TELEPHOTO_CAMERA;
+      break;
+    case TypeCameraNumber.PERISCOPE_TELEPHOTO_CAMERA:
+      statusNumber = TypeCamera.PERISCOPE_TELEPHOTO_CAMERA;
+      break;
+    case TypeCameraNumber.MARCO_CAMERA:
+      statusNumber = TypeCamera.MARCO_CAMERA;
+      break;
+    case TypeCameraNumber.DEPTH_CAMERA:
+      statusNumber = TypeCamera.DEPTH_CAMERA;
       break;
     default:
       statusNumber = ""; // Nếu giá trị không khớp với bất kỳ trạng thái nào.

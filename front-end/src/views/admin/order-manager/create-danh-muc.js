@@ -34,6 +34,15 @@ const CreateDanhMuc = ({ open, close, getAll, danhMucs }) => {
   const validationAll = () => {
     const msg = {};
 
+    const isDuplicate = danhMucs.some(
+      (products) => products.tenDanhMuc === tenDanhMuc
+    );
+
+    if (isDuplicate) {
+      handleOpenAlertVariant("Tên danh mục đã tồn tại", Notistack.ERROR);
+      msg = "Đã tồn tại";
+    }
+
     if (!tenDanhMuc.trim("")) {
       msg.tenDanhMuc = "Tên danh mục không được trống.";
     }

@@ -8,11 +8,13 @@ import beephone_shop_projects.core.common.base.ResponseObject;
 import beephone_shop_projects.core.common.base.ResponsePage;
 import beephone_shop_projects.entity.Pin;
 import beephone_shop_projects.infrastructure.constant.ApiConstants;
+import beephone_shop_projects.infrastructure.constant.StatusCommon;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(ApiConstants.ApiSystems.API_PIN_URI)
@@ -37,7 +39,9 @@ public class PinController {
 
     @GetMapping
     public ResponseObject<List<PinResponse>> getPin() {
-        List<PinResponse> pin = pinService.findAll();
+        List<PinResponse> pin = pinService.findAll().stream()
+                .filter(products -> StatusCommon.ACTIVE.equals(products.getStatus()))
+                .collect(Collectors.toList());
         return new ResponseObject<>(pin);
     }
 

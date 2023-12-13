@@ -22,6 +22,7 @@ import {
   TypeCameraNumber,
 } from "./enum";
 import useCustomSnackbar from "../../../utilities/notistack";
+import { ConvertCameraTypeToString } from "../../../utilities/convertEnum";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -53,6 +54,21 @@ const CreateCameraTruoc = ({ open, close, getAll, cameraFront }) => {
 
   const validationAll = () => {
     const msg = {};
+
+    const isDuplicate = cameraFront.some(
+      (camera) =>
+        camera.doPhanGiai === Number(doPhanGiai) &&
+        camera.cameraType === ConvertCameraTypeToString(cameraType)
+    );
+
+    if (isDuplicate) {
+      handleOpenAlertVariant("Độ phân giải đã tồn tại", Notistack.ERROR);
+      msg = "Độ phân giải đã tồn tại";
+    }
+
+    if (isNaN(doPhanGiai) || doPhanGiai < 1 || doPhanGiai > 10000) {
+      msg.doPhanGiai = "Độ phân giải phải là số và từ 1 đến 10000 Megapixels";
+    }
 
     if (!doPhanGiai.trim("")) {
       msg.doPhanGiai = "Độ phân giải không được trống.";

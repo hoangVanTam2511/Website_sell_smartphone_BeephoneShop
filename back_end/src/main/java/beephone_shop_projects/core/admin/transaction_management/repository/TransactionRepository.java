@@ -12,7 +12,7 @@ public interface TransactionRepository extends IHinhThucThanhToanRepository {
 
     @Query("""
             SELECT h.id AS id, h.ma AS ma, h.soTienThanhToan AS soTienThanhToan, hd.id as idHoaDon, hd.ma AS maHoaDon, h.loaiThanhToan AS loaiThanhToan, 
-            h.hinhThucThanhToan AS hinhThucThanhToan, h.trangThai AS trangThai, h.createdAt AS ngayTao
+            h.hinhThucThanhToan AS hinhThucThanhToan, h.trangThai AS trangThai, h.createdAt AS ngayTao, h.hoaDon.accountEmployee.hoVaTen as nguoiXacNhan
             FROM HinhThucThanhToan h JOIN HoaDon hd ON h.hoaDon.id = hd.id WHERE 
             ((:#{#request.maHoaDon} IS NULL OR hd.ma LIKE CONCAT('%', COALESCE(:#{#request.maHoaDon}, ''), '%'))
             OR (:#{#request.soTienThanhToan} IS NULL OR h.soTienThanhToan = COALESCE(:#{#request.soTienThanhToan}, h.soTienThanhToan)))

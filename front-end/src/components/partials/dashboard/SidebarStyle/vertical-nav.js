@@ -190,7 +190,7 @@ const VerticalNav = memo((props) => {
                 </svg>
               </i>
               <span className="item-name text-start" style={{ fontWeight: "" }}>
-                Quản Lý Thu Chi
+                Xem Thu Chi
               </span>
             </div>
           </Link>

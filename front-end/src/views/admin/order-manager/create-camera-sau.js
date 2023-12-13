@@ -22,6 +22,7 @@ import {
   TypeCameraNumber,
 } from "./enum";
 import useCustomSnackbar from "../../../utilities/notistack";
+import { ConvertCameraTypeToString } from "../../../utilities/convertEnum";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -33,7 +34,7 @@ const CreateCameraSau = ({ open, close, getAll, cameraRear }) => {
   const [cameraType, setCameraType] = React.useState(
     TypeCameraNumber.STANDARD_CAMERA
   );
-  const [doPhanGiai, setDoPhanGiai] = React.useState();
+  const [doPhanGiai, setDoPhanGiai] = React.useState("");
   const [status, setStatus] = React.useState(StatusCommonProductsNumber.ACTIVE);
   const { handleOpenAlertVariant } = useCustomSnackbar();
 
@@ -55,21 +56,21 @@ const CreateCameraSau = ({ open, close, getAll, cameraRear }) => {
   const validationAll = () => {
     const msg = {};
 
-    let isDuplicate = false;
-
-    cameraRear.forEach((camera) => {
-      if (camera.doPhanGiai === doPhanGiai) {
-        isDuplicate = true;
-      }
-    });
+    const isDuplicate = cameraRear.some(
+      (camera) =>
+        camera.doPhanGiai === Number(doPhanGiai) &&
+        camera.cameraType === ConvertCameraTypeToString(cameraType)
+    );
 
     if (isDuplicate) {
-      msg.doPhanGiai = "Camera đã tồn tại";
+      handleOpenAlertVariant("Độ phân giải đã tồn tại", Notistack.ERROR);
+      msg = "Độ phân giải đã tồn tại";
     }
 
-    if (isNaN(doPhanGiai) || doPhanGiai < 1 || doPhanGiai > 1000) {
-      msg.doPhanGiai = "Độ phân giải phải là số và từ 1 đến 1000 Megapixels";
+    if (isNaN(doPhanGiai) || doPhanGiai < 1 || doPhanGiai > 10000) {
+      msg.doPhanGiai = "Độ phân giải phải là số và từ 1 đến 10000 Megapixels";
     }
+
     if (!doPhanGiai.trim("")) {
       msg.doPhanGiai = "Độ phân giải không được trống.";
     }
@@ -108,7 +109,7 @@ const CreateCameraSau = ({ open, close, getAll, cameraRear }) => {
   const handleReset = (event) => {
     setStatus(StatusCommonProductsNumber.ACTIVE);
     setDoPhanGiai("");
-    setCameraType("");
+    setCameraType(TypeCameraNumber.STANDARD_CAMERA);
   };
 
   const uniqueDoPhanGiai = cameraRear

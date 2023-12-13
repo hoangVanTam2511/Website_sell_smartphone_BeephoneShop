@@ -35,4 +35,7 @@ public interface TransactionResponse {
     @Value("#{target.ngayTao}")
     Date getNgayTao();
 
+    @Value("#{target.nguoiXacNhan}")
+    String getNguoiXacNhan();
+
 }
