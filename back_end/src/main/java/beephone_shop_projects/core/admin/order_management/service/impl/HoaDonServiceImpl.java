@@ -460,7 +460,6 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
         orderCurrent.setTinhThanhPhoNguoiNhan(req.getTinhThanhPhoNguoiNhan());
         orderCurrent.setQuanHuyenNguoiNhan(null);
         orderCurrent.setXaPhuongNguoiNhan(null);
-        System.out.println(orderCurrent.getTinhThanhPhoNguoiNhan());
       }
       if (req.getQuanHuyenNguoiNhan() != null) {
         orderCurrent.setQuanHuyenNguoiNhan(req.getQuanHuyenNguoiNhan());
