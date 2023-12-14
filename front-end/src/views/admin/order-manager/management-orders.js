@@ -106,18 +106,18 @@ const ManagementOrders = () => {
   };
 
   const findOrdersByMultipleCriteriaWithPagination = (page) => {
-    requestParam('GET',`/api/orders`, {
-          currentPage: page,
-          keyword: keyword,
-          fromDate: fromDate,
-          toDate: toDate,
-          isPending: false,
-          sort: sort,
-          type: type,
-          state: state,
-          pageSize: size,
-        },
-      })
+    requestParam('GET', `/api/orders`, {
+      currentPage: page,
+      keyword: keyword,
+      fromDate: fromDate,
+      toDate: toDate,
+      isPending: false,
+      sort: sort,
+      type: type,
+      state: state,
+      pageSize: size,
+    },
+    )
       .then((response) => {
         setOrders(response.data.data);
         setTotalPages(response.data.totalPages);

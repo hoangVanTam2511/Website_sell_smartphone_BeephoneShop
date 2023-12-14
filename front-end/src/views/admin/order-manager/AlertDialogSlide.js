@@ -2809,23 +2809,6 @@ export function CustomersDialog(props) {
               {idCus === item.id ? "Bỏ chọn" : "Chọn"}
             </span>
           </Button>
-          <Button
-            // onClick={() => handleSelectCustomer(item.id)}
-            className="rounded-2"
-            type="warning"
-            style={{
-              height: "35px",
-              width: "92px",
-              fontSize: "14px",
-            }}
-          >
-            <span
-              className={"text-dark"}
-              style={{ fontWeight: "500", marginBottom: "3px" }}
-            >
-              Cập nhật
-            </span>
-          </Button>
         </div>
       ),
     },
