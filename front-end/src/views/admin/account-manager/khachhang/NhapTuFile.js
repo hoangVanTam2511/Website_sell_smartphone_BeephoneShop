@@ -12,7 +12,7 @@ import { Notistack } from "../../order-manager/enum";
 import useCustomSnackbar from "../../../../utilities/notistack";
 import * as dayjs from "dayjs";
 
-const NhapTuFile = () => {
+const NhapTuFile = (props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { handleOpenAlertVariant } = useCustomSnackbar();
 
@@ -58,6 +58,7 @@ const NhapTuFile = () => {
       return true;
     }
   };
+
   const handleEmailChange = (e) => {
     const value = e
     const parn = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -97,7 +98,7 @@ const NhapTuFile = () => {
         console.log(err);
       });
 
-    console.log(allCustomers)
+    // console.log(allCustomers)
     reader.readAsBinaryString(e.target.files[0]);
     reader.onload = (e) => {
       const data = e.target.result;
@@ -178,7 +179,8 @@ const NhapTuFile = () => {
             khachHangData
           ).then((response) => {
             if(response.status === 200){
-              handleOpenAlertVariant("Thêm thành công", Notistack.SUCCESS);
+              // handleOpenAlertVariant("Thêm thành công", Notistack.SUCCESS);
+              
             }
           });
          
@@ -191,6 +193,9 @@ const NhapTuFile = () => {
      
     }
 
+    // sau khi thêm xong
+    handleOk()
+    props.loadAfterImport()
     handleOpenAlertVariant("Import thành công", Notistack.SUCCESS);
     e.target.value = null;
   }

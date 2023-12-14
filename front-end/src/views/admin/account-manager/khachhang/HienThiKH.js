@@ -62,6 +62,8 @@ const HienThiKH = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [searchText, setSearchText] = useState("");
   const [filterStatus, setFilterStatus] = useState(0);
+  const [loadAgain, setLoadAgain] = useState(0);
+
   const handleFilter = (status) => {
     setFilterStatus(status);
     // setCurrentPage(0); // Reset current page to 1 when applying filters
@@ -138,10 +140,10 @@ const HienThiKH = () => {
 
   useEffect(() => {
     loadDataListRole(currentPage);
-  }, [currentPage]);
+  }, [currentPage, loadAgain]);
   // load
   const loadDataListRole = (currentPage) => {
-    request('GET', apiURLKH + "/hien-thi?page=" + currentPage)
+    request('GET', apiURLKH + "/hien-thi?pageNo=" + currentPage)
       .then((response) => {
         setListKH(response.data.data);
         console.log(response.data.data)
@@ -328,6 +330,10 @@ const HienThiKH = () => {
     },
   ];
 
+  const loadAfterImport = () => {
+    setLoadAgain(2)
+  }
+
   return (
     <>
       <Form form={form} component={false} initialValues={{}}>
@@ -504,7 +510,7 @@ const HienThiKH = () => {
                   type="primary"
                   style={{ height: "40px", width: "auto", fontSize: "15px" }}
                 >
-                  <NhapTuFile />
+                  <NhapTuFile loadAfterImport={loadAfterImport}/>
                 </Button>
               </div>
             </Card.Header>
