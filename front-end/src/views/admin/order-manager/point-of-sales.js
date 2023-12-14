@@ -85,7 +85,7 @@ import AppBarCode from "./App";
 import Html5QrcodePlugin from "./Html5QrcodePlugin";
 import { PrintBillAtTheCounter, PrintBillAtTheCounterAuto } from "./printer-invoice";
 import { useReactToPrint } from "react-to-print";
-import { request, requestBodyParam   } from "../../../store/helpers/axios_helper";
+import { request, requestBodyParam } from "../../../store/helpers/axios_helper";
 
 const IOSSwitch = styled((props) => (
   <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
@@ -244,8 +244,8 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      request("PUT",`/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
-        )
+      request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
+      )
         .then((response) => {
           const data = response.data.data;
           setOrder(data);
@@ -272,7 +272,7 @@ const PointOfSales = () => {
       isUpdateEmail: true,
     };
     try {
-      request("PUT",`/api/orders/${order.id}?isUpdateStatusOrderDelivery=true`, orderRequest)
+      request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=true`, orderRequest)
         .then((response) => {
           const data = response.data.data;
           setOrder(data);
@@ -300,8 +300,8 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      request("PUT",`/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
-        )
+      request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
+      )
         .then((response) => {
           const data = response.data.data;
           setOrder(data);
@@ -393,8 +393,8 @@ const PointOfSales = () => {
         isUpdateEmail: false,
       };
       try {
-        request("PUT",`/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
-          )
+        request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
+        )
           .then((response) => {
             const data = response.data.data;
             setOrder(data);
@@ -439,8 +439,8 @@ const PointOfSales = () => {
         isUpdateEmail: false,
       };
       try {
-        request("PUT",`/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
-          )
+        request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
+        )
           .then((response) => {
             const data = response.data.data;
             setOrder(data);
@@ -496,8 +496,8 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      request("PUT",`/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
-        )
+      request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
+      )
         .then((response) => {
           const data = response.data.data;
           setOrder(data);
@@ -537,8 +537,8 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      request("PUT",`/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
-        )
+      request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
+      )
         .then((response) => {
           const data = response.data.data;
           setOrder(data);
@@ -565,8 +565,8 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      request("PUT",`/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
-        )
+      request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
+      )
         .then((response) => {
           const data = response.data.data;
           setOrder(data);
@@ -593,8 +593,8 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      request("PUT",`/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
-        )
+      request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
+      )
         .then((response) => {
           const data = response.data.data;
           setOrder(data);
@@ -623,8 +623,8 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      request("PUT",`/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
-        )
+      request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
+      )
         .then((response) => {
           const order = response.data.data;
           setOrder(order);
@@ -714,8 +714,8 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      request("PUT",`/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
-        )
+      request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
+      )
         .then((response) => {
           const data = response.data.data;
           setOrder(data);
@@ -753,8 +753,8 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      requestBodyParam("PUT",`/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
-        )
+      requestBodyParam("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
+      )
         .then((response) => {
           const data = response.data.data;
           setOrder(data);
@@ -769,7 +769,7 @@ const PointOfSales = () => {
   const getCustomerById = async (id) => {
     setIsLoading(true);
     if (id !== null) {
-      request("GET",`/khach-hang/hien-thi-theo/${id}`)
+      request("GET", `/khach-hang/hien-thi-theo/${id}`)
         .then(async (response) => {
           const data = response.data;
           await updateAccount(id);
@@ -939,8 +939,8 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      request("PUT",`/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
-        )
+      request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
+      )
         .then((response) => {
           setOrder(response.data.data);
           setIsLoading(false);
@@ -979,28 +979,28 @@ const PointOfSales = () => {
     };
 
     try {
-      const response = request("PUT",`/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
-      );
+      request(`PUT`, `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest).then((response) => {
+        const data = response.data.data;
+        console.log(data);
+        setOrder(data);
 
-      const data = response.data.data;
-      setOrder(data);
+        const account = data && data.account && data.account;
+        const listAddress = data.account && data.account.diaChiList && data.account.diaChiList;
+        const addressActive = listAddress && listAddress.find((item) => item.trangThai === 1);
 
-      const account = data && data.account && data.account;
-      const listAddress = data.account && data.account.diaChiList && data.account.diaChiList;
-      const addressActive = listAddress && listAddress.find((item) => item.trangThai === 1);
-      console.log(addressActive);
+        if (account) {
+          updateInfoShipDefault(addressActive);
+        }
+        else {
+          updateInfoShipDefault(null);
+        }
 
-      if (account) {
-        updateInfoShipDefault(addressActive);
-      }
-      else {
-        updateInfoShipDefault(null);
-      }
-
-      getAllOrdersPending();
-      // setIsLoading(false);
-      // handleOpenAlertVariant(message, Notistack.SUCCESS);
+        getAllOrdersPending();
+        // setIsLoading(false);
+        // handleOpenAlertVariant(message, Notistack.SUCCESS);
+      });
     } catch (error) {
+      console.log(error)
       // Xử lý lỗi tại đây (nếu cần)
     }
   };
@@ -1032,8 +1032,8 @@ const PointOfSales = () => {
       setLoadingChild(true);
       setTimeout(() => {
         try {
-          request("PUT",`/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
-            )
+          request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
+          )
             .then((response) => {
               setOrder(response.data.data);
               setDiscount("");
@@ -1050,8 +1050,8 @@ const PointOfSales = () => {
       }, 1000);
     } else if (idVoucher === null && !loading) {
       try {
-        request("PUT",`/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
-          )
+        request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
+        )
           .then((response) => {
             setOrder(response.data.data);
             setIdVoucher("");
@@ -1069,7 +1069,7 @@ const PointOfSales = () => {
       setLoadingChild(true);
       setTimeout(() => {
         try {
-          request("PUT",`/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
+          request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
           )
             .then((response) => {
               setOrder(response.data.data);
@@ -1087,8 +1087,8 @@ const PointOfSales = () => {
       }, 1000);
     } else {
       try {
-        request("PUT",`/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
-          )
+        request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
+        )
           .then((response) => {
             setOrder(response.data.data);
             setIdVoucher(response.data.data.voucher.id);
@@ -1116,11 +1116,11 @@ const PointOfSales = () => {
       },
     };
     try {
-      request("PUT",`/api/carts/amount`, request, {
+      request("PUT", `/api/carts/amount`, request, {
         headers: {
           "Content-Type": "application/json",
         },
-      });
+      }).th;
       await getAllOrdersPending();
       await getCartItems();
       handleCloseOpenModalUpdateImei();
@@ -1206,7 +1206,7 @@ const PointOfSales = () => {
   };
 
   const getAllOrdersPending = async () => {
-    request("GET",`/api/orders/pending`, {})
+    request("GET", `/api/orders/pending`, {})
       .then((response) => {
         setOrders(response.data.data);
       })
@@ -1220,7 +1220,7 @@ const PointOfSales = () => {
   };
 
   const getOrderPendingDefaultFirst = async () => {
-    request("GET",`/api/orders/pending`, {})
+    request("GET", `/api/orders/pending`, {})
       .then((response) => {
         const order = response && response.data.data[0];
         navigate(`/dashboard/point-of-sales/${order.ma}`);
@@ -1357,7 +1357,7 @@ const PointOfSales = () => {
   };
 
   const getOrderPendingById = async () => {
-    request("GET",`/api/orders/pending`, {})
+    request("GET", `/api/orders/pending`, {})
       .then((response) => {
         const data = response && response.data.data;
         const order = data.find((item) => item.ma === id);
@@ -1502,11 +1502,11 @@ const PointOfSales = () => {
         code: order.ma,
       };
       try {
-        request("POST",`/api/vnpay/payment`, vnpayReq, {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          })
+        request("POST", `/api/vnpay/payment`, vnpayReq, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
           .then((response) => {
             setIsLoading(false);
             handleCloseOpenModalConfirmRedirectPayment();
@@ -1527,11 +1527,11 @@ const PointOfSales = () => {
         createdByPayment: userId,
       };
       try {
-        request("PUT",`/api/vnpay/payment/cash`, orderRequest, {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          })
+        request("PUT", `/api/vnpay/payment/cash`, orderRequest, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
           .then((response) => {
             const order = response.data.data;
             setOrder(order);
@@ -1559,12 +1559,12 @@ const PointOfSales = () => {
   const [totalPagesVoucher, setTotalPagesVoucher] = useState();
 
   const getVouchersIsActive = (page, keyword) => {
-    request("GET",`/voucher/voucherActive`, {
-        params: {
-          pageNo: page,
-          keyword: keyword,
-        },
-      })
+    request("GET", `/voucher/voucherActive`, {
+      params: {
+        pageNo: page,
+        keyword: keyword,
+      },
+    })
       .then((response) => {
         setVouchers(response.data.data);
         setTotalPagesVoucher(response.data.totalPages);
@@ -1589,7 +1589,7 @@ const PointOfSales = () => {
   }, [cartItems, discountValue, shipFee]);
 
   const getCartItems = async () => {
-    request("GET",`/api/orders/pending/${order.id}`)
+    request("GET", `/api/orders/pending/${order.id}`)
       .then((response) => {
         const data = response.data.data;
         setOrder(data);
@@ -1614,7 +1614,7 @@ const PointOfSales = () => {
   };
 
   const getPaymentsOfOrder = async () => {
-    request("GET",`/api/orders/pending/${order.id}`)
+    request("GET", `/api/orders/pending/${order.id}`)
       .then((response) => {
         const data = response.data.data;
         setOrder(data);
@@ -1636,7 +1636,7 @@ const PointOfSales = () => {
 
   const getOrderPendingLastRemove = async () => {
     // setIsLoading(true);
-    request("GET",`/api/orders/pending`, {})
+    request("GET", `/api/orders/pending`, {})
       .then((response) => {
         const orders = response.data.data;
         setOrders(orders);
@@ -1765,7 +1765,7 @@ const PointOfSales = () => {
         id: order.id,
       };
       try {
-        const response = request("POST",`/api/orders?isPending=true`,
+        const response = request("POST", `/api/orders?isPending=true`,
           data
         );
         await getAllOrdersPending();
@@ -1812,7 +1812,7 @@ const PointOfSales = () => {
   const handleDeletePaymentById = async (id) => {
     setIsLoading(true);
     try {
-      request("DELETE",`/api/payment/${id}`, {
+      request("DELETE", `/api/payment/${id}`, {
         params: {
           orderId: order.id,
         },
@@ -1830,7 +1830,7 @@ const PointOfSales = () => {
   const handleDeleteCartItemById = async (id) => {
     setIsLoading(true);
     try {
-      request("DELETE",`/api/carts/${id}`);
+      request("DELETE", `/api/carts/${id}`);
       await getCartItems();
       await getAllOrdersPending();
       setIsLoading(false);
@@ -1855,7 +1855,7 @@ const PointOfSales = () => {
         setIsLoading(true);
       }
       try {
-        request("DELETE",`/api/orders/${id}`);
+        request("DELETE", `/api/orders/${id}`);
         await getOrderPendingLastRemove();
         if (sizeCartItems > 0) {
           setIsLoading(false);
@@ -1991,12 +1991,12 @@ const PointOfSales = () => {
 
   const [totalPagesCustomer, setTotalPagesCustomer] = useState();
   const getAllCustomers = (page, keyword) => {
-    request("GET",`/khach-hang/hien-thi`, {
-        params: {
-          pageNo: page,
-          keyword: keyword,
-        },
-      })
+    request("GET", `/khach-hang/hien-thi`, {
+      params: {
+        pageNo: page,
+        keyword: keyword,
+      },
+    })
       .then((response) => {
         setCustomers(response.data.data);
         setTotalPagesCustomer(response.data.totalPages);
@@ -2009,12 +2009,12 @@ const PointOfSales = () => {
   const handleCheckVoucher = (value) => {
     setLoadingChild(true);
     setTimeout(() => {
-      request("GET",`/voucher/findVoucher`, {
-          params: {
-            input: value,
-            tongTien: handleCountTotalMoney(),
-          },
-        })
+      request("GET", `/voucher/findVoucher`, {
+        params: {
+          input: value,
+          tongTien: handleCountTotalMoney(),
+        },
+      })
         .then((response) => {
           setDiscountValidate("");
           if (response.data.data.status === true) {
@@ -2267,7 +2267,7 @@ const PointOfSales = () => {
       imei: imei,
     };
     try {
-      request("PUT",`/api/carts/scanner`, data, {
+      request("PUT", `/api/carts/scanner`, data, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -2305,21 +2305,23 @@ const PointOfSales = () => {
     };
     console.log(data);
     try {
-      request("PUT",`/api/carts`, data, {
+      request("PUT", `/api/carts`, data, {
         headers: {
           "Content-Type": "application/json",
         },
-      });
-      await getAllOrdersPending();
-      await getCartItems();
-      handleCloseOpenModalImei();
-      handleCloseDialogProducts();
-      handleOpenAlertVariant(
-        "Thêm vào giỏ hàng thành công ",
-        Notistack.SUCCESS
-      );
-      setIsLoading(false);
-      setIsOpen(false);
+      }).then(async (response) => {
+
+        await getAllOrdersPending();
+        await getCartItems();
+        handleCloseOpenModalImei();
+        handleCloseDialogProducts();
+        handleOpenAlertVariant(
+          "Thêm vào giỏ hàng thành công ",
+          Notistack.SUCCESS
+        );
+        setIsLoading(false);
+        setIsOpen(false);
+      })
     } catch (error) {
       handleOpenAlertVariant(error.response.data.message, "warning");
       setIsLoading(false);
