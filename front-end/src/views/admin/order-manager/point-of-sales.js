@@ -393,7 +393,7 @@ const PointOfSales = () => {
         isUpdateEmail: false,
       };
       try {
-        request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
+        await request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
         )
           .then((response) => {
             const data = response.data.data;
@@ -439,7 +439,7 @@ const PointOfSales = () => {
         isUpdateEmail: false,
       };
       try {
-        request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
+        await request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
         )
           .then((response) => {
             const data = response.data.data;
@@ -766,6 +766,54 @@ const PointOfSales = () => {
     } catch (error) { }
   };
 
+
+  // const getCustomerById = async (id) => {
+  //   setIsLoading(true);
+  //   if (id !== null) {
+  //     try {
+  //       const response = await request("GET", `/khach-hang/hien-thi-theo/${id}`);
+  //       const data = response.data;
+  //       await updateAccount(id);
+  //       console.log(data);
+  //       setCustomer(data);
+  //       setCustomerName(data.hoVaTen);
+  //       setCustomerPhone(data.soDienThoai);
+  //       setCustomerEmail(data.email);
+  //       setIdCustomer(data.id);
+  //       setCustomerAddressList(data.diaChiList);
+  //       setIsLoading(false);
+  //       handleCloseDialogCustomers();
+  //       handleOpenAlertVariant(
+  //         "Chọn khách hàng thành công!",
+  //         Notistack.SUCCESS
+  //       );
+  //     } catch (error) {
+  //       console.error(error);
+  //       setIsLoading(false);
+  //     }
+  //   }
+  //   else {
+  //     try {
+  //       await updateAccount(null);
+  //       setCustomer(null);
+  //       setCustomerName("");
+  //       setCustomerPhone("");
+  //       setCustomerEmail("");
+  //       setIdCustomer("");
+  //       setCustomerAddressList([]);
+  //       setIsLoading(false);
+  //       handleCloseDialogCustomers();
+  //       handleOpenAlertVariant(
+  //         "Bỏ chọn khách hàng thành công!",
+  //         Notistack.SUCCESS
+  //       );
+  //     } catch (error) {
+  //       console.error(error);
+  //       setIsLoading(false);
+  //     }
+  //   }
+  // };
+
   const getCustomerById = async (id) => {
     setIsLoading(true);
     if (id !== null) {
@@ -908,6 +956,7 @@ const PointOfSales = () => {
   const paymentOrder = async (data) => {
     setIsLoading(true);
     const orderRequest = {
+      ma: order.ma,
       tongTien: handleCountTotalMoney(),
       tienThua: paymentWhenReceive === true ? 0 : handleCountTotalSurplus(),
       tongTienSauKhiGiam: handleCountTotalMoney() - discountValue,
@@ -958,6 +1007,57 @@ const PointOfSales = () => {
     } catch (error) { }
   };
 
+  // const updateAccount = async (id) => {
+  //   return new Promise((resolve, reject) => {
+  //     const orderRequest = {
+  //       isUpdateType: false,
+  //       isPayment: false,
+  //       isUpdateInfoShip: false,
+  //       isUpdateAccount: true,
+  //       isUpdateVoucher: false,
+  //       isUpdateInfoShipByCustomer: false,
+  //       isUpdateNoteShip: false,
+  //       isUpdateNameShip: false,
+  //       isUpdateAddressShip: false,
+  //       isUpdatePhoneShip: false,
+  //       isUpdateSdt: false,
+  //       isUpdateFullName: false,
+  //       isUpdateEmail: false,
+  //       account: {
+  //         id: id,
+  //       },
+  //     };
+  //
+  //     try {
+  //       request(`PUT`, `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest)
+  //         .then((response) => {
+  //           const data = response.data.data;
+  //           console.log(data);
+  //           setOrder(data);
+  //
+  //           const account = data && data.account && data.account;
+  //           const listAddress = data.account && data.account.diaChiList && data.account.diaChiList;
+  //           const addressActive = listAddress && listAddress.find((item) => item.trangThai === 1);
+  //
+  //           if (account) {
+  //             updateInfoShipDefault(addressActive);
+  //           } else {
+  //             updateInfoShipDefault(null);
+  //           }
+  //
+  //           getAllOrdersPending();
+  //           resolve(); // hoặc resolve(data) nếu bạn muốn trả về dữ liệu từ hàm updateAccount
+  //         })
+  //         .catch((error) => {
+  //           console.log(error);
+  //           reject(error);
+  //         });
+  //     } catch (error) {
+  //       console.log(error);
+  //       reject(error);
+  //     }
+  //   });
+  // };
   const updateAccount = async (id) => {
     const orderRequest = {
       isUpdateType: false,
@@ -979,7 +1079,7 @@ const PointOfSales = () => {
     };
 
     try {
-      request(`PUT`, `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest).then((response) => {
+      await request(`PUT`, `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest).then(async (response) => {
         const data = response.data.data;
         console.log(data);
         setOrder(data);
@@ -989,10 +1089,10 @@ const PointOfSales = () => {
         const addressActive = listAddress && listAddress.find((item) => item.trangThai === 1);
 
         if (account) {
-          updateInfoShipDefault(addressActive);
+          await updateInfoShipDefault(addressActive);
         }
         else {
-          updateInfoShipDefault(null);
+          await updateInfoShipDefault(null);
         }
 
         getAllOrdersPending();
