@@ -2,6 +2,8 @@ package beephone_shop_projects.core.admin.order_management.service;
 
 import beephone_shop_projects.core.admin.order_management.model.request.SearchFilterOrderDto;
 import beephone_shop_projects.core.admin.order_management.model.request.OrderRequest;
+import beephone_shop_projects.core.admin.order_management.model.response.OrderCustomResponse;
+import beephone_shop_projects.core.admin.order_management.model.response.OrderPaginationCustomResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.OrderResponse;
 import beephone_shop_projects.entity.Account;
 import beephone_shop_projects.entity.Voucher;
@@ -15,7 +17,7 @@ public interface HoaDonService extends GenericService<OrderResponse, OrderReques
 
   OrderResponse placeOrder(OrderRequest orderRequest) throws Exception;
 
-  Page<OrderResponse> findOrdersByMultipleCriteriaWithPagination(SearchFilterOrderDto searchFilterDTO) throws Exception;
+  Page<OrderPaginationCustomResponse> findOrdersByMultipleCriteriaWithPagination(SearchFilterOrderDto searchFilterDTO) throws Exception;
 
   OrderResponse updateStatusOrderDelivery(OrderRequest req, String id) throws Exception;
 

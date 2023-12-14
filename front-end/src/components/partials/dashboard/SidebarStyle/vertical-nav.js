@@ -847,9 +847,9 @@ const VerticalNav = memo((props) => {
                     <li className="nav-item">
                   <Link
                     className={`${
-                      location.pathname === "/nhan-vien" ? "active" : ""
+                      location.pathname === "/dashboard/employees" ? "active" : ""
                     } nav-link`}
-                    to="/nhan-vien"
+                    to="/dashboard/employees"
                   >
                     <i className="icon">
                       <svg
@@ -881,9 +881,9 @@ const VerticalNav = memo((props) => {
                 <li className="nav-item">
                   <Link
                     className={`${
-                      location.pathname === "/khach-hang" ? "active" : ""
+                      location.pathname === "/dashboard/customers" ? "active" : ""
                     } nav-link`}
-                    to="/khach-hang"
+                    to="/dashboard/customers"
                   >
                     <i className="icon">
                       <svg
@@ -962,9 +962,9 @@ const VerticalNav = memo((props) => {
               <li className="nav-item">
                 <Link
                   className={`${
-                    location.pathname === "/dashboard/voucher" ? "active" : ""
+                    location.pathname === "/dashboard/vouchers" ? "active" : ""
                   } nav-link`}
-                  to="/dashboard/voucher"
+                  to="/dashboard/vouchers"
                 >
                   <i className="icon">
                     <svg
@@ -990,9 +990,9 @@ const VerticalNav = memo((props) => {
               <li className="nav-item">
                 <Link
                   className={`${
-                    location.pathname === "/khuyen-mai" ? "active" : ""
+                    location.pathname === "/dashboard/discounts" ? "active" : ""
                   } nav-link`}
-                  to="/khuyen-mai"
+                  to="/dashboard/discounts"
                 >
                   <i className="icon">
                     <svg

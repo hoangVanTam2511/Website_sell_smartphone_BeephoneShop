@@ -1,13 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
   Link,
-  useLocation,
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
-import { Button, Table } from "antd";
+import { Button, Empty, Table } from "antd";
 import {
-  Box,
   FormControl,
   IconButton,
   MenuItem,
@@ -25,16 +23,14 @@ import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import Zoom from "@mui/material/Zoom";
-import * as dayjs from "dayjs";
 import { OrderStatusString, OrderTypeString } from "./enum";
 import LoadingIndicator from "../../../utilities/loading";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
-import moment from "moment";
 import { over } from "stompjs";
 import SockJS from "sockjs-client";
 import { FaPencilAlt } from "react-icons/fa";
+import * as dayjs from "dayjs";
 import { request, requestParam } from '../../../store/helpers/axios_helper'
 
 const ManagementOrders = () => {
@@ -50,10 +46,43 @@ const ManagementOrders = () => {
   );
   const [fromDate, setFromDate] = useState(searchParams.get("fromDate"));
   const [toDate, setToDate] = useState(searchParams.get("toDate"));
-  const [state, setState] = useState(searchParams.get("state"));
-  const [type, setType] = useState(searchParams.get("type"));
-  const [sort, setSort] = useState(searchParams.get("sort"));
+  const [state, setState] = useState(searchParams.get("state") || 10);
+  const [type, setType] = useState(searchParams.get("type") || 10);
+  const [sort, setSort] = useState(searchParams.get("sort") || "default");
+  const [size, setSize] = useState(searchParams.get("pageSize") || 10);
   const [changeOfRealtime, setChangeOfRealtime] = useState("");
+  const [openSort, setOpenSort] = useState(false);
+  const handleCloseOpenSort = () => {
+    setOpenSort(false);
+  };
+
+  const handleOpenSort = () => {
+    setOpenSort(true);
+  };
+  const [openPage, setOpenPage] = useState(false);
+  const handleCloseOpenPage = () => {
+    setOpenPage(false);
+  };
+
+  const handleOpenPage = () => {
+    setOpenPage(true);
+  };
+  const [openType, setOpenType] = useState(false);
+  const handleCloseOpenType = () => {
+    setOpenType(false);
+  };
+
+  const handleOpenType = () => {
+    setOpenType(true);
+  };
+  const [openStatus, setOpenStatus] = useState(false);
+  const handleCloseOpenStatus = () => {
+    setOpenStatus(false);
+  };
+
+  const handleOpenStatus = () => {
+    setOpenStatus(true);
+  };
   var stompClient = null;
 
   //connnect
@@ -83,10 +112,16 @@ const ManagementOrders = () => {
           fromDate: fromDate,
           toDate: toDate,
           isPending: false,
+          sort: sort,
+          type: type,
+          state: state,
+          pageSize: size,
+        },
       })
       .then((response) => {
         setOrders(response.data.data);
         setTotalPages(response.data.totalPages);
+        setCurrentPage(response.data.pageable.currentPage + 1);
         setIsLoading(false);
         console.log(response.data.data);
         // localStorage.setItem('orders', response.data.content);
@@ -98,22 +133,12 @@ const ManagementOrders = () => {
       });
   };
 
-  const isFirstRender = useRef(true);
   useEffect(() => {
     if (stompClient === null) {
       connect();
     }
     findOrdersByMultipleCriteriaWithPagination(currentPage);
-  }, [fromDate, toDate, keyword, currentPage, changeOfRealtime]);
-
-  // const isMounted = useRef(false);
-  // useEffect(() => {
-  //   if (!isMounted.current) {
-  //     isMounted.current = true;
-  //     setIsLoading(true);
-  //     findOrdersByMultipleCriteriaWithPagination(currentPage);
-  //   }
-  // }, [])
+  }, [fromDate, toDate, keyword, currentPage, type, sort, size, state, changeOfRealtime]);
 
   const handleRefreshData = () => {
     navigate(`/dashboard/management-orders`);
@@ -122,6 +147,10 @@ const ManagementOrders = () => {
     setFromDate(null);
     setToDate(null);
     setCurrentPage(1);
+    setSize(10);
+    setSort("default");
+    setType(10);
+    setState(10);
     // findOrdersByMultipleCriteriaWithPagination(1);
     // handleRemoveStorage();
   };
@@ -148,8 +177,8 @@ const ManagementOrders = () => {
   const handleGetValueFromInputTextField = (event) => {
     const value = event.target.value;
     setKeyword(value);
-    setCurrentPage(1);
-    searchParams.delete("currentPage");
+    // setCurrentPage(1);
+    // searchParams.delete("currentPage");
     setSearchParams(searchParams);
     // localStorage.setItem('keyword', value);
     // localStorage.removeItem('currentPage');
@@ -159,10 +188,10 @@ const ManagementOrders = () => {
     const value = newDate.format("DD-MM-YYYY");
     setToDate(value);
     searchParams.set("toDate", newDate.format("DD-MM-YYYY"));
-    searchParams.delete("currentPage");
+    // searchParams.delete("currentPage");
     setSearchParams(searchParams);
     handleSetParamsDate();
-    setCurrentPage(1);
+    // setCurrentPage(1);
     // localStorage.setItem('toDate', value);
     // localStorage.removeItem('currentPage');
   };
@@ -171,10 +200,10 @@ const ManagementOrders = () => {
     const value = newDate.format("DD-MM-YYYY");
     setFromDate(value);
     searchParams.set("fromDate", newDate.format("DD-MM-YYYY"));
-    searchParams.delete("currentPage");
+    // searchParams.delete("currentPage");
     setSearchParams(searchParams);
     handleSetParamsDate();
-    setCurrentPage(1);
+    // setCurrentPage(1);
     // localStorage.setItem('fromDate', value);
     // localStorage.removeItem('currentPage');
   };
@@ -207,7 +236,7 @@ const ManagementOrders = () => {
       dataIndex: "stt",
       width: "5%",
       render: (text, record, index) => (
-        <span style={{ fontWeight: "400" }}>{orders.indexOf(record) + 1}</span>
+        <span style={{ fontWeight: "400" }}>{record.stt}</span>
       ),
     },
     {
@@ -225,14 +254,18 @@ const ManagementOrders = () => {
       align: "center",
       width: "10%",
       render: (text, order) =>
-        order.account === null &&
-          order.loaiHoaDon === OrderTypeString.AT_COUNTER
-          ? order.hoVaTen
-          : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
-            order.account &&
-            order.account.hoVaTen
-            ? order.account.hoVaTen
-            : order.tenNguoiNhan,
+        <span style={{/*  textOverflow: "ellipsis", maxWidth: "300px", whiteSpace: "normal" */ }}>
+          {
+            order.account === null &&
+              order.loaiHoaDon === OrderTypeString.AT_COUNTER
+              ? order.hoVaTen
+              : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
+                order.account &&
+                order.account.hoVaTen
+                ? order.account.hoVaTen
+                : order.tenNguoiNhan
+          }
+        </span>
     },
     {
       title: "Số Điện Thoại",
@@ -310,25 +343,12 @@ const ManagementOrders = () => {
             className="rounded-pill mx-auto badge-success"
             style={{
               height: "35px",
-              width: "115px",
+              width: "125px",
               padding: "4px",
             }}
           >
             <span className="text-white" style={{ fontSize: "14px" }}>
-              Đã xác nhận
-            </span>
-          </div>
-        ) : status == OrderStatusString.PREPARING ? (
-          <div
-            className="rounded-pill mx-auto badge-warning"
-            style={{
-              height: "35px",
-              width: "150px",
-              padding: "4px",
-            }}
-          >
-            <span className="text-dark" style={{ fontSize: "14px" }}>
-              Đang chuẩn bị hàng
+              Chờ giao hàng
             </span>
           </div>
         ) : status == OrderStatusString.DELIVERING ? (
@@ -391,13 +411,12 @@ const ManagementOrders = () => {
     {
       title: "Tổng Tiền",
       align: "center",
-      dataIndex: "tongTien",
       width: "15%",
       render: (text, record) => (
         <span className="txt-danger" style={{ fontWeight: "500" }}>
           {record &&
-            record.tongTien &&
-            record.tongTien.toLocaleString("vi-VN", {
+            record.khachCanTra &&
+            record.khachCanTra.toLocaleString("vi-VN", {
               style: "currency",
               currency: "VND",
             })}
@@ -445,7 +464,7 @@ const ManagementOrders = () => {
           rowKey="ma"
           dataSource={orders}
           pagination={false}
-          locale={{ emptyText: <EmptyData /> }}
+          locale={{ emptyText: <Empty /> }}
         />
       </>
     );
@@ -578,7 +597,7 @@ const ManagementOrders = () => {
               }}
             >
               <div
-                // onClick={handleOpenSelect1}
+                onClick={handleOpenStatus}
                 className=""
                 style={{ marginTop: "8px" }}
               >
@@ -591,7 +610,7 @@ const ManagementOrders = () => {
               </div>
               <FormControl
                 sx={{
-                  minWidth: 50,
+                  maxWidth: 200,
                 }}
                 size="small"
               >
@@ -613,16 +632,27 @@ const ManagementOrders = () => {
                       fontWeight: "500",
                     },
                   }}
-                  // open={openSelect1}
-                  // onClose={handleCloseSelect1}
-                  // onOpen={handleOpenSelect1}
-                  defaultValue={14}
+                  open={openStatus}
+                  onClose={handleCloseOpenStatus}
+                  onOpen={handleOpenStatus}
+                  defaultValue={10}
+                  value={state}
+                  onChange={(e) => {
+                    setState(e.target.value);
+                    searchParams.set("orderStatus", state === 0 ? OrderStatusString.PENDING_CONFIRM
+                      : state === 1 ? OrderStatusString.CONFIRMED : state === 3 ? OrderStatusString.DELIVERING
+                        : state === 4 ? "COMPLETE" : OrderStatusString.CANCELLED);
+                    setSearchParams(searchParams)
+                  }}
                 >
-                  <MenuItem className="" value={14}>
+                  <MenuItem className="" value={10}>
                     Tất cả
                   </MenuItem>
-                  <MenuItem value={15}>Khách hàng mới</MenuItem>
-                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
+                  <MenuItem value={0}>Chờ xác nhận</MenuItem>
+                  <MenuItem value={1}>Chờ giao hàng</MenuItem>
+                  <MenuItem value={3}>Đang giao hàng</MenuItem>
+                  <MenuItem value={4}>Hoàn thành</MenuItem>
+                  <MenuItem value={5}>Đã hủy</MenuItem>
                 </Select>
               </FormControl>
             </div>
@@ -635,7 +665,7 @@ const ManagementOrders = () => {
               }}
             >
               <div
-                // onClick={handleOpenSelect1}
+                onClick={handleOpenType}
                 className=""
                 style={{ marginTop: "8px" }}
               >
@@ -648,7 +678,7 @@ const ManagementOrders = () => {
               </div>
               <FormControl
                 sx={{
-                  minWidth: 50,
+                  maxWidth: 200,
                 }}
                 size="small"
               >
@@ -670,16 +700,21 @@ const ManagementOrders = () => {
                       fontWeight: "500",
                     },
                   }}
-                  // open={openSelect1}
-                  // onClose={handleCloseSelect1}
-                  // onOpen={handleOpenSelect1}
-                  defaultValue={14}
+                  open={openType}
+                  onClose={handleCloseOpenType}
+                  onOpen={handleOpenType}
+                  defaultValue={10}
+                  value={type}
+                  onChange={(e) => {
+                    setType(e.target.value); searchParams.set("orderType", type === 0 ? OrderTypeString.AT_COUNTER : OrderTypeString.DELIVERY);
+                    setSearchParams(searchParams)
+                  }}
                 >
-                  <MenuItem className="" value={14}>
+                  <MenuItem className="" value={10}>
                     Tất cả
                   </MenuItem>
-                  <MenuItem value={15}>Khách hàng mới</MenuItem>
-                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
+                  <MenuItem value={0}>Tại quầy</MenuItem>
+                  <MenuItem value={1}>Giao hàng</MenuItem>
                 </Select>
               </FormControl>
             </div>
@@ -692,7 +727,7 @@ const ManagementOrders = () => {
               }}
             >
               <div
-                // onClick={handleOpenSelect1}
+                onClick={handleOpenSort}
                 className=""
                 style={{ marginTop: "8px" }}
               >
@@ -705,7 +740,7 @@ const ManagementOrders = () => {
               </div>
               <FormControl
                 sx={{
-                  minWidth: 50,
+                  maxWidth: 200,
                 }}
                 size="small"
               >
@@ -727,16 +762,21 @@ const ManagementOrders = () => {
                       fontWeight: "500",
                     },
                   }}
-                  // open={openSelect1}
-                  // onClose={handleCloseSelect1}
-                  // onOpen={handleOpenSelect1}
-                  defaultValue={14}
+                  open={openSort}
+                  onClose={handleCloseOpenSort}
+                  onOpen={handleOpenSort}
+                  defaultValue={"default"}
+                  value={sort}
+                  onChange={(e) => {
+                    setSort(e.target.value); searchParams.set("sortType", sort);
+                    setSearchParams(searchParams)
+                  }}
                 >
-                  <MenuItem className="" value={14}>
-                    Tất cả
+                  <MenuItem className="" value={"default"}>
+                    Mặc định
                   </MenuItem>
-                  <MenuItem value={15}>Khách hàng mới</MenuItem>
-                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
+                  <MenuItem value={"desc"}>Cũ</MenuItem>
+                  <MenuItem value={"asc"}>Mới</MenuItem>
                 </Select>
               </FormControl>
             </div>
@@ -749,7 +789,7 @@ const ManagementOrders = () => {
               }}
             >
               <div
-                // onClick={handleOpenSelect1}
+                onClick={handleOpenPage}
                 className=""
                 style={{ marginTop: "8px" }}
               >
@@ -762,7 +802,7 @@ const ManagementOrders = () => {
               </div>
               <FormControl
                 sx={{
-                  minWidth: 50,
+                  maxWidth: 200,
                 }}
                 size="small"
               >
@@ -784,16 +824,21 @@ const ManagementOrders = () => {
                       fontWeight: "500",
                     },
                   }}
-                  // open={openSelect1}
-                  // onClose={handleCloseSelect1}
-                  // onOpen={handleOpenSelect1}
-                  defaultValue={14}
+                  open={openPage}
+                  onClose={handleCloseOpenPage}
+                  onOpen={handleOpenPage}
+                  defaultValue={10}
+                  value={size}
+                  onChange={(e) => {
+                    setSize(e.target.value); searchParams.set("pageSize", size);
+                    setSearchParams(searchParams)
+                  }}
                 >
-                  <MenuItem className="" value={14}>
-                    Tất cả
+                  <MenuItem className="" value={10}>
+                    10/Pages
                   </MenuItem>
-                  <MenuItem value={15}>Khách hàng mới</MenuItem>
-                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
+                  <MenuItem value={20}>20/Pages</MenuItem>
+                  <MenuItem value={50}>50/Pages</MenuItem>
                 </Select>
               </FormControl>
             </div>

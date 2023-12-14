@@ -43,7 +43,7 @@ public interface AccountRepository extends IAccountRepository, CustomKhachHangRe
     Page<Account> getAllNV(Pageable pageable);
 
     @Query(value = """
-                SELECT  kh FROM Account kh where kh.idRole.ma='role1'
+                SELECT kh FROM Account kh where kh.idRole.ma='role1' or kh.idRole.ma ='role3'
             """)
     List<Account> getAllNVienNoPage();
 
@@ -116,7 +116,7 @@ public interface AccountRepository extends IAccountRepository, CustomKhachHangRe
     List<Account> sendMailAccount();
 
     @Query(value = """
-            SELECT * FROM account acc WHERE acc.email = :email 
+            SELECT * FROM account acc WHERE acc.email = :email
             """, nativeQuery = true)
     Account findByEmail(@Param("email") String email);
 
