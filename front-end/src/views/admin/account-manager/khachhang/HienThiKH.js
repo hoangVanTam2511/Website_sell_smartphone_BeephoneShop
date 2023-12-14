@@ -149,7 +149,7 @@ const HienThiKH = () => {
         console.log(response.data.data)
         setTotalPages(response.data.totalPages);
       })
-      .catch(() => {});
+      .catch(() => { });
   };
   //edit
   const navigate = useNavigate();
@@ -172,7 +172,7 @@ const HienThiKH = () => {
       matKhau: record.matKhau,
       soDienThoai: record.soDienThoai,
     });
-    navigate(`/update-khach-hang/${record.id}`);
+    navigate(`/dashboard/update-customer/${record.id}`);
     setEditingKey(record.id);
   };
 
@@ -295,11 +295,9 @@ const HienThiKH = () => {
               />
             </Tooltip>
             <Popconfirm
-              title={`Đổi trạng thái tài khoản từ ${
-                record.trangThai === 0 ? `"Hoạt Động"` : `"Ngừng Hoạt Động"`
-              } sang ${
-                record.trangThai === 0 ? `"Ngừng Hoạt Động"` : `"Hoạt Động"`
-              } `}
+              title={`Đổi trạng thái tài khoản từ ${record.trangThai === 0 ? `"Hoạt Động"` : `"Ngừng Hoạt Động"`
+                } sang ${record.trangThai === 0 ? `"Ngừng Hoạt Động"` : `"Hoạt Động"`
+                } `}
               onConfirm={() => {
                 doChangeTrangThai(record.id);
               }}
@@ -467,7 +465,7 @@ const HienThiKH = () => {
                     </SelectMui>
                   </FormControl>
                 </div>
-                <Link to="/them-khach-hang" className="me-3">
+                <Link to="/dashboard/create-customer" className="me-3">
                   <Button
                     // onClick={handleCreateNewOrderPending}
                     className="rounded-2 button-mui"

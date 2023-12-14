@@ -134,7 +134,7 @@ export const DefaultRouter = [
       },
       {
         path: "/home",
-        element: <Index />,
+        element: <ThongKe />,
       },
       {
         path: "chip",
@@ -181,32 +181,27 @@ export const DefaultRouter = [
         element: <ThemSanPham />,
       },
       {
-        path: "khach-hang",
-        element: <KhachHang />,
-      },
-      {
-        path: "khach-hang",
+        path: "/dashboard/customers",
         element: <KhachHang />,
       },
       {
         path: "mau-sac",
         element: <MauSac />,
       },
-
       {
-        path: "them-khach-hang",
+        path: "/dashboard/create-customer",
         element: <AddKH />,
       },
       {
-        path: "/update-khach-hang/:id",
+        path: "/dashboard/update-customer/:id",
         element: <UpdateKH />,
       },
       {
-        path: "/update-nhan-vien/:id",
+        path: "dashboard/update-employee/:id",
         element: <UpdateNV />,
       },
       {
-        path: "diachi-khach-hang",
+        path: "/dashboard/customer-address",
         element: <AddressForm />,
       },
       ,
@@ -215,15 +210,15 @@ export const DefaultRouter = [
         element: <NhapTuFileKH />,
       },
       {
-        path: "nhan-vien",
+        path: "/dashboard/employees",
         element: <NhanVien />,
       },
       {
-        path: "them-nhan-vien",
+        path: "/dashboard/create-employee",
         element: <AddNv />,
       },
       {
-        path: "imei/:idChiTietSanPham",
+        path: "/dashboard/imeis/:id",
         element: <Imei />,
       },
       {
@@ -231,19 +226,19 @@ export const DefaultRouter = [
         element: <NhapTuFileNV />,
       },
       {
-        path: "chuc-vu",
+        path: "/dashboard/roles",
         element: <Role />,
       },
       {
-        path: "them-chuc-vu",
+        path: "/dashboard/create-role",
         element: <AddRole />,
       },
       {
-        path: "dashboard/voucher",
+        path: "dashboard/vouchers",
         element: <HienThiVoucher />,
       },
       {
-        path: "dashboard/add-voucher",
+        path: "dashboard/create-voucher",
         element: <AddVoucher />,
       },
       {
@@ -251,11 +246,11 @@ export const DefaultRouter = [
         element: <UpdateVoucher />,
       },
       {
-        path: "khuyen-mai",
+        path: "/dashboard/discounts",
         element: <HienThiKhuyenMai />,
       },
       {
-        path: "them-khuyen-mai",
+        path: "/dashboard/create-discount",
         element: <AddKhuyenMai />,
       },
       // {
@@ -263,7 +258,7 @@ export const DefaultRouter = [
       //   element: <AddKhuyenMai />,
       // },
       {
-        path: "sua-khuyen-mai/:id",
+        path: "/dashboard/update-discount/:id",
         element: <SuaKhuyenMai />,
       },
       {
