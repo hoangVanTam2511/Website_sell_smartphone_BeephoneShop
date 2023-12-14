@@ -35,7 +35,7 @@ import Sheet from "@mui/joy/Sheet";
 import { ConfirmAddProduct, ConfirmChangeTypePhienBan } from "./AlertDialogSlide";
 import ModalChonDonGiaChung from "./modal-don-gia-chung";
 import CreateMauSac from "./create-mau-sac";
-import { request } from '../../../store/helpers/axios_helper'
+import { request, requestBodyMultipartFile } from '../../../store/helpers/axios_helper'
 
 const ITEM_HEIGHT = 130;
 const ITEM_PADDING_TOP = 8;
@@ -973,15 +973,10 @@ const UpdateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
 
   const addFiles = async (ma) => {
     try {
-      request('POST','/api/products/upload-multiple', formData, {
-        params: {
+      requestBodyMultipartFile('POST','/api/products/upload-multiple', formData, {
           ma: ma,
-        }
-      }, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      })
+      }
+      )
     }
     catch (error) {
       setIsLoading(false);

@@ -37,7 +37,7 @@ import ModalChonDonGiaChung from "./modal-don-gia-chung";
 import CreateMauSac from "./create-mau-sac";
 import Barcode from 'react-barcode';
 import html2canvas from 'html2canvas';
-import { request } from '../../../store/helpers/axios_helper'
+import { request, requestBodyMultipartFile } from '../../../store/helpers/axios_helper'
 
 const ITEM_HEIGHT = 130;
 const ITEM_PADDING_TOP = 8;
@@ -888,15 +888,16 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
     // check product  
     console.log(products)
     try {
-      request('POST',`/api/products`, products, {
-        headers: {
-          "Content-Type": "application/json",
+      request('POST',`/api/products`, products).then(
+        async(res) => {
+          console.log(res)
+          const isMissingImage = cauHinhsFinal.some((cauHinh) => !cauHinh.image);
+          if (!isMissingImage) {
+            await addFiles(res.data.data.ma);
+          }
         }
-      })
-      const isMissingImage = cauHinhsFinal.some((cauHinh) => !cauHinh.image);
-      if (!isMissingImage) {
-        await addFiles(products.product.ma);
-      }
+      )
+    
       handleOpenAlertVariant("Thêm sản phẩm thành công!", Notistack.SUCCESS);
       setIsLoadingInside(false);
       getOverplay(false);
@@ -927,14 +928,10 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
 
   const addFiles = async (ma) => {
     try {
-      request('POST','/api/products/upload-multiple', formData, {
-        params: {
+      requestBodyMultipartFile('POST','/api/products/upload-multiple', formData, {
           ma: ma,
-        }
-      }, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+      }).then((res) => {
+        // console.log(res)
       })
     }
     catch (error) {
