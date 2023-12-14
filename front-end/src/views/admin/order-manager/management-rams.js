@@ -315,6 +315,15 @@ const ManagementRams = () => {
   const validationAll = () => {
     const msg = {};
 
+    const isDuplicate = listRam.some(
+      (product) => product.dungLuong === dungLuong && product.id !== idRam
+    );
+
+    if (isDuplicate) {
+      handleOpenAlertVariant("Ram đã tồn tại", Notistack.ERROR);
+      msg = "Đã tồn tại";
+    }
+
     if (!dungLuong.trim("")) {
       msg.dungLuong = "Kích thước ram không được trống.";
     }

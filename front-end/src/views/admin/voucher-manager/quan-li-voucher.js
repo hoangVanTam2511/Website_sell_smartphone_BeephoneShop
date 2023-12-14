@@ -514,7 +514,7 @@ const HienThiVoucher = () => {
               className="rounded-pill mx-auto badge-primary"
               style={{
                 height: "35px",
-                width: "110px",
+                width: "135px",
                 padding: "4px",
               }}
             >
@@ -527,7 +527,7 @@ const HienThiVoucher = () => {
               className="rounded-pill mx-auto badge-danger"
               style={{
                 height: "35px",
-                width: "auto",
+                width: "135px",
                 padding: "4px",
               }}
             >
@@ -540,7 +540,7 @@ const HienThiVoucher = () => {
               className="rounded-pill mx-auto badge-light"
               style={{
                 height: "35px",
-                width: "120px",
+                width: "135px",
                 padding: "4px",
               }}
             >
@@ -553,7 +553,7 @@ const HienThiVoucher = () => {
               className="rounded-pill mx-auto badge-danger"
               style={{
                 height: "35px",
-                width: "90px",
+                width: "135px",
                 padding: "4px",
               }}
             >
@@ -566,7 +566,7 @@ const HienThiVoucher = () => {
               className="rounded-pill mx-auto badge-warning"
               style={{
                 height: "35px",
-                width: "90px",
+                width: "135px",
                 padding: "4px",
               }}
             >
@@ -796,7 +796,6 @@ const HienThiVoucher = () => {
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
         <MenuItem
-          // selected={}
           disabled={
             checkStatus === StatusDiscount.HOAT_DONG
               ? true
@@ -830,7 +829,7 @@ const HienThiVoucher = () => {
           }}
           style={{ color: "black" }}
         >
-          Hủy Voucher
+          Hủy Phiếu Giảm Giá
         </MenuItem>
       </Menu>
       <div

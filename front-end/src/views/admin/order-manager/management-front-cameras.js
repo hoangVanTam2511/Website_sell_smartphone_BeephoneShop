@@ -31,7 +31,10 @@ import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDown
 import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import CreateCameraTruoc from "./create-camera-truoc";
 import useCustomSnackbar from "../../../utilities/notistack";
-import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
+import {
+  ConvertCameraTypeToString,
+  ConvertStatusProductsNumberToString,
+} from "../../../utilities/convertEnum";
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -214,7 +217,24 @@ const ManagementFrontCameras = () => {
   const validationAll = () => {
     const msg = {};
 
-    if (!doPhanGiai.trim("")) {
+    const isDuplicate = cameras.some(
+      (camera) =>
+        camera.doPhanGiai == doPhanGiai &&
+        camera.cameraType === cameraType &&
+        camera.id !== idCamera
+    );
+
+    if (isDuplicate) {
+      handleOpenAlertVariant("Camera đã tồn tại", Notistack.ERROR);
+      msg = "Đã tồn tại";
+    }
+
+    if (
+      doPhanGiai !== null &&
+      doPhanGiai !== undefined &&
+      typeof doPhanGiai === "string" &&
+      doPhanGiai.trim() === ""
+    ) {
       msg.doPhanGiai = "Độ phân giải không được trống.";
     }
 

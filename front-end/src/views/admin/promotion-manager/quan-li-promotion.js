@@ -62,6 +62,7 @@ const HienThiKhuyenMai = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [sortVoucher, setSortVoucher] = useState("all");
   const [showPage, setShowPage] = useState(5);
+  const [checkStatus, setCheckStatus] = useState("");
 
   const handleReset = () => {
     setIsLoading(false);
@@ -422,7 +423,7 @@ const HienThiKhuyenMai = () => {
               className="rounded-pill mx-auto badge-primary"
               style={{
                 height: "35px",
-                width: "110px",
+                width: "135px",
                 padding: "4px",
               }}
             >
@@ -435,7 +436,7 @@ const HienThiKhuyenMai = () => {
               className="rounded-pill mx-auto badge-danger"
               style={{
                 height: "35px",
-                width: "auto",
+                width: "135px",
                 padding: "4px",
               }}
             >
@@ -448,7 +449,7 @@ const HienThiKhuyenMai = () => {
               className="rounded-pill mx-auto badge-light"
               style={{
                 height: "35px",
-                width: "120px",
+                width: "135px",
                 padding: "4px",
               }}
             >
@@ -461,7 +462,7 @@ const HienThiKhuyenMai = () => {
               className="rounded-pill mx-auto badge-danger"
               style={{
                 height: "35px",
-                width: "90px",
+                width: "135px",
                 padding: "4px",
               }}
             >
@@ -474,7 +475,7 @@ const HienThiKhuyenMai = () => {
               className="rounded-pill mx-auto badge-warning"
               style={{
                 height: "35px",
-                width: "90px",
+                width: "135px",
                 padding: "4px",
               }}
             >
@@ -503,6 +504,7 @@ const HienThiKhuyenMai = () => {
                 </IconButton>
               </Link>
             </Tooltip>
+
             <Tooltip TransitionComponent={Zoom} title={"Đổi trạng thái"}>
               <IconButton
                 disabled={
@@ -521,6 +523,7 @@ const HienThiKhuyenMai = () => {
                   handleClickChangeStatus(event);
                   setId(record.id);
                   setMa(record.tenKhuyenMai);
+                  setCheckStatus(record.trangThai);
                 }}
               >
                 <AssignmentOutlinedIcon
@@ -677,7 +680,13 @@ const HienThiKhuyenMai = () => {
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
         <MenuItem
-          // selected={}
+          disabled={
+            checkStatus === StatusDiscount.HOAT_DONG
+              ? true
+              : checkStatus === StatusDiscount.CHUA_DIEN_RA
+              ? true
+              : false
+          }
           onClick={() => {
             handleOpenDialogConfirmUpdate();
             setSelectedStatus(5);
@@ -692,10 +701,12 @@ const HienThiKhuyenMai = () => {
             setSelectedStatus(StatusDiscount.TAM_DUNG);
           }}
           style={{ color: "black" }}
+          disabled={checkStatus === StatusDiscount.TAM_DUNG ? true : false}
         >
           Tạm Dừng
         </MenuItem>
         <MenuItem
+          disabled={checkStatus === StatusDiscount.DA_HUY ? true : false}
           onClick={() => {
             handleOpenDialogConfirmUpdate();
             setSelectedStatus(StatusDiscount.DA_HUY);

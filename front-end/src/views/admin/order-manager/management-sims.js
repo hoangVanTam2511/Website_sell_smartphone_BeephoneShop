@@ -231,7 +231,7 @@ const ManagementSims = () => {
         <span>
           {record.status === SimStatus.ACTIVE ? (
             <div
-              className="rounded-pill mx-auto badge-primary"
+              className="rounded-pill mx-auto badge-success"
               style={{
                 height: "35px",
                 width: "96px",

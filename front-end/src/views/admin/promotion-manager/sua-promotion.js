@@ -77,7 +77,7 @@ const SuaKhuyenMai = () => {
   let successfulCount1 = 0;
 
   const redirectToHienThiKhuyenMai = () => {
-    navigate("/khuyen-mai");
+    navigate("/dashboard/discounts");
   };
 
   const handleOpenDialogConfirmAdd = () => {

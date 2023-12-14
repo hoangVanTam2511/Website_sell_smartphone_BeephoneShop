@@ -41,7 +41,7 @@ const CreateChip = ({ open, close, getAll, chips }) => {
       msg = "Đã tồn tại";
     }
 
-    if (!tenChip.trim("")) {
+    if (tenChip.trim() === "") {
       msg.tenChip = "Tên chip không được trống.";
     }
 
@@ -148,6 +148,10 @@ const CreateChip = ({ open, close, getAll, chips }) => {
                       id="demo-simple-select"
                       value={status}
                       label="Trạng Thái"
+                      style={{
+                        pointerEvents: "none",
+                        opacity: 0.5,
+                      }}
                       onChange={handleChangeStatus}
                       defaultValue={StatusCommonProductsNumber.ACTIVE}
                     >

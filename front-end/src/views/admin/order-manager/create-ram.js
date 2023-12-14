@@ -13,26 +13,10 @@ import {
   Slide,
   InputLabel,
 } from "@mui/material";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import { PlusOutlined } from "@ant-design/icons";
-import Card from "../../../components/Card";
-import { format } from "date-fns";
 import axios from "axios";
-import { parseInt } from "lodash";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
-import Zoom from "@mui/material/Zoom";
-import * as dayjs from "dayjs";
 import LoadingIndicator from "../../../utilities/loading";
 import generateRandomCode from "../../../utilities/randomCode";
-import {
-  Notistack,
-  StatusCommonProducts,
-  StatusCommonProductsNumber,
-} from "./enum";
+import { Notistack, StatusCommonProductsNumber } from "./enum";
 import useCustomSnackbar from "../../../utilities/notistack";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -69,7 +53,16 @@ const CreateRam = ({ open, close, getAll, rams }) => {
   const validationAll = () => {
     const msg = {};
 
-    if (!kichThuoc.trim("")) {
+    const isDuplicate = rams.some(
+      (products) => products.dungLuong == kichThuoc
+    );
+
+    if (isDuplicate) {
+      handleOpenAlertVariant("Kích thước ram đã tồn tại", Notistack.ERROR);
+      msg = "Đã tồn tại";
+    }
+
+    if (kichThuoc.trim() === "") {
       msg.kichThuoc = "Kích thước ram không được trống.";
     }
 
@@ -182,6 +175,10 @@ const CreateRam = ({ open, close, getAll, rams }) => {
                       id="demo-simple-select"
                       value={status}
                       label="Trạng Thái"
+                      style={{
+                        pointerEvents: "none",
+                        opacity: 0.5,
+                      }}
                       defaultValue={StatusCommonProductsNumber.ACTIVE}
                       onChange={handleChangeStatus}
                     >

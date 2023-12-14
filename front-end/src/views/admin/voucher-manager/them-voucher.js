@@ -123,7 +123,7 @@ const AddVoucher = () => {
   };
 
   const redirectToHienThiVoucher = () => {
-    navigate("/dashboard/voucher");
+    navigate("/dashboard/vouchers");
   };
 
   const handleUpdateVoucher = (id) => {

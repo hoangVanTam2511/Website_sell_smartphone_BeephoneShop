@@ -337,6 +337,18 @@ const ManagementPins = () => {
   const validationAll = () => {
     const msg = {};
 
+    const isDuplicate = pins.some(
+      (product) =>
+        product.loaiPin === loaiPin &&
+        product.dungLuong === dungLuong &&
+        product.id !== idPin
+    );
+
+    if (isDuplicate) {
+      handleOpenAlertVariant("Pin đã tồn tại", Notistack.ERROR);
+      msg = "Đã tồn tại";
+    }
+
     if (!loaiPin.trim("")) {
       msg.loaiPin = "Loại pin không được trống.";
     }

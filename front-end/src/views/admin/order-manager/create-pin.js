@@ -40,7 +40,7 @@ const CreatePin = ({ open, close, getAll, pins }) => {
   };
 
   const uniqueDungLuong = pins
-    .map((option) => option.dungLuong)
+    .map((option) => option.dungLuong.toString())
     .filter((value, index, self) => {
       return self.indexOf(value) === index;
     });
@@ -66,11 +66,21 @@ const CreatePin = ({ open, close, getAll, pins }) => {
   const validationAll = () => {
     const msg = {};
 
-    if (!loaiPin.trim("")) {
+    const isDuplicate = pins.some(
+      (products) =>
+        products.loaiPin === loaiPin && products.dungLuong == dungLuong
+    );
+
+    if (isDuplicate) {
+      handleOpenAlertVariant("Pin đã tồn tại", Notistack.ERROR);
+      msg = "Đã tồn tại";
+    }
+
+    if (loaiPin.trim() === "") {
       msg.loaiPin = "Loại pin không được trống.";
     }
 
-    if (!dungLuong.trim("")) {
+    if (dungLuong.trim() === "") {
       msg.dungLuong = "Dung lượng pin không được trống.";
     }
 
@@ -193,11 +203,16 @@ const CreatePin = ({ open, close, getAll, pins }) => {
                       Trạng Thái
                     </InputLabel>
                     <Select
+                      disabled={true}
                       className="custom"
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
                       value={status}
                       label="Trạng Thái"
+                      style={{
+                        pointerEvents: "none",
+                        opacity: 0.5,
+                      }}
                       onChange={handleChangeStatus}
                       defaultValue={StatusCommonProductsNumber.ACTIVE}
                     >

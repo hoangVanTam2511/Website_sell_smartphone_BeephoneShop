@@ -363,6 +363,15 @@ const ManagementHangs = () => {
   const validationAll = () => {
     const msg = {};
 
+    const isDuplicate = listHang.some(
+      (product) => product.tenChip === tenHang && product.id !== idHang
+    );
+
+    if (isDuplicate) {
+      handleOpenAlertVariant("Hãng đã tồn tại", Notistack.ERROR);
+      msg = "Đã tồn tại";
+    }
+
     if (!tenHang.trim("")) {
       msg.tenHang = "Tên hãng không được trống.";
     }

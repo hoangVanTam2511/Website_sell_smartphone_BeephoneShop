@@ -65,7 +65,7 @@ const AddKhuyenMai = () => {
   const navigate = useNavigate();
 
   const redirectToHienThiKhuyenMai = () => {
-    navigate("/khuyen-mai");
+    navigate("/dashboard/discounts");
   };
 
   const handleOpenDialogConfirmAdd = () => {

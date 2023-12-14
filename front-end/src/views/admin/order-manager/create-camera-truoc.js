@@ -62,15 +62,15 @@ const CreateCameraTruoc = ({ open, close, getAll, cameraFront }) => {
     );
 
     if (isDuplicate) {
-      handleOpenAlertVariant("Độ phân giải đã tồn tại", Notistack.ERROR);
-      msg = "Độ phân giải đã tồn tại";
+      handleOpenAlertVariant("Camera đã tồn tại", Notistack.ERROR);
+      msg = "Đã tồn tại";
     }
 
     if (isNaN(doPhanGiai) || doPhanGiai < 1 || doPhanGiai > 10000) {
       msg.doPhanGiai = "Độ phân giải phải là số và từ 1 đến 10000 Megapixels";
     }
 
-    if (!doPhanGiai.trim("")) {
+    if (doPhanGiai.trim() === "") {
       msg.doPhanGiai = "Độ phân giải không được trống.";
     }
 
@@ -222,6 +222,7 @@ const CreateCameraTruoc = ({ open, close, getAll, cameraFront }) => {
                       Trạng Thái
                     </InputLabel>
                     <Select
+                      // disabled={true}
                       className="custom"
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
@@ -229,6 +230,10 @@ const CreateCameraTruoc = ({ open, close, getAll, cameraFront }) => {
                       label="Trạng Thái"
                       onChange={handleChangeStatus}
                       defaultValue={StatusCommonProductsNumber.ACTIVE}
+                      style={{
+                        pointerEvents: "none",
+                        opacity: 0.5,
+                      }}
                     >
                       <MenuItem value={StatusCommonProductsNumber.ACTIVE}>
                         Hoạt Động

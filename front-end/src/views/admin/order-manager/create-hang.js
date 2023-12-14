@@ -37,11 +37,11 @@ const CreateHang = ({ open, close, getAll, hangs }) => {
     const isDuplicate = hangs.some((products) => products.tenHang === tenHang);
 
     if (isDuplicate) {
-      handleOpenAlertVariant("Tên danh mục đã tồn tại", Notistack.ERROR);
+      handleOpenAlertVariant("Hãng đã tồn tại", Notistack.ERROR);
       msg = "Đã tồn tại";
     }
 
-    if (!tenHang.trim("")) {
+    if (tenHang.trim() === "") {
       msg.tenHang = "Tên hãng không được trống.";
     }
 
@@ -148,6 +148,10 @@ const CreateHang = ({ open, close, getAll, hangs }) => {
                       id="demo-simple-select"
                       value={status}
                       label="Trạng Thái"
+                      style={{
+                        pointerEvents: "none",
+                        opacity: 0.5,
+                      }}
                       defaultValue={StatusCommonProductsNumber.ACTIVE}
                       onChange={handleChangeStatus}
                     >

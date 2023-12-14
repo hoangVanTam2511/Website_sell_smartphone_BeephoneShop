@@ -500,35 +500,6 @@ const VerticalNav = memo((props) => {
               <li className="nav-item">
                 <Link
                   className={`${
-                    location.pathname === "/dashboard/sacs" ? "active" : ""
-                  } nav-link`}
-                  to="/dashboard/sacs"
-                >
-                  <i className="icon">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="10"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                    >
-                      <g>
-                        <circle
-                          cx="12"
-                          cy="12"
-                          r="8"
-                          fill="currentColor"
-                        ></circle>
-                      </g>
-                    </svg>
-                  </i>
-                  <i className="sidenav-mini-icon"> S </i>
-                  <span className="item-name">Sạc</span>
-                </Link>
-              </li>
-
-              <li className="nav-item">
-                <Link
-                  className={`${
                     location.pathname === "/dashboard/hangs" ? "active" : ""
                   } nav-link`}
                   to="/dashboard/hangs"
@@ -700,6 +671,34 @@ const VerticalNav = memo((props) => {
               <li className="nav-item">
                 <Link
                   className={`${
+                    location.pathname === "/dashboard/sacs" ? "active" : ""
+                  } nav-link`}
+                  to="/dashboard/sacs"
+                >
+                  <i className="icon">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="10"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <g>
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="8"
+                          fill="currentColor"
+                        ></circle>
+                      </g>
+                    </svg>
+                  </i>
+                  <i className="sidenav-mini-icon"> S </i>
+                  <span className="item-name">Cổng Sạc</span>
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link
+                  className={`${
                     location.pathname === "/dashboard/rear-cameras"
                       ? "active"
                       : ""
@@ -839,7 +838,9 @@ const VerticalNav = memo((props) => {
                 <li className="nav-item">
                   <Link
                     className={`${
-                      location.pathname === "/dashboard/employees" ? "active" : ""
+                      location.pathname === "/dashboard/employees"
+                        ? "active"
+                        : ""
                     } nav-link`}
                     to="/dashboard/employees"
                   >
@@ -867,7 +868,9 @@ const VerticalNav = memo((props) => {
                 <li className="nav-item">
                   <Link
                     className={`${
-                      location.pathname === "/dashboard/customers" ? "active" : ""
+                      location.pathname === "/dashboard/customers"
+                        ? "active"
+                        : ""
                     } nav-link`}
                     to="/dashboard/customers"
                   >

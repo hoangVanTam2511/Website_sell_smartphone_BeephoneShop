@@ -60,7 +60,7 @@ const UpdateVoucher = () => {
   const navigate = useNavigate();
 
   const redirectToHienThiVoucher = () => {
-    navigate("/dashboard/voucher");
+    navigate("/dashboard/vouchers");
   };
 
   const handleOpenDialogConfirmUpdate = () => {

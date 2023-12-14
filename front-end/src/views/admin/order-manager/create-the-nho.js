@@ -16,7 +16,8 @@ import {
 import axios from "axios";
 import LoadingIndicator from "../../../utilities/loading";
 import generateRandomCode from "../../../utilities/randomCode";
-import { StatusCommonProductsNumber } from "./enum";
+import { Notistack, StatusCommonProductsNumber } from "./enum";
+import useCustomSnackbar from "../../../utilities/notistack";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -28,13 +29,25 @@ const CreateTheNho = ({ open, close, getAll, theNhos }) => {
   const [loaiTheNho, setLoaiTheNho] = React.useState("");
   const [dungLuongToiDa, setDungLuongToiDa] = React.useState("");
   const [status, setStatus] = React.useState(StatusCommonProductsNumber.ACTIVE);
+  const { handleOpenAlertVariant } = useCustomSnackbar();
 
   const [validationMsg, setValidationMsg] = useState({});
 
   const validationAll = () => {
     const msg = {};
 
-    if (!loaiTheNho.trim("")) {
+    const isDuplicate = theNhos.some(
+      (products) =>
+        products.loaiTheNho === loaiTheNho &&
+        products.dungLuongToiDa == dungLuongToiDa
+    );
+
+    if (isDuplicate) {
+      handleOpenAlertVariant("Thẻ nhớ đã tồn tại", Notistack.ERROR);
+      msg = "Đã tồn tại";
+    }
+
+    if (loaiTheNho.trim() === "") {
       msg.loaiTheNho = "Loại thẻ nhớ không được trống.";
     }
 
@@ -74,9 +87,10 @@ const CreateTheNho = ({ open, close, getAll, theNhos }) => {
         close();
         getAll();
         handleReset();
+        handleOpenAlertVariant("Thêm thẻ nhớ thành công", Notistack.SUCCESS);
       })
       .catch((error) => {
-        console.log("add thất bại");
+        handleOpenAlertVariant("Thêm thẻ nhớ thất bại", Notistack.ERROR);
       });
   };
 
@@ -200,7 +214,10 @@ const CreateTheNho = ({ open, close, getAll, theNhos }) => {
                       id="demo-simple-select"
                       value={status}
                       label="Trạng Thái"
-                      d
+                      style={{
+                        pointerEvents: "none",
+                        opacity: 0.5,
+                      }}
                       defaultValue={StatusCommonProductsNumber.ACTIVE}
                       onChange={handleChangeStatus}
                     >

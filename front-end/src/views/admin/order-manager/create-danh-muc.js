@@ -43,7 +43,7 @@ const CreateDanhMuc = ({ open, close, getAll, danhMucs }) => {
       msg = "Đã tồn tại";
     }
 
-    if (!tenDanhMuc.trim("")) {
+    if (tenDanhMuc.trim() === "") {
       msg.tenDanhMuc = "Tên danh mục không được trống.";
     }
 
@@ -151,6 +151,10 @@ const CreateDanhMuc = ({ open, close, getAll, danhMucs }) => {
                       value={status}
                       label="Trạng Thái"
                       onChange={handleChangeStatus}
+                      style={{
+                        pointerEvents: "none",
+                        opacity: 0.5,
+                      }}
                       defaultValue={StatusCommonProductsNumber.ACTIVE}
                     >
                       <MenuItem value={StatusCommonProductsNumber.ACTIVE}>

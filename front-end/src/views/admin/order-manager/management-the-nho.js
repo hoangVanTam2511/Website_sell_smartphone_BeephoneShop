@@ -665,7 +665,7 @@ const ManagementTheNhos = () => {
       <CreateTheNho
         open={open}
         close={handleClose}
-        getAll={getListTheNho}
+        getAll={getListProductSearchAndPage}
         theNhos={listTheNho}
       />
       <Dialog

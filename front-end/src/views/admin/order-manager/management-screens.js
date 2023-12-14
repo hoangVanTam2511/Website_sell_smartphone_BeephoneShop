@@ -441,6 +441,43 @@ const ManagementScreens = () => {
 
   const { handleOpenAlertVariant } = useCustomSnackbar();
 
+  // const [validationMsg, setValidationMsg] = useState({});
+
+  // const validationAll = () => {
+  //   const msg = {};
+
+  //   const isDuplicate = listRam.some(
+  //     (product) => product.dungLuong === dungLuong && product.id !== idRam
+  //   );
+
+  //   if (isDuplicate) {
+  //     handleOpenAlertVariant("Ram đã tồn tại", Notistack.ERROR);
+  //     msg = "Đã tồn tại";
+  //   }
+
+  //   if (!dungLuong.trim("")) {
+  //     msg.dungLuong = "Kích thước ram không được trống.";
+  //   }
+
+  //   if (dungLuong < 1) {
+  //     msg.dungLuong = "Kích thước ram không được nhỏ hơn 1 GB.";
+  //   }
+
+  //   if (dungLuong > 3000) {
+  //     msg.dungLuong = "Kích thước ram không được lớn hơn 3000 GB.";
+  //   }
+
+  //   setValidationMsg(msg);
+  //   if (Object.keys(msg).length > 0) return false;
+  //   return true;
+  // };
+
+  // const handleSubmit = () => {
+  //   const isValid = validationAll();
+  //   if (!isValid) return;
+  //   updateRam();
+  // };
+
   const updateDoPhanGiai = () => {
     let obj = {
       id: idDoPhanGiai,

@@ -15,7 +15,8 @@ import {
 import axios from "axios";
 import LoadingIndicator from "../../../utilities/loading";
 import generateRandomCode from "../../../utilities/randomCode";
-import { StatusCommonProductsNumber } from "./enum";
+import { Notistack, StatusCommonProductsNumber } from "./enum";
+import useCustomSnackbar from "../../../utilities/notistack";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -27,6 +28,7 @@ const CreateSac = ({ open, close, getAll, sacs }) => {
   const [isLoading, setIsLoading] = React.useState(false);
   const [status, setStatus] = React.useState(StatusCommonProductsNumber.ACTIVE);
   const [loaiCongSac, setLoaiCongSac] = React.useState("");
+  const { handleOpenAlertVariant } = useCustomSnackbar();
 
   const handleChangeStatus = (event) => {
     setStatus(event.target.value);
@@ -45,7 +47,16 @@ const CreateSac = ({ open, close, getAll, sacs }) => {
   const validationAll = () => {
     const msg = {};
 
-    if (!loaiCongSac.trim("")) {
+    const isDuplicate = sacs.some(
+      (products) => products.loaiCongSac == loaiCongSac
+    );
+
+    if (isDuplicate) {
+      handleOpenAlertVariant("Loại cổng sạc đã tồn tại", Notistack.ERROR);
+      msg = "Đã tồn tại";
+    }
+
+    if (loaiCongSac.trim() === "") {
       msg.loaiCongSac = "Loại cổng sạc không được trống.";
     }
 
@@ -139,6 +150,10 @@ const CreateSac = ({ open, close, getAll, sacs }) => {
                       id="demo-simple-select"
                       value={status}
                       label="Trạng Thái"
+                      style={{
+                        pointerEvents: "none",
+                        opacity: 0.5,
+                      }}
                       defaultValue={StatusCommonProductsNumber.ACTIVE}
                       onChange={handleChangeStatus}
                     >

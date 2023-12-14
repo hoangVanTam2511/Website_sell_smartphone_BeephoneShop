@@ -2,10 +2,10 @@ import React, { useEffect, Fragment, memo } from "react";
 import { Navbar, Container, Nav, Dropdown } from "react-bootstrap";
 import { Link, useLocation, useParams } from "react-router-dom";
 import CustomToggle from "../../../dropdowns";
-import FolderIcon from '@mui/icons-material/Folder';
-import Breadcrumbs from '@mui/joy/Breadcrumbs';
-import { Link as LinkJoy } from '@mui/joy';
-import Typography from '@mui/joy/Typography';
+import FolderIcon from "@mui/icons-material/Folder";
+import Breadcrumbs from "@mui/joy/Breadcrumbs";
+import { Link as LinkJoy } from "@mui/joy";
+import Typography from "@mui/joy/Typography";
 
 //img
 // import flag1 from '../../../../assets/images/Flag/flag001.png'
@@ -37,7 +37,7 @@ import * as SettingSelector from "../../../../store/setting/selectors";
 const Header = memo((props) => {
   const navbarHide = useSelector(SettingSelector.navbar_show); // array
   const headerNavbar = useSelector(SettingSelector.header_navbar);
-  const user = useSelector(state => state.user.user)
+  const user = useSelector((state) => state.user.user);
 
   useEffect(() => {
     // navbarstylemode
@@ -68,105 +68,139 @@ const Header = memo((props) => {
   }, [location.pathname]);
   const getBreadcrumbList = (path) => {
     switch (path) {
-      case '/dashboard/management-orders':
+      case "/dashboard/management-orders":
         return [
-          { label: 'Quản Lý Đơn Hàng', path: '/dashboard/management-orders' },
+          { label: "Quản Lý Đơn Hàng", path: "/dashboard/management-orders" },
         ];
       case `/dashboard/order-detail/${id}`:
         return [
-          { label: 'Quản Lý Đơn Hàng', path: '/dashboard/management-orders' },
-          { label: 'Chi Tiết Đơn Hàng', path: `/dashboard/order-detail/${id}` },
+          { label: "Quản Lý Đơn Hàng", path: "/dashboard/management-orders" },
+          { label: "Chi Tiết Đơn Hàng", path: `/dashboard/order-detail/${id}` },
         ];
       case `/dashboard/point-of-sales/${id}`:
         return [
-          { label: 'Bán Hàng Tại Quầy', path: `/dashboard/point-of-sales/${id}` },
+          {
+            label: "Bán Hàng Tại Quầy",
+            path: `/dashboard/point-of-sales/${id}`,
+          },
         ];
-      case '/dashboard/statistic':
-        return [
-          { label: 'Thống Kê', path: '/dashboard/statistic' },
-        ];
-      case '/dashboard/transaction':
-        return [
-          { label: 'Quản Lý Thu Chi', path: '/dashboard/transaction' },
-        ];
-      case '/dashboard/refund-order':
-        return [
-          { label: 'Trả Hàng', path: '/dashboard/refund-order' },
-        ];
-      case '/dashboard/products':
-        return [
-          { label: 'Danh Sách Sản Phẩm', path: '/dashboard/products' },
-        ];
+      case "/dashboard/statistic":
+        return [{ label: "Thống Kê", path: "/dashboard/statistic" }];
+      case "/dashboard/transaction":
+        return [{ label: "Quản Lý Thu Chi", path: "/dashboard/transaction" }];
+      case "/dashboard/refund-order":
+        return [{ label: "Trả Hàng", path: "/dashboard/refund-order" }];
+      case "/dashboard/products":
+        return [{ label: "Danh Sách Sản Phẩm", path: "/dashboard/products" }];
       case `/dashboard/products/${id}`:
         return [
-          { label: 'Danh Sách Sản Phẩm', path: '/dashboard/products' },
-          { label: 'Chi Tiết Sản Phẩm', path: `/dashboard/products/${id}` },
+          { label: "Danh Sách Sản Phẩm", path: "/dashboard/products" },
+          { label: "Chi Tiết Sản Phẩm", path: `/dashboard/products/${id}` },
         ];
-      case '/dashboard/create-product':
+      case "/dashboard/create-product":
         return [
-          { label: 'Danh Sách Sản Phẩm', path: '/dashboard/products' },
-          { label: 'Thêm Sản Phẩm', path: '/dashboard/create-product' },
+          { label: "Danh Sách Sản Phẩm", path: "/dashboard/products" },
+          { label: "Thêm Sản Phẩm", path: "/dashboard/create-product" },
         ];
       case `/dashboard/update-product/${id}`:
         return [
-          { label: 'Danh Sách Sản Phẩm', path: '/dashboard/products' },
-          { label: 'Cập Nhật Sản Phẩm', path: `/dashboard/update-product/${id}` },
+          { label: "Danh Sách Sản Phẩm", path: "/dashboard/products" },
+          {
+            label: "Cập Nhật Sản Phẩm",
+            path: `/dashboard/update-product/${id}`,
+          },
         ];
-      case '/dashboard/discounts':
+      case "/dashboard/discounts":
+        return [{ label: "Giảm Giá Sản Phẩm", path: "/dashboard/discounts" }];
+      case "/dashboard/create-discount":
         return [
-          { label: 'Giảm Giá Sản Phẩm', path: '/dashboard/discounts' },
-        ];
-      case '/dashboard/create-discount':
-        return [
-          { label: 'Giảm Giá Sản Phẩm', path: '/dashboard/discounts' },
-          { label: 'Thêm Đợt Giảm Giá ', path: '/dashboard/create-discount' },
+          { label: "Giảm Giá Sản Phẩm", path: "/dashboard/discounts" },
+          { label: "Thêm Đợt Giảm Giá ", path: "/dashboard/create-discount" },
         ];
       case `/dashboard/update-discount/${id}`:
         return [
-          { label: 'Giảm Giá Sản Phẩm', path: '/dashboard/discounts' },
-          { label: 'Cập Nhật Đợt Giảm Giá', path: `/dashboard/update-discount/${id}` },
+          { label: "Giảm Giá Sản Phẩm", path: "/dashboard/discounts" },
+          {
+            label: "Cập Nhật Đợt Giảm Giá",
+            path: `/dashboard/update-discount/${id}`,
+          },
         ];
-      case '/dashboard/vouchers':
+      case "/dashboard/vouchers":
+        return [{ label: "Phiếu Giảm Giá", path: "/dashboard/vouchers" }];
+      case "/dashboard/create-voucher":
         return [
-          { label: 'Phiếu Giảm Giá', path: '/dashboard/vouchers' },
-        ];
-      case '/dashboard/create-voucher':
-        return [
-          { label: 'Phiếu Giảm Giá', path: '/dashboard/vouchers' },
-          { label: 'Thêm Phiếu Giảm Giá', path: '/dashboard/create-voucher' },
+          { label: "Phiếu Giảm Giá", path: "/dashboard/vouchers" },
+          { label: "Thêm Phiếu Giảm Giá", path: "/dashboard/create-voucher" },
         ];
       case `/dashboard/update-voucher/${id}`:
         return [
-          { label: 'Phiếu Giảm Giá', path: '/dashboard/vouchers' },
-          { label: 'Cập Nhật Phiếu Giảm Giá', path: `/dashboard/update-voucher/${id}` },
+          { label: "Phiếu Giảm Giá", path: "/dashboard/vouchers" },
+          {
+            label: "Cập Nhật Phiếu Giảm Giá",
+            path: `/dashboard/update-voucher/${id}`,
+          },
         ];
-      case '/dashboard/employees':
+      case "/dashboard/employees":
+        return [{ label: "Nhân Viên", path: "/dashboard/employees" }];
+      case "/dashboard/create-employee":
         return [
-          { label: 'Nhân Viên', path: '/dashboard/employees' },
-        ];
-      case '/dashboard/create-employee':
-        return [
-          { label: 'Nhân Viên', path: '/dashboard/employees' },
-          { label: 'Thêm Nhân Viên', path: '/dashboard/create-employee' },
+          { label: "Nhân Viên", path: "/dashboard/employees" },
+          { label: "Thêm Nhân Viên", path: "/dashboard/create-employee" },
         ];
       case `/dashboard/update-employee/${id}`:
         return [
-          { label: 'Nhân Viên', path: '/dashboard/employees' },
-          { label: 'Cập Nhật Nhân Viên', path: `/dashboard/update-employee/${id}` },
+          { label: "Nhân Viên", path: "/dashboard/employees" },
+          {
+            label: "Cập Nhật Nhân Viên",
+            path: `/dashboard/update-employee/${id}`,
+          },
         ];
-      case '/dashboard/customers':
+      case "/dashboard/customers":
+        return [{ label: "Khách Hàng", path: "/dashboard/customers" }];
+      case "/dashboard/create-customer":
         return [
-          { label: 'Khách Hàng', path: '/dashboard/customers' },
-        ];
-      case '/dashboard/create-customer':
-        return [
-          { label: 'Khách Hàng', path: '/dashboard/customers' },
-          { label: 'Thêm Khách Hàng', path: '/dashboard/create-customer' },
+          { label: "Khách Hàng", path: "/dashboard/customers" },
+          { label: "Thêm Khách Hàng", path: "/dashboard/create-customer" },
         ];
       case `/dashboard/update-customer/${id}`:
         return [
-          { label: 'Khách Hàng', path: '/dashboard/customers' },
-          { label: 'Cập Nhật Khách Hàng', path: `/dashboard/update-customer/${id}` },
+          { label: "Khách Hàng", path: "/dashboard/customers" },
+          {
+            label: "Cập Nhật Khách Hàng",
+            path: `/dashboard/update-customer/${id}`,
+          },
+        ];
+      case `/dashboard/colors`:
+        return [{ label: "Danh Sách Màu Sắc", path: "/dashboard/colors" }];
+      case `/dashboard/chips`:
+        return [{ label: "Danh Sách Chip", path: "/dashboard/chips" }];
+      case `/dashboard/imeis`:
+        return [{ label: "Danh Sách IMEI", path: "/dashboard/imeis" }];
+      case `/dashboard/rams`:
+        return [{ label: "Danh Sách RAM", path: "/dashboard/rams" }];
+      case `/dashboard/roms`:
+        return [{ label: "Danh Sách ROM", path: "/dashboard/roms" }];
+      case `/dashboard/sacs`:
+        return [{ label: "Danh Sách Cổng Sạc", path: "/dashboard/sacs" }];
+      case `/dashboard/hangs`:
+        return [{ label: "Danh Sách Hãng", path: "/dashboard/hangs" }];
+      case `/dashboard/pins`:
+        return [{ label: "Danh Sách PIN", path: "/dashboard/pins" }];
+      case `/dashboard/danh-mucs`:
+        return [{ label: "Danh Sách Danh Mục", path: "/dashboard/danh-mucs" }];
+      case `/dashboard/sims`:
+        return [{ label: "Danh Sách SIM", path: "/dashboard/sims" }];
+      case `/dashboard/the-nhos`:
+        return [{ label: "Danh Sách Thẻ Nhớ", path: "/dashboard/the-nhos" }];
+      case `/dashboard/screens`:
+        return [{ label: "Danh Sách Màn Hình", path: "/dashboard/screens" }];
+      case `/dashboard/front-cameras`:
+        return [
+          { label: "Danh Sách Camera Trước", path: "/dashboard/front-cameras" },
+        ];
+      case `/dashboard/rear-cameras`:
+        return [
+          { label: "Danh Sách Camera Sau", path: "/dashboard/rear-cameras" },
         ];
       default:
         return [];
@@ -183,17 +217,29 @@ const Header = memo((props) => {
         <Container fluid className="navbar-inner">
           <div>
             <Breadcrumbs separator="›" aria-label="breadcrumbs">
-              {navigationItems.length > 1 && navigationItems.map((item) => (
-                location.pathname === item.path ?
-                  <Typography color="neutral" sx={{ display: 'flex', alignItems: 'center' }}>
+              {navigationItems.map((item) =>
+                location.pathname === item.path ? (
+                  <Typography
+                    color="neutral"
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      fontWeight: "500",
+                    }}
+                  >
                     {item.label}
-                  </Typography> :
+                  </Typography>
+                ) : (
                   <Link key={item.path} color="primary" to={item.path}>
-                    <span className="underline-custom" style={{ fontWeight: "500" }}>
+                    <span
+                      className="underline-custom"
+                      style={{ fontWeight: "500" }}
+                    >
                       {item.label}
                     </span>
                   </Link>
-              ))}
+                )
+              )}
             </Breadcrumbs>
           </div>
           <div
@@ -289,13 +335,23 @@ const Header = memo((props) => {
                   aria-expanded="false"
                 >
                   <img
-                    src={user === undefined || user.ma === "" ? '' : user.anhDaiDien}
+                    src={
+                      user === undefined || user.ma === ""
+                        ? ""
+                        : user.anhDaiDien
+                    }
                     alt="User-Profile"
                     className="theme-color-default-img img-fluid avatar avatar-50 avatar-rounded"
                   />
                   <div className="caption ms-3 d-none d-md-block ">
-                    <h6 className="mb-0 caption-title">{user === undefined || user.ma === "" ? '' : user.hoVaTen}</h6>
-                    <p className="mb-0 caption-sub-title">{user === undefined || user.ma === "" ? '' : user.idRole.ten}</p>
+                    <h6 className="mb-0 caption-title">
+                      {user === undefined || user.ma === "" ? "" : user.hoVaTen}
+                    </h6>
+                    <p className="mb-0 caption-sub-title">
+                      {user === undefined || user.ma === ""
+                        ? ""
+                        : user.idRole.ten}
+                    </p>
                   </div>
                 </Dropdown.Toggle>
                 <Dropdown.Menu

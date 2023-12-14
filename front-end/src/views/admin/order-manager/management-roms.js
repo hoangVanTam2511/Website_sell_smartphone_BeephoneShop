@@ -315,6 +315,15 @@ const ManagementRoms = () => {
   const validationAll = () => {
     const msg = {};
 
+    const isDuplicate = listRom.some(
+      (product) => product.dungLuong === dungLuong && product.id !== idRom
+    );
+
+    if (isDuplicate) {
+      handleOpenAlertVariant("Rom đã tồn tại", Notistack.ERROR);
+      msg = "Đã tồn tại";
+    }
+
     if (!dungLuong.trim("")) {
       msg.dungLuong = "Kích thước rom không được trống.";
     }

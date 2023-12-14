@@ -333,6 +333,16 @@ const ManagementDanhMuc = () => {
   const validationAll = () => {
     const msg = {};
 
+    const isDuplicate = danhMuc.some(
+      (product) =>
+        product.tenDanhMuc === danhMucName && product.id !== idDanhMuc
+    );
+
+    if (isDuplicate) {
+      handleOpenAlertVariant("Danh mục đã tồn tại", Notistack.ERROR);
+      msg = "Đã tồn tại";
+    }
+
     if (!danhMucName.trim("")) {
       msg.danhMucName = "Tên danh mục không được trống.";
     }

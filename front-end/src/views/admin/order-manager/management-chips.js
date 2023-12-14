@@ -51,6 +51,7 @@ const ManagementChips = () => {
   const [openConfirm, setOpenConfirm] = useState(false);
   const [open1, setOpen1] = React.useState(false);
   const { handleOpenAlertVariant } = useCustomSnackbar();
+  const [check, setCheck] = useState(0);
   const [currentPage, setCurrentPage] = useState(
     searchParams.get("currentPage") || 1
   );
@@ -232,6 +233,13 @@ const ManagementChips = () => {
   const validationAll = () => {
     const msg = {};
 
+    const isDuplicate = listChip.some((chip) => chip.tenChip === tenChip && chip.id !== idChip);
+
+    if (isDuplicate) {
+      handleOpenAlertVariant("Chip đã tồn tại", Notistack.ERROR);
+      msg = "Đã tồn tại";
+    }
+
     if (!tenChip.trim("")) {
       msg.tenChip = "Tên chip không được trống.";
     }
@@ -244,7 +252,7 @@ const ManagementChips = () => {
   const handleSubmit = () => {
     const isValid = validationAll();
     if (!isValid) return;
-    updateChip();
+       updateChip();
   };
 
   const updateChip = () => {

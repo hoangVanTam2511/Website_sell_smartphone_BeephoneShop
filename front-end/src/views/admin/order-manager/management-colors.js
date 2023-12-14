@@ -333,6 +333,15 @@ const ManagementColors = () => {
   const validationAll = () => {
     const msg = {};
 
+    const isDuplicate = colors.some(
+      (product) => product.tenMauSac === colorName && product.id !== idColor
+    );
+
+    if (isDuplicate) {
+      handleOpenAlertVariant("Màu sắc đã tồn tại", Notistack.ERROR);
+      msg = "Đã tồn tại";
+    }
+
     if (!colorName.trim("")) {
       msg.colorName = "Tên màu sắc không được trống.";
     }

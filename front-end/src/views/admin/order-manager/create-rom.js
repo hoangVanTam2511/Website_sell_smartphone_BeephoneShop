@@ -16,7 +16,8 @@ import {
 import axios from "axios";
 import LoadingIndicator from "../../../utilities/loading";
 import generateRandomCode from "../../../utilities/randomCode";
-import { StatusCommonProductsNumber } from "./enum";
+import { Notistack, StatusCommonProductsNumber } from "./enum";
+import useCustomSnackbar from "../../../utilities/notistack";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -27,6 +28,7 @@ const CreateRom = ({ open, close, getAll, roms }) => {
   const [kichThuoc, setKichThuoc] = useState("");
   const [isLoading, setIsLoading] = React.useState(false);
   const [status, setStatus] = React.useState(StatusCommonProductsNumber.ACTIVE);
+  const { handleOpenAlertVariant } = useCustomSnackbar();
 
   const handleChangeStatus = (event) => {
     setStatus(event.target.value);
@@ -52,7 +54,16 @@ const CreateRom = ({ open, close, getAll, roms }) => {
   const validationAll = () => {
     const msg = {};
 
-    if (!kichThuoc.trim("")) {
+    const isDuplicate = roms.some(
+      (products) => products.dungLuong == kichThuoc
+    );
+
+    if (isDuplicate) {
+      handleOpenAlertVariant("Kích thước rom đã tồn tại", Notistack.ERROR);
+      msg = "Đã tồn tại";
+    }
+
+    if (kichThuoc.trim() === "") {
       msg.kichThuoc = "Kích thước rom không được trống.";
     }
 
@@ -87,9 +98,10 @@ const CreateRom = ({ open, close, getAll, roms }) => {
         close();
         getAll();
         handleReset();
+        handleOpenAlertVariant("Thêm thành công", Notistack.SUCCESS);
       })
       .catch((error) => {
-        console.log("add thất bại");
+        handleOpenAlertVariant("Thêm thất bại", Notistack.ERROR);
       });
   };
 
@@ -162,6 +174,10 @@ const CreateRom = ({ open, close, getAll, roms }) => {
                       id="demo-simple-select"
                       value={status}
                       label="Trạng Thái"
+                      style={{
+                        pointerEvents: "none",
+                        opacity: 0.5,
+                      }}
                       defaultValue={StatusCommonProductsNumber.ACTIVE}
                       onChange={handleChangeStatus}
                     >

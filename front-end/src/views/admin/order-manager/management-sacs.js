@@ -406,7 +406,7 @@ const ManagementCongSacs = () => {
             <div className="header-title mt-2">
               <TextField
                 placeholder="Tìm theo mã, loại cổng sạc"
-                label="Tìm Sạc"
+                label="Tìm Cổng Sạc"
                 onChange={handleSearchTatCaChange}
                 value={searchTatCa}
                 InputLabelProps={{

@@ -38,7 +38,16 @@ const CreateMauSac = ({ open, close, getAll, colors }) => {
   const validationAll = () => {
     const msg = {};
 
-    if (!colorName.trim("")) {
+    const isDuplicate = colors.some(
+      (products) => products.tenMauSac === colorName
+    );
+
+    if (isDuplicate) {
+      handleOpenAlertVariant("Màu sắc đã tồn tại", Notistack.ERROR);
+      msg = "Đã tồn tại";
+    }
+
+    if (colorName.trim() === "") {
       msg.colorName = "Tên màu sắc không được trống.";
     }
 
@@ -147,6 +156,10 @@ const CreateMauSac = ({ open, close, getAll, colors }) => {
                       id="demo-simple-select"
                       value={status}
                       label="Trạng Thái"
+                      style={{
+                        pointerEvents: "none",
+                        opacity: 0.5,
+                      }}
                       defaultValue={StatusCommonProductsNumber.ACTIVE}
                       onChange={handleChangeStatus}
                     >

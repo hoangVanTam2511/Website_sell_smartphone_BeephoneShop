@@ -1,8 +1,4 @@
 import React, { useState } from "react";
-// import {
-//   useNavigate,
-
-// } from "react-router-dom";
 import { Button, message } from "antd";
 import {
   FormControl,
@@ -20,10 +16,11 @@ import {
 import axios from "axios";
 // import LoadingIndicator from "../../../utilities/loading";
 import { apiURLSimCard } from "../../../service/api";
-import { SimMultiple, StatusCommonProductsNumber } from "./enum";
+import { Notistack, SimMultiple, StatusCommonProductsNumber } from "./enum";
 
 import LoadingIndicator from "../../../utilities/loading";
 import generateRandomCode from "../../../utilities/genCode";
+import useCustomSnackbar from "../../../utilities/notistack";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -36,6 +33,7 @@ const CreateSimCard = ({ open, close, getAll, sims }) => {
   const [checkedDualSim, setCheckedDualSim] = React.useState(false);
   const [checkedSingleSim, setCheckedSingleSim] = React.useState(true);
   const [status, setStatus] = React.useState(StatusCommonProductsNumber.ACTIVE);
+  const { handleOpenAlertVariant } = useCustomSnackbar();
 
   const uniqueLoaiTheSim = sims
     .map((option) => option.loaiTheSim)
@@ -62,7 +60,16 @@ const CreateSimCard = ({ open, close, getAll, sims }) => {
   const validationAll = () => {
     const msg = {};
 
-    if (!loaiTheSim.trim("")) {
+    const isDuplicate =
+      sims.some((products) => products.loaiTheSim == loaiTheSim) &&
+      sims.some((products) => products.simMultiple == loaiTheSim);
+
+    if (isDuplicate) {
+      handleOpenAlertVariant("Loại thẻ sim đã tồn tại", Notistack.ERROR);
+      msg = "Đã tồn tại";
+    }
+
+    if (loaiTheSim.trim() === "") {
       msg.loaiTheSim = "Loại thẻ sim không được trống.";
     }
 
@@ -121,10 +128,10 @@ const CreateSimCard = ({ open, close, getAll, sims }) => {
         close();
         getAll();
         handleReset();
-        message.success("Thêm thành công");
+        handleOpenAlertVariant("Thêm thành công thẻ sim", Notistack.ERROR);
       })
       .catch((error) => {
-        console.log("add thất bại");
+        handleOpenAlertVariant("Thêm thất bại thẻ sim", Notistack.ERROR);
       });
   };
   const handleReset = (event) => {
@@ -188,6 +195,10 @@ const CreateSimCard = ({ open, close, getAll, sims }) => {
                       id="demo-simple-select"
                       value={status}
                       label="Trạng Thái"
+                      style={{
+                        pointerEvents: "none",
+                        opacity: 0.5,
+                      }}
                       defaultValue={StatusCommonProductsNumber.ACTIVE}
                       onChange={handleChangeStatus}
                     >
