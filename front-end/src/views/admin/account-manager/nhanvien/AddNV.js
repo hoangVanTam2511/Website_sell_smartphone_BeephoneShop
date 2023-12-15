@@ -208,7 +208,6 @@ const AddNV = () => {
         return;
       }
       const nhanVienRespone = await axios.post(apiURLNV + "/add", obj);
-      console.log(nhanVienRespone.data);
       const generatedMaKhachHang = nhanVienRespone.data.id;
       addDiaChiList(generatedMaKhachHang);
       redirectToHienThiKH(generatedMaKhachHang);
@@ -225,8 +224,8 @@ const AddNV = () => {
       setListNV([newNhanVienRespone, ...listNV]);
       handleOpenAlertVariant("Thêm nhân viên thành công", Notistack.SUCCESS);
     } catch (error) {
-      handleOpenAlertVariant("Thêm thất bại", Notistack.ERROR);
-      console.log(error);
+      handleOpenAlertVariant(error.response.data, Notistack.ERROR);
+      setIsConfirmVisible(false);
     }
   };
   const addDiaChiList = (generatedMaKhachHang) => {

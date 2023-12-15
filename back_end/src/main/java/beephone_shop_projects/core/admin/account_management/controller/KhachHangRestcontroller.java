@@ -52,8 +52,24 @@ public class KhachHangRestcontroller {
 
 
     @PostMapping("add")
-    public ResponseObject<Account> add(@RequestBody AddKhachHangRequest request) {
-        return new ResponseObject(accService.addKH(request));
+    public ResponseEntity<?> add(@Valid @RequestBody AddKhachHangRequest request,BindingResult result) {
+        if (result.hasErrors()) {
+            Map<String, String> errors = new HashMap<>();
+            for (FieldError error : result.getFieldErrors()) {
+                errors.put(error.getField(), error.getDefaultMessage());
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+        }
+
+        if (accService.isPhoneNumberUnique(request.getSoDienThoai())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Số điện thoại đã tồn tại trong hệ thống.");
+        }
+        try {
+            Account addedAccount = accService.addKH(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(addedAccount);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PutMapping("update/{id}")
@@ -87,6 +103,7 @@ public class KhachHangRestcontroller {
             }
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
         }
+
         try {
             DiaChi addedDiaChi = diaChiService.addDiaChi(request, id);
             return new ResponseEntity(addedDiaChi, HttpStatus.CREATED);

@@ -12,9 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.text.Normalizer;
 import java.text.ParseException;
@@ -62,7 +60,7 @@ public class NhanVienServiceImpl implements NhanVienService {
         String code = String.format("NV%04d", number);
         String hoVaTen = request.getHoVaTen();
 
-        String hoVaTenWithoutSpaces = hoVaTen.replaceAll("\\s+", ""); // Loại bỏ khoảng trắng
+        String hoVaTenWithoutSpaces = hoVaTen.replaceAll("\\s+", "");
         String hoVaTenWithoutDiacritics = removeDiacritics(hoVaTenWithoutSpaces);
         Date date = null;
         try {
@@ -70,7 +68,6 @@ public class NhanVienServiceImpl implements NhanVienService {
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
-
 
         String[] specialCharsArray = {"!", "@", "#", "$", "%", "^", "&", "*", "+", "-"};
         String specialChars = getRandomSpecialChars(specialCharsArray);
@@ -134,8 +131,18 @@ public class NhanVienServiceImpl implements NhanVienService {
     }
 
     @Override
-    public boolean isPhoneNumberUnique(String phoneNumberToCheck) {
-        return accountRepository.existsBySoDienThoai(phoneNumberToCheck);
+    public Boolean isPhoneNumberUnique(String phoneNumberToCheck) {
+        return accountRepository.existsBySoDienThoaiNhanVien(phoneNumberToCheck);
+    }
+
+    @Override
+    public Boolean isPhoneNumberUniqueCustomer(String phoneNumberToCheck) {
+        return accountRepository.existsBySoDienThoaiKhachHang(phoneNumberToCheck);
+    }
+
+    @Override
+    public Boolean existsByCanCuocCongDan(String canCuoc) {
+        return accountRepository.existsByCanCuocCongDan(canCuoc);
     }
 
     public static String removeDiacritics(String str) {

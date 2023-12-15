@@ -243,8 +243,9 @@ const AddKH = () => {
       handleOpenAlertVariant("Thêm thành công", Notistack.SUCCESS);
     } catch (error) {
       // Xử lý lỗi
-      alert("Thêm khách hàng thất bại");
-      console.log(error);
+      handleOpenAlertVariant(error.response.data, Notistack.ERROR);
+      setShowConfirmModal(false);
+      console.log(error.response.data);
     }
   };
   const generateRandomCode = () => {
@@ -494,7 +495,7 @@ const AddKH = () => {
                   style={{ marginBottom: "30px", marginTop: "20px" }}
                 >
                   <TextField
-                    label="Họ và tên khách hàng (cho địa chỉ)"
+                    label="Họ và tên người nhận"
                     value={hoTenKH}
                     id="fullWidth"
                     onChange={handleHoVaTenKH}
@@ -508,7 +509,7 @@ const AddKH = () => {
                 </div>
                 <div className="text-f" style={{ marginBottom: "30px" }}>
                   <TextField
-                    label="Số điện thoại khách hàng"
+                    label="Số điện thoại người nhận"
                     id="fullWidth"
                     value={soDienThoaiKhachHang}
                     onChange={handleSDTKH}

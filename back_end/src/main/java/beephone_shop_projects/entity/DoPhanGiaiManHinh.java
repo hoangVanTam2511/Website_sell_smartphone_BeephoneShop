@@ -30,7 +30,4 @@ public class DoPhanGiaiManHinh extends PrimaryEntity implements IsIdentified {
   @Enumerated(EnumType.ORDINAL)
   private ResolutionType resolutionType;
 
-//  @Enumerated(EnumType.ORDINAL)
-  private Date updatedAt;
-
 }

@@ -121,7 +121,7 @@ const AddressUpdate = ({
     setXaPhuong1(value);
   };
   const { handleOpenAlertVariant } = useCustomSnackbar();
-  const handleSaveChanges = async (ma) => {
+  const handleSaveChanges = async (id) => {
     // Gọi API để cập nhật thông tin địa chỉ
     setSubmittedS(true);
     setFormSubmittedS(true);
@@ -158,7 +158,7 @@ const AddressUpdate = ({
       };
       axios
         .put(
-          `${apiURLKH}/dia-chi/update?ma=${diaChiList.ma}`, // Extract id from updatedData
+          `${apiURLKH}/dia-chi/update?id=${diaChiList.id}`, // Extract id from updatedData
           updatedItem
         )
         .then((response) => {
@@ -169,7 +169,7 @@ const AddressUpdate = ({
             ); // Cập nhật thông tin trong danh sách diaChiList
             close();
             const updatedItemIndex = data.map((address) =>
-              address.ma === ma ? { ...address, ...updatedItem } : address
+              address.id === id ? { ...address, ...updatedItem } : address
             );
             setData(updatedItemIndex);
           } else {
@@ -257,8 +257,7 @@ const AddressUpdate = ({
             // onClick={showConfirm}
             size={"large"}
             onClick={() => {
-              handleSaveChanges(diaChiList.ma);
-              console.log(diaChiList);
+              handleSaveChanges(diaChiList.id);
             }}
           >
             <FontAwesomeIcon

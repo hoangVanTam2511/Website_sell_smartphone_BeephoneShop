@@ -13,12 +13,10 @@ import java.util.List;
 @Setter
 public class AddKhachHangRequest {
     @NotBlank(message = "Họ tên trống")
-    @Pattern(regexp = "^[a-zA-Z0-9 ]*$", message = "Họ và tên không được chứa ký tự đặc biệt")
     @Size(max = 30, message = "Họ tên không được vượt quá 30 ký tự")
     private String hoVaTen;
 
     @NotBlank(message = "Email trống")
-    @Pattern(regexp = "^[a-zA-Z0-9._-]+@gmail\\.com$", message = "Email sai định dạng hoặc không phải là Gmail")
     private String email;
 
     @NotNull(message = "Ngày sinh trống")
@@ -26,10 +24,8 @@ public class AddKhachHangRequest {
 
     private String matKhau;
     @NotBlank(message = "Số điện thoại trống")
-    @Pattern(regexp = "^(?:\\+84|0)[1-9]\\d{8}$", message = "Số điện thoại không hợp lệ")
     private String soDienThoai;
-
-    @NotNull(message = "Căn cước công dân trống")
+    
     private String canCuocCongDan;
 
     private Boolean gioiTinh;
