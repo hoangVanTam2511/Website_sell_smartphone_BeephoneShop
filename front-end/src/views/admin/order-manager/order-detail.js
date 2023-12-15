@@ -49,6 +49,7 @@ import { over } from "stompjs";
 import SockJS from "sockjs-client";
 import PrinterInvoice, { Print, PrintDelivery } from "./printer-invoice";
 import { useSelector } from "react-redux";
+import { request } from '../../../store/helpers/axios_helper'
 
 var stompClient = null;
 const OrderDetail = (props) => {
@@ -153,12 +154,7 @@ const OrderDetail = (props) => {
     try {
       await axios.put(
         `http://localhost:8080/api/orders/roll-back-status`,
-        data,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+        data
       );
       await getOrderItemsById();
       handleOpenAlertVariant("Hoàn tác thành công ", Notistack.SUCCESS);
@@ -180,11 +176,10 @@ const OrderDetail = (props) => {
       imei: imei,
     };
     try {
-      await axios.put(`http://localhost:8080/api/carts/order/scanner`, data, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      request('PUT', `/api/carts/order/scanner`, data
+      ).then((res) => {
+
+      })
       await getOrderItemsById();
       handleCloseOpenScanner();
       handleOpenAlertVariant("Thêm sản phẩm thành công ", Notistack.SUCCESS);
@@ -245,8 +240,7 @@ const OrderDetail = (props) => {
     setOpenModalImei(false);
   };
   const getAllProducts = async () => {
-    await axios
-      .get(`http://localhost:8080/api/products/product-items`)
+    request('GET', `/api/products/product-items`)
       .then((response) => {
         setProducts(response.data.data);
       })
@@ -310,11 +304,7 @@ const OrderDetail = (props) => {
       imeis: cartItems.imeis,
     };
     try {
-      await axios.put(`http://localhost:8080/api/carts/order`, data, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      request('PUT', `/api/carts/order`, data);
       await getOrderItemsById();
       handleCloseOpenModalImei();
       handleCloseOpenProducts();
@@ -344,7 +334,7 @@ const OrderDetail = (props) => {
   const handleDeleteCartItemOrderById = async (id) => {
     setIsLoading(true);
     try {
-      await axios.delete(`http://localhost:8080/api/carts/order/${id}`);
+      request('DELETE', `/api/carts/order/${id}`);
       await getOrderItemsById();
       setIsLoading(false);
       handleOpenAlertVariant(
@@ -367,11 +357,11 @@ const OrderDetail = (props) => {
       },
     };
     try {
-      await axios.put(`http://localhost:8080/api/carts/order/amount`, request, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      request('PUT', `/api/carts/order/amount`, request).then(
+        (res) => {
+
+        }
+      )
       await getOrderItemsById();
       handleCloseOpenModalUpdateImei();
       handleOpenAlertVariant(
@@ -390,15 +380,14 @@ const OrderDetail = (props) => {
 
   const getOrderItemsById = async () => {
     setIsLoading(true);
-    await axios
-      .get(`http://localhost:8080/api/orders/${id}`)
+    request('GET', `/api/orders/${id}`)
       .then((response) => {
         const data = response.data.data;
         setOrder(data);
         const sortOrderHistories =
           data.orderHistories &&
           data.orderHistories.sort((a, b) => b.createdAt - a.createdAt);
-        setOrderHistories(sortOrderHistories);
+        setOrderHistories(data.orderHistories);
         const sortPayments =
           data.paymentMethods &&
           data.paymentMethods.sort(
@@ -469,10 +458,9 @@ const OrderDetail = (props) => {
     });
   });
 
-
   useEffect(() => {
     getOrderItemsById();
-    getAllProducts();
+    // getAllProducts();
     getCustomers();
     if (stompClient === null) {
       connect();
@@ -494,11 +482,11 @@ const OrderDetail = (props) => {
       tongTienString: totalString,
     };
     try {
-      await axios.put(`http://localhost:8080/api/carts/order/refund`, request, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      request('PUT', `/api/carts/order/refund`, request).then(
+        (res) => {
+
+        }
+      )
       await getOrderItemsById();
       handleCloseOpenModalRefund();
       handleOpenAlertVariant(
@@ -535,15 +523,7 @@ const OrderDetail = (props) => {
   const updateStatusOrderDelivery = async (orderRequest) => {
     setIsLoading(true);
     try {
-      await axios
-        .put(`http://localhost:8080/api/orders/${id}`, orderRequest, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          params: {
-            isUpdateStatusOrderDelivery: true,
-          },
-        })
+      request('PUT', `/api/orders/${id}?isUpdateStatusOrderDelivery=true`, orderRequest)
         .then((response) => {
           getOrderItemsById();
           var test = {
@@ -574,12 +554,7 @@ const OrderDetail = (props) => {
       createdByPayment: userId,
     };
     try {
-      await axios
-        .put(`http://localhost:8080/api/vnpay/payment/delivery`, orderRequest, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        })
+      request('PUT', `/api/vnpay/payment/delivery`, orderRequest)
         .then((response) => {
           const order = response.data.data;
           setOrder(order);
@@ -717,17 +692,17 @@ const OrderDetail = (props) => {
                 </>
               ) : item.loaiThaoTac == 9 ? (
                 <>
-                                <div className="d-flex"                       style={{ marginBottom: "5px" }}>
-                  <div className="" style={{ backgroundColor: "#ffd500", width: "40px", height: "35px", borderRadius: "5px", position: "relative" }}>
-                                    <div style={{position: "absolute", left: "9px", top: "4px"}}>
-                    <FaPencilAlt
-                      color="#ffffff"
-                      size={"22px"}
-                    />
-                                    </div>
+                  <div className="d-flex" style={{ marginBottom: "5px" }}>
+                    <div className="" style={{ backgroundColor: "#ffd500", width: "40px", height: "35px", borderRadius: "5px", position: "relative" }}>
+                      <div style={{ position: "absolute", left: "9px", top: "4px" }}>
+                        <FaPencilAlt
+                          color="#ffffff"
+                          size={"22px"}
+                        />
+                      </div>
+                    </div>
+                    <span style={{ marginTop: "5px" }} className="ms-4">{item.thaoTac}</span>
                   </div>
-                    <span style={{marginTop: "5px"}} className="ms-4">{item.thaoTac}</span>
-                                </div>
                 </>
               )
                 : (

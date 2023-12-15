@@ -47,6 +47,7 @@ import { Button } from "@mui/joy";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { Notistack, StatusCommonProducts } from "./enum";
 import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
+import { request } from '../../../store/helpers/axios_helper'
 // import Sketch from '@uiw/react-color-sketch';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -104,8 +105,7 @@ const UpdateMauSac = ({ close1, getAll1, colors1, colorById }) => {
       tenMauSac: colorName,
       status: status,
     };
-    axios
-      .put(`http://localhost:8080/api/colors}`, obj)
+    request('PUT',`/api/colors}`, obj)
       .then((response) => {
         close1();
         getAll1();

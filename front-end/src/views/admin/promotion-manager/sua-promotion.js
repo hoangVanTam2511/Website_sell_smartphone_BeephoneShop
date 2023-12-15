@@ -38,6 +38,7 @@ import {
 } from "../order-manager/enum";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
+import { request } from '../../../store/helpers/axios_helper'
 
 const SuaKhuyenMai = () => {
   const [ma, setMa] = useState("");
@@ -112,8 +113,7 @@ const SuaKhuyenMai = () => {
   };
 
   const loadDatalistSanPham = () => {
-    axios
-      .get("http://localhost:8080/san-pham-1")
+    request('GET',"/san-pham-1")
       .then((response) => {
         setListSanPham(response.data.data);
       })
@@ -126,8 +126,7 @@ const SuaKhuyenMai = () => {
   };
 
   const loadDatalistSanPhamChiTiet = (id, check) => {
-    axios
-      .get("http://localhost:8080/san-pham-chi-tiet-1/" + id + "/" + check)
+    request('GET',"/san-pham-chi-tiet-1/" + id + "/" + check)
       .then((response) => {
         setlistSanPhamChiTiet(response.data.data);
       })
@@ -140,8 +139,7 @@ const SuaKhuyenMai = () => {
   };
 
   const clear = () => {
-    axios
-      .get("http://localhost:8080/san-pham-chi-tiet/removeALL")
+    request('GET',"/san-pham-chi-tiet/removeALL")
       .then((response) => {
         setlistSanPhamChiTiet(response.data.data);
       })
@@ -189,8 +187,7 @@ const SuaKhuyenMai = () => {
   };
 
   const detailKhuyenMai = () => {
-    axios
-      .get(apiURLKhuyenMai + "/get-by-id/" + id)
+    request('GET', apiURLKhuyenMai + "/get-by-id/" + id)
       .then((response) => {
         console.log(response);
         setTenKhuyenMai(response.data.data.tenKhuyenMai);
@@ -213,8 +210,7 @@ const SuaKhuyenMai = () => {
   };
 
   const detailKhuyenMaiChiTiet = () => {
-    axios
-      .get("http://localhost:8080/detail/khuyen-mai/" + id)
+    request('GET',"/detail/khuyen-mai/" + id)
       .then((response) => {
         const data1 = response.data.data;
         const listIdSanPham = data1.map((item) => item.idSanPham);
@@ -238,8 +234,7 @@ const SuaKhuyenMai = () => {
 
   //Detail sản phẩm chi tiết đã áp dụng khuyến mãi
   const detailSanPhamSauKhuyenMai = (id) => {
-    axios
-      .get("http://localhost:8080/san-pham-chi-tiet-khuyen-mai/detail/" + id)
+    request('GET',"/san-pham-chi-tiet-khuyen-mai/detail/" + id)
       .then((response) => {
         console.log("SanPHamSauKhuyenMai" + response);
         setSanPhamChiTietKhuyenMai(response.data.data);
@@ -268,8 +263,7 @@ const SuaKhuyenMai = () => {
       loaiKhuyenMai: selectDiscount,
       giaTriKhuyenMai: numericValue2,
     };
-    axios
-      .put(apiURLKhuyenMai + "/update-khuyen-mai/" + id, obj)
+    request('PUT', apiURLKhuyenMai + "/update-khuyen-mai/" + id, obj)
       .then((response) => {
         idCheckboxdelete.forEach((idSP) => {
           deleteKhuyenMaiChiTiet(id, idSP);
@@ -298,9 +292,7 @@ const SuaKhuyenMai = () => {
   };
 
   const deleteKhuyenMaiChiTiet = (khuyenMaiID, idSP) => {
-    axios
-      .delete(
-        "http://localhost:8080/khuyen-mai-chi-tiet/update/" +
+    request('DELETE',"/khuyen-mai-chi-tiet/update/" +
           khuyenMaiID +
           "/" +
           idSP
@@ -314,9 +306,7 @@ const SuaKhuyenMai = () => {
   };
 
   const updateKhuyenMaiChiTiet = (khuyenMaiID, idSP) => {
-    axios
-      .put(
-        "http://localhost:8080/khuyen-mai-chi-tiet/update-don-gia/" +
+    request('PUT',"/khuyen-mai-chi-tiet/update-don-gia/" +
           khuyenMaiID +
           "/" +
           idSP
@@ -330,8 +320,7 @@ const SuaKhuyenMai = () => {
   };
 
   const updateSanPhamChiTiet = (idSP) => {
-    axios
-      .put("http://localhost:8080/khuyen-mai-chi-tiet/update-san-pham/" + idSP)
+    request('PUT',"/khuyen-mai-chi-tiet/update-san-pham/" + idSP)
       .then((response) => {
         console.log("Update thành công");
       })
@@ -345,9 +334,7 @@ const SuaKhuyenMai = () => {
       idKhuyenMai: khuyenMaiID,
       idSanPhamChiTiet: idSanPhamChiTiet,
     };
-    axios
-      .post(
-        "http://localhost:8080/khuyen-mai-chi-tiet/add",
+    request('POST',"/khuyen-mai-chi-tiet/add",
         objKhuyenMaiChiTiet
       )
       .then((response) => {

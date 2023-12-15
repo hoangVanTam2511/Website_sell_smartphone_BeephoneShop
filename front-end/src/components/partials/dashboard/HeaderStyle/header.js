@@ -6,6 +6,12 @@ import FolderIcon from "@mui/icons-material/Folder";
 import Breadcrumbs from "@mui/joy/Breadcrumbs";
 import { Link as LinkJoy } from "@mui/joy";
 import Typography from "@mui/joy/Typography";
+import { request, setAuthHeader } from '../../../../store/helpers/axios_helper'
+import { useNavigate } from 'react-router-dom'
+import FolderIcon from '@mui/icons-material/Folder';
+import Breadcrumbs from '@mui/joy/Breadcrumbs';
+import { Link as LinkJoy } from '@mui/joy';
+import Typography from '@mui/joy/Typography';
 
 //img
 // import flag1 from '../../../../assets/images/Flag/flag001.png'
@@ -27,6 +33,7 @@ import avatars5 from "../../../../assets/images/avatars/avtar_4.png";
 import avatars6 from "../../../../assets/images/avatars/avtar_5.png";
 // logo
 import Logo from "../../components/logo";
+import { getUser } from '../../../../store/user/userSlice'
 
 // Redux Selector / Action
 import { useSelector } from "react-redux";
@@ -37,6 +44,8 @@ import * as SettingSelector from "../../../../store/setting/selectors";
 const Header = memo((props) => {
   const navbarHide = useSelector(SettingSelector.navbar_show); // array
   const headerNavbar = useSelector(SettingSelector.header_navbar);
+  const user = getUser()
+  const navigate = useNavigate()
   const user = useSelector((state) => state.user.user);
 
   useEffect(() => {
@@ -310,9 +319,9 @@ const Header = memo((props) => {
                             alt=""
                           />
                           <div className="w-100 ms-3">
-                            <h6 className="mb-0 ">New Mail from Fenny</h6>
+                            <h6 className="mb-0 ">Thông báo từ ai đó pro</h6>
                             <div className="d-flex justify-content-between align-items-center">
-                              <p className="mb-0">Cyst Bni</p>
+                              <p className="mb-0">No body for me</p>
                               <small className="float-right font-size-12">
                                 3 days ago
                               </small>
@@ -352,6 +361,8 @@ const Header = memo((props) => {
                         ? ""
                         : user.idRole.ten}
                     </p>
+                    <h6 className="mb-0 caption-title">{user === undefined || user.ma === "" ? '' : user.hoVaTen}</h6>
+                    <p className="mb-0 caption-sub-title">{user === undefined || user.ma === "" ? '' : user.tenChucVu}</p>
                   </div>
                 </Dropdown.Toggle>
                 <Dropdown.Menu
@@ -359,14 +370,19 @@ const Header = memo((props) => {
                   aria-labelledby="navbarDropdown"
                 >
                   <Dropdown.Item href="https://templates.iqonic.design/hope-ui/react/build/dashboard/app/user-profile">
-                    Profile
+                    Thông tin cá nhân
                   </Dropdown.Item>
                   <Dropdown.Item href="https://templates.iqonic.design/hope-ui/react/build/dashboard/app/user-privacy-setting">
-                    Privacy Setting
+                    Cài đặt
                   </Dropdown.Item>
                   <Dropdown.Divider />
-                  <Dropdown.Item href="https://templates.iqonic.design/hope-ui/react/build/auth/sign-in">
-                    Logout
+                  <Dropdown.Item
+                    onClick={() => {
+                      navigate("/login")
+                      setAuthHeader(null)
+                    }}
+                  >
+                    Đăng xuất
                   </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>

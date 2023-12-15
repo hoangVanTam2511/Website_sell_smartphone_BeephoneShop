@@ -35,6 +35,7 @@ import Sheet from "@mui/joy/Sheet";
 import { ConfirmAddProduct, ConfirmChangeTypePhienBan } from "./AlertDialogSlide";
 import ModalChonDonGiaChung from "./modal-don-gia-chung";
 import CreateMauSac from "./create-mau-sac";
+import { request, requestBodyMultipartFile } from '../../../store/helpers/axios_helper'
 
 const ITEM_HEIGHT = 130;
 const ITEM_PADDING_TOP = 8;
@@ -82,8 +83,7 @@ const UpdateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
   }
   const [listColor, setListColor] = useState([]);
   const getListColor = async () => {
-    await axios
-      .get(`http://localhost:8080/api/colors`)
+    request('GET',`/api/colors`)
       .then((response) => {
         setListColor(response.data.data);
       })
@@ -94,8 +94,7 @@ const UpdateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
   const [listRam, setListRam] = useState([]);
   const [listRom, setListRom] = useState([]);
   const getListRom = () => {
-    axios
-      .get(`http://localhost:8080/api/roms`)
+    request('GET',`/api/roms`)
       .then((response) => {
         setListRom(response.data.data);
       })
@@ -104,8 +103,7 @@ const UpdateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
       });
   };
   const getListRam = () => {
-    axios
-      .get(`http://localhost:8080/api/rams`)
+    request('GET',`/api/rams`)
       .then((response) => {
         setListRam(response.data.data);
       })
@@ -127,8 +125,7 @@ const UpdateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
   const [isLoadingInside, setIsLoadingInside] = useState(false);
   const handleDownloadSample = () => {
     setIsLoading(true);
-    axios
-      .post('http://localhost:8080/api/create-excel-template-by', {}, { responseType: 'blob' }) // Sử dụng phương thức POST
+    request('POST','/api/create-excel-template-by', {}, { responseType: 'blob' }) // Sử dụng phương thức POST
       .then((response) => {
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');
@@ -937,7 +934,7 @@ const UpdateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
       productItems: JSON.parse(storeItem),
     }
     try {
-      await axios.post(`http://localhost:8080/api/products`, request, {
+      request('POST',`/api/products`, request, {
         headers: {
           "Content-Type": "application/json",
         }
@@ -976,15 +973,10 @@ const UpdateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
 
   const addFiles = async (ma) => {
     try {
-      await axios.post('http://localhost:8080/api/products/upload-multiple', formData, {
-        params: {
+      requestBodyMultipartFile('POST','/api/products/upload-multiple', formData, {
           ma: ma,
-        }
-      }, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      })
+      }
+      )
     }
     catch (error) {
       setIsLoading(false);

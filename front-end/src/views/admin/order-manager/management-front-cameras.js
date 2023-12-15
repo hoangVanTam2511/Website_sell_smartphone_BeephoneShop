@@ -35,6 +35,8 @@ import {
   ConvertCameraTypeToString,
   ConvertStatusProductsNumberToString,
 } from "../../../utilities/convertEnum";
+import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
+import { request, requestParam } from '../../../store/helpers/axios_helper'
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -57,8 +59,7 @@ const ManagementFrontCameras = () => {
   );
 
   const getListCameraFront = () => {
-    axios
-      .get(`http://localhost:8080/api/camera-fronts`)
+    request('GET',`/api/camera-fronts`)
       .then((response) => {
         setCameras(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -93,15 +94,13 @@ const ManagementFrontCameras = () => {
 
   const getListProductSearchAndPage = (page) => {
     // setIsLoading(false);
-    axios
-      .get(`http://localhost:8080/api/camera-fronts/search`, {
-        params: {
+    requestParam('GET',`/api/camera-fronts/search`, {
           keyword: searchTatCa,
           currentPage: page,
           pageSize: pageShow,
           status: ConvertStatusProductsNumberToString(searchTrangThai),
-        },
-      })
+        }
+      )
       .then((response) => {
         setCameraPages(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -131,8 +130,7 @@ const ManagementFrontCameras = () => {
   const [cameraType, setCameraType] = useState("");
 
   const detailCameras = async (id) => {
-    await axios
-      .get(`http://localhost:8080/api/camera-fronts/${id}`)
+    request('GET',`/api/camera-fronts/${id}`)
       .then((response) => {
         setCameraCode(response.data.data.ma);
         setCameraType(response.data.data.cameraType);
@@ -217,6 +215,11 @@ const ManagementFrontCameras = () => {
   const validationAll = () => {
     const msg = {};
 
+    console.log(String(doPhanGiai))
+
+    if(String(doPhanGiai) === null || String(doPhanGiai) === "" || String(doPhanGiai) === undefined){
+      msg.doPhanGiai = "Độ phân giải không được bỏ trống.";
+      return;
     const isDuplicate = cameras.some(
       (camera) =>
         camera.doPhanGiai == doPhanGiai &&
@@ -257,8 +260,8 @@ const ManagementFrontCameras = () => {
       cameraType: cameraType,
       status: status,
     };
-    axios
-      .put(`http://localhost:8080/api/camera-fronts`, obj)
+    console.log(obj)
+    request('PUT',`/api/camera-fronts/update`, obj)
       .then((response) => {
         getListCameraFront();
         handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
@@ -269,8 +272,7 @@ const ManagementFrontCameras = () => {
       });
   };
   const doiTrangThaiProducts = (idCamera) => {
-    axios
-      .put(`http://localhost:8080/api/camera-fronts/${idCamera}`)
+    request('PUT',`/api/camera-fronts/${idCamera}`)
       .then((response) => {
         getListCameraFront();
         handleOpenAlertVariant(

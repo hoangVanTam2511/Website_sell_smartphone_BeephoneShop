@@ -18,6 +18,7 @@ import LoadingIndicator from "../../../utilities/loading";
 import generateRandomCode from "../../../utilities/randomCode";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { Notistack, StatusCommonProductsNumber } from "./enum";
+import { request } from '../../../store/helpers/axios_helper'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -111,8 +112,7 @@ const CreatePin = ({ open, close, getAll, pins }) => {
       dungLuong: dungLuong,
       status: status,
     };
-    axios
-      .post(`http://localhost:8080/api/pins`, obj)
+    request('POST',`/api/pins`, obj)
       .then((response) => {
         close();
         getAll();

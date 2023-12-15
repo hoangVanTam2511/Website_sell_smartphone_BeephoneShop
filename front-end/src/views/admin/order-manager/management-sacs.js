@@ -30,6 +30,7 @@ import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import useCustomSnackbar from "../../../utilities/notistack";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
+import { request, requestParam } from '../../../store/helpers/axios_helper'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -48,8 +49,7 @@ const ManagementCongSacs = () => {
   );
 
   const loadDataChargers = () => {
-    axios
-      .get(`http://localhost:8080/api/chargers`)
+    request('GET',`/api/chargers`)
       .then((response) => {
         setCongSacs(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -78,14 +78,11 @@ const ManagementCongSacs = () => {
 
   const getListProductSearchAndPage = (page) => {
     // setIsLoading(false);
-    axios
-      .get(`http://localhost:8080/api/chargers/search`, {
-        params: {
+    requestParam('GET',`/api/chargers/search`, {
           keyword: searchTatCa,
           currentPage: page,
           pageSize: pageShow,
           status: ConvertStatusProductsNumberToString(searchTrangThai),
-        },
       })
       .then((response) => {
         setProductPages(response.data.data);
@@ -300,8 +297,7 @@ const ManagementCongSacs = () => {
   const [idSac, setIdSac] = useState("");
 
   const detailSacs = async (id) => {
-    await axios
-      .get(`http://localhost:8080/api/chargers/${id}`)
+    request('GET',`/api/chargers/${id}`)
       .then((response) => {
         setSacCode(response.data.data.ma);
         setStatus(response.data.data.status);
@@ -366,8 +362,7 @@ const ManagementCongSacs = () => {
       loaiCongSac: loaiCongSac,
       status: status,
     };
-    axios
-      .put(`http://localhost:8080/api/chargers`, obj)
+    request('PUT',`/api/chargers`, obj)
       .then((response) => {
         loadDataChargers();
         handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
@@ -379,8 +374,7 @@ const ManagementCongSacs = () => {
   };
 
   const doiTrangThaiProducts = (idSac) => {
-    axios
-      .put(`http://localhost:8080/api/chargers/${idSac}`)
+    request('PUT',`/api/chargers/${idSac}`)
       .then((response) => {
         loadDataChargers();
         handleOpenAlertVariant(

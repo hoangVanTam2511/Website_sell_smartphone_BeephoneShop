@@ -7,24 +7,36 @@ import beephone_shop_projects.core.admin.account_management.repository.AccountRe
 import beephone_shop_projects.core.admin.account_management.repository.RoleRepository;
 import beephone_shop_projects.core.admin.account_management.service.NhanVienService;
 import beephone_shop_projects.entity.Account;
+import beephone_shop_projects.infrastructure.config.mail.EmailService;
 import beephone_shop_projects.infrastructure.constant.StatusAccountCus;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
 
 import java.text.Normalizer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+@RequiredArgsConstructor
 @Service
 public class NhanVienServiceImpl implements NhanVienService {
+
     @Autowired
     private AccountRepository accountRepository;
+
     @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
+    private EmailService emailService;
+
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public Page<Account> getAllNV(Integer pageNo) {
@@ -81,9 +93,14 @@ public class NhanVienServiceImpl implements NhanVienService {
                 .canCuocCongDan(request.getCanCuocCongDan())
                 .trangThai(StatusAccountCus.LAM_VIEC)
                 .ma(code)
-                .matKhau(matKhau)
+                .matKhau(passwordEncoder.encode(matKhau))
                 .soDienThoai(request.getSoDienThoai())
                 .build();
+
+        Context context = new Context();
+        context.setVariable("password",matKhau);
+        emailService.sendEmailWithHtmlTemplate(request.getEmail(), "Mật khẩu của bạn", "email-get-pass-template", context);
+
         return accountRepository.save(kh);
     }
 
@@ -147,4 +164,5 @@ public class NhanVienServiceImpl implements NhanVienService {
 
         return sb.toString();
     }
+
 }

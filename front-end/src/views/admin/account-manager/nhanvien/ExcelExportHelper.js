@@ -1,6 +1,8 @@
 import React from "react";
 import * as XLSX from "xlsx";
 import * as XlsxPopulate from "xlsx-populate/browser/xlsx-populate";
+import moment from "moment";
+import * as dayjs from "dayjs";
 
 const ExcelExportHelper = ({ data }) => {
   const createDownLoadData = () => {
@@ -8,7 +10,7 @@ const ExcelExportHelper = ({ data }) => {
       console.log(url);
       const downloadAnchorNode = document.createElement("a");
       downloadAnchorNode.setAttribute("href", url);
-      downloadAnchorNode.setAttribute("download", "product_report.xlsx");
+      downloadAnchorNode.setAttribute("download", "danh_sach_nhan_vien.xlsx");
       downloadAnchorNode.click();
       downloadAnchorNode.remove();
     });
@@ -38,15 +40,15 @@ const ExcelExportHelper = ({ data }) => {
     // create an ArrayBuffer with a size in bytes
     const buf = new ArrayBuffer(s.length);
 
-    console.log(buf);
+    // console.log(buf);
 
     //create a 8 bit integer array
     const view = new Uint8Array(buf);
 
-    console.log(view);
+    // console.log(view);
     //charCodeAt The charCodeAt() method returns an integer between 0 and 65535 representing the UTF-16 code
     for (let i = 0; i !== s.length; ++i) {
-      console.log(s.charCodeAt(i));
+      // console.log(s.charCodeAt(i));
       view[i] = s.charCodeAt(i);
     }
 
@@ -54,52 +56,51 @@ const ExcelExportHelper = ({ data }) => {
   };
 
   const handleExport = () => {
-    const title = [{ A: "Danh sách sản phẩm" }, {}];
+    const title = [{ A: "Danh sách nhân viên" }, {}];
 
     let table1 = [
       {
         A: "STT",
         B: "Mã",
-        C: "Tên sản phẩm",
-        D: "Hãng sản xuất",
-        E: "Dòng sản phẩm",
-        F: "Chip",
-        G: "Màn hình",
-        H: "Pin",
-        I: "Hệ điều hành",
-        J: "Số sim",
-        K: "Mô tả"
+        C: "Họ và tên",
+        D: "Ngày sinh",
+        E: "Email",
+        F: "Căn cước công dân",
+        G: "Số điện thoại",
+        H: "Địa chỉ",
+        I: "Phuờng/Xã",
+        J: "Quận/huyện",
+        K: "Tỉnh/Thành phố"
       },
     ];
 
-    const products = data.map((item, index) => ({
-      stt: item.stt,
-      tenSanPham: item.tenSanPham,
-      hang: item.tags[0],
-      dongSanPham: item.tags[1],
-      chip: item.tags[2],
-      doPhanGiaiManHinh: item.doPhanGiaiManHinh,
-      kichThuocManHinh: item.kichThuocManHinh,
-      dungLuong: item.dungLuong,
-      heDieuHanh: item.heDieuHanh,
-      sim: item.sim,
-      mota: item.mota,
-      ma: item.ma
+    const employees = data.map((item, index) => ({
+      stt: index + 1,
+      ma: item.ma,
+      hoVaTen: item.hoVaTen,
+      ngaySinh: dayjs(item.ngaySinh).$D + "/" + (dayjs(item.ngaySinh).$M + 1) + "/" + dayjs(item.ngaySinh).$y,
+      email: item.email,
+      canCuocCongDan:item.canCuocCongDan,
+      soDienThoai: item.soDienThoai,
+      diaChi: item.diaChiList[0].diaChi,
+      tinhThanhPho: item.diaChiList[0].tinhThanhPho,
+      quanHuyen: item.diaChiList[0].quanHuyen,
+      phuongXa: item.diaChiList[0].xaPhuong,
     }))
 
-    products.forEach((product) => {
+    employees.forEach((product) => {
       table1.push({
         A: product.stt,
         B: product.ma,
-        C: product.tenSanPham,
-        D: product.hang,
-        E: product.dongSanPham,
-        F: product.chip,
-        G: product.doPhanGiaiManHinh + "-" + product.kichThuocManHinh + " inch",
-        H: product.dungLuong + " mah",
-        I: product.heDieuHanh,
-        J: product.sim + " sim",
-        K: product.mota
+        C: product.hoVaTen,
+        D: product.ngaySinh,
+        E: product.email,
+        F: product.canCuocCongDan,
+        G: product.soDienThoai,
+        H: product.diaChi,
+        I: product.phuongXa,
+        J: product.quanHuyen,
+        K: product.tinhThanhPho
       });
 
     });
@@ -118,13 +119,9 @@ const ExcelExportHelper = ({ data }) => {
       skipHeader: true,
     });
 
-    const sheetConfigs = XLSX.utils.json_to_sheet(finalData, {
-      skipHeader: true,
-    });
 
-    XLSX.utils.book_append_sheet(wb, sheet, "Thông tin sản phẩm");
+    XLSX.utils.book_append_sheet(wb, sheet, "Danh sách nhân viên");
 
-    XLSX.utils.book_append_sheet(wb, sheetConfigs, "Danh sách cấu hình");
 
     // Since blobs can store binary data, they can be used to store images or other multimedia files.
 
@@ -207,9 +204,10 @@ const ExcelExportHelper = ({ data }) => {
         console.log(dataInfo);
 
         sheet.range(dataInfo.theadRange).style({
-          fill: "FFFD04",
+          fill: "4472c4",
           bold: true,
           horizontalAlignment: "center",
+          fontColor: "ffffff",
         });
 
         if (dataInfo.theadRange1) {

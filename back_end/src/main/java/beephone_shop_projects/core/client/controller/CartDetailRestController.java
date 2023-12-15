@@ -53,4 +53,14 @@ public class CartDetailRestController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    @DeleteMapping("/delete-all-cart")
+    public ResponseEntity<?> deleteCartDetails(@RequestParam("id_customer")String idCustomer){
+        try{
+            cartDetailService.deleteAllCartByIDCustomer(idCustomer);
+            return new ResponseEntity<>(cartDetailService.getCartDetails(idCustomer), HttpStatus.OK);
+        }catch (Exception ex){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }

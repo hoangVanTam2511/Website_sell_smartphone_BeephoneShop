@@ -9,19 +9,21 @@ import beephone_shop_projects.core.admin.order_management.repository.impl.OrderR
 import beephone_shop_projects.core.admin.order_management.service.impl.LichSuHoaDonServiceImpl;
 import beephone_shop_projects.core.client.models.request.BillClientRequest;
 import beephone_shop_projects.core.client.models.request.BillDetailClientRequest;
+import beephone_shop_projects.core.client.models.response.BillClientResponce;
+import beephone_shop_projects.core.client.models.response.ProductOfBillDetail;
 import beephone_shop_projects.core.client.repositories.*;
 import beephone_shop_projects.entity.*;
+import beephone_shop_projects.infrastructure.config.mail.EmailService;
 import beephone_shop_projects.infrastructure.constant.OrderStatus;
 import beephone_shop_projects.infrastructure.constant.OrderType;
 import beephone_shop_projects.utils.RandomCodeGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 @Service
 public class BillClientServiceImpl {
@@ -54,7 +56,7 @@ public class BillClientServiceImpl {
     private BillClientRepository billClientRepository;
 
     @Autowired
-    private BillDetailRepository billDetailRepository;
+    private BillDetailClientRepository billDetailRepository;
 
     @Autowired
     private ProductDetailClientRepository productDetailClientRepository;
@@ -64,6 +66,12 @@ public class BillClientServiceImpl {
 
     @Autowired
     private CartDetailClientRepository cartDetailClientRepository;
+
+    @Autowired
+    private BillDetailClientRepository billDetailClientRepository;
+
+    @Autowired
+    private EmailService emailService;
 
     public HoaDon createBillClient(BillClientRequest orderRequest) throws Exception {
 
@@ -93,6 +101,7 @@ public class BillClientServiceImpl {
         newOrder.setCreatedAt(new Date());
         newOrder.setTongTien(orderRequest.getTongTien());
         newOrder.setNgayMongMuonNhan(new Date(orderRequest.getNgayNhanHang()));
+        newOrder.setEmail(orderRequest.getEmail());
         HoaDon createdOrder = hoaDonRepository.save(newOrder);
 
         LichSuHoaDon orderHistory = new LichSuHoaDon();
@@ -134,8 +143,31 @@ public class BillClientServiceImpl {
         return "Thành công";
     }
 
-    public List<HoaDon> getHoaDonByIDKhachHang(String idKhachHang) {
-        return billClientRepository.getHoaDonByIDKhachHang(idKhachHang);
+    public List<BillClientResponce> getHoaDonByIDKhachHang(String idKhachHang) {
+        ArrayList<HoaDon> listBill =  billClientRepository.getHoaDonByIDKhachHang(idKhachHang);
+        ArrayList<BillClientResponce> billClientResponces = new ArrayList<>();
+
+        for(HoaDon hoaDon : listBill) {
+            BillClientResponce billClientResponce = new BillClientResponce();
+            billClientResponce.setId(hoaDon.getId());
+            billClientResponce.setMa(hoaDon.getMa());
+
+            ArrayList<ProductOfBillDetail> productOfBillDetails = billDetailClientRepository.getProductOfDetailsByIDBill(hoaDon.getId());
+
+            if (!productOfBillDetails.isEmpty()) {
+//                throw new RuntimeException("Không tìm thấy hoá đơn chi tiết nào trong hoá đơn!");
+                billClientResponce.setDuongDan(productOfBillDetails.get(0).getDuongDan());
+                billClientResponce.setRom(productOfBillDetails.get(0).getRom());
+                billClientResponce.setRam(productOfBillDetails.get(0).getRam());
+                billClientResponce.setSoLuongSanPham(productOfBillDetails.size());
+                billClientResponce.setTenMauSac(productOfBillDetails.get(0).getTenMauSac());
+                billClientResponce.setTenSanPham(productOfBillDetails.get(0).getTenSanPham());
+                billClientResponce.setTrangThai(String.valueOf(hoaDon.getTrangThai()));
+                billClientResponce.setTongTienSauKhiGiam(hoaDon.getTongTienSauKhiGiam());
+                billClientResponces.add(billClientResponce);
+            }
+        }
+        return billClientResponces;
     }
 
     public HoaDon getHoaDonByIDHoaDon(String idHoaDon) throws Exception {
@@ -152,5 +184,19 @@ public class BillClientServiceImpl {
 
     public List<LichSuHoaDon> getLichSuHoaDon(String idHoaDon) {
         return lichSuHoaDonRepository.getOrderHistoriesByOrderId(idHoaDon);
+    }
+
+    public String sendEmail(String idHoaDon) throws Exception {
+        HoaDon bill = billClientRepository.findById(idHoaDon).orElseThrow(()-> new Exception("Không tìm thấy hoá đơn"));
+        ArrayList<ProductOfBillDetail> productOfBillDetails = billDetailClientRepository.getProductOfDetailsByIDBill(bill.getId());
+
+        //send email
+        Context context = new Context();
+
+        context.setVariable("bill", bill);
+        context.setVariable("billDetails", productOfBillDetails);
+
+        emailService.sendEmailWithHtmlTemplate(bill.getEmail(), "Thông tin đơn hàng " + bill.getMa(), "email-template", context);
+        return "Send email successfully";
     }
 }

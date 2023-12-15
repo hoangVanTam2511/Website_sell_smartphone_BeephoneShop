@@ -11,14 +11,19 @@ import org.springframework.stereotype.Repository;
 public interface AccountClientRepository extends IAccountRepository {
 
     @Query(value = """
-            SELECT * FROM account acc WHERE acc.email = :email AND acc.mat_khau = :pass
+            SELECT * FROM account acc WHERE acc.email = :email LIMIT 0, 1
             """, nativeQuery = true)
-    Account checkEmailAndPass(@Param("email") String email,@Param("pass") String pass);
+    Account checkEmailAndPass(@Param("email") String email);
 
     @Query(value = """
             SELECT * FROM account acc WHERE acc.email = :email 
             """, nativeQuery = true)
     Account findByEmail(@Param("email") String email);
+
+    @Query(value = """
+            SELECT * FROM account acc WHERE acc.so_dien_thoai = :so_dien_thoai 
+            """, nativeQuery = true)
+    Account findByPhoneNumber(@Param("so_dien_thoai") String soDienThoai);
 
     @Query(value = """
             SELECT * FROM account acc WHERE acc.ma IS NULL

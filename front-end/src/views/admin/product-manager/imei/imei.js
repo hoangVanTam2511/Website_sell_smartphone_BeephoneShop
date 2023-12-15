@@ -26,7 +26,7 @@ import { Link,useParams  } from "react-router-dom";
 import { SearchOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
 import NhapTuFile from "../imei/NhapTuFile";
-
+import { request } from '../../../../store/helpers/axios_helper'
 
 const currentDate = new Date().toISOString().split("T")[0];
 
@@ -255,7 +255,7 @@ const HienThiKH = () => {
   
   // delete
   const deleteColor = async (id) => {
-    await axios.delete(`${apiURLimei}/delete?id=${id}`).then(
+    request('DELETE', `${apiURLimei}/delete?id=${id}`).then(
       (response)=>{
         loadDatalistMauSac();
       })

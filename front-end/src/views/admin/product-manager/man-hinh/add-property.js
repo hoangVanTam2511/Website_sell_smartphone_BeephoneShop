@@ -6,7 +6,7 @@ import { FormLabel } from "react-bootstrap";
 import { PlusOutlined } from "@ant-design/icons";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import { request } from '../../../../store/helpers/axios_helper'
 
 const AddProperty = (props) => {
   const [loading, setLoading] = useState(false);
@@ -78,7 +78,7 @@ const AddProperty = (props) => {
     }
 
     setLoading(true);
-    axios.post("http://localhost:8080/man-hinh/save", displayForm);
+    request('POST',"/man-hinh/save", displayForm);
     setTimeout(() => {
       props.loadData()
       setLoading(false);
@@ -106,8 +106,6 @@ const AddProperty = (props) => {
     setsizeDisplayError("");
     setdisplayForm({ ...displayForm, [e.target.name]: e.target.value });
   };
-
-
 
 
   return (

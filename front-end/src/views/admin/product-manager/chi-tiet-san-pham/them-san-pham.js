@@ -61,6 +61,7 @@ import TextField from "@mui/material/TextField";
 import FormHelperText from "@mui/material/FormHelperText";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { request } from '../../../../store/helpers/axios_helper'
 
 const { TextArea } = Input;
 let index = 0;
@@ -172,7 +173,7 @@ const ThemSanPham = () => {
         return;
     }
 
-    await axios.post("http://localhost:8080/hang/save", nhaSanXuatForm);
+    request('POST',"/hang/save", nhaSanXuatForm);
     setConfirmLoading(true);
     setTimeout(() => {
       setOpen(false);
@@ -207,8 +208,7 @@ const ThemSanPham = () => {
 
   const showModalFormChip = async () => {
     setOpenFormChip(true);
-    await axios
-      .get("http://localhost:8080/chip/new-code")
+    request('GET',"/chip/new-code")
       .then((res) => {
         setChipForm({ ...chipForm, maChip: res.data });
       })
@@ -216,7 +216,7 @@ const ThemSanPham = () => {
   };
 
   const handleOkFormChip = async () => {
-    await axios.post("http://localhost:8080/chip/save", chipForm);
+    request('POST',"/chip/save", chipForm);
     setConfirmLoading(true);
     setTimeout(() => {
       setOpenFormChip(false);
@@ -242,8 +242,7 @@ const ThemSanPham = () => {
   const showModalFormpin = async () => {
     setOpenFormpin(true);
 
-    await axios
-      .get("http://localhost:8080/pin/new-code")
+    request('GET',"/pin/new-code")
       .then((res) => {
         setpinForm({ ...pinForm, mapin: res.data });
       })
@@ -251,7 +250,7 @@ const ThemSanPham = () => {
   };
 
   const handleOkFormpin = async () => {
-    await axios.post("http://localhost:8080/pin/save-second", pinForm);
+    request('POST',"/pin/save-second", pinForm);
     setConfirmLoading(true);
     setTimeout(() => {
       setOpenFormpin(false);
@@ -277,15 +276,14 @@ const ThemSanPham = () => {
   const showModalFormram = async () => {
     setOpenFormram(true);
 
-    await axios
-      .get("http://localhost:8080/ram/new-code")
+    request('GET',"/ram/new-code")
       .then((res) => {
         setramForm({ ...ramForm, maram: res.data });
       })
       .catch((res) => console.log(res));
   };
   const handleOkFormram = async () => {
-    await axios.post("http://localhost:8080/ram/save-second", ramForm);
+    request('POST',"/ram/save-second", ramForm);
     setConfirmLoading(true);
     setTimeout(() => {
       setOpenFormram(false);
@@ -314,7 +312,7 @@ const ThemSanPham = () => {
   };
 
   const handleOkFormrom = async () => {
-    await axios.post("http://localhost:8080/rom/save-second", romForm);
+    request('POST',"/rom/save-second", romForm);
     setConfirmLoading(true);
     setTimeout(() => {
       setOpenFormrom(false);
@@ -339,8 +337,7 @@ const ThemSanPham = () => {
   const showModalFormmauSac = async () => {
     setOpenFormmauSac(true);
 
-    await axios
-      .get("http://localhost:8080/mau-sac/new-code")
+    request('GET',"/mau-sac/new-code")
       .then((res) => {
         setmauSacForm({ ...mauSacForm, mamauSac: res.data });
       })
@@ -348,7 +345,7 @@ const ThemSanPham = () => {
   };
 
   const handleOkFormmauSac = async () => {
-    await axios.post("http://localhost:8080/mau-sac/save-second", mauSacForm);
+    request('POST',"/mau-sac/save-second", mauSacForm);
     setConfirmLoading(true);
     setTimeout(() => {
       setOpenFormmauSac(false);
@@ -385,7 +382,7 @@ const ThemSanPham = () => {
       return;
     }
     setLoading(true);
-    axios.post("http://localhost:8080/camera/save", cameraForm);
+    request('POST',"/camera/save", cameraForm);
     setTimeout(() => {
       setLoading(false);
       setOpenFormCamera(false);
@@ -402,15 +399,14 @@ const ThemSanPham = () => {
   const showModalFormmanHinh = async () => {
     setOpenFormmanHinh(true);
 
-    await axios
-      .get("http://localhost:8080/man-hinh/new-code")
+    request('GET',"/man-hinh/new-code")
       .then((res) => {
         setmanHinhForm({ ...manHinhForm, mamanHinh: res.data });
       })
       .catch((res) => console.log(res));
   };
   const handleOkFormmanHinh = async () => {
-    await axios.post("http://localhost:8080/man-hinh/save-second", manHinhForm);
+    request('POST',"/man-hinh/save-second", manHinhForm);
     setConfirmLoading(true);
     setTimeout(() => {
       setOpenFormmanHinh(false);
@@ -436,16 +432,14 @@ const ThemSanPham = () => {
   const showModalFormDongSanPham = async () => {
     setOpenFormDongSanPham(true);
 
-    await axios
-      .get("http://localhost:8080/dong-san-pham/new-code")
+    request('GET',"/dong-san-pham/new-code")
       .then((res) => {
         setDongSanPhamForm({ ...DongSanPhamForm, maDongSanPham: res.data });
       })
       .catch((res) => console.log(res));
   };
   const handleOkFormDongSanPham = async () => {
-    await axios.post(
-      "http://localhost:8080/dong-san-pham/save",
+    request('POST',"/dong-san-pham/save",
       DongSanPhamForm
     );
     setConfirmLoading(true);
@@ -488,8 +482,7 @@ const ThemSanPham = () => {
         );
         return;
       }
-      await axios
-        .post("http://localhost:8080/cau-hinh/save", cauHinh)
+      request('POST',"/cau-hinh/save", cauHinh)
         .then((res) => {
           openNotificationSuccess(
             "success",
@@ -567,8 +560,7 @@ const ThemSanPham = () => {
 
   // delete
   const deleteColor = async (id) => {
-    await axios
-      .delete(`${apiURLCauHinh}/delete/${id}`)
+    request('DELETE',`${apiURLCauHinh}/delete/${id}`)
       .then((response) => {
         loadDataListCauHinh(currentPage);
       })
@@ -678,12 +670,9 @@ const ThemSanPham = () => {
   const { donGia, moTa } = chiTietSanPham; // tạo contructor
 
   const onSubmit = async () => {
-    await axios
-      .post("http://localhost:8080/san-pham/save", chiTietSanPham)
+    request('POST',"/san-pham/save", chiTietSanPham)
       .then((res) => {
-        axios
-          .post(
-            `http://localhost:8080/chi-tiet-san-pham/save?id=${res.data.id}`,
+        request('POST',`/chi-tiet-san-pham/save?id=${res.data.id}`,
             listIdCauHinh
           )
           .then((res) => {})
@@ -946,8 +935,7 @@ const ThemSanPham = () => {
   };
 
   const handleClickStepThree = async () => {
-    await axios
-      .post("http://localhost:8080/san-pham/save", chiTietSanPham)
+    request('POST',"/san-pham/save", chiTietSanPham)
       .then((res) => {
         {
             console.log(res.data.id)
@@ -959,14 +947,12 @@ const ThemSanPham = () => {
       .catch((res) => console.log(res));
 
     listCauHinhSelected.forEach(async (item, index) => {
-      await axios
-        .post("http://localhost:8080/chi-tiet-san-pham/save", item)
+      request('POST',"/chi-tiet-san-pham/save", item)
         .then((res) => {
           for (let [key, value] of urlImage) {
             if (getIndexOfLocationImage(key) == index) {
               if (value != null) {
-                axios
-                  .post("http://localhost:8080/anh/save", {
+                request('POST',"/anh/save", {
                     tenAnh: key,
                     duongDan: value,
                     trangThai: pinImage.get(key),

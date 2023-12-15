@@ -24,7 +24,8 @@ import {
 import { StatusAccountCus, StatusCusNumber } from "../khachhang/enum";
 import { Notistack } from "../../order-manager/enum";
 import useCustomSnackbar from "../../../../utilities/notistack";
-
+import { request } from '../../../../store/helpers/axios_helper'
+import ExcelExportHelper from "../nhanvien/ExcelExportHelper";
 //show
 const HienThiNV = () => {
   const [form] = Form.useForm();
@@ -42,7 +43,7 @@ const HienThiNV = () => {
         loadDataListRole(targetPage);
         return;
       }
-      const response = await axios.get(apiURLNV + "/search-all", {
+      const response = request('GET',apiURLNV + "/search-all", {
         params: {
           tenKH: searchText,
           page: page,
@@ -64,8 +65,7 @@ const HienThiNV = () => {
   }, [searchText]);
   // load
   const loadDataListRole = (currentPage) => {
-    axios
-      .get(
+    request('GET',
         apiURLNV +
         "/search-all?page=" +
         currentPage +
@@ -75,6 +75,7 @@ const HienThiNV = () => {
         filterStatus
       )
       .then((response) => {
+        console.log(response.data.data);
         setListNV(response.data.data);
         setTotalPages(response.data.totalPages);
       })
@@ -138,8 +139,7 @@ const HienThiNV = () => {
     setEditingKey(record.id);
   };
   const doChangeTrangThai = (id) => {
-    axios
-      .put(apiURLNV + `/${id}/doi-tt`)
+    request('PUT', apiURLNV + `/${id}/doi-tt`)
       .then((response) => {
         loadDataListRole(currentPage);
         handleOpenAlertVariant("Đổi trạng thái thành công", Notistack.SUCCESS);
@@ -460,8 +460,17 @@ const HienThiNV = () => {
                     type="primary"
                     style={{ height: "40px", width: "auto", fontSize: "15px" }}
                   >
-                    <NhapTuFile />
+                     <ExcelExportHelper data={listNV} />
                   </Button>
+
+                  {/* <Button
+                    // onClick={handleCreateNewOrderPending}
+                    className="rounded-2 button-mui"
+                    type="primary"
+                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                  >
+                    <NhapTuFile />
+                  </Button> */}
                 </div>
               </Card.Header>
               <Card.Body>

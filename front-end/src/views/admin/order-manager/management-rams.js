@@ -31,6 +31,8 @@ import CreateRam from "./create-ram";
 import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
 import useCustomSnackbar from "../../../utilities/notistack";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
+import { request, requestParam } from '../../../store/helpers/axios_helper'
+
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -50,8 +52,7 @@ const ManagementRams = () => {
   const [openSelect, setOpenSelect] = useState(false);
 
   const loadDataRam = () => {
-    axios
-      .get(`http://localhost:8080/api/rams`)
+    request('GET',`/api/rams`)
       .then((response) => {
         setListRam(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -65,13 +66,10 @@ const ManagementRams = () => {
 
   const getListRamSearchAndPage = (page) => {
     // setIsLoading(false);
-    axios
-      .get(`http://localhost:8080/api/rams/search`, {
-        params: {
+    requestParam('GET',`/api/rams/search`, {
           keyword: searchTatCa,
           currentPage: page,
           status: ConvertStatusProductsNumberToString(searchTrangThai),
-        },
       })
       .then((response) => {
         setRamPages(response.data.data);
@@ -271,8 +269,7 @@ const ManagementRams = () => {
   const [idRam, setIdRam] = useState("");
 
   const detailRams = async (id) => {
-    await axios
-      .get(`http://localhost:8080/api/rams/${id}`)
+    request('GET',`/api/rams/${id}`)
       .then((response) => {
         setRamCode(response.data.data.ma);
         setStatus(response.data.data.status);
@@ -354,8 +351,7 @@ const ManagementRams = () => {
       dungLuong: dungLuong,
       status: status,
     };
-    axios
-      .put(`http://localhost:8080/api/rams`, obj)
+    request('PUT',`/api/rams`, obj)
       .then((response) => {
         loadDataRam();
         handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
@@ -367,8 +363,7 @@ const ManagementRams = () => {
   };
 
   const doiTrangThaiProducts = (idRam) => {
-    axios
-      .put(`http://localhost:8080/api/rams/${idRam}`)
+    request('PUT',`/api/rams/${idRam}`)
       .then((response) => {
         loadDataRam();
         handleOpenAlertVariant(

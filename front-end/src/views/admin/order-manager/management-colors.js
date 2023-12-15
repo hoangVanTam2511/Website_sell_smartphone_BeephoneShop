@@ -31,6 +31,8 @@ import LoadingIndicator from "../../../utilities/loading";
 import CreateMauSac from "./create-mau-sac";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
+import { request, requestParam } from '../../../store/helpers/axios_helper'
+
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -57,8 +59,7 @@ const ManagementColors = () => {
   const [openSelect, setOpenSelect] = useState(false);
 
   const getListColor = () => {
-    axios
-      .get(`http://localhost:8080/api/colors`)
+    request('GET',`/api/colors`)
       .then((response) => {
         setColors(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -70,14 +71,11 @@ const ManagementColors = () => {
 
   const getListProductSearchAndPage = (page) => {
     // setIsLoading(false);
-    axios
-      .get(`http://localhost:8080/api/colors/search`, {
-        params: {
+    requestParam('GET',`/api/colors/search`, {
           keyword: searchTatCa,
           currentPage: page,
           pageSize: pageShow,
           status: ConvertStatusProductsNumberToString(searchTrangThai),
-        },
       })
       .then((response) => {
         setColorPages(response.data.data);
@@ -100,8 +98,7 @@ const ManagementColors = () => {
   };
 
   const detailColor = async (id) => {
-    await axios
-      .get(`http://localhost:8080/api/colors/${id}`)
+    request('GET',`/api/colors/${id}`)
       .then((response) => {
         setColorCode(response.data.data.ma);
         setStatus(response.data.data.status);
@@ -179,8 +176,7 @@ const ManagementColors = () => {
   };
 
   const doiTrangThaiColor = (idColor) => {
-    axios
-      .put(`http://localhost:8080/api/colors/doi-trang-thai/${idColor}`)
+    request('PUT',`/api/colors/doi-trang-thai/${idColor}`)
       .then((response) => {
         getListColor();
         handleOpenAlertVariant(
@@ -364,8 +360,7 @@ const ManagementColors = () => {
       tenMauSac: colorName,
       status: status,
     };
-    axios
-      .put(`http://localhost:8080/api/colors`, obj)
+    request('PUT',`/api/colors`, obj)
       .then((response) => {
         getListColor();
         handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);

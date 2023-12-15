@@ -13,8 +13,8 @@ import java.util.ArrayList;
 public interface BillClientRepository extends IHoaDonRepository {
 
     @Query(value = """
-        SELECT * FROM hoa_don WHERE id_khach_hang = :id_khach_hang
-        """, nativeQuery = true)
+        SELECT hd FROM HoaDon hd WHERE hd.account.id = :id_khach_hang
+        """)
     ArrayList<HoaDon> getHoaDonByIDKhachHang(@Param("id_khach_hang") String idKhachHang);
 
     @Query(value = """

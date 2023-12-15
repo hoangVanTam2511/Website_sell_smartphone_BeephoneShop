@@ -19,7 +19,7 @@ import AddressForm from "./DiaChi";
 import ImageUploadComponent from "./Anh";
 import IDScan from "./QuetCanCuoc";
 import { useNavigate } from "react-router-dom";
-
+import { request } from '../../../../store/helpers/axios_helper'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faExclamationCircle,
@@ -207,23 +207,29 @@ const AddNV = () => {
         setIsConfirmVisible(false);
         return;
       }
-      const nhanVienRespone = await axios.post(apiURLNV + "/add", obj);
+      request('POST', apiURLNV + "/add", obj).then(
+        (res) => {
+          if (res.status === 200) {
+            var nhanVienRespone = res
+            const generatedMaKhachHang = nhanVienRespone.data.data.id;
+            addDiaChiList(generatedMaKhachHang);
+            redirectToHienThiKH(generatedMaKhachHang);
+            const newNhanVienRespone = {
+              hoVaTen: hoVaTen,
+              ngaySinh: ngaySinh,
+              soDienThoai: soDienThoai,
+              diaChiList: [],
+              gioiTinh: gioiTinh,
+              email: email,
+              anhDaiDien: anhDaiDien,
+              canCuocCongDan: cccd,
+            };
+            setListNV([newNhanVienRespone, ...listNV]);
+            handleOpenAlertVariant("Thêm khách hàng thành công", Notistack.SUCCESS);
+          }
+        }
+      );
 
-      const generatedMaKhachHang = nhanVienRespone.data.data.id;
-      addDiaChiList(generatedMaKhachHang);
-      redirectToHienThiKH(generatedMaKhachHang);
-      const newNhanVienRespone = {
-        hoVaTen: hoVaTen,
-        ngaySinh: ngaySinh,
-        soDienThoai: soDienThoai,
-        diaChiList: [],
-        gioiTinh: gioiTinh,
-        email: email,
-        anhDaiDien: anhDaiDien,
-        canCuocCongDan: cccd,
-      };
-      setListNV([newNhanVienRespone, ...listNV]);
-      handleOpenAlertVariant("Thêm khách hàng thành công", Notistack.SUCCESS);
     } catch (error) {
       handleOpenAlertVariant("Thêm thất bại", Notistack.ERROR);
     }
@@ -240,8 +246,7 @@ const AddNV = () => {
       account: generatedMaKhachHang,
       trangThaiNV: 1,
     };
-    axios
-      .post(`${apiURLNV}/dia-chi/add?id=${generatedMaKhachHang}`, newAddress)
+    request('POST', `${apiURLNV}/dia-chi/add?id=${generatedMaKhachHang}`, newAddress)
       .then((response) => {
         let newKhachHangResponse = {
           diaChi: diaChi,
@@ -252,6 +257,8 @@ const AddNV = () => {
           trangThaiNV: 1,
         };
         setDiaChiList([newKhachHangResponse, ...diaChiList]);
+      }).catch((error) => {
+        console.log(error)
       });
   };
   const handleChangeDate = (date) => {

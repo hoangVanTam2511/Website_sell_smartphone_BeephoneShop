@@ -31,6 +31,7 @@ import * as React from "react";
 import ModalAddKhachHang from "./ModalAddKhachHang";
 import { Notistack } from "../../order-manager/enum";
 import useCustomSnackbar from "../../../../utilities/notistack";
+import { request, requestParam } from '../../../../store/helpers/axios_helper'
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -61,6 +62,8 @@ const HienThiKH = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [searchText, setSearchText] = useState("");
   const [filterStatus, setFilterStatus] = useState(0);
+  const [loadAgain, setLoadAgain] = useState(0);
+
   const handleFilter = (status) => {
     setFilterStatus(status);
     // setCurrentPage(0); // Reset current page to 1 when applying filters
@@ -103,12 +106,9 @@ const HienThiKH = () => {
         loadDataListRole(targetPage); // Tải danh sách từ trang targetPage
         return;
       }
-      axios
-        .get(apiURLKH + "/search-all", {
-          params: {
+      requestParam('GET', apiURLKH + "/search-all", {
             tenKH: searchText,
             page: currentPage,
-          },
         })
         .then((response) => {
           setTotalPages(response.data.totalPages);
@@ -140,13 +140,13 @@ const HienThiKH = () => {
 
   useEffect(() => {
     loadDataListRole(currentPage);
-  }, [currentPage]);
+  }, [currentPage, loadAgain]);
   // load
   const loadDataListRole = (currentPage) => {
-    axios
-      .get(apiURLKH + "/hien-thi?page=" + currentPage)
+    request('GET', apiURLKH + "/hien-thi?pageNo=" + currentPage)
       .then((response) => {
         setListKH(response.data.data);
+        console.log(response.data.data)
         setTotalPages(response.data.totalPages);
       })
       .catch(() => { });
@@ -177,8 +177,7 @@ const HienThiKH = () => {
   };
 
   const doChangeTrangThai = (id) => {
-    axios
-      .put(apiURLKH + `/${id}/doi-tt`)
+    request('PUT', apiURLKH + `/${id}/doi-tt`)
       .then((response) => {
         loadDataListRole(currentPage);
         handleOpenAlertVariant("Đổi trạng thái thành công", Notistack.SUCCESS);
@@ -328,6 +327,10 @@ const HienThiKH = () => {
       },
     },
   ];
+
+  const loadAfterImport = () => {
+    setLoadAgain(2)
+  }
 
   return (
     <>
@@ -505,7 +508,7 @@ const HienThiKH = () => {
                   type="primary"
                   style={{ height: "40px", width: "auto", fontSize: "15px" }}
                 >
-                  <NhapTuFile />
+                  <NhapTuFile loadAfterImport={loadAfterImport}/>
                 </Button>
               </div>
             </Card.Header>

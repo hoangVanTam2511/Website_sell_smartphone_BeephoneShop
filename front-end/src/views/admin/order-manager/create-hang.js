@@ -17,6 +17,7 @@ import LoadingIndicator from "../../../utilities/loading";
 import generateRandomCode from "../../../utilities/randomCode";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { Notistack, StatusCommonProductsNumber } from "./enum";
+import { request } from '../../../store/helpers/axios_helper'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -62,8 +63,7 @@ const CreateHang = ({ open, close, getAll, hangs }) => {
       tenHang: tenHang,
       status: status,
     };
-    axios
-      .post(`http://localhost:8080/api/brands`, obj)
+    request('POST',`/api/brands`, obj)
       .then((response) => {
         close();
         getAll();

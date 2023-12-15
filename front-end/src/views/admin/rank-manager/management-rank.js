@@ -33,6 +33,7 @@ import {
 } from "../order-manager/enum";
 import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
 import { InputAdornment } from "@mui/material";
+import { request } from '../../../store/helpers/axios_helper'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -67,8 +68,7 @@ const ManagementRanks = () => {
   const [searchTrangThai, setSearchTrangThai] = useState(6);
 
   const getListRank = () => {
-    axios
-      .get(`http://localhost:8080/rank/ranks`)
+    request('GET',`/rank/ranks`)
       .then((response) => {
         setListRank(response.data.data);
       })
@@ -78,8 +78,7 @@ const ManagementRanks = () => {
   };
 
   const getListProductSearchAndPage = (page) => {
-    axios
-      .get(`http://localhost:8080/rank/ranksPage`, {
+    request('GET',`/rank/ranksPage`, {
         params: {
           page: page,
           pageSize: pageShow,
@@ -160,8 +159,7 @@ const ManagementRanks = () => {
   };
 
   const detailRank = async (idRank) => {
-    await axios
-      .get(`http://localhost:8080/rank/get-by-id/${idRank}`)
+    request('GET',`/rank/get-by-id/${idRank}`)
       .then((response) => {
         setMaRank(response.data.data.ma);
         setTenRank(response.data.data.ten);
@@ -178,8 +176,7 @@ const ManagementRanks = () => {
   };
 
   const doiTrangThaiRank = (idRank) => {
-    axios
-      .put(`http://localhost:8080/rank/deleteTrangThaiRank/${idRank}`)
+    request('PUT',`/rank/deleteTrangThaiRank/${idRank}`)
       .then((response) => {
         getListProductSearchAndPage();
         handleOpenAlertVariant(
@@ -220,8 +217,7 @@ const ManagementRanks = () => {
       dieuKienToiThieu: dieuKienToiThieu,
       uuDai: value,
     };
-    axios
-      .put(`http://localhost:8080/rank/updateRank/${idRank}`, obj)
+    request('PUT',`/rank/updateRank/${idRank}`, obj)
       .then((response) => {
         getListProductSearchAndPage(currentPage);
         handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);

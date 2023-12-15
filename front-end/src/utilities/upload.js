@@ -246,7 +246,7 @@ function PreviewMultipleImages({ uniqueColors, getColorImage, confirm, getValidI
             <input style={{ display: "none" }} ref={inputRef} type="file" accept="image/*" onChange={handleMultipleImages} multiple />
           </span>
         </Button>
-      </div>
+      </div>  
     </>
   )
 }

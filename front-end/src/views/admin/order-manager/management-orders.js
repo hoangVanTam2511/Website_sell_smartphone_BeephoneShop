@@ -31,6 +31,7 @@ import { over } from "stompjs";
 import SockJS from "sockjs-client";
 import { FaPencilAlt } from "react-icons/fa";
 import * as dayjs from "dayjs";
+import { request, requestParam } from '../../../store/helpers/axios_helper'
 
 const ManagementOrders = () => {
   const navigate = useNavigate();
@@ -105,20 +106,18 @@ const ManagementOrders = () => {
   };
 
   const findOrdersByMultipleCriteriaWithPagination = (page) => {
-    axios
-      .get(`http://localhost:8080/api/orders`, {
-        params: {
-          currentPage: page,
-          keyword: keyword,
-          fromDate: fromDate,
-          toDate: toDate,
-          isPending: false,
-          sort: sort,
-          type: type,
-          state: state,
-          pageSize: size,
-        },
-      })
+    requestParam('GET', `/api/orders`, {
+      currentPage: page,
+      keyword: keyword,
+      fromDate: fromDate,
+      toDate: toDate,
+      isPending: false,
+      sort: sort,
+      type: type,
+      state: state,
+      pageSize: size,
+    },
+    )
       .then((response) => {
         setOrders(response.data.data);
         setTotalPages(response.data.totalPages);

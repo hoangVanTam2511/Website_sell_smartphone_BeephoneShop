@@ -18,6 +18,7 @@ import LoadingIndicator from "../../../utilities/loading";
 import generateRandomCode from "../../../utilities/randomCode";
 import { Notistack, StatusCommonProductsNumber } from "./enum";
 import useCustomSnackbar from "../../../utilities/notistack";
+import { request } from '../../../store/helpers/axios_helper'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -94,8 +95,7 @@ const CreateRam = ({ open, close, getAll, rams }) => {
       dungLuong: kichThuoc,
       status: status,
     };
-    axios
-      .post(`http://localhost:8080/api/rams`, obj)
+    request('POST',`/api/rams`, obj)
       .then((response) => {
         close();
         getAll();

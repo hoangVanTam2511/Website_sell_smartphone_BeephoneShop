@@ -25,6 +25,7 @@ import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDown
 import LoadingIndicator from "../../../utilities/loading";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
+import { request, requestParam } from '../../../store/helpers/axios_helper'
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -48,8 +49,7 @@ const ManagementImei = () => {
   const [openSelect, setOpenSelect] = useState(false);
 
   const getListImei = () => {
-    axios
-      .get(`http://localhost:8080/api/imeis`)
+    request('GET',`/api/imeis`)
       .then((response) => {
         setImei(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -61,13 +61,10 @@ const ManagementImei = () => {
 
   const getListImeiSearchAndPage = (page) => {
     // setIsLoading(false);
-    axios
-      .get(`http://localhost:8080/api/imeis/search`, {
-        params: {
+    requestParam('GET',`/api/imeis/search`, {
           keyword: searchTatCa,
           currentPage: page,
           trangThai: ConvertStatusProductsNumberToString(searchTrangThai),
-        },
       })
       .then((response) => {
         // const data = response.data.data;
@@ -116,8 +113,7 @@ const ManagementImei = () => {
   }, []);
 
   const doiTrangThaiImei = (idImei) => {
-    axios
-      .put(`http://localhost:8080/api/imeis/${idImei}`)
+    request('PUT',`/api/imeis/${idImei}`)
       .then((response) => {
         getListImei();
         console.log(response);

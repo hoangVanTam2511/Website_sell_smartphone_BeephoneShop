@@ -1,6 +1,7 @@
 import React from "react";
 import * as XLSX from "xlsx";
 import * as XlsxPopulate from "xlsx-populate/browser/xlsx-populate";
+import { StatusCusNumber } from "./enum";
 
 const ExcelExportHelper = ({ data }) => {
   const createDownLoadData = () => {
@@ -8,7 +9,7 @@ const ExcelExportHelper = ({ data }) => {
       console.log(url);
       const downloadAnchorNode = document.createElement("a");
       downloadAnchorNode.setAttribute("href", url);
-      downloadAnchorNode.setAttribute("download", "product_report.xlsx");
+      downloadAnchorNode.setAttribute("download", "danh_sach_khach_hang.xlsx");
       downloadAnchorNode.click();
       downloadAnchorNode.remove();
     });
@@ -54,52 +55,36 @@ const ExcelExportHelper = ({ data }) => {
   };
 
   const handleExport = () => {
-    const title = [{ A: "Danh sách sản phẩm" }, {}];
+    const title = [{ A: "Danh sách khách hàng" }, {}];
 
     let table1 = [
       {
         A: "STT",
         B: "Mã",
-        C: "Tên sản phẩm",
-        D: "Hãng sản xuất",
-        E: "Dòng sản phẩm",
-        F: "Chip",
-        G: "Màn hình",
-        H: "Pin",
-        I: "Hệ điều hành",
-        J: "Số sim",
-        K: "Mô tả",
+        C: "Họ và tên",
+        D: "Email",
+        E: "Số điện thoại",
+        F: "Trạng thái",
       },
     ];
 
-    const products = data.map((item, index) => ({
-      stt: item.stt,
-      tenSanPham: item.tenSanPham,
-      hang: item.tags[0],
-      dongSanPham: item.tags[1],
-      chip: item.tags[2],
-      doPhanGiaiManHinh: item.doPhanGiaiManHinh,
-      kichThuocManHinh: item.kichThuocManHinh,
-      dungLuong: item.dungLuong,
-      heDieuHanh: item.heDieuHanh,
-      sim: item.sim,
-      mota: item.mota,
+    const customers = data.map((item, index) => ({
+      stt: index + 1,
       ma: item.ma,
+      hoVaTen: item.hoVaTen,
+      email: item.email,
+      soDienThoai: item.soDienThoai,
+      trangThai: item.trangThai === StatusCusNumber.NGUNG_HOAT_DONG ? "Ngừng hoạt động" : "Hoạt động",
     }));
 
-    products.forEach((product) => {
+    customers.forEach((cus) => {
       table1.push({
-        A: product.stt,
-        B: product.ma,
-        C: product.tenSanPham,
-        D: product.hang,
-        E: product.dongSanPham,
-        F: product.chip,
-        G: product.doPhanGiaiManHinh + "-" + product.kichThuocManHinh + " inch",
-        H: product.dungLuong + " mah",
-        I: product.heDieuHanh,
-        J: product.sim + " sim",
-        K: product.mota,
+        A: cus.stt,
+        B: cus.ma,
+        C: cus.hoVaTen,
+        D: cus.email,
+        E: cus.soDienThoai,
+        F: cus.trangThai,
       });
     });
 
@@ -116,13 +101,9 @@ const ExcelExportHelper = ({ data }) => {
       skipHeader: true,
     });
 
-    const sheetConfigs = XLSX.utils.json_to_sheet(finalData, {
-      skipHeader: true,
-    });
 
-    XLSX.utils.book_append_sheet(wb, sheet, "Thông tin sản phẩm");
+    XLSX.utils.book_append_sheet(wb, sheet, "Danh sách khách hàng");
 
-    XLSX.utils.book_append_sheet(wb, sheetConfigs, "Danh sách cấu hình");
 
     // Since blobs can store binary data, they can be used to store images or other multimedia files.
 
@@ -137,15 +118,15 @@ const ExcelExportHelper = ({ data }) => {
 
     const dataInfo = {
       titleCell: "A2",
-      titleRange: "A1:K2",
-      tbodyRange: `A3:K${finalData.length}`,
+      titleRange: "A1:F2",
+      tbodyRange: `A3:F${finalData.length}`,
       theadRange:
         headerIndexes?.length >= 1
-          ? `A${headerIndexes[0] + 1}:K${headerIndexes[0] + 1}`
+          ? `A${headerIndexes[0] + 1}:F${headerIndexes[0] + 1}`
           : null,
       theadRange1:
         headerIndexes?.length >= 2
-          ? `A${headerIndexes[1] + 1}:H${headerIndexes[1] + 1}`
+          ? `A${headerIndexes[1] + 1}:F${headerIndexes[1] + 1}`
           : null,
       tFirstColumnRange:
         headerIndexes?.length >= 1
@@ -183,11 +164,6 @@ const ExcelExportHelper = ({ data }) => {
         sheet.column("D").width(24);
         sheet.column("E").width(25);
         sheet.column("F").width(25);
-        sheet.column("G").width(25);
-        sheet.column("H").width(25);
-        sheet.column("I").width(25);
-        sheet.column("J").width(25);
-        sheet.column("K").width(25);
 
         sheet.range(dataInfo.titleRange).merged(true).style({
           bold: true,
@@ -205,9 +181,10 @@ const ExcelExportHelper = ({ data }) => {
         console.log(dataInfo);
 
         sheet.range(dataInfo.theadRange).style({
-          fill: "FFFD04",
+          fill: `4472c4`,
           bold: true,
           horizontalAlignment: "center",
+          fontColor: "ffffff",
         });
 
         if (dataInfo.theadRange1) {

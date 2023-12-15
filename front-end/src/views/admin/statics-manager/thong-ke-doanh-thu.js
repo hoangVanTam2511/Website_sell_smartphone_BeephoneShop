@@ -20,6 +20,7 @@ import Slider from "@material-ui/core/Slider";
 import { Table, ArrowUpOutlined, Button, Image } from "antd";
 import numeral from "numeral";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
+import { request } from '../../../store/helpers/axios_helper'
 
 const ThongKeDoanhThu = () => {
   const [listDonHangAll, setListDonHangAll] = useState([]);
@@ -45,8 +46,7 @@ const ThongKeDoanhThu = () => {
   const [tocDoTangTruong, setTocDoTangTruong] = useState([]);
 
   const thongKeTheoNgay = () => {
-    axios
-      .get(`http://localhost:8080/thong-ke/in-day`)
+    request('GET',`/thong-ke/in-day`)
       .then((response) => {
         setListDonHangInDay(response.data);
       })
@@ -54,8 +54,7 @@ const ThongKeDoanhThu = () => {
   };
 
   const thongKeTheoThang = () => {
-    axios
-      .get(`http://localhost:8080/thong-ke/in-month`)
+    request('GET',`/thong-ke/in-month`)
       .then((response) => {
         setListDonHangInMonth(response.data);
       })
@@ -63,8 +62,7 @@ const ThongKeDoanhThu = () => {
   };
 
   const thongKeTheoSanPham = () => {
-    axios
-      .get(`http://localhost:8080/thong-ke/san-pham`)
+    request('GET',`/thong-ke/san-pham`)
       .then((response) => {
         setListSanPham(response.data);
       })
@@ -72,8 +70,7 @@ const ThongKeDoanhThu = () => {
   };
 
   const getSanPhamBanChay = () => {
-    axios
-      .get(`http://localhost:8080/thong-ke/san-pham-ban-chay`, {
+    request('GET',`/thong-ke/san-pham-ban-chay`, {
         params: {
           chonTheo: loaiBoLoc,
         },
@@ -85,8 +82,7 @@ const ThongKeDoanhThu = () => {
   };
 
   const getSanPhamSapHetHang = () => {
-    axios
-      .get(`http://localhost:8080/thong-ke/san-pham-sap-het-hang`)
+    request('GET',`/thong-ke/san-pham-sap-het-hang`)
       .then((response) => {
         setListSanPhamSapHet(response.data);
       })
@@ -94,8 +90,7 @@ const ThongKeDoanhThu = () => {
   };
 
   const getTocDoTangTruong = () => {
-    axios
-      .get(`http://localhost:8080/thong-ke/toc-do-tang-truong`)
+    request('GET',`/thong-ke/toc-do-tang-truong`)
       .then((response) => {
         setTocDoTangTruong(response.data);
       })
@@ -171,8 +166,7 @@ const ThongKeDoanhThu = () => {
   });
 
   const fetchData = (numberOfDays) => {
-    const sanPhamPromise = axios.get(
-      `http://localhost:8080/thong-ke/san-pham-khoang-ngay`,
+    const sanPhamPromise = request('GET',`/thong-ke/san-pham-khoang-ngay`,
       {
         params: {
           date1: searchNgayBatDau,
@@ -181,8 +175,7 @@ const ThongKeDoanhThu = () => {
       }
     );
 
-    const donHangPromise = axios.get(
-      `http://localhost:8080/thong-ke/don-hang-khoang-ngay`,
+    const donHangPromise = request('GET',`/thong-ke/don-hang-khoang-ngay`,
       {
         params: {
           date1: searchNgayBatDau,
@@ -308,8 +301,7 @@ const ThongKeDoanhThu = () => {
 
   useEffect(() => {
     const getTrangThaiDonHang = () => {
-      axios
-        .get(`http://localhost:8080/thong-ke/trang-thai-don-hang`, {
+      request('GET',`/thong-ke/trang-thai-don-hang`, {
           params: {
             chonTheo: loaiBoLocTDTT,
           },

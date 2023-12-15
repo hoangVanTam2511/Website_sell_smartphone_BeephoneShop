@@ -18,6 +18,8 @@ import LoadingIndicator from "../../../utilities/loading";
 import generateRandomCode from "../../../utilities/randomCode";
 import { Notistack, StatusCommonProductsNumber } from "./enum";
 import useCustomSnackbar from "../../../utilities/notistack";
+import { StatusCommonProductsNumber } from "./enum";
+import { request } from '../../../store/helpers/axios_helper'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -81,8 +83,7 @@ const CreateTheNho = ({ open, close, getAll, theNhos }) => {
       dungLuongToiDa: dungLuongToiDa,
       status: status,
     };
-    axios
-      .post(`http://localhost:8080/api/the-nhos`, obj)
+    request('POST',`/api/the-nhos`, obj)
       .then((response) => {
         close();
         getAll();

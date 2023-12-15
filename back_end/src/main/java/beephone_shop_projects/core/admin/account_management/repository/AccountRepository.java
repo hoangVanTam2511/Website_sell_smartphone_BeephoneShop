@@ -15,6 +15,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,7 +44,7 @@ public interface AccountRepository extends IAccountRepository, CustomKhachHangRe
     Page<Account> getAllNV(Pageable pageable);
 
     @Query(value = """
-                SELECT  kh FROM Account kh where kh.idRole.ma='role1'
+                SELECT kh FROM Account kh where kh.idRole.ma='role1' or kh.idRole.ma ='role3'
             """)
     List<Account> getAllNVienNoPage();
 
@@ -57,6 +58,13 @@ public interface AccountRepository extends IAccountRepository, CustomKhachHangRe
              ORDER BY a.created_at DESC 
             """, nativeQuery = true)
     Page<AccountResponse> getAllKH(Pageable pageable, @Param("request") FindAccountRequest request);
+
+    @Query(value = """
+                SELECT  a.ma ,a.id,a.email,a.ho_va_ten, a.trang_thai,a.mat_khau , a.so_dien_thoai , a.ngay_sinh ,a.id_role, a.anh_dai_dien, a.created_at
+                        FROM account a join role b on a.id_role=b.id where b.ma="role2" 
+             ORDER BY a.created_at DESC 
+            """, nativeQuery = true)
+    ArrayList<AccountResponse> getAllKHNoPageable();
 
     @Transactional
     @Modifying
@@ -114,5 +122,10 @@ public interface AccountRepository extends IAccountRepository, CustomKhachHangRe
 
     @Query("SELECT a FROM Account a WHERE a.idRole.ma='role2'")
     List<Account> sendMailAccount();
+
+    @Query(value = """
+            SELECT * FROM account acc WHERE acc.email = :email
+            """, nativeQuery = true)
+    Account findByEmail(@Param("email") String email);
 
 }

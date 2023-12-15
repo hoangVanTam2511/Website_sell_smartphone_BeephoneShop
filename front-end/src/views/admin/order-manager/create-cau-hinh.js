@@ -37,6 +37,7 @@ import ModalChonDonGiaChung from "./modal-don-gia-chung";
 import CreateMauSac from "./create-mau-sac";
 import Barcode from 'react-barcode';
 import html2canvas from 'html2canvas';
+import { request, requestBodyMultipartFile } from '../../../store/helpers/axios_helper'
 
 const ITEM_HEIGHT = 130;
 const ITEM_PADDING_TOP = 8;
@@ -85,8 +86,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
   }
   const [listColor, setListColor] = useState([]);
   const getListColor = async () => {
-    await axios
-      .get(`http://localhost:8080/api/colors`)
+    request('GET',`/api/colors`)
       .then((response) => {
         setListColor(response.data.data);
       })
@@ -97,8 +97,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
   const [listRam, setListRam] = useState([]);
   const [listRom, setListRom] = useState([]);
   const getListRom = () => {
-    axios
-      .get(`http://localhost:8080/api/roms`)
+    request('GET',`/api/roms`)
       .then((response) => {
         setListRom(response.data.data);
       })
@@ -107,8 +106,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
       });
   };
   const getListRam = () => {
-    axios
-      .get(`http://localhost:8080/api/rams`)
+    request('GET',`/api/rams`)
       .then((response) => {
         setListRam(response.data.data);
       })
@@ -120,8 +118,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
   const [listImeiCurrent, setListImeiCurrent] = useState([]);
 
   const getAllImei = () => {
-    axios
-      .get(`http://localhost:8080/api/imeis/all`, {
+    request('GET',`/api/imeis/all`, {
       })
       .then((response) => {
         setListImeiCurrent(response.data.data);
@@ -145,8 +142,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
   const [isLoadingInside, setIsLoadingInside] = useState(false);
   const handleDownloadSample = () => {
     setIsLoading(true);
-    axios
-      .post('http://localhost:8080/api/create-excel-template-by', {}, { responseType: 'blob' }) // Sử dụng phương thức POST
+    request('POST','/api/create-excel-template-by', {}, { responseType: 'blob' }) // Sử dụng phương thức POST
       .then((response) => {
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');
@@ -885,20 +881,23 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
     setIsLoadingInside(true);
     getOverplay(true);
     const storeItem = localStorage.getItem('cauHinhsFinal');
-    const request = {
+    const products = {
       product: getProduct,
       productItems: JSON.parse(storeItem),
     }
+    // check product  
+    console.log(products)
     try {
-      await axios.post(`http://localhost:8080/api/products`, request, {
-        headers: {
-          "Content-Type": "application/json",
+      request('POST',`/api/products`, products).then(
+        async(res) => {
+          console.log(res)
+          const isMissingImage = cauHinhsFinal.some((cauHinh) => !cauHinh.image);
+          if (!isMissingImage) {
+            await addFiles(res.data.data.ma);
+          }
         }
-      })
-      const isMissingImage = cauHinhsFinal.some((cauHinh) => !cauHinh.image);
-      if (!isMissingImage) {
-        await addFiles(request.product.ma);
-      }
+      )
+    
       handleOpenAlertVariant("Thêm sản phẩm thành công!", Notistack.SUCCESS);
       setIsLoadingInside(false);
       getOverplay(false);
@@ -909,7 +908,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
     catch (error) {
       setIsLoadingInside(false);
       getOverplay(false);
-      console.error("Error");
+      console.error(error);
     }
   }
   const listFiles = [...cauHinhsFinal]
@@ -929,14 +928,10 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
 
   const addFiles = async (ma) => {
     try {
-      await axios.post('http://localhost:8080/api/products/upload-multiple', formData, {
-        params: {
+      requestBodyMultipartFile('POST','/api/products/upload-multiple', formData, {
           ma: ma,
-        }
-      }, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+      }).then((res) => {
+        // console.log(res)
       })
     }
     catch (error) {
@@ -1033,7 +1028,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
             )
           })}
         </div>
-        <button onClick={convertBarcodeToImage}>Chuyển đổi thành ảnh</button>
+        {/* <button onClick={convertBarcodeToImage}>Chuyển đổi thành ảnh</button> */}
         {barcodeImages.map((item, index) => (
           <img key={index} src={item.image} alt={`Barcode ${index}`} />
         ))}

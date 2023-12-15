@@ -23,6 +23,7 @@ import {
 } from "./enum";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { ConvertCameraTypeToString } from "../../../utilities/convertEnum";
+import { request } from '../../../store/helpers/axios_helper'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -92,8 +93,7 @@ const CreateCameraTruoc = ({ open, close, getAll, cameraFront }) => {
       cameraType: cameraType,
       status: status,
     };
-    axios
-      .post(`http://localhost:8080/api/camera-fronts`, obj)
+    request('POST',`/api/camera-fronts`, obj)
       .then((response) => {
         close();
         getAll();
@@ -223,7 +223,6 @@ const CreateCameraTruoc = ({ open, close, getAll, cameraFront }) => {
                       Trạng Thái
                     </InputLabel>
                     <Select
-                      // disabled={true}
                       className="custom"
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"

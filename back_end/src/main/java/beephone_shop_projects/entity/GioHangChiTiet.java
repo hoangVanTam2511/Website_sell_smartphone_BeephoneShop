@@ -40,6 +40,7 @@ public class GioHangChiTiet extends PrimaryEntity implements Serializable {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_chi_tiet_san_pham")
+  @JsonIgnore
   private SanPhamChiTiet sanPhamChiTiet;
 
 }

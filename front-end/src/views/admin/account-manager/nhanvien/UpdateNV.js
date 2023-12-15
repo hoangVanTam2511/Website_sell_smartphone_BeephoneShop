@@ -26,6 +26,8 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { Notistack } from "../../order-manager/enum";
 import useCustomSnackbar from "../../../../utilities/notistack";
 import { useNavigate } from "react-router-dom";
+import { request } from '../../../../store/helpers/axios_helper'
+
 const UpdateNV = () => {
   const { id } = useParams();
   let [hoVaTen, setTen] = useState("");
@@ -80,8 +82,7 @@ const UpdateNV = () => {
     getKHById(id);
   }, [id]);
   const getKHById = (id) => {
-    axios
-      .get(apiURLNV + `/hien-thi-theo/${id}`)
+    request('GET', apiURLNV + `/hien-thi-theo/${id}`)
       .then((response) => {
         const data = response.data;
         setXaPhuong(data.diaChiList[0].xaPhuong);
@@ -227,59 +228,75 @@ const UpdateNV = () => {
         matKhau: matKhau,
       };
 
-      const updateEmployeeResponse = await axios.put(
+      request('PUT',
         `${apiURLNV}/update/${id}`,
         updatedEmployee
+      ).then(
+        (res) => {
+          if(res.status === 200){
+            var updateEmployeeResponse = res;
+            if (updateEmployeeResponse.status === 200) {
+              if (!tinhThanhPho || !xaPhuong || !quanHuyen) {
+                handleOpenAlertVariant(
+                  "Vui lòng điền đủ thông tin trước khi lưu.",
+                  Notistack.ERROR
+                );
+      
+                setIsConfirmVisible(false);
+                return;
+              }
+      
+              setIsConfirmVisible(false);
+      
+              const updatedAddress = {
+                diaChi: diaChi,
+                xaPhuong: xaPhuong,
+                quanHuyen: quanHuyen,
+                tinhThanhPho: tinhThanhPho,
+                account: id,
+              };
+      
+              request('PUT',
+                `${apiURLNV}/dia-chi/update?id=` + id,
+                updatedAddress
+              ).then(
+                (res) => {
+                  if(res === 200){
+                    console.log(res)
+                    const updateAddressResponse = res.data
+                    if (updateAddressResponse.status === 200) {
+                      const updatedAddressInfo = {
+                        diaChi: updatedAddress.diaChi,
+                        xaPhuong: updatedAddress.xaPhuong,
+                        quanHuyen: updatedAddress.quanHuyen,
+                        tinhThanhPho: updatedAddress.tinhThanhPho,
+                        account: id,
+                      };
+                      setDiaChiList(updatedAddressInfo);
+                      handleOpenAlertVariant("Sửa thành công", Notistack.SUCCESS);
+                    } else {
+                      handleOpenAlertVariant(
+                        "Đã xảy ra lỗi, vui lòng liên hệ quản trị viên.",
+                        Notistack.ERROR
+                      );
+                    }
+                  }
+                }
+              );
+      
+              
+            } else {
+              handleOpenAlertVariant(
+                "Đã xảy ra lỗi, vui lòng liên hệ quản trị viên.",
+                Notistack.ERROR
+              );
+            }
+          }
+        
+        }
       );
 
-      if (updateEmployeeResponse.status === 200) {
-        if (!tinhThanhPho || !xaPhuong || !quanHuyen) {
-          handleOpenAlertVariant(
-            "Vui lòng điền đủ thông tin trước khi lưu.",
-            Notistack.ERROR
-          );
-
-          setIsConfirmVisible(false);
-          return;
-        }
-
-        setIsConfirmVisible(false);
-
-        const updatedAddress = {
-          diaChi: diaChi,
-          xaPhuong: xaPhuong,
-          quanHuyen: quanHuyen,
-          tinhThanhPho: tinhThanhPho,
-          account: id,
-        };
-
-        const updateAddressResponse = await axios.put(
-          `${apiURLNV}/dia-chi/update?id=` + id,
-          updatedAddress
-        );
-
-        if (updateAddressResponse.status === 200) {
-          const updatedAddressInfo = {
-            diaChi: updatedAddress.diaChi,
-            xaPhuong: updatedAddress.xaPhuong,
-            quanHuyen: updatedAddress.quanHuyen,
-            tinhThanhPho: updatedAddress.tinhThanhPho,
-            account: id,
-          };
-          setDiaChiList(updatedAddressInfo);
-          handleOpenAlertVariant("Sửa thành công", Notistack.SUCCESS);
-        } else {
-          handleOpenAlertVariant(
-            "Đã xảy ra lỗi, vui lòng liên hệ quản trị viên.",
-            Notistack.ERROR
-          );
-        }
-      } else {
-        handleOpenAlertVariant(
-          "Đã xảy ra lỗi, vui lòng liên hệ quản trị viên.",
-          Notistack.ERROR
-        );
-      }
+     
     } catch (error) {
       handleOpenAlertVariant(
         "Đã xảy ra lỗi, vui lòng liên hệ quản trị viên.",

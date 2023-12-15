@@ -22,13 +22,13 @@ public class ImageServiceImpl1 {
 
     public Anh insert(CreateImageRequest req) {
 
-        SanPhamChiTiet sanPhamChiTiet = productDetailRepository.findById(req.getIdProductDetail()).orElseThrow();
+        SanPhamChiTiet sanPhamChiTiet = productDetailRepository.findById(req.getIdChiTietSanPham()).orElseThrow();
 
         Anh anh = new Anh();
         anh.setMa(imageRepository.getNewCode() == null ? "ANH_O" : "ANH_" + imageRepository.getNewCode());
-        anh.setTenAnh(req.getNameImage());
-        anh.setDuongDan(req.getUrlImage());
-        anh.setTrangThai(req.getState());
+        anh.setTenAnh(req.getTenAnh());
+        anh.setDuongDan(req.getDuongDan());
+        anh.setTrangThai(req.getTrangThai());
         anh.setSanPhamChiTiet(sanPhamChiTiet);
 
         return imageRepository.save(anh);

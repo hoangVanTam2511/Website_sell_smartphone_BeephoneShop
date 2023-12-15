@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.admin.account_management.service.impl;
 
+import beephone_shop_projects.core.admin.account_management.model.request.AddKhachHangExcelRequest;
 import beephone_shop_projects.core.admin.account_management.model.request.AddKhachHangRequest;
 import beephone_shop_projects.core.admin.account_management.model.request.CreateKhachHangRequest;
 import beephone_shop_projects.core.admin.account_management.model.request.FindAccountRequest;
@@ -8,14 +9,18 @@ import beephone_shop_projects.core.admin.account_management.repository.AccountRe
 import beephone_shop_projects.core.admin.account_management.repository.RoleRepository;
 import beephone_shop_projects.core.admin.account_management.service.KhachHangService;
 import beephone_shop_projects.entity.Account;
+import beephone_shop_projects.infrastructure.config.mail.EmailService;
 import beephone_shop_projects.infrastructure.constant.StatusAccountCus;
 import beephone_shop_projects.infrastructure.constant.StatusDiscount;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
 
 import java.text.Normalizer;
 import java.text.ParseException;
@@ -23,13 +28,19 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
-
+@RequiredArgsConstructor
 public class KhachHangServiceImpl implements KhachHangService {
+
     @Autowired
     private AccountRepository accountRepository;
 
     @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
+    private EmailService emailService;
+
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public Page<AccountResponse> getAllKH(FindAccountRequest request) {
@@ -62,14 +73,14 @@ public class KhachHangServiceImpl implements KhachHangService {
         return page;
     }
 
-
-
     @Override
     public Account addKH(AddKhachHangRequest request) {
         Random random = new Random();
         Date date = null;
         try {
-            date = new SimpleDateFormat("dd/MM/yyyy").parse(request.getNgaySinh());
+            if(!request.getNgaySinh().isEmpty()){
+                date = new SimpleDateFormat("dd/MM/yyyy").parse(request.getNgaySinh());
+            }
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
@@ -90,9 +101,13 @@ public class KhachHangServiceImpl implements KhachHangService {
                 .gioiTinh(request.getGioiTinh())
                 .trangThai(StatusAccountCus.HOAT_DONG)
                 .ma(code)
-                .matKhau(matKhau)
+                .matKhau(passwordEncoder.encode(matKhau))
                 .soDienThoai(request.getSoDienThoai())
                 .build();
+
+        Context context = new Context();
+        context.setVariable("password", matKhau);
+        emailService.sendEmailWithHtmlTemplate(request.getEmail(), "Mật khẩu của bạn", "email-get-pass-template", context);
         return accountRepository.save(kh);
     }
 
@@ -147,5 +162,38 @@ public class KhachHangServiceImpl implements KhachHangService {
         }
 
         return sb.toString();
+    }
+
+    public Account addKHByImportExcel(AddKhachHangExcelRequest request) {
+        Random random = new Random();
+        Date date = null;
+
+        String hoVaTen = request.getHoVaTen();
+        int number = random.nextInt(10000);
+        String code = String.format("KH%04d", number);
+        String hoVaTenWithoutSpaces = hoVaTen.replaceAll("\\s+", "");
+        String hoVaTenWithoutDiacritics = removeDiacritics(hoVaTenWithoutSpaces);
+        String[] specialCharsArray = {"!", "@", "#", "$", "%", "^", "&", "*", "+", "-"};
+        String specialChars = getRandomSpecialChars(specialCharsArray);
+        String matKhau = hoVaTenWithoutDiacritics + specialChars + code;
+        Account kh = new Account().builder()
+                .email(request.getEmail())
+                .idRole(roleRepository.findByMa("role2"))
+                .hoVaTen(request.getHoVaTen())
+                .gioiTinh(request.getGioiTinh())
+                .trangThai(StatusAccountCus.HOAT_DONG)
+                .ma(request.getMa())
+                .matKhau(passwordEncoder.encode(matKhau))
+                .soDienThoai(request.getSoDienThoai())
+                .build();
+
+        Context context = new Context();
+        context.setVariable("password", matKhau);
+        emailService.sendEmailWithHtmlTemplate(request.getEmail(), "Mật khẩu của bạn", "email-get-pass-template", context);
+        return accountRepository.save(kh);
+    }
+
+    public ArrayList<AccountResponse> getAllKhachHangNoPageable() {
+        return accountRepository.getAllKHNoPageable();
     }
 }

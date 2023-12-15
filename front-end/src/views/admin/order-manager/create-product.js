@@ -45,6 +45,7 @@ import CreateDanhMuc from "./create-danh-muc";
 import CreateCameraSau from "./create-camera-sau";
 import CreateCameraTruoc from "./create-camera-truoc";
 import { brown } from "@mui/material/colors";
+import { request } from '../../../store/helpers/axios_helper'
 // import Sketch from '@uiw/react-color-sketch';
 
 const ITEM_HEIGHT = 130;
@@ -73,8 +74,7 @@ const CreateProduct = ({ }) => {
 
   const [categorys, setCategorys] = useState([]);
   const getListDanhMuc = () => {
-    axios
-      .get(`http://localhost:8080/api/danh-mucs`)
+    request('GET',`/api/danh-mucs`)
       .then((response) => {
         setCategorys(response.data.data);
       })
@@ -88,8 +88,7 @@ const CreateProduct = ({ }) => {
     setOpenHang(false);
   }
   const getListHang = () => {
-    axios
-      .get(`http://localhost:8080/api/brands`)
+    request('GET',`/api/brands`)
       .then((response) => {
         setListHang(response.data.data);
       })
@@ -104,8 +103,7 @@ const CreateProduct = ({ }) => {
     setOpenChip(false);
   }
   const getListChip = () => {
-    axios
-      .get(`http://localhost:8080/api/chips`)
+    request('GET',`/api/chips`)
       .then((response) => {
         setListChip(response.data.data);
       })
@@ -120,8 +118,7 @@ const CreateProduct = ({ }) => {
     setOpenPin(false);
   }
   const getListPin = () => {
-    axios
-      .get(`http://localhost:8080/api/pins`)
+    request('GET',`/api/pins`)
       .then((response) => {
         setListPin(response.data.data);
       })
@@ -136,8 +133,7 @@ const CreateProduct = ({ }) => {
     setOpenSac(false);
   }
   const getListSac = () => {
-    axios
-      .get(`http://localhost:8080/api/chargers`)
+    request('GET',`/api/chargers`)
       .then((response) => {
         setListSac(response.data.data);
       })
@@ -152,8 +148,7 @@ const CreateProduct = ({ }) => {
     setOpenTheNho(false);
   }
   const getListTheNho = () => {
-    axios
-      .get(`http://localhost:8080/api/the-nhos`)
+    request('GET',`/api/the-nhos`)
       .then((response) => {
         setListTheNho(response.data.data);
       })
@@ -168,8 +163,7 @@ const CreateProduct = ({ }) => {
     setOpenManHinh(false);
   }
   const getListManHinh = () => {
-    axios
-      .get(`http://localhost:8080/api/display`)
+    request('GET',`/api/display`)
       .then((response) => {
         setListManHinh(response.data.data);
         console.log(response.data.data)
@@ -189,8 +183,7 @@ const CreateProduct = ({ }) => {
     setOpenTheSim(false);
   }
   const getListTheSim = () => {
-    axios
-      .get(`http://localhost:8080/api/sim-cards/all`)
+    request('GET',`/api/sim-cards/all`)
       .then((response) => {
         setListTheSim(response.data.data);
       })
@@ -501,8 +494,7 @@ const CreateProduct = ({ }) => {
   const [camerasSau, setCamerasSau] = useState([]);
   const [camerasTruoc, setCamerasTruoc] = useState([]);
   const getListCameraTruoc = () => {
-    axios
-      .get(`http://localhost:8080/api/camera-fronts`)
+    request('GET',`/api/camera-fronts`)
       .then((response) => {
         setCamerasTruoc(response.data.data);
       })
@@ -511,8 +503,7 @@ const CreateProduct = ({ }) => {
       });
   };
   const getListCameraSau = () => {
-    axios
-      .get(`http://localhost:8080/api/camera-rears`)
+    request('GET',`/api/camera-rears`)
       .then((response) => {
         setCamerasSau(response.data.data);
       })

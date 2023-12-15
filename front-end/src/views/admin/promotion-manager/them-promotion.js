@@ -30,6 +30,7 @@ import useCustomSnackbar from "../../../utilities/notistack";
 import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
 import LoadingIndicator from "../../../utilities/loading";
 import { useNavigate } from "react-router-dom";
+import { request } from '../../../store/helpers/axios_helper'
 
 const AddKhuyenMai = () => {
   //add-khuyen-mai
@@ -100,8 +101,7 @@ const AddKhuyenMai = () => {
   };
 
   const loadDatalistSanPham = () => {
-    axios
-      .get("http://localhost:8080/san-pham-1")
+    request('GET',"/san-pham-1")
       .then((response) => {
         setListSanPham(response.data.data);
       })
@@ -114,8 +114,7 @@ const AddKhuyenMai = () => {
   };
 
   const loadDatalistSanPhamChiTiet = (id, check) => {
-    axios
-      .get(`http://localhost:8080/san-pham-chi-tiet-1/${id}/${check}`)
+    request('GET',`/san-pham-chi-tiet-1/${id}/${check}`)
       .then((response) => {
         setlistSanPhamChiTiet(response.data.data);
         const data = response.data.data;
@@ -132,8 +131,7 @@ const AddKhuyenMai = () => {
   };
 
   const clear = () => {
-    axios
-      .get("http://localhost:8080/san-pham-chi-tiet/removeALL")
+    request('GET',"/san-pham-chi-tiet/removeALL")
       .then((response) => {
         setlistSanPhamChiTiet(response.data.data);
       })
@@ -195,8 +193,7 @@ const AddKhuyenMai = () => {
 
   //Detail sản phẩm chi tiết đã áp dụng khuyến mãi
   const detailSanPhamSauKhuyenMai = (id) => {
-    axios
-      .get("http://localhost:8080/san-pham-chi-tiet-khuyen-mai/detail/" + id)
+    request('GET',"/san-pham-chi-tiet-khuyen-mai/detail/" + id)
       .then((response) => {
         setSanPhamChiTietKhuyenMai(response.data.data);
       })
@@ -218,8 +215,7 @@ const AddKhuyenMai = () => {
       ngayKetThuc: ngayKetThuc,
     };
 
-    axios
-      .post(apiURLKhuyenMai + "/add-khuyen-mai", obj)
+    request('POST', apiURLKhuyenMai + "/add-khuyen-mai", obj)
       .then((response) => {
         const khuyenMaiID = response.data.data.id;
         selectedProductDetails.forEach((idSanPhamChiTiet) => {
@@ -245,9 +241,7 @@ const AddKhuyenMai = () => {
       idKhuyenMai: khuyenMaiID,
       idSanPhamChiTiet: idSanPhamChiTiet,
     };
-    axios
-      .post(
-        "http://localhost:8080/khuyen-mai-chi-tiet/add",
+    request('POST',"/khuyen-mai-chi-tiet/add",
         objKhuyenMaiChiTiet
       )
       .then((response) => {
@@ -271,8 +265,7 @@ const AddKhuyenMai = () => {
   };
 
   const updateSanPhamChiTiet = (idSP) => {
-    axios
-      .put("http://localhost:8080/khuyen-mai-chi-tiet/update-san-pham/" + idSP)
+    request('PUT',"/khuyen-mai-chi-tiet/update-san-pham/" + idSP)
       .then((response) => {
         console.log("Update thành công ");
       })

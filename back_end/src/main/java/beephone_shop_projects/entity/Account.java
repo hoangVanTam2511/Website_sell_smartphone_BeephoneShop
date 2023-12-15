@@ -4,6 +4,7 @@ import beephone_shop_projects.entity.base.IsIdentified;
 import beephone_shop_projects.entity.base.PrimaryEntity;
 import beephone_shop_projects.infrastructure.constant.StatusAccountCus;
 import beephone_shop_projects.infrastructure.constant.StatusDiscount;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -50,6 +51,7 @@ public class Account extends PrimaryEntity implements IsIdentified {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_role")
+    @JsonIgnore
     private Role idRole;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "account")

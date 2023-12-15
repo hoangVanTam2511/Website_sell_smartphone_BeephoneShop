@@ -30,6 +30,7 @@ import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import useCustomSnackbar from "../../../utilities/notistack";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
+import { request, requestParam } from '../../../store/helpers/axios_helper'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -48,13 +49,10 @@ const ManagementHangs = () => {
   );
 
   const findOrdersByMultipleCriteriaWithPagination = (page) => {
-    axios
-      .get(`http://localhost:8080/api/orders`, {
-        params: {
+    requestParam('GET',`/api/orders`, {
           currentPage: page,
           keyword: keyword,
           isPending: false,
-        },
       })
       .then((response) => {
         setListHang(response.data.data);
@@ -68,8 +66,7 @@ const ManagementHangs = () => {
   };
 
   const getListHang = (page) => {
-    axios
-      .get(`http://localhost:8080/api/brands`)
+    request('GET',`/api/brands`)
       .then((response) => {
         setListHang(response.data.data);
         // setIsLoading(false);
@@ -87,8 +84,7 @@ const ManagementHangs = () => {
 
   const getListProductSearchAndPage = (page) => {
     // setIsLoading(false);
-    axios
-      .get(`http://localhost:8080/api/brands/search`, {
+    request('GET',`/api/brands/search`, {
         params: {
           keyword: searchTatCa,
           currentPage: page,
@@ -319,8 +315,7 @@ const ManagementHangs = () => {
   const [idHang, setIdHang] = useState("");
 
   const detailHangs = async (id) => {
-    await axios
-      .get(`http://localhost:8080/api/brands/${id}`)
+    request('GET',`/api/brands/${id}`)
       .then((response) => {
         setHangCode(response.data.data.ma);
         setStatus(response.data.data.status);
@@ -394,8 +389,7 @@ const ManagementHangs = () => {
       tenHang: tenHang,
       status: status,
     };
-    axios
-      .put(`http://localhost:8080/api/brands`, obj)
+    request('PUT',`/api/brands`, obj)
       .then((response) => {
         getListProductSearchAndPage();
         handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
@@ -407,8 +401,7 @@ const ManagementHangs = () => {
   };
 
   const doiTrangThaiProducts = (idHang) => {
-    axios
-      .put(`http://localhost:8080/api/brands/${idHang}`)
+    request('PUT',`/api/brands/${idHang}`)
       .then((response) => {
         getListProductSearchAndPage();
         handleOpenAlertVariant(

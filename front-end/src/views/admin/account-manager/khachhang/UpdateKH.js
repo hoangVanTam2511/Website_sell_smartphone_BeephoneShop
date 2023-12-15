@@ -29,6 +29,7 @@ import * as dayjs from "dayjs";
 import useCustomSnackbar from "../../../../utilities/notistack";
 import { Notistack } from "../../order-manager/enum";
 import { useNavigate } from "react-router-dom";
+import { request } from '../../../../store/helpers/axios_helper'
 
 const UpdateKH = () => {
   const { id } = useParams();
@@ -75,9 +76,15 @@ const UpdateKH = () => {
   //hiển thị diaChi
   const fetchDiaChiList = async () => {
     try {
-      const response = await fetch(apiURLKH + "/dia-chi/hien-thi/" + id);
-      const data = await response.json();
-      setDiaChiList(data);
+      request('GET',apiURLKH + "/dia-chi/hien-thi/" + id).then(
+        (res) => {
+          if(res.status === 200){
+            setDiaChiList(res.data);
+          }
+        }
+      )
+      // console.log(response);
+      
     } catch (error) {
       console.error("Error fetching dia chi list:", error);
     }
@@ -92,8 +99,7 @@ const UpdateKH = () => {
     getKHById(id);
   }, [id]);
   const getKHById = (id) => {
-    axios
-      .get(apiURLKH + `/hien-thi-theo/${id}`)
+    request('GET', apiURLKH + `/hien-thi-theo/${id}`)
       .then((response) => {
         const data = response.data;
         setMa(data.ma);
@@ -268,8 +274,7 @@ const UpdateKH = () => {
       return;
     }
     setIsModalVisibleS(false);
-    axios
-      .post(`${apiURLKH}/dia-chi/add?id=${id}`, newAddress)
+    request('POST', `${apiURLKH}/dia-chi/add?id=${id}`, newAddress)
       .then((response) => {
         let newKhachHangResponse = {
           diaChi: diaChi,
@@ -343,8 +348,7 @@ const UpdateKH = () => {
         matKhau: matKhau,
       };
 
-      axios
-        .put(`${apiURLKH}/update/${id}`, updatedItem)
+      request('PUT', `${apiURLKH}/update/${id}`, updatedItem)
         .then((response) => {
           if (response.status === 200) {
             handleOpenAlertVariant("Sửa thành công", Notistack.SUCCESS);

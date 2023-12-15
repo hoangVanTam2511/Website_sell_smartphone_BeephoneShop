@@ -1,4 +1,4 @@
-import React, { useState, useContext, memo, Fragment } from "react";
+import React, { useState, useContext, memo, Fragment, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Accordion,
@@ -6,6 +6,7 @@ import {
   AccordionContext,
 } from "react-bootstrap";
 import { useSelector } from "react-redux";
+import { getUser } from "../../../../store/user/userSlice";
 
 function CustomToggle({ children, eventKey, onClick }) {
   const { activeEventKey } = useContext(AccordionContext);
@@ -36,7 +37,12 @@ const VerticalNav = memo((props) => {
   const [active, setActive] = useState("");
   //location
   let location = useLocation();
-  const user = useSelector((state) => state.user.user);
+  const user =  getUser()
+
+  useEffect(() => {
+    // user = getUser();
+    console.log(user)
+  },[])
 
   return (
     <Fragment>
@@ -761,9 +767,8 @@ const VerticalNav = memo((props) => {
           </Accordion.Collapse>
         </Accordion.Item>
 
-        {user === undefined || user.ma === "" ? (
-          <></>
-        ) : user.idRole.ma === "role3" ? (
+        
+
           <Accordion.Item
             as="li"
             eventKey="sidebar-user"
@@ -835,7 +840,10 @@ const VerticalNav = memo((props) => {
             </CustomToggle>
             <Accordion.Collapse eventKey="sidebar-user">
               <ul className="sub-nav">
-                <li className="nav-item">
+                {
+                  user.idRole === 'role3'?
+                  <>
+                    <li className="nav-item">
                   <Link
                     className={`${
                       location.pathname === "/dashboard/employees"
@@ -864,7 +872,13 @@ const VerticalNav = memo((props) => {
                     <i className="sidenav-mini-icon"> L </i>
                     <span className="item-name">Nhân Viên</span>
                   </Link>
-                </li>
+                  </li>
+                  </>:
+                  <>
+                  </>
+                }
+              
+
                 <li className="nav-item">
                   <Link
                     className={`${
@@ -895,41 +909,9 @@ const VerticalNav = memo((props) => {
                     <span className="item-name">Khách Hàng</span>
                   </Link>
                 </li>
-
-                {/* <li className="nav-item">
-                  <Link
-                    className={`${
-                      location.pathname === "/chuc-vu" ? "active" : ""
-                    } nav-link`}
-                    to="/chuc-vu"
-                  >
-                    <i className="icon">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="10"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                      >
-                        <g>
-                          <circle
-                            cx="12"
-                            cy="12"
-                            r="8"
-                            fill="currentColor"
-                          ></circle>
-                        </g>
-                      </svg>
-                    </i>
-                    <i className="sidenav-mini-icon"> L </i>
-                    <span className="item-name">Chức Vụ</span>
-                  </Link>
-                </li> */}
               </ul>
             </Accordion.Collapse>
           </Accordion.Item>
-        ) : (
-          <></>
-        )}
 
         <Accordion.Item
           as="li"
