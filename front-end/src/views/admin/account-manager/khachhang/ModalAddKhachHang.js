@@ -26,7 +26,7 @@ import { Notistack } from "../../order-manager/enum";
 import useCustomSnackbar from "../../../../utilities/notistack";
 import { useNavigate } from "react-router-dom";
 import { ConfirmDialog } from "../../../../utilities/confirmModalDialoMui";
-const ModalAddKhachHang = ({ close, openCustomer, setOP }) => {
+const ModalAddKhachHang = ({ close, openCustomer, setOP, getCustomer }) => {
   let [listKH, setListKH] = useState([]);
   let [hoVaTen, setTen] = useState("");
   let [ngaySinh, setNgaySinh] = useState("");
@@ -222,6 +222,7 @@ const ModalAddKhachHang = ({ close, openCustomer, setOP }) => {
     setDiaChiError("");
     setDiaChi("");
     setHuy(true);
+    setAnhDaiDien("");
   };
 
   const AddKH = async () => {
@@ -266,7 +267,6 @@ const ModalAddKhachHang = ({ close, openCustomer, setOP }) => {
           Notistack.ERROR
         );
         setShowConfirmModal(false);
-        console.log("hi" + openCustomer);
         return;
       }
       // Gọi API tạo khách hàng mới
@@ -292,6 +292,7 @@ const ModalAddKhachHang = ({ close, openCustomer, setOP }) => {
       setListKH([newKhachHangResponse, ...listKH]);
       close();
       handleResetForm();
+      getCustomer();
       handleOpenAlertVariant("Thêm thành công", Notistack.SUCCESS);
       return;
     } catch (error) {
@@ -301,7 +302,6 @@ const ModalAddKhachHang = ({ close, openCustomer, setOP }) => {
   useEffect(() => {
     if (!openCustomer) {
       handleResetForm();
-      // setHuy(false);
       close();
     }
   }, [close, openCustomer]);
@@ -346,287 +346,236 @@ const ModalAddKhachHang = ({ close, openCustomer, setOP }) => {
 
   return (
     <>
-      <div className="text-center" style={{ marginBottom: "20px" }}>
-        <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>
-          THÊM KHÁCH HÀNG
+      <div style={{ marginBottom: "20px" }}>
+        <span style={{ fontSize: "22px", fontWeight: "500" }}>
+          Thêm Khách Hàng
         </span>
       </div>
       <Grid container justifyContent="space-between">
         {/* Left column */}
-        <Grid item xs={6.2}>
+        <Grid item xs={0.1}></Grid>
+        <Grid item xs={5}>
           <div
             style={{
               display: "flex",
+              flexDirection: "column",
               alignItems: "center",
-              justifyContent: "space-between",
-              position: "sticky",
-              fontSize: "16px",
-              top: 0,
-              backgroundColor: "white",
-              borderLeft: "4px solid #e2e2e2",
-              zIndex: 1,
-              paddingLeft: "10px",
-              color: "gray",
+              width: "95%",
+              marginTop: "20px",
+              marginBottom: "16px",
             }}
           >
-            {/* <span
-              style={{
-                color: "gray",
-                display: "block",
-                padding: "15px",
-                borderBottom: "1px solid #e2e2e2",
-                flex: "1",
-                margin: "0",
-              }}
+            <ImageUploadComponent
+              setAnhDaiDien={handleAnhDaiDienChange}
+              // existingImageUrl={anhDaiDien}
+              openCustomer={openCustomer}
+              hoten={hoVaTen}
+            />
+            <br />
+          </div>
+          <div style={{ width: "95.7%" }}>
+            <div
+              className="text-f"
+              style={{ textAlign: "center", marginBottom: "20px" }}
             >
-              Thông tin Khách Hàng
-            </span> */}
-          </div>
-          <div
-            bordered={false}
-            headStyle={{ borderLeft: "4px solid #e2e2e2", borderRadius: 0 }}
-            style={{
-              height: "100%",
-              overflowY: "auto",
+              <TextField
+                label="Họ và tên"
+                value={hoVaTen}
+                id="fullWidth"
+                onChange={handleHoVaTenChange}
+                error={(formSubmitted && !hoVaTen) || !!hoVaTenError}
+                helperText={
+                  hoVaTenError ||
+                  (formSubmitted && !hoVaTen && "Họ và tên trống")
+                }
+                style={{ width: "100%" }}
+              />
+            </div>
+            <div style={{ display: "flex", alignItems: "right" }}>
+              <div
+                className="text-f"
+                style={{
+                  marginBottom: "30px",
+                  width: "63%",
+                }}
+              >
+                {/* Ngày sinh */}
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DemoContainer components={["DatePicker"]}>
+                    <DatePicker
+                      disableFuture
+                      label="Ngày Sinh"
+                      value={dayjs(ngaySinh)}
+                      format="DD/MM/YYYY"
+                      onChange={handleChangeDate}
+                      sx={{
+                        position: "relative",
 
-              zIndex: 0,
-              position: "relative",
-            }}
-          >
-            <Grid container justifyContent="space-between">
-              <Grid item xs={4}>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    width: "95%",
-                    marginTop: "20px",
-                  }}
-                >
-                  <ImageUploadComponent
-                    setAnhDaiDien={handleAnhDaiDienChange}
-                    existingImageUrl={anhDaiDien}
-                    hoten={hoVaTen}
-                  />
-                  <br />
-                </div>
-              </Grid>
-              <Grid item xs={8} style={{ marginTop: "30px" }}>
-                <div style={{ width: "95.7%" }}>
-                  <div
-                    className="text-f"
-                    style={{ textAlign: "center", marginBottom: "20px" }}
-                  >
-                    <TextField
-                      label="Họ và tên"
-                      value={hoVaTen}
-                      id="fullWidth"
-                      onChange={handleHoVaTenChange}
-                      error={(formSubmitted && !hoVaTen) || !!hoVaTenError}
-                      helperText={
-                        hoVaTenError ||
-                        (formSubmitted && !hoVaTen && "Họ và tên trống")
-                      }
-                      style={{ width: "100%" }}
-                    />
-                  </div>
-                  <div style={{ display: "flex", alignItems: "right" }}>
-                    <div
-                      className="text-f"
-                      style={{
-                        marginBottom: "30px",
-                        width: "63%",
+                        "& .MuiInputBase-root": {
+                          width: "100%",
+                        },
                       }}
-                    >
-                      {/* Ngày sinh */}
-                      <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DemoContainer components={["DatePicker"]}>
-                          <DatePicker
-                            disableFuture
-                            label="Ngày Sinh"
-                            value={dayjs(ngaySinh)}
-                            format="DD/MM/YYYY"
-                            onChange={handleChangeDate}
-                            sx={{
-                              position: "relative",
-
-                              "& .MuiInputBase-root": {
-                                width: "100%",
-                              },
-                            }}
-                            slotProps={{
-                              textField: {
-                                error: formSubmitted && !ngaySinh,
-                                helperText:
-                                  formSubmitted && !ngaySinh
-                                    ? "Chưa chọn ngày sinh"
-                                    : "",
-                              },
-                            }}
-                          />
-                        </DemoContainer>
-                      </LocalizationProvider>
-                    </div>
-                    <div
-                      className="text-f"
-                      style={{
-                        width: "45%",
-                        marginLeft: "15px",
-                        marginTop: "15px",
+                      slotProps={{
+                        textField: {
+                          error: formSubmitted && !ngaySinh,
+                          helperText:
+                            formSubmitted && !ngaySinh
+                              ? "Chưa chọn ngày sinh"
+                              : "",
+                        },
                       }}
-                    >
-                      {/* Giới tính */}
-                      <FormControl component="fieldset">
-                        <RadioGroup
-                          row
-                          aria-label="gioiTinh"
-                          name="gioiTinh"
-                          value={gioiTinh}
-                          onChange={(e) => {
-                            setGioiTinh(e.target.value === "true"); // Convert the string to a boolean value
-                          }}
-                        >
-                          <FormControlLabel
-                            value="true"
-                            control={<Radio style={{ borderRadius: "50%" }} />} // Add border radius to the radio button
-                            label="Nam"
-                          />
-                          <FormControlLabel
-                            value="false"
-                            control={<Radio style={{ borderRadius: "50%" }} />} // Add border radius to the radio button
-                            label="Nữ"
-                          />
-                        </RadioGroup>
-                      </FormControl>
-                    </div>
-                  </div>
+                    />
+                  </DemoContainer>
+                </LocalizationProvider>
+              </div>
+              <div
+                className="text-f"
+                style={{
+                  width: "45%",
+                  marginLeft: "15px",
+                  marginTop: "15px",
+                }}
+              >
+                {/* Giới tính */}
+                <FormControl component="fieldset">
+                  <RadioGroup
+                    row
+                    aria-label="gioiTinh"
+                    name="gioiTinh"
+                    value={gioiTinh}
+                    onChange={(e) => {
+                      setGioiTinh(e.target.value === "true"); // Convert the string to a boolean value
+                    }}
+                  >
+                    <FormControlLabel
+                      value="true"
+                      control={<Radio style={{ borderRadius: "50%" }} />} // Add border radius to the radio button
+                      label="Nam"
+                    />
+                    <FormControlLabel
+                      value="false"
+                      control={<Radio style={{ borderRadius: "50%" }} />} // Add border radius to the radio button
+                      label="Nữ"
+                    />
+                  </RadioGroup>
+                </FormControl>
+              </div>
+            </div>
 
-                  <div
-                    className="text-f"
-                    style={{ textAlign: "center", marginBottom: "30px" }}
-                  >
-                    <TextField
-                      label="Email"
-                      value={email}
-                      // id="fullWidth"
-                      onChange={handleEmailChange}
-                      error={(formSubmitted && !email) || !!emailError} // Show error if form submitted and hoVaTen is empty
-                      helperText={
-                        emailError || (formSubmitted && !email && "Email trống")
-                      }
-                      style={{ width: "100%" }}
-                    />
-                  </div>
-                  <div
-                    className="text-f"
-                    style={{ textAlign: "center", marginBottom: "30px" }}
-                  >
-                    <TextField
-                      label="Số điện thoại"
-                      id="fullWidth"
-                      value={soDienThoai}
-                      onChange={handleSDT}
-                      error={(formSubmitted && !soDienThoai) || !!sdtError}
-                      helperText={
-                        sdtError ||
-                        (formSubmitted && !soDienThoai && "Số điện thoại trống")
-                      }
-                      style={{ width: "100%" }}
-                    />
-                  </div>
-                </div>{" "}
-              </Grid>
-            </Grid>
-          </div>
+            <div
+              className="text-f"
+              style={{ textAlign: "center", marginBottom: "30px" }}
+            >
+              <TextField
+                label="Email"
+                value={email}
+                // id="fullWidth"
+                onChange={handleEmailChange}
+                error={(formSubmitted && !email) || !!emailError} // Show error if form submitted and hoVaTen is empty
+                helperText={
+                  emailError || (formSubmitted && !email && "Email trống")
+                }
+                style={{ width: "100%" }}
+              />
+            </div>
+            <div
+              className="text-f"
+              style={{ textAlign: "center", marginBottom: "30px" }}
+            >
+              <TextField
+                label="Số điện thoại"
+                id="fullWidth"
+                value={soDienThoai}
+                onChange={handleSDT}
+                error={(formSubmitted && !soDienThoai) || !!sdtError}
+                helperText={
+                  sdtError ||
+                  (formSubmitted && !soDienThoai && "Số điện thoại trống")
+                }
+                style={{ width: "100%" }}
+              />
+            </div>
+          </div>{" "}
         </Grid>{" "}
         <Grid
           item
-          xs={5.6}
+          xs={6}
           style={{ borderLeft: "1px solid #e2e2e2", paddingLeft: "20px" }}
         >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              position: "sticky",
-              fontSize: "16px",
-              top: 0,
-              backgroundColor: "white",
-              borderLeft: "4px solid #e2e2e2",
-              zIndex: 1,
-              paddingLeft: "10px",
-              color: "gray",
-            }}
-          >
-            <div style={{ width: "95%", margin: "0 auto", marginTop: "30px" }}>
-              <div
-                className="text-f"
-                style={{ marginBottom: "30px", marginTop: "13px" }}
-              >
-                <TextField
-                  label="Họ và tên khách hàng (cho địa chỉ)"
-                  value={hoTenKH}
-                  id="fullWidth"
-                  onChange={handleHoVaTenKH}
-                  error={(formSubmitted && !hoTenKH) || !!hoTenkhError}
-                  helperText={
-                    hoTenkhError ||
-                    (formSubmitted && !hoTenKH && "Họ và tên trống")
-                  }
-                  style={{ width: "100%" }}
-                />
-              </div>
-              <div className="text-f" style={{ marginBottom: "30px" }}>
-                <TextField
-                  label="Số điện thoại khách hàng"
-                  id="fullWidth"
-                  value={soDienThoaiKhachHang}
-                  onChange={handleSDTKH}
-                  error={
-                    (formSubmitted && !soDienThoaiKhachHang) || !!sdtkhError
-                  }
-                  helperText={
-                    sdtkhError ||
-                    (formSubmitted &&
-                      !soDienThoaiKhachHang &&
-                      "Số điện thoại khách hàng trống")
-                  }
-                  style={{ width: "100%" }}
-                />
-              </div>
-              <div className="text-f" style={{ marginBottom: "30px" }}>
-                <TextField
-                  label="Địa chỉ"
-                  id="fullWidth"
-                  value={diaChi}
-                  onChange={handleDiaChi}
-                  error={(formSubmitted && !diaChi) || !!diaChiError}
-                  helperText={
-                    diaChiError || (formSubmitted && !diaChi && "Địa chỉ trống")
-                  }
-                  style={{ width: "100%" }}
-                />
-              </div>
-              <div style={{ marginBottom: "20px" }}>
-                <ModalAddDiaChiKhachHang
-                  onDiaChiChange={handleAddressChange}
-                  required={true}
-                  submitted={submitted}
-                  onProvinceChange={handleProvinceChange}
-                  onDistrictChange={handleDistrictChange}
-                  onWardChange={handleWardChange}
-                  formSubmitted={formSubmitted}
-                  huy={huy}
-                  set={setHuy}
-                />
-              </div>
+          <div style={{ width: "95%", margin: "0 auto" }}>
+            <div
+              className="text-f"
+              style={{ marginBottom: "30px", marginTop: "13px" }}
+            >
+              <TextField
+                label="Họ và tên khách hàng (cho địa chỉ)"
+                value={hoTenKH}
+                id="fullWidth"
+                onChange={handleHoVaTenKH}
+                error={(formSubmitted && !hoTenKH) || !!hoTenkhError}
+                helperText={
+                  hoTenkhError ||
+                  (formSubmitted && !hoTenKH && "Họ và tên trống")
+                }
+                style={{ width: "100%" }}
+              />
+            </div>
+            <div className="text-f" style={{ marginBottom: "30px" }}>
+              <TextField
+                label="Số điện thoại khách hàng"
+                id="fullWidth"
+                value={soDienThoaiKhachHang}
+                onChange={handleSDTKH}
+                error={(formSubmitted && !soDienThoaiKhachHang) || !!sdtkhError}
+                helperText={
+                  sdtkhError ||
+                  (formSubmitted &&
+                    !soDienThoaiKhachHang &&
+                    "Số điện thoại khách hàng trống")
+                }
+                style={{ width: "100%" }}
+              />
+            </div>
+            <div className="text-f" style={{ marginBottom: "30px" }}>
+              <TextField
+                label="Địa chỉ"
+                id="fullWidth"
+                value={diaChi}
+                onChange={handleDiaChi}
+                error={(formSubmitted && !diaChi) || !!diaChiError}
+                helperText={
+                  diaChiError || (formSubmitted && !diaChi && "Địa chỉ trống")
+                }
+                style={{ width: "100%" }}
+              />
+            </div>
+            <div style={{ marginBottom: "20px" }}>
+              <ModalAddDiaChiKhachHang
+                onDiaChiChange={handleAddressChange}
+                required={true}
+                submitted={submitted}
+                onProvinceChange={handleProvinceChange}
+                onDistrictChange={handleDistrictChange}
+                onWardChange={handleWardChange}
+                formSubmitted={formSubmitted}
+                huy={huy}
+                set={setHuy}
+                openCustomer={openCustomer}
+              />
             </div>
           </div>
         </Grid>{" "}
       </Grid>
       <div style={{ float: "right", marginTop: "10px", marginRight: "10px" }}>
+        {/* <Button
+          onClick={() => {
+            handleResetForm();
+          }}
+          size="large"
+          type="text"
+        >
+          Hủy
+        </Button> */}
         <Button
           type="primary"
           onClick={handleOpenDialogConfirmAdd}

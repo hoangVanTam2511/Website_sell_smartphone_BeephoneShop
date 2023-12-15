@@ -208,8 +208,8 @@ const AddNV = () => {
         return;
       }
       const nhanVienRespone = await axios.post(apiURLNV + "/add", obj);
-
-      const generatedMaKhachHang = nhanVienRespone.data.data.id;
+      console.log(nhanVienRespone.data);
+      const generatedMaKhachHang = nhanVienRespone.data.id;
       addDiaChiList(generatedMaKhachHang);
       redirectToHienThiKH(generatedMaKhachHang);
       const newNhanVienRespone = {
@@ -223,9 +223,10 @@ const AddNV = () => {
         canCuocCongDan: cccd,
       };
       setListNV([newNhanVienRespone, ...listNV]);
-      handleOpenAlertVariant("Thêm khách hàng thành công", Notistack.SUCCESS);
+      handleOpenAlertVariant("Thêm nhân viên thành công", Notistack.SUCCESS);
     } catch (error) {
       handleOpenAlertVariant("Thêm thất bại", Notistack.ERROR);
+      console.log(error);
     }
   };
   const addDiaChiList = (generatedMaKhachHang) => {
@@ -260,7 +261,7 @@ const AddNV = () => {
   };
   return (
     <>
-      <Card bordered={false} style={{ width: "100%" }}>
+      <Card bordered="false" style={{ width: "100%" }}>
         <h3
           style={{
             color: "gray",

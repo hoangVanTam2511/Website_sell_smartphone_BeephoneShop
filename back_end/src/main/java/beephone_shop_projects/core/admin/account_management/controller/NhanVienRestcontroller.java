@@ -47,9 +47,30 @@ public class NhanVienRestcontroller {
     }
 
     @PostMapping("add")
-    public ResponseObject<Account> add(@RequestBody AddNhanVienRequest request) {
-        return new ResponseObject(accService.addNV(request));
+    public ResponseEntity<?> add(@Valid @RequestBody AddNhanVienRequest request, BindingResult result) {
+        if (result.hasErrors()) {
+            Map<String, String> errors = new HashMap<>();
+            for (FieldError error : result.getFieldErrors()) {
+                errors.put(error.getField(), error.getDefaultMessage());
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+        }
+
+        // Kiểm tra trùng lặp số điện thoại trước khi thêm nhân viên
+        if (accService.isPhoneNumberUnique(request.getSoDienThoai())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Số điện thoại đã tồn tại trong hệ thống.");
+        }
+
+        try {
+            // Thêm nhân viên
+            Account addedAccount = accService.addNV(request);
+            // Tiếp tục thêm địa chỉ nếu nhân viên được thêm thành công
+            return ResponseEntity.status(HttpStatus.CREATED).body(addedAccount);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
+
 
     @PutMapping("update/{id}")
     public ResponseObject<Account> updateNV(@Valid @RequestBody CreateNhanVienRequest request, BindingResult result,

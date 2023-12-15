@@ -56,6 +56,7 @@ public class DiaChiServiceImpl implements DiaChiService {
                 .soDienThoaiKhachHang(diaChiKhachHangRequest.getSoDienThoaiKhachHang())
                 .diaChi(diaChiKhachHangRequest.getDiaChi())
                 .hoTenKH(diaChiKhachHangRequest.getHoTenKH())
+                .ma(diaChiKhachHangRequest.getMa())
                 .build();
 
         DiaChi addedDiaChi = diaChiRepository.save(newDC);
@@ -102,15 +103,17 @@ public class DiaChiServiceImpl implements DiaChiService {
     @Override
     @Transactional
     public void doiTrangThai(String id, String account) {
-        Account account1 = accountRepository.findById(account)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy tài khoản"));
-        for (DiaChi existingDiaChi : account1.getDiaChiList()) {
-            if (existingDiaChi.getId().equals(id)) {
-                existingDiaChi.setTrangThai(1);
-            } else {
-                existingDiaChi.setTrangThai(0);
-            }
-        }
+
+//        Account account1 = accountRepository.findById(account)
+//                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy tài khoản"));
+//
+//        for (DiaChi existingDiaChi : account1.getDiaChiList()) {
+//            if (existingDiaChi.getMa().equals(ma)) {
+//                existingDiaChi.setTrangThai(1);
+//            } else {
+//                existingDiaChi.setTrangThai(0);
+//            }
+//        }
         diaChiRepository.updateTrangThai(id, account);
     }
 
@@ -121,8 +124,8 @@ public class DiaChiServiceImpl implements DiaChiService {
     }
 
     @Override
-    public DiaChi updateDiaChi(DiaChiKhachHangRequest diaChiKhachHangRequest, String id) {
-        Optional<DiaChi> optional = diaChiRepository.findById(id);
+    public DiaChi updateDiaChi(DiaChiKhachHangRequest diaChiKhachHangRequest, String ma) {
+        Optional<DiaChi> optional = diaChiRepository.findById(ma);
         Integer newTrangThai = diaChiKhachHangRequest.getTrangThai();
         Account account = accountRepository.findById(diaChiKhachHangRequest.getAccount()).orElseThrow(() -> new IllegalArgumentException("Không tìm thấy tài khoản"));
 
@@ -197,9 +200,65 @@ public class DiaChiServiceImpl implements DiaChiService {
     }
 
     @Override
-    public DiaChi getOneDiaChi(String id, String account) {
-        return diaChiRepository.getOneDiaChi(id, account);
+    public DiaChi getOneDiaChi(String ma) {
+        Optional<DiaChi>  optional=diaChiRepository.findByMa(ma);
+        return optional.get();
     }
+
+    @Override
+    public DiaChi searchDiaChi(String id) {
+        return diaChiRepository.findByMa(id).get();
+    }
+
+    @Override
+    public DiaChi updateDiaChiBy(DiaChiKhachHangRequest diaChiKhachHangRequest, String ma) {
+        Optional<DiaChi> optional = diaChiRepository.findById(ma);
+        Integer newTrangThai = diaChiKhachHangRequest.getTrangThai();
+        Account account = accountRepository.findById(diaChiKhachHangRequest.getAccount()).orElseThrow(() -> new IllegalArgumentException("Không tìm thấy tài khoản"));
+
+        if (newTrangThai == null || newTrangThai != 1) {
+            newTrangThai = 0;
+        } else {
+            for (DiaChi existingDiaChi : account.getDiaChiList()) {
+                existingDiaChi.setTrangThai(0);
+            }
+        }
+        if (optional.isPresent()) {
+
+
+            DiaChi diaChiToUpdate = optional.get();
+            if (diaChiKhachHangRequest.getDiaChi() != null) {
+                diaChiToUpdate.setDiaChi(diaChiKhachHangRequest.getDiaChi());
+            }
+            if (diaChiKhachHangRequest.getSoDienThoaiKhachHang() != null) {
+                diaChiToUpdate.setSoDienThoaiKhachHang(diaChiKhachHangRequest.getSoDienThoaiKhachHang());
+            }
+            if (diaChiKhachHangRequest.getHoTenKH() != null) {
+                diaChiToUpdate.setHoTenKH(diaChiKhachHangRequest.getHoTenKH());
+            }
+            if (diaChiKhachHangRequest.getTrangThai() != null) {
+                diaChiToUpdate.setTrangThai(newTrangThai);
+            }
+            if (diaChiKhachHangRequest.getAccount() != null) {
+                diaChiToUpdate.setAccount(accountRepository.findById(diaChiKhachHangRequest.getAccount()).orElse(null));
+            }
+            if (diaChiKhachHangRequest.getTinhThanhPho() != null) {
+                diaChiToUpdate.setTinhThanhPho(diaChiKhachHangRequest.getTinhThanhPho());
+            }
+            if (diaChiKhachHangRequest.getXaPhuong() != null) {
+                diaChiToUpdate.setXaPhuong(diaChiKhachHangRequest.getXaPhuong());
+            }
+            if (diaChiKhachHangRequest.getQuanHuyen() != null) {
+                diaChiToUpdate.setQuanHuyen(diaChiKhachHangRequest.getQuanHuyen());
+            }
+
+            diaChiRepository.save(diaChiToUpdate);
+            return diaChiToUpdate;
+        }
+        return null;
+    }
+
+
 
 
     public static String getRandomSpecialChars(String[] specialCharsArray) {

@@ -12,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.text.Normalizer;
 import java.text.ParseException;
@@ -68,6 +70,8 @@ public class NhanVienServiceImpl implements NhanVienService {
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
+
+
         String[] specialCharsArray = {"!", "@", "#", "$", "%", "^", "&", "*", "+", "-"};
         String specialChars = getRandomSpecialChars(specialCharsArray);
         String matKhau = hoVaTenWithoutDiacritics + specialChars + code;
@@ -115,8 +119,7 @@ public class NhanVienServiceImpl implements NhanVienService {
     @Override
     public Page<Account> search(Optional<String> tenSearch,Integer acc,  Integer pageNo) {
         Pageable pageable = PageRequest.of(pageNo - 1, 5);
-//        return accountRepository.searchAllNV(tenSearch,acc, pageable);
-        return null;
+        return accountRepository.searchAllNV(tenSearch, pageable);
     }
 
     @Override
@@ -128,6 +131,11 @@ public class NhanVienServiceImpl implements NhanVienService {
     public Page<Account> filterTrangThai(StatusAccountCus trangThai, Integer pageableNo) {
         Pageable pageable = PageRequest.of(pageableNo - 1, 5);
         return accountRepository.filterTrangThai(trangThai, pageable);
+    }
+
+    @Override
+    public boolean isPhoneNumberUnique(String phoneNumberToCheck) {
+        return accountRepository.existsBySoDienThoai(phoneNumberToCheck);
     }
 
     public static String removeDiacritics(String str) {

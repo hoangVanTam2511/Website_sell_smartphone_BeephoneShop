@@ -45,6 +45,7 @@ const UpdateKH = () => {
   let [id1, setId] = useState("");
   let [xaPhuong, setXaPhuong] = useState("");
   let [ma, setMa] = useState("");
+
   let [matKhau, setMatKhau] = useState("");
   let [trangThai, setTrangThai] = useState(1);
   let [trangThaiKH, setTrangThaiKH] = useState(0); // Khởi tạo mặc định là 0
@@ -53,6 +54,17 @@ const UpdateKH = () => {
   const { handleOpenAlertVariant } = useCustomSnackbar();
   var navigate = useNavigate();
 
+  const generateRandomCode = () => {
+    const getRandomInt = () => {
+      return Math.floor(Math.random() * 10); // Sinh số ngẫu nhiên từ 0 đến 9
+    };
+
+    let randomCode = "DC";
+    for (let i = 0; i < 10; i++) {
+      randomCode += getRandomInt();
+    }
+    return randomCode;
+  };
   const [diaChiList, setDiaChiList] = useState([
     {
       diaChi: "",
@@ -69,19 +81,20 @@ const UpdateKH = () => {
 
   useEffect(() => {
     fetchDiaChiList();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   //hiển thị diaChi
   const fetchDiaChiList = async () => {
     try {
-      const response = await fetch(apiURLKH + "/dia-chi/hien-thi/" + id);
-      const data = await response.json();
-      setDiaChiList(data);
+      const response = await axios.get(`${apiURLKH}/dia-chi/hien-thi/${id}`);
+      setDiaChiList(response.data);
     } catch (error) {
       console.error("Error fetching dia chi list:", error);
     }
   };
+
+  // Hiển thị diaChi
+
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [isModalVisibleS, setIsModalVisibleS] = useState(false);
   const [formSubmittedS, setFormSubmittedS] = useState(false);
@@ -246,6 +259,7 @@ const UpdateKH = () => {
       account: id,
       id: id1,
       trangThai: trangThaiKH,
+      ma: generateRandomCode(),
     };
     if (
       !hoTenKH ||
@@ -282,10 +296,10 @@ const UpdateKH = () => {
           id: id1,
           trangThai: trangThaiKH,
         };
-        setDiaChiList([newKhachHangResponse, ...diaChiList]);
-        setId(response.data.id);
+        setDiaChiList([...diaChiList, newKhachHangResponse]);
+        fetchDiaChiList();
+        console.log(response.data);
         handleOpenAlertVariant("Thêm thành công", Notistack.SUCCESS);
-        // redirectToHienThiKH();
         handleCloseModal();
         return;
       })
@@ -312,7 +326,6 @@ const UpdateKH = () => {
 
   const save = async (id) => {
     setSubmitted(true);
-
     setFormSubmitted(true);
     if (!hoVaTen || !ngaySinh || !email || !soDienThoai) {
       handleOpenAlertVariant(
@@ -374,7 +387,7 @@ const UpdateKH = () => {
   return (
     <>
       {" "}
-      <Card bordered={false} style={{ width: "100%" }}>
+      <Card bordered="false" style={{ width: "100%" }}>
         <Grid container justifyContent="space-between">
           {/* Left column */}
           <Grid item xs={6.5}>
@@ -407,8 +420,8 @@ const UpdateKH = () => {
               </span>
             </div>
             <div
-              bordered={false}
-              headStyle={{ borderLeft: "4px solid #e2e2e2", borderRadius: 0 }}
+              bordered="false"
+              headstyle={{ borderLeft: "4px solid #e2e2e2", borderRadius: 0 }}
               style={{
                 height: "100%",
                 overflowY: "auto",
@@ -658,9 +671,9 @@ const UpdateKH = () => {
             </div>
             <div
               // title={<span style={{ color: "gray" }}>Thông tin Địa Chỉ </span>}
-              bordered={false}
+              bordered="false"
               // bodyStyle={{ padding: 0 }}
-              headStyle={{
+              headstyle={{
                 // backgroundColor: "#d5dbfa",
                 borderLeft: "4px solid #e2e2e2",
                 borderRadius: 0,
@@ -782,6 +795,7 @@ const UpdateKH = () => {
                   diaChiList={diaChiList}
                   account={id}
                   updateDiaChiList={updateDiaChiList}
+                  fetchDiaChiList={fetchDiaChiList}
                 />
               </div>{" "}
             </div>{" "}

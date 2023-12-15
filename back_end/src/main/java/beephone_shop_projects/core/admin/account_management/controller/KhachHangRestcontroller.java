@@ -66,9 +66,9 @@ public class KhachHangRestcontroller {
         accService.doiTrangThai(id);
     }
 
-    @PutMapping("dia-chi/thiet-lap-md/{id}")
+    @PutMapping("dia-chi/thiet-lap-md")
     @CrossOrigin(origins = {"*"})
-    public void thietLapMacDinh(@PathVariable("id") String id, @RequestParam String account) {
+    public void thietLapMacDinh( @RequestParam String id, @RequestParam String account) {
         diaChiService.doiTrangThai(id, account);
     }
 
@@ -97,8 +97,8 @@ public class KhachHangRestcontroller {
         }
     }
 
-    @PutMapping("dia-chi/update/{id}")
-    public ResponseEntity updateDiaChi(@RequestBody DiaChiKhachHangRequest request, @PathVariable("id") String id) {
+    @PutMapping("dia-chi/update")
+    public ResponseEntity updateDiaChi(@RequestBody DiaChiKhachHangRequest request, @RequestParam String id) {
         try {
             DiaChi addedDiaChi = diaChiService.updateDiaChi(request, id);
             return new ResponseEntity(addedDiaChi, HttpStatus.OK);
@@ -122,14 +122,30 @@ public class KhachHangRestcontroller {
         }
     }
 
-    @GetMapping("dia-chi/get-one/{id}")
-    public DiaChi getOneDiaChi(@PathVariable("id") String id, @RequestParam String account) {
-        return diaChiService.getOneDiaChi(id, account);
-    }
+//    @GetMapping("dia-chi/get-one")
+//    public DiaChi getOneDiaChi(@RequestParam("id") String id) {
+//        return diaChiService.getOneDiaChi(id);
+//    }
 
     @GetMapping("hien-thi-theo/{id}")
     public Account getOne(@PathVariable("id") UUID id) {
         return accService.getOne(id);
+    }
+    @GetMapping("mot-dia-chi")
+    @CrossOrigin(origins = {"*"})
+    public DiaChi getOneDiaChi(@RequestParam String id) {
+        return diaChiService.searchDiaChi(id);
+    }
+    @PutMapping("dia-chi/update1")
+    public ResponseEntity updateDiaChi1(@RequestBody DiaChiKhachHangRequest request, @RequestParam String id) {
+        try {
+            DiaChi addedDiaChi = diaChiService.updateDiaChiBy(request, id);
+            return new ResponseEntity(addedDiaChi, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi server khi thêm địa chỉ.");
+        }
     }
 
 }

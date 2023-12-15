@@ -41,6 +41,7 @@ const AddKH = () => {
   let [soDienThoaiKhachHang, setSoDienThoaiKhachHang] = useState("");
   let [xaPhuong, setXaPhuong] = useState("");
   let [trangThaiKH, setTrangThaiKH] = useState(1);
+  let [maDC, setMaDC] = useState("");
   const [diaChiList, setDiaChiList] = useState([
     {
       diaChi: "",
@@ -246,7 +247,17 @@ const AddKH = () => {
       console.log(error);
     }
   };
+  const generateRandomCode = () => {
+    const getRandomInt = () => {
+      return Math.floor(Math.random() * 10); // Sinh số ngẫu nhiên từ 0 đến 9
+    };
 
+    let randomCode = "DC";
+    for (let i = 0; i < 10; i++) {
+      randomCode += getRandomInt();
+    }
+    return randomCode;
+  };
   const addDiaChiList = (generatedMaKhachHang) => {
     //day
     setSubmitted(true);
@@ -260,6 +271,7 @@ const AddKH = () => {
       hoTenKH: hoTenKH,
       account: generatedMaKhachHang,
       trangThai: trangThaiKH,
+      ma: generateRandomCode(),
     };
     axios
       .post(`${apiURLKH}/dia-chi/add?id=${generatedMaKhachHang}`, newAddress)
@@ -273,7 +285,9 @@ const AddKH = () => {
           hoTenKH: hoTenKH,
           account: generatedMaKhachHang,
           trangThai: trangThaiKH,
+          ma: maDC,
         };
+        setMaDC(response.data.ma);
         setDiaChiList([newKhachHangResponse, ...diaChiList]);
       })
       .catch((error) => {

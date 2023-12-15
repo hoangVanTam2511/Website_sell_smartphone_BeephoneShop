@@ -20,6 +20,8 @@ public class DiaChi extends PrimaryEntity implements IsIdentified {
 
     private String soDienThoaiKhachHang;
 
+    private String ma;
+
     private String diaChi;
 
     private String tinhThanhPho;

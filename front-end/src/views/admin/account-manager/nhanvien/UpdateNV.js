@@ -78,7 +78,7 @@ const UpdateNV = () => {
   //call KH
   useEffect(() => {
     getKHById(id);
-  }, [id]);
+  }, []);
   const getKHById = (id) => {
     axios
       .get(apiURLNV + `/hien-thi-theo/${id}`)

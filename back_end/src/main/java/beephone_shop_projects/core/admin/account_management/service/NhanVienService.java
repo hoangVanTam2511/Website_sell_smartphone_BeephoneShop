@@ -28,5 +28,6 @@ public interface NhanVienService {
     Account getOne(UUID id);
 
     Page<Account> filterTrangThai(StatusAccountCus trangThai, Integer pageableNo);
+    public boolean isPhoneNumberUnique(String phoneNumberToCheck);
 
 }

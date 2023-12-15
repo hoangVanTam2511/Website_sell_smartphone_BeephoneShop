@@ -68,7 +68,7 @@ public interface AccountRepository extends IAccountRepository, CustomKhachHangRe
                 ELSE e.trangThai
             END
             WHERE e.id = :idBanGhi
-
+            
             """)
     void doiTrangThai(@Param("idBanGhi") String id);
 
@@ -115,4 +115,5 @@ public interface AccountRepository extends IAccountRepository, CustomKhachHangRe
     @Query("SELECT a FROM Account a WHERE a.idRole.ma='role2'")
     List<Account> sendMailAccount();
 
+    Boolean existsBySoDienThoai( String phone);
 }
