@@ -130,7 +130,7 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
     }
 
     if (findProductItemCurrentInCart.isPresent()) {
-      List<ImeiChuaBan> imeisInCart = findProductItemCurrentInCart.get().getImeisChuaBan();
+      Set<ImeiChuaBan> imeisInCart = findProductItemCurrentInCart.get().getImeisChuaBan();
       GioHangChiTiet getProductItemInCartCurrent = findProductItemCurrentInCart.get();
       getProductItemInCartCurrent.setSoLuong(getProductItemInCartCurrent
               .getSoLuong() + req.getAmount());
@@ -301,14 +301,9 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
       throw new RestApiException("Sản phẩm không tồn tại!");
     }
 
-    int totalAmount = 0;
-    for (GioHangChiTiet cartItem : findCartCurrent.getCartItems()) {
-      totalAmount += cartItem.getSoLuong();
-    }
-
     SanPhamChiTiet getOptional = getProductItemInCartItem.get();
     List<ImeiCustomRequest> imeiFromRequest = req.getImeis();
-    List<ImeiChuaBan> imeiCurrentInCart = findCartItem.getImeisChuaBan();
+    Set<ImeiChuaBan> imeiCurrentInCart = findCartItem.getImeisChuaBan();
     Set<String> currentImeis = imeiCurrentInCart.stream()
             .map(ImeiChuaBan::getSoImei)
             .collect(Collectors.toSet());
@@ -324,7 +319,7 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
             })
             .collect(Collectors.toList());
 
-    if (totalAmount + imeiToAdd.size() > 4) {
+    if (imeiToAdd.size() > 4) {
       throw new RestApiException("Lựa chọn tối đa 4 số lượng sản phẩm!");
     }
 
@@ -387,7 +382,7 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
     }
 
     if (findProductItemCurrentInCartOrder.isPresent()) {
-      List<ImeiDaBan> imeisInCartOrder = findProductItemCurrentInCartOrder.get().getImeisDaBan();
+      Set<ImeiDaBan> imeisInCartOrder = findProductItemCurrentInCartOrder.get().getImeisDaBan();
       HoaDonChiTiet getProductItemInCartOrderCurrent = findProductItemCurrentInCartOrder.get();
       getProductItemInCartOrderCurrent.setSoLuong(getProductItemInCartOrderCurrent
               .getSoLuong() + req.getAmount());
@@ -566,7 +561,7 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
             findProductAlreadyExistInCartItemOrder(findImei.get().getSanPhamChiTiet().getId(), req.getOrder().getId());
 
     if (findProductItemCurrentInCartOrder.isPresent()) {
-      List<ImeiDaBan> imeisInCart = findProductItemCurrentInCartOrder.get().getImeisDaBan();
+      Set<ImeiDaBan> imeisInCart = findProductItemCurrentInCartOrder.get().getImeisDaBan();
       for (ImeiDaBan imeiDaBan : imeisInCart) {
         if (imeiDaBan.getSoImei().equals(req.getImei())) {
           throw new RestApiException("Imei đang được chọn trong đơn hàng!");
@@ -733,7 +728,7 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
 
     SanPhamChiTiet getOptional = getProductItemInCartItemOrder.get();
     List<ImeiCustomRequest> imeiFromRequest = req.getImeis();
-    List<ImeiDaBan> imeiCurrentInCartOrder = findCartItemOrder.get().getImeisDaBan();
+    Set<ImeiDaBan> imeiCurrentInCartOrder = findCartItemOrder.get().getImeisDaBan();
     Set<String> currentImeis = imeiCurrentInCartOrder.stream()
             .map(ImeiDaBan::getSoImei)
             .collect(Collectors.toSet());

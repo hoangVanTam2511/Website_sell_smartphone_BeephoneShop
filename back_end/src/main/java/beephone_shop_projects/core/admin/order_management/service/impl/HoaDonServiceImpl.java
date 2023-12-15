@@ -1,8 +1,11 @@
 package beephone_shop_projects.core.admin.order_management.service.impl;
 
+import beephone_shop_projects.core.admin.account_management.repository.AccountRepository;
+import beephone_shop_projects.core.admin.account_management.repository.CustomKhachHangRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.converter.AccountConverter;
 import beephone_shop_projects.core.admin.order_management.converter.ImeiNotSoldConverter;
 import beephone_shop_projects.core.admin.order_management.converter.OrderConverter;
+import beephone_shop_projects.core.admin.order_management.converter.OrderCustomConverter;
 import beephone_shop_projects.core.admin.order_management.converter.OrderHistoryConverter;
 import beephone_shop_projects.core.admin.order_management.converter.ProductItemConverter;
 import beephone_shop_projects.core.admin.order_management.converter.VoucherConverter;
@@ -10,15 +13,16 @@ import beephone_shop_projects.core.admin.order_management.model.request.CartRequ
 import beephone_shop_projects.core.admin.order_management.model.request.OrderHistoryRequest;
 import beephone_shop_projects.core.admin.order_management.model.request.OrderRequest;
 import beephone_shop_projects.core.admin.order_management.model.request.SearchFilterOrderDto;
-import beephone_shop_projects.core.admin.order_management.model.response.AccountResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.CartItemResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.OrderHistoryResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.OrderItemResponse;
+import beephone_shop_projects.core.admin.order_management.model.response.OrderPaginationCustomResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.OrderResponse;
 import beephone_shop_projects.core.admin.order_management.repository.ImeiChuaBanCustomRepository;
 import beephone_shop_projects.core.admin.order_management.repository.ImeiDaBanCustomRepository;
 import beephone_shop_projects.core.admin.order_management.repository.LichSuHoaDonCustomRepository;
 import beephone_shop_projects.core.admin.order_management.repository.OrderItemRepository;
+import beephone_shop_projects.core.admin.order_management.repository.OrderJpaCustomRepository;
 import beephone_shop_projects.core.admin.order_management.repository.impl.CartRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.repository.impl.HinhThucThanhToanRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.repository.impl.LichSuHoaDonRepositoryImpl;
@@ -26,6 +30,7 @@ import beephone_shop_projects.core.admin.order_management.repository.impl.OrderR
 import beephone_shop_projects.core.admin.order_management.service.HoaDonService;
 import beephone_shop_projects.core.admin.product_management.repository.ProductDetailRepository;
 import beephone_shop_projects.core.admin.voucher_management.repository.VoucherRepository;
+import beephone_shop_projects.entity.Account;
 import beephone_shop_projects.entity.GioHang;
 import beephone_shop_projects.entity.GioHangChiTiet;
 import beephone_shop_projects.entity.HoaDon;
@@ -44,11 +49,11 @@ import beephone_shop_projects.infrastructure.exeption.rest.RestApiException;
 import beephone_shop_projects.utils.BarcodeGenerator;
 import beephone_shop_projects.utils.RandomCodeGenerator;
 import com.google.zxing.BarcodeFormat;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -64,7 +69,13 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
   private OrderRepositoryImpl hoaDonRepository;
 
   @Autowired
+  private AccountRepository accountRepository;
+
+  @Autowired
   private LichSuHoaDonServiceImpl orderHistoryServiceImpl;
+
+  @Autowired
+  private OrderJpaCustomRepository orderJpaCustomRepository;
 
   @Autowired
   private LichSuHoaDonRepositoryImpl lichSuHoaDonRepository;
@@ -77,6 +88,9 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
 
   @Autowired
   private OrderConverter orderConverter;
+
+  @Autowired
+  private OrderCustomConverter orderCustomConverter;
 
   @Autowired
   private CartServiceImpl gioHangService;
@@ -119,6 +133,12 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
 
   @Autowired
   private BarcodeGenerator barcodeGenerator;
+
+  @Autowired
+  private ModelMapper modelMapper;
+
+  @Autowired
+  private CustomKhachHangRepositoryImpl customKhachHangRepository;
 
   public HoaDonServiceImpl(OrderRepositoryImpl repo, OrderConverter converter) {
     super(repo, converter);
@@ -175,7 +195,7 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
   }
 
   @Override
-  public Page<OrderResponse> findOrdersByMultipleCriteriaWithPagination(SearchFilterOrderDto searchFilter) throws Exception {
+  public Page<OrderPaginationCustomResponse> findOrdersByMultipleCriteriaWithPagination(SearchFilterOrderDto searchFilter) throws Exception {
     if (searchFilter.getKeyword() == null) {
       searchFilter.setKeyword("");
     }
@@ -185,9 +205,15 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
     if (searchFilter.getPageSize() == null) {
       searchFilter.setPageSize(10);
     }
-    Pageable pageable = PageRequest.of(searchFilter.getCurrentPage() - 1, searchFilter.getPageSize(), Sort.by("createdAt").descending());
-    Page<HoaDon> orders = hoaDonRepository.findOrdersByMultipleCriteriaWithPagination(pageable, searchFilter);
-    return orderConverter.convertToPageResponse(orders);
+
+    Pageable pageable = PageRequest.of(searchFilter.getCurrentPage() - 1, searchFilter.getPageSize());
+    Page<OrderPaginationCustomResponse> orders = hoaDonRepository.findOrdersByMultipleCriteriaWithPagination(pageable, searchFilter);
+    while (orders.isEmpty() && pageable.getPageNumber() > 0) {
+      pageable = pageable.previousOrFirst();
+      orders = hoaDonRepository.findOrdersByMultipleCriteriaWithPagination(pageable, searchFilter);
+    }
+    return orders;
+//    return orderCustomConverter.convertToPageResponse(orders);
   }
 
   @Override
@@ -311,29 +337,31 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
 
   @Override
   public OrderResponse updateOrPaymentOrderPending(OrderRequest req, String id) throws Exception {
-    OrderResponse orderCurrent = getOrderPendingById(id);
+
+    HoaDon orderCurrent = hoaDonRepository.getOrderPendingById(id);
+    OrderResponse orderResponse = this.getOrderPendingById(id);
     if (orderCurrent == null) {
       throw new RestApiException("Đơn hàng không tồn tại!");
     }
 
     if (req.getIsUpdateType()) {
       orderCurrent.setLoaiHoaDon(req.getLoaiHoaDon());
-      HoaDon updateOrderPending = hoaDonRepository.save(orderConverter.convertResponseToEntity(orderCurrent));
+      HoaDon updateOrderPending = orderJpaCustomRepository.save(orderCurrent);
       return orderConverter.convertEntityToResponse(updateOrderPending);
     }
     if (req.getIsUpdateSdt()) {
       orderCurrent.setSoDienThoai(req.getSoDienThoai());
-      HoaDon updateOrderPending = hoaDonRepository.save(orderConverter.convertResponseToEntity(orderCurrent));
+      HoaDon updateOrderPending = orderJpaCustomRepository.save(orderCurrent);
       return orderConverter.convertEntityToResponse(updateOrderPending);
     }
     if (req.getIsUpdateFullName()) {
       orderCurrent.setHoVaTen(req.getHoVaTen());
-      HoaDon updateOrderPending = hoaDonRepository.save(orderConverter.convertResponseToEntity(orderCurrent));
+      HoaDon updateOrderPending = orderJpaCustomRepository.save(orderCurrent);
       return orderConverter.convertEntityToResponse(updateOrderPending);
     }
     if (req.getIsUpdateEmail()) {
       orderCurrent.setEmail(req.getEmail());
-      HoaDon updateOrderPending = hoaDonRepository.save(orderConverter.convertResponseToEntity(orderCurrent));
+      HoaDon updateOrderPending = orderJpaCustomRepository.save(orderCurrent);
       return orderConverter.convertEntityToResponse(updateOrderPending);
     }
 
@@ -353,11 +381,14 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
       orderCurrent.setMaQrCode(uri);
 
       if (req.getEmployee().getId() != null) {
-        AccountResponse accountEmp = new AccountResponse();
-        accountEmp.setId(req.getEmployee().getId());
-        orderCurrent.setAccountEmployee(accountEmp);
-      } else {
-        throw new RestApiException("Account nhân viên không tồn tại!");
+        Account findAccount = customKhachHangRepository.getAccountById(req.getEmployee().getId());
+        if (findAccount != null) {
+          orderCurrent.setAccountEmployee(findAccount);
+        } else {
+          throw new RestApiException("Account nhân viên không tồn tại!");
+        }
+//        Account accountEmp = new Account();
+//        accountEmp.setId(req.getEmployee().getId());
       }
 
 
@@ -371,7 +402,7 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
         orderCurrent.setQuanHuyenNguoiNhan(null);
       }
 
-      HoaDon paymentOrder = hoaDonRepository.save(orderConverter.convertResponseToEntity(orderCurrent));
+      HoaDon paymentOrder = orderJpaCustomRepository.save(orderCurrent);
       if (req.getCart() != null) {
         CartRequest cartRequest = req.getCart();
         for (CartItemResponse cartItem : cartRequest.getCartItems()) {
@@ -428,11 +459,16 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
 
     } else if (req.getIsUpdateAccount()) {
       if (req.getAccount().getId() != null) {
-        orderCurrent.setAccount(accountConverter.convertRequestToResponse(req.getAccount()));
+        Account findAccount = customKhachHangRepository.getAccountById(req.getAccount().getId());
+        if (findAccount != null) {
+          orderCurrent.setAccount(findAccount);
+        } else {
+          throw new RestApiException("Account không tồn tại!");
+        }
       } else {
         orderCurrent.setAccount(null);
       }
-      HoaDon updateOrderPending = hoaDonRepository.save(orderConverter.convertResponseToEntity(orderCurrent));
+      HoaDon updateOrderPending = orderJpaCustomRepository.save(orderCurrent);
       return orderConverter.convertEntityToResponse(updateOrderPending);
     } else if (req.getIsUpdateInfoShip()) {
       if (req.getTinhThanhPhoNguoiNhan() != null) {
@@ -447,15 +483,13 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
       if (req.getXaPhuongNguoiNhan() != null) {
         orderCurrent.setXaPhuongNguoiNhan(req.getXaPhuongNguoiNhan());
       }
-      HoaDon updateOrderPending = hoaDonRepository.save(orderConverter.convertResponseToEntity(orderCurrent));
+      HoaDon updateOrderPending = orderJpaCustomRepository.save(orderCurrent);
       return orderConverter.convertEntityToResponse(updateOrderPending);
 
     } else if (req.getIsUpdateInfoShipByCustomer()) {
       orderCurrent.setTenNguoiNhan(req.getTenNguoiNhan());
       orderCurrent.setSoDienThoaiNguoiNhan(req.getSoDienThoaiNguoiNhan());
       orderCurrent.setDiaChiNguoiNhan(req.getDiaChiNguoiNhan());
-//      orderCurrent.setLoaiHoaDon(req.getLoaiHoaDon());
-//      orderCurrent.setPhiShip(req.getPhiShip());
       if (req.getTinhThanhPhoNguoiNhan() != null) {
         orderCurrent.setTinhThanhPhoNguoiNhan(req.getTinhThanhPhoNguoiNhan());
         orderCurrent.setQuanHuyenNguoiNhan(null);
@@ -468,24 +502,24 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
       if (req.getXaPhuongNguoiNhan() != null) {
         orderCurrent.setXaPhuongNguoiNhan(req.getXaPhuongNguoiNhan());
       }
-      HoaDon updateOrderPending = hoaDonRepository.save(orderConverter.convertResponseToEntity(orderCurrent));
+      HoaDon updateOrderPending = orderJpaCustomRepository.save(orderCurrent);
       return orderConverter.convertEntityToResponse(updateOrderPending);
 
     } else if (req.getIsUpdateNameShip()) {
       orderCurrent.setTenNguoiNhan(req.getTenNguoiNhan());
-      HoaDon updateOrderPending = hoaDonRepository.save(orderConverter.convertResponseToEntity(orderCurrent));
+      HoaDon updateOrderPending = orderJpaCustomRepository.save(orderCurrent);
       return orderConverter.convertEntityToResponse(updateOrderPending);
     } else if (req.getIsUpdatePhoneShip()) {
       orderCurrent.setSoDienThoaiNguoiNhan(req.getSoDienThoaiNguoiNhan());
-      HoaDon updateOrderPending = hoaDonRepository.save(orderConverter.convertResponseToEntity(orderCurrent));
+      HoaDon updateOrderPending = orderJpaCustomRepository.save(orderCurrent);
       return orderConverter.convertEntityToResponse(updateOrderPending);
     } else if (req.getIsUpdateNoteShip()) {
       orderCurrent.setGhiChu(req.getGhiChu());
-      HoaDon updateOrderPending = hoaDonRepository.save(orderConverter.convertResponseToEntity(orderCurrent));
+      HoaDon updateOrderPending = orderJpaCustomRepository.save(orderCurrent);
       return orderConverter.convertEntityToResponse(updateOrderPending);
     } else if (req.getIsUpdateAddressShip()) {
       orderCurrent.setDiaChiNguoiNhan(req.getDiaChiNguoiNhan());
-      HoaDon updateOrderPending = hoaDonRepository.save(orderConverter.convertResponseToEntity(orderCurrent));
+      HoaDon updateOrderPending = orderJpaCustomRepository.save(orderCurrent);
       return orderConverter.convertEntityToResponse(updateOrderPending);
     } else if (req.getIsUpdateVoucher()) {
       if (req.getVoucher().getId() == null) {
@@ -499,13 +533,13 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
         if (findVoucher.isPresent()) {
           findVoucher.get().setSoLuong(findVoucher.get().getSoLuong() - 1);
         }
-        orderCurrent.setVoucher(voucherConverter.convertRequestToResponse(req.getVoucher()));
+        orderCurrent.setVoucher(findVoucher.get());
       }
 
-      HoaDon updateOrderPending = hoaDonRepository.save(orderConverter.convertResponseToEntity(orderCurrent));
+      HoaDon updateOrderPending = orderJpaCustomRepository.save(orderCurrent);
       return orderConverter.convertEntityToResponse(updateOrderPending);
     }
-    return orderCurrent;
+    return orderConverter.convertEntityToResponse(orderCurrent);
 
   }
 

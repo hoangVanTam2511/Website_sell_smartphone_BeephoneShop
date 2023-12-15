@@ -4,20 +4,35 @@ import beephone_shop_projects.core.admin.order_management.model.request.SearchFi
 import beephone_shop_projects.core.admin.order_management.model.request.SearchProductDto;
 import beephone_shop_projects.core.admin.order_management.repository.ProductItemRepository;
 import beephone_shop_projects.core.common.base.JpaPersistence;
+import beephone_shop_projects.entity.CameraSau;
+import beephone_shop_projects.entity.CameraSauDienThoai;
+import beephone_shop_projects.entity.CameraTruoc;
+import beephone_shop_projects.entity.CameraTruocDienThoai;
 import beephone_shop_projects.entity.Chip;
+import beephone_shop_projects.entity.CongSac;
+import beephone_shop_projects.entity.DanhMuc;
 import beephone_shop_projects.entity.DanhMucDienThoai;
+import beephone_shop_projects.entity.DoPhanGiaiManHinh;
 import beephone_shop_projects.entity.Hang;
+import beephone_shop_projects.entity.Image;
+import beephone_shop_projects.entity.KhuyenMaiChiTiet;
 import beephone_shop_projects.entity.ManHinh;
+import beephone_shop_projects.entity.MauSac;
 import beephone_shop_projects.entity.Pin;
 import beephone_shop_projects.entity.Ram;
 import beephone_shop_projects.entity.Rom;
 import beephone_shop_projects.entity.SanPham;
 import beephone_shop_projects.entity.SanPhamChiTiet;
+import beephone_shop_projects.entity.TheNho;
+import beephone_shop_projects.entity.TheSim;
+import beephone_shop_projects.entity.TheSimDienThoai;
 import beephone_shop_projects.infrastructure.constant.OperatingType;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Fetch;
 import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.apache.commons.lang3.StringUtils;
@@ -53,6 +68,31 @@ public class ProductItemRepositoryImpl extends AbstractRepositoryImpl<SanPhamChi
 
       Root<SanPhamChiTiet> root = criteriaQuery.from(this.getPersistenceClass());
       Root<SanPhamChiTiet> countRoot = countQuery.from(this.getPersistenceClass());
+
+      Fetch<SanPhamChiTiet, Ram> joinRam = root.fetch("ram", JoinType.LEFT);
+      Fetch<SanPhamChiTiet, Rom> joinRom = root.fetch("rom", JoinType.LEFT);
+      Fetch<SanPhamChiTiet, MauSac> joinColor = root.fetch("mauSac", JoinType.LEFT);
+      Fetch<SanPhamChiTiet, Image> joinImage = root.fetch("image", JoinType.LEFT);
+//      Fetch<SanPhamChiTiet, KhuyenMaiChiTiet> joinPromotions = root.fetch("promotions", JoinType.LEFT);
+      Fetch<SanPhamChiTiet, MauSac> joinImeis = root.fetch("imeis", JoinType.LEFT);
+      Fetch<SanPhamChiTiet, SanPham> joinProduct = root.fetch("sanPham", JoinType.LEFT);
+
+      Fetch<SanPham, Chip> joinChip = joinProduct.fetch("chip", JoinType.LEFT);
+      Fetch<SanPham, Pin> joinPin = joinProduct.fetch("pin", JoinType.LEFT);
+      Fetch<SanPham, ManHinh> joinScreen = joinProduct.fetch("manHinh", JoinType.LEFT);
+      Fetch<ManHinh, DoPhanGiaiManHinh> joinScreenRelution = joinScreen.fetch("doPhanGiaiManHinh", JoinType.LEFT);
+      Fetch<SanPham, Hang> joinBrand = joinProduct.fetch("hang", JoinType.LEFT);
+      Fetch<SanPham, CongSac> joinChargingPort = joinProduct.fetch("congSac", JoinType.LEFT);
+      Fetch<SanPham, TheNho> joinMemoryCard = joinProduct.fetch("theNho", JoinType.LEFT);
+
+      Fetch<SanPham, TheSimDienThoai> joinSimCardPhone = joinProduct.fetch("theSims", JoinType.LEFT);
+      Fetch<TheSimDienThoai, TheSim> joinSimCard = joinSimCardPhone.fetch("theSim", JoinType.LEFT);
+      Fetch<SanPham, DanhMucDienThoai> joinCategoryPhone = joinProduct.fetch("danhMucs", JoinType.LEFT);
+      Fetch<DanhMucDienThoai, DanhMuc> joinCategory = joinCategoryPhone.fetch("danhMuc", JoinType.LEFT);
+      Fetch<SanPham, CameraTruocDienThoai> joinCameraFrontPhone = joinProduct.fetch("cameraTruocs", JoinType.LEFT);
+      Fetch<CameraTruocDienThoai, CameraTruoc> joinCameraFront = joinCameraFrontPhone.fetch("cameraTruoc", JoinType.LEFT);
+      Fetch<SanPham, CameraSauDienThoai> joinCameraRearPhone = joinProduct.fetch("cameraSaus", JoinType.LEFT);
+      Fetch<CameraSauDienThoai, CameraSau> joinCameraRear = joinCameraRearPhone.fetch("cameraSau", JoinType.LEFT);
 
       JpaPersistence<SanPhamChiTiet> configuration = new JpaPersistence<SanPhamChiTiet>(criteriaBuilder, criteriaQuery, countQuery, root, countRoot);
 

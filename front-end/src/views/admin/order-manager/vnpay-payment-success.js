@@ -70,7 +70,7 @@ const PaymentSuccess = () => {
   const outputDate = momentDate.format("HH:mm:ss - DD/MM/YYYY");
 
   const handleRedirectPayment = (url) => {
-    navigate(url);
+    window.location.href = url;
   };
 
   const handleGetUrlRedirectPayment = async () => {

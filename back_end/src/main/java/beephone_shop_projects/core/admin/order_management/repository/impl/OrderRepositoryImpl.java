@@ -2,23 +2,43 @@ package beephone_shop_projects.core.admin.order_management.repository.impl;
 
 import beephone_shop_projects.core.admin.order_management.model.request.SearchFilterOrderDto;
 import beephone_shop_projects.core.admin.order_management.model.request.SearchOrderDto;
+import beephone_shop_projects.core.admin.order_management.model.response.OrderPaginationCustomResponse;
 import beephone_shop_projects.core.admin.order_management.repository.OrderRepository;
 import beephone_shop_projects.core.common.base.JpaPersistence;
-import beephone_shop_projects.entity.Anh;
-import beephone_shop_projects.entity.CauHinh;
+import beephone_shop_projects.entity.Account;
+import beephone_shop_projects.entity.CameraSau;
+import beephone_shop_projects.entity.CameraSauDienThoai;
+import beephone_shop_projects.entity.CameraTruoc;
+import beephone_shop_projects.entity.CameraTruocDienThoai;
+import beephone_shop_projects.entity.Chip;
+import beephone_shop_projects.entity.CongSac;
+import beephone_shop_projects.entity.DanhMuc;
+import beephone_shop_projects.entity.DanhMucDienThoai;
+import beephone_shop_projects.entity.DiaChi;
+import beephone_shop_projects.entity.DoPhanGiaiManHinh;
 import beephone_shop_projects.entity.GioHang;
 import beephone_shop_projects.entity.GioHangChiTiet;
+import beephone_shop_projects.entity.Hang;
 import beephone_shop_projects.entity.HoaDon;
 import beephone_shop_projects.entity.HoaDonChiTiet;
+import beephone_shop_projects.entity.Image;
 import beephone_shop_projects.entity.ImeiChuaBan;
+import beephone_shop_projects.entity.ImeiDaBan;
+import beephone_shop_projects.entity.ManHinh;
 import beephone_shop_projects.entity.MauSac;
+import beephone_shop_projects.entity.Pin;
 import beephone_shop_projects.entity.Ram;
+import beephone_shop_projects.entity.Role;
 import beephone_shop_projects.entity.Rom;
 import beephone_shop_projects.entity.SanPham;
 import beephone_shop_projects.entity.SanPhamChiTiet;
+import beephone_shop_projects.entity.TheNho;
+import beephone_shop_projects.entity.TheSim;
+import beephone_shop_projects.entity.TheSimDienThoai;
 import beephone_shop_projects.infrastructure.constant.OrderStatus;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceException;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Expression;
@@ -56,19 +76,45 @@ public class OrderRepositoryImpl extends AbstractRepositoryImpl<HoaDon, String> 
 
       Root<HoaDon> root = criteriaQuery.from(this.getPersistenceClass());
       Fetch<HoaDon, HoaDonChiTiet> joinOrderItems = root.fetch("orderItems", JoinType.LEFT);
-      Fetch<HoaDon, GioHang> joinCart = root.fetch("cart", JoinType.INNER);
-      Fetch<GioHang, GioHangChiTiet> joinCartItems = joinCart.
-              fetch("cartItems", JoinType.LEFT);
-//      Fetch<GioHangChiTiet, ImeiChuaBan> joinImeiChuaBan = joinCartItems.fetch("sanPhamChiTiet", JoinType.LEFT);
+      Fetch<HoaDon, GioHang> joinCart = root.fetch("cart", JoinType.LEFT);
+      Fetch<GioHang, GioHangChiTiet> joinCartItems = joinCart.fetch("cartItems", JoinType.LEFT);
+      Fetch<GioHangChiTiet, ImeiChuaBan> joinImeisNotSold = joinCartItems.fetch("imeisChuaBan", JoinType.LEFT);
       Fetch<GioHangChiTiet, SanPhamChiTiet> joinProductDetails = joinCartItems.fetch("sanPhamChiTiet", JoinType.LEFT);
+
+      Fetch<SanPhamChiTiet, Ram> joinRam = joinProductDetails.fetch("ram", JoinType.LEFT);
+      Fetch<SanPhamChiTiet, Rom> joinRom = joinProductDetails.fetch("rom", JoinType.LEFT);
+      Fetch<SanPhamChiTiet, MauSac> joinColor = joinProductDetails.fetch("mauSac", JoinType.LEFT);
+      Fetch<SanPhamChiTiet, Image> joinImage = joinProductDetails.fetch("image", JoinType.LEFT);
+//      Fetch<SanPhamChiTiet, KhuyenMaiChiTiet> joinPromotions = joinProductDetails.fetch("promotions", JoinType.LEFT);
+      Fetch<SanPhamChiTiet, MauSac> joinImeis = joinProductDetails.fetch("imeis", JoinType.LEFT);
       Fetch<SanPhamChiTiet, SanPham> joinProduct = joinProductDetails.fetch("sanPham", JoinType.LEFT);
-      Fetch<SanPhamChiTiet, CauHinh> joinConfiguration = joinProductDetails.fetch("cauHinh", JoinType.LEFT);
-      Fetch<CauHinh, Ram> joinRam = joinConfiguration.fetch("ram", JoinType.LEFT);
-      Fetch<CauHinh, Rom> joinRom = joinConfiguration.fetch("rom", JoinType.LEFT);
-      Fetch<CauHinh, MauSac> joinMauSac = joinConfiguration.fetch("mauSac", JoinType.LEFT);
+
+      Fetch<SanPham, Chip> joinChip = joinProduct.fetch("chip", JoinType.LEFT);
+      Fetch<SanPham, Pin> joinPin = joinProduct.fetch("pin", JoinType.LEFT);
+      Fetch<SanPham, ManHinh> joinScreen = joinProduct.fetch("manHinh", JoinType.LEFT);
+      Fetch<ManHinh, DoPhanGiaiManHinh> joinScreenRelution = joinScreen.fetch("doPhanGiaiManHinh", JoinType.LEFT);
+      Fetch<SanPham, Hang> joinBrand = joinProduct.fetch("hang", JoinType.LEFT);
+      Fetch<SanPham, CongSac> joinChargingPort = joinProduct.fetch("congSac", JoinType.LEFT);
+      Fetch<SanPham, TheNho> joinMemoryCard = joinProduct.fetch("theNho", JoinType.LEFT);
+
+      Fetch<SanPham, TheSimDienThoai> joinSimCardPhone = joinProduct.fetch("theSims", JoinType.LEFT);
+      Fetch<TheSimDienThoai, TheSim> joinSimCard = joinSimCardPhone.fetch("theSim", JoinType.LEFT);
+      Fetch<SanPham, DanhMucDienThoai> joinCategoryPhone = joinProduct.fetch("danhMucs", JoinType.LEFT);
+      Fetch<DanhMucDienThoai, DanhMuc> joinCategory = joinCategoryPhone.fetch("danhMuc", JoinType.LEFT);
+      Fetch<SanPham, CameraTruocDienThoai> joinCameraFrontPhone = joinProduct.fetch("cameraTruocs", JoinType.LEFT);
+      Fetch<CameraTruocDienThoai, CameraTruoc> joinCameraFront = joinCameraFrontPhone.fetch("cameraTruoc", JoinType.LEFT);
+      Fetch<SanPham, CameraSauDienThoai> joinCameraRearPhone = joinProduct.fetch("cameraSaus", JoinType.LEFT);
+      Fetch<CameraSauDienThoai, CameraSau> joinCameraRear = joinCameraRearPhone.fetch("cameraSau", JoinType.LEFT);
+
+      Fetch<HoaDon, Account> joinAccount = root.fetch("account", JoinType.LEFT);
+      Fetch<HoaDon, Account> joinAccountEmployee = root.fetch("accountEmployee", JoinType.LEFT);
+      Fetch<Account, Role> joinRoleAccount = joinAccount.fetch("idRole", JoinType.LEFT);
+      Fetch<Account, Role> joinRoleAccountEmployee = joinAccountEmployee.fetch("idRole", JoinType.LEFT);
+      Fetch<Account, DiaChi> joinAddress = joinAccount.fetch("diaChiList", JoinType.LEFT);
+      Fetch<Account, DiaChi> joinAddressEmployee = joinAccountEmployee.fetch("diaChiList", JoinType.LEFT);
+
       root.fetch("paymentMethods", JoinType.LEFT);
       root.fetch("orderHistories", JoinType.LEFT);
-      root.fetch("account", JoinType.LEFT);
       root.fetch("voucher", JoinType.LEFT);
 
       Predicate condition = criteriaBuilder.equal(root.get("id"), id);
@@ -91,19 +137,45 @@ public class OrderRepositoryImpl extends AbstractRepositoryImpl<HoaDon, String> 
       CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
       CriteriaQuery<HoaDon> criteriaQuery = criteriaBuilder.createQuery(this.getPersistenceClass());
 
-//      Fetch<HoaDon, HoaDonChiTiet> joinOrderItems = root.fetch("orderItems", JoinType.INNER);
       Root<HoaDon> root = criteriaQuery.from(this.getPersistenceClass());
       Fetch<HoaDon, HoaDonChiTiet> joinOrderItems = root.fetch("orderItems", JoinType.LEFT);
+      Fetch<HoaDonChiTiet, ImeiDaBan> joinImeisSold = joinOrderItems.fetch("imeisDaBan", JoinType.LEFT);
       Fetch<HoaDonChiTiet, SanPhamChiTiet> joinProductDetails = joinOrderItems.fetch("sanPhamChiTiet", JoinType.LEFT);
+
+      Fetch<SanPhamChiTiet, Ram> joinRam = joinProductDetails.fetch("ram", JoinType.LEFT);
+      Fetch<SanPhamChiTiet, Rom> joinRom = joinProductDetails.fetch("rom", JoinType.LEFT);
+      Fetch<SanPhamChiTiet, MauSac> joinColor = joinProductDetails.fetch("mauSac", JoinType.LEFT);
+      Fetch<SanPhamChiTiet, Image> joinImage = joinProductDetails.fetch("image", JoinType.LEFT);
+//      Fetch<SanPhamChiTiet, KhuyenMaiChiTiet> joinPromotions = joinProductDetails.fetch("promotions", JoinType.LEFT);
+      Fetch<SanPhamChiTiet, MauSac> joinImeis = joinProductDetails.fetch("imeis", JoinType.LEFT);
       Fetch<SanPhamChiTiet, SanPham> joinProduct = joinProductDetails.fetch("sanPham", JoinType.LEFT);
-      Fetch<SanPhamChiTiet, CauHinh> joinConfiguration = joinProductDetails.fetch("cauHinh", JoinType.LEFT);
-      Fetch<CauHinh, Ram> joinRam = joinConfiguration.fetch("ram", JoinType.LEFT);
-      Fetch<CauHinh, Rom> joinRom = joinConfiguration.fetch("rom", JoinType.LEFT);
-      Fetch<CauHinh, MauSac> joinMauSac = joinConfiguration.fetch("mauSac", JoinType.LEFT);
+
+      Fetch<SanPham, Chip> joinChip = joinProduct.fetch("chip", JoinType.LEFT);
+      Fetch<SanPham, Pin> joinPin = joinProduct.fetch("pin", JoinType.LEFT);
+      Fetch<SanPham, ManHinh> joinScreen = joinProduct.fetch("manHinh", JoinType.LEFT);
+      Fetch<ManHinh, DoPhanGiaiManHinh> joinScreenRelution = joinScreen.fetch("doPhanGiaiManHinh", JoinType.LEFT);
+      Fetch<SanPham, Hang> joinBrand = joinProduct.fetch("hang", JoinType.LEFT);
+      Fetch<SanPham, CongSac> joinChargingPort = joinProduct.fetch("congSac", JoinType.LEFT);
+      Fetch<SanPham, TheNho> joinMemoryCard = joinProduct.fetch("theNho", JoinType.LEFT);
+
+      Fetch<SanPham, TheSimDienThoai> joinSimCardPhone = joinProduct.fetch("theSims", JoinType.LEFT);
+      Fetch<TheSimDienThoai, TheSim> joinSimCard = joinSimCardPhone.fetch("theSim", JoinType.LEFT);
+      Fetch<SanPham, DanhMucDienThoai> joinCategoryPhone = joinProduct.fetch("danhMucs", JoinType.LEFT);
+      Fetch<DanhMucDienThoai, DanhMuc> joinCategory = joinCategoryPhone.fetch("danhMuc", JoinType.LEFT);
+      Fetch<SanPham, CameraTruocDienThoai> joinCameraFrontPhone = joinProduct.fetch("cameraTruocs", JoinType.LEFT);
+      Fetch<CameraTruocDienThoai, CameraTruoc> joinCameraFront = joinCameraFrontPhone.fetch("cameraTruoc", JoinType.LEFT);
+      Fetch<SanPham, CameraSauDienThoai> joinCameraRearPhone = joinProduct.fetch("cameraSaus", JoinType.LEFT);
+      Fetch<CameraSauDienThoai, CameraSau> joinCameraRear = joinCameraRearPhone.fetch("cameraSau", JoinType.LEFT);
+
+      Fetch<HoaDon, Account> joinAccount = root.fetch("account", JoinType.LEFT);
+      Fetch<HoaDon, Account> joinAccountEmployee = root.fetch("accountEmployee", JoinType.LEFT);
+      Fetch<Account, Role> joinRoleAccount = joinAccount.fetch("idRole", JoinType.LEFT);
+      Fetch<Account, Role> joinRoleAccountEmployee = joinAccountEmployee.fetch("idRole", JoinType.LEFT);
+      Fetch<Account, DiaChi> joinAddress = joinAccount.fetch("diaChiList", JoinType.LEFT);
+      Fetch<Account, DiaChi> joinAddressEmployee = joinAccountEmployee.fetch("diaChiList", JoinType.LEFT);
 
       root.fetch("paymentMethods", JoinType.LEFT);
       root.fetch("orderHistories", JoinType.LEFT);
-      root.fetch("account", JoinType.LEFT);
       root.fetch("voucher", JoinType.LEFT);
 
       Predicate condition = criteriaBuilder.equal(root.get("ma"), id);
@@ -119,8 +191,9 @@ public class OrderRepositoryImpl extends AbstractRepositoryImpl<HoaDon, String> 
 
   @Override
   @Transactional
-  public Page<HoaDon> findOrdersByMultipleCriteriaWithPagination(Pageable pageable, SearchFilterOrderDto searchFilter) {
-    List<HoaDon> orders = null;
+  public Page<OrderPaginationCustomResponse> findOrdersByMultipleCriteriaWithPagination(Pageable pageable, SearchFilterOrderDto searchFilter) {
+    List<HoaDon> orders = new ArrayList<>();
+    List<OrderPaginationCustomResponse> pagedOrders = new ArrayList<>();
     Long totalElements = 0L;
 
     try (EntityManager entityManager = this.getEntityManager()) {
@@ -132,37 +205,55 @@ public class OrderRepositoryImpl extends AbstractRepositoryImpl<HoaDon, String> 
       Root<HoaDon> root = criteriaQuery.from(this.getPersistenceClass());
       Root<HoaDon> countRoot = countQuery.from(this.getPersistenceClass());
 
-//      Fetch<HoaDon, GioHang> joinCart = root.fetch("cart", JoinType.LEFT);
-//      Fetch<GioHang, GioHangChiTiet> joinCartItems = joinCart.
-//              fetch("cartItems", JoinType.LEFT);
-//      Fetch<GioHangChiTiet, SanPhamChiTiet> joinProductDetails = joinCartItems.
-//              fetch("sanPhamChiTiet", JoinType.LEFT);
-//      Fetch<SanPhamChiTiet, SanPham> joinProduct = joinProductDetails.
-//              fetch("sanPham", JoinType.LEFT);
-//      Fetch<SanPhamChiTiet, CauHinh> joinConfiguration = joinProductDetails.
-//              fetch("cauHinh", JoinType.LEFT);
-//      Fetch<CauHinh, Ram> joinRam = joinConfiguration.fetch("ram", JoinType.LEFT);
-//      Fetch<CauHinh, Rom> joinRom = joinConfiguration.fetch("rom", JoinType.LEFT);
-//      Fetch<CauHinh, MauSac> joinMauSac = joinConfiguration.fetch("mauSac", JoinType.LEFT);
-      root.fetch("paymentMethods", JoinType.LEFT);
-      root.fetch("orderHistories", JoinType.LEFT);
-      root.fetch("account", JoinType.LEFT);
-      root.fetch("voucher", JoinType.LEFT);
-
+      Fetch<HoaDon, Account> joinAccount = root.fetch("account", JoinType.LEFT);
+      Fetch<HoaDon, Account> joinAccountEmployee = root.fetch("accountEmployee", JoinType.LEFT);
+      Fetch<Account, Role> joinRoleAccount = joinAccount.fetch("idRole", JoinType.LEFT);
+      Fetch<Account, Role> joinRoleAccountEmployee = joinAccountEmployee.fetch("idRole", JoinType.LEFT);
+      Fetch<Account, DiaChi> joinAddress = joinAccount.fetch("diaChiList", JoinType.LEFT);
+      Fetch<Account, DiaChi> joinAddressEmployee = joinAccountEmployee.fetch("diaChiList", JoinType.LEFT);
       JpaPersistence<HoaDon> configuration = new JpaPersistence<HoaDon>(criteriaBuilder, criteriaQuery, countQuery, root, countRoot);
 
       this.buildSelectAllAndCountEntity(configuration);
-      this.buildSortByPageable(configuration, pageable.getSort());
+//      this.buildSortByPageable(configuration, pageable.getSort());
       this.buildWhereConditionByPredicates(configuration, buildPredicates(SearchOrderDto.class, searchFilter, configuration));
 
-      orders = this.buildQueryWithPaginationByPageableAndCriteriaQuery(pageable, configuration);
+      TypedQuery<HoaDon> query = entityManager.createQuery(criteriaQuery)
+              .setFirstResult(pageable.getPageNumber() * pageable.getPageSize())
+              .setMaxResults(pageable.getPageSize());
+      orders = query.getResultList();
+
+      int stt = (int) pageable.getOffset() + 1;
+
+      for (int i = 0; i < orders.size(); i++) {
+        HoaDon hoaDon = orders.get(i);
+        OrderPaginationCustomResponse dto = new OrderPaginationCustomResponse();
+        dto.setStt((long) (stt + i));
+        dto.setId(hoaDon.getId());
+        dto.setMa(hoaDon.getMa());
+        dto.setHoVaTen(hoaDon.getHoVaTen());
+        dto.setSoDienThoai(hoaDon.getSoDienThoai());
+        dto.setTenNguoiNhan(hoaDon.getTenNguoiNhan());
+        dto.setSoDienThoaiNguoiNhan(hoaDon.getSoDienThoaiNguoiNhan());
+        dto.setCreatedBy(hoaDon.getCreatedBy());
+        dto.setCreatedAt(hoaDon.getCreatedAt());
+        dto.setTongTien(hoaDon.getTongTien());
+        dto.setKhachCanTra(hoaDon.getKhachCanTra());
+        dto.setLoaiHoaDon(hoaDon.getLoaiHoaDon());
+        dto.setTrangThai(hoaDon.getTrangThai());
+        dto.setAccount(hoaDon.getAccount());
+        dto.setAccountEmployee(hoaDon.getAccountEmployee());
+        pagedOrders.add(dto);
+      }
+
+
+//      orders = this.buildQueryWithPaginationByPageableAndCriteriaQuery(pageable, configuration);
       totalElements = entityManager.createQuery(countQuery).getSingleResult();
 
     } catch (HibernateException e) {
       logger.error(e.getMessage(), e);
       throw e;
     }
-    return new PageImpl<>(orders, pageable, totalElements);
+    return new PageImpl<>(pagedOrders, pageable, totalElements);
   }
 
   @Override
@@ -174,20 +265,46 @@ public class OrderRepositoryImpl extends AbstractRepositoryImpl<HoaDon, String> 
       CriteriaQuery<HoaDon> criteriaQuery = criteriaBuilder.createQuery(this.getPersistenceClass());
 
       Root<HoaDon> root = criteriaQuery.from(this.getPersistenceClass());
+      Fetch<HoaDon, GioHang> joinCart = root.fetch("cart", JoinType.LEFT);
       Fetch<HoaDon, HoaDonChiTiet> joinOrderItems = root.fetch("orderItems", JoinType.LEFT);
-      Fetch<HoaDon, GioHang> joinCart = root.fetch("cart", JoinType.INNER);
-      Fetch<GioHang, GioHangChiTiet> joinCartItems = joinCart.
-              fetch("cartItems", JoinType.LEFT);
-//      Fetch<GioHangChiTiet, ImeiChuaBan> joinImeiChuaBan = joinCartItems.fetch("imeis", JoinType.LEFT);
+      Fetch<GioHang, GioHangChiTiet> joinCartItems = joinCart.fetch("cartItems", JoinType.LEFT);
+      Fetch<GioHangChiTiet, ImeiChuaBan> joinImeisNotSold = joinCartItems.fetch("imeisChuaBan", JoinType.LEFT);
       Fetch<GioHangChiTiet, SanPhamChiTiet> joinProductDetails = joinCartItems.fetch("sanPhamChiTiet", JoinType.LEFT);
+
+      Fetch<SanPhamChiTiet, Ram> joinRam = joinProductDetails.fetch("ram", JoinType.LEFT);
+      Fetch<SanPhamChiTiet, Rom> joinRom = joinProductDetails.fetch("rom", JoinType.LEFT);
+      Fetch<SanPhamChiTiet, MauSac> joinColor = joinProductDetails.fetch("mauSac", JoinType.LEFT);
+      Fetch<SanPhamChiTiet, Image> joinImage = joinProductDetails.fetch("image", JoinType.LEFT);
+//      Fetch<SanPhamChiTiet, KhuyenMaiChiTiet> joinPromotions = joinProductDetails.fetch("promotions", JoinType.LEFT);
+      Fetch<SanPhamChiTiet, MauSac> joinImeis = joinProductDetails.fetch("imeis", JoinType.LEFT);
       Fetch<SanPhamChiTiet, SanPham> joinProduct = joinProductDetails.fetch("sanPham", JoinType.LEFT);
-      Fetch<SanPhamChiTiet, CauHinh> joinConfiguration = joinProductDetails.fetch("cauHinh", JoinType.LEFT);
-      Fetch<CauHinh, Ram> joinRam = joinConfiguration.fetch("ram", JoinType.LEFT);
-      Fetch<CauHinh, Rom> joinRom = joinConfiguration.fetch("rom", JoinType.LEFT);
-      Fetch<CauHinh, MauSac> joinMauSac = joinConfiguration.fetch("mauSac", JoinType.LEFT);
+
+      Fetch<SanPham, Chip> joinChip = joinProduct.fetch("chip", JoinType.LEFT);
+      Fetch<SanPham, Pin> joinPin = joinProduct.fetch("pin", JoinType.LEFT);
+      Fetch<SanPham, ManHinh> joinScreen = joinProduct.fetch("manHinh", JoinType.LEFT);
+      Fetch<ManHinh, DoPhanGiaiManHinh> joinScreenRelution = joinScreen.fetch("doPhanGiaiManHinh", JoinType.LEFT);
+      Fetch<SanPham, Hang> joinBrand = joinProduct.fetch("hang", JoinType.LEFT);
+      Fetch<SanPham, CongSac> joinChargingPort = joinProduct.fetch("congSac", JoinType.LEFT);
+      Fetch<SanPham, TheNho> joinMemoryCard = joinProduct.fetch("theNho", JoinType.LEFT);
+
+      Fetch<SanPham, TheSimDienThoai> joinSimCardPhone = joinProduct.fetch("theSims", JoinType.LEFT);
+      Fetch<TheSimDienThoai, TheSim> joinSimCard = joinSimCardPhone.fetch("theSim", JoinType.LEFT);
+      Fetch<SanPham, DanhMucDienThoai> joinCategoryPhone = joinProduct.fetch("danhMucs", JoinType.LEFT);
+      Fetch<DanhMucDienThoai, DanhMuc> joinCategory = joinCategoryPhone.fetch("danhMuc", JoinType.LEFT);
+      Fetch<SanPham, CameraTruocDienThoai> joinCameraFrontPhone = joinProduct.fetch("cameraTruocs", JoinType.LEFT);
+      Fetch<CameraTruocDienThoai, CameraTruoc> joinCameraFront = joinCameraFrontPhone.fetch("cameraTruoc", JoinType.LEFT);
+      Fetch<SanPham, CameraSauDienThoai> joinCameraRearPhone = joinProduct.fetch("cameraSaus", JoinType.LEFT);
+      Fetch<CameraSauDienThoai, CameraSau> joinCameraRear = joinCameraRearPhone.fetch("cameraSau", JoinType.LEFT);
+
+      Fetch<HoaDon, Account> joinAccount = root.fetch("account", JoinType.LEFT);
+      Fetch<HoaDon, Account> joinAccountEmployee = root.fetch("accountEmployee", JoinType.LEFT);
+      Fetch<Account, Role> joinRoleAccount = joinAccount.fetch("idRole", JoinType.LEFT);
+      Fetch<Account, Role> joinRoleAccountEmployee = joinAccountEmployee.fetch("idRole", JoinType.LEFT);
+      Fetch<Account, DiaChi> joinAddress = joinAccount.fetch("diaChiList", JoinType.LEFT);
+      Fetch<Account, DiaChi> joinAddressEmployee = joinAccountEmployee.fetch("diaChiList", JoinType.LEFT);
+
       root.fetch("paymentMethods", JoinType.LEFT);
       root.fetch("orderHistories", JoinType.LEFT);
-      root.fetch("account", JoinType.LEFT);
       root.fetch("voucher", JoinType.LEFT);
 
       Predicate condition = criteriaBuilder.equal(root.get("trangThai"), OrderStatus.PENDING_PAYMENT.ordinal());
@@ -251,29 +368,39 @@ public class OrderRepositoryImpl extends AbstractRepositoryImpl<HoaDon, String> 
     }
 
     if (state != null) {
-      predicates.add(criteriaBuilder.equal(root.get(fieldState), state));
-      countPredicates.add(criteriaBuilder.equal(countRoot.get(fieldState), state));
+      if (state == 10) {
+        Integer[] states = {0, 1, 2, 3, 4, 5, 7};
+        predicates.add(root.get(fieldState).in(states));
+        countPredicates.add(countRoot.get(fieldState).in(states));
+      } else if (state == 4) {
+        Integer[] states = {4, 7};
+        predicates.add(root.get(fieldState).in(states));
+        countPredicates.add(countRoot.get(fieldState).in(states));
+      } else {
+        predicates.add(criteriaBuilder.equal(root.get(fieldState), state));
+        countPredicates.add(criteriaBuilder.equal(countRoot.get(fieldState), state));
+      }
     }
 
     if (type != null) {
-      predicates.add(criteriaBuilder.equal(root.get(fieldType), type));
-      countPredicates.add(criteriaBuilder.equal(countRoot.get(fieldType), type));
-    }
-
-    if (isPending != null && isPending) {
-      state = 6;
-      predicates.add(criteriaBuilder.equal(root.get(fieldState), state));
-      countPredicates.add(criteriaBuilder.equal(countRoot.get(fieldState), state));
-    }
-
-    if (isPending != null && !isPending && state == null) {
-      Integer[] states = {0, 1, 2, 3, 4, 5, 7};
-      predicates.add(root.get(fieldState).in(states));
-      countPredicates.add(countRoot.get(fieldState).in(states));
+      if (type == 10) {
+        Integer[] types = {0, 1};
+        predicates.add(root.get(fieldType).in(types));
+        countPredicates.add(countRoot.get(fieldType).in(types));
+      } else {
+        predicates.add(criteriaBuilder.equal(root.get(fieldType), type));
+        countPredicates.add(criteriaBuilder.equal(countRoot.get(fieldType), type));
+      }
     }
 
     if (sortType != null) {
-      // Do something
+      if (sortType.equals("default")) {
+        criteriaQuery.orderBy(criteriaBuilder.desc(root.get(fieldDate)));
+      } else if (sortType.equals("desc")) {
+        criteriaQuery.orderBy(criteriaBuilder.asc(root.get(fieldDate)));
+      } else if (sortType.equals("asc")) {
+        criteriaQuery.orderBy(criteriaBuilder.desc(root.get(fieldDate)));
+      }
     }
 
     mapPredicates.put("predicates", predicates);

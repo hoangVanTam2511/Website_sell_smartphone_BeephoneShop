@@ -15,7 +15,9 @@ public class SearchOrderDto {
 
   private String soDienThoaiNguoiNhan;
 
-  private String diaChiNguoiNhan;
+  private String hoVaTen;
 
-  private BigDecimal tongTien;
+  private String soDienThoai;
+
+  private BigDecimal khachCanTra;
 }

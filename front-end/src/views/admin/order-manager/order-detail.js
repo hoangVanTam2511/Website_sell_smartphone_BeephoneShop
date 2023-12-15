@@ -176,8 +176,8 @@ const OrderDetail = (props) => {
       imei: imei,
     };
     try {
-      request('PUT',`/api/carts/order/scanner`, data
-      ).then((res) =>{
+      request('PUT', `/api/carts/order/scanner`, data
+      ).then((res) => {
 
       })
       await getOrderItemsById();
@@ -240,7 +240,7 @@ const OrderDetail = (props) => {
     setOpenModalImei(false);
   };
   const getAllProducts = async () => {
-    request('GET',`/api/products/product-items`)
+    request('GET', `/api/products/product-items`)
       .then((response) => {
         setProducts(response.data.data);
       })
@@ -304,7 +304,7 @@ const OrderDetail = (props) => {
       imeis: cartItems.imeis,
     };
     try {
-      request('PUT',`/api/carts/order`, data);
+      request('PUT', `/api/carts/order`, data);
       await getOrderItemsById();
       handleCloseOpenModalImei();
       handleCloseOpenProducts();
@@ -334,7 +334,7 @@ const OrderDetail = (props) => {
   const handleDeleteCartItemOrderById = async (id) => {
     setIsLoading(true);
     try {
-      request('DELETE',`/api/carts/order/${id}`);
+      request('DELETE', `/api/carts/order/${id}`);
       await getOrderItemsById();
       setIsLoading(false);
       handleOpenAlertVariant(
@@ -357,7 +357,7 @@ const OrderDetail = (props) => {
       },
     };
     try {
-      request('PUT',`/api/carts/order/amount`, request).then(
+      request('PUT', `/api/carts/order/amount`, request).then(
         (res) => {
 
         }
@@ -380,14 +380,14 @@ const OrderDetail = (props) => {
 
   const getOrderItemsById = async () => {
     setIsLoading(true);
-    request('GET',`/api/orders/${id}`)
+    request('GET', `/api/orders/${id}`)
       .then((response) => {
         const data = response.data.data;
         setOrder(data);
         const sortOrderHistories =
           data.orderHistories &&
           data.orderHistories.sort((a, b) => b.createdAt - a.createdAt);
-        setOrderHistories(sortOrderHistories);
+        setOrderHistories(data.orderHistories);
         const sortPayments =
           data.paymentMethods &&
           data.paymentMethods.sort(
@@ -458,10 +458,9 @@ const OrderDetail = (props) => {
     });
   });
 
-
   useEffect(() => {
     getOrderItemsById();
-    getAllProducts();
+    // getAllProducts();
     getCustomers();
     if (stompClient === null) {
       connect();
@@ -483,7 +482,7 @@ const OrderDetail = (props) => {
       tongTienString: totalString,
     };
     try {
-      request('PUT',`/api/carts/order/refund`, request).then(
+      request('PUT', `/api/carts/order/refund`, request).then(
         (res) => {
 
         }
@@ -524,7 +523,7 @@ const OrderDetail = (props) => {
   const updateStatusOrderDelivery = async (orderRequest) => {
     setIsLoading(true);
     try {
-      request('PUT',`/api/orders/${id}?isUpdateStatusOrderDelivery=true`, orderRequest)
+      request('PUT', `/api/orders/${id}?isUpdateStatusOrderDelivery=true`, orderRequest)
         .then((response) => {
           getOrderItemsById();
           var test = {
@@ -555,7 +554,7 @@ const OrderDetail = (props) => {
       createdByPayment: userId,
     };
     try {
-      request('PUT',`/api/vnpay/payment/delivery`, orderRequest)
+      request('PUT', `/api/vnpay/payment/delivery`, orderRequest)
         .then((response) => {
           const order = response.data.data;
           setOrder(order);
@@ -693,17 +692,17 @@ const OrderDetail = (props) => {
                 </>
               ) : item.loaiThaoTac == 9 ? (
                 <>
-                                <div className="d-flex"                       style={{ marginBottom: "5px" }}>
-                  <div className="" style={{ backgroundColor: "#ffd500", width: "40px", height: "35px", borderRadius: "5px", position: "relative" }}>
-                                    <div style={{position: "absolute", left: "9px", top: "4px"}}>
-                    <FaPencilAlt
-                      color="#ffffff"
-                      size={"22px"}
-                    />
-                                    </div>
+                  <div className="d-flex" style={{ marginBottom: "5px" }}>
+                    <div className="" style={{ backgroundColor: "#ffd500", width: "40px", height: "35px", borderRadius: "5px", position: "relative" }}>
+                      <div style={{ position: "absolute", left: "9px", top: "4px" }}>
+                        <FaPencilAlt
+                          color="#ffffff"
+                          size={"22px"}
+                        />
+                      </div>
+                    </div>
+                    <span style={{ marginTop: "5px" }} className="ms-4">{item.thaoTac}</span>
                   </div>
-                    <span style={{marginTop: "5px"}} className="ms-4">{item.thaoTac}</span>
-                                </div>
                 </>
               )
                 : (

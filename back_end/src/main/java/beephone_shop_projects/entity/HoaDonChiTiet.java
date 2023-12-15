@@ -16,6 +16,7 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Setter
@@ -36,7 +37,7 @@ public class HoaDonChiTiet extends PrimaryEntity implements Serializable {
   private Integer trangThai;
 
   @OneToMany(mappedBy = "hoaDonChiTiet")
-  private List<ImeiDaBan> imeisDaBan;
+  private Set<ImeiDaBan> imeisDaBan;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_chi_tiet_san_pham")

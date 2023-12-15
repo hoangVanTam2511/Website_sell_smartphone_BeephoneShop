@@ -85,7 +85,7 @@ import AppBarCode from "./App";
 import Html5QrcodePlugin from "./Html5QrcodePlugin";
 import { PrintBillAtTheCounter, PrintBillAtTheCounterAuto } from "./printer-invoice";
 import { useReactToPrint } from "react-to-print";
-import { request, requestBodyParam } from "../../../store/helpers/axios_helper";
+import { request, requestBodyParam, requestParam } from "../../../store/helpers/axios_helper";
 
 const IOSSwitch = styled((props) => (
   <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
@@ -272,7 +272,7 @@ const PointOfSales = () => {
       isUpdateEmail: true,
     };
     try {
-      request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=true`, orderRequest)
+      request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest)
         .then((response) => {
           const data = response.data.data;
           setOrder(data);
@@ -393,7 +393,7 @@ const PointOfSales = () => {
         isUpdateEmail: false,
       };
       try {
-        request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
+        await request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
         )
           .then((response) => {
             const data = response.data.data;
@@ -439,7 +439,7 @@ const PointOfSales = () => {
         isUpdateEmail: false,
       };
       try {
-        request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
+        await request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
         )
           .then((response) => {
             const data = response.data.data;
@@ -766,10 +766,58 @@ const PointOfSales = () => {
     } catch (error) { }
   };
 
+
+  // const getCustomerById = async (id) => {
+  //   setIsLoading(true);
+  //   if (id !== null) {
+  //     try {
+  //       const response = await request("GET", `/khach-hang/hien-thi-theo/${id}`);
+  //       const data = response.data;
+  //       await updateAccount(id);
+  //       console.log(data);
+  //       setCustomer(data);
+  //       setCustomerName(data.hoVaTen);
+  //       setCustomerPhone(data.soDienThoai);
+  //       setCustomerEmail(data.email);
+  //       setIdCustomer(data.id);
+  //       setCustomerAddressList(data.diaChiList);
+  //       setIsLoading(false);
+  //       handleCloseDialogCustomers();
+  //       handleOpenAlertVariant(
+  //         "Chọn khách hàng thành công!",
+  //         Notistack.SUCCESS
+  //       );
+  //     } catch (error) {
+  //       console.error(error);
+  //       setIsLoading(false);
+  //     }
+  //   }
+  //   else {
+  //     try {
+  //       await updateAccount(null);
+  //       setCustomer(null);
+  //       setCustomerName("");
+  //       setCustomerPhone("");
+  //       setCustomerEmail("");
+  //       setIdCustomer("");
+  //       setCustomerAddressList([]);
+  //       setIsLoading(false);
+  //       handleCloseDialogCustomers();
+  //       handleOpenAlertVariant(
+  //         "Bỏ chọn khách hàng thành công!",
+  //         Notistack.SUCCESS
+  //       );
+  //     } catch (error) {
+  //       console.error(error);
+  //       setIsLoading(false);
+  //     }
+  //   }
+  // };
+
   const getCustomerById = async (id) => {
     setIsLoading(true);
     if (id !== null) {
-      request("GET", `/khach-hang/hien-thi-theo/${id}`)
+      request("GET", `/khach-hang/${id}`)
         .then(async (response) => {
           const data = response.data;
           await updateAccount(id);
@@ -908,6 +956,7 @@ const PointOfSales = () => {
   const paymentOrder = async (data) => {
     setIsLoading(true);
     const orderRequest = {
+      ma: order.ma,
       tongTien: handleCountTotalMoney(),
       tienThua: paymentWhenReceive === true ? 0 : handleCountTotalSurplus(),
       tongTienSauKhiGiam: handleCountTotalMoney() - discountValue,
@@ -958,6 +1007,57 @@ const PointOfSales = () => {
     } catch (error) { }
   };
 
+  // const updateAccount = async (id) => {
+  //   return new Promise((resolve, reject) => {
+  //     const orderRequest = {
+  //       isUpdateType: false,
+  //       isPayment: false,
+  //       isUpdateInfoShip: false,
+  //       isUpdateAccount: true,
+  //       isUpdateVoucher: false,
+  //       isUpdateInfoShipByCustomer: false,
+  //       isUpdateNoteShip: false,
+  //       isUpdateNameShip: false,
+  //       isUpdateAddressShip: false,
+  //       isUpdatePhoneShip: false,
+  //       isUpdateSdt: false,
+  //       isUpdateFullName: false,
+  //       isUpdateEmail: false,
+  //       account: {
+  //         id: id,
+  //       },
+  //     };
+  //
+  //     try {
+  //       request(`PUT`, `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest)
+  //         .then((response) => {
+  //           const data = response.data.data;
+  //           console.log(data);
+  //           setOrder(data);
+  //
+  //           const account = data && data.account && data.account;
+  //           const listAddress = data.account && data.account.diaChiList && data.account.diaChiList;
+  //           const addressActive = listAddress && listAddress.find((item) => item.trangThai === 1);
+  //
+  //           if (account) {
+  //             updateInfoShipDefault(addressActive);
+  //           } else {
+  //             updateInfoShipDefault(null);
+  //           }
+  //
+  //           getAllOrdersPending();
+  //           resolve(); // hoặc resolve(data) nếu bạn muốn trả về dữ liệu từ hàm updateAccount
+  //         })
+  //         .catch((error) => {
+  //           console.log(error);
+  //           reject(error);
+  //         });
+  //     } catch (error) {
+  //       console.log(error);
+  //       reject(error);
+  //     }
+  //   });
+  // };
   const updateAccount = async (id) => {
     const orderRequest = {
       isUpdateType: false,
@@ -979,7 +1079,7 @@ const PointOfSales = () => {
     };
 
     try {
-      request(`PUT`, `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest).then((response) => {
+      await request(`PUT`, `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest).then(async (response) => {
         const data = response.data.data;
         console.log(data);
         setOrder(data);
@@ -989,10 +1089,10 @@ const PointOfSales = () => {
         const addressActive = listAddress && listAddress.find((item) => item.trangThai === 1);
 
         if (account) {
-          updateInfoShipDefault(addressActive);
+          /* await  */updateInfoShipDefault(addressActive);
         }
         else {
-          updateInfoShipDefault(null);
+          /* await  */updateInfoShipDefault(null);
         }
 
         getAllOrdersPending();
@@ -1107,7 +1207,7 @@ const PointOfSales = () => {
 
   const handleUpdateAmountCartItem = async (id, imeis) => {
     setIsLoading(true);
-    const request = {
+    const requestBody = {
       id: id,
       amount: imeis.length,
       imeis: imeis,
@@ -1116,26 +1216,49 @@ const PointOfSales = () => {
       },
     };
     try {
-      request("PUT", `/api/carts/amount`, request, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }).th;
-      await getAllOrdersPending();
-      await getCartItems();
-      handleCloseOpenModalUpdateImei();
-      handleOpenAlertVariant(
-        "Cập nhật số lượng thành công!",
-        Notistack.SUCCESS
-      );
-      setChangedCartItems(changedCartItems + 1);
-      setIsLoading(false);
+      await request("PUT", `/api/carts/amount`, requestBody).then(async (response) => {
+        await getAllOrdersPending();
+        await getCartItems();
+        handleCloseOpenModalUpdateImei();
+        handleOpenAlertVariant("Cập nhật số lượng thành công!", Notistack.SUCCESS);
+        setChangedCartItems(changedCartItems + 1);
+        setIsLoading(false);
+      });
     } catch (error) {
       setIsLoading(false);
       handleOpenAlertVariant(error.response.data.message, "warning");
-      console.error("Error");
+      console.error(error);
     }
   };
+  // const handleUpdateAmountCartItem = async (id, imeis) => {
+  //   setIsLoading(true);
+  //   const request = {
+  //     id: id,
+  //     amount: imeis.length,
+  //     imeis: imeis,
+  //     cart: {
+  //       id: cartId,
+  //     },
+  //   };
+  //   try {
+  //     request("PUT", `/api/carts/amount`, request
+  //     ).then(async (response) => {
+  //       await getAllOrdersPending();
+  //       await getCartItems();
+  //       handleCloseOpenModalUpdateImei();
+  //       handleOpenAlertVariant(
+  //         "Cập nhật số lượng thành công!",
+  //         Notistack.SUCCESS
+  //       );
+  //       setChangedCartItems(changedCartItems + 1);
+  //       setIsLoading(false);
+  //     })
+  //   } catch (error) {
+  //     setIsLoading(false);
+  //     handleOpenAlertVariant(error.response.data.message, "warning");
+  //     console.error("Error");
+  //   }
+  // };
 
   const userId = useSelector(state => state.user.user.id);
 
@@ -1502,11 +1625,7 @@ const PointOfSales = () => {
         code: order.ma,
       };
       try {
-        request("POST", `/api/vnpay/payment`, vnpayReq, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        })
+        request("POST", `/api/vnpay/payment`, vnpayReq)
           .then((response) => {
             setIsLoading(false);
             handleCloseOpenModalConfirmRedirectPayment();
@@ -1589,7 +1708,7 @@ const PointOfSales = () => {
   }, [cartItems, discountValue, shipFee]);
 
   const getCartItems = async () => {
-    request("GET", `/api/orders/pending/${order.id}`)
+    await request("GET", `/api/orders/pending/${order.id}`)
       .then((response) => {
         const data = response.data.data;
         setOrder(data);
@@ -1830,15 +1949,16 @@ const PointOfSales = () => {
   const handleDeleteCartItemById = async (id) => {
     setIsLoading(true);
     try {
-      request("DELETE", `/api/carts/${id}`);
-      await getCartItems();
-      await getAllOrdersPending();
-      setIsLoading(false);
-      setChangedCartItems(changedCartItems + 1);
-      handleOpenAlertVariant(
-        "Xóa thành công sản phẩm khỏi giỏ hàng!",
-        Notistack.SUCCESS
-      );
+      await request("DELETE", `/api/carts/${id}`).then(async (response) => {
+        await getCartItems();
+        await getAllOrdersPending();
+        setIsLoading(false);
+        setChangedCartItems(changedCartItems + 1);
+        handleOpenAlertVariant(
+          "Xóa thành công sản phẩm khỏi giỏ hàng!",
+          Notistack.SUCCESS
+        );
+      });
     } catch (error) {
       console.log(error);
     }
@@ -2009,11 +2129,9 @@ const PointOfSales = () => {
   const handleCheckVoucher = (value) => {
     setLoadingChild(true);
     setTimeout(() => {
-      request("GET", `/voucher/findVoucher`, {
-        params: {
-          input: value,
-          tongTien: handleCountTotalMoney(),
-        },
+      requestParam("GET", `/voucher/findVoucher`, {
+        input: value,
+        tongTien: handleCountTotalMoney(),
       })
         .then((response) => {
           setDiscountValidate("");
@@ -2031,7 +2149,7 @@ const PointOfSales = () => {
           setLoadingChild(false);
         })
         .catch((error) => {
-          console.error("Error");
+          console.error(error);
         });
     }, 1000);
   };
@@ -2267,20 +2385,21 @@ const PointOfSales = () => {
       imei: imei,
     };
     try {
-      request("PUT", `/api/carts/scanner`, data, {
+      await request("PUT", `/api/carts/scanner`, data, {
         headers: {
           "Content-Type": "application/json",
         },
+      }).then(async (response) => {
+        await getAllOrdersPending();
+        await getCartItems();
+        handleCloseOpenScanner();
+        handleOpenAlertVariant(
+          "Thêm vào giỏ hàng thành công ",
+          Notistack.SUCCESS
+        );
+        setIsLoading(false);
+        setIsOpen(false);
       });
-      await getAllOrdersPending();
-      await getCartItems();
-      handleCloseOpenScanner();
-      handleOpenAlertVariant(
-        "Thêm vào giỏ hàng thành công ",
-        Notistack.SUCCESS
-      );
-      setIsLoading(false);
-      setIsOpen(false);
     } catch (error) {
       handleOpenAlertVariant(error.response.data.message, "warning");
       handleCloseOpenScanner();
@@ -2305,7 +2424,7 @@ const PointOfSales = () => {
     };
     console.log(data);
     try {
-      request("PUT", `/api/carts`, data, {
+      await request("PUT", `/api/carts`, data, {
         headers: {
           "Content-Type": "application/json",
         },

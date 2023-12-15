@@ -4,6 +4,7 @@ import beephone_shop_projects.entity.base.IsIdentified;
 import beephone_shop_projects.entity.base.PrimaryEntity;
 import beephone_shop_projects.infrastructure.constant.StatusAccountCus;
 import beephone_shop_projects.infrastructure.constant.StatusDiscount;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,6 +14,7 @@ import lombok.Setter;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -47,11 +49,12 @@ public class Account extends PrimaryEntity implements IsIdentified {
     @Enumerated(EnumType.ORDINAL)
     private StatusAccountCus trangThai;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_role")
+    @JsonIgnore
     private Role idRole;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "account")
-    private List<DiaChi> diaChiList;
+    private Set<DiaChi> diaChiList;
 
 }

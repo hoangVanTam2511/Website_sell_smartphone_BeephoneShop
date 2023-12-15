@@ -67,19 +67,19 @@ const HienThiNV = () => {
   const loadDataListRole = (currentPage) => {
     request('GET',
         apiURLNV +
-          "/search-all?page=" +
-          currentPage +
-          "&tenKH=" +
-          searchText +
-          "&trangThai=" +
-          filterStatus
+        "/search-all?page=" +
+        currentPage +
+        "&tenKH=" +
+        searchText +
+        "&trangThai=" +
+        filterStatus
       )
       .then((response) => {
         console.log(response.data.data);
         setListNV(response.data.data);
         setTotalPages(response.data.totalPages);
       })
-      .catch(() => {});
+      .catch(() => { });
   };
 
   const handleFilter = (status) => {
@@ -135,7 +135,7 @@ const HienThiNV = () => {
       gioiTinh: record.gioiTinh,
       anhDaiDien: record.anhDaiDien,
     });
-    navigate(`/update-nhan-vien/${record.id}`);
+    navigate(`/dashboard/update-employee/${record.id}`);
     setEditingKey(record.id);
   };
   const doChangeTrangThai = (id) => {
@@ -275,15 +275,13 @@ const HienThiNV = () => {
               />
             </Tooltip>
             <Popconfirm
-              title={`Đổi trạng thái tài khoản từ ${
-                record.trangThai === StatusAccountCus.LAM_VIEC
+              title={`Đổi trạng thái tài khoản từ ${record.trangThai === StatusAccountCus.LAM_VIEC
                   ? `"Làm việc"`
                   : `"Đã nghỉ"`
-              } sang ${
-                record.trangThai === StatusAccountCus.LAM_VIEC
+                } sang ${record.trangThai === StatusAccountCus.LAM_VIEC
                   ? `"Đã nghỉ"`
                   : `"Làm việc"`
-              } `}
+                } `}
               onConfirm={() => {
                 doChangeTrangThai(record.id);
               }}
@@ -431,7 +429,7 @@ const HienThiNV = () => {
                       </SelectMui>
                     </FormControl>
                   </div>
-                  <Link to="/them-nhan-vien" className="me-3">
+                  <Link to="/dashboard/create-employee" className="me-3">
                     <Button
                       // onClick={handleCreateNewOrderPending}
                       className="rounded-2 button-mui"

@@ -31,7 +31,7 @@ public class DiaChi extends PrimaryEntity implements IsIdentified {
     private Integer trangThai;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_account")
     private Account account;
 }

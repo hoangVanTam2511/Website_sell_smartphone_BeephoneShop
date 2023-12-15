@@ -51,7 +51,7 @@ const LoginPage = () => {
     request("POST", "/client/account/login", userLogin)
     .then(res => {
       if (res.status === 200) {
-        console.log(res.data)
+        console.log(res.data.token)
         setAuthHeader(res.data.token)
         dispatch(changeInformationUser(res.data))
           if (res.data.idRole === 'role2') {
