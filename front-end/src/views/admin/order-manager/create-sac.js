@@ -168,6 +168,22 @@ const CreateSac = ({ open, close, getAll, sacs }) => {
                 </div>
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
+                    onClick={() => {
+                      close();
+                      handleReset();
+                    }}
+                    className="rounded-2 me-2 button-mui"
+                    type="error"
+                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                  >
+                    <span
+                      className=""
+                      style={{ marginBottom: "2px", fontWeight: "500" }}
+                    >
+                      Hủy
+                    </span>
+                  </Button>
+                  <Button
                     onClick={() => handleSubmit()}
                     className="rounded-2 button-mui"
                     type="primary"

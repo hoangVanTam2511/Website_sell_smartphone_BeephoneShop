@@ -1,6 +1,5 @@
 package beephone_shop_projects.core.admin.transaction_management.model.response;
 
-import beephone_shop_projects.entity.HoaDon;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.math.BigDecimal;
@@ -35,7 +34,7 @@ public interface TransactionResponse {
     @Value("#{target.ngayTao}")
     Date getNgayTao();
 
-    @Value("#{target.nguoiXacNhan}")
-    String getNguoiXacNhan();
+    @Value("#{target.idNhanVien}")
+    String getIdNhanVien();
 
 }

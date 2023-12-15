@@ -633,7 +633,7 @@ const AddKhuyenMai = () => {
               className="title-promotion ms-3"
               style={{ paddingBottom: "2px", paddingLeft: "10px" }}
             >
-              Thêm Giảm Giá
+              Thêm Đợt Giảm Giá
             </h5>
             <div className="ms-3 mb-3 mt-2">
               <div className="input-container">

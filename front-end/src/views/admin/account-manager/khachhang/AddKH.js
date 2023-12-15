@@ -151,7 +151,7 @@ const AddKH = () => {
     }
   };
   const redirectToHienThiKH = (generatedMaKhachHang) => {
-    navigate("/update-khach-hang/" + generatedMaKhachHang);
+    navigate("/dashboard/update-customer/" + generatedMaKhachHang);
   };
   const handleAddressChange = (result) => {
     setDiaChi(result);

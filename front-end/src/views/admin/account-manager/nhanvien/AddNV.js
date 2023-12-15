@@ -158,7 +158,7 @@ const AddNV = () => {
     setAnhDaiDien(imageURL);
   };
   const redirectToHienThiKH = (generatedMaKhachHang) => {
-    navigate("/update-nhan-vien/" + generatedMaKhachHang);
+    navigate("/dashboard/update-employee/" + generatedMaKhachHang);
   };
   const showConfirm = () => {
     setIsConfirmVisible(true);

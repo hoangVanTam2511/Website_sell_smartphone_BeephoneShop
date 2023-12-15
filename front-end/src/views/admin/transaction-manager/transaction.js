@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useForm } from "antd/es/form/Form";
 import "./style.css";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
@@ -38,6 +38,7 @@ const Transaction = () => {
   const [searchNgayBatDau, setSearchNgayBatDau] = useState(null);
   const [searchNgayKetThuc, setSearchNgayKetThuc] = useState(null);
   const [openSelect2, setOpenSelect2] = useState(false);
+  const [idNhanVien, setIdNhanVien] = useState("");
 
   const loadDataListTransaction = (page) => {
     const requestParams = {
@@ -173,6 +174,8 @@ const Transaction = () => {
     setCurrentPage(page);
     loadDataListTransaction(page);
   };
+
+  const navigate = useNavigate();
 
   const columns = [
     {
@@ -370,9 +373,15 @@ const Transaction = () => {
       width: "10%",
       align: "center",
       render: (text, record) => (
-        <a>
-          <span className="gach-chan">{record.nguoiXacNhan}</span>
-        </a>
+        <span
+          className="underline-custom"
+          style={{ cursor: "pointer" }}
+          onClick={() => {
+            navigate(`/dashboard/update-employee/${record.idNhanVien}`);
+          }}
+        >
+          {record.nguoiXacNhan}
+        </span>
       ),
     },
   ];
