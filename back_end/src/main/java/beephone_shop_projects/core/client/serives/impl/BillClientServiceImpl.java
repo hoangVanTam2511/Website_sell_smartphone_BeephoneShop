@@ -127,10 +127,6 @@ public class BillClientServiceImpl {
     }
 
     public String createBillDetail(BillDetailClientRequest bd) throws Exception {
-        if(!bd.getIdKhachHang().isEmpty()){
-            GioHang gioHang = cartClientRepository.getGioHangByIDKhachHang(bd.getIdKhachHang());
-            cartDetailClientRepository.deleteCartDetailByIdGioHangAndIdCTSP(gioHang.getId(), bd.getIdSanPhamChiTiet());
-        }
 
         HoaDon bill = billClientRepository.findById(bd.getIdHoaDon()).get();
         HoaDonChiTiet orderItem = new HoaDonChiTiet();
