@@ -78,6 +78,7 @@ const CreateChip = ({ open, close, getAll, chips }) => {
   const handleReset = (event) => {
     setStatus(StatusCommonProductsNumber.ACTIVE);
     setTenChip("");
+    setValidationMsg({});
   };
 
   const handleChangeStatus = (event) => {

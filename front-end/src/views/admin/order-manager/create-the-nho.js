@@ -98,6 +98,7 @@ const CreateTheNho = ({ open, close, getAll, theNhos }) => {
     setStatus(StatusCommonProductsNumber.ACTIVE);
     setLoaiTheNho("");
     setDungLuongToiDa("");
+    setValidationMsg({});
   };
 
   const handleChangeStatus = (event) => {

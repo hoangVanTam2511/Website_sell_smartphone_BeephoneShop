@@ -109,6 +109,7 @@ const CreateCameraTruoc = ({ open, close, getAll, cameraFront }) => {
     setStatus(StatusCommonProductsNumber.ACTIVE);
     setDoPhanGiai("");
     setCameraType("");
+    setValidationMsg({});
   };
 
   const uniqueDoPhanGiai = cameraFront

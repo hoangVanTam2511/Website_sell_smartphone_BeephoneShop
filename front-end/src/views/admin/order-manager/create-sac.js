@@ -40,6 +40,7 @@ const CreateSac = ({ open, close, getAll, sacs }) => {
   const handleReset = (event) => {
     setStatus(StatusCommonProductsNumber.ACTIVE);
     setLoaiCongSac("");
+    setValidationMsg({});
   };
 
   const [validationMsg, setValidationMsg] = useState({});

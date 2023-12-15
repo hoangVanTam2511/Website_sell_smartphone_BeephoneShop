@@ -59,6 +59,7 @@ const CreatePin = ({ open, close, getAll, pins }) => {
     setStatus(StatusCommonProductsNumber.ACTIVE);
     setLoaiPin("");
     setDungLuong("");
+    setValidationMsg({});
   };
 
   const [validationMsg, setValidationMsg] = useState({});

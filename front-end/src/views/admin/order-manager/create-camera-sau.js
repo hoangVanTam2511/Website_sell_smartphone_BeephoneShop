@@ -110,6 +110,7 @@ const CreateCameraSau = ({ open, close, getAll, cameraRear }) => {
     setStatus(StatusCommonProductsNumber.ACTIVE);
     setDoPhanGiai("");
     setCameraType(TypeCameraNumber.STANDARD_CAMERA);
+    setValidationMsg({});
   };
 
   const uniqueDoPhanGiai = cameraRear

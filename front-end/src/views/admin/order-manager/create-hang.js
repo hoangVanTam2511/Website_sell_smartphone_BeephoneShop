@@ -78,6 +78,7 @@ const CreateHang = ({ open, close, getAll, hangs }) => {
   const handleReset = (event) => {
     setStatus(StatusCommonProductsNumber.ACTIVE);
     setTenHang("");
+    setValidationMsg({});
   };
 
   const handleChangeStatus = (event) => {

@@ -84,6 +84,7 @@ const CreateMauSac = ({ open, close, getAll, colors }) => {
   const handleReset = () => {
     setStatus(StatusCommonProductsNumber.ACTIVE);
     setColorName("");
+    setValidationMsg({});
   };
 
   const uniqueTenMauSac = colors

@@ -46,6 +46,7 @@ const CreateRam = ({ open, close, getAll, rams }) => {
   const handleReset = (event) => {
     setStatus(StatusCommonProductsNumber.ACTIVE);
     setKichThuoc("");
+    setValidationMsg({});
   };
 
   const [validationMsg, setValidationMsg] = useState({});

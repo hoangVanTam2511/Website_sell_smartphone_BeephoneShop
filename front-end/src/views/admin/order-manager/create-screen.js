@@ -93,12 +93,14 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
   const handleReset = () => {
     setChieuDai("");
     setChieuRong("");
+    setValidationMsg({});
   };
   const handleReset1 = () => {
     setLoaiManHinh("");
     setDoPhanGiai("");
     setTanSoQuet("");
     setKichThuoc("");
+    setValidationMsg({});
   };
 
   const [validationMsg, setValidationMsg] = useState({});

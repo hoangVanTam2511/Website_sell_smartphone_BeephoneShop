@@ -139,6 +139,7 @@ const CreateSimCard = ({ open, close, getAll, sims }) => {
     setLoaiTheSim("");
     setCheckedSingleSim(true);
     setCheckedDualSim(false);
+    setValidationMsg({});
   };
   return (
     <>

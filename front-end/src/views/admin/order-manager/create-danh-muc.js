@@ -80,6 +80,7 @@ const CreateDanhMuc = ({ open, close, getAll, danhMucs }) => {
   const handleReset = (event) => {
     setStatus(StatusCommonProductsNumber.ACTIVE);
     setTenDanhMuc("");
+    setValidationMsg({});
   };
 
   const handleChangeStatus = (event) => {

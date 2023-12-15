@@ -47,6 +47,7 @@ const CreateRom = ({ open, close, getAll, roms }) => {
   const handleReset = (event) => {
     setStatus(StatusCommonProductsNumber.ACTIVE);
     setKichThuoc("");
+    setValidationMsg({});
   };
 
   const [validationMsg, setValidationMsg] = useState({});
