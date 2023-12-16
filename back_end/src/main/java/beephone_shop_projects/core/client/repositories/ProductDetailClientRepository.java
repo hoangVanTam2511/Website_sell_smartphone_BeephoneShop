@@ -59,7 +59,10 @@ public interface ProductDetailClientRepository extends ISanPhamChiTietRepository
              SELECT sp.ten_san_pham,
              chip.ten_chip,
              hang.ten_hang, mh.loai_man_hinh, mh.kich_thuoc AS kich_thuoc_man_hinh,
-             sac.loai_cong_sac, tn.loai_the_nho, pin.dung_luong as dung_luong_pin
+             sac.loai_cong_sac, tn.loai_the_nho, pin.dung_luong as dung_luong_pin,
+             mh.tan_so_quet AS tan_so_quet,
+             dpmh.chieu_dai, dpmh.chieu_rong,
+             sp.operating_type as he_dieu_hanh
              FROM san_pham AS sp
              LEFT JOIN chip ON chip.id = sp.id_chip
              LEFT JOIN hang ON hang.id = sp.id_hang
@@ -67,6 +70,7 @@ public interface ProductDetailClientRepository extends ISanPhamChiTietRepository
              LEFT JOIN sac ON sac.id = sp.id_sac
              LEFT JOIN the_nho AS tn ON tn.id = sp.id_the_nho
              LEFT JOIN pin ON pin.id = sp.id_pin
+             LEFT JOIN do_phan_giai_man_hinh dpmh ON dpmh.id = mh.id_do_phan_giai_man_hinh
              WHERE sp.id = :id_product
             """, nativeQuery = true)
     ProductResponce getProductByIdProduct(@Param("id_product") String id_product);
@@ -154,4 +158,20 @@ public interface ProductDetailClientRepository extends ISanPhamChiTietRepository
          WHERE sp.id  = :id_product
         """, nativeQuery = true)
     ArrayList<ImageResponce> getImagesByIDProductDetails(@Param("id_product") String idProduct);
+
+    @Query(value = """
+            SELECT ct.do_phan_giai, ctdt.is_camera_main from san_pham sp
+            JOIN camera_truoc_dien_thoai ctdt ON ctdt.id_san_pham = sp.id
+            JOIN camera_truoc ct ON ct.id = ctdt.id_camera_truoc
+            WHERE sp.id = :id_san_pham
+    """, nativeQuery = true)
+    ArrayList<CameraRearResponce> getCameraTruocByIDSanPham(@Param("id_san_pham") String idSanPham);
+
+    @Query(value = """
+            SELECT ct.do_phan_giai, ctdt.is_camera_main from san_pham sp
+            JOIN camera_sau_dien_thoai ctdt ON ctdt.id_san_pham = sp.id
+            JOIN camera_sau ct ON ct.id = ctdt.id_camera_sau
+            WHERE sp.id = :id_san_pham
+    """, nativeQuery = true)
+    ArrayList<CameraRearResponce> getCameraSauByIDSanPham(@Param("id_san_pham") String idSanPham);
 }

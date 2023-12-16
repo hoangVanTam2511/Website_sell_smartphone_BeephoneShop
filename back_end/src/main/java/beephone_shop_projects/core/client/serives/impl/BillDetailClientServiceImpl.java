@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.client.serives.impl;
 
+import beephone_shop_projects.core.client.models.response.ProductDetailFillterResponce;
 import beephone_shop_projects.core.client.models.response.ProductOfBillDetail;
 import beephone_shop_projects.core.client.repositories.BillDetailClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,5 +16,9 @@ public class BillDetailClientServiceImpl {
 
     public ArrayList<ProductOfBillDetail> getListProductOfDetailByIDBill(String idBill){
         return billDetailClientRepository.getProductOfDetailsByIDBill(idBill);
+    }
+
+    public ArrayList<ProductDetailFillterResponce> getAllProductDetailFillterResponce(){
+        return billDetailClientRepository.getAllProductDetailFillterResponce();
     }
 }

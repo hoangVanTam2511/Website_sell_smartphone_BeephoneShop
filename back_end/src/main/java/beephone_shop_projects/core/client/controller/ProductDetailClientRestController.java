@@ -1,6 +1,7 @@
 package beephone_shop_projects.core.client.controller;
 
 import beephone_shop_projects.core.client.models.request.SearchProductDetailClient;
+import beephone_shop_projects.core.client.serives.impl.BillDetailClientServiceImpl;
 import beephone_shop_projects.core.client.serives.impl.ProductDetailClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,9 @@ public class ProductDetailClientRestController {
 
     @Autowired
     private ProductDetailClientService productDetailService;
+
+    @Autowired
+    private BillDetailClientServiceImpl billDetailService;
 
     @GetMapping("/get-list-products")
     public ResponseEntity<?> getListProductDetails() {
@@ -71,7 +75,7 @@ public class ProductDetailClientRestController {
     @GetMapping("/get-product-detail")
     public ResponseEntity<?> getProductDetail(){
         try{
-            return new ResponseEntity<>(productDetailService.getListProductDetail(), HttpStatus.OK);
+            return new ResponseEntity<>(billDetailService.getAllProductDetailFillterResponce(), HttpStatus.OK);
         }catch (Exception ex){
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
@@ -81,6 +85,24 @@ public class ProductDetailClientRestController {
     public ResponseEntity<?> getImages(@PathVariable("id") String idProduct){
         try{
             return new ResponseEntity<>(productDetailService.getImagesByIDProductDetail(idProduct), HttpStatus.OK);
+        }catch (Exception ex){
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/camera-rear")
+    public ResponseEntity<?> getCameraRears(@RequestParam("id") String id){
+        try{
+         return new ResponseEntity<>(productDetailService.getCameraSauByIDSanPham(id), HttpStatus.OK);
+        }catch (Exception ex){
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/camera-front")
+    public ResponseEntity<?> getCameraFronts(@RequestParam("id") String id){
+        try{
+            return new ResponseEntity<>(productDetailService.getCameraTruocByIDSanPham(id), HttpStatus.OK);
         }catch (Exception ex){
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }

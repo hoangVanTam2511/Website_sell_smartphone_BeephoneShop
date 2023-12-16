@@ -47,18 +47,15 @@ import java.util.UUID;
 @RequestMapping("/khach-hang/")
 @CrossOrigin(origins = "*")
 public class KhachHangRestcontroller {
-    @Autowired
-    private KhachHangServiceImpl accService;
 
-    @Autowired
-    private DiaChiServiceImpl diaChiService;
-  @Autowired
-  private KhachHangServiceImpl accService;
-  @Autowired
-  private DiaChiServiceImpl diaChiService;
+@Autowired
+private KhachHangServiceImpl accService;
 
-  @Autowired
-  private CustomKhachHangRepositoryImpl customKhachHangRepository;
+@Autowired
+private DiaChiServiceImpl diaChiService;
+
+@Autowired
+private CustomKhachHangRepositoryImpl customKhachHangRepository;
 
   @GetMapping("hien-thi-custom")
   public ResponsePage hienThiCustom(@ModelAttribute FindAccountRequest request) {
@@ -81,10 +78,6 @@ public class KhachHangRestcontroller {
   public ResponseObject<Account> add(@RequestBody AddKhachHangRequest request) {
     return new ResponseObject(accService.addKH(request));
   }
-    @PostMapping("add")
-    public ResponseObject<Account> add(@RequestBody AddKhachHangRequest request) {
-        return new ResponseObject(accService.addKH(request));
-    }
 
   @PutMapping("update/{id}")
   public ResponseObject<Account> update(@RequestBody CreateKhachHangRequest request, @PathVariable("id") String id) {
@@ -93,11 +86,6 @@ public class KhachHangRestcontroller {
     @PostMapping("/add-with-excel")
     public ResponseObject<Account> add(@RequestBody AddKhachHangExcelRequest request) {
         return new ResponseObject(accService.addKHByImportExcel(request));
-    }
-
-    @PutMapping("update/{id}")
-    public ResponseObject<Account> update(@RequestBody CreateKhachHangRequest request, @PathVariable("id") String id) {
-        return new ResponseObject(accService.updateKH(request, id));
     }
 
   @PutMapping("{id}/doi-tt")
