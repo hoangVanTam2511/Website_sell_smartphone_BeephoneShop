@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -127,10 +128,6 @@ public class BillClientServiceImpl {
     }
 
     public String createBillDetail(BillDetailClientRequest bd) throws Exception {
-        if(!bd.getIdKhachHang().isEmpty()){
-            GioHang gioHang = cartClientRepository.getGioHangByIDKhachHang(bd.getIdKhachHang());
-            cartDetailClientRepository.deleteCartDetailByIdGioHangAndIdCTSP(gioHang.getId(), bd.getIdSanPhamChiTiet());
-        }
 
         HoaDon bill = billClientRepository.findById(bd.getIdHoaDon()).get();
         HoaDonChiTiet orderItem = new HoaDonChiTiet();
@@ -163,7 +160,7 @@ public class BillClientServiceImpl {
                 billClientResponce.setTenMauSac(productOfBillDetails.get(0).getTenMauSac());
                 billClientResponce.setTenSanPham(productOfBillDetails.get(0).getTenSanPham());
                 billClientResponce.setTrangThai(String.valueOf(hoaDon.getTrangThai()));
-                billClientResponce.setTongTienSauKhiGiam(hoaDon.getTongTienSauKhiGiam());
+                billClientResponce.setTongTienSauKhiGiam(BigDecimal.valueOf(hoaDon.getTongTienSauKhiGiam().doubleValue() + hoaDon.getPhiShip().doubleValue()));
                 billClientResponces.add(billClientResponce);
             }
         }

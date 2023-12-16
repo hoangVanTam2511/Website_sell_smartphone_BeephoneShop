@@ -47,14 +47,15 @@ import java.util.UUID;
 @RequestMapping("/khach-hang/")
 @CrossOrigin(origins = "*")
 public class KhachHangRestcontroller {
-    @Autowired
-    private KhachHangServiceImpl accService;
 
-    @Autowired
-    private DiaChiServiceImpl diaChiService;
+@Autowired
+private KhachHangServiceImpl accService;
 
-    @Autowired
-    private CustomKhachHangRepositoryImpl customKhachHangRepository;
+@Autowired
+private DiaChiServiceImpl diaChiService;
+
+@Autowired
+private CustomKhachHangRepositoryImpl customKhachHangRepository;
 
     @GetMapping("hien-thi-custom")
     public ResponsePage hienThiCustom(@ModelAttribute FindAccountRequest request) {

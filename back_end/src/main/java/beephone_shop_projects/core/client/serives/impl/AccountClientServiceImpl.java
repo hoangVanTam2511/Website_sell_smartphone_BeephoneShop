@@ -58,6 +58,7 @@ public class AccountClientServiceImpl{
                     .soDienThoai(kh.getSoDienThoai())
                     .idRole(kh.getIdRole().getMa())
                     .tenChucVu(kh.getIdRole().getTen())
+                    .gioiTinh(kh.getGioiTinh())
                     .build();
             return dto;
         }else{

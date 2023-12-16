@@ -28,4 +28,15 @@ public interface ProductResponce {
     @Value("#{target.dung_luong_pin}")
     String getDungLuongPin();
 
+    @Value("#{target.tan_so_quet}")
+    Integer getTanSoQuet();
+
+    @Value("#{target.chieu_dai}")
+    Integer getChieuDai();
+
+    @Value("#{target.chieu_rong}")
+    Integer getChieuRong();
+
+    @Value("#{target.he_dieu_hanh}")
+    Integer getHeDieuHanh();
 }

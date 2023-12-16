@@ -68,6 +68,29 @@ public interface CartDetailClientRepository extends IGioHangChiTietRepository {
         """, nativeQuery = true)
     ArrayList<CartDetailResponce> getCartDetails(@Param("id_khach_hang")String idKhachHang);
 
+    @Query(value = """
+            SELECT ghct.id AS id_gio_hang_chi_tiet, spct.id AS id_san_pham_chi_tiet, 
+            spct.so_luong_ton_kho, spct.don_gia, ms.ten_mau_sac,
+            sp.ten_san_pham,
+            ram.dung_luong AS dung_luong_ram,
+            rom.dung_luong AS dung_luong_rom,   
+            ghct.so_luong AS so_luong_sap_mua,
+            image.path AS duong_dan,
+            IF(kmct.don_gia_sau_khuyen_mai is null ,0, kmct.don_gia_sau_khuyen_mai) AS don_gia_sau_khuyen_mai
+            FROM gio_hang_chi_tiet ghct
+            JOIN gio_hang gh ON gh.id = ghct.id_gio_hang
+            JOIN san_pham_chi_tiet spct ON spct.id = ghct.id_chi_tiet_san_pham
+            LEFT JOIN image ON image.id = spct.id_image
+            JOIN san_pham sp ON sp.id = spct.id_san_pham
+            LEFT JOIN khuyen_mai_chi_tiet kmct ON kmct.id_chi_tiet_san_pham = spct.id
+            JOIN mau_sac ms ON ms.id = spct.id_mau_sac
+            JOIN ram ON ram.id = spct.id_ram
+            JOIN rom ON rom.id = spct.id_rom
+            WHERE ghct.id = :id_product_detail
+        """, nativeQuery = true)
+    CartDetailResponce getCartDetailByID(@Param("id_product_detail")String idProductDetail);
+
+
     @Modifying
     @Query(value = """
         delete from gio_hang_chi_tiet where id_gio_hang = :id_gio_hang and id_chi_tiet_san_pham = :id_chi_tiet_san_pham

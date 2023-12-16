@@ -41,4 +41,6 @@ public class AccountDto {
 
     private String tenChucVu;
 
+    private Boolean gioiTinh;
+
 }

@@ -28,7 +28,7 @@ public class CartDetailServiceImpl {
     @Autowired
     private AccountClientRepository accountClientRepository;
 
-    public GioHangChiTiet setCartWithIdProductDetailAndIdCustomer(String idCustomer, String idProductDetail, String type) {
+    public CartDetailResponce setCartWithIdProductDetailAndIdCustomer(String idCustomer, String idProductDetail, String type) {
         GioHang gioHang = cartClientRepository.getGioHangByIDKhachHang(idCustomer);
         SanPhamChiTiet sanPhamChiTiet = productDetailClientRepository.findById(idProductDetail).orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm"));
 
@@ -47,14 +47,16 @@ public class CartDetailServiceImpl {
                     throw new RuntimeException("Không thể bán vượt quá số lượng cho phép");
                 }
                 gioHangChiTiet.setSoLuong(gioHangChiTiet.getSoLuong() + 1);
-                return cartDetailClientRepository.save(gioHangChiTiet);
+                GioHangChiTiet temp = cartDetailClientRepository.save(gioHangChiTiet);
+                return getCartDetailByID(temp.getId());
             }else{
                 if(gioHangChiTiet.getSoLuong()  == 0){
                     cartDetailClientRepository.delete(gioHangChiTiet);
                     throw new RuntimeException("Số lượng sản phẩm đã hết");
                 }
                 gioHangChiTiet.setSoLuong(gioHangChiTiet.getSoLuong() - 1);
-                return cartDetailClientRepository.save(gioHangChiTiet);
+                GioHangChiTiet temp = cartDetailClientRepository.save(gioHangChiTiet);
+                return getCartDetailByID(temp.getId());
             }
         } else {
             GioHangChiTiet cartDetail = new GioHangChiTiet();
@@ -62,7 +64,8 @@ public class CartDetailServiceImpl {
             cartDetail.setDonGia(sanPhamChiTiet.getDonGia());
             cartDetail.setSanPhamChiTiet(sanPhamChiTiet);
             cartDetail.setGioHang(gioHang);
-            return cartDetailClientRepository.save(cartDetail);
+            GioHangChiTiet temp = cartDetailClientRepository.save(cartDetail);
+            return getCartDetailByID(temp.getId());
         }
     }
 
@@ -77,6 +80,10 @@ public class CartDetailServiceImpl {
 
     public ArrayList<CartDetailResponce> getCartDetails(String idCustomer){
         return cartDetailClientRepository.getCartDetails(idCustomer);
+    }
+
+    public CartDetailResponce getCartDetailByID(String id){
+        return cartDetailClientRepository.getCartDetailByID(id);
     }
 
     public String deleteCartDetail(String id){

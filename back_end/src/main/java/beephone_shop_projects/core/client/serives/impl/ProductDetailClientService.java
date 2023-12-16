@@ -111,4 +111,12 @@ public class ProductDetailClientService {
         }
         return false;
     }
+
+    public ArrayList<CameraRearResponce> getCameraTruocByIDSanPham(String idSanPham) {
+        return productDetailClientRepository.getCameraTruocByIDSanPham(idSanPham);
+    }
+
+    public ArrayList<CameraRearResponce> getCameraSauByIDSanPham(String idSanPham) {
+        return productDetailClientRepository.getCameraSauByIDSanPham(idSanPham);
+    }
 }
