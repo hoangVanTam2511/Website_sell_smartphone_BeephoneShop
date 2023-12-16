@@ -24,10 +24,10 @@ public class TransactionRequest {
 
     private Integer trangThai;
 
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
+    @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     private Date ngayBatDau;
 
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
+    @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     private Date ngayKetThuc;
 
 }

@@ -42,8 +42,13 @@ const ThongKeDoanhThu = () => {
   const [searchMonth, setSearchMonth] = useState();
   const [searchYear, setSearchYear] = useState(dayjs());
   const currentYear = new Date().getFullYear();
+
   const [searchNgayBatDau, setSearchNgayBatDau] = useState("");
   const [searchNgayKetThuc, setSearchNgayKetThuc] = useState("");
+
+  const [searchNgayBatDau1, setSearchNgayBatDau1] = useState("");
+  const [searchNgayKetThuc1, setSearchNgayKetThuc1] = useState("");
+
   const [tocDoTangTruong, setTocDoTangTruong] = useState([]);
   const [activeButton, setActiveButton] = useState("thang");
   const [activeButton1, setActiveButton1] = useState("thang");
@@ -285,6 +290,14 @@ const ThongKeDoanhThu = () => {
 
   const handleSearchNgayKetThucChange = (date) => {
     setSearchNgayKetThuc(dayjs(date).format("DD/MM/YYYY"));
+  };
+
+  const handleSearchNgayBatDauChange1 = (date) => {
+    setSearchNgayBatDau1(dayjs(date).format("DD/MM/YYYY"));
+  };
+
+  const handleSearchNgayKetThucChange1 = (date) => {
+    setSearchNgayKetThuc1(dayjs(date).format("DD/MM/YYYY"));
   };
   //thống kê trạng thái đơn hàng
   const chartContainer = useRef(null);
@@ -552,28 +565,12 @@ const ThongKeDoanhThu = () => {
 
   const [openSelect, setOpenSelect] = useState(false);
 
-  const handleCloseSelect = () => {
-    setOpenSelect(false);
-  };
-
-  const handleOpenSelect = () => {
-    setOpenSelect(true);
-  };
-
   const handleSearchLoaiBoLoc = (loaiBoLoc) => {
     setLoaiBoLoc(loaiBoLoc);
     setActiveButton(loaiBoLoc);
   };
 
   const [openSelect1, setOpenSelect1] = useState(false);
-
-  const handleCloseSelect1 = () => {
-    setOpenSelect1(false);
-  };
-
-  const handleOpenSelect1 = () => {
-    setOpenSelect1(true);
-  };
 
   const handleSearchLoaiBoLoc1 = (loaiBoLocTDTT) => {
     setLoaiBoLocTDTT(loaiBoLocTDTT);
@@ -823,12 +820,12 @@ const ThongKeDoanhThu = () => {
                           <DatePicker
                             label="Ngày Bắt Đầu"
                             value={
-                              searchNgayBatDau
-                                ? dayjs(searchNgayBatDau, "DD/MM/YYYY")
+                              searchNgayBatDau1
+                                ? dayjs(searchNgayBatDau1, "DD/MM/YYYY")
                                 : null
                             }
                             format="DD/MM/YYYY"
-                            onChange={handleSearchNgayBatDauChange}
+                            onChange={handleSearchNgayBatDauChange1}
                             slotProps={{ textField: { size: "small" } }}
                             sx={{
                               position: "relative",
@@ -845,12 +842,12 @@ const ThongKeDoanhThu = () => {
                           <DatePicker
                             label="Ngày Kết Thúc"
                             value={
-                              searchNgayKetThuc
-                                ? dayjs(searchNgayKetThuc, "DD/MM/YYYY")
+                              searchNgayKetThuc1
+                                ? dayjs(searchNgayKetThuc1, "DD/MM/YYYY")
                                 : null
                             }
                             format="DD/MM/YYYY"
-                            onChange={handleSearchNgayKetThucChange}
+                            onChange={handleSearchNgayKetThucChange1}
                             slotProps={{ textField: { size: "small" } }}
                             sx={{
                               position: "relative",

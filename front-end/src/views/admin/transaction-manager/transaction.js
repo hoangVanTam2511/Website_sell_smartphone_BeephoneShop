@@ -21,7 +21,7 @@ import * as dayjs from "dayjs";
 import { Notistack } from "../order-manager/enum";
 import axios from "axios";
 import { format } from "date-fns";
-import { request } from '../../../store/helpers/axios_helper'
+import { request, requestParam } from "../../../store/helpers/axios_helper";
 
 const Transaction = () => {
   const [form] = useForm();
@@ -42,7 +42,7 @@ const Transaction = () => {
   const [idNhanVien, setIdNhanVien] = useState("");
 
   const loadDataListTransaction = (page) => {
-    const requestParams = {
+    const request = {
       maHoaDon: searchTatCa,
       page: page,
       hinhThucThanhToan: searchHinhThucThanhToan,
@@ -52,9 +52,7 @@ const Transaction = () => {
       ngayBatDau: searchNgayBatDau,
       ngayKetThuc: searchNgayKetThuc,
     };
-    request('GET',`/transaction/transactions`, {
-        params: requestParams,
-      })
+    requestParam("GET", `/transaction/transactions`, request)
       .then((response) => {
         setListTransaction(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -148,15 +146,19 @@ const Transaction = () => {
 
   const handleSearchNgayBatDauChange = (selectedDate) => {
     const formattedDate = selectedDate
-      ? dayjs(selectedDate).format("DD/MM/YYYY")
-      : "";
+      ? dayjs(selectedDate).startOf("day").format("DD/MM/YYYY HH:mm:ss")
+      : dayjs().startOf("day").format("DD/MM/YYYY HH:mm:ss"); // Nếu không có giá trị selectedDate, sử dụng ngày và thời gian bắt đầu của ngày hiện tại
+
     setSearchNgayBatDau(formattedDate);
     setCurrentPage(1);
   };
 
   const handleSearchNgayKetThucChange = (selectedDate) => {
-    const value = selectedDate.format("DD/MM/YYYY");
-    setSearchNgayKetThuc(value); // Cập nhật giá trị khi Select thay đổi
+    const formattedDate = selectedDate
+      ? dayjs(selectedDate).endOf("day").format("DD/MM/YYYY HH:mm:ss")
+      : dayjs().endOf("day").format("DD/MM/YYYY HH:mm:ss"); // Nếu không có giá trị selectedDate, sử dụng ngày hiện tại
+
+    setSearchNgayKetThuc(formattedDate); // Cập nhật giá trị khi Select thay đổi
     setCurrentPage(1);
   };
 
@@ -167,7 +169,10 @@ const Transaction = () => {
     setSearchHinhThucThanhToan(3);
     setSearchTrangThai(6);
     setCurrentPage(1);
+    setSearchNgayBatDau(null);
+    setSearchNgayKetThuc(null);
     setSearchParams("");
+    loadDataListTransaction(currentPage);
   };
 
   const chuyenTrang = (event, page) => {
