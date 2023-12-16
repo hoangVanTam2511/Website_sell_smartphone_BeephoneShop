@@ -203,6 +203,15 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
       throw new RestApiException("Imei không khả dụng!");
     }
 
+    int totalAmount = 0;
+    for (GioHangChiTiet cartItem : findCartCurrent.getCartItems()) {
+      totalAmount += cartItem.getSoLuong();
+    }
+
+    if (totalAmount + req.getImeis().size() > 4) {
+      throw new RestApiException("Lựa chọn tối đa 4 số lượng sản phẩm!");
+    }
+
     Optional<GioHangChiTiet> findProductItemCurrentInCart = cartItemCustomRepository.
             findCartItemAlready(findImei.get().getSanPhamChiTiet().getId(), findCartCurrent.getId());
 
@@ -319,7 +328,12 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
             })
             .collect(Collectors.toList());
 
-    if (imeiToAdd.size() > 4) {
+    int totalAmount = 0;
+    for (GioHangChiTiet cartItem : findCartCurrent.getCartItems()) {
+      totalAmount += cartItem.getSoLuong();
+    }
+
+    if (totalAmount + req.getImeis().size() - imeiCurrentInCart.size() > 4){
       throw new RestApiException("Lựa chọn tối đa 4 số lượng sản phẩm!");
     }
 
@@ -719,12 +733,12 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
       throw new RestApiException("Sản phẩm không tồn tại!");
     }
 
-    int totalImei = 0;
-    for (HoaDonChiTiet orderItem : findOrderCurrent.getOrderItems()) {
-      if (orderItem.getImeisDaBan() != null) {
-        totalImei += orderItem.getImeisDaBan().size();
-      }
-    }
+//    int totalImei = 0;
+//    for (HoaDonChiTiet orderItem : findOrderCurrent.getOrderItems()) {
+//      if (orderItem.getImeisDaBan() != null) {
+//        totalImei += orderItem.getImeisDaBan().size();
+//      }
+//    }
 
     SanPhamChiTiet getOptional = getProductItemInCartItemOrder.get();
     List<ImeiCustomRequest> imeiFromRequest = req.getImeis();
@@ -747,6 +761,17 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
 //    if (totalImei >= 4) {
 //      throw new RestApiException("Lựa chọn tối đa 4 số lượng sản phẩm!");
 //    }
+    int totalImei = 0;
+    for (HoaDonChiTiet orderItem : findOrderCurrent.getOrderItems()) {
+      if (orderItem.getImeisDaBan() != null) {
+        totalImei += orderItem.getSoLuong();
+      }
+    }
+
+    if (totalImei + req.getImeis().size() - imeiCurrentInCartOrder.size() > 4){
+      throw new RestApiException("Lựa chọn tối đa 4 số lượng sản phẩm!");
+    }
+
 
     List<ImeiDaBan> imeiToRemove = imeiCurrentInCartOrder.stream()
             .filter(imei -> !imeiFromRequest.stream()

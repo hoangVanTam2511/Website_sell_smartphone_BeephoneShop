@@ -1,5 +1,5 @@
 import React, { useEffect, useState, memo } from 'react'
-import { TextField, FormControl, InputLabel, Select as SelectMui, OutlinedInput, MenuItem, IconButton, Tooltip, Zoom } from '@mui/material'
+import { TextField, FormControl, InputLabel, Select as SelectMui, OutlinedInput, MenuItem, IconButton, Tooltip, Zoom, FormHelperText } from '@mui/material'
 import style from './style.css'
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -28,7 +28,7 @@ import { TextFieldAddress, TextFieldName, TextFieldNote, TextFieldPhone } from '
 import { FaPencilAlt, FaTrashAlt } from 'react-icons/fa';
 
 const DeliveryShipInfo = ({
-  customerAddressShip, customerNameShip, customerPhoneShip,
+  customerAddressShip, customerNameShip, customerPhoneShip, confirm,
   customerWardShip, customerDistrictShip, customerProvinceShip, getNameShip, getAddressShip, getPhoneShip,
   getDistrictShip, getWardShip, getProvinceShip, getNoteShip, customerNoteShip, loading
   , delivery, getShipFee, isShow, getIsShow, update, updateName, updatePhone, updateNote, updateAddress
@@ -66,26 +66,26 @@ const DeliveryShipInfo = ({
   const fetchDataFirst = async () => {
     if (customerWardShip && customerProvinceShip && customerDistrictShip) {
       const province = provinces.find((item) => item.ProvinceName === customerProvinceShip);
-      if (province){
-      await Promise.all([
-        getAllDistrictGhnByIdProvinceByCustomer(province.ProvinceID, customerDistrictShip, customerWardShip),
-      ]);
+      if (province) {
+        await Promise.all([
+          getAllDistrictGhnByIdProvinceByCustomer(province.ProvinceID, customerDistrictShip, customerWardShip),
+        ]);
       }
     }
     else if (!customerWardShip && customerProvinceShip && customerDistrictShip) {
       const province = provinces.find((item) => item.ProvinceName === customerProvinceShip);
-      if (province){
-      await Promise.all([
-        getAllDistrictGhnByIdProvinceByCustomer(province.ProvinceID, customerDistrictShip, ""),
-      ]);
+      if (province) {
+        await Promise.all([
+          getAllDistrictGhnByIdProvinceByCustomer(province.ProvinceID, customerDistrictShip, ""),
+        ]);
       }
     }
     else if (!customerWardShip && customerProvinceShip && !customerDistrictShip) {
       const province = provinces.find((item) => item.ProvinceName === customerProvinceShip);
-      if (province){
-      await Promise.all([
-        getAllDistrictGhnByIdProvinceByCustomer(province.ProvinceID, "", ""),
-      ]);
+      if (province) {
+        await Promise.all([
+          getAllDistrictGhnByIdProvinceByCustomer(province.ProvinceID, "", ""),
+        ]);
 
       }
     }
@@ -324,13 +324,13 @@ const DeliveryShipInfo = ({
                 {delivery ?
                   <div style={{ width: "98.5%" }} className="">
                     <div>
-                      <TextFieldName nameDefault={customerName} getName={getNameShip} update={updateName} />
+                      <TextFieldName nameDefault={customerName} getName={getNameShip} update={updateName} confirm={confirm} />
                     </div>
                     <div>
-                      <TextFieldPhone phoneDefault={customerPhone} getPhone={getPhoneShip} update={updatePhone} />
+                      <TextFieldPhone phoneDefault={customerPhone} getPhone={getPhoneShip} update={updatePhone} confirm={confirm} />
                     </div>
                     <div className='d-flex mt-3'>
-                      <FormControl style={{ width: "100%" }}>
+                      <FormControl error={confirm && selectedProvince === ""} style={{ width: "100%" }}>
                         <InputLabel >Tỉnh / Thành Phố</InputLabel>
                         <SelectMui
                           className='custom'
@@ -347,8 +347,11 @@ const DeliveryShipInfo = ({
                             </MenuItem>
                           ))}
                         </SelectMui>
+                        {confirm && selectedProvince === "" &&
+                          <FormHelperText>Bạn chưa chọn Tỉnh / Thành Phố!</FormHelperText>
+                        }
                       </FormControl>
-                      <FormControl style={{ width: "100%" }} className='ms-3'>
+                      <FormControl error={confirm && selectedDistrict === ""} style={{ width: "100%" }} className='ms-3'>
                         <InputLabel >Quận / Huyện</InputLabel>
                         <SelectMui
                           className='custom'
@@ -367,8 +370,11 @@ const DeliveryShipInfo = ({
                               </MenuItem>
                             ))}
                         </SelectMui>
+                        {confirm && selectedDistrict === "" &&
+                          <FormHelperText>Bạn chưa chọn Quận / Huyện!</FormHelperText>
+                        }
                       </FormControl>
-                      <FormControl style={{ width: "100%" }} className='ms-3'>
+                      <FormControl error={confirm && selectedWard === ""} style={{ width: "100%" }} className='ms-3'>
                         <InputLabel>Phường / Xã</InputLabel>
                         <SelectMui
                           className='custom'
@@ -385,10 +391,13 @@ const DeliveryShipInfo = ({
                             </MenuItem>
                           ))}
                         </SelectMui>
+                        {confirm && selectedWard === "" &&
+                          <FormHelperText>Bạn chưa chọn Phường / Xã!</FormHelperText>
+                        }
                       </FormControl>
                     </div>
                     <div>
-                      <TextFieldAddress addressDefault={customerAddress} getAddress={getAddressShip} update={updateAddress} />
+                      <TextFieldAddress addressDefault={customerAddress} getAddress={getAddressShip} update={updateAddress} confirm={confirm} />
                     </div>
                     <TextFieldNote noteDefault={customerNote} getNote={getNoteShip} update={updateNote} />
                     <div className='mt-4 pt-2 ms-2 ps-1' style={{ height: "45px" }}>

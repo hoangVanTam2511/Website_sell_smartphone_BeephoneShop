@@ -856,9 +856,20 @@ const PointOfSales = () => {
     }
   };
 
-  const divRef = useRef(null);
-  const scrollToDiv = () => {
-    const { top, height } = divRef.current.getBoundingClientRect();
+  const divRef1 = useRef(null);
+  const divRef2 = useRef(null);
+  const scrollToDiv1 = () => {
+    const { top, height } = divRef1.current.getBoundingClientRect();
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const offset = top + scrollTop - (window.innerHeight - height) / 2;
+
+    window.scrollTo({
+      top: offset,
+      behavior: "smooth",
+    });
+  };
+  const scrollToDiv2 = () => {
+    const { top, height } = divRef2.current.getBoundingClientRect();
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     const offset = top + scrollTop - (window.innerHeight - height) / 2;
 
@@ -882,11 +893,22 @@ const PointOfSales = () => {
     }
   };
 
+  const checkInfoShip = () => {
+    if (customerNameShip.trim() === "" || customerPhoneShip.trim() === ""
+      || customerAddressShip.trim() === "" || customerDistrictShip.trim() === "" || customerWardShip.trim() === "") {
+      return true;
+    }
+    return false;
+  };
+
   const handleOpenDialogConfirmPayment = () => {
     setConfirm(true);
-    console.log(checkInfoGuest());
     if (checkInfoGuest() === true) {
-      scrollToDiv();
+      scrollToDiv1();
+      return;
+    }
+    if (checkInfoShip() === true && order.loaiHoaDon === OrderTypeString.DELIVERY && checkInfoGuest() === false) {
+      scrollToDiv2();
       return;
     }
     if (cartItems && cartItems.length == 0) {
@@ -970,7 +992,7 @@ const PointOfSales = () => {
       orderHistories: data.orderHistories,
       hinhThucThanhToan: selectedValuePaymentMethod,
       employee: {
-        id: userId,
+        id: userId === null || userId === "" || userId === undefined ? null : userId,
       },
       cart: order.cart,
       isPayment: true,
@@ -1088,7 +1110,7 @@ const PointOfSales = () => {
         const listAddress = data.account && data.account.diaChiList && data.account.diaChiList;
         const addressActive = listAddress && listAddress.find((item) => item.trangThai === 1);
 
-        if (account) {
+        if (addressActive) {
           /* await  */updateInfoShipDefault(addressActive);
         }
         else {
@@ -1329,7 +1351,7 @@ const PointOfSales = () => {
   };
 
   const getAllOrdersPending = async () => {
-    request("GET", `/api/orders/pending`, {})
+    await request("GET", `/api/orders/pending`, {})
       .then((response) => {
         setOrders(response.data.data);
       })
@@ -1733,7 +1755,7 @@ const PointOfSales = () => {
   };
 
   const getPaymentsOfOrder = async () => {
-    request("GET", `/api/orders/pending/${order.id}`)
+    await request("GET", `/api/orders/pending/${order.id}`)
       .then((response) => {
         const data = response.data.data;
         setOrder(data);
@@ -1755,7 +1777,7 @@ const PointOfSales = () => {
 
   const getOrderPendingLastRemove = async () => {
     // setIsLoading(true);
-    request("GET", `/api/orders/pending`, {})
+    await request("GET", `/api/orders/pending`, {})
       .then((response) => {
         const orders = response.data.data;
         setOrders(orders);
@@ -1876,70 +1898,64 @@ const PointOfSales = () => {
 
   const handleAddOrderPending = async () => {
     setIsLoading(true);
-    if (orders.length >= 6) {
-      handleOpenAlertVariant("Tối đa 6 tab!", "warning");
-      setIsLoading(false);
-    } else {
-      const data = {
-        id: order.id,
-      };
-      try {
-        const response = request("POST", `/api/orders?isPending=true`,
-          data
-        );
-        await getAllOrdersPending();
-        setValueTabs(orders.length + 1);
-        setOrder(response.data.data);
-        navigate(`/dashboard/point-of-sales/${response.data.data.ma}`);
-        setCartId(response.data.data.cart.id);
-        setDelivery(false);
-        setPaymentWhenReceive(false);
-        setCartItems([]);
-        setPaymentHistories([]);
-        setCustomerPayment(0);
-        // setSelectedValuePaymentMethod("Tiền mặt");
-        // setHadPaymentBank(false);
-        setShipFee(0);
-        setDiscount("");
-        setIdVoucher("");
-        setConfirm(false);
-        setDiscountValue(0);
-        setIdCustomer("");
-        setCustomerName("");
-        setCustomerPhone("");
-        setCustomerEmail("");
-        setCustomerAddressList([]);
-        setCustomerNameShip("");
-        setCustomerPhoneShip("");
-        setCustomerAddressShip("");
-        setCustomerWardShip("");
-        setCustomerProvinceShip("");
-        setCustomerDistrictShip("");
-        setCustomerNoteShip("");
+    const data = {
+      id: order.id,
+    };
+    try {
+      const response = await request("POST", `/api/orders?isPending=true`,
+        data
+      );
+     await getAllOrdersPending();
+      setValueTabs(orders.length + 1);
+      setOrder(response.data.data);
+      navigate(`/dashboard/point-of-sales/${response.data.data.ma}`);
+      setCartId(response.data.data.cart.id);
+      setDelivery(false);
+      setPaymentWhenReceive(false);
+      setCartItems([]);
+      setPaymentHistories([]);
+      setCustomerPayment(0);
+      // setSelectedValuePaymentMethod("Tiền mặt");
+      // setHadPaymentBank(false);
+      setShipFee(0);
+      setDiscount("");
+      setIdVoucher("");
+      setConfirm(false);
+      setDiscountValue(0);
+      setIdCustomer("");
+      setCustomerName("");
+      setCustomerPhone("");
+      setCustomerEmail("");
+      setCustomerAddressList([]);
+      setCustomerNameShip("");
+      setCustomerPhoneShip("");
+      setCustomerAddressShip("");
+      setCustomerWardShip("");
+      setCustomerProvinceShip("");
+      setCustomerDistrictShip("");
+      setCustomerNoteShip("");
 
-        setFullName("");
-        setEmail("");
-        setSdt("");
-        setIsLoading(false);
-      } catch (error) {
-        setIsLoading(false);
-        console.log(error);
-      }
+      setFullName("");
+      setEmail("");
+      setSdt("");
+      setIsLoading(false);
+    } catch (error) {
+      handleOpenAlertVariant(error.response.data.message, "warning");
+      setIsLoading(false);
+      console.log(error);
     }
   };
 
   const handleDeletePaymentById = async (id) => {
     setIsLoading(true);
     try {
-      request("DELETE", `/api/payment/${id}`, {
-        params: {
-          orderId: order.id,
-        },
+      await request("DELETE", `/api/payment/${id}?orderId=${order.id}`, {
+      }).then(async (response) => {
+        await getPaymentsOfOrder();
+        await getAllOrdersPending();
+        setIsLoading(false);
+        handleOpenAlertVariant("Xóa thành công!", Notistack.SUCCESS);
       });
-      await getPaymentsOfOrder();
-      await getAllOrdersPending();
-      setIsLoading(false);
-      handleOpenAlertVariant("Xóa thành công!", Notistack.SUCCESS);
     } catch (error) {
       console.log(error);
       setIsLoading(false);
@@ -1965,21 +1981,19 @@ const PointOfSales = () => {
   };
 
   const handleDeleteOrderPendingById = async (id) => {
-    if (order && order.paymentMethods && order.paymentMethods.length > 0) {
+    const getOrder = orders.find((item) => item.id === id);
+    if (getOrder && getOrder.paymentMethods && getOrder.paymentMethods.length > 0) {
       handleOpenAlertVariant(
         "Không cho phép xóa đơn hàng đã thanh toán!",
         Notistack.ERROR
       );
     } else {
-      if (sizeCartItems > 0) {
         setIsLoading(true);
-      }
       try {
-        request("DELETE", `/api/orders/${id}`);
+        await request("DELETE", `/api/orders/${id}`).then(async (response) => {
         await getOrderPendingLastRemove();
-        if (sizeCartItems > 0) {
           setIsLoading(false);
-        }
+        });
       } catch (error) {
         console.log(error);
       } finally {
@@ -2821,7 +2835,7 @@ const PointOfSales = () => {
               "0 0.1rem 0.3rem #00000020",
           }}
         >
-          <div className="d-flex justify-content-between mt-1" ref={divRef}>
+          <div className="d-flex justify-content-between mt-1" ref={divRef1}>
             <div className="ms-2" style={{ marginTop: "5px" }}>
               <span
                 className=""
@@ -2909,15 +2923,6 @@ const PointOfSales = () => {
                   />
                 </div>
 
-                <div className="d-flex ms-auto">
-                  <div className="" style={{ width: "400px" }}>
-                    <TextFieldEmail
-                      emailDefault={email}
-                      getEmail={getEmail}
-                      update={updateEmail}
-                    />
-                  </div>
-                </div>
               </div>
               <div className="d-flex ms-2 mt-3">
                 <div className="" style={{ width: "400px" }}>
@@ -3036,8 +3041,9 @@ const PointOfSales = () => {
             }}
           ></div>
           <div className="d-flex justify-content-between">
-            <div className="" style={{}}>
+            <div className="" style={{}} ref={divRef2}>
               <DeliveryInfoShip
+                confirm={confirm}
                 delivery={delivery}
                 getShipFee={getShipFee}
                 update={updateInfoShipOrder}

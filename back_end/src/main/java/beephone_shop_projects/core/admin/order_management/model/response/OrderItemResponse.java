@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 @AllArgsConstructor
@@ -31,5 +32,7 @@ public class OrderItemResponse {
   private List<ImeiDaBan> imeisDaBan;
 
   private ProductItemResponse sanPhamChiTiet;
+
+  private Date createdAt;
 
 }

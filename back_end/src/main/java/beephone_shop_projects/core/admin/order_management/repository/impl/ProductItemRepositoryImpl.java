@@ -15,7 +15,6 @@ import beephone_shop_projects.entity.DanhMucDienThoai;
 import beephone_shop_projects.entity.DoPhanGiaiManHinh;
 import beephone_shop_projects.entity.Hang;
 import beephone_shop_projects.entity.Image;
-import beephone_shop_projects.entity.KhuyenMaiChiTiet;
 import beephone_shop_projects.entity.ManHinh;
 import beephone_shop_projects.entity.MauSac;
 import beephone_shop_projects.entity.Pin;
@@ -224,7 +223,6 @@ public class ProductItemRepositoryImpl extends AbstractRepositoryImpl<SanPhamChi
       Join<SanPhamChiTiet, Rom> romJoinCount = countRoot.join("rom");
       countPredicates.add(romJoinCount.get("id").in(roms));
     }
-
 
     if (fromPrice != null && toPrice != null) {
       predicates.add(criteriaBuilder.between(root.get("donGia"), fromPrice, toPrice));

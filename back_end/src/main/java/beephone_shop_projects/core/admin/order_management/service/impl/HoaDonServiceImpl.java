@@ -291,34 +291,40 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
 
   @Override
   public OrderResponse createOrderPending() throws Exception {
-    boolean checkCodeExists = false;
-    String code;
+    List<OrderResponse> orders = this.getOrdersPending();
+    if (orders.size() >= 6){
+      throw new RestApiException("Tối đa 6 tab đơn hàng");
+    }
+    else{
+      boolean checkCodeExists = false;
+      String code;
 
-    do {
-      code = RandomCodeGenerator.generateRandomNumber();
-      HoaDon findCodeOrder = hoaDonRepository.getOrderDetailsById(code);
+      do {
+        code = RandomCodeGenerator.generateRandomNumber();
+        HoaDon findCodeOrder = hoaDonRepository.getOrderDetailsById(code);
 
-      if (findCodeOrder == null) {
-        checkCodeExists = false;
-      } else {
-        checkCodeExists = true;
-      }
-    } while (checkCodeExists);
+        if (findCodeOrder == null) {
+          checkCodeExists = false;
+        } else {
+          checkCodeExists = true;
+        }
+      } while (checkCodeExists);
 
-    HoaDon newOrderPending = new HoaDon();
-    newOrderPending.setMa(code);
-    newOrderPending.setCreatedAt(new Date());
-    newOrderPending.setTrangThai(OrderStatus.PENDING_PAYMENT);
-    newOrderPending.setLoaiHoaDon(OrderType.AT_COUNTER);
-    newOrderPending.setTongTien(BigDecimal.ZERO);
+      HoaDon newOrderPending = new HoaDon();
+      newOrderPending.setMa(code);
+      newOrderPending.setCreatedAt(new Date());
+      newOrderPending.setTrangThai(OrderStatus.PENDING_PAYMENT);
+      newOrderPending.setLoaiHoaDon(OrderType.AT_COUNTER);
+      newOrderPending.setTongTien(BigDecimal.ZERO);
 
-    GioHang cart = new GioHang();
-    cart.setMa(gioHangRepository.getMaxEntityCodeByClass());
-    GioHang createdCart = gioHangRepository.save(cart);
-    newOrderPending.setCart(createdCart);
-    HoaDon createdOrderPending = hoaDonRepository.save(newOrderPending);
+      GioHang cart = new GioHang();
+      cart.setMa(gioHangRepository.getMaxEntityCodeByClass());
+      GioHang createdCart = gioHangRepository.save(cart);
+      newOrderPending.setCart(createdCart);
+      HoaDon createdOrderPending = hoaDonRepository.save(newOrderPending);
 
-    return orderConverter.convertEntityToResponse(createdOrderPending);
+      return orderConverter.convertEntityToResponse(createdOrderPending);
+    }
 //    HoaDon newOrderPending = new HoaDon();
 //    newOrderPending.setMa(hoaDonRepository.getMaxEntityCodeByClass());
 //    newOrderPending.setCreatedAt(new Date());
@@ -339,7 +345,7 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
   public OrderResponse updateOrPaymentOrderPending(OrderRequest req, String id) throws Exception {
 
     HoaDon orderCurrent = hoaDonRepository.getOrderPendingById(id);
-    OrderResponse orderResponse = this.getOrderPendingById(id);
+//    OrderResponse orderResponse = this.getOrderPendingById(id);
     if (orderCurrent == null) {
       throw new RestApiException("Đơn hàng không tồn tại!");
     }
@@ -390,7 +396,6 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
 //        Account accountEmp = new Account();
 //        accountEmp.setId(req.getEmployee().getId());
       }
-
 
       if (req.getLoaiHoaDon().equals(OrderType.AT_COUNTER)) {
         orderCurrent.setTenNguoiNhan(null);
@@ -647,6 +652,10 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
       throw new RestApiException("Đơn hàng không tồn tại!");
     }
 
+    BigDecimal phiShipCu = orderCurrent.getPhiShip();
+    BigDecimal khachCanTraCu = orderCurrent.getKhachCanTra();
+    BigDecimal khachCanTraMoi = khachCanTraCu.subtract(phiShipCu);
+
     orderCurrent.setTenNguoiNhan(req.getTenNguoiNhan());
     orderCurrent.setSoDienThoaiNguoiNhan(req.getSoDienThoaiNguoiNhan());
     orderCurrent.setDiaChiNguoiNhan(req.getDiaChiNguoiNhan());
@@ -654,6 +663,7 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
     orderCurrent.setTinhThanhPhoNguoiNhan(req.getTinhThanhPhoNguoiNhan());
     orderCurrent.setQuanHuyenNguoiNhan(req.getQuanHuyenNguoiNhan());
     orderCurrent.setXaPhuongNguoiNhan(req.getXaPhuongNguoiNhan());
+    orderCurrent.setKhachCanTra(khachCanTraMoi.add(req.getPhiShip()));
 
     HoaDon updatedOrderCurrent = hoaDonRepository.save(orderConverter.convertResponseToEntity(orderCurrent));
     LichSuHoaDon lichSuHoaDon = new LichSuHoaDon();

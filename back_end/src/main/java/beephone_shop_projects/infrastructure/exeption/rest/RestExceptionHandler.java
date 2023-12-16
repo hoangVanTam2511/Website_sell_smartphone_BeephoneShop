@@ -18,12 +18,12 @@ public final class RestExceptionHandler extends
         BeePhoneProjectExceptionRestHandler<ConstraintViolationException> {
 
 //   Bad Request
-//  @ExceptionHandler(RestApiException.class)
-//  public ResponseEntity<?> handlerRestApiExceptionGlobal(RestApiException restApiException) {
-//    ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST,
-//            restApiException.getMessage(), null);
-//    return new ResponseEntity<>(apiError, org.springframework.http.HttpStatus.BAD_REQUEST);
-//  }
+  @ExceptionHandler(RestApiException.class)
+  public ResponseEntity<?> handlerRestApiExceptionGlobal(RestApiException restApiException) {
+    ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST,
+            restApiException.getMessage(), null);
+    return new ResponseEntity<>(apiError, org.springframework.http.HttpStatus.BAD_REQUEST);
+  }
 
   // Exception common
 //  @ExceptionHandler(RuntimeException.class)

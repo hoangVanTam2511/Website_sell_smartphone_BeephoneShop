@@ -23,7 +23,7 @@ const LoginPage = () => {
     password: ''
   })
 
-  useEffect(() => {})
+  useEffect(() => { })
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
@@ -49,40 +49,40 @@ const LoginPage = () => {
     }
 
     request("POST", "/client/account/login", userLogin)
-    .then(res => {
-      if (res.status === 200) {
-        console.log(res.data.token)
-        setAuthHeader(res.data.token)
-        dispatch(changeInformationUser(res.data))
+      .then(res => {
+        if (res.status === 200) {
+          console.log(res.data.token)
+          setAuthHeader(res.data.token)
+          dispatch(changeInformationUser(res.data))
           if (res.data.idRole === 'role2') {
-            openNotificationWithIcon('error',"Bạn không quyền truy cập hệ thống.", "Bạn không có quyền truy cập hệ thống.")
+            openNotificationWithIcon('error', "Bạn không quyền truy cập hệ thống.", "Bạn không có quyền truy cập hệ thống.")
           } else {
             resetLogin()
-            openNotificationWithIcon('success',"Đăng nhập thành công.", "")
-            navigate('/home')
+            openNotificationWithIcon('success', "Đăng nhập thành công.", "")
+            navigate('/dashboard/statistic');
           }
-      }
-  })
-    .catch(error =>{
-      openNotificationWithIcon('error',"Sai tài khoản hoặc mật khẩu.", "Bạn không nhập đúng tài khoản hoặc mật khẩu.Vui lòng kiểm tra lại.")
-    })
+        }
+      })
+      .catch(error => {
+        openNotificationWithIcon('error', "Sai tài khoản hoặc mật khẩu.", "Bạn không nhập đúng tài khoản hoặc mật khẩu.Vui lòng kiểm tra lại.")
+      })
   }
 
   const forgetPass = () => {
     request("POST", "/email/send-html-email-get-pass",
-    {
-      "email": userLogin.email
-    }).then(res => {
-      setIsForgetView(0)
-      openNotificationWithIcon('success',"Mật khẩu đã dược gửi về email của bạn.", "Mật khẩu đã được gửi về email của bạn.")
-    }).catch(error => {
-      openNotificationWithIcon('error',"Không tìm thấy email trên hệ thống.", "")
-    })
+      {
+        "email": userLogin.email
+      }).then(res => {
+        setIsForgetView(0)
+        openNotificationWithIcon('success', "Mật khẩu đã dược gửi về email của bạn.", "Mật khẩu đã được gửi về email của bạn.")
+      }).catch(error => {
+        openNotificationWithIcon('error', "Không tìm thấy email trên hệ thống.", "")
+      })
   }
 
   return (
     <>
-     {contextHolder}
+      {contextHolder}
       <div className='bodyLogin'>
         <div>
           {/* <img src='logo.png' /> */}
@@ -137,12 +137,12 @@ const LoginPage = () => {
               )}
 
               {isForgetView === 1 ? (
-                <span  style={{ cursor: 'pointer', textAlign: 'center', marginLeft: '101px' }} onClick={() => setIsForgetView(0)}>
+                <span style={{ cursor: 'pointer', textAlign: 'center', marginLeft: '101px' }} onClick={() => setIsForgetView(0)}>
                   Quay lại đăng nhập
                 </span>
               ) : (
                 <span
-                  style={{ cursor: 'pointer', marginRight: '17px'  }}
+                  style={{ cursor: 'pointer', marginRight: '17px' }}
                   onClick={() => setIsForgetView(1)}
                 >
                   Quên mật khẩu?
