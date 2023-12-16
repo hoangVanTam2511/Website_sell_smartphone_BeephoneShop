@@ -18,8 +18,7 @@ import LoadingIndicator from "../../../utilities/loading";
 import generateRandomCode from "../../../utilities/randomCode";
 import { Notistack, StatusCommonProductsNumber } from "./enum";
 import useCustomSnackbar from "../../../utilities/notistack";
-import { StatusCommonProductsNumber } from "./enum";
-import { request } from '../../../store/helpers/axios_helper'
+import { request } from "../../../store/helpers/axios_helper";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -83,7 +82,7 @@ const CreateTheNho = ({ open, close, getAll, theNhos }) => {
       dungLuongToiDa: dungLuongToiDa,
       status: status,
     };
-    request('POST',`/api/the-nhos`, obj)
+    request("POST", `/api/the-nhos`, obj)
       .then((response) => {
         close();
         getAll();
@@ -185,11 +184,11 @@ const CreateTheNho = ({ open, close, getAll, theNhos }) => {
                         {...params}
                         InputProps={{
                           ...params.InputProps,
-                          endAdornment: (
+                          startAdornment: (
                             <>
                               <InputAdornment
                                 style={{ marginLeft: "5px" }}
-                                position="end"
+                                position="start"
                               >
                                 GB
                               </InputAdornment>
@@ -205,7 +204,7 @@ const CreateTheNho = ({ open, close, getAll, theNhos }) => {
                   />
                 </div>
 
-                <div className="mt-3">
+                {/* <div className="mt-3">
                   <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">
                       Trạng Thái
@@ -231,7 +230,7 @@ const CreateTheNho = ({ open, close, getAll, theNhos }) => {
                       </MenuItem>
                     </Select>
                   </FormControl>
-                </div>
+                </div> */}
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
                     onClick={() => {

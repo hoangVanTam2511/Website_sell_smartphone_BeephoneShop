@@ -13,3 +13,8 @@
   display: flex;
   flex-direction: column;
 }
+
+.button-active {
+  background-color: blue;
+  color: white;
+}

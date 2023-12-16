@@ -2,6 +2,7 @@ import React from "react";
 import * as XLSX from "xlsx";
 import * as XlsxPopulate from "xlsx-populate/browser/xlsx-populate";
 import { StatusCusNumber } from "./enum";
+import { FaDownload } from "react-icons/fa6";
 
 const ExcelExportHelper = ({ data }) => {
   const createDownLoadData = () => {
@@ -74,7 +75,10 @@ const ExcelExportHelper = ({ data }) => {
       hoVaTen: item.hoVaTen,
       email: item.email,
       soDienThoai: item.soDienThoai,
-      trangThai: item.trangThai === StatusCusNumber.NGUNG_HOAT_DONG ? "Ngừng hoạt động" : "Hoạt động",
+      trangThai:
+        item.trangThai === StatusCusNumber.NGUNG_HOAT_DONG
+          ? "Ngừng hoạt động"
+          : "Hoạt động",
     }));
 
     customers.forEach((cus) => {
@@ -101,9 +105,7 @@ const ExcelExportHelper = ({ data }) => {
       skipHeader: true,
     });
 
-
     XLSX.utils.book_append_sheet(wb, sheet, "Danh sách khách hàng");
-
 
     // Since blobs can store binary data, they can be used to store images or other multimedia files.
 
@@ -222,7 +224,20 @@ const ExcelExportHelper = ({ data }) => {
       }}
       type="primary"
     >
-      Export
+      <FaDownload
+        className="ms-1"
+        style={{
+          position: "absolute",
+          bottom: "13.5px",
+          left: "10px",
+        }}
+      />
+      <span
+        className=""
+        style={{ marginBottom: "2px", fontWeight: "500", marginLeft: "21px" }}
+      >
+        Export Excel
+      </span>
     </span>
   );
 };

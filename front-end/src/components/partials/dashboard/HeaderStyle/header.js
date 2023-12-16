@@ -2,16 +2,12 @@ import React, { useEffect, Fragment, memo } from "react";
 import { Navbar, Container, Nav, Dropdown } from "react-bootstrap";
 import { Link, useLocation, useParams } from "react-router-dom";
 import CustomToggle from "../../../dropdowns";
+import { request, setAuthHeader } from "../../../../store/helpers/axios_helper";
+import { useNavigate } from "react-router-dom";
 import FolderIcon from "@mui/icons-material/Folder";
 import Breadcrumbs from "@mui/joy/Breadcrumbs";
 import { Link as LinkJoy } from "@mui/joy";
 import Typography from "@mui/joy/Typography";
-import { request, setAuthHeader } from '../../../../store/helpers/axios_helper'
-import { useNavigate } from 'react-router-dom'
-import FolderIcon from '@mui/icons-material/Folder';
-import Breadcrumbs from '@mui/joy/Breadcrumbs';
-import { Link as LinkJoy } from '@mui/joy';
-import Typography from '@mui/joy/Typography';
 
 //img
 // import flag1 from '../../../../assets/images/Flag/flag001.png'
@@ -33,7 +29,7 @@ import avatars5 from "../../../../assets/images/avatars/avtar_4.png";
 import avatars6 from "../../../../assets/images/avatars/avtar_5.png";
 // logo
 import Logo from "../../components/logo";
-import { getUser } from '../../../../store/user/userSlice'
+import { getUser } from "../../../../store/user/userSlice";
 
 // Redux Selector / Action
 import { useSelector } from "react-redux";
@@ -44,8 +40,7 @@ import * as SettingSelector from "../../../../store/setting/selectors";
 const Header = memo((props) => {
   const navbarHide = useSelector(SettingSelector.navbar_show); // array
   const headerNavbar = useSelector(SettingSelector.header_navbar);
-  const user = getUser()
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const user = useSelector((state) => state.user.user);
 
   useEffect(() => {
@@ -85,6 +80,10 @@ const Header = memo((props) => {
         return [
           { label: "Quản Lý Đơn Hàng", path: "/dashboard/management-orders" },
           { label: "Chi Tiết Đơn Hàng", path: `/dashboard/order-detail/${id}` },
+          {
+            label: "Bán Hàng Tại Quầy",
+            path: `/dashboard/point-of-sales`,
+          },
         ];
       case `/dashboard/point-of-sales/${id}`:
         return [
@@ -100,20 +99,20 @@ const Header = memo((props) => {
       case "/dashboard/refund-order":
         return [{ label: "Trả Hàng", path: "/dashboard/refund-order" }];
       case "/dashboard/products":
-        return [{ label: "Danh Sách Sản Phẩm", path: "/dashboard/products" }];
+        return [{ label: "Quản Lý Sản Phẩm", path: "/dashboard/products" }];
       case `/dashboard/products/${id}`:
         return [
-          { label: "Danh Sách Sản Phẩm", path: "/dashboard/products" },
+          { label: "Quản Lý Sản Phẩm", path: "/dashboard/products" },
           { label: "Chi Tiết Sản Phẩm", path: `/dashboard/products/${id}` },
         ];
       case "/dashboard/create-product":
         return [
-          { label: "Danh Sách Sản Phẩm", path: "/dashboard/products" },
+          { label: "Quản Lý Sản Phẩm", path: "/dashboard/products" },
           { label: "Thêm Sản Phẩm", path: "/dashboard/create-product" },
         ];
       case `/dashboard/update-product/${id}`:
         return [
-          { label: "Danh Sách Sản Phẩm", path: "/dashboard/products" },
+          { label: "Quản Lý Sản Phẩm", path: "/dashboard/products" },
           {
             label: "Cập Nhật Sản Phẩm",
             path: `/dashboard/update-product/${id}`,
@@ -180,36 +179,36 @@ const Header = memo((props) => {
           },
         ];
       case `/dashboard/colors`:
-        return [{ label: "Danh Sách Màu Sắc", path: "/dashboard/colors" }];
+        return [{ label: "Quản Lý Màu Sắc", path: "/dashboard/colors" }];
       case `/dashboard/chips`:
-        return [{ label: "Danh Sách Chip", path: "/dashboard/chips" }];
+        return [{ label: "Quản Lý Chip", path: "/dashboard/chips" }];
       case `/dashboard/imeis`:
-        return [{ label: "Danh Sách IMEI", path: "/dashboard/imeis" }];
+        return [{ label: "Quản Lý IMEI", path: "/dashboard/imeis" }];
       case `/dashboard/rams`:
-        return [{ label: "Danh Sách RAM", path: "/dashboard/rams" }];
+        return [{ label: "Quản Lý RAM", path: "/dashboard/rams" }];
       case `/dashboard/roms`:
-        return [{ label: "Danh Sách ROM", path: "/dashboard/roms" }];
+        return [{ label: "Quản Lý ROM", path: "/dashboard/roms" }];
       case `/dashboard/sacs`:
-        return [{ label: "Danh Sách Cổng Sạc", path: "/dashboard/sacs" }];
+        return [{ label: "Quản Lý Cổng Sạc", path: "/dashboard/sacs" }];
       case `/dashboard/hangs`:
-        return [{ label: "Danh Sách Hãng", path: "/dashboard/hangs" }];
+        return [{ label: "Quản Lý Hãng", path: "/dashboard/hangs" }];
       case `/dashboard/pins`:
-        return [{ label: "Danh Sách PIN", path: "/dashboard/pins" }];
+        return [{ label: "Quản Lý PIN", path: "/dashboard/pins" }];
       case `/dashboard/danh-mucs`:
-        return [{ label: "Danh Sách Danh Mục", path: "/dashboard/danh-mucs" }];
+        return [{ label: "Quản Lý Danh Mục", path: "/dashboard/danh-mucs" }];
       case `/dashboard/sims`:
-        return [{ label: "Danh Sách SIM", path: "/dashboard/sims" }];
+        return [{ label: "Quản Lý SIM", path: "/dashboard/sims" }];
       case `/dashboard/the-nhos`:
-        return [{ label: "Danh Sách Thẻ Nhớ", path: "/dashboard/the-nhos" }];
+        return [{ label: "Quản Lý Thẻ Nhớ", path: "/dashboard/the-nhos" }];
       case `/dashboard/screens`:
-        return [{ label: "Danh Sách Màn Hình", path: "/dashboard/screens" }];
+        return [{ label: "Quản Lý Màn Hình", path: "/dashboard/screens" }];
       case `/dashboard/front-cameras`:
         return [
-          { label: "Danh Sách Camera Trước", path: "/dashboard/front-cameras" },
+          { label: "Quản Lý Camera Trước", path: "/dashboard/front-cameras" },
         ];
       case `/dashboard/rear-cameras`:
         return [
-          { label: "Danh Sách Camera Sau", path: "/dashboard/rear-cameras" },
+          { label: "Quản Lý Camera Sau", path: "/dashboard/rear-cameras" },
         ];
       default:
         return [];
@@ -359,10 +358,8 @@ const Header = memo((props) => {
                     <p className="mb-0 caption-sub-title">
                       {user === undefined || user.ma === ""
                         ? ""
-                        : user.idRole.ten}
+                        : user.tenChucVu}
                     </p>
-                    <h6 className="mb-0 caption-title">{user === undefined || user.ma === "" ? '' : user.hoVaTen}</h6>
-                    <p className="mb-0 caption-sub-title">{user === undefined || user.ma === "" ? '' : user.tenChucVu}</p>
                   </div>
                 </Dropdown.Toggle>
                 <Dropdown.Menu
@@ -378,8 +375,8 @@ const Header = memo((props) => {
                   <Dropdown.Divider />
                   <Dropdown.Item
                     onClick={() => {
-                      navigate("/login")
-                      setAuthHeader(null)
+                      navigate("/login");
+                      setAuthHeader(null);
                     }}
                   >
                     Đăng xuất

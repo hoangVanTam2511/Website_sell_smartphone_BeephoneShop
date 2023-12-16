@@ -31,7 +31,7 @@ import * as React from "react";
 import ModalAddKhachHang from "./ModalAddKhachHang";
 import { Notistack } from "../../order-manager/enum";
 import useCustomSnackbar from "../../../../utilities/notistack";
-import { request, requestParam } from '../../../../store/helpers/axios_helper'
+import { request, requestParam } from "../../../../store/helpers/axios_helper";
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -106,15 +106,14 @@ const HienThiKH = () => {
         loadDataListRole(targetPage); // Tải danh sách từ trang targetPage
         return;
       }
-      requestParam('GET', apiURLKH + "/search-all", {
-            tenKH: searchText,
-            page: currentPage,
-        })
-        .then((response) => {
-          setTotalPages(response.data.totalPages);
-          // setCurrentPage(targetPage);
-          setListKH(response.data.data);
-        });
+      requestParam("GET", apiURLKH + "/search-all", {
+        tenKH: searchText,
+        page: currentPage,
+      }).then((response) => {
+        setTotalPages(response.data.totalPages);
+        // setCurrentPage(targetPage);
+        setListKH(response.data.data);
+      });
     } catch (error) {
       console.log("Error searching accounts:", error);
     }
@@ -143,13 +142,13 @@ const HienThiKH = () => {
   }, [currentPage, loadAgain]);
   // load
   const loadDataListRole = (currentPage) => {
-    request('GET', apiURLKH + "/hien-thi?pageNo=" + currentPage)
+    request("GET", apiURLKH + "/hien-thi?pageNo=" + currentPage)
       .then((response) => {
         setListKH(response.data.data);
-        console.log(response.data.data)
+        console.log(response.data.data);
         setTotalPages(response.data.totalPages);
       })
-      .catch(() => { });
+      .catch(() => {});
   };
   //edit
   const navigate = useNavigate();
@@ -177,7 +176,7 @@ const HienThiKH = () => {
   };
 
   const doChangeTrangThai = (id) => {
-    request('PUT', apiURLKH + `/${id}/doi-tt`)
+    request("PUT", apiURLKH + `/${id}/doi-tt`)
       .then((response) => {
         loadDataListRole(currentPage);
         handleOpenAlertVariant("Đổi trạng thái thành công", Notistack.SUCCESS);
@@ -233,7 +232,7 @@ const HienThiKH = () => {
               className="rounded-pill mx-auto badge-primary"
               style={{
                 height: "35px",
-                width: "96px",
+                width: "135px",
                 padding: "4px",
               }}
             >
@@ -246,7 +245,7 @@ const HienThiKH = () => {
               className="rounded-pill mx-auto badge-danger"
               style={{
                 height: "35px",
-                width: "140px",
+                width: "135px",
                 padding: "4px",
               }}
             >
@@ -259,7 +258,7 @@ const HienThiKH = () => {
               className="rounded-pill mx-auto badge-primary"
               style={{
                 height: "35px",
-                width: "130px",
+                width: "135px",
                 padding: "4px",
               }}
             >
@@ -288,16 +287,18 @@ const HienThiKH = () => {
                 onClick={() => edit(record)}
                 style={{
                   cursor: "pointer",
-                  color: editingKey === record.id ? "red" : "green",
+                  color: "#2f80ed",
                   marginRight: "20px",
                 }}
                 disabled={editingKey !== ""}
               />
             </Tooltip>
             <Popconfirm
-              title={`Đổi trạng thái tài khoản từ ${record.trangThai === 0 ? `"Hoạt Động"` : `"Ngừng Hoạt Động"`
-                } sang ${record.trangThai === 0 ? `"Ngừng Hoạt Động"` : `"Hoạt Động"`
-                } `}
+              title={`Đổi trạng thái tài khoản từ ${
+                record.trangThai === 0 ? `"Hoạt Động"` : `"Ngừng Hoạt Động"`
+              } sang ${
+                record.trangThai === 0 ? `"Ngừng Hoạt Động"` : `"Hoạt Động"`
+              } `}
               onConfirm={() => {
                 doChangeTrangThai(record.id);
               }}
@@ -316,7 +317,7 @@ const HienThiKH = () => {
                   style={{
                     cursor: "pointer",
                     // eslint-disable-next-line eqeqeq
-                    color: record.trangThai == 0 ? "#e5383b" : "#2f80ed",
+                    color: record.trangThai == 0 ? "#e5383b" : "#09a129",
                     marginRight: "20px",
                   }}
                 />
@@ -329,8 +330,8 @@ const HienThiKH = () => {
   ];
 
   const loadAfterImport = () => {
-    setLoadAgain(2)
-  }
+    setLoadAgain(2);
+  };
 
   return (
     <>
@@ -380,27 +381,7 @@ const HienThiKH = () => {
                   </span>
                 </Button>
               </div>
-              <Button
-                onClick={handleClickOpen}
-                className="rounded-2 button-mui"
-                type="primary"
-                style={{ height: "40px", width: "auto", fontSize: "15px" }}
-              >
-                <PlusOutlined
-                  className="ms-1"
-                  style={{
-                    position: "absolute",
-                    bottom: "12.5px",
-                    left: "12px",
-                  }}
-                />
-                <span
-                  className="ms-3 ps-1"
-                  style={{ marginBottom: "3px", fontWeight: "500" }}
-                >
-                  Thêm Khách Hàng
-                </span>
-              </Button>
+
               <div className="mt-2 d-flex">
                 <div
                   className="ms-4 me-5 d-flex"
@@ -508,7 +489,7 @@ const HienThiKH = () => {
                   type="primary"
                   style={{ height: "40px", width: "auto", fontSize: "15px" }}
                 >
-                  <NhapTuFile loadAfterImport={loadAfterImport}/>
+                  <NhapTuFile loadAfterImport={loadAfterImport} />
                 </Button>
               </div>
             </Card.Header>

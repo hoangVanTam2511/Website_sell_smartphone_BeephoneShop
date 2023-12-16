@@ -18,7 +18,7 @@ import { Button } from "@mui/joy";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { Notistack, StatusCommonProductsNumber } from "./enum";
 import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
-import { request } from '../../../store/helpers/axios_helper'
+import { request } from "../../../store/helpers/axios_helper";
 // import Sketch from '@uiw/react-color-sketch';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -69,7 +69,7 @@ const CreateMauSac = ({ open, close, getAll, colors }) => {
       tenMauSac: colorName,
       status: status,
     };
-    request('POST',`/api/colors`, obj)
+    request("POST", `/api/colors`, obj)
       .then((response) => {
         handleReset();
         close();
@@ -146,7 +146,7 @@ const CreateMauSac = ({ open, close, getAll, colors }) => {
                   />
                 </div>
 
-                <div className="mt-3">
+                {/* <div className="mt-3">
                   <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">
                       Trạng Thái
@@ -159,7 +159,6 @@ const CreateMauSac = ({ open, close, getAll, colors }) => {
                       label="Trạng Thái"
                       style={{
                         pointerEvents: "none",
-                        opacity: 0.5,
                       }}
                       defaultValue={StatusCommonProductsNumber.ACTIVE}
                       onChange={handleChangeStatus}
@@ -172,7 +171,7 @@ const CreateMauSac = ({ open, close, getAll, colors }) => {
                       </MenuItem>
                     </Select>
                   </FormControl>
-                </div>
+                </div> */}
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
                     onClick={() => {

@@ -17,8 +17,7 @@ import LoadingIndicator from "../../../utilities/loading";
 import generateRandomCode from "../../../utilities/randomCode";
 import { Notistack, StatusCommonProductsNumber } from "./enum";
 import useCustomSnackbar from "../../../utilities/notistack";
-import { StatusCommonProductsNumber } from "./enum";
-import { request } from '../../../store/helpers/axios_helper'
+import { request } from "../../../store/helpers/axios_helper";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -80,7 +79,7 @@ const CreateSac = ({ open, close, getAll, sacs }) => {
       loaiCongSac: loaiCongSac,
       status: status,
     };
-    request('POST',`/api/chargers`, obj)
+    request("POST", `/api/chargers`, obj)
       .then((response) => {
         close();
         getAll();
@@ -141,7 +140,7 @@ const CreateSac = ({ open, close, getAll, sacs }) => {
                     )}
                   />
                 </div>
-                <div className="mt-3" style={{}}>
+                {/* <div className="mt-3" style={{}}>
                   <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">
                       Trạng Thái
@@ -167,7 +166,7 @@ const CreateSac = ({ open, close, getAll, sacs }) => {
                       </MenuItem>
                     </Select>
                   </FormControl>
-                </div>
+                </div> */}
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
                     onClick={() => {

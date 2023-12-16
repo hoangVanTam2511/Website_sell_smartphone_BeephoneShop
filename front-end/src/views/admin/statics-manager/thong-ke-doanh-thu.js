@@ -12,16 +12,17 @@ import {
   faRankingStar,
 } from "@fortawesome/free-solid-svg-icons";
 import { Card, FormControl, MenuItem, Select } from "@mui/material";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { DatePicker } from "@mui/x-date-pickers";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers-pro";
+import { AdapterDayjs } from "@mui/x-date-pickers-pro/AdapterDayjs";
 import * as dayjs from "dayjs";
 import Slider from "@material-ui/core/Slider";
 import { Table, ArrowUpOutlined, Button, Image } from "antd";
 import numeral from "numeral";
-import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
-import { request } from '../../../store/helpers/axios_helper'
-
+import { request } from "../../../store/helpers/axios_helper";
+import { ButtonGroup } from "@mui/joy";
+import { DateRangePicker } from "@mui/x-date-pickers-pro/DateRangePicker";
 const ThongKeDoanhThu = () => {
   const [listDonHangAll, setListDonHangAll] = useState([]);
   // const [listDonHangInMonth, setListDonHangInMonth] = useState([]);
@@ -44,9 +45,12 @@ const ThongKeDoanhThu = () => {
   const [searchNgayBatDau, setSearchNgayBatDau] = useState("");
   const [searchNgayKetThuc, setSearchNgayKetThuc] = useState("");
   const [tocDoTangTruong, setTocDoTangTruong] = useState([]);
+  const [activeButton, setActiveButton] = useState("thang");
+  const [activeButton1, setActiveButton1] = useState("thang");
+  const [openDate, setOpenDate] = useState(false);
 
   const thongKeTheoNgay = () => {
-    request('GET',`/thong-ke/in-day`)
+    request("GET", `/thong-ke/in-day`)
       .then((response) => {
         setListDonHangInDay(response.data);
       })
@@ -54,7 +58,7 @@ const ThongKeDoanhThu = () => {
   };
 
   const thongKeTheoThang = () => {
-    request('GET',`/thong-ke/in-month`)
+    request("GET", `/thong-ke/in-month`)
       .then((response) => {
         setListDonHangInMonth(response.data);
       })
@@ -62,7 +66,7 @@ const ThongKeDoanhThu = () => {
   };
 
   const thongKeTheoSanPham = () => {
-    request('GET',`/thong-ke/san-pham`)
+    request("GET", `/thong-ke/san-pham`)
       .then((response) => {
         setListSanPham(response.data);
       })
@@ -70,11 +74,7 @@ const ThongKeDoanhThu = () => {
   };
 
   const getSanPhamBanChay = () => {
-    request('GET',`/thong-ke/san-pham-ban-chay`, {
-        params: {
-          chonTheo: loaiBoLoc,
-        },
-      })
+    request("GET", `/thong-ke/san-pham-ban-chay?chonTheo=${loaiBoLoc}`)
       .then((response) => {
         setListSanPhamBanChay(response.data);
       })
@@ -82,7 +82,7 @@ const ThongKeDoanhThu = () => {
   };
 
   const getSanPhamSapHetHang = () => {
-    request('GET',`/thong-ke/san-pham-sap-het-hang`)
+    request("GET", `/thong-ke/san-pham-sap-het-hang`)
       .then((response) => {
         setListSanPhamSapHet(response.data);
       })
@@ -90,7 +90,7 @@ const ThongKeDoanhThu = () => {
   };
 
   const getTocDoTangTruong = () => {
-    request('GET',`/thong-ke/toc-do-tang-truong`)
+    request("GET", `/thong-ke/toc-do-tang-truong`)
       .then((response) => {
         setTocDoTangTruong(response.data);
       })
@@ -166,23 +166,19 @@ const ThongKeDoanhThu = () => {
   });
 
   const fetchData = (numberOfDays) => {
-    const sanPhamPromise = request('GET',`/thong-ke/san-pham-khoang-ngay`,
-      {
-        params: {
-          date1: searchNgayBatDau,
-          date2: searchNgayKetThuc,
-        },
-      }
-    );
+    const sanPhamPromise = request("GET", `/thong-ke/san-pham-khoang-ngay`, {
+      params: {
+        date1: searchNgayBatDau,
+        date2: searchNgayKetThuc,
+      },
+    });
 
-    const donHangPromise = request('GET',`/thong-ke/don-hang-khoang-ngay`,
-      {
-        params: {
-          date1: searchNgayBatDau,
-          date2: searchNgayKetThuc,
-        },
-      }
-    );
+    const donHangPromise = request("GET", `/thong-ke/don-hang-khoang-ngay`, {
+      params: {
+        date1: searchNgayBatDau,
+        date2: searchNgayKetThuc,
+      },
+    });
     Promise.all([sanPhamPromise, donHangPromise])
       .then(([sanPhamResponse, donHangResponse]) => {
         const sanPhamData = sanPhamResponse.data;
@@ -301,11 +297,7 @@ const ThongKeDoanhThu = () => {
 
   useEffect(() => {
     const getTrangThaiDonHang = () => {
-      request('GET',`/thong-ke/trang-thai-don-hang`, {
-          params: {
-            chonTheo: loaiBoLocTDTT,
-          },
-        })
+      request("GET", `/thong-ke/trang-thai-don-hang?chonTheo=${loaiBoLocTDTT}`)
         .then((response) => {
           setTrangThaiDonHang(response.data);
         })
@@ -395,7 +387,7 @@ const ThongKeDoanhThu = () => {
           <img
             src={record.duongDan}
             alt="Ảnh"
-            style={{ width: "100px", height: "100px" }}
+            style={{ width: "80px", height: "100px" }}
           />
         );
       },
@@ -408,7 +400,8 @@ const ThongKeDoanhThu = () => {
       render: (value, record) => {
         return (
           <span style={{ whiteSpace: "pre-line" }}>
-            {record.tenSanPham} {record.kichThuocRam}GB/{record.kichThuocRom}GB{" "}
+            {record.tenSanPham} {record.dungLuongRam}GB/{record.dungLuongRom}GB{" "}
+            <br />
             {"("}
             {record.tenMauSac}
             {")"}
@@ -464,12 +457,73 @@ const ThongKeDoanhThu = () => {
     {
       title: "Tên Sản Phẩm",
       dataIndex: "tenSanPham",
-      width: "20%",
+      width: "17%",
       align: "center",
       render: (value, record) => {
         return (
           <span style={{ whiteSpace: "pre-line" }}>
-            {record.tenSanPham} {record.kichThuocRam}GB/{record.kichThuocRom}GB{" "}
+            {record.tenSanPham} {record.dungLuongRam}GB/{record.dungLuongRom}GB{" "}
+            {"("}
+            {record.tenMauSac}
+            {")"}
+          </span>
+        );
+      },
+    },
+    {
+      title: "Giá Bán",
+      dataIndex: "donGia",
+      width: "15%",
+      align: "center",
+      render: (value, record) => {
+        let formattedValue = value;
+        formattedValue = numeral(record.donGia).format("0,0 VND") + " ₫";
+        return <span>{formattedValue}</span>;
+      },
+    },
+    {
+      title: "Số lượng đã bán",
+      dataIndex: "soLuong",
+      width: "15%",
+      align: "center",
+    },
+  ];
+
+  const columns2 = [
+    {
+      title: "STT",
+      dataIndex: "stt",
+      width: "5%",
+      align: "center",
+      render: (text, record, index) => (
+        <span>{listSanPhamSapHet.indexOf(record) + 1}</span>
+      ),
+    },
+    {
+      title: "Ảnh",
+      dataIndex: "duongDan",
+      key: "duongDan",
+      width: "15%",
+      align: "center",
+      render: (text, record) => {
+        return (
+          <img
+            src={record.duongDan}
+            alt="Ảnh"
+            style={{ width: "100px", height: "100px" }}
+          />
+        );
+      },
+    },
+    {
+      title: "Tên Sản Phẩm",
+      dataIndex: "tenSanPham",
+      width: "17%",
+      align: "center",
+      render: (value, record) => {
+        return (
+          <span style={{ whiteSpace: "pre-line" }}>
+            {record.tenSanPham} {record.dungLuongRam}GB/{record.dungLuongRom}GB{" "}
             {"("}
             {record.tenMauSac}
             {")"}
@@ -506,9 +560,9 @@ const ThongKeDoanhThu = () => {
     setOpenSelect(true);
   };
 
-  const handleSearchLoaiBoLoc = (event) => {
-    const selectedValue = event.target.value;
-    setLoaiBoLoc(selectedValue);
+  const handleSearchLoaiBoLoc = (loaiBoLoc) => {
+    setLoaiBoLoc(loaiBoLoc);
+    setActiveButton(loaiBoLoc);
   };
 
   const [openSelect1, setOpenSelect1] = useState(false);
@@ -521,9 +575,9 @@ const ThongKeDoanhThu = () => {
     setOpenSelect1(true);
   };
 
-  const handleSearchLoaiBoLoc1 = (event) => {
-    const selectedValue = event.target.value;
-    setLoaiBoLocTDTT(selectedValue);
+  const handleSearchLoaiBoLoc1 = (loaiBoLocTDTT) => {
+    setLoaiBoLocTDTT(loaiBoLocTDTT);
+    setActiveButton1(loaiBoLocTDTT);
   };
 
   return (
@@ -683,59 +737,154 @@ const ThongKeDoanhThu = () => {
               <div
                 className="d-flex"
                 style={{
-                  height: "40px",
+                  height: "60px",
                   position: "relative",
                   cursor: "pointer",
                 }}
               >
-                <div
-                  onClick={handleOpenSelect}
-                  className=""
-                  style={{ marginTop: "7px" }}
-                >
-                  <span
-                    className="ms-2 ps-1"
-                    style={{ fontSize: "15px", fontWeight: "450" }}
-                  >
-                    Trạng Thái:{" "}
-                  </span>
-                </div>
-                <FormControl
-                  sx={{
-                    minWidth: 50,
-                  }}
-                  size="small"
-                >
-                  <Select
-                    MenuProps={{
-                      PaperProps: {
-                        style: {
-                          borderRadius: "7px",
-                        },
-                      },
+                <ButtonGroup spacing="0.5rem" aria-label="spacing button group">
+                  <Button
+                    onClick={() => {
+                      handleSearchLoaiBoLoc("ngay");
+                      setOpenDate(false);
                     }}
-                    IconComponent={KeyboardArrowDownOutlinedIcon}
-                    sx={{
-                      "& .MuiOutlinedInput-notchedOutline": {
-                        border: "none !important",
-                      },
-                      "& .MuiSelect-select": {
-                        color: "#2f80ed",
-                        fontWeight: "500",
-                      },
+                    className={activeButton === "ngay" ? "button-active" : ""}
+                    style={{
+                      height: "40px",
+                      width: "100px",
+                      fontSize: "15px",
                     }}
-                    open={openSelect}
-                    onClose={handleCloseSelect}
-                    onOpen={handleOpenSelect}
-                    value={loaiBoLoc}
-                    onChange={handleSearchLoaiBoLoc}
                   >
-                    <MenuItem value={"ngay"}>Ngày</MenuItem>
-                    <MenuItem value={"tuan"}>Tuần</MenuItem>
-                    <MenuItem value={"thang"}>Tháng</MenuItem>
-                    <MenuItem value={"nam"}>Năm</MenuItem>
-                  </Select>
-                </FormControl>
+                    Ngày
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      handleSearchLoaiBoLoc("tuan");
+                      setOpenDate(false);
+                    }}
+                    className={activeButton === "tuan" ? "button-active" : ""}
+                    style={{
+                      height: "40px",
+                      width: "100px",
+                      fontSize: "15px",
+                    }}
+                  >
+                    Tuần
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      handleSearchLoaiBoLoc("thang");
+                      setOpenDate(false);
+                    }}
+                    className={activeButton === "thang" ? "button-active" : ""}
+                    style={{
+                      height: "40px",
+                      width: "100px",
+                      fontSize: "15px",
+                    }}
+                  >
+                    Tháng
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      handleSearchLoaiBoLoc("nam");
+                      setOpenDate(false);
+                    }}
+                    className={activeButton === "nam" ? "button-active" : ""}
+                    style={{
+                      height: "40px",
+                      width: "100px",
+                      fontSize: "15px",
+                    }}
+                  >
+                    Năm
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      handleSearchLoaiBoLoc("tuyChinh");
+                      setOpenDate(true);
+                    }}
+                    className={
+                      activeButton === "tuyChinh" ? "button-active" : ""
+                    }
+                    style={{
+                      height: "40px",
+                      width: "100px",
+                      fontSize: "15px",
+                    }}
+                  >
+                    Tùy chỉnh
+                  </Button>
+
+                  {openDate && (
+                    <div className="d-flex">
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DemoContainer components={["DatePicker"]}>
+                          <DatePicker
+                            label="Ngày Bắt Đầu"
+                            value={
+                              searchNgayBatDau
+                                ? dayjs(searchNgayBatDau, "DD/MM/YYYY")
+                                : null
+                            }
+                            format="DD/MM/YYYY"
+                            onChange={handleSearchNgayBatDauChange}
+                            slotProps={{ textField: { size: "small" } }}
+                            sx={{
+                              position: "relative",
+                              width: "50px",
+                              "& .MuiInputBase-root": {
+                                width: "85%",
+                              },
+                            }}
+                          />
+                        </DemoContainer>
+                      </LocalizationProvider>
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DemoContainer components={["DatePicker"]}>
+                          <DatePicker
+                            label="Ngày Kết Thúc"
+                            value={
+                              searchNgayKetThuc
+                                ? dayjs(searchNgayKetThuc, "DD/MM/YYYY")
+                                : null
+                            }
+                            format="DD/MM/YYYY"
+                            onChange={handleSearchNgayKetThucChange}
+                            slotProps={{ textField: { size: "small" } }}
+                            sx={{
+                              position: "relative",
+                              width: "50px",
+                              "& .MuiInputBase-root": {
+                                width: "85%",
+                              },
+                            }}
+                          />
+                        </DemoContainer>
+                      </LocalizationProvider>
+                      <div style={{ paddingTop: "7px" }}>
+                        <Button
+                          onClick={() => {
+                            handleReset();
+                          }}
+                          type="warning"
+                          style={{
+                            height: "40px",
+                            width: "100px",
+                            fontSize: "15px",
+                          }}
+                        >
+                          <span
+                            className="text-dark"
+                            style={{ fontWeight: "500" }}
+                          >
+                            Làm Mới
+                          </span>
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </ButtonGroup>
               </div>
             </div>
             <hr />
@@ -772,7 +921,8 @@ const ThongKeDoanhThu = () => {
               }}
             />
           </Row>
-          {/* <Row
+
+          <Row
             className="mb-3 mt-3"
             style={{
               margin: "10px",
@@ -784,19 +934,18 @@ const ThongKeDoanhThu = () => {
           >
             <h5>
               <FontAwesomeIcon icon={faRankingStar} />
-              Sản phẩm đổi trả
+              Sản phẩm trả hàng
               <hr />
             </h5>
             <Table
-              columns={columns}
-              // dataSource={data}
-              onChange={onChange}
+              columns={columns2}
+              dataSource={listSanPhamSapHet}
               pagination={{
                 // simple: true,
                 pageSize: "3",
               }}
             />
-          </Row> */}
+          </Row>
           <Row
             className="mt-3"
             style={{
@@ -1066,18 +1215,62 @@ const ThongKeDoanhThu = () => {
                       cursor: "pointer",
                     }}
                   >
-                    <div
-                      onClick={handleOpenSelect1}
-                      className=""
-                      style={{ marginTop: "7px" }}
+                    <ButtonGroup
+                      spacing="0.5rem"
+                      aria-label="spacing button group"
                     >
-                      <span
-                        className="ms-2 ps-1"
-                        style={{ fontSize: "15px", fontWeight: "450" }}
+                      <Button
+                        onClick={() => {
+                          handleSearchLoaiBoLoc1("ngay");
+                        }}
+                        className={
+                          activeButton1 === "ngay" ? "button-active" : ""
+                        }
                       >
-                        Trạng Thái:{" "}
-                      </span>
-                    </div>
+                        Ngày
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          handleSearchLoaiBoLoc1("tuan");
+                        }}
+                        className={
+                          activeButton1 === "tuan" ? "button-active" : ""
+                        }
+                      >
+                        Tuần
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          handleSearchLoaiBoLoc1("thang");
+                        }}
+                        className={
+                          activeButton1 === "thang" ? "button-active" : ""
+                        }
+                      >
+                        Tháng
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          handleSearchLoaiBoLoc1("nam");
+                        }}
+                        className={
+                          activeButton1 === "nam" ? "button-active" : ""
+                        }
+                      >
+                        Năm
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          handleSearchLoaiBoLoc1("nam");
+                        }}
+                        className={
+                          activeButton1 === "nam" ? "button-active" : ""
+                        }
+                      >
+                        Tùy Chỉnh
+                      </Button>
+                    </ButtonGroup>
+                    {/*                    
                     <FormControl
                       sx={{
                         minWidth: 50,
@@ -1113,7 +1306,7 @@ const ThongKeDoanhThu = () => {
                         <MenuItem value={"thang"}>Tháng</MenuItem>
                         <MenuItem value={"nam"}>Năm</MenuItem>
                       </Select>
-                    </FormControl>
+                    </FormControl> */}
                   </div>
                 </div>
                 <div

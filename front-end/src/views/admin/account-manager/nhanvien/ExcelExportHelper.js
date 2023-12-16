@@ -3,6 +3,7 @@ import * as XLSX from "xlsx";
 import * as XlsxPopulate from "xlsx-populate/browser/xlsx-populate";
 import moment from "moment";
 import * as dayjs from "dayjs";
+import { FaDownload } from "react-icons/fa6";
 
 const ExcelExportHelper = ({ data }) => {
   const createDownLoadData = () => {
@@ -70,7 +71,7 @@ const ExcelExportHelper = ({ data }) => {
         H: "Địa chỉ",
         I: "Phuờng/Xã",
         J: "Quận/huyện",
-        K: "Tỉnh/Thành phố"
+        K: "Tỉnh/Thành phố",
       },
     ];
 
@@ -78,15 +79,20 @@ const ExcelExportHelper = ({ data }) => {
       stt: index + 1,
       ma: item.ma,
       hoVaTen: item.hoVaTen,
-      ngaySinh: dayjs(item.ngaySinh).$D + "/" + (dayjs(item.ngaySinh).$M + 1) + "/" + dayjs(item.ngaySinh).$y,
+      ngaySinh:
+        dayjs(item.ngaySinh).$D +
+        "/" +
+        (dayjs(item.ngaySinh).$M + 1) +
+        "/" +
+        dayjs(item.ngaySinh).$y,
       email: item.email,
-      canCuocCongDan:item.canCuocCongDan,
+      canCuocCongDan: item.canCuocCongDan,
       soDienThoai: item.soDienThoai,
       diaChi: item.diaChiList[0].diaChi,
       tinhThanhPho: item.diaChiList[0].tinhThanhPho,
       quanHuyen: item.diaChiList[0].quanHuyen,
       phuongXa: item.diaChiList[0].xaPhuong,
-    }))
+    }));
 
     employees.forEach((product) => {
       table1.push({
@@ -100,13 +106,11 @@ const ExcelExportHelper = ({ data }) => {
         H: product.diaChi,
         I: product.phuongXa,
         J: product.quanHuyen,
-        K: product.tinhThanhPho
+        K: product.tinhThanhPho,
       });
-
     });
 
-    table1 = table1
-      .concat([""]);
+    table1 = table1.concat([""]);
 
     const finalData = [...title, ...table1];
 
@@ -119,9 +123,7 @@ const ExcelExportHelper = ({ data }) => {
       skipHeader: true,
     });
 
-
     XLSX.utils.book_append_sheet(wb, sheet, "Danh sách nhân viên");
-
 
     // Since blobs can store binary data, they can be used to store images or other multimedia files.
 
@@ -230,8 +232,7 @@ const ExcelExportHelper = ({ data }) => {
         //     // bold: true,
         //   });
         // }
-
-            });
+      });
 
       return workbook
         .outputAsync()
@@ -246,7 +247,20 @@ const ExcelExportHelper = ({ data }) => {
       }}
       type="primary"
     >
-      +Xuất file excel
+      <FaDownload
+        className="ms-1"
+        style={{
+          position: "absolute",
+          bottom: "13.5px",
+          left: "10px",
+        }}
+      />
+      <span
+        className=""
+        style={{ marginBottom: "2px", fontWeight: "500", marginLeft: "21px" }}
+      >
+        Export Excel
+      </span>
     </span>
   );
 };

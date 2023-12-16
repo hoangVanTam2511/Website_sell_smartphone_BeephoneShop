@@ -38,8 +38,12 @@ import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
 import useCustomSnackbar from "../../../utilities/notistack";
-import { request, requestParam } from '../../../store/helpers/axios_helper'
-
+import { request, requestParam } from "../../../store/helpers/axios_helper";
+import {
+  faArrowsRotate,
+  faPenToSquare,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -99,12 +103,12 @@ const ManagementScreens = () => {
 
   const getListProductSearchAndPage = (page) => {
     // setIsLoading(false);
-    requestParam('GET',`/api/display/search`, {
-          keyword: searchTatCa,
-          currentPage: page,
-          pageSize: pageShow,
-          status: ConvertStatusProductsNumberToString(searchTrangThai),
-      })
+    requestParam("GET", `/api/display/search`, {
+      keyword: searchTatCa,
+      currentPage: page,
+      pageSize: pageShow,
+      status: ConvertStatusProductsNumberToString(searchTrangThai),
+    })
       .then((response) => {
         setProductPages(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -212,7 +216,7 @@ const ManagementScreens = () => {
       width: "15%",
       dataIndex: "ma",
       render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>{ record.ma}</span>
+        <span style={{ fontWeight: "400" }}>{record.ma}</span>
       ),
     },
     {
@@ -231,8 +235,13 @@ const ManagementScreens = () => {
       width: "15%",
       render: (text, record) => (
         <span style={{ fontWeight: "400" }}>
-          {record.doPhanGiaiManHinh === null ? '':record.doPhanGiaiManHinh.chieuDai} x{" "}
-          {record.doPhanGiaiManHinh === null ? '': record.doPhanGiaiManHinh.chieuRong + " Pixels"}
+          {record.doPhanGiaiManHinh === null
+            ? ""
+            : record.doPhanGiaiManHinh.chieuDai}{" "}
+          x{" "}
+          {record.doPhanGiaiManHinh === null
+            ? ""
+            : record.doPhanGiaiManHinh.chieuRong + " Pixels"}
         </span>
       ),
     },
@@ -241,7 +250,7 @@ const ManagementScreens = () => {
       align: "center",
       width: "15%",
       render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>{ record.tanSoQuet + " HZ"}</span>
+        <span style={{ fontWeight: "400" }}>{record.tanSoQuet + " HZ"}</span>
       ),
     },
     {
@@ -301,10 +310,16 @@ const ManagementScreens = () => {
                     setIdManHinh(record.id);
                     setIdDoPhanGiai(record.doPhanGiaiManHinh.id);
                     setMaDoPhanGiai(record.doPhanGiaiManHinh.ma);
-                    console.log(record.doPhanGiaiManHinh.id);
                   }}
                 >
-                  <BorderColorOutlinedIcon color="primary" />
+                  <FontAwesomeIcon
+                    icon={faPenToSquare}
+                    size="sm"
+                    style={{
+                      color: "#2f80ed",
+                      cursor: "pointer",
+                    }}
+                  />
                 </IconButton>
               </Tooltip>
 
@@ -325,14 +340,19 @@ const ManagementScreens = () => {
                   style={{ marginTop: "6px" }}
                   onClick={() => doiTrangThaiProducts(record.id)}
                 >
-                  <AssignmentOutlinedIcon
-                    color={
-                      record.status === StatusCommonProducts.IN_ACTIVE
-                        ? "error"
-                        : record.status === StatusCommonProducts.ACTIVE
-                        ? "success"
-                        : "disabled"
-                    }
+                  <FontAwesomeIcon
+                    icon={faArrowsRotate}
+                    size="sm"
+                    transform={{ rotate: 90 }}
+                    style={{
+                      cursor: "pointer",
+                      color:
+                        record.status === StatusCommonProducts.IN_ACTIVE
+                          ? "#e5383b"
+                          : record.status === StatusCommonProducts.ACTIVE
+                          ? "#09a129"
+                          : "disabled",
+                    }}
                   />
                 </IconButton>
               </Tooltip>
@@ -392,7 +412,7 @@ const ManagementScreens = () => {
   const [maDoPhanGiai, setMaDoPhanGiai] = useState("");
 
   const detailManHinhs = (id) => {
-    request('GET',`/api/display/${id}`)
+    request("GET", `/api/display/${id}`)
       .then((response) => {
         setManHinhCode(response.data.data.ma);
         setTrangThai(response.data.data.status);
@@ -511,7 +531,7 @@ const ManagementScreens = () => {
       kichThuoc: kichThuoc,
       status: trangThai,
     };
-    request('PUT',`/api/display`, obj)
+    request("PUT", `/api/display`, obj)
       .then((response) => {
         loadDataList();
         handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
@@ -523,9 +543,9 @@ const ManagementScreens = () => {
   };
 
   const doiTrangThaiProducts = (idManHinh) => {
-    request('PUT',`/api/display/${idManHinh}`)
+    request("PUT", `/api/display/${idManHinh}`)
       .then((response) => {
-        loadDataList();
+        getListProductSearchAndPage(currentPage);
         handleOpenAlertVariant(
           "Đổi trạng thái thành công!!!",
           Notistack.SUCCESS
@@ -983,7 +1003,7 @@ const ManagementScreens = () => {
                     )}
                   />
                 </div>
-                <div className="mt-3" style={{}}>
+                {/* <div className="mt-3" style={{}}>
                   <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">
                       Trạng Thái
@@ -1005,7 +1025,7 @@ const ManagementScreens = () => {
                       </MenuItem>
                     </Select>
                   </FormControl>
-                </div>
+                </div> */}
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
                     onClick={() => {

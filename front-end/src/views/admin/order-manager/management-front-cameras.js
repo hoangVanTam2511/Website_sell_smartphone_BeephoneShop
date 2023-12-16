@@ -7,6 +7,7 @@ import {
   DialogContent,
   FormControl,
   IconButton,
+  InputAdornment,
   InputLabel,
   MenuItem,
   Pagination,
@@ -17,7 +18,6 @@ import {
 } from "@mui/material";
 import { PlusOutlined } from "@ant-design/icons";
 import Card from "../../../components/Card";
-import axios from "axios";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import Zoom from "@mui/material/Zoom";
 import {
@@ -25,7 +25,6 @@ import {
   StatusCommonProducts,
   StatusCommonProductsNumber,
   TypeCamera,
-  TypeCameraNumber,
 } from "./enum";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
@@ -35,8 +34,13 @@ import {
   ConvertCameraTypeToString,
   ConvertStatusProductsNumberToString,
 } from "../../../utilities/convertEnum";
-import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
-import { request, requestParam } from '../../../store/helpers/axios_helper'
+import {
+  faArrowsRotate,
+  faPenToSquare,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { request, requestParam } from "../../../store/helpers/axios_helper";
+
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -59,7 +63,7 @@ const ManagementFrontCameras = () => {
   );
 
   const getListCameraFront = () => {
-    request('GET',`/api/camera-fronts`)
+    request("GET", `/api/camera-fronts`)
       .then((response) => {
         setCameras(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -94,13 +98,12 @@ const ManagementFrontCameras = () => {
 
   const getListProductSearchAndPage = (page) => {
     // setIsLoading(false);
-    requestParam('GET',`/api/camera-fronts/search`, {
-          keyword: searchTatCa,
-          currentPage: page,
-          pageSize: pageShow,
-          status: ConvertStatusProductsNumberToString(searchTrangThai),
-        }
-      )
+    requestParam("GET", `/api/camera-fronts/search`, {
+      keyword: searchTatCa,
+      currentPage: page,
+      pageSize: pageShow,
+      status: ConvertStatusProductsNumberToString(searchTrangThai),
+    })
       .then((response) => {
         setCameraPages(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -130,7 +133,7 @@ const ManagementFrontCameras = () => {
   const [cameraType, setCameraType] = useState("");
 
   const detailCameras = async (id) => {
-    request('GET',`/api/camera-fronts/${id}`)
+    request("GET", `/api/camera-fronts/${id}`)
       .then((response) => {
         setCameraCode(response.data.data.ma);
         setCameraType(response.data.data.cameraType);
@@ -215,11 +218,15 @@ const ManagementFrontCameras = () => {
   const validationAll = () => {
     const msg = {};
 
-    console.log(String(doPhanGiai))
+    console.log(String(doPhanGiai));
 
-    if(String(doPhanGiai) === null || String(doPhanGiai) === "" || String(doPhanGiai) === undefined){
+    if (
+      String(doPhanGiai) === null ||
+      String(doPhanGiai) === "" ||
+      String(doPhanGiai) === undefined
+    ) {
       msg.doPhanGiai = "Độ phân giải không được bỏ trống.";
-      return;
+    }
     const isDuplicate = cameras.some(
       (camera) =>
         camera.doPhanGiai == doPhanGiai &&
@@ -260,8 +267,8 @@ const ManagementFrontCameras = () => {
       cameraType: cameraType,
       status: status,
     };
-    console.log(obj)
-    request('PUT',`/api/camera-fronts/update`, obj)
+    console.log(obj);
+    request("PUT", `/api/camera-fronts/update`, obj)
       .then((response) => {
         getListCameraFront();
         handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
@@ -272,9 +279,9 @@ const ManagementFrontCameras = () => {
       });
   };
   const doiTrangThaiProducts = (idCamera) => {
-    request('PUT',`/api/camera-fronts/${idCamera}`)
+    request("PUT", `/api/camera-fronts/${idCamera}`)
       .then((response) => {
-        getListCameraFront();
+        getListProductSearchAndPage(currentPage);
         handleOpenAlertVariant(
           "Đổi trạng thái thành công!!!",
           Notistack.SUCCESS
@@ -389,9 +396,17 @@ const ManagementFrontCameras = () => {
                     setIdCamera(record.id);
                   }}
                 >
-                  <BorderColorOutlinedIcon color="primary" />
+                  <FontAwesomeIcon
+                    icon={faPenToSquare}
+                    size="sm"
+                    style={{
+                      color: "#2f80ed",
+                      cursor: "pointer",
+                    }}
+                  />
                 </IconButton>
               </Tooltip>
+
               {/* Hàm đổi trạng thái */}
 
               <Tooltip
@@ -409,14 +424,19 @@ const ManagementFrontCameras = () => {
                   style={{ marginTop: "6px" }}
                   onClick={() => doiTrangThaiProducts(record.id)}
                 >
-                  <AssignmentOutlinedIcon
-                    color={
-                      record.status === StatusCommonProducts.IN_ACTIVE
-                        ? "error"
-                        : record.status === StatusCommonProducts.ACTIVE
-                        ? "success"
-                        : "disabled"
-                    }
+                  <FontAwesomeIcon
+                    icon={faArrowsRotate}
+                    size="sm"
+                    transform={{ rotate: 90 }}
+                    style={{
+                      cursor: "pointer",
+                      color:
+                        record.status === StatusCommonProducts.IN_ACTIVE
+                          ? "#e5383b"
+                          : record.status === StatusCommonProducts.ACTIVE
+                          ? "#09a129"
+                          : "disabled",
+                    }}
                   />
                 </IconButton>
               </Tooltip>
@@ -426,6 +446,7 @@ const ManagementFrontCameras = () => {
       ),
     },
   ];
+
   return (
     <>
       <div
@@ -678,6 +699,20 @@ const ManagementFrontCameras = () => {
                     renderInput={(params) => (
                       <TextField
                         {...params}
+                        InputProps={{
+                          ...params.InputProps,
+                          startAdornment: (
+                            <>
+                              <InputAdornment
+                                style={{ marginLeft: "5px" }}
+                                position="start"
+                              >
+                                <span className="">Megapixel</span>
+                              </InputAdornment>
+                              {params.InputProps.startAdornment}
+                            </>
+                          ),
+                        }}
                         label="Độ Phân Giải"
                         error={validationMsg.doPhanGiai !== undefined}
                         helperText={validationMsg.doPhanGiai}

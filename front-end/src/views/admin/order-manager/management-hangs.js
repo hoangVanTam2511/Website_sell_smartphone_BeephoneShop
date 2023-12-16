@@ -30,8 +30,12 @@ import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import useCustomSnackbar from "../../../utilities/notistack";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
-import { request, requestParam } from '../../../store/helpers/axios_helper'
-
+import { request, requestParam } from "../../../store/helpers/axios_helper";
+import {
+  faArrowsRotate,
+  faPenToSquare,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -49,11 +53,11 @@ const ManagementHangs = () => {
   );
 
   const findOrdersByMultipleCriteriaWithPagination = (page) => {
-    requestParam('GET',`/api/orders`, {
-          currentPage: page,
-          keyword: keyword,
-          isPending: false,
-      })
+    requestParam("GET", `/api/orders`, {
+      currentPage: page,
+      keyword: keyword,
+      isPending: false,
+    })
       .then((response) => {
         setListHang(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -66,7 +70,7 @@ const ManagementHangs = () => {
   };
 
   const getListHang = (page) => {
-    request('GET',`/api/brands`)
+    request("GET", `/api/brands`)
       .then((response) => {
         setListHang(response.data.data);
         // setIsLoading(false);
@@ -84,14 +88,14 @@ const ManagementHangs = () => {
 
   const getListProductSearchAndPage = (page) => {
     // setIsLoading(false);
-    request('GET',`/api/brands/search`, {
-        params: {
-          keyword: searchTatCa,
-          currentPage: page,
-          pageSize: pageShow,
-          status: ConvertStatusProductsNumberToString(searchTrangThai),
-        },
-      })
+    request("GET", `/api/brands/search`, {
+      params: {
+        keyword: searchTatCa,
+        currentPage: page,
+        pageSize: pageShow,
+        status: ConvertStatusProductsNumberToString(searchTrangThai),
+      },
+    })
       .then((response) => {
         setProductPages(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -270,7 +274,14 @@ const ManagementHangs = () => {
                     setIdHang(record.id);
                   }}
                 >
-                  <BorderColorOutlinedIcon color="primary" />
+                  <FontAwesomeIcon
+                    icon={faPenToSquare}
+                    size="sm"
+                    style={{
+                      color: "#2f80ed",
+                      cursor: "pointer",
+                    }}
+                  />
                 </IconButton>
               </Tooltip>
 
@@ -291,14 +302,19 @@ const ManagementHangs = () => {
                   style={{ marginTop: "6px" }}
                   onClick={() => doiTrangThaiProducts(record.id)}
                 >
-                  <AssignmentOutlinedIcon
-                    color={
-                      record.status === StatusCommonProducts.IN_ACTIVE
-                        ? "error"
-                        : record.status === StatusCommonProducts.ACTIVE
-                        ? "success"
-                        : "disabled"
-                    }
+                  <FontAwesomeIcon
+                    icon={faArrowsRotate}
+                    size="sm"
+                    transform={{ rotate: 90 }}
+                    style={{
+                      cursor: "pointer",
+                      color:
+                        record.status === StatusCommonProducts.IN_ACTIVE
+                          ? "#e5383b"
+                          : record.status === StatusCommonProducts.ACTIVE
+                          ? "#09a129"
+                          : "disabled",
+                    }}
                   />
                 </IconButton>
               </Tooltip>
@@ -315,7 +331,7 @@ const ManagementHangs = () => {
   const [idHang, setIdHang] = useState("");
 
   const detailHangs = async (id) => {
-    request('GET',`/api/brands/${id}`)
+    request("GET", `/api/brands/${id}`)
       .then((response) => {
         setHangCode(response.data.data.ma);
         setStatus(response.data.data.status);
@@ -389,7 +405,7 @@ const ManagementHangs = () => {
       tenHang: tenHang,
       status: status,
     };
-    request('PUT',`/api/brands`, obj)
+    request("PUT", `/api/brands`, obj)
       .then((response) => {
         getListProductSearchAndPage();
         handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
@@ -401,9 +417,9 @@ const ManagementHangs = () => {
   };
 
   const doiTrangThaiProducts = (idHang) => {
-    request('PUT',`/api/brands/${idHang}`)
+    request("PUT", `/api/brands/${idHang}`)
       .then((response) => {
-        getListProductSearchAndPage();
+        getListProductSearchAndPage(currentPage);
         handleOpenAlertVariant(
           "Đổi trạng thái thành công!!!",
           Notistack.SUCCESS

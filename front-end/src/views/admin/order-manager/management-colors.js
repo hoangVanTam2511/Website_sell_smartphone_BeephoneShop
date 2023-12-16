@@ -31,8 +31,12 @@ import LoadingIndicator from "../../../utilities/loading";
 import CreateMauSac from "./create-mau-sac";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
-import { request, requestParam } from '../../../store/helpers/axios_helper'
-
+import { request, requestParam } from "../../../store/helpers/axios_helper";
+import {
+  faArrowsRotate,
+  faPenToSquare,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -59,7 +63,7 @@ const ManagementColors = () => {
   const [openSelect, setOpenSelect] = useState(false);
 
   const getListColor = () => {
-    request('GET',`/api/colors`)
+    request("GET", `/api/colors`)
       .then((response) => {
         setColors(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -71,12 +75,12 @@ const ManagementColors = () => {
 
   const getListProductSearchAndPage = (page) => {
     // setIsLoading(false);
-    requestParam('GET',`/api/colors/search`, {
-          keyword: searchTatCa,
-          currentPage: page,
-          pageSize: pageShow,
-          status: ConvertStatusProductsNumberToString(searchTrangThai),
-      })
+    requestParam("GET", `/api/colors/search`, {
+      keyword: searchTatCa,
+      currentPage: page,
+      pageSize: pageShow,
+      status: ConvertStatusProductsNumberToString(searchTrangThai),
+    })
       .then((response) => {
         setColorPages(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -98,7 +102,7 @@ const ManagementColors = () => {
   };
 
   const detailColor = async (id) => {
-    request('GET',`/api/colors/${id}`)
+    request("GET", `/api/colors/${id}`)
       .then((response) => {
         setColorCode(response.data.data.ma);
         setStatus(response.data.data.status);
@@ -176,9 +180,9 @@ const ManagementColors = () => {
   };
 
   const doiTrangThaiColor = (idColor) => {
-    request('PUT',`/api/colors/doi-trang-thai/${idColor}`)
+    request("PUT", `/api/colors/doi-trang-thai/${idColor}`)
       .then((response) => {
-        getListColor();
+        getListProductSearchAndPage(currentPage);
         handleOpenAlertVariant(
           "Đổi trạng thái thành công!!!",
           Notistack.SUCCESS
@@ -280,13 +284,19 @@ const ManagementColors = () => {
           <div className="button-container">
             <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
               <IconButton
-                size=""
                 onClick={() => {
-                  setIdColor(record.id);
                   handleClickOpen1(record.id);
+                  setIdColor(record.id);
                 }}
               >
-                <BorderColorOutlinedIcon color="primary" />
+                <FontAwesomeIcon
+                  icon={faPenToSquare}
+                  size="sm"
+                  style={{
+                    color: "#2f80ed",
+                    cursor: "pointer",
+                  }}
+                />
               </IconButton>
             </Tooltip>
 
@@ -307,14 +317,19 @@ const ManagementColors = () => {
                 style={{ marginTop: "6px" }}
                 onClick={() => doiTrangThaiColor(record.id)}
               >
-                <AssignmentOutlinedIcon
-                  color={
-                    record.status === StatusCommonProducts.IN_ACTIVE
-                      ? "error"
-                      : record.status === StatusCommonProducts.ACTIVE
-                      ? "success"
-                      : "disabled"
-                  }
+                <FontAwesomeIcon
+                  icon={faArrowsRotate}
+                  size="sm"
+                  transform={{ rotate: 90 }}
+                  style={{
+                    cursor: "pointer",
+                    color:
+                      record.status === StatusCommonProducts.IN_ACTIVE
+                        ? "#e5383b"
+                        : record.status === StatusCommonProducts.ACTIVE
+                        ? "#09a129"
+                        : "disabled",
+                  }}
                 />
               </IconButton>
             </Tooltip>
@@ -360,7 +375,7 @@ const ManagementColors = () => {
       tenMauSac: colorName,
       status: status,
     };
-    request('PUT',`/api/colors`, obj)
+    request("PUT", `/api/colors`, obj)
       .then((response) => {
         getListColor();
         handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);

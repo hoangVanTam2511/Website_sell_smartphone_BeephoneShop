@@ -17,7 +17,7 @@ import LoadingIndicator from "../../../utilities/loading";
 import generateRandomCode from "../../../utilities/randomCode";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { Notistack, StatusCommonProductsNumber } from "./enum";
-import { request } from '../../../store/helpers/axios_helper'
+import { request } from "../../../store/helpers/axios_helper";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -63,7 +63,7 @@ const CreateHang = ({ open, close, getAll, hangs }) => {
       tenHang: tenHang,
       status: status,
     };
-    request('POST',`/api/brands`, obj)
+    request("POST", `/api/brands`, obj)
       .then((response) => {
         close();
         getAll();
@@ -138,7 +138,7 @@ const CreateHang = ({ open, close, getAll, hangs }) => {
                     )}
                   />
                 </div>
-                <div className="mt-3" style={{}}>
+                {/* <div className="mt-3" style={{}}>
                   <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">
                       Trạng Thái
@@ -164,7 +164,7 @@ const CreateHang = ({ open, close, getAll, hangs }) => {
                       </MenuItem>
                     </Select>
                   </FormControl>
-                </div>
+                </div> */}
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
                     onClick={() => {

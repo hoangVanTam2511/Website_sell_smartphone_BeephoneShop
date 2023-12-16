@@ -185,7 +185,7 @@ const CreateSimCard = ({ open, close, getAll, sims }) => {
                     )}
                   />
                 </div>
-                <div className="mt-3" style={{}}>
+                {/* <div className="mt-3" style={{}}>
                   <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">
                       Trạng Thái
@@ -211,7 +211,7 @@ const CreateSimCard = ({ open, close, getAll, sims }) => {
                       </MenuItem>
                     </Select>
                   </FormControl>
-                </div>
+                </div> */}
                 <div className="mt-3 d-flex">
                   <div>
                     <FormControlLabel

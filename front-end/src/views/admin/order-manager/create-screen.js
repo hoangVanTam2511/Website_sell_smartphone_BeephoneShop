@@ -388,11 +388,11 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
                         {...params}
                         InputProps={{
                           ...params.InputProps,
-                          endAdornment: (
+                          startAdornment: (
                             <>
                               <InputAdornment
                                 style={{ marginLeft: "5px" }}
-                                position="end"
+                                position="start"
                               >
                                 Hz
                               </InputAdornment>
@@ -421,11 +421,11 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
                         {...params}
                         InputProps={{
                           ...params.InputProps,
-                          endAdornment: (
+                          startAdornment: (
                             <>
                               <InputAdornment
                                 style={{ marginLeft: "5px" }}
-                                position="end"
+                                position="start"
                               >
                                 inches
                               </InputAdornment>
@@ -440,7 +440,7 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
                     )}
                   />
                 </div>
-                <div className="mt-3" style={{}}>
+                {/* <div className="mt-3" style={{}}>
                   <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">
                       Trạng Thái
@@ -466,7 +466,7 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
                       </MenuItem>
                     </Select>
                   </FormControl>
-                </div>
+                </div> */}
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
                     onClick={() => {

@@ -32,8 +32,12 @@ import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import useCustomSnackbar from "../../../utilities/notistack";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
-import { request, requestParam } from '../../../store/helpers/axios_helper'
-
+import { request, requestParam } from "../../../store/helpers/axios_helper";
+import {
+  faArrowsRotate,
+  faPenToSquare,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -71,7 +75,7 @@ const ManagementTheNhos = () => {
   // };
 
   const getListTheNho = (page) => {
-    request('GET',`/api/the-nhos`)
+    request("GET", `/api/the-nhos`)
       .then((response) => {
         setListTheNho(response.data.data);
         getListProductSearchAndPage(currentPage);
@@ -90,12 +94,12 @@ const ManagementTheNhos = () => {
 
   const getListProductSearchAndPage = (page) => {
     // setIsLoading(false);
-    requestParam('GET',`/api/the-nhos/search`, {
-          keyword: searchTatCa,
-          currentPage: page,
-          pageSize: pageShow,
-          status: ConvertStatusProductsNumberToString(searchTrangThai),
-      })
+    requestParam("GET", `/api/the-nhos/search`, {
+      keyword: searchTatCa,
+      currentPage: page,
+      pageSize: pageShow,
+      status: ConvertStatusProductsNumberToString(searchTrangThai),
+    })
       .then((response) => {
         setProductPages(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -287,7 +291,14 @@ const ManagementTheNhos = () => {
                     setIdTheNho(record.id);
                   }}
                 >
-                  <BorderColorOutlinedIcon color="primary" />
+                  <FontAwesomeIcon
+                    icon={faPenToSquare}
+                    size="sm"
+                    style={{
+                      color: "#2f80ed",
+                      cursor: "pointer",
+                    }}
+                  />
                 </IconButton>
               </Tooltip>
 
@@ -308,14 +319,19 @@ const ManagementTheNhos = () => {
                   style={{ marginTop: "6px" }}
                   onClick={() => doiTrangThaiProducts(record.id)}
                 >
-                  <AssignmentOutlinedIcon
-                    color={
-                      record.status === StatusCommonProducts.IN_ACTIVE
-                        ? "error"
-                        : record.status === StatusCommonProducts.ACTIVE
-                        ? "success"
-                        : "disabled"
-                    }
+                  <FontAwesomeIcon
+                    icon={faArrowsRotate}
+                    size="sm"
+                    transform={{ rotate: 90 }}
+                    style={{
+                      cursor: "pointer",
+                      color:
+                        record.status === StatusCommonProducts.IN_ACTIVE
+                          ? "#e5383b"
+                          : record.status === StatusCommonProducts.ACTIVE
+                          ? "#09a129"
+                          : "disabled",
+                    }}
                   />
                 </IconButton>
               </Tooltip>
@@ -333,7 +349,7 @@ const ManagementTheNhos = () => {
   const [idTheNho, setIdTheNho] = useState("");
 
   const detailTheNhos = async (id) => {
-    request('GET',`/api/the-nhos/${id}`)
+    request("GET", `/api/the-nhos/${id}`)
       .then((response) => {
         setTheNhoCode(response.data.data.ma);
         setStatus(response.data.data.status);
@@ -422,7 +438,7 @@ const ManagementTheNhos = () => {
       loaiTheNho: loaiTheNho,
       status: status,
     };
-    request('PUT',`/api/the-nhos`, obj)
+    request("PUT", `/api/the-nhos`, obj)
       .then((response) => {
         getListProductSearchAndPage(currentPage);
         handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
@@ -434,9 +450,9 @@ const ManagementTheNhos = () => {
   };
 
   const doiTrangThaiProducts = (idTheNho) => {
-    request('PUT',`/api/the-nhos/${idTheNho}`)
+    request("PUT", `/api/the-nhos/${idTheNho}`)
       .then((response) => {
-        getListProductSearchAndPage();
+        getListProductSearchAndPage(currentPage);
         handleOpenAlertVariant(
           "Đổi trạng thái thành công!!!",
           Notistack.SUCCESS
@@ -720,11 +736,11 @@ const ManagementTheNhos = () => {
                         {...params}
                         InputProps={{
                           ...params.InputProps,
-                          endAdornment: (
+                          startAdornment: (
                             <>
                               <InputAdornment
                                 style={{ marginLeft: "5px" }}
-                                position="end"
+                                position="start"
                               >
                                 GB
                               </InputAdornment>
@@ -739,7 +755,7 @@ const ManagementTheNhos = () => {
                     )}
                   />
                 </div>
-                <div className="mt-3" style={{}}>
+                {/* <div className="mt-3" style={{}}>
                   <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">
                       Trạng Thái
@@ -761,7 +777,7 @@ const ManagementTheNhos = () => {
                       </MenuItem>
                     </Select>
                   </FormControl>
-                </div>
+                </div> */}
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
                     onClick={() => handleSubmit()}

@@ -30,9 +30,13 @@ import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import CreateRom from "./create-rom";
 import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
-import { request, requestParam } from '../../../store/helpers/axios_helper'
+import { request, requestParam } from "../../../store/helpers/axios_helper";
 import useCustomSnackbar from "../../../utilities/notistack";
-
+import {
+  faArrowsRotate,
+  faPenToSquare,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -52,7 +56,7 @@ const ManagementRoms = () => {
   const [openSelect, setOpenSelect] = useState(false);
 
   const loadDataRoms = () => {
-    request('GET',`/api/roms`)
+    request("GET", `/api/roms`)
       .then((response) => {
         setListRom(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -66,11 +70,11 @@ const ManagementRoms = () => {
 
   const getListRomSearchAndPage = (page) => {
     // setIsLoading(false);
-    requestParam('GET',`/api/roms/search`, {
-          keyword: searchTatCa,
-          currentPage: page,
-          status: ConvertStatusProductsNumberToString(searchTrangThai),
-      })
+    requestParam("GET", `/api/roms/search`, {
+      keyword: searchTatCa,
+      currentPage: page,
+      status: ConvertStatusProductsNumberToString(searchTrangThai),
+    })
       .then((response) => {
         setRomPages(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -224,7 +228,14 @@ const ManagementRoms = () => {
                     setIdRom(record.id);
                   }}
                 >
-                  <BorderColorOutlinedIcon color="primary" />
+                  <FontAwesomeIcon
+                    icon={faPenToSquare}
+                    size="sm"
+                    style={{
+                      color: "#2f80ed",
+                      cursor: "pointer",
+                    }}
+                  />
                 </IconButton>
               </Tooltip>
 
@@ -245,14 +256,19 @@ const ManagementRoms = () => {
                   style={{ marginTop: "6px" }}
                   onClick={() => doiTrangThaiProducts(record.id)}
                 >
-                  <AssignmentOutlinedIcon
-                    color={
-                      record.status === StatusCommonProducts.IN_ACTIVE
-                        ? "error"
-                        : record.status === StatusCommonProducts.ACTIVE
-                        ? "success"
-                        : "disabled"
-                    }
+                  <FontAwesomeIcon
+                    icon={faArrowsRotate}
+                    size="sm"
+                    transform={{ rotate: 90 }}
+                    style={{
+                      cursor: "pointer",
+                      color:
+                        record.status === StatusCommonProducts.IN_ACTIVE
+                          ? "#e5383b"
+                          : record.status === StatusCommonProducts.ACTIVE
+                          ? "#09a129"
+                          : "disabled",
+                    }}
                   />
                 </IconButton>
               </Tooltip>
@@ -269,7 +285,7 @@ const ManagementRoms = () => {
   const [idRom, setIdRom] = useState("");
 
   const detailRoms = async (id) => {
-    request('GET',`/api/roms/${id}`)
+    request("GET", `/api/roms/${id}`)
       .then((response) => {
         setRomCode(response.data.data.ma);
         setStatus(response.data.data.status);
@@ -351,7 +367,7 @@ const ManagementRoms = () => {
       dungLuong: dungLuong,
       status: status,
     };
-    request('PUT',`/api/roms`, obj)
+    request("PUT", `/api/roms`, obj)
       .then((response) => {
         loadDataRoms();
         handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
@@ -363,9 +379,9 @@ const ManagementRoms = () => {
   };
 
   const doiTrangThaiProducts = (idRom) => {
-    request('PUT',`/api/roms/${idRom}`)
+    request("PUT", `/api/roms/${idRom}`)
       .then((response) => {
-        loadDataRoms();
+        getListRomSearchAndPage(currentPage);
         handleOpenAlertVariant(
           "Đổi trạng thái thành công!!!",
           Notistack.SUCCESS
@@ -566,11 +582,11 @@ const ManagementRoms = () => {
                         {...params}
                         InputProps={{
                           ...params.InputProps,
-                          endAdornment: (
+                          startAdornment: (
                             <>
                               <InputAdornment
                                 style={{ marginLeft: "5px" }}
-                                position="end"
+                                position="start"
                               >
                                 GB
                               </InputAdornment>
@@ -585,7 +601,7 @@ const ManagementRoms = () => {
                     )}
                   />
                 </div>
-                <div className="mt-3" style={{}}>
+                {/* <div className="mt-3" style={{}}>
                   <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">
                       Trạng Thái
@@ -607,7 +623,7 @@ const ManagementRoms = () => {
                       </MenuItem>
                     </Select>
                   </FormControl>
-                </div>
+                </div> */}
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
                     onClick={() => handleSubmit()}

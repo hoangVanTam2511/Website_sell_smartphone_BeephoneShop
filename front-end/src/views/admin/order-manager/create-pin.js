@@ -18,7 +18,7 @@ import LoadingIndicator from "../../../utilities/loading";
 import generateRandomCode from "../../../utilities/randomCode";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { Notistack, StatusCommonProductsNumber } from "./enum";
-import { request } from '../../../store/helpers/axios_helper'
+import { request } from "../../../store/helpers/axios_helper";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -112,7 +112,7 @@ const CreatePin = ({ open, close, getAll, pins }) => {
       dungLuong: dungLuong,
       status: status,
     };
-    request('POST',`/api/pins`, obj)
+    request("POST", `/api/pins`, obj)
       .then((response) => {
         close();
         getAll();
@@ -179,11 +179,11 @@ const CreatePin = ({ open, close, getAll, pins }) => {
                         {...params}
                         InputProps={{
                           ...params.InputProps,
-                          endAdornment: (
+                          startAdornment: (
                             <>
                               <InputAdornment
                                 style={{ marginLeft: "5px" }}
-                                position="end"
+                                position="start"
                               >
                                 mAh
                               </InputAdornment>
@@ -198,7 +198,7 @@ const CreatePin = ({ open, close, getAll, pins }) => {
                     )}
                   />
                 </div>
-                <div className="mt-3" style={{}}>
+                {/* <div className="mt-3" style={{}}>
                   <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">
                       Trạng Thái
@@ -225,7 +225,7 @@ const CreatePin = ({ open, close, getAll, pins }) => {
                       </MenuItem>
                     </Select>
                   </FormControl>
-                </div>
+                </div> */}
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
                     onClick={() => {

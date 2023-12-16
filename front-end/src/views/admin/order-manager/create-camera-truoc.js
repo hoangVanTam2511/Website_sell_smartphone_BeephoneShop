@@ -23,7 +23,7 @@ import {
 } from "./enum";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { ConvertCameraTypeToString } from "../../../utilities/convertEnum";
-import { request } from '../../../store/helpers/axios_helper'
+import { request } from "../../../store/helpers/axios_helper";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -93,7 +93,7 @@ const CreateCameraTruoc = ({ open, close, getAll, cameraFront }) => {
       cameraType: cameraType,
       status: status,
     };
-    request('POST',`/api/camera-fronts`, obj)
+    request("POST", `/api/camera-fronts`, obj)
       .then((response) => {
         close();
         getAll();
@@ -157,11 +157,11 @@ const CreateCameraTruoc = ({ open, close, getAll, cameraFront }) => {
                         {...params}
                         InputProps={{
                           ...params.InputProps,
-                          endAdornment: (
+                          startAdornment: (
                             <>
                               <InputAdornment
                                 style={{ marginLeft: "5px" }}
-                                position="end"
+                                position="start"
                               >
                                 <span className="">Megapixel</span>
                               </InputAdornment>

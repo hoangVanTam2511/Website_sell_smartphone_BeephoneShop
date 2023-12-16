@@ -25,7 +25,13 @@ import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDown
 import LoadingIndicator from "../../../utilities/loading";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
-import { request, requestParam } from '../../../store/helpers/axios_helper'
+import { request, requestParam } from "../../../store/helpers/axios_helper";
+import {
+  faArrowsRotate,
+  faPenToSquare,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { current } from "@reduxjs/toolkit";
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -48,34 +54,29 @@ const ManagementImei = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [openSelect, setOpenSelect] = useState(false);
 
-  const getListImei = () => {
-    request('GET',`/api/imeis`)
-      .then((response) => {
-        setImei(response.data.data);
-        setTotalPages(response.data.totalPages);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
+  // const getListImei = () => {
+  //   request("GET", `/api/imeis`)
+  //     .then((response) => {
+  //       setImei(response.data.data);
+  //       setTotalPages(response.data.totalPages);
+  //     })
+  //     .catch((error) => {
+  //       console.error(error);
+  //     });
+  // };
 
   const getListImeiSearchAndPage = (page) => {
-    // setIsLoading(false);
-    requestParam('GET',`/api/imeis/search`, {
-          keyword: searchTatCa,
-          currentPage: page,
-          trangThai: ConvertStatusProductsNumberToString(searchTrangThai),
-      })
+    requestParam("GET", `/api/imeis/search`, {
+      keyword: searchTatCa,
+      currentPage: page,
+      trangThai: ConvertStatusProductsNumberToString(searchTrangThai),
+    })
       .then((response) => {
-        // const data = response.data.data;
-        // data.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
         setImeiPages(response.data.data);
         setTotalPages(response.data.totalPages);
-        // setIsLoading(true);
       })
       .catch((error) => {
         console.error(error);
-        // setIsLoading(false);
       });
   };
 
@@ -109,14 +110,13 @@ const ManagementImei = () => {
   }, [searchTatCa, searchTrangThai, currentPage, totalPages]);
 
   useEffect(() => {
-    getListImei();
+    getListImeiSearchAndPage(currentPage);
   }, []);
 
   const doiTrangThaiImei = (idImei) => {
-    request('PUT',`/api/imeis/${idImei}`)
+    request("PUT", `/api/imeis/${idImei}`)
       .then((response) => {
-        getListImei();
-        console.log(response);
+        getListImeiSearchAndPage(currentPage);
         handleOpenAlertVariant(
           "Đổi trạng thái thành công!!!",
           Notistack.SUCCESS
@@ -179,7 +179,7 @@ const ManagementImei = () => {
             className="rounded-pill mx-auto badge-success"
             style={{
               height: "35px",
-              width: "96px",
+              width: "135px",
               padding: "4px",
             }}
           >
@@ -190,7 +190,7 @@ const ManagementImei = () => {
         ) : type === StatusImei.NOT_SOLD ? (
           <div
             className="rounded-pill badge-warning mx-auto"
-            style={{ height: "35px", width: "140px", padding: "4px" }}
+            style={{ height: "35px", width: "135px", padding: "4px" }}
           >
             <span className="" style={{ fontSize: "14px" }}>
               Chưa Bán
@@ -199,7 +199,7 @@ const ManagementImei = () => {
         ) : type === StatusImei.IN_ACTIVE ? (
           <div
             className="rounded-pill badge-danger mx-auto"
-            style={{ height: "35px", width: "140px", padding: "4px" }}
+            style={{ height: "35px", width: "135px", padding: "4px" }}
           >
             <span className="text-white" style={{ fontSize: "14px" }}>
               Ngừng hoạt động
@@ -219,13 +219,19 @@ const ManagementImei = () => {
           <div className="button-container">
             <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
               <IconButton
-                size=""
                 onClick={() => {
-                  setIdImei(record.id);
                   handleClickOpen1(record.id);
+                  setIdImei(record.id);
                 }}
               >
-                <BorderColorOutlinedIcon color="primary" />
+                <FontAwesomeIcon
+                  icon={faPenToSquare}
+                  size="sm"
+                  style={{
+                    color: "#2f80ed",
+                    cursor: "pointer",
+                  }}
+                />
               </IconButton>
             </Tooltip>
 
@@ -235,7 +241,7 @@ const ManagementImei = () => {
               TransitionComponent={Zoom}
               title={
                 record.trangThai === StatusImei.NOT_SOLD
-                  ? "Chưa Bán"
+                  ? "Chưa bán"
                   : record.trangThai === StatusImei.IN_ACTIVE
                   ? "Ngừng kích hoạt"
                   : ""
@@ -246,14 +252,19 @@ const ManagementImei = () => {
                 style={{ marginTop: "6px" }}
                 onClick={() => doiTrangThaiImei(record.id)}
               >
-                <AssignmentOutlinedIcon
-                  color={
-                    record.trangThai === StatusImei.IN_ACTIVE
-                      ? "error"
-                      : record.trangThai === StatusImei.NOT_SOLD
-                      ? "primary"
-                      : "disabled"
-                  }
+                <FontAwesomeIcon
+                  icon={faArrowsRotate}
+                  size="sm"
+                  transform={{ rotate: 90 }}
+                  style={{
+                    cursor: "pointer",
+                    color:
+                      record.trangThai === StatusImei.IN_ACTIVE
+                        ? "#e5383b"
+                        : record.trangThai === StatusImei.NOT_SOLD
+                        ? "#09a129"
+                        : "disabled",
+                  }}
                 />
               </IconButton>
             </Tooltip>

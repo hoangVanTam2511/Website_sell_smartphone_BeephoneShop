@@ -7,6 +7,7 @@ import {
   DialogContent,
   FormControl,
   IconButton,
+  InputAdornment,
   InputLabel,
   MenuItem,
   Pagination,
@@ -34,9 +35,12 @@ import {
   ConvertCameraTypeToString,
   ConvertStatusProductsNumberToString,
 } from "../../../utilities/convertEnum";
-import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
-import { request, requestParam } from '../../../store/helpers/axios_helper'
-
+import { request, requestParam } from "../../../store/helpers/axios_helper";
+import {
+  faArrowsRotate,
+  faPenToSquare,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -73,13 +77,12 @@ const ManagementRearCameras = () => {
 
   const getListProductSearchAndPage = (page) => {
     // setIsLoading(false);
-    requestParam('GET',`/api/camera-rears/search`, {
-          keyword: searchTatCa,
-          currentPage: page,
-          pageSize: pageShow,
-          status: ConvertStatusProductsNumberToString(searchTrangThai),
-        }
-      )
+    requestParam("GET", `/api/camera-rears/search`, {
+      keyword: searchTatCa,
+      currentPage: page,
+      pageSize: pageShow,
+      status: ConvertStatusProductsNumberToString(searchTrangThai),
+    })
       .then((response) => {
         setCameraPages(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -135,7 +138,7 @@ const ManagementRearCameras = () => {
   };
 
   const getListCameraRear = () => {
-    request('GET',`/api/camera-rears`)
+    request("GET", `/api/camera-rears`)
       .then((response) => {
         setCameraRears(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -260,7 +263,14 @@ const ManagementRearCameras = () => {
                     setIdCamera(record.id);
                   }}
                 >
-                  <BorderColorOutlinedIcon color="primary" />
+                  <FontAwesomeIcon
+                    icon={faPenToSquare}
+                    size="sm"
+                    style={{
+                      color: "#2f80ed",
+                      cursor: "pointer",
+                    }}
+                  />
                 </IconButton>
               </Tooltip>
 
@@ -281,14 +291,19 @@ const ManagementRearCameras = () => {
                   style={{ marginTop: "6px" }}
                   onClick={() => doiTrangThaiProducts(record.id)}
                 >
-                  <AssignmentOutlinedIcon
-                    color={
-                      record.status === StatusCommonProducts.IN_ACTIVE
-                        ? "error"
-                        : record.status === StatusCommonProducts.ACTIVE
-                        ? "success"
-                        : "disabled"
-                    }
+                  <FontAwesomeIcon
+                    icon={faArrowsRotate}
+                    size="sm"
+                    transform={{ rotate: 90 }}
+                    style={{
+                      cursor: "pointer",
+                      color:
+                        record.status === StatusCommonProducts.IN_ACTIVE
+                          ? "#e5383b"
+                          : record.status === StatusCommonProducts.ACTIVE
+                          ? "#09a129"
+                          : "disabled",
+                    }}
                   />
                 </IconButton>
               </Tooltip>
@@ -306,7 +321,7 @@ const ManagementRearCameras = () => {
   const [cameraType, setCameraType] = useState("");
 
   const detailCameras = async (id) => {
-    request('GET',`/api/camera-rears/${id}`)
+    request("GET", `/api/camera-rears/${id}`)
       .then((response) => {
         setCameraCode(response.data.data.ma);
         setCameraType(response.data.data.cameraType);
@@ -394,7 +409,7 @@ const ManagementRearCameras = () => {
       cameraType: cameraType,
       status: status,
     };
-    request('PUT',`/api/camera-rears`, obj)
+    request("PUT", `/api/camera-rears`, obj)
       .then((response) => {
         getListCameraRear();
         handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
@@ -406,9 +421,9 @@ const ManagementRearCameras = () => {
   };
 
   const doiTrangThaiProducts = (idCamera) => {
-    request('PUT',`/api/camera-rears/${idCamera}`)
+    request("PUT", `/api/camera-rears/${idCamera}`)
       .then((response) => {
-        getListCameraRear();
+        getListProductSearchAndPage(currentPage);
         handleOpenAlertVariant(
           "Đổi trạng thái thành công!!!",
           Notistack.SUCCESS
@@ -671,6 +686,20 @@ const ManagementRearCameras = () => {
                     renderInput={(params) => (
                       <TextField
                         {...params}
+                        InputProps={{
+                          ...params.InputProps,
+                          startAdornment: (
+                            <>
+                              <InputAdornment
+                                style={{ marginLeft: "5px" }}
+                                position="start"
+                              >
+                                <span className="">Megapixel</span>
+                              </InputAdornment>
+                              {params.InputProps.startAdornment}
+                            </>
+                          ),
+                        }}
                         label="Độ Phân Giải"
                         error={validationMsg.doPhanGiai !== undefined}
                         helperText={validationMsg.doPhanGiai}

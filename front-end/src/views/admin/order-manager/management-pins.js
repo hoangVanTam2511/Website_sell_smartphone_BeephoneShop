@@ -31,8 +31,12 @@ import CreatePin from "./create-pin";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
-import { request, requestParam } from '../../../store/helpers/axios_helper'
-
+import { request, requestParam } from "../../../store/helpers/axios_helper";
+import {
+  faArrowsRotate,
+  faPenToSquare,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -52,7 +56,7 @@ const ManagementPins = () => {
   const [openSelect, setOpenSelect] = useState(false);
 
   const loadDataPins = () => {
-    request('GET',`/api/pins`)
+    request("GET", `/api/pins`)
       .then((response) => {
         setPins(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -66,11 +70,11 @@ const ManagementPins = () => {
 
   const getListPinSearchAndPage = (page) => {
     // setIsLoading(false);
-    requestParam('GET',`/api/pins/search`, {
-          keyword: searchTatCa,
-          currentPage: page,
-          status: ConvertStatusProductsNumberToString(searchTrangThai),
-      })
+    requestParam("GET", `/api/pins/search`, {
+      keyword: searchTatCa,
+      currentPage: page,
+      status: ConvertStatusProductsNumberToString(searchTrangThai),
+    })
       .then((response) => {
         setPinPages(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -233,7 +237,14 @@ const ManagementPins = () => {
                     setIdPin(record.id);
                   }}
                 >
-                  <BorderColorOutlinedIcon color="primary" />
+                  <FontAwesomeIcon
+                    icon={faPenToSquare}
+                    size="sm"
+                    style={{
+                      color: "#2f80ed",
+                      cursor: "pointer",
+                    }}
+                  />
                 </IconButton>
               </Tooltip>
 
@@ -254,14 +265,19 @@ const ManagementPins = () => {
                   style={{ marginTop: "6px" }}
                   onClick={() => doiTrangThaiProducts(record.id)}
                 >
-                  <AssignmentOutlinedIcon
-                    color={
-                      record.status === StatusCommonProducts.IN_ACTIVE
-                        ? "error"
-                        : record.status === StatusCommonProducts.ACTIVE
-                        ? "success"
-                        : "disabled"
-                    }
+                  <FontAwesomeIcon
+                    icon={faArrowsRotate}
+                    size="sm"
+                    transform={{ rotate: 90 }}
+                    style={{
+                      cursor: "pointer",
+                      color:
+                        record.status === StatusCommonProducts.IN_ACTIVE
+                          ? "#e5383b"
+                          : record.status === StatusCommonProducts.ACTIVE
+                          ? "#09a129"
+                          : "disabled",
+                    }}
                   />
                 </IconButton>
               </Tooltip>
@@ -279,7 +295,7 @@ const ManagementPins = () => {
   const [idPin, setIdPin] = useState("");
 
   const detailPins = async (id) => {
-    request('GET',`/api/pins/${id}`)
+    request("GET", `/api/pins/${id}`)
       .then((response) => {
         setPinCode(response.data.data.ma);
         setStatus(response.data.data.status);
@@ -380,7 +396,7 @@ const ManagementPins = () => {
       dungLuong: dungLuong,
       status: status,
     };
-    request('PUT',`/api/pins`, obj)
+    request("PUT", `/api/pins`, obj)
       .then((response) => {
         loadDataPins();
         handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
@@ -392,9 +408,9 @@ const ManagementPins = () => {
   };
 
   const doiTrangThaiProducts = (idPin) => {
-    request('PUT',`/api/pins/${idPin}`)
+    request("PUT", `/api/pins/${idPin}`)
       .then((response) => {
-        loadDataPins();
+        getListPinSearchAndPage(currentPage);
         handleOpenAlertVariant(
           "Đổi trạng thái thành công!!!",
           Notistack.SUCCESS
@@ -615,11 +631,11 @@ const ManagementPins = () => {
                         {...params}
                         InputProps={{
                           ...params.InputProps,
-                          endAdornment: (
+                          startAdornment: (
                             <>
                               <InputAdornment
                                 style={{ marginLeft: "5px" }}
-                                position="end"
+                                position="start"
                               >
                                 mAh
                               </InputAdornment>
@@ -634,7 +650,7 @@ const ManagementPins = () => {
                     )}
                   />
                 </div>
-                <div className="mt-3" style={{}}>
+                {/* <div className="mt-3" style={{}}>
                   <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">
                       Trạng Thái
@@ -656,7 +672,7 @@ const ManagementPins = () => {
                       </MenuItem>
                     </Select>
                   </FormControl>
-                </div>
+                </div> */}
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
                     onClick={() => handleSubmit()}

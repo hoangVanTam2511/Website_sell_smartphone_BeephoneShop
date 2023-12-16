@@ -17,8 +17,6 @@ import {
 } from "@mui/material";
 import { PlusOutlined } from "@ant-design/icons";
 import Card from "../../../components/Card";
-import axios from "axios";
-import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import Zoom from "@mui/material/Zoom";
 import {
   Notistack,
@@ -27,11 +25,15 @@ import {
 } from "./enum";
 import CreateChip from "./create-chip";
 import useCustomSnackbar from "../../../utilities/notistack";
-import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
-import { current } from "@reduxjs/toolkit";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
-import { request, requestParam } from '../../../store/helpers/axios_helper'
+import { request, requestParam } from "../../../store/helpers/axios_helper";
+import {
+  faArrowsRotate,
+  faHouse,
+  faPenToSquare,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -52,33 +54,12 @@ const ManagementChips = () => {
   const [openConfirm, setOpenConfirm] = useState(false);
   const [open1, setOpen1] = React.useState(false);
   const { handleOpenAlertVariant } = useCustomSnackbar();
-  const [check, setCheck] = useState(0);
   const [currentPage, setCurrentPage] = useState(
     searchParams.get("currentPage") || 1
   );
 
-  const findOrdersByMultipleCriteriaWithPagination = (page) => {
-    request('GET',`/api/orders`, {
-        params: {
-          currentPage: page,
-          keyword: keyword,
-          isPending: false,
-        },
-      })
-      .then((response) => {
-        setListChip(response.data.data);
-        setTotalPages(response.data.totalPages);
-
-        // setIsLoading(false);
-      })
-      .catch((error) => {
-        console.error(error);
-        // setIsLoading(false);
-      });
-  };
-
   const getListChip = (page) => {
-    request('GET',`/api/chips`)
+    request("GET", `/api/chips`)
       .then((response) => {
         setListChip(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -98,12 +79,12 @@ const ManagementChips = () => {
 
   const getListProductSearchAndPage = (page) => {
     // setIsLoading(false);
-    requestParam('GET',`/api/chips/search`, {
-          keyword: searchTatCa,
-          currentPage: page,
-          pageSize: pageShow,
-          status: ConvertStatusProductsNumberToString(searchTrangThai),
-      })
+    requestParam("GET", `/api/chips/search`, {
+      keyword: searchTatCa,
+      currentPage: page,
+      pageSize: pageShow,
+      status: ConvertStatusProductsNumberToString(searchTrangThai),
+    })
       .then((response) => {
         setChipPages(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -176,7 +157,7 @@ const ManagementChips = () => {
   };
 
   const detailChip = async (idChip) => {
-    request('GET',`/api/chips/${idChip}`)
+    request("GET", `/api/chips/${idChip}`)
       .then((response) => {
         setMaChip(response.data.data.ma);
         setStatus(response.data.data.status);
@@ -186,9 +167,9 @@ const ManagementChips = () => {
   };
 
   const doiTrangThaiChip = (idChip) => {
-    request('PUT',`/api/chips/${idChip}`)
+    request("PUT", `/api/chips/${idChip}`)
       .then((response) => {
-        getListChip();
+        getListProductSearchAndPage(currentPage);
         handleOpenAlertVariant(
           "Đổi trạng thái thành công!!!",
           Notistack.SUCCESS
@@ -227,7 +208,9 @@ const ManagementChips = () => {
   const validationAll = () => {
     const msg = {};
 
-    const isDuplicate = listChip.some((chip) => chip.tenChip === tenChip && chip.id !== idChip);
+    const isDuplicate = listChip.some(
+      (chip) => chip.tenChip === tenChip && chip.id !== idChip
+    );
 
     if (isDuplicate) {
       handleOpenAlertVariant("Chip đã tồn tại", Notistack.ERROR);
@@ -246,7 +229,7 @@ const ManagementChips = () => {
   const handleSubmit = () => {
     const isValid = validationAll();
     if (!isValid) return;
-       updateChip();
+    updateChip();
   };
 
   const updateChip = () => {
@@ -256,7 +239,7 @@ const ManagementChips = () => {
       tenChip: tenChip,
       status: status,
     };
-    request('PUT',`/api/chips`, obj)
+    request("PUT", `/api/chips`, obj)
       .then((response) => {
         getListChip();
         handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
@@ -373,7 +356,14 @@ const ManagementChips = () => {
                     setIdChip(record.id);
                   }}
                 >
-                  <BorderColorOutlinedIcon color="primary" />
+                  <FontAwesomeIcon
+                    icon={faPenToSquare}
+                    size="sm"
+                    style={{
+                      color: "#2f80ed",
+                      cursor: "pointer",
+                    }}
+                  />
                 </IconButton>
               </Tooltip>
 
@@ -394,14 +384,19 @@ const ManagementChips = () => {
                   style={{ marginTop: "6px" }}
                   onClick={() => doiTrangThaiChip(record.id)}
                 >
-                  <AssignmentOutlinedIcon
-                    color={
-                      record.status === StatusCommonProducts.IN_ACTIVE
-                        ? "error"
-                        : record.status === StatusCommonProducts.ACTIVE
-                        ? "success"
-                        : "disabled"
-                    }
+                  <FontAwesomeIcon
+                    icon={faArrowsRotate}
+                    size="sm"
+                    transform={{ rotate: 90 }}
+                    style={{
+                      cursor: "pointer",
+                      color:
+                        record.status === StatusCommonProducts.IN_ACTIVE
+                          ? "#e5383b"
+                          : record.status === StatusCommonProducts.ACTIVE
+                          ? "#09a129"
+                          : "disabled",
+                    }}
                   />
                 </IconButton>
               </Tooltip>
@@ -422,8 +417,14 @@ const ManagementChips = () => {
         }}
       >
         <Card className="">
+          <span
+            className="header-title mt-3 ms-4"
+            style={{ fontWeight: "500px" }}
+          >
+            <FontAwesomeIcon icon={faHouse} size={"sm"} /> Quản Lý CHIP
+          </span>
           <Card.Header className="d-flex justify-content-between">
-            <div className="header-title mt-2">
+            <div className="header-title">
               <TextField
                 placeholder="Tìm theo mã, tên Chip"
                 label="Tìm Chip"

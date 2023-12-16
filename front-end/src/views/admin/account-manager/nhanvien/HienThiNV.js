@@ -24,8 +24,9 @@ import {
 import { StatusAccountCus, StatusCusNumber } from "../khachhang/enum";
 import { Notistack } from "../../order-manager/enum";
 import useCustomSnackbar from "../../../../utilities/notistack";
-import { request } from '../../../../store/helpers/axios_helper'
+import { request } from "../../../../store/helpers/axios_helper";
 import ExcelExportHelper from "../nhanvien/ExcelExportHelper";
+import { PlusOutlined } from "@ant-design/icons";
 //show
 const HienThiNV = () => {
   const [form] = Form.useForm();
@@ -43,7 +44,7 @@ const HienThiNV = () => {
         loadDataListRole(targetPage);
         return;
       }
-      const response = request('GET',apiURLNV + "/search-all", {
+      const response = request("GET", apiURLNV + "/search-all", {
         params: {
           tenKH: searchText,
           page: page,
@@ -65,21 +66,22 @@ const HienThiNV = () => {
   }, [searchText]);
   // load
   const loadDataListRole = (currentPage) => {
-    request('GET',
-        apiURLNV +
+    request(
+      "GET",
+      apiURLNV +
         "/search-all?page=" +
         currentPage +
         "&tenKH=" +
         searchText +
         "&trangThai=" +
         filterStatus
-      )
+    )
       .then((response) => {
         console.log(response.data.data);
         setListNV(response.data.data);
         setTotalPages(response.data.totalPages);
       })
-      .catch(() => { });
+      .catch(() => {});
   };
 
   const handleFilter = (status) => {
@@ -139,7 +141,7 @@ const HienThiNV = () => {
     setEditingKey(record.id);
   };
   const doChangeTrangThai = (id) => {
-    request('PUT', apiURLNV + `/${id}/doi-tt`)
+    request("PUT", apiURLNV + `/${id}/doi-tt`)
       .then((response) => {
         loadDataListRole(currentPage);
         handleOpenAlertVariant("Đổi trạng thái thành công", Notistack.SUCCESS);
@@ -215,7 +217,7 @@ const HienThiNV = () => {
               className="rounded-pill mx-auto badge-primary"
               style={{
                 height: "35px",
-                width: "96px",
+                width: "135px",
                 padding: "4px",
               }}
             >
@@ -228,7 +230,7 @@ const HienThiNV = () => {
               className="rounded-pill mx-auto badge-danger"
               style={{
                 height: "35px",
-                width: "96px",
+                width: "135px",
                 padding: "4px",
               }}
             >
@@ -241,7 +243,7 @@ const HienThiNV = () => {
               className="rounded-pill mx-auto badge-primary"
               style={{
                 height: "35px",
-                width: "130px",
+                width: "135px",
                 padding: "4px",
               }}
             >
@@ -269,19 +271,21 @@ const HienThiNV = () => {
                 onClick={() => edit(record)}
                 style={{
                   cursor: "pointer",
-                  color: editingKey === record.id ? "red" : "green",
+                  color: "#2f80ed",
                 }}
                 size="lg"
               />
             </Tooltip>
             <Popconfirm
-              title={`Đổi trạng thái tài khoản từ ${record.trangThai === StatusAccountCus.LAM_VIEC
+              title={`Đổi trạng thái tài khoản từ ${
+                record.trangThai === StatusAccountCus.LAM_VIEC
                   ? `"Làm việc"`
                   : `"Đã nghỉ"`
-                } sang ${record.trangThai === StatusAccountCus.LAM_VIEC
+              } sang ${
+                record.trangThai === StatusAccountCus.LAM_VIEC
                   ? `"Đã nghỉ"`
                   : `"Làm việc"`
-                } `}
+              } `}
               onConfirm={() => {
                 doChangeTrangThai(record.id);
               }}
@@ -302,7 +306,7 @@ const HienThiNV = () => {
                     color:
                       record.trangThai === StatusAccountCus.LAM_VIEC
                         ? "#e5383b"
-                        : "#2f80ed",
+                        : "#09a129",
                   }}
                   transform={{ rotate: 90 }}
                   size="lg"
@@ -448,19 +452,30 @@ const HienThiNV = () => {
                       left: "12px",
                     }}
                   /> */}
-                      <span style={{ marginBottom: "3px", fontWeight: "500" }}>
-                        + Tạo tài khoản
+                      <PlusOutlined
+                        className="ms-1"
+                        style={{
+                          position: "absolute",
+                          bottom: "12.5px",
+                          left: "12px",
+                        }}
+                      />
+                      <span
+                        className="ms-3 ps-1"
+                        style={{ marginBottom: "3px", fontWeight: "500" }}
+                      >
+                        Tạo tài khoản
                       </span>
                     </Button>
                   </Link>
 
                   <Button
                     // onClick={handleCreateNewOrderPending}
-                    className="rounded-2 button-mui"
+                    className="rounded-2 button-mui me-2"
                     type="primary"
                     style={{ height: "40px", width: "auto", fontSize: "15px" }}
                   >
-                     <ExcelExportHelper data={listNV} />
+                    <ExcelExportHelper data={listNV} />
                   </Button>
 
                   {/* <Button

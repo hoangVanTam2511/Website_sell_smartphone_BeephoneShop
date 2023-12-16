@@ -22,7 +22,7 @@ import {
   TypeCameraNumber,
 } from "./enum";
 import useCustomSnackbar from "../../../utilities/notistack";
-import { request } from '../../../store/helpers/axios_helper'
+import { request } from "../../../store/helpers/axios_helper";
 import { ConvertCameraTypeToString } from "../../../utilities/convertEnum";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -94,7 +94,7 @@ const CreateCameraSau = ({ open, close, getAll, cameraRear }) => {
       doPhanGiai: doPhanGiai,
       status: status,
     };
-    request('POST',`/api/camera-rears`, obj)
+    request("POST", `/api/camera-rears`, obj)
       .then((response) => {
         close();
         getAll();
@@ -158,11 +158,11 @@ const CreateCameraSau = ({ open, close, getAll, cameraRear }) => {
                         {...params}
                         InputProps={{
                           ...params.InputProps,
-                          endAdornment: (
+                          startAdornment: (
                             <>
                               <InputAdornment
                                 style={{ marginLeft: "5px" }}
-                                position="end"
+                                position="start"
                               >
                                 <span className="">Megapixel</span>
                               </InputAdornment>
@@ -218,7 +218,7 @@ const CreateCameraSau = ({ open, close, getAll, cameraRear }) => {
                   </FormControl>
                 </div>
 
-                <div className="mt-3">
+                {/* <div className="mt-3">
                   <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">
                       Trạng Thái
@@ -244,7 +244,7 @@ const CreateCameraSau = ({ open, close, getAll, cameraRear }) => {
                       </MenuItem>
                     </Select>
                   </FormControl>
-                </div>
+                </div> */}
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
                     onClick={() => {

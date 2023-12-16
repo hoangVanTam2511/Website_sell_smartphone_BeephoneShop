@@ -27,7 +27,7 @@ import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
 import useCustomSnackbar from "../../../utilities/notistack";
 import LoadingIndicator from "../../../utilities/loading";
 import { Navigate, useNavigate } from "react-router-dom";
-import { request } from '../../../store/helpers/axios_helper'
+import { request } from "../../../store/helpers/axios_helper";
 
 const AddVoucher = () => {
   const navigate = useNavigate();
@@ -163,7 +163,7 @@ const AddVoucher = () => {
       loaiVoucher: selectDiscount,
     };
 
-    request('POST', apiURLVoucher + "/addVoucher", obj)
+    request("POST", apiURLVoucher + "/addVoucher", obj)
       .then((response) => {
         setTimeout(() => {
           setIsLoading(true);
@@ -293,7 +293,7 @@ const AddVoucher = () => {
         <div className="mx-auto" style={{ maxWidth: "70%" }}>
           <div className="text-center pt-3 mb-3" style={{}}>
             <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>
-              THÊM VOUCHER
+              THÊM PHIẾU GIẢM GIÁ
             </span>
           </div>
           <div
@@ -303,7 +303,7 @@ const AddVoucher = () => {
             <div className="ms-4">
               <TextField
                 className="custom"
-                label="Tên Voucher"
+                label="Tên phiếu giảm giá"
                 value={ten}
                 id="fullWidth"
                 onChange={(e) => {
@@ -431,20 +431,14 @@ const AddVoucher = () => {
             <div>
               <TextField
                 className="custom"
-                label="Giá Trị Voucher"
+                label="Giá Trị phiếu giảm giá"
                 value={value}
                 onChange={handleChange}
                 id="outlined-end-adornment"
                 InputProps={{
                   inputMode: "numeric",
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      {selectDiscount === TypeDiscountString.VND
-                        ? TypeDiscountString.VND
-                        : TypeDiscountString.PERCENT
-                        ? "%"
-                        : ""}
-                    </InputAdornment>
+                  startAdornment: (
+                    <InputAdornment position="start">VNĐ</InputAdornment>
                   ),
                 }}
                 style={{
@@ -467,8 +461,8 @@ const AddVoucher = () => {
                 id="outlined-end-adornment"
                 InputProps={{
                   inputMode: "numeric",
-                  endAdornment: (
-                    <InputAdornment position="end">VND</InputAdornment>
+                  startAdornment: (
+                    <InputAdornment position="start">VNĐ</InputAdornment>
                   ),
                 }}
                 style={{ width: "380px" }}

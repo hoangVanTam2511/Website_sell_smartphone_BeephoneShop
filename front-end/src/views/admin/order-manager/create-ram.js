@@ -18,7 +18,7 @@ import LoadingIndicator from "../../../utilities/loading";
 import generateRandomCode from "../../../utilities/randomCode";
 import { Notistack, StatusCommonProductsNumber } from "./enum";
 import useCustomSnackbar from "../../../utilities/notistack";
-import { request } from '../../../store/helpers/axios_helper'
+import { request } from "../../../store/helpers/axios_helper";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -95,7 +95,7 @@ const CreateRam = ({ open, close, getAll, rams }) => {
       dungLuong: kichThuoc,
       status: status,
     };
-    request('POST',`/api/rams`, obj)
+    request("POST", `/api/rams`, obj)
       .then((response) => {
         close();
         getAll();
@@ -146,11 +146,11 @@ const CreateRam = ({ open, close, getAll, rams }) => {
                         {...params}
                         InputProps={{
                           ...params.InputProps,
-                          endAdornment: (
+                          startAdornment: (
                             <>
                               <InputAdornment
                                 style={{ marginLeft: "5px" }}
-                                position="end"
+                                position="start"
                               >
                                 GB
                               </InputAdornment>
@@ -165,7 +165,7 @@ const CreateRam = ({ open, close, getAll, rams }) => {
                     )}
                   />
                 </div>
-                <div className="mt-3" style={{}}>
+                {/* <div className="mt-3" style={{}}>
                   <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">
                       Trạng Thái
@@ -191,7 +191,7 @@ const CreateRam = ({ open, close, getAll, rams }) => {
                       </MenuItem>
                     </Select>
                   </FormControl>
-                </div>
+                </div> */}
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button
                     onClick={() => {

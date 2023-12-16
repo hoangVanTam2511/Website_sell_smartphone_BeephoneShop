@@ -43,7 +43,12 @@ import {
 import useCustomSnackbar from "../../../utilities/notistack";
 import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
 import * as React from "react";
-import { request, requestParam } from '../../../store/helpers/axios_helper'
+import { request, requestParam } from "../../../store/helpers/axios_helper";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faArrowsRotate,
+  faPenToSquare,
+} from "@fortawesome/free-solid-svg-icons";
 
 //show
 const HienThiVoucher = () => {
@@ -72,17 +77,16 @@ const HienThiVoucher = () => {
 
   const loadDataListVoucher = (page) => {
     setIsLoading(false);
-    requestParam('GET', `${apiURLVoucher}/vouchers`, {
-          keyword: searchTatCa,
-          pageNo: page,
-          pageSize: showPage,
-          loaiVoucher: ConvertTypeVoucherNumberToString(searchLoaiVoucher),
-          sortType: sortVoucher,
-          trangThai: ConvertStatusVoucherNumberToString(searchTrangThai),
-          ngayBatDau: searchNgayBatDau,
-          ngayKetThuc: searchNgayKetThuc,
-        }
-      )
+    requestParam("GET", `${apiURLVoucher}/vouchers`, {
+      keyword: searchTatCa,
+      pageNo: page,
+      pageSize: showPage,
+      loaiVoucher: ConvertTypeVoucherNumberToString(searchLoaiVoucher),
+      sortType: sortVoucher,
+      trangThai: ConvertStatusVoucherNumberToString(searchTrangThai),
+      ngayBatDau: searchNgayBatDau,
+      ngayKetThuc: searchNgayKetThuc,
+    })
       .then((response) => {
         setListVoucher(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -96,52 +100,20 @@ const HienThiVoucher = () => {
       });
   };
 
-  const sendMail = () => {
-    let obj = {
-      mails: ["dungnpph25823@fpt.edu.vn", "anhltvph25818@fpt.edu.vn"],
-      subject: "BeePhoneShop thông báo đặt hàng thành công.",
-      tenKhachHang: "Lê Thị Vân Anh",
-      maDonHang: "No0199310122",
-      ngayDatHang: "19/08/2003",
-      hinhThucThanhToan: "Chuyển khoản",
-      hinhThucGiaoHang: "Giao hàng nhanh",
-      diaChi:
-        "Ngõ 75 Phú Diễn, Phường Phú Diễn, Quận Nam Từ Liêm, Thành Phố Hà Nội",
-      sdtNhanHang: "0999166666",
-      thanhTien: "37.999.000 VND",
-      phiVanChuyen: "0 VND",
-      giamGia: "3.000.000 VND",
-      tongCong: "34.999.000 VND",
-    };
-    request('POST', `${apiURLVoucher}/sendMail`, obj)
-      .then((response) => {
-        handleOpenAlertVariant("Thành công", Notistack.SUCCESS);
-      })
-      .catch((error) => {
-        handleOpenAlertVariant(
-          "Đã xảy ra lỗi, vui lòng liên hệ quản trị viên.",
-          Notistack.ERROR
-        );
-      });
-  };
-
   const loadDataListVoucher1 = (page) => {
-    requestParam('GET', `${apiURLVoucher}/vouchers`, {
-          keyword: searchTatCa,
-          pageNo: page,
-          pageSize: showPage,
-          loaiVoucher: ConvertTypeVoucherNumberToString(searchLoaiVoucher),
-          sortType: sortVoucher,
-          trangThai: ConvertStatusVoucherNumberToString(searchTrangThai),
-          ngayBatDau: searchNgayBatDau,
-          ngayKetThuc: searchNgayKetThuc,
-        }
-      )
+    requestParam("GET", `${apiURLVoucher}/vouchers`, {
+      keyword: searchTatCa,
+      pageNo: page,
+      pageSize: showPage,
+      loaiVoucher: ConvertTypeVoucherNumberToString(searchLoaiVoucher),
+      sortType: sortVoucher,
+      trangThai: ConvertStatusVoucherNumberToString(searchTrangThai),
+      ngayBatDau: searchNgayBatDau,
+      ngayKetThuc: searchNgayKetThuc,
+    })
       .then((response) => {
-        let stt = response.data.data;
         setListVoucher(response.data.data);
         setTotalPages(response.data.totalPages);
-        console.log(stt.length);
       })
       .catch((error) => {
         handleOpenAlertVariant(
@@ -203,7 +175,7 @@ const HienThiVoucher = () => {
       lyDoHuy: lyDoHuy,
     };
     setIsLoading(false);
-    request('PUT', `${apiURLVoucher}/deleteTrangThaiVoucher/${id}`, obj)
+    request("PUT", `${apiURLVoucher}/deleteTrangThaiVoucher/${id}`, obj)
       .then((response) => {
         loadDataListVoucher(currentPage);
         handleOpenAlertVariant("Đổi trạng thái thành công!", Notistack.SUCCESS);
@@ -219,7 +191,7 @@ const HienThiVoucher = () => {
 
   const kichHoatVoucher = () => {
     setIsLoading(false);
-    request('PUT', `${apiURLVoucher}/kichHoatVoucher/${id}`)
+    request("PUT", `${apiURLVoucher}/kichHoatVoucher/${id}`)
       .then((response) => {
         loadDataListVoucher(currentPage);
         handleOpenAlertVariant("Kích hoạt thành công!", Notistack.SUCCESS);
@@ -585,63 +557,29 @@ const HienThiVoucher = () => {
             <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
               <Link to={`/dashboard/update-voucher/${record.id}`}>
                 <IconButton size="">
-                  <BorderColorOutlinedIcon color="primary" />
+                  <FontAwesomeIcon
+                    icon={faPenToSquare}
+                    size="sm"
+                    style={{
+                      color: "#2f80ed",
+                      cursor: "pointer",
+                    }}
+                  />
                 </IconButton>
               </Link>
             </Tooltip>
 
-            {/* <Popconfirm
-              title="Đổi trạng thái"
-              description={
-                <div>
-                  <p>Hãy chọn trạng thái muốn đổi</p>
-                  <Select
-                    // value={}
-                    style={{ width: 180, height: 30 }}
-                    // onChange={(value) => handleChange(value, record.id)}
-                  >
-                    <Select.Option value="HOAT_DONG">Hoạt động</Select.Option>
-                    <Select.Option value="CHUA_DIEN_RA">
-                      Chưa diễn ra
-                    </Select.Option>
-                    <Select.Option value="DA_HUY">Đã hủy</Select.Option>
-                  </Select>
-                </div>
-              }
-              onConfirm={handleOkConfirm}
-              onCancel={handleCancelConfirm}
-              onClick={() => setId(record.id)}
-              placement="topLeft"
-            > */}
-            <Tooltip
-              TransitionComponent={Zoom}
-              title={
-                // record.trangThai === StatusDiscount.HOAT_DONG ||
-                // record.trangThai === StatusDiscount.CHUA_DIEN_RA
-                //   ? "Ngừng kích hoạt"
-                //   : record.trangThai === StatusDiscount.DA_HUY &&
-                //     isDatePast(record.ngayBatDau) === true
-                //   ? "Kích hoạt"
-                //   : record.trangThai === StatusDiscount.DA_HUY &&
-                //     isRangeDate(record.ngayBatDau, record.ngayKetThuc) === true
-                //   ? "Kích hoạt"
-                //   : record.trangThai === StatusDiscount.NGUNG_HOAT_DONG
-                //   ? "Không thể đổi"
-                //   : ""
-                "Đổi trạng thái"
-              }
-            >
+            <Tooltip TransitionComponent={Zoom} title={"Đổi trạng thái"}>
               <IconButton
                 disabled={
                   record.trangThai === StatusDiscount.NGUNG_HOAT_DONG ||
                   // (
                   record.trangThai === StatusDiscount.DA_HUY
-                    ? // && isDateFuture(record.ngayKetThuc) === true)
-                      true
+                    ? true
                     : false
                 }
-                className="ms-2"
-                style={{ marginTop: "6px" }}
+                // className="ms-2"
+                // style={{ marginTop: "6px" }}
                 aria-controls="simple-menu"
                 aria-haspopup="true"
                 onClick={(event) => {
@@ -651,27 +589,32 @@ const HienThiVoucher = () => {
                   setCheckStatus(record.trangThai);
                 }}
               >
-                <AssignmentOutlinedIcon
-                  color={
-                    record.trangThai === StatusDiscount.HOAT_DONG ||
-                    record.trangThai === StatusDiscount.CHUA_DIEN_RA
-                      ? "error"
-                      : record.trangThai === StatusDiscount.DA_HUY &&
-                        isDatePast(record.ngayBatDau) === true
-                      ? "white"
-                      : record.trangThai === StatusDiscount.DA_HUY &&
-                        isRangeDate(record.ngayBatDau, record.ngayKetThuc) ===
-                          true
-                      ? "white"
-                      : record.trangThai === StatusDiscount.TAM_DUNG &&
-                        isDatePast(record.ngayBatDau) === true
-                      ? "success"
-                      : record.trangThai === StatusDiscount.TAM_DUNG &&
-                        isRangeDate(record.ngayBatDau, record.ngayKetThuc) ===
-                          true
-                      ? "success"
-                      : "disabled"
-                  }
+                <FontAwesomeIcon
+                  icon={faArrowsRotate}
+                  size="sm"
+                  transform={{ rotate: 90 }}
+                  style={{
+                    cursor: "pointer",
+                    color:
+                      record.trangThai === StatusDiscount.HOAT_DONG ||
+                      record.trangThai === StatusDiscount.CHUA_DIEN_RA
+                        ? "#e5383b"
+                        : record.trangThai === StatusDiscount.DA_HUY &&
+                          isDatePast(record.ngayBatDau) === true
+                        ? "disabled"
+                        : record.trangThai === StatusDiscount.DA_HUY &&
+                          isRangeDate(record.ngayBatDau, record.ngayKetThuc) ===
+                            true
+                        ? "disabled"
+                        : record.trangThai === StatusDiscount.TAM_DUNG &&
+                          isDatePast(record.ngayBatDau) === true
+                        ? "#09a129"
+                        : record.trangThai === StatusDiscount.TAM_DUNG &&
+                          isRangeDate(record.ngayBatDau, record.ngayKetThuc) ===
+                            true
+                        ? "#09a129"
+                        : "disabled",
+                  }}
                 />
               </IconButton>
             </Tooltip>
@@ -823,7 +766,7 @@ const HienThiVoucher = () => {
           }}
           style={{ color: "black" }}
         >
-          Hủy Phiếu Giảm Giá
+          Hủy
         </MenuItem>
       </Menu>
       <div
@@ -837,8 +780,8 @@ const HienThiVoucher = () => {
           <Card.Header className="">
             <div className="header-title mt-2">
               <TextField
-                placeholder="Tìm theo mã, giá trị, số lượng voucher"
-                label="Tìm voucher"
+                placeholder="Tìm theo mã, giá trị, số lượng phiếu giảm giá"
+                label="Tìm phiếu giảm giá"
                 value={searchTatCa}
                 onChange={handleSearchTatCaChange}
                 InputLabelProps={{
@@ -871,22 +814,6 @@ const HienThiVoucher = () => {
                   Làm Mới
                 </span>
               </Button>
-
-              {/* <Button
-                onClick={() => {
-                  sendMail();
-                }}
-                className="rounded-2 ms-2"
-                type="warning"
-                style={{ width: "100px", fontSize: "15px" }}
-              >
-                <span
-                  className="text-dark"
-                  style={{ fontWeight: "500", marginBottom: "2px" }}
-                >
-                  Gửi Mail
-                </span>
-              </Button> */}
             </div>
             <div className="d-flex">
               <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -939,7 +866,7 @@ const HienThiVoucher = () => {
                 <Button
                   className="rounded-2 button-mui"
                   type="primary"
-                  style={{ height: "40px", width: "140px", fontSize: "15px" }}
+                  style={{ height: "40px", width: "200px", fontSize: "15px" }}
                 >
                   <PlusOutlined
                     className="ms-1"
@@ -953,7 +880,7 @@ const HienThiVoucher = () => {
                     className="ms-3 ps-1"
                     style={{ marginBottom: "3px", fontWeight: "500" }}
                   >
-                    Tạo voucher
+                    Tạo phiếu giảm giá
                   </span>
                 </Button>
               </Link>
