@@ -101,78 +101,6 @@ const TabItem = ({
     onOpenImei();
   };
 
-  // useEffect(() => {
-  //   if (idCustomer === "") {
-  //     setCustomer(null);
-  //     setCustomerName("");
-  //     setCustomerPhone("");
-  //     setCustomerAddress("");
-  //
-  //     getAllProvinceGhn();
-  //     setSelectedWard("");
-  //     setSelectedProvince("");
-  //     setSelectedDistrict("");
-  //     setDistricts([]);
-  //     setWards([]);
-  //   }
-  //   else {
-  //     getCustomerById();
-  //   }
-  // }, [idCustomer])
-
-  // useEffect(() => {
-  //   const customer = {
-  //     hoVaTen: customerName,
-  //     soDienThoai: customerPhone,
-  //     diaChi: customerAddress,
-  //   }
-  //   getCustomer(customer);
-  //
-  // }, [customerAddress, customerName, customerPhone])
-
-  // const getPhone = (phone) => {
-  //   setCustomerPhone(phone);
-  // }
-  // const getName = (name) => {
-  //   setCustomerName(name);
-  // }
-  // const getAddress = (address) => {
-  //   setCustomerAddress(address);
-  // }
-
-  // const getCustomerById = async () => {
-  //   setIsLoading(true);
-  //   await axios
-  //     .get(`http://localhost:8080/khach-hang/hien-thi-theo/${idCustomer}`)
-  //     .then(async (response) => {
-  //       const data = response.data;
-  //       setCustomer(data);
-  //       setCustomerName(data.hoVaTen);
-  //       setCustomerPhone(data.soDienThoai);
-  //       setCustomerAddress(data.diaChi);
-  //       setCustomerEmail(data.email);
-  //
-  //       const listAddress = data && data.diaChiList;
-  //       const address = listAddress.find((a) => a.trangThai === 1);
-  //
-  //       const province = provinces.find((item) => item.ProvinceName === address.tinhThanhPho);
-  //       setSelectedProvince(province.ProvinceID);
-  //
-  //       const district = districts.find((item) => item.DistrictName === address.quanHuyen);
-  //       setSelectedDistrict(district.DistrictID);
-  //
-  //       await getAllWardGhnByIdDistrict(district.DistrictID, true, address.xaPhuong);
-  //       setIsLoading(false);
-  //     })
-  //     .catch((error) => {
-  //       console.error(error);
-  //       setIsLoading(false);
-  //     });
-  // };
-
-  // useEffect(() => {
-  //   getAllDistrictGhnByIdProvince(selectedProvince);
-  // }, [selectedProvince])
 
   const openDialogProductItems = () => {
     // openDialogProductDetails();
@@ -195,7 +123,7 @@ const TabItem = ({
   };
 
   const openProductsDialog = () => {
-    getAllProducts();
+    // getAllProducts();
     openDialogProducts();
   };
 
@@ -208,83 +136,6 @@ const TabItem = ({
         console.error("Error");
       });
   };
-  // const tokenGhn = "62124d79-4ffa-11ee-b1d4-92b443b7a897";
-  //
-  // const getShipFeeGhn = () => {
-  //   axios.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee`, {
-  //     params: {
-  //       from_district_id: shopDistrictId,
-  //       from_ward_code: shopWardCode,
-  //       service_id: serviceID,
-  //       to_district_id: selectedDistrict,
-  //       to_ward_code: selectedWard,
-  //       weight: 240,
-  //     },
-  //     headers: {
-  //       token: tokenGhn,
-  //       Accept: 'application/json',
-  //     }
-  //   }).then(
-  //     (response) => {
-  //       getShipFee(response.data.data.total);
-  //     }
-  //   )
-  // }
-  //
-  // const getAllWardGhnByIdDistrict = async (districtId, selectWard, district) => {
-  //   await axios.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward`, {
-  //     params: {
-  //       district_id: districtId,
-  //     },
-  //     headers: {
-  //       token: tokenGhn,
-  //       Accept: 'application/json',
-  //     }
-  //   }).then(
-  //     (response) => {
-  //       setWards(response.data.data);
-  //       if (selectWard) {
-  //         const ward = response.data.data.find((item) => item.WardName === district);
-  //         setSelectedWard(ward.WardCode);
-  //         console.log(ward);
-  //       }
-  //     }
-  //   )
-  // }
-  //
-  // const getAllDistrictGhnByIdProvince = async (provinceId) => {
-  //   await axios.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district`, {
-  //     params: {
-  //       province_id: provinceId,
-  //     },
-  //     headers: {
-  //       token: tokenGhn,
-  //       Accept: 'application/json',
-  //     }
-  //   }).then(
-  //     (response) => {
-  //       setDistricts(response.data.data);
-  //     }
-  //   )
-  // }
-  //
-  // const getAllProvinceGhn = async () => {
-  //   axios.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province`, {
-  //     headers: {
-  //       token: tokenGhn,
-  //       Accept: 'application/json',
-  //     }
-  //   }).then(
-  //     (response) => {
-  //       setProvinces(response.data.data);
-  //     }
-  //   )
-  // }
-  //
-  // const shopID = 189389;
-  // const serviceID = 53320;
-  // const shopDistrictId = 1482;
-  // const shopWardCode = 11007;
   //
   const cartItemsSort = cartItems.sort(
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)

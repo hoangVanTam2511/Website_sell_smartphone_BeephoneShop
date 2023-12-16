@@ -123,19 +123,13 @@ const OrderDetail = (props) => {
       createdBy: userId,
     };
     try {
-      await axios.put(
-        `http://localhost:8080/api/orders/update-info-delivery`,
-        data,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      await getOrderItemsById();
-      handleOpenAlertVariant("Cập nhật thông tin đơn hàng thành công ", Notistack.SUCCESS);
-      handleCloseDialogUpdateRecipientOrder();
-      setIsLoading(false);
+      await request('PUT',
+        `/api/orders/update-info-delivery`, data).then(async (response) => {
+          await getOrderItemsById();
+          handleOpenAlertVariant("Cập nhật thông tin đơn hàng thành công ", Notistack.SUCCESS);
+          handleCloseDialogUpdateRecipientOrder();
+          setIsLoading(false);
+        });
     } catch (error) {
       handleOpenAlertVariant(error.response.data.message, "warning");
       setIsLoading(false);
@@ -152,14 +146,14 @@ const OrderDetail = (props) => {
       createdBy: userId,
     };
     try {
-      await axios.put(
-        `http://localhost:8080/api/orders/roll-back-status`,
-        data
-      );
-      await getOrderItemsById();
-      handleOpenAlertVariant("Hoàn tác thành công ", Notistack.SUCCESS);
-      handleCloseOpenRollback();
-      setIsLoading(false);
+      await request('PUT',
+        `/api/orders/roll-back-status`,
+        data).then(async (response) => {
+          await getOrderItemsById();
+          handleOpenAlertVariant("Hoàn tác thành công ", Notistack.SUCCESS);
+          handleCloseOpenRollback();
+          setIsLoading(false);
+        });
     } catch (error) {
       handleOpenAlertVariant(error.response.data.message, "warning");
       setIsLoading(false);
@@ -176,14 +170,13 @@ const OrderDetail = (props) => {
       imei: imei,
     };
     try {
-      request('PUT', `/api/carts/order/scanner`, data
-      ).then((res) => {
-
+      await request('PUT', `/api/carts/order/scanner`, data
+      ).then(async (response) => {
+        await getOrderItemsById();
+        handleCloseOpenScanner();
+        handleOpenAlertVariant("Thêm sản phẩm thành công ", Notistack.SUCCESS);
+        setIsLoading(false);
       })
-      await getOrderItemsById();
-      handleCloseOpenScanner();
-      handleOpenAlertVariant("Thêm sản phẩm thành công ", Notistack.SUCCESS);
-      setIsLoading(false);
     } catch (error) {
       handleOpenAlertVariant(error.response.data.message, "warning");
       handleCloseOpenScanner();
@@ -304,13 +297,14 @@ const OrderDetail = (props) => {
       imeis: cartItems.imeis,
     };
     try {
-      request('PUT', `/api/carts/order`, data);
-      await getOrderItemsById();
-      handleCloseOpenModalImei();
-      handleCloseOpenProducts();
-      handleOpenAlertVariant("Thêm sản phẩm thành công ", Notistack.SUCCESS);
-      setIsLoading(false);
-      setIsOpen(false);
+      await request('PUT', `/api/carts/order`, data).then(async (response) => {
+        await getOrderItemsById();
+        handleCloseOpenModalImei();
+        handleCloseOpenProducts();
+        handleOpenAlertVariant("Thêm sản phẩm thành công ", Notistack.SUCCESS);
+        setIsLoading(false);
+        setIsOpen(false);
+      });
     } catch (error) {
       handleOpenAlertVariant(error.response.data.message, "warning");
       setIsLoading(false);
@@ -334,13 +328,14 @@ const OrderDetail = (props) => {
   const handleDeleteCartItemOrderById = async (id) => {
     setIsLoading(true);
     try {
-      request('DELETE', `/api/carts/order/${id}`);
-      await getOrderItemsById();
-      setIsLoading(false);
-      handleOpenAlertVariant(
-        "Xóa thành công sản phẩm khỏi giỏ hàng!",
-        Notistack.SUCCESS
-      );
+      await request('DELETE', `/api/carts/order/${id}`).then(async (response) => {
+        await getOrderItemsById();
+        setIsLoading(false);
+        handleOpenAlertVariant(
+          "Xóa thành công sản phẩm khỏi giỏ hàng!",
+          Notistack.SUCCESS
+        );
+      });
     } catch (error) {
       console.log(error);
     }
@@ -348,7 +343,7 @@ const OrderDetail = (props) => {
 
   const handleUpdateAmountCartItemOrder = async (imeis) => {
     setIsLoading(true);
-    const request = {
+    const requestBody = {
       id: idOrderItem,
       amount: imeis && imeis.length,
       imeis: imeis,
@@ -357,18 +352,16 @@ const OrderDetail = (props) => {
       },
     };
     try {
-      request('PUT', `/api/carts/order/amount`, request).then(
-        (res) => {
-
-        }
-      )
-      await getOrderItemsById();
-      handleCloseOpenModalUpdateImei();
-      handleOpenAlertVariant(
-        "Cập nhật số lượng thành công!",
-        Notistack.SUCCESS
-      );
-      setIsLoading(false);
+      await request('PUT', `/api/carts/order/amount`, requestBody)
+        .then(async (response) => {
+          await getOrderItemsById();
+          handleCloseOpenModalUpdateImei();
+          handleOpenAlertVariant(
+            "Cập nhật số lượng thành công!",
+            Notistack.SUCCESS
+          );
+          setIsLoading(false);
+        });
     } catch (error) {
       setIsLoading(false);
       handleOpenAlertVariant(error.response.data.message, "warning");
@@ -380,14 +373,14 @@ const OrderDetail = (props) => {
 
   const getOrderItemsById = async () => {
     setIsLoading(true);
-    request('GET', `/api/orders/${id}`)
+    await request('GET', `/api/orders/${id}`)
       .then((response) => {
         const data = response.data.data;
         setOrder(data);
         const sortOrderHistories =
           data.orderHistories &&
-          data.orderHistories.sort((a, b) => b.createdAt - a.createdAt);
-        setOrderHistories(data.orderHistories);
+          data.orderHistories.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+        setOrderHistories(sortOrderHistories);
         const sortPayments =
           data.paymentMethods &&
           data.paymentMethods.sort(
@@ -446,6 +439,10 @@ const OrderDetail = (props) => {
         setIsLoading(false);
       });
   };
+  const orderItemsSort = orderItems.sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  );
+
 
   const orderImeis = orderItems.map((order) => {
     return order.imeisDaBan.map((item) => {
@@ -467,39 +464,6 @@ const OrderDetail = (props) => {
     }
   }, []);
 
-  const handleRefund = async (imeis, total, note, fee, totalString) => {
-    setIsLoading(true);
-    const request = {
-      id: idOrderItem,
-      amount: imeis && imeis.length,
-      imeis: imeis,
-      order: {
-        id: order.id,
-      },
-      tongTien: total || 0,
-      ghiChu: note,
-      phuPhi: fee || 0,
-      tongTienString: totalString,
-    };
-    try {
-      request('PUT', `/api/carts/order/refund`, request).then(
-        (res) => {
-
-        }
-      )
-      await getOrderItemsById();
-      handleCloseOpenModalRefund();
-      handleOpenAlertVariant(
-        "Xác nhận trả hàng thành công!",
-        Notistack.SUCCESS
-      );
-      setIsLoading(false);
-    } catch (error) {
-      setIsLoading(false);
-      handleOpenAlertVariant(error.response.data.message, "warning");
-      console.error("Error");
-    }
-  };
 
   const [maxAmount, setMaxAmount] = useState(0);
 
@@ -515,17 +479,13 @@ const OrderDetail = (props) => {
     return total - discount + feeShip;
   };
 
-  const isOrderValidDelivery =
-    order &&
-    order.orderItems &&
-    order.orderItems.every((item) => item.soLuong === item.imeisDaBan.length);
 
   const updateStatusOrderDelivery = async (orderRequest) => {
     setIsLoading(true);
     try {
-      request('PUT', `/api/orders/${id}?isUpdateStatusOrderDelivery=true`, orderRequest)
-        .then((response) => {
-          getOrderItemsById();
+      await request('PUT', `/api/orders/${id}?isUpdateStatusOrderDelivery=true`, orderRequest)
+        .then(async (response) => {
+          await getOrderItemsById();
           var test = {
             name: "test2" + Math.random(),
           };
@@ -533,6 +493,7 @@ const OrderDetail = (props) => {
             stompClient.send("/app/bills", {}, JSON.stringify(test));
           }
           setIsLoading(false);
+          setOpenCommon(false);
           handleOpenAlertVariant("Xác nhận thành công", "success");
         });
     } catch (error) {
@@ -554,7 +515,7 @@ const OrderDetail = (props) => {
       createdByPayment: userId,
     };
     try {
-      request('PUT', `/api/vnpay/payment/delivery`, orderRequest)
+      await request('PUT', `/api/vnpay/payment/delivery`, orderRequest)
         .then((response) => {
           const order = response.data.data;
           setOrder(order);
@@ -965,7 +926,6 @@ const OrderDetail = (props) => {
       },
     };
     updateStatusOrderDelivery(data);
-    setOpenCommon(false);
   };
   const handleConfirmOrderFinish = (description) => {
     const data = {
@@ -982,7 +942,6 @@ const OrderDetail = (props) => {
       },
     };
     updateStatusOrderDelivery(data);
-    setOpenCommon(false);
   };
   const handleConfirmDelivery = (description) => {
     const data = {
@@ -999,7 +958,6 @@ const OrderDetail = (props) => {
       },
     };
     updateStatusOrderDelivery(data);
-    setOpenCommon(false);
   };
 
   const handleConfirmOrderInfo = (description) => {
@@ -1017,7 +975,6 @@ const OrderDetail = (props) => {
       },
     };
     updateStatusOrderDelivery(data);
-    setOpenCommon(false);
   };
   const handleOpenDialogConfirmOrder = (status, isCancel) => {
     if (isCancel) {
@@ -1262,8 +1219,10 @@ const OrderDetail = (props) => {
         </div>
         <div className="d-flex">
           <Print data={order} imeis={orderImeis} />
-          {order.loaiHoaDon === OrderTypeString.DELIVERY && (
-            <PrintDelivery data={order} />
+          {order.loaiHoaDon === OrderTypeString.DELIVERY && order.trangThai === OrderStatusString.CONFIRMED && (
+            <>
+              <PrintDelivery data={order} />
+            </>
           )}
           <Button
             onClick={handleClickOpenDialogDetailOrderHistories}
@@ -1736,7 +1695,7 @@ const OrderDetail = (props) => {
               </span>
             </div>
             <div className="">
-              {order.loaiHoaDon === OrderTypeString.DELIVERY &&
+              {order.loaiHoaDon === OrderTypeString.DELIVERY && (order.trangThai === OrderStatusString.PENDING_CONFIRM || order.trangThai === OrderStatusString.CONFIRMED) &&
                 order.tienKhachTra < total ? (
                 <Button
                   onClick={() => setOpenPayment(true)}
@@ -1753,27 +1712,6 @@ const OrderDetail = (props) => {
                     style={{ fontWeight: "500", marginBottom: "2px" }}
                   >
                     Tiến hành thanh toán
-                  </span>
-                </Button>
-              ) : order.tienTraKhach < order.tienTraHang ? (
-                <Button
-                  onClick={() => {
-                    setOpenPayment(true);
-                    setIsRefund(true);
-                  }}
-                  className="rounded-2 ms-2"
-                  type="primary"
-                  style={{
-                    height: "40px",
-                    fontSize: "16px",
-                    width: "110px",
-                  }}
-                >
-                  <span
-                    className=""
-                    style={{ fontWeight: "500", marginBottom: "2px" }}
-                  >
-                    Hoàn tiền
                   </span>
                 </Button>
               ) : null}
@@ -2173,7 +2111,7 @@ const OrderDetail = (props) => {
                 <Table
                   className="table-cart"
                   columns={columnsOrderItems}
-                  dataSource={orderItems}
+                  dataSource={orderItemsSort}
                   pagination={false}
                   rowKey={"id"}
                   key={"id"}
@@ -2491,17 +2429,6 @@ const OrderDetail = (props) => {
           open={openViewImei}
           close={handleCloseOpenViewImei}
           imeis={viewImeis}
-        />
-
-        <ModalRefundProduct
-          open={openModalRefund}
-          close={handleCloseOpenModalRefund}
-          imeis={filteredData}
-          refresh={selectedImeiRefresh}
-          img={itemImg}
-          price={itemPrice}
-          name={itemName}
-          refund={handleRefund}
         />
 
         <ScannerBarcode

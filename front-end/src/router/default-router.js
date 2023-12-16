@@ -133,7 +133,7 @@ export const DefaultRouter = [
         element: <Navigate to="/login" replace={true} />,
       },
       {
-        path: "/home",
+        path: "/dashboard/statistic",
         element: <ThongKe />,
       },
       {

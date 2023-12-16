@@ -572,7 +572,10 @@ export function UpdateRecipientOrderDialog(props) {
         open={open}
         TransitionComponent={Transition}
         keepMounted
-        onClose={onCloseNoAction}
+        onClose={() => {
+          resetData();
+          onCloseNoAction();
+        }}
         aria-describedby="alert-dialog-slide-description"
         maxWidth="xl"
         maxHeight="xl"
@@ -1445,7 +1448,7 @@ export function ProductsDialog(props) {
             <>
               <div className="mt-1 pt-1 d-flex">
                 <TextField
-                  label="Tìm kiếm theo mã, tên, số lượng tồn"
+                  label="Tìm kiếm sản phẩm theo mã, tên, số lượng tồn"
                   onChange={(e) => {
                     setKeyword(e.target.value);
                   }}
@@ -1466,7 +1469,20 @@ export function ProductsDialog(props) {
                   className=""
                 />
                 <Button
-                  // onClick={handleRefreshData}
+                  onClick={() => {
+                    setKeyword("");
+                    setCurrentPage(1);
+                    setSelectedValueCpus([0]);
+                    setSelectedValueCategorys([0]);
+                    setSelectedValueScreens([0]);
+                    setSelectedValueBrands([0]);
+                    setSelectedValueOperas(["None"]);
+                    setSelectedValuePins([0]);
+                    setSelectedValueRams([0]);
+                    setSelectedValueRoms([0]);
+                    setSize(10);
+                    setSort("New");
+                  }}
                   className="rounded-2 ms-2"
                   type="warning"
                   style={{
@@ -2848,26 +2864,29 @@ export function CustomersDialog(props) {
               <div className="mt-2 d-flex justify-content-between">
                 <div>
                   <TextField
-                    label="Tìm Khách Hàng"
+                    label="Tìm khách hàng theo mã, tên, email, số điện thoại"
                     onChange={handleChangeSearchCustomer}
                     value={keyword}
                     InputLabelProps={{
                       sx: {
                         marginTop: "0.5px",
-                        textTransform: "capitalize",
+                        // textTransform: "capitalize",
                       },
                     }}
                     inputProps={{
                       style: {
                         height: "23px",
-                        width: "550px",
+                        width: "600px",
                       },
                     }}
                     size="small"
                     className=""
                   />
                   <Button
-                    // onClick={handleRefreshData}
+                    onClick={() => {
+                      setCurrentPage(1);
+                      setKeyword("");
+                    }}
                     className="rounded-2 ms-2"
                     type="warning"
                     style={{ height: "40px", width: "100px", fontSize: "15px" }}
@@ -3043,23 +3062,6 @@ export function AddressDialog(props) {
               style={{ fontWeight: "500", marginBottom: "2px" }}
             >
               Chọn
-            </span>
-          </Button>
-          <Button
-            // onClick={() => handleSelectCustomer(item.id)}
-            className="rounded-2 button-mui"
-            type="warning"
-            style={{
-              height: "35px",
-              width: "92px",
-              fontSize: "14px",
-            }}
-          >
-            <span
-              className={"text-dark"}
-              style={{ fontWeight: "500", marginBottom: "2px" }}
-            >
-              {"Cập nhật"}
             </span>
           </Button>
         </div>
@@ -3868,12 +3870,21 @@ export const ModalImeiByProductItem = ({
   isOpen,
 }) => {
   const [selectedImei, setSelectedImei] = useState([]);
+  const [imei, setImei] = useState("");
   const [imeis, setImeis] = useState(imeisChuaBan);
   const { handleOpenAlertVariant } = useCustomSnackbar();
 
-  const filteredData = imeis.filter(
+  // const filteredData = imeis.filter(
+  //   (item) =>
+  //     item.trangThai === StatusImei.NOT_SOLD || item.trangThai === StatusImei.PENDING_DELIVERY ||
+  //     item.trangThai === StatusImei.IN_THE_CART
+  // );
+  const filteredData = imeis.filter((item) =>
+    item.soImei.includes(imei)
+  ).filter(
     (item) =>
-      item.trangThai === StatusImei.NOT_SOLD || item.trangThai === StatusImei.PENDING_DELIVERY ||
+      item.trangThai === StatusImei.NOT_SOLD ||
+      item.trangThai === StatusImei.PENDING_DELIVERY ||
       item.trangThai === StatusImei.IN_THE_CART
   );
 
@@ -3891,6 +3902,14 @@ export const ModalImeiByProductItem = ({
     setSelectedImei([]);
     setImeis(imeisChuaBan)
   }, [imeisChuaBan]);
+
+  useEffect(() => {
+    let newCurrentPage = currentPage;
+    while (newCurrentPage > 1 && filteredData.slice((newCurrentPage - 1) * itemsPerPage, newCurrentPage * itemsPerPage).length === 0) {
+      newCurrentPage--;
+    }
+    setCurrentPage(newCurrentPage);
+  }, [filteredData]);
 
   return (
     <>
@@ -3915,8 +3934,10 @@ export const ModalImeiByProductItem = ({
                 <div className="">
                   <TextField
                     label="Tìm IMEI"
-                    // onChange={handleGetValueFromInputTextField}
-                    // value={keyword}
+                    onChange={(e) => {
+                      setImei(e.target.value);
+                    }}
+                    value={imei}
                     InputLabelProps={{
                       sx: {
                         marginTop: "",
@@ -3932,19 +3953,6 @@ export const ModalImeiByProductItem = ({
                     size="small"
                     className=""
                   />
-                  <Button
-                    onClick={() => { console.log(imeis) }}
-                    className="rounded-2 ms-2 button-mui"
-                    type="primary"
-                    style={{ width: "100px", fontSize: "15px" }}
-                  >
-                    <span
-                      className="text-white"
-                      style={{ fontWeight: "500", marginBottom: "2px" }}
-                    >
-                      Tìm Kiếm
-                    </span>
-                  </Button>
                 </div>
               </div>
               <div className="mx-auto mt-3 pt-2">
@@ -4011,10 +4019,7 @@ export const ModalImeiByProductItem = ({
                                     StatusImei.IN_THE_CART ? (
                                     <div
                                       className={
-                                        item.trangThai ===
-                                          StatusImei.PENDING_DELIVERY
-                                          ? "badge-primary rounded-pill mx-auto"
-                                          : "badge-success rounded-pill mx-auto"
+                                        "badge-success rounded-pill mx-auto"
                                       }
                                       style={{
                                         height: "35px",
@@ -4035,7 +4040,7 @@ export const ModalImeiByProductItem = ({
                                           : item.trangThai ===
                                             StatusImei.IN_THE_CART
                                             ? "Chưa Bán"
-                                            : "Chờ Giao"}
+                                            : "Chưa Bán"}
                                       </span>
                                     </div>
                                   ) : (
@@ -4182,9 +4187,19 @@ export const ModalUpdateImeiByProductItem = ({
   max,
 }) => {
   const [selectedImei, setSelectedImei] = useState(imeisChuaBan);
+  const [imei, setImei] = useState("");
   const { handleOpenAlertVariant } = useCustomSnackbar();
 
-  const filteredData = imeis.filter(
+  // const filteredData = imeis.filter(
+  //   (item) =>
+  //     item.trangThai === StatusImei.NOT_SOLD ||
+  //     item.trangThai === StatusImei.PENDING_DELIVERY ||
+  //     item.trangThai === StatusImei.IN_THE_CART
+  // );
+
+  const filteredData = imeis.filter((item) =>
+    item.soImei.includes(imei)
+  ).filter(
     (item) =>
       item.trangThai === StatusImei.NOT_SOLD ||
       item.trangThai === StatusImei.PENDING_DELIVERY ||
@@ -4205,6 +4220,14 @@ export const ModalUpdateImeiByProductItem = ({
     setSelectedImei(imeisChuaBan);
   }, [refresh]);
 
+  useEffect(() => {
+    let newCurrentPage = currentPage;
+    while (newCurrentPage > 1 && filteredData.slice((newCurrentPage - 1) * itemsPerPage, newCurrentPage * itemsPerPage).length === 0) {
+      newCurrentPage--;
+    }
+    setCurrentPage(newCurrentPage);
+  }, [filteredData]);
+
   return (
     <>
       <Dialog
@@ -4212,7 +4235,7 @@ export const ModalUpdateImeiByProductItem = ({
         TransitionComponent={Transition}
         keepMounted
         onClose={() => {
-          close(); /*  setSelectedImei([])  */
+          close();/*  setSelectedImei([])  */
         }}
         maxWidth="xxl"
         maxHeight="xxl"
@@ -4227,8 +4250,10 @@ export const ModalUpdateImeiByProductItem = ({
                 <div className="">
                   <TextField
                     label="Tìm IMEI"
-                    // onChange={handleGetValueFromInputTextField}
-                    // value={keyword}
+                    onChange={(e) => {
+                      setImei(e.target.value);
+                    }}
+                    value={imei}
                     InputLabelProps={{
                       sx: {
                         marginTop: "",
@@ -4244,22 +4269,6 @@ export const ModalUpdateImeiByProductItem = ({
                     size="small"
                     className=""
                   />
-                  <Button
-                    onClick={() => {
-                      console.log(imeisChuaBan);
-                      console.log(imeis);
-                    }}
-                    className="rounded-2 ms-2 button-mui"
-                    type="primary"
-                    style={{ width: "100px", fontSize: "15px" }}
-                  >
-                    <span
-                      className="text-white"
-                      style={{ fontWeight: "500", marginBottom: "2px" }}
-                    >
-                      Tìm Kiếm
-                    </span>
-                  </Button>
                 </div>
               </div>
               <div className="mx-auto mt-3 pt-2">
@@ -4351,8 +4360,7 @@ export const ModalUpdateImeiByProductItem = ({
                                   item.trangThai === StatusImei.NOT_SOLD ||
                                   item.trangThai === StatusImei.IN_THE_CART ? (
                                   <div
-                                    className={item.trangThai === StatusImei.PENDING_DELIVERY ?
-                                      "badge-primary rounded-pill mx-auto" :
+                                    className={
                                       "badge-success rounded-pill mx-auto"
                                     }
                                     style={{
@@ -4373,7 +4381,7 @@ export const ModalUpdateImeiByProductItem = ({
                                         : item.trangThai ===
                                           StatusImei.IN_THE_CART
                                           ? "Chưa Bán"
-                                          : "Chờ Giao"}
+                                          : "Chưa Bán"}
                                     </span>
                                   </div>
                                 ) : (
