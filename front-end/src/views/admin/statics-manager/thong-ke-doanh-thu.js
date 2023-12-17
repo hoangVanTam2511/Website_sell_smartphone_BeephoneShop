@@ -40,8 +40,6 @@ const ThongKeDoanhThu = () => {
   const [searchStartDate, setSearchStartDate] = useState(dayjs());
   const [searchEndDate, setSearchEndDate] = useState(dayjs().add(7, "day"));
   const [searchMonth, setSearchMonth] = useState();
-  const [searchYear, setSearchYear] = useState(dayjs());
-  const currentYear = new Date().getFullYear();
 
   const [searchNgayBatDau, setSearchNgayBatDau] = useState("");
   const [searchNgayKetThuc, setSearchNgayKetThuc] = useState("");

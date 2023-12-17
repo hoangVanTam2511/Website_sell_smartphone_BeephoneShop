@@ -12,8 +12,8 @@ import java.util.Date;
 @Setter
 public class TransactionRequest {
 
-    private String ma;
-
+//    private String ma;
+//
     private BigDecimal soTienThanhToan;
 
     private String maHoaDon;
@@ -29,5 +29,9 @@ public class TransactionRequest {
 
     @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     private Date ngayKetThuc;
+
+    private String keyword;
+
+    private String sortValue;
 
 }

@@ -17,9 +17,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @Component
@@ -34,6 +37,10 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public ResponsePage<TransactionCustomResponse> getAll(Integer pageNo, TransactionRequest request) {
 
+        if (request.getKeyword() == null) {
+            request.setKeyword("");
+        }
+
         Pageable pageable = PageRequest.of(pageNo - 1, 5);
 
         ResponsePage<TransactionCustomResponse> pageCustomResponses = new ResponsePage<>();
@@ -42,7 +49,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         Page<TransactionResponse> pageGetAll = transactionRepository.getAll(pageable, request);
 
-        for (TransactionResponse response : pageGetAll.getContent() ) {
+        for (TransactionResponse response : pageGetAll.getContent()) {
 
             TransactionCustomResponse response1 = new TransactionCustomResponse();
 
@@ -60,7 +67,7 @@ public class TransactionServiceImpl implements TransactionService {
             response1.setMaHoaDon(response.getMaHoaDon());
             response1.setIdNhanVien(response.getIdNhanVien());
 
-            if (idEmployee.isPresent()){
+            if (idEmployee.isPresent()) {
                 if (idEmployee.get().getId().equals(response.getIdNhanVien())) {
                     response1.setNguoiXacNhan(idEmployee.get().getHoVaTen());
                 }

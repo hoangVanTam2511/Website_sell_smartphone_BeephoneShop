@@ -103,46 +103,10 @@ public class DBGenerator implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        XepHang xepHang = new XepHang();
-        xepHang.setMa("rank1");
-        xepHang.setTen("Bạc");
-        xepHang.setDieuKienToiThieu(new BigDecimal(3000000));
-        xepHang.setDieuKienToiDa(new BigDecimal(7000000));
-        xepHang.setUuDai(new BigDecimal(30));
-        xepHang.setStatus(StatusCommon.ACTIVE);
-        xepHang.setId(iRankRepository.save(xepHang).getId());
-
-        XepHang xepHang1 = new XepHang();
-        xepHang1.setMa("rank11");
-        xepHang1.setTen("Vàng");
-        xepHang1.setDieuKienToiThieu(new BigDecimal(7000000));
-        xepHang1.setDieuKienToiDa(new BigDecimal(120000000));
-        xepHang1.setUuDai(new BigDecimal(3));
-        xepHang1.setStatus(StatusCommon.ACTIVE);
-        xepHang1.setId(iRankRepository.save(xepHang1).getId());
-
-        XepHang xepHang2 = new XepHang();
-        xepHang2.setMa("rank12");
-        xepHang2.setTen("Kim Cương");
-        xepHang2.setDieuKienToiThieu(new BigDecimal(12000000));
-        xepHang2.setDieuKienToiDa(new BigDecimal(20000000));
-        xepHang2.setUuDai(new BigDecimal(2));
-        xepHang2.setStatus(StatusCommon.ACTIVE);
-        xepHang2.setId(iRankRepository.save(xepHang2).getId());
-
-        XepHang xepHang3 = new XepHang();
-        xepHang3.setMa("rank13");
-        xepHang3.setTen("Đồng");
-        xepHang3.setDieuKienToiThieu(new BigDecimal(100000));
-        xepHang3.setDieuKienToiDa(new BigDecimal(3000000));
-        xepHang3.setUuDai(new BigDecimal(1));
-        xepHang3.setStatus(StatusCommon.ACTIVE);
-        xepHang3.setId(iRankRepository.save(xepHang3).getId());
-
         //Bảng Danh Mục
         DanhMuc danhMuc = new DanhMuc();
         danhMuc.setMa("DMUC1");
-        danhMuc.setTenDanhMuc("Chơi Game, Cấu Hình Cao");
+        danhMuc.setTenDanhMuc("Chơi Game");
         danhMuc.setStatus(StatusCommon.ACTIVE);
         danhMuc.setId(danhMucRepository.save(danhMuc).getId());
 
@@ -163,6 +127,12 @@ public class DBGenerator implements CommandLineRunner {
         danhMuc3.setTenDanhMuc("Mỏng Nhẹ");
         danhMuc3.setStatus(StatusCommon.ACTIVE);
         danhMuc3.setId(danhMucRepository.save(danhMuc3).getId());
+
+        DanhMuc danhMuc4 = new DanhMuc();
+        danhMuc4.setMa("DMUC14");
+        danhMuc4.setTenDanhMuc("Cấu Hình Cao");
+        danhMuc4.setStatus(StatusCommon.ACTIVE);
+        danhMuc4.setId(danhMucRepository.save(danhMuc4).getId());
 
         //Bảng Role
         Role nhanVien = new Role();
@@ -223,6 +193,7 @@ public class DBGenerator implements CommandLineRunner {
         accountAdmin.setTrangThai(StatusAccountCus.LAM_VIEC);
         accountAdmin.setIdRole(admin);
         accountAdmin.setId(accountRepository.save(accountAdmin).getId());
+
 
         //Bảng Camera Trước
         CameraTruoc cameraTruoc = new CameraTruoc();
@@ -872,14 +843,12 @@ public class DBGenerator implements CommandLineRunner {
         //Bảng khuyến mại
         KhuyenMai khuyenMai = new KhuyenMai();
         khuyenMai.setMa("KhuyenMai1");
-        khuyenMai.setTenKhuyenMai("FPT Shop giảm 250K VNĐ");
+        khuyenMai.setTenKhuyenMai("BeePhone Shop giảm 250K VNĐ");
         khuyenMai.setGiaTriKhuyenMai(new BigDecimal(250000));
         khuyenMai.setLoaiKhuyenMai(TypeDiscount.VND);
         SimpleDateFormat dateFormat5 = new SimpleDateFormat("dd-MM-yyyy");
-//        Date ngayBatDau5 = null;
         Date ngayKetThuc5 = null;
         try {
-//            ngayBatDau5 = dateFormat5.parse("20-05-2023");
             ngayKetThuc5 = dateFormat5.parse("10-12-2023");
         } catch (ParseException e) {
             e.printStackTrace();
@@ -891,7 +860,7 @@ public class DBGenerator implements CommandLineRunner {
 
         KhuyenMai khuyenMai2 = new KhuyenMai();
         khuyenMai2.setMa("KhuyenMai2");
-        khuyenMai2.setTenKhuyenMai("FPT Shop giảm 500k VNĐ");
+        khuyenMai2.setTenKhuyenMai("BeePhone Shop giảm 500k VNĐ");
         khuyenMai2.setGiaTriKhuyenMai(new BigDecimal(250000));
         khuyenMai2.setLoaiKhuyenMai(TypeDiscount.VND);
         SimpleDateFormat dateFormat6 = new SimpleDateFormat("dd-MM-yyyy");
@@ -899,7 +868,7 @@ public class DBGenerator implements CommandLineRunner {
         Date ngayKetThuc6 = null;
         try {
             ngayBatDau6 = dateFormat6.parse("20-05-2023");
-            ngayKetThuc6 = dateFormat6.parse("30-07-2023");
+            ngayKetThuc6 = dateFormat6.parse("30-07-2024");
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -910,7 +879,7 @@ public class DBGenerator implements CommandLineRunner {
 
         KhuyenMai khuyenMai3 = new KhuyenMai();
         khuyenMai3.setMa("KhuyenMai1");
-        khuyenMai3.setTenKhuyenMai("FPT Shop giảm 1 triệu VNĐ");
+        khuyenMai3.setTenKhuyenMai("BeePhone Shop giảm 1 triệu VNĐ");
         khuyenMai3.setGiaTriKhuyenMai(new BigDecimal(1000000));
         khuyenMai3.setLoaiKhuyenMai(TypeDiscount.VND);
         SimpleDateFormat dateFormat7 = new SimpleDateFormat("dd-MM-yyyy");
@@ -927,6 +896,44 @@ public class DBGenerator implements CommandLineRunner {
         khuyenMai3.setTrangThai(StatusDiscount.CHUA_DIEN_RA);
         khuyenMai3.setId(khuyenMaiRepository.save(khuyenMai3).getId());
 
+        KhuyenMai khuyenMai4 = new KhuyenMai();
+        khuyenMai4.setMa("KhuyenMai16");
+        khuyenMai4.setTenKhuyenMai("BeePhone Shop giảm 1 triệu 2 VNĐ");
+        khuyenMai4.setGiaTriKhuyenMai(new BigDecimal(1200000));
+        khuyenMai4.setLoaiKhuyenMai(TypeDiscount.VND);
+        SimpleDateFormat dateFormat8 = new SimpleDateFormat("dd-MM-yyyy");
+        Date ngayBatDau8 = null;
+        Date ngayKetThuc8 = null;
+        try {
+            ngayBatDau8 = dateFormat8.parse("20-05-2023");
+            ngayKetThuc8 = dateFormat8.parse("30-12-2024");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        khuyenMai4.setNgayBatDau(ngayBatDau8);
+        khuyenMai4.setNgayKetThuc(ngayKetThuc8);
+        khuyenMai4.setTrangThai(StatusDiscount.CHUA_DIEN_RA);
+        khuyenMai4.setId(khuyenMaiRepository.save(khuyenMai4).getId());
+
+        KhuyenMai khuyenMai5 = new KhuyenMai();
+        khuyenMai5.setMa("KhuyenMai17");
+        khuyenMai5.setTenKhuyenMai("BeePhone Shop giảm 1 triệu 5 VNĐ");
+        khuyenMai5.setGiaTriKhuyenMai(new BigDecimal(1500000));
+        khuyenMai5.setLoaiKhuyenMai(TypeDiscount.VND);
+        SimpleDateFormat dateFormat9 = new SimpleDateFormat("dd-MM-yyyy");
+        Date ngayBatDau9 = null;
+        Date ngayKetThuc9 = null;
+        try {
+            ngayBatDau9 = dateFormat9.parse("20-05-2023");
+            ngayKetThuc9 = dateFormat9.parse("14-01-2024");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        khuyenMai5.setNgayBatDau(ngayBatDau9);
+        khuyenMai5.setNgayKetThuc(ngayKetThuc9);
+        khuyenMai5.setTrangThai(StatusDiscount.CHUA_DIEN_RA);
+        khuyenMai5.setId(khuyenMaiRepository.save(khuyenMai5).getId());
+
         //Bảng Voucher
         Voucher voucher = new Voucher();
         voucher.setMa("VOUCHER123");
@@ -939,10 +946,8 @@ public class DBGenerator implements CommandLineRunner {
         voucher.setSoLuong(1000);
         voucher.setLoaiVoucher(TypeDiscount.VND);
         SimpleDateFormat dateFormat1 = new SimpleDateFormat("dd-MM-yyyy");
-//        Date ngayBatDau1 = null;
         Date ngayKetThuc1 = null;
         try {
-//            ngayBatDau1 = dateFormat1.parse("20-05-2023");
             ngayKetThuc1 = dateFormat1.parse("20-12-2023");
         } catch (ParseException e) {
             e.printStackTrace();
@@ -951,6 +956,50 @@ public class DBGenerator implements CommandLineRunner {
         voucher.setNgayKetThuc(ngayKetThuc1);
         voucher.setTrangThai(StatusDiscount.CHUA_DIEN_RA);
         voucher.setId(voucherRepository.save(voucher).getId());
+
+        Voucher voucher5 = new Voucher();
+        voucher5.setMa("VOUCHER13123");
+        voucher5.setTen("""
+                Giảm ngay 10 triệu cho đơn hàng của khách hàng đạt 31 triệu
+                """);
+        voucher5.setGiaTriVoucher(new BigDecimal(1000000));
+        voucher5.setDieuKienApDung(new BigDecimal(31000000));
+        voucher5.setGiaTriToiDa(null);
+        voucher5.setSoLuong(1000);
+        voucher5.setLoaiVoucher(TypeDiscount.VND);
+        SimpleDateFormat dateFormat15 = new SimpleDateFormat("dd-MM-yyyy");
+        Date ngayKetThuc15 = null;
+        try {
+            ngayKetThuc15 = dateFormat1.parse("20-10-2024");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        voucher5.setNgayBatDau(new Date());
+        voucher5.setNgayKetThuc(ngayKetThuc15);
+        voucher5.setTrangThai(StatusDiscount.CHUA_DIEN_RA);
+        voucher5.setId(voucherRepository.save(voucher5).getId());
+
+        Voucher voucher6 = new Voucher();
+        voucher6.setMa("VOUCHER123983");
+        voucher6.setTen("""
+                Giảm ngay 7000k cho đơn hàng của khách hàng đạt 50000k
+                """);
+        voucher6.setGiaTriVoucher(new BigDecimal(7000000));
+        voucher6.setDieuKienApDung(new BigDecimal(50000000));
+        voucher6.setGiaTriToiDa(null);
+        voucher6.setSoLuong(1000);
+        voucher6.setLoaiVoucher(TypeDiscount.VND);
+        SimpleDateFormat dateFormat19 = new SimpleDateFormat("dd-MM-yyyy");
+        Date ngayKetThuc19 = null;
+        try {
+            ngayKetThuc19 = dateFormat19.parse("20-9-2024");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        voucher6.setNgayBatDau(new Date());
+        voucher6.setNgayKetThuc(ngayKetThuc19);
+        voucher6.setTrangThai(StatusDiscount.CHUA_DIEN_RA);
+        voucher6.setId(voucherRepository.save(voucher6).getId());
 
         Voucher voucher2 = new Voucher();
         voucher2.setMa("VOUCHER456");
@@ -1000,10 +1049,11 @@ public class DBGenerator implements CommandLineRunner {
         voucher3.setNgayKetThuc(ngayKetThuc);
         voucher3.setId(voucherRepository.save(voucher3).getId());
 
-
-        SanPham sanPham = new SanPham();
-        sanPham.setMa("SP00001");
-
+//        SanPham sanPham = new SanPham();
+//        sanPham.setMa("SP00001");
+//        sanPham.setTenSanPham("Xiaomi Mi 10");
+//        sanPham.setMoTa("Tốt");
+//        sanPham.setDanhMucs();
     }
 
 

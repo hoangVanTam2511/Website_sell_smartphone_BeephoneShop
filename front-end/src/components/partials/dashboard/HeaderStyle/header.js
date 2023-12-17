@@ -41,7 +41,7 @@ const Header = memo((props) => {
   const navbarHide = useSelector(SettingSelector.navbar_show); // array
   const headerNavbar = useSelector(SettingSelector.header_navbar);
   const navigate = useNavigate();
-  const user = useSelector((state) => state.user.user);
+  const user = getUser();
 
   useEffect(() => {
     // navbarstylemode

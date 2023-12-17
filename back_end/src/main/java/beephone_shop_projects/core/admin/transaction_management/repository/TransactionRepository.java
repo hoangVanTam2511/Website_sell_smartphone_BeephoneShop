@@ -14,14 +14,19 @@ public interface TransactionRepository extends IHinhThucThanhToanRepository {
     @Query("""
             SELECT h.id AS id, h.ma AS ma, h.soTienThanhToan AS soTienThanhToan, hd.id as idHoaDon, hd.ma AS maHoaDon, h.loaiThanhToan AS loaiThanhToan, 
             h.hinhThucThanhToan AS hinhThucThanhToan, h.trangThai AS trangThai, h.createdAt AS ngayTao, h.createdBy as idNhanVien
-            FROM HinhThucThanhToan h JOIN HoaDon hd ON h.hoaDon.id = hd.id WHERE 
-            ((:#{#request.maHoaDon} IS NULL OR hd.ma LIKE CONCAT('%', COALESCE(:#{#request.maHoaDon}, ''), '%'))
-            OR (:#{#request.soTienThanhToan} IS NULL OR h.soTienThanhToan = COALESCE(:#{#request.soTienThanhToan}, h.soTienThanhToan)))
+            FROM HinhThucThanhToan h JOIN HoaDon hd ON h.hoaDon.id = hd.id  
+            WHERE ((:#{#request.keyword} IS NULL OR hd.ma LIKE  :#{'%' + #request.keyword + '%'})
+            OR (:#{#request.soTienThanhToan} IS NULL OR h.soTienThanhToan = :#{#request.soTienThanhToan}))
             AND (:#{#request.hinhThucThanhToan} IS NULL OR :#{#request.hinhThucThanhToan} = 3 OR h.hinhThucThanhToan = :#{#request.hinhThucThanhToan} )
             AND (:#{#request.loaiThanhToan} IS NULL OR  :#{#request.loaiThanhToan} = 3 OR h.loaiThanhToan = :#{#request.loaiThanhToan} )
             AND (:#{#request.trangThai} IS NULL OR :#{#request.trangThai} = 6 OR h.trangThai = :#{#request.trangThai} )
-            AND (:#{#request.ngayBatDau} IS NULL OR :#{#request.ngayKetThuc} IS NULL 
-            OR h.createdAt BETWEEN :#{#request.ngayBatDau} AND :#{#request.ngayKetThuc})
+            AND (:#{#request.sortValue} IS NULL
+                OR (:#{#request.sortValue} = 'a-z' ORDER BY h.soTienThanhToan ASC)
+                OR (:#{#request.sortValue} = 'z-a' ORDER BY h.soTienThanhToan DESC))
+            AND ((:#{#request.ngayBatDau} IS NULL AND :#{#request.ngayKetThuc} IS NULL)
+            OR ((:#{#request.ngayBatDau} IS NULL OR h.createdAt >= :#{#request.ngayBatDau})
+            AND (:#{#request.ngayKetThuc} IS NULL OR h.createdAt <= :#{#request.ngayKetThuc})))
+            
                         """)
     Page<TransactionResponse> getAll(Pageable pageable, @Param("request") TransactionRequest request);
 
