@@ -120,6 +120,7 @@ private CustomKhachHangRepositoryImpl customKhachHangRepository;
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().body(e.getMessage());
     } catch (RuntimeException e) {
+        e.printStackTrace();
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi server khi thêm địa chỉ.");
     }
   }
@@ -132,6 +133,7 @@ private CustomKhachHangRepositoryImpl customKhachHangRepository;
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().body(e.getMessage());
     } catch (RuntimeException e) {
+        e.printStackTrace();
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi server khi thêm địa chỉ.");
     }
   }
