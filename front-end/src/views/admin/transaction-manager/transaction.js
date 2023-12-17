@@ -51,6 +51,7 @@ const Transaction = () => {
       trangThai: searchTrangThai,
       ngayBatDau: searchNgayBatDau,
       ngayKetThuc: searchNgayKetThuc,
+      sortValue: sortTransaction,
     };
     requestParam("GET", `/transaction/transactions`, request)
       .then((response) => {
@@ -76,6 +77,7 @@ const Transaction = () => {
     searchHinhThucThanhToan,
     currentPage,
     totalPages,
+    sortTransaction,
   ]);
 
   const handleCloseSelect2 = () => {
