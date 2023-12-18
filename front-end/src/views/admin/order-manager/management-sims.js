@@ -3,9 +3,11 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Empty, Table } from "antd";
 import {
   Autocomplete,
+  Checkbox,
   Dialog,
   DialogContent,
   FormControl,
+  FormControlLabel,
   IconButton,
   InputLabel,
   MenuItem,
@@ -349,9 +351,18 @@ const ManagementSims = () => {
   const detailTheSims = async (id) => {
     request("GET", `/api/sim-cards/${id}`)
       .then((response) => {
-        setTheSimCode(response.data.data.ma);
-        setStatus(response.data.data.status);
-        setLoaiTheSim(response.data.data.loaiTheSim);
+        const data = response.data.data;
+        setTheSimCode(data.ma);
+        setStatus(data.status);
+        setLoaiTheSim(data.loaiTheSim);
+        console.log(data);
+        if (data.simMultiple === SimMultiple.SINGLE_SIM) {
+          setCheckedSingleSim(true);
+          setCheckedDualSim(false);
+        } else {
+          setCheckedDualSim(true);
+          setCheckedSingleSim(false);
+        }
       })
       .catch((error) => {});
   };
@@ -381,7 +392,8 @@ const ManagementSims = () => {
   const handleChangeStatus = (event) => {
     setStatus(event.target.value);
   };
-
+  const [checkedDualSim, setCheckedDualSim] = React.useState(false);
+  const [checkedSingleSim, setCheckedSingleSim] = React.useState(false);
   const { handleOpenAlertVariant } = useCustomSnackbar();
 
   const [validationMsg, setValidationMsg] = useState({});
@@ -436,7 +448,12 @@ const ManagementSims = () => {
         handleOpenAlertVariant(error.response.data.message, Notistack.ERROR);
       });
   };
-
+  const handleChangeCheckedSingleSim = (event) => {
+    setCheckedSingleSim(event.target.checked);
+  };
+  const handleChangeCheckedDualSim = (event) => {
+    setCheckedDualSim(event.target.checked);
+  };
   return (
     <>
       <div
@@ -718,6 +735,32 @@ const ManagementSims = () => {
                       </MenuItem>
                     </Select>
                   </FormControl>
+                </div>
+                <div className="mt-3 d-flex">
+                  <div>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          onChange={handleChangeCheckedSingleSim}
+                          checked={checkedSingleSim}
+                          disabled
+                        />
+                      }
+                      label="1 SIM"
+                    />
+                  </div>
+                  <div className="ms-3">
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          onChange={handleChangeCheckedDualSim}
+                          checked={checkedDualSim}
+                          disabled
+                        />
+                      }
+                      label="2 SIM"
+                    />
+                  </div>
                 </div>
                 <div className="mt-4 pt-1 d-flex justify-content-end">
                   <Button

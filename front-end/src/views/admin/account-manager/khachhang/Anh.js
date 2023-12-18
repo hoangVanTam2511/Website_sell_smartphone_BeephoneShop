@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Upload, message, Image } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
-const ImageUploadComponent = ({ setAnhDaiDien, hoten }) => {
+const ImageUploadComponent = ({ setAnhDaiDien, hoten, openCustomer }) => {
   const [imageUrl, setImageUrl] = useState(null);
   const [imageSize, setImageSize] = useState({ width: 120, height: 120 });
 
@@ -29,7 +29,12 @@ const ImageUploadComponent = ({ setAnhDaiDien, hoten }) => {
       });
     }
   };
-
+  useEffect(() => {
+    if (openCustomer) {
+      setAnhDaiDien("");
+      setImageUrl(null);
+    }
+  }, [openCustomer]);
   const customUploadRequest = async (options) => {
     setTimeout(() => {
       const data = {
@@ -47,7 +52,6 @@ const ImageUploadComponent = ({ setAnhDaiDien, hoten }) => {
       reader.onload = (e) => {
         setImageUrl(e.target.result);
         setAnhDaiDien(e.target.result);
-        console.log("Image URL length:", e.target.result.length);
       };
       reader.readAsDataURL(file);
       return false;

@@ -10,6 +10,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import lombok.*;
 
+import java.util.Date;
+
 @Entity
 @Getter
 @Setter
@@ -27,8 +29,5 @@ public class DoPhanGiaiManHinh extends PrimaryEntity implements IsIdentified {
 
   @Enumerated(EnumType.ORDINAL)
   private ResolutionType resolutionType;
-
-//  @Enumerated(EnumType.ORDINAL)
-//  private StatusCommon status;
 
 }

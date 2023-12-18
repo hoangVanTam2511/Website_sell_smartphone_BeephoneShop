@@ -2,6 +2,7 @@ package beephone_shop_projects.core.admin.order_management.repository.impl;
 
 import beephone_shop_projects.core.admin.order_management.model.request.SearchFilterProductItemDto;
 import beephone_shop_projects.core.admin.order_management.model.request.SearchProductDto;
+import beephone_shop_projects.core.admin.order_management.model.request.SearchProductItemDto;
 import beephone_shop_projects.core.admin.order_management.repository.ProductItemRepository;
 import beephone_shop_projects.core.common.base.JpaPersistence;
 import beephone_shop_projects.entity.CameraSau;
@@ -15,6 +16,7 @@ import beephone_shop_projects.entity.DanhMucDienThoai;
 import beephone_shop_projects.entity.DoPhanGiaiManHinh;
 import beephone_shop_projects.entity.Hang;
 import beephone_shop_projects.entity.Image;
+import beephone_shop_projects.entity.Imei;
 import beephone_shop_projects.entity.ManHinh;
 import beephone_shop_projects.entity.MauSac;
 import beephone_shop_projects.entity.Pin;
@@ -97,7 +99,7 @@ public class ProductItemRepositoryImpl extends AbstractRepositoryImpl<SanPhamChi
 
       this.buildSelectAllAndCountEntity(configuration);
       this.buildSortByPageable(configuration, pageable.getSort());
-      this.buildWhereConditionByPredicates(configuration, buildPredicates(SearchProductDto.class, searchFilter, configuration));
+      this.buildWhereConditionByPredicates(configuration, buildPredicates(SearchProductItemDto.class, searchFilter, configuration));
 
       products = this.buildQueryWithPaginationByPageableAndCriteriaQuery(pageable, configuration);
       totalElements = entityManager.createQuery(countQuery).getSingleResult();
@@ -109,7 +111,51 @@ public class ProductItemRepositoryImpl extends AbstractRepositoryImpl<SanPhamChi
     return new PageImpl<>(products, pageable, totalElements);
   }
 
-  private Map<String, List<Predicate>> buildPredicates(Class<SearchProductDto> searchEntity, SearchFilterProductItemDto searchFilter, JpaPersistence<SanPhamChiTiet> configuration) {
+  @Override
+  public List<SanPhamChiTiet> findByIdProductItem(String id) {
+    List<SanPhamChiTiet> products = null;
+    try (EntityManager entityManager = this.getEntityManager()) {
+      CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+      CriteriaQuery<SanPhamChiTiet> criteriaQuery = criteriaBuilder.createQuery(this.getPersistenceClass());
+      Root<SanPhamChiTiet> root = criteriaQuery.from(this.getPersistenceClass());
+
+      Fetch<SanPhamChiTiet, Ram> joinRam = root.fetch("ram", JoinType.LEFT);
+      Fetch<SanPhamChiTiet, Rom> joinRom = root.fetch("rom", JoinType.LEFT);
+      Fetch<SanPhamChiTiet, MauSac> joinColor = root.fetch("mauSac", JoinType.LEFT);
+      Fetch<SanPhamChiTiet, Image> joinImage = root.fetch("image", JoinType.LEFT);
+//      Fetch<SanPhamChiTiet, KhuyenMaiChiTiet> joinPromotions = root.fetch("promotions", JoinType.LEFT);
+      Fetch<SanPhamChiTiet, MauSac> joinImeis = root.fetch("imeis", JoinType.LEFT);
+      Fetch<SanPhamChiTiet, SanPham> joinProduct = root.fetch("sanPham", JoinType.LEFT);
+
+      Fetch<SanPham, Chip> joinChip = joinProduct.fetch("chip", JoinType.LEFT);
+      Fetch<SanPham, Pin> joinPin = joinProduct.fetch("pin", JoinType.LEFT);
+      Fetch<SanPham, ManHinh> joinScreen = joinProduct.fetch("manHinh", JoinType.LEFT);
+      Fetch<ManHinh, DoPhanGiaiManHinh> joinScreenRelution = joinScreen.fetch("doPhanGiaiManHinh", JoinType.LEFT);
+      Fetch<SanPham, Hang> joinBrand = joinProduct.fetch("hang", JoinType.LEFT);
+      Fetch<SanPham, CongSac> joinChargingPort = joinProduct.fetch("congSac", JoinType.LEFT);
+      Fetch<SanPham, TheNho> joinMemoryCard = joinProduct.fetch("theNho", JoinType.LEFT);
+
+      Fetch<SanPham, TheSimDienThoai> joinSimCardPhone = joinProduct.fetch("theSims", JoinType.LEFT);
+      Fetch<TheSimDienThoai, TheSim> joinSimCard = joinSimCardPhone.fetch("theSim", JoinType.LEFT);
+      Fetch<SanPham, DanhMucDienThoai> joinCategoryPhone = joinProduct.fetch("danhMucs", JoinType.LEFT);
+      Fetch<DanhMucDienThoai, DanhMuc> joinCategory = joinCategoryPhone.fetch("danhMuc", JoinType.LEFT);
+      Fetch<SanPham, CameraTruocDienThoai> joinCameraFrontPhone = joinProduct.fetch("cameraTruocs", JoinType.LEFT);
+      Fetch<CameraTruocDienThoai, CameraTruoc> joinCameraFront = joinCameraFrontPhone.fetch("cameraTruoc", JoinType.LEFT);
+      Fetch<SanPham, CameraSauDienThoai> joinCameraRearPhone = joinProduct.fetch("cameraSaus", JoinType.LEFT);
+      Fetch<CameraSauDienThoai, CameraSau> joinCameraRear = joinCameraRearPhone.fetch("cameraSau", JoinType.LEFT);
+
+      Predicate condition = criteriaBuilder.equal(root.get("sanPham").get("id"), id);
+      criteriaQuery.select(root).where(condition);
+      products = entityManager.createQuery(criteriaQuery).getResultList();
+
+    } catch (HibernateException e) {
+      logger.error(e.getMessage(), e);
+      throw e;
+    }
+    return products;
+  }
+
+  private Map<String, List<Predicate>> buildPredicates(Class<SearchProductItemDto> searchEntity, SearchFilterProductItemDto searchFilter, JpaPersistence<SanPhamChiTiet> configuration) {
     Map<String, List<Predicate>> mapPredicates = new HashMap<String, List<Predicate>>();
     List<Predicate> predicates = new ArrayList<Predicate>();
     List<Predicate> countPredicates = new ArrayList<Predicate>();
@@ -239,7 +285,7 @@ public class ProductItemRepositoryImpl extends AbstractRepositoryImpl<SanPhamChi
     return mapPredicates;
   }
 
-  protected Predicate getPredicateContainsObject(Root<SanPhamChiTiet> root, Class<SearchProductDto> entityDTO, String keyword, JpaPersistence<SanPhamChiTiet> configuration) {
+  protected Predicate getPredicateContainsObject(Root<SanPhamChiTiet> root, Class<SearchProductItemDto> entityDTO, String keyword, JpaPersistence<SanPhamChiTiet> configuration) {
     Field[] fields = entityDTO.getDeclaredFields();
     List<Predicate> predicates = new ArrayList<>();
     for (Field field : fields) {

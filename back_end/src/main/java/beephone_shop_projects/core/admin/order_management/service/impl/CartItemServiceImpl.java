@@ -208,7 +208,7 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
       totalAmount += cartItem.getSoLuong();
     }
 
-    if (totalAmount + req.getImeis().size() > 4) {
+    if (totalAmount + req.getAmount() > 4) {
       throw new RestApiException("Lựa chọn tối đa 4 số lượng sản phẩm!");
     }
 
@@ -764,7 +764,7 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
     int totalImei = 0;
     for (HoaDonChiTiet orderItem : findOrderCurrent.getOrderItems()) {
       if (orderItem.getImeisDaBan() != null) {
-        totalImei += orderItem.getSoLuong();
+        totalImei += orderItem.getImeisDaBan().size();
       }
     }
 

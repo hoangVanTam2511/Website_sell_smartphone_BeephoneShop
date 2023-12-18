@@ -14,12 +14,10 @@ import java.util.List;
 public class AddNhanVienRequest {
     private String ma;
     @NotBlank(message = "Họ tên trống")
-    @Pattern(regexp = "^[a-zA-Z0-9 ]*$", message = "Họ và tên không được chứa ký tự đặc biệt")
     @Size(max = 30, message = "Họ tên không được vượt quá 30 ký tự")
     private String hoVaTen;
 
     @NotBlank(message = "Email trống")
-    @Pattern(regexp = "^[a-zA-Z0-9._-]+@gmail\\.com$", message = "Email sai định dạng hoặc không phải là Gmail")
     private String email;
 
     @NotBlank(message = "Số điện thoại trống")

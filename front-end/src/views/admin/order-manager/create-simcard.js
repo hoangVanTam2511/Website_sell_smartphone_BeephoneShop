@@ -86,53 +86,87 @@ const CreateSimCard = ({ open, close, getAll, sims }) => {
 
   const addTheSim = () => {
     let simObjects = [];
-    if (checkedSingleSim && checkedDualSim) {
-      // Nếu cả hai loại SIM được chọn, tạo hai đối tượng và thêm vào danh sách
-      const simObject1 = {
-        ma: generateRandomCode(),
-        loaiTheSim: loaiTheSim,
-        status: status,
-        simMultiple: SimMultiple.SINGLE_SIM,
-      };
+    const existingSingleSim = sims.some(
+      (sim) =>
+        sim.loaiTheSim === loaiTheSim &&
+        sim.simMultiple === SimMultiple.SINGLE_SIM
+    );
+    const existingDualSim = sims.some(
+      (sim) =>
+        sim.loaiTheSim === loaiTheSim &&
+        sim.simMultiple === SimMultiple.DUAL_SIM
+    );
 
-      const simObject2 = {
-        ma: "TS" + generateRandomCode(),
-        loaiTheSim: loaiTheSim,
-        status: status,
-        simMultiple: SimMultiple.DUAL_SIM,
-      };
-
-      simObjects.push(simObject1, simObject2);
-    } else if (checkedSingleSim) {
-      // Nếu chỉ một trong hai loại SIM được chọn hoặc không có SIM nào được chọn, tạo một đối tượng và thêm vào danh sách
-      const simObject = {
-        ma: "TS" + generateRandomCode(),
-        loaiTheSim: loaiTheSim,
-        status: status,
-        simMultiple: SimMultiple.SINGLE_SIM,
-      };
-      simObjects.push(simObject);
+    if (!checkedSingleSim && !checkedDualSim) {
+      handleOpenAlertVariant(
+        "Chưa chọn loại sim (1 sim hoặc 2 sim)",
+        Notistack.ERROR
+      );
+    } else if (existingSingleSim && existingDualSim) {
+      handleOpenAlertVariant(
+        "Sim này đã đủ 1 loại 1 sim và 1 loại 2 sim!!",
+        Notistack.ERROR
+      );
+    } else if (existingSingleSim && checkedSingleSim) {
+      handleOpenAlertVariant(
+        "Loại này đã tồn tại loại 1 sim.",
+        Notistack.ERROR
+      );
+    } else if (existingDualSim && checkedDualSim) {
+      message.error("Loại này đã tồn tại 2 sim.");
+      handleOpenAlertVariant(
+        "Loại này đã tồn tại loại 2 sim.",
+        Notistack.ERROR
+      );
     } else {
-      // Nếu chỉ một trong hai loại SIM được chọn hoặc không có SIM nào được chọn, tạo một đối tượng và thêm vào danh sách
-      const simObject = {
-        ma: "TS" + generateRandomCode(),
-        loaiTheSim: loaiTheSim,
-        status: status,
-        simMultiple: SimMultiple.SINGLE_SIM,
-      };
-      simObjects.push(simObject);
+      if (checkedSingleSim && checkedDualSim) {
+        // Nếu cả hai loại SIM được chọn, tạo hai đối tượng và thêm vào danh sách
+        const simObject1 = {
+          ma: generateRandomCode(),
+          loaiTheSim: loaiTheSim,
+          status: status,
+          simMultiple: SimMultiple.SINGLE_SIM,
+        };
+
+        const simObject2 = {
+          ma: "TS" + generateRandomCode(),
+          loaiTheSim: loaiTheSim,
+          status: status,
+          simMultiple: SimMultiple.DUAL_SIM,
+        };
+
+        simObjects.push(simObject1, simObject2);
+      } else if (checkedSingleSim) {
+        // Nếu chỉ một trong hai loại SIM được chọn hoặc không có SIM nào được chọn, tạo một đối tượng và thêm vào danh sách
+        const simObject = {
+          ma: "TS" + generateRandomCode(),
+          loaiTheSim: loaiTheSim,
+          status: status,
+          simMultiple: SimMultiple.SINGLE_SIM,
+        };
+        simObjects.push(simObject);
+      } else if (checkedDualSim) {
+        // Nếu chỉ một trong hai loại SIM được chọn hoặc không có SIM nào được chọn, tạo một đối tượng và thêm vào danh sách
+        const simObject = {
+          ma: "TS" + generateRandomCode(),
+          loaiTheSim: loaiTheSim,
+          status: status,
+          simMultiple: SimMultiple.DUAL_SIM,
+        };
+        simObjects.push(simObject);
+      }
+      axios
+        .post(apiURLSimCard + "/add", simObjects)
+        .then((response) => {
+          close();
+          getAll();
+          handleReset();
+          handleOpenAlertVariant("Thêm thành công thẻ sim", Notistack.ERROR);
+        })
+        .catch((error) => {
+          handleOpenAlertVariant("Thêm thất bại thẻ sim", Notistack.ERROR);
+        });
     }
-    axios
-      .post(apiURLSimCard + "/add", simObjects)
-      .then((response) => {
-        close();
-        getAll();
-        handleReset();
-        handleOpenAlertVariant("Thêm thành công thẻ sim", Notistack.ERROR);
-      })
-      .catch((error) => {
-        handleOpenAlertVariant("Thêm thất bại thẻ sim", Notistack.ERROR);
-      });
   };
   const handleReset = (event) => {
     setStatus(StatusCommonProductsNumber.ACTIVE);

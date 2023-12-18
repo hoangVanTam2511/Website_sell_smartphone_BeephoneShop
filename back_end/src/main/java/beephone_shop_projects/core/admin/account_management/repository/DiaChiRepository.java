@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public interface DiaChiRepository extends IDiaChiRepository {
@@ -19,17 +20,18 @@ public interface DiaChiRepository extends IDiaChiRepository {
     @Modifying
     @Transactional
     @Query("UPDATE DiaChi d \n" +
-            "SET d.trangThai = CASE WHEN d.id = :newId THEN 1 ELSE 0 END\n" +
-            "WHERE d.account.id = :accountId\n")
-    void updateTrangThai(@Param("newId") String newId, @Param("accountId") String accountId);
+            "SET d.trangThai = CASE WHEN d.id = :id THEN 1 ELSE 0 END\n" +
+            "WHERE d.account.id = :account ")
+    void updateTrangThai(@Param("id") String id, @Param("account") String account);
 
     @Query(value = """
-                SELECT  kh FROM DiaChi kh where kh.account.id=:id
+                SELECT  kh FROM DiaChi kh where kh.account.id=:id 
+              ORDER BY kh.trangThai DESC, kh.createdAt ASC
             """)
     List<DiaChi> getAllDiaChi(String id);
-    @Query(value = """
-                SELECT  kh FROM DiaChi kh where kh.account.id=:account and kh.id=:id
-            """)
-    DiaChi getOneDiaChi(String id,String account);
+//    @Query(value = """
+//                SELECT  kh FROM DiaChi kh where kh.ma=:id
+//            """)
+    Optional<DiaChi> findById(String id);
     DiaChi findByAccount_Id(String id);
 }

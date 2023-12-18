@@ -9,10 +9,12 @@ public interface DiaChiService {
     DiaChi getOne(UUID id);
     DiaChi addDiaChi(DiaChiKhachHangRequest diaChiKhachHangRequest,String id);
     DiaChi addDiaChiNhanVien(DiaChiNhanVienRequest diaChiNhanVienRequest, String id);
-    void doiTrangThai(String id,String account);
+    void doiTrangThai(String ma,String account);
     void xoaDiaChi(String id);
-    DiaChi updateDiaChi(DiaChiKhachHangRequest diaChiKhachHangRequest,String id);
+    DiaChi updateDiaChi(DiaChiKhachHangRequest diaChiKhachHangRequest,String ma);
     DiaChi updateDiaChiNhanVien(DiaChiNhanVienRequest diaChiNhanVien,String id);
-    DiaChi getOneDiaChi(String id,String account);
+    DiaChi getOneDiaChi(String ma);
+    DiaChi searchDiaChi(String id);
+    DiaChi updateDiaChiBy(DiaChiKhachHangRequest diaChiKhachHangRequest, String ma);
 
 }

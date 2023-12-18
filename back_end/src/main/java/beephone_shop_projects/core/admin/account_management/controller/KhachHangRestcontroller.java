@@ -74,10 +74,26 @@ private CustomKhachHangRepositoryImpl customKhachHangRepository;
   }
 
 
-  @PostMapping("add")
-  public ResponseObject<Account> add(@RequestBody AddKhachHangRequest request) {
-    return new ResponseObject(accService.addKH(request));
-  }
+    @PostMapping("add")
+    public ResponseEntity<?> add(@Valid @RequestBody AddKhachHangRequest request,BindingResult result) {
+        if (result.hasErrors()) {
+            Map<String, String> errors = new HashMap<>();
+            for (FieldError error : result.getFieldErrors()) {
+                errors.put(error.getField(), error.getDefaultMessage());
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+        }
+
+        if (accService.isPhoneNumberUnique(request.getSoDienThoai())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Số điện thoại đã tồn tại trong hệ thống.");
+        }
+        try {
+            Account addedAccount = accService.addKH(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(addedAccount);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
   @PutMapping("update/{id}")
   public ResponseObject<Account> update(@RequestBody CreateKhachHangRequest request, @PathVariable("id") String id) {
@@ -93,50 +109,49 @@ private CustomKhachHangRepositoryImpl customKhachHangRepository;
     accService.doiTrangThai(id);
   }
 
-  @PutMapping("dia-chi/thiet-lap-md/{id}")
-  @CrossOrigin(origins = {"*"})
-  public void thietLapMacDinh(@PathVariable("id") String id, @RequestParam String account) {
-    diaChiService.doiTrangThai(id, account);
-  }
+    @PutMapping("dia-chi/thiet-lap-md")
+    @CrossOrigin(origins = {"*"})
+    public void thietLapMacDinh( @RequestParam String id, @RequestParam String account) {
+        diaChiService.doiTrangThai(id, account);
+    }
 
   @GetMapping("dia-chi/hien-thi/{id}")
   public List<DiaChi> hienThiDiaChi(@PathVariable String id) {
     return diaChiService.getAllDiaChi(id);
   }
 
-  @PostMapping("dia-chi/add")
-  @CrossOrigin(origins = {"*"})
-  public ResponseEntity addDiaChi(@Valid @RequestBody DiaChiKhachHangRequest request, BindingResult result, @RequestParam String id) {
-    if (result.hasErrors()) {
-      Map<String, String> errors = new HashMap<>();
-      for (FieldError error : result.getFieldErrors()) {
-        errors.put(error.getField(), error.getDefaultMessage());
-      }
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
-    }
-    try {
-      DiaChi addedDiaChi = diaChiService.addDiaChi(request, id);
-      return new ResponseEntity(addedDiaChi, HttpStatus.CREATED);
-    } catch (IllegalArgumentException e) {
-      return ResponseEntity.badRequest().body(e.getMessage());
-    } catch (RuntimeException e) {
-        e.printStackTrace();
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi server khi thêm địa chỉ.");
-    }
-  }
+    @PostMapping("dia-chi/add")
+    @CrossOrigin(origins = {"*"})
+    public ResponseEntity addDiaChi(@Valid @RequestBody DiaChiKhachHangRequest request, BindingResult result, @RequestParam String id) {
+        if (result.hasErrors()) {
+            Map<String, String> errors = new HashMap<>();
+            for (FieldError error : result.getFieldErrors()) {
+                errors.put(error.getField(), error.getDefaultMessage());
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+        }
 
-  @PutMapping("dia-chi/update/{id}")
-  public ResponseEntity updateDiaChi(@RequestBody DiaChiKhachHangRequest request, @PathVariable("id") String id) {
-    try {
-      DiaChi addedDiaChi = diaChiService.updateDiaChi(request, id);
-      return new ResponseEntity(addedDiaChi, HttpStatus.OK);
-    } catch (IllegalArgumentException e) {
-      return ResponseEntity.badRequest().body(e.getMessage());
-    } catch (RuntimeException e) {
-        e.printStackTrace();
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi server khi thêm địa chỉ.");
+        try {
+            DiaChi addedDiaChi = diaChiService.addDiaChi(request, id);
+            return new ResponseEntity(addedDiaChi, HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi server khi thêm địa chỉ.");
+        }
     }
-  }
+
+    @PutMapping("dia-chi/update")
+    public ResponseEntity updateDiaChi(@RequestBody DiaChiKhachHangRequest request, @RequestParam String id) {
+        try {
+            DiaChi addedDiaChi = diaChiService.updateDiaChi(request, id);
+            return new ResponseEntity(addedDiaChi, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi server khi thêm địa chỉ.");
+        }
+    }
 
   @DeleteMapping("dia-chi/delete")
   @CrossOrigin(origins = {"*"})
@@ -151,15 +166,31 @@ private CustomKhachHangRepositoryImpl customKhachHangRepository;
     }
   }
 
-  @GetMapping("dia-chi/get-one/{id}")
-  public DiaChi getOneDiaChi(@PathVariable("id") String id, @RequestParam String account) {
-    return diaChiService.getOneDiaChi(id, account);
-  }
+//    @GetMapping("dia-chi/get-one")
+//    public DiaChi getOneDiaChi(@RequestParam("id") String id) {
+//        return diaChiService.getOneDiaChi(id);
+//    }
 
-  @GetMapping("hien-thi-theo/{id}")
-  public Account getOne(@PathVariable("id") UUID id) {
-    return accService.getOne(id);
-  }
+    @GetMapping("hien-thi-theo/{id}")
+    public Account getOne(@PathVariable("id") UUID id) {
+        return accService.getOne(id);
+    }
+    @GetMapping("mot-dia-chi")
+    @CrossOrigin(origins = {"*"})
+    public DiaChi getOneDiaChi(@RequestParam String id) {
+        return diaChiService.searchDiaChi(id);
+    }
+    @PutMapping("dia-chi/update1")
+    public ResponseEntity updateDiaChi1(@RequestBody DiaChiKhachHangRequest request, @RequestParam String id) {
+        try {
+            DiaChi addedDiaChi = diaChiService.updateDiaChiBy(request, id);
+            return new ResponseEntity(addedDiaChi, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi server khi thêm địa chỉ.");
+        }
+    }
 
   @GetMapping("/{id}")
   public Account getById(@PathVariable("id") String id) {

@@ -43,6 +43,7 @@ const AddKH = () => {
   let [soDienThoaiKhachHang, setSoDienThoaiKhachHang] = useState("");
   let [xaPhuong, setXaPhuong] = useState("");
   let [trangThaiKH, setTrangThaiKH] = useState(1);
+  let [maDC, setMaDC] = useState("");
   const [diaChiList, setDiaChiList] = useState([
     {
       diaChi: "",
@@ -249,11 +250,22 @@ const AddKH = () => {
      
     } catch (error) {
       // Xử lý lỗi
-      alert("Thêm khách hàng thất bại");
-      console.log(error);
+      handleOpenAlertVariant(error.response.data, Notistack.ERROR);
+      setShowConfirmModal(false);
+      console.log(error.response.data);
     }
   };
+  const generateRandomCode = () => {
+    const getRandomInt = () => {
+      return Math.floor(Math.random() * 10); // Sinh số ngẫu nhiên từ 0 đến 9
+    };
 
+    let randomCode = "DC";
+    for (let i = 0; i < 10; i++) {
+      randomCode += getRandomInt();
+    }
+    return randomCode;
+  };
   const addDiaChiList = (generatedMaKhachHang) => {
     //day
     setSubmitted(true);
@@ -267,6 +279,7 @@ const AddKH = () => {
       hoTenKH: hoTenKH,
       account: generatedMaKhachHang,
       trangThai: trangThaiKH,
+      ma: generateRandomCode(),
     };
     request('POST', `${apiURLKH}/dia-chi/add?id=${generatedMaKhachHang}`, newAddress)
       .then((response) => {
@@ -279,7 +292,9 @@ const AddKH = () => {
           hoTenKH: hoTenKH,
           account: generatedMaKhachHang,
           trangThai: trangThaiKH,
+          ma: maDC,
         };
+        setMaDC(response.data.ma);
         setDiaChiList([newKhachHangResponse, ...diaChiList]);
       })
       .catch((error) => {
@@ -486,7 +501,7 @@ const AddKH = () => {
                   style={{ marginBottom: "30px", marginTop: "20px" }}
                 >
                   <TextField
-                    label="Họ và tên khách hàng (cho địa chỉ)"
+                    label="Họ và tên người nhận"
                     value={hoTenKH}
                     id="fullWidth"
                     onChange={handleHoVaTenKH}
@@ -500,7 +515,7 @@ const AddKH = () => {
                 </div>
                 <div className="text-f" style={{ marginBottom: "30px" }}>
                   <TextField
-                    label="Số điện thoại khách hàng"
+                    label="Số điện thoại người nhận"
                     id="fullWidth"
                     value={soDienThoaiKhachHang}
                     onChange={handleSDTKH}

@@ -44,7 +44,6 @@ import { styled } from "@mui/system";
 import Table from "@mui/material/Table";
 import { PlusOutlined } from "@ant-design/icons";
 import TableBody from "@mui/material/TableBody";
-import DeleteIcon from "@mui/icons-material/Delete";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
@@ -78,9 +77,9 @@ import { FaExternalLinkSquareAlt, FaTrashAlt } from "react-icons/fa";
 import { FaEye } from "react-icons/fa6";
 import Scanner from "./scanner";
 import AppBarCode from "./App";
-
-import Card from "../../../components/Card";
 import ModalAddKhachHang from "../account-manager/khachhang/ModalAddKhachHang.js";
+import AddressNew from "../account-manager/dia-chi/add-dia-chi.js";
+import AddressUpdate from "../account-manager/dia-chi/update-dia-chi.js";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -897,7 +896,6 @@ export function ProductsDialog(props) {
   const [openPin, setOpenPin] = useState(false);
   const [openSort, setOpenSort] = useState(false);
   const [openPage, setOpenPage] = useState(false);
-  const [page, setPage] = useState(false);
 
   const handleOpenSort = () => {
     setOpenSort(true);
@@ -2724,6 +2722,7 @@ export function CustomersDialog(props) {
   const handleClickOpen = () => {
     setOpenCustomer(true);
   };
+
   const chuyenTrang = (event, page) => {
     setCurrentPage(page);
     getCustomer(page);
@@ -2972,16 +2971,20 @@ export function CustomersDialog(props) {
           overflowX: "hidden", // Ngăn việc cuộn ngang
           "& .MuiDialog-paper": {
             width: "100%",
-            maxWidth: "84vw",
-            maxHeight: "unset", // Loại bỏ giới hạn chiều cao nếu cần
+            maxWidth: "71vw",
           },
         }}
       >
-        <DialogContent className="">
+        <DialogContent
+          style={{ fontSize: "22px", fontWeight: "500", height: "700px" }}
+        >
           <ModalAddKhachHang
             close={() => {
               handleClose();
             }}
+            getCustomer={getCustomer}
+            openCustomer={openCustomer}
+            setOP={setOpenCustomer}
           />
         </DialogContent>
       </Dialog>
@@ -2990,10 +2993,56 @@ export function CustomersDialog(props) {
 }
 
 export function AddressDialog(props) {
-  const { open, onClose, data, add, isOpen } = props;
-
+  const {
+    open,
+    onClose,
+    data,
+    add,
+    add1,
+    isOpen,
+    idCus,
+    getAddress,
+    setData,
+    hoTenKH,
+    xaPhuong,
+    tinhThanhPho,
+    quanHuyen,
+    sdt,
+    diaChi,
+    setXaPhuong,
+    setDiaChi,
+    setTinhThanhPho,
+    setHoTenKH,
+    setSDT,
+    setQuanHuyen,
+    diaChiList,
+  } = props;
   const handleSelectAddress = (item) => {
-    add(item);
+    add1(item);
+  };
+  const [openAddress, setOpenAddress] = React.useState(false);
+  const [openAddressUpdate, setOpenAddressUpdate] = React.useState(false);
+  const handleCloseAddress = () => {
+    setOpenAddress(false);
+  };
+
+  const handleOpenAddress = () => {
+    setOpenAddress(true);
+  };
+  const handleCloseAddressUpdate = () => {
+    setOpenAddressUpdate(false);
+  };
+
+  const handleOpenAddressUpdate = () => {
+    setOpenAddressUpdate(true);
+  };
+  const handleChooseAddress = (id) => {
+    if (data === id) {
+      add(null);
+    } else {
+      add(id);
+      setOpenAddressUpdate(true);
+    }
   };
   const columns = [
     {
@@ -3062,6 +3111,25 @@ export function AddressDialog(props) {
               style={{ fontWeight: "500", marginBottom: "2px" }}
             >
               Chọn
+            </span>
+          </Button>
+          <Button
+            onClick={() => {
+              handleChooseAddress(item);
+            }}
+            className="rounded-2 button-mui"
+            type="warning"
+            style={{
+              height: "35px",
+              width: "92px",
+              fontSize: "14px",
+            }}
+          >
+            <span
+              className={"text-dark"}
+              style={{ fontWeight: "500", marginBottom: "2px" }}
+            >
+              {"Cập nhật"}
             </span>
           </Button>
         </div>
@@ -3135,7 +3203,7 @@ export function AddressDialog(props) {
                 </div>
                 <div>
                   <Button
-                    // onClick={handleCreateNewOrderPending}
+                    onClick={handleOpenAddress}
                     className="rounded-2 button-mui"
                     type="primary"
                     style={{ height: "40px", width: "175px", fontSize: "15px" }}
@@ -3172,6 +3240,79 @@ export function AddressDialog(props) {
           ) : null}
         </DialogContent>
         <DialogActions></DialogActions>
+      </Dialog>
+      <Dialog
+        open={openAddress}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={() => {
+          handleCloseAddress();
+        }}
+        maxWidth={false}
+        sx={{
+          maxWidth: "unset",
+          overflowX: "hidden", // Ngăn việc cuộn ngang
+          "& .MuiDialog-paper": {
+            width: "50%",
+            maxWidth: "70vw",
+          },
+        }}
+      >
+        <DialogContent
+          style={{ fontSize: "22px", fontWeight: "500", height: "700px" }}
+        >
+          <AddressNew
+            idCustom={idCus}
+            openAddress={openAddress}
+            close={handleCloseAddress}
+            getAddress={getAddress}
+            data={data}
+            setData={setData}
+          />
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={openAddressUpdate}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={() => {
+          handleCloseAddressUpdate();
+        }}
+        maxWidth={false}
+        sx={{
+          maxWidth: "unset",
+          overflowX: "hidden", // Ngăn việc cuộn ngang
+          "& .MuiDialog-paper": {
+            width: "50%",
+            maxWidth: "70vw",
+          },
+        }}
+      >
+        <DialogContent
+          style={{ fontSize: "22px", fontWeight: "500", height: "700px" }}
+        >
+          <AddressUpdate
+            idCustom={idCus}
+            openAddress={openAddress}
+            close={handleCloseAddressUpdate}
+            getAddress={getAddress}
+            data={data}
+            setData={setData}
+            hoTenKH={hoTenKH}
+            xaPhuong={xaPhuong}
+            tinhThanhPho={tinhThanhPho}
+            quanHuyen={quanHuyen}
+            sdt={sdt}
+            diaChi={diaChi}
+            setXaPhuong={setXaPhuong}
+            setDiaChi={setDiaChi}
+            setTinhThanhPho={setTinhThanhPho}
+            setHoTenKH={setHoTenKH}
+            setSDT={setSDT}
+            setQuanHuyen={setQuanHuyen}
+            diaChiList={diaChiList}
+          />
+        </DialogContent>
       </Dialog>
     </div>
   );
@@ -4221,11 +4362,13 @@ export const ModalUpdateImeiByProductItem = ({
   }, [refresh]);
 
   useEffect(() => {
-    let newCurrentPage = currentPage;
-    while (newCurrentPage > 1 && filteredData.slice((newCurrentPage - 1) * itemsPerPage, newCurrentPage * itemsPerPage).length === 0) {
-      newCurrentPage--;
+    if (imei.trim() !== "") {
+      let newCurrentPage = currentPage;
+      while (newCurrentPage > 1 && filteredData.slice((newCurrentPage - 1) * itemsPerPage, newCurrentPage * itemsPerPage).length === 0) {
+        newCurrentPage--;
+      }
+      setCurrentPage(newCurrentPage);
     }
-    setCurrentPage(newCurrentPage);
   }, [filteredData]);
 
   return (

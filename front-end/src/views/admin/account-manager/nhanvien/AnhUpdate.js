@@ -6,7 +6,7 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const ImageUploadComponent = ({ setAnhDaiDien, existingImageUrl, hoten }) => {
   const [imageUrl, setImageUrl] = useState(null);
-  const [imageSize, setImageSize] = useState({ width: 170, height: 170 });
+  const [imageSize, setImageSize] = useState({ width: 140, height: 140 });
 
   useEffect(() => {
     if (existingImageUrl) {
@@ -62,7 +62,7 @@ const ImageUploadComponent = ({ setAnhDaiDien, existingImageUrl, hoten }) => {
   };
   const calculateImageSize = (width, height) => {
     const aspectRatio = width / height;
-    const maxDimension = 120;
+    const maxDimension = 140;
 
     if (aspectRatio > 1) {
       return { width: maxDimension, height: maxDimension / aspectRatio };

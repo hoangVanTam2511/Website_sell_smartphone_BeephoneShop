@@ -164,6 +164,11 @@ public class KhachHangServiceImpl implements KhachHangService {
         return sb.toString();
     }
 
+    @Override
+    public Boolean isPhoneNumberUnique(String phoneNumberToCheck) {
+        return accountRepository.existsBySoDienThoaiKhachHang(phoneNumberToCheck);
+    }
+
     public Account addKHByImportExcel(AddKhachHangExcelRequest request) {
         Random random = new Random();
         Date date = null;

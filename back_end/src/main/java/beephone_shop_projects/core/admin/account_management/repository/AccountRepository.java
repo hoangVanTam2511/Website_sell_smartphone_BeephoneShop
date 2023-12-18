@@ -30,14 +30,6 @@ public interface AccountRepository extends IAccountRepository, CustomKhachHangRe
             AND ac.idRole.ma='role1'
                   """)
     Page<Account> findAllHaha(Pageable pageable, @Param("req") SearchAccountRequest request);
-
-    //                 OR #{#req.email} IS NULL OR #{#req.email} IS NULL OR #{#req.diaChi} IS NULL OR #{#req.email} IS NULL
-//    OR ac.email LIKE CONCAT('%', :tenKH, '%')
-    //                        OR ac.diaChi LIKE CONCAT('%', :tenKH, '%')
-//                        OR ac.xaPhuong LIKE CONCAT('%', :tenKH, '%')
-//                        OR ac.tinhThanhPho LIKE CONCAT('%', :tenKH, '%')
-//                        OR ac.quanHuyen LIKE CONCAT('%', :tenKH, '%')
-//                        OR ac.soDienThoai LIKE CONCAT('%', :tenKH, '%')
     @Query(value = """
                 SELECT  kh FROM Account kh where kh.idRole.ma='role1' or  kh.idRole.ma  ='role3'
             """)
@@ -76,7 +68,7 @@ public interface AccountRepository extends IAccountRepository, CustomKhachHangRe
                 ELSE e.trangThai
             END
             WHERE e.id = :idBanGhi
-
+            
             """)
     void doiTrangThai(@Param("idBanGhi") String id);
 
@@ -123,6 +115,12 @@ public interface AccountRepository extends IAccountRepository, CustomKhachHangRe
     @Query("SELECT a FROM Account a WHERE a.idRole.ma='role2'")
     List<Account> sendMailAccount();
 
+    @Query("SELECT CASE WHEN COUNT(a) > 0 THEN TRUE ELSE FALSE END FROM Account a WHERE a.soDienThoai = :phone AND a.idRole.ma = 'role2'")
+    Boolean existsBySoDienThoaiNhanVien(String phone);
+    @Query("SELECT CASE WHEN COUNT(a) > 0 THEN TRUE ELSE FALSE END FROM Account a WHERE a.soDienThoai = :phone AND a.idRole.ma = 'role1'")
+    Boolean existsBySoDienThoaiKhachHang(String phone);
+
+    Boolean existsByCanCuocCongDan( String canCuoc);
     @Query(value = """
             SELECT * FROM account acc WHERE acc.email = :email
             """, nativeQuery = true)

@@ -1,20 +1,17 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { MenuItem, TextField } from "@mui/material";
+import { Grid, MenuItem, TextField } from "@mui/material";
 
-const host = "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/";
+const host = "https://online-gateway.ghn.vn/shiip/public-api/master-data/";
 
-const AddressFormUpdate = ({
+const ModalAddDiaChiKhachHang = ({
   onProvinceChange,
   onDistrictChange,
   onWardChange,
-  selectedTinhThanhPho,
-  selectedQuanHuyen,
-  selectedXaPhuong,
-  editing,
   formSubmitted,
   huy,
   set,
+  openCustomer,
 }) => {
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
@@ -22,70 +19,17 @@ const AddressFormUpdate = ({
   const [selectedProvince, setSelectedProvince] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedWard, setSelectedWard] = useState("");
+
   useEffect(() => {
     fetchProvinces();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const changeProvinceNameToID = () => {
-    const selectedProvinceCode = provinces.find(
-      (province) => province.ProvinceName === selectedTinhThanhPho
-    )?.ProvinceID;
-    setSelectedProvince(selectedProvinceCode);
-    fetchDistricts(selectedProvinceCode);
-  };
-  const changeDistricNameToID = () => {
-    const selectedDistrictCode = districts.find(
-      (district) => district.DistrictName === selectedQuanHuyen
-    )?.DistrictID;
 
-    if (selectedDistrictCode) {
-      setSelectedDistrict(selectedDistrictCode);
-      fetchWards(selectedDistrictCode);
-    }
-  };
-  const changedWardNameToID = () => {
-    const selectedWardCode = wards.find(
-      (ward) => ward.WardName === selectedXaPhuong
-    )?.WardCode;
-    setSelectedWard(selectedWardCode);
-  };
-  useEffect(() => {
-    if (huy) {
-      // Clear selections in the select boxes
-      changeProvinceNameToID();
-      changeDistricNameToID();
-      changedWardNameToID();
-    }
-    // huyCallBack();
-    set(false);
-  }, [huy]);
-
-  useEffect(() => {
-    if (selectedTinhThanhPho && !editing) {
-      changeProvinceNameToID();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedTinhThanhPho, provinces]);
-
-  useEffect(() => {
-    if (selectedQuanHuyen) {
-      changeDistricNameToID();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedQuanHuyen, districts]);
-
-  useEffect(() => {
-    if (selectedXaPhuong) {
-      changedWardNameToID();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedXaPhuong, wards]);
-
-  const callAPI = async (api) => {
+  const callAPI = (api) => {
     return axios
       .get(api, {
         headers: {
-          token: "62124d79-4ffa-11ee-b1d4-92b443b7a897",
+          token: "c2f01f86-3164-11ee-af43-6ead57e9219a",
         },
       })
       .then((response) => {
@@ -102,12 +46,35 @@ const AddressFormUpdate = ({
         console.error("Error fetching provinces:", error);
       });
   };
-
+  useEffect(() => {
+    if (huy) {
+      // Clear selections in the select boxes
+      setSelectedDistrict("");
+      setSelectedProvince("");
+      setSelectedWard("");
+      setDistricts([]);
+      setWards([]);
+    }
+    // huyCallBack();
+    set(false);
+  }, [huy]);
+  useEffect(() => {
+    if (openCustomer) {
+      // Clear selections in the select boxes
+      setSelectedDistrict("");
+      setSelectedProvince("");
+      setSelectedWard("");
+      setDistricts([]);
+      setWards([]);
+    }
+    // huyCallBack();
+    set(false);
+  }, [openCustomer]);
   const fetchDistricts = (provinceCode) => {
     callAPI(host + "district?province_id=" + provinceCode)
       .then((data) => {
         setDistricts(data.data);
-        setSelectedDistrict(""); // Reset selected district when fetching new districts
+        setSelectedDistrict("");
       })
       .catch((error) => {
         console.error("Error fetching districts:", error);
@@ -118,26 +85,22 @@ const AddressFormUpdate = ({
     callAPI(host + "ward?district_id=" + districtCode)
       .then((data) => {
         setWards(data.data);
-        setSelectedWard(""); // Reset selected ward when fetching new wards
+        setSelectedWard("");
       })
       .catch((error) => {
         console.error("Error fetching wards:", error);
       });
   };
 
-  const handleProvinceChange = (event) => {
-    setSelectedProvince(event.target.value);
+  const handleProvinceChange = (value) => {
+    setSelectedProvince(value.target.value);
     setSelectedDistrict("");
     setSelectedWard("");
-    if (selectedProvince) {
-      onDistrictChange("");
-      onWardChange("");
-    }
     setDistricts([]);
     setWards([]);
-    fetchDistricts(event.target.value);
-    onProvinceChange(event.target.value);
+    fetchDistricts(value.target.value);
   };
+
   const handleDistrictChange = (value) => {
     setSelectedDistrict(value.target.value);
     setSelectedWard("");
@@ -153,31 +116,32 @@ const AddressFormUpdate = ({
   };
 
   useEffect(() => {
-    if (selectedProvince) {
+    if (selectedDistrict && selectedProvince && selectedWard) {
       const selectedProvinceName = provinces.find(
         (province) => province.ProvinceID === selectedProvince
-      )?.ProvinceName;
-      onProvinceChange(selectedProvinceName);
-    }
-  }, [selectedProvince, onProvinceChange, provinces]);
-
-  useEffect(() => {
-    if (selectedDistrict) {
+      ).ProvinceName;
       const selectedDistrictName = districts.find(
         (district) => district.DistrictID === selectedDistrict
-      )?.DistrictName;
-      onDistrictChange(selectedDistrictName);
-    }
-  }, [selectedDistrict, onDistrictChange, districts]);
-
-  useEffect(() => {
-    if (selectedWard) {
+      ).DistrictName;
       const selectedWardName = wards.find(
         (ward) => ward.WardCode === selectedWard
-      )?.WardName;
+      ).WardName;
+      onProvinceChange(selectedProvinceName);
+      onDistrictChange(selectedDistrictName);
       onWardChange(selectedWardName);
     }
-  }, [selectedWard, onWardChange, wards]);
+  }, [
+    selectedProvince,
+    selectedDistrict,
+    selectedWard,
+    provinces,
+    districts,
+    wards,
+    onProvinceChange,
+    onDistrictChange,
+    onWardChange,
+  ]);
+
   return (
     <>
       <div
@@ -252,4 +216,4 @@ const AddressFormUpdate = ({
   );
 };
 
-export default AddressFormUpdate;
+export default ModalAddDiaChiKhachHang;

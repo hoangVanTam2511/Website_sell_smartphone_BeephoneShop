@@ -86,6 +86,7 @@ import Html5QrcodePlugin from "./Html5QrcodePlugin";
 import { PrintBillAtTheCounter, PrintBillAtTheCounterAuto } from "./printer-invoice";
 import { useReactToPrint } from "react-to-print";
 import { request, requestBodyParam, requestParam } from "../../../store/helpers/axios_helper";
+import { getUser } from "../../../store/user/userSlice";
 
 const IOSSwitch = styled((props) => (
   <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
@@ -197,7 +198,13 @@ const PointOfSales = () => {
   const [customerProvinceShip, setCustomerProvinceShip] = useState("");
   const [customerDistrictShip, setCustomerDistrictShip] = useState("");
   const [customerWardShip, setCustomerWardShip] = useState("");
-
+  let [hoTenKH, setHoTenKH] = useState("");
+  let [quanHuyen, setQuanHuyen] = useState("");
+  let [tinhThanhPho, setTinhThanhPho] = useState("");
+  let [diaChi, setDiaChi] = useState("");
+  let [soDienThoaiKhachHang, setSoDienThoaiKhachHang] = useState("");
+  let [xaPhuong, setXaPhuong] = useState("");
+  let [diaChiList, setDiaChiList] = useState({});
   const [customerAddressList, setCustomerAddressList] = useState([]);
   const [isShow, setIsShow] = useState(false);
 
@@ -514,6 +521,25 @@ const PointOfSales = () => {
             "Chọn địa chỉ giao hàng thành công!",
             Notistack.SUCCESS
           );
+        });
+    } catch (error) {
+      setIsLoading(false);
+    }
+  };
+  const openEditModal = async (diaChiList) => {
+    try {
+      await axios
+        .get(`http://localhost:8080/khach-hang/mot-dia-chi?id=${diaChiList.id}`)
+        .then((response) => {
+          // const data = response.data.data;
+          setSoDienThoaiKhachHang(diaChiList.soDienThoaiKhachHang);
+          setHoTenKH(diaChiList.hoTenKH);
+          setQuanHuyen(diaChiList.quanHuyen);
+          setDiaChi(diaChiList.diaChi);
+          setTinhThanhPho(diaChiList.tinhThanhPho);
+          setXaPhuong(diaChiList.xaPhuong);
+          setDiaChiList(diaChiList);
+          console.log(diaChiList);
         });
     } catch (error) {
       setIsLoading(false);
@@ -1282,7 +1308,7 @@ const PointOfSales = () => {
   //   }
   // };
 
-  const userId = useSelector(state => state.user.user.id);
+  const userId = getUser().id;
 
   const processingPaymentOrder = () => {
     console.log(userId);
@@ -1352,8 +1378,14 @@ const PointOfSales = () => {
 
   const getAllOrdersPending = async () => {
     await request("GET", `/api/orders/pending`, {})
-      .then((response) => {
-        setOrders(response.data.data);
+      .then(async (response) => {
+        const data = response.data.data;
+        if (data && data.length === 0) {
+          await handleAddOrderPendingDefault();
+        }
+        else {
+          setOrders(response.data.data);
+        }
       })
       .catch((error) => {
         console.error(error);
@@ -1896,6 +1928,54 @@ const PointOfSales = () => {
       });
   };
 
+  const handleAddOrderPendingDefault = async () => {
+    setIsLoading(true);
+    const data = {
+      id: order.id,
+    };
+    try {
+      await request("POST", `/api/orders?isPending=true`, data
+      ).then(async (response) => {
+        await getAllOrdersPending();
+        setValueTabs(1);
+        setOrder(response.data.data);
+        navigate(`/dashboard/point-of-sales/${response.data.data.ma}`);
+        setCartId(response.data.data.cart.id);
+        setDelivery(false);
+        setPaymentWhenReceive(false);
+        setCartItems([]);
+        setPaymentHistories([]);
+        setCustomerPayment(0);
+        setShipFee(0);
+        setDiscount("");
+        setIdVoucher("");
+        setConfirm(false);
+        setDiscountValue(0);
+        setIdCustomer("");
+        setCustomerName("");
+        setCustomerPhone("");
+        setCustomerEmail("");
+        setCustomerAddressList([]);
+        setCustomerNameShip("");
+        setCustomerPhoneShip("");
+        setCustomerAddressShip("");
+        setCustomerWardShip("");
+        setCustomerProvinceShip("");
+        setCustomerDistrictShip("");
+        setCustomerNoteShip("");
+
+        setFullName("");
+        setEmail("");
+        setSdt("");
+        setIsLoading(false);
+      });
+    } catch (error) {
+      handleOpenAlertVariant(error.response.data.message, "warning");
+      setIsLoading(false);
+      console.log(error);
+    }
+  };
+
   const handleAddOrderPending = async () => {
     setIsLoading(true);
     const data = {
@@ -1904,41 +1984,42 @@ const PointOfSales = () => {
     try {
       const response = await request("POST", `/api/orders?isPending=true`,
         data
-      );
-     await getAllOrdersPending();
-      setValueTabs(orders.length + 1);
-      setOrder(response.data.data);
-      navigate(`/dashboard/point-of-sales/${response.data.data.ma}`);
-      setCartId(response.data.data.cart.id);
-      setDelivery(false);
-      setPaymentWhenReceive(false);
-      setCartItems([]);
-      setPaymentHistories([]);
-      setCustomerPayment(0);
-      // setSelectedValuePaymentMethod("Tiền mặt");
-      // setHadPaymentBank(false);
-      setShipFee(0);
-      setDiscount("");
-      setIdVoucher("");
-      setConfirm(false);
-      setDiscountValue(0);
-      setIdCustomer("");
-      setCustomerName("");
-      setCustomerPhone("");
-      setCustomerEmail("");
-      setCustomerAddressList([]);
-      setCustomerNameShip("");
-      setCustomerPhoneShip("");
-      setCustomerAddressShip("");
-      setCustomerWardShip("");
-      setCustomerProvinceShip("");
-      setCustomerDistrictShip("");
-      setCustomerNoteShip("");
+      ).then(async (response) => {
+        await getAllOrdersPending();
+        setValueTabs(orders.length + 1);
+        setOrder(response.data.data);
+        navigate(`/dashboard/point-of-sales/${response.data.data.ma}`);
+        setCartId(response.data.data.cart.id);
+        setDelivery(false);
+        setPaymentWhenReceive(false);
+        setCartItems([]);
+        setPaymentHistories([]);
+        setCustomerPayment(0);
+        // setSelectedValuePaymentMethod("Tiền mặt");
+        // setHadPaymentBank(false);
+        setShipFee(0);
+        setDiscount("");
+        setIdVoucher("");
+        setConfirm(false);
+        setDiscountValue(0);
+        setIdCustomer("");
+        setCustomerName("");
+        setCustomerPhone("");
+        setCustomerEmail("");
+        setCustomerAddressList([]);
+        setCustomerNameShip("");
+        setCustomerPhoneShip("");
+        setCustomerAddressShip("");
+        setCustomerWardShip("");
+        setCustomerProvinceShip("");
+        setCustomerDistrictShip("");
+        setCustomerNoteShip("");
 
-      setFullName("");
-      setEmail("");
-      setSdt("");
-      setIsLoading(false);
+        setFullName("");
+        setEmail("");
+        setSdt("");
+        setIsLoading(false);
+      });
     } catch (error) {
       handleOpenAlertVariant(error.response.data.message, "warning");
       setIsLoading(false);
@@ -1988,10 +2069,10 @@ const PointOfSales = () => {
         Notistack.ERROR
       );
     } else {
-        setIsLoading(true);
+      setIsLoading(true);
       try {
         await request("DELETE", `/api/orders/${id}`).then(async (response) => {
-        await getOrderPendingLastRemove();
+          await getOrderPendingLastRemove();
           setIsLoading(false);
         });
       } catch (error) {
@@ -2288,10 +2369,7 @@ const PointOfSales = () => {
     }
   };
 
-  // const isMounted = useRef(false);
   useEffect(() => {
-    // if (!isMounted.current) {
-    // isMounted.current = true;
     setIsLoading(true);
     getAllOrdersPending();
     if (id) {
@@ -2301,7 +2379,6 @@ const PointOfSales = () => {
     }
     getAllCustomers();
     getVouchersIsActive();
-    // }
   }, []);
 
   const [openModalConfirmRedirectPayment, setOpenModalConfirmRedirectPayment] =
@@ -2836,13 +2913,36 @@ const PointOfSales = () => {
           }}
         >
           <div className="d-flex justify-content-between mt-1" ref={divRef1}>
-            <div className="ms-2" style={{ marginTop: "5px" }}>
+            <div className="ms-2 d-flex" style={{ marginTop: "5px" }}>
               <span
                 className=""
                 style={{ fontSize: "22px", fontWeight: "500" }}
               >
                 Khách hàng
               </span>
+              {idCustomer !== "" &&
+                <div className="ms-2" style={{ marginTop: "3px" }}>
+                  <Tooltip
+                    title="Bỏ chọn"
+                    TransitionComponent={Zoom}
+                  >
+                    <IconButton
+                      onClick={() => {
+                        getCustomerById(null);
+                      }}
+                      aria-label="delete"
+                      size="small"
+                      className=""
+                    >
+                      <HighlightOffOutlinedIcon
+                        className="text-dark"
+                        fontSize="inherit"
+                      />
+                    </IconButton>
+                  </Tooltip>
+
+                </div>
+              }
             </div>
             <div className="">
               <Button
@@ -3649,8 +3749,24 @@ const PointOfSales = () => {
         open={openAddresses}
         onClose={handleCloseDialogAddresses}
         data={customerAddressList}
+        setData={setCustomerAddressList}
         isOpen={isOpen}
-        add={updateInfoShip}
+        add={openEditModal}
+        add1={updateInfoShip}
+        idCus={idCustomer}
+        hoTenKH={hoTenKH}
+        xaPhuong={xaPhuong}
+        tinhThanhPho={tinhThanhPho}
+        quanHuyen={quanHuyen}
+        sdt={soDienThoaiKhachHang}
+        diaChi={diaChi}
+        setXaPhuong={setXaPhuong}
+        setDiaChi={setDiaChi}
+        setTinhThanhPho={setTinhThanhPho}
+        setHoTenKH={setHoTenKH}
+        setSDT={setSoDienThoaiKhachHang}
+        setQuanHuyen={setQuanHuyen}
+        diaChiList={diaChiList}
       />
 
       <MultiplePaymentMethods

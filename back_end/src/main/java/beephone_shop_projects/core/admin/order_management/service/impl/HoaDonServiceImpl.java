@@ -551,11 +551,11 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
   @Override
   public List<OrderResponse> getOrdersPending() throws Exception {
     List<HoaDon> orders = hoaDonRepository.getOrdersPending();
-    if (orders.isEmpty()) {
-      this.createOrderPending();
-      List<HoaDon> ordersDefault = hoaDonRepository.getOrdersPending();
-      return orderConverter.convertToListResponse(ordersDefault);
-    }
+//    if (orders.isEmpty()) {
+//      this.createOrderPending();
+//      List<HoaDon> ordersDefault = hoaDonRepository.getOrdersPending();
+//      return orderConverter.convertToListResponse(ordersDefault);
+//    }
     return orderConverter.convertToListResponse(orders);
   }
 

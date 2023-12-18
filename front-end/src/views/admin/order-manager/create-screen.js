@@ -50,6 +50,9 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
 
   useEffect(() => {
     // Load data when the component mounts
+    getDoPhanGiai();
+  }, []);
+  const getDoPhanGiai = () => {
     axios
       .get(apiURLDoPhanGiai)
       .then((response) => {
@@ -62,6 +65,7 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
   const [formSubmitMH, setFormSubmitMH] = useState(false);
   const { handleOpenAlertVariant } = useCustomSnackbar();
 
+  const [idDPG, setIdDPG] = useState(false);
   const handleChieuDai = (e) => {
     const value = e.target.value;
     if (!isNaN(value)) {
@@ -202,7 +206,7 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
       chieuRong: chieuRong,
     };
     if (!chieuDai || !chieuRong) {
-      // message.error("Vui lòng điền đủ thông tin");
+      message.error("Vui lòng điền đủ thông tin");
       setOpenDoPhanGiai(true);
       return;
     }
@@ -215,13 +219,13 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
           chieuRong: chieuRong,
         };
         setListPhanGiai([newDoPhanGiai, ...listPhanGiai]);
+        getDoPhanGiai();
         handleOpenAlertVariant(
           "Thêm thành công độ phân giải màn hình",
           Notistack.SUCCESS
         );
         handleReset();
         setOpenDoPhanGiai(false);
-        // redirectToHienThiKH(generatedMaKhachHang);
       })
       .catch((error) => {
         handleOpenAlertVariant(

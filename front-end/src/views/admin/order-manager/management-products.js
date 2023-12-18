@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Empty, Table } from "antd";
-import { Box, FormControl, IconButton, MenuItem, Pagination, Select, TextField, Tooltip, } from "@mui/material";
+import { Box, FormControl, IconButton, ListItemText, MenuItem, Pagination, Select as SelectMui, TextField, Tooltip, Checkbox as CheckBoxMui } from "@mui/material";
 import { PlusOutlined } from "@ant-design/icons";
 import Card from "../../../components/Card";
 import { format } from "date-fns";
@@ -28,42 +28,248 @@ const ManagementProducts = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [products, setProducts] = useState([]);
-  const [productItems, setProductItems] = useState([]);
-  const [productName, setProductName] = useState('');
   const [totalPages, setTotalPages] = useState();
   const [refreshPage, setRefreshPage] = useState(1);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [keyword, setKeyword] = useState(searchParams.get('keyword'));
-  const [currentPage, setCurrentPage] = useState(searchParams.get('currentPage') || 1);
+  const [keyword, setKeyword] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const [openProductItems, setOpenProductItems] = useState(false);
+  const [openCategory, setOpenCategory] = useState(false);
+  const [openBrand, setOpenBrand] = useState(false);
+  const [openOpera, setOpenOpera] = useState(false);
+  const [openCpu, setOpenCpu] = useState(false);
+  const [openScreen, setOpenScreen] = useState(false);
+  const [openPin, setOpenPin] = useState(false);
+  const [openSort, setOpenSort] = useState(false);
+  const [openPage, setOpenPage] = useState(false);
 
-  const handleCloseOpenProductItems = () => {
-    setOpenProductItems(false);
-  }
+  const handleOpenSort = () => {
+    setOpenSort(true);
+  };
 
-  const getAll = () => {
-    request('GET',`/api/products`, {
-      })
-      .then((response) => {
-        setProducts(response.data.data);
-        setIsLoading(false);
-        console.log(response.data.data);
-      })
-      .catch((error) => {
-        console.error(error);
-        setIsLoading(false);
-      });
-  }
+  const handleCloseOpenSort = () => {
+    setOpenSort(false);
+  };
 
-  useEffect(() => {
-    setIsLoading(true);
-    getAll();
-  }, []);
+  const handleOpenPage = () => {
+    setOpenPage(true);
+  };
+
+  const handleCloseOpenPage = () => {
+    setOpenPage(false);
+  };
+
 
   const handleRedirectCreateProduct = () => {
     navigate(`/dashboard/create-product`);
   }
+
+  const handleCloseOpenCategory = () => {
+    setOpenCategory(false);
+  };
+
+  const handleOpenCategory = () => {
+    setOpenCategory(true);
+  };
+
+  const handleCloseBrand = () => {
+    setOpenBrand(false);
+  };
+
+  const handleOpenBrand = () => {
+    setOpenBrand(true);
+  };
+  const handleCloseOpera = () => {
+    setOpenOpera(false);
+  };
+
+  const handleOpenOpera = () => {
+    setOpenOpera(true);
+  };
+  const handleCloseCpu = () => {
+    setOpenCpu(false);
+  };
+
+  const handleOpenCpu = () => {
+    setOpenCpu(true);
+  };
+
+  const handleCloseScreen = () => {
+    setOpenScreen(false);
+  };
+
+  const handleOpenScreen = () => {
+    setOpenScreen(true);
+  };
+  const handleClosePin = () => {
+    setOpenPin(false);
+  };
+
+  const handleOpenPin = () => {
+    setOpenPin(true);
+  };
+
+  const [selectedValueCategorys, setSelectedValueCategorys] = React.useState([
+    0,
+  ]);
+  const [selectedValueBrands, setSelectedValueBrands] = React.useState([0]);
+  const [selectedValueOperas, setSelectedValueOperas] = React.useState([
+    "None",
+  ]);
+  const [selectedValueCpus, setSelectedValueCpus] = React.useState([0]);
+  const [selectedValueScreens, setSelectedValueScreens] = React.useState([0]);
+  const [selectedValuePins, setSelectedValuePins] = React.useState([0]);
+
+  const [categorys, setCategorys] = useState([]);
+  const getListDanhMuc = () => {
+    axios
+      .get(`http://localhost:8080/api/danh-mucs`)
+      .then((response) => {
+        setCategorys(response.data.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+  const [listHang, setListHang] = useState([]);
+  const getListHang = () => {
+    axios
+      .get(`http://localhost:8080/api/brands`)
+      .then((response) => {
+        setListHang(response.data.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const [listChip, setListChip] = useState([]);
+  const getListChip = () => {
+    axios
+      .get(`http://localhost:8080/api/chips`)
+      .then((response) => {
+        setListChip(response.data.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const [listPin, setListPin] = useState([]);
+  const getListPin = () => {
+    axios
+      .get(`http://localhost:8080/api/pins`)
+      .then((response) => {
+        setListPin(response.data.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const [listManHinh, setListManHinh] = useState([]);
+  const getListManHinh = () => {
+    axios
+      .get(`http://localhost:8080/api/display`)
+      .then((response) => {
+        setListManHinh(response.data.data);
+        console.log(response.data.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const [sort, setSort] = useState("");
+  const [size, setSize] = useState(10);
+
+  const handlePageChange = (event, page) => {
+    setCurrentPage(page);
+  };
+
+
+  const operas = ["ANDROID", "IOS"];
+
+  const findProductsByMultipleCriteriaWithPagination = (page) => {
+    const params = new URLSearchParams();
+    params.append("currentPage", page);
+    params.append("pageSize", size);
+    params.append("keyword", keyword);
+    params.append(
+      "danhMucs",
+      selectedValueCategorys.length === 1 && selectedValueCategorys[0] === 0
+        ? []
+        : selectedValueCategorys && selectedValueCategorys.filter((item) => item !== 0)
+    );
+    params.append(
+      "hangs",
+      selectedValueBrands.length === 1 && selectedValueBrands[0] === 0
+        ? []
+        : selectedValueBrands && selectedValueBrands.filter((item) => item !== 0)
+    );
+    params.append(
+      "heDieuHanhs",
+      selectedValueOperas.length === 1 && selectedValueOperas[0] === "None"
+        ? operas
+        : selectedValueOperas && selectedValueOperas.filter((item) => item !== "None")
+    );
+    params.append(
+      "chips",
+      selectedValueCpus.length === 1 && selectedValueCpus[0] === 0
+        ? []
+        : selectedValueCpus && selectedValueCpus.filter((item) => item !== 0)
+    );
+    params.append(
+      "manHinhs",
+      selectedValueScreens.length === 1 && selectedValueScreens[0] === 0
+        ? []
+        : selectedValueScreens && selectedValueScreens.filter((item) => item !== 0)
+    );
+    params.append(
+      "pins",
+      selectedValuePins.length === 1 && selectedValuePins[0] === 0
+        ? []
+        : selectedValuePins && selectedValuePins.filter((item) => item !== 0)
+    );
+    axios
+      .get(
+        `http://localhost:8080/api/products/products/page?${params}`,
+        {}
+      )
+      .then((response) => {
+        const data = response.data.data;
+        setProducts(data);
+        setTotalPages(response.data.totalPages);
+        setIsLoading(false);
+        console.log(response.data.data);
+      })
+      .catch((error) => {
+        // setIsLoading(false);
+        console.error(error);
+      });
+  };
+
+  useEffect(() => {
+    findProductsByMultipleCriteriaWithPagination(currentPage);
+  }, [
+    currentPage,
+    keyword,
+    size,
+    selectedValuePins,
+    selectedValueScreens,
+    selectedValueCpus,
+    selectedValueBrands,
+    selectedValueOperas,
+    selectedValueCategorys,
+  ]);
+
+  useEffect(() => {
+    getListDanhMuc();
+    getListHang();
+    getListManHinh();
+    getListChip();
+    getListPin();
+  }, []);
 
   const OrderTable = () => {
     return (
@@ -79,13 +285,13 @@ const ManagementProducts = () => {
     );
   };
 
-  const totalAmountInStock = (item) => {
-    let total = 0;
-    item.map((product) => {
-      total += product.soLuongTonKho;
-    })
-    return total;
-  }
+  // const totalAmountInStock = (item) => {
+  //   let total = 0;
+  //   item.map((product) => {
+  //     total += product.soLuongTonKho;
+  //   })
+  //   return total;
+  // }
 
 
   const columns = [
@@ -106,12 +312,10 @@ const ManagementProducts = () => {
         <>
           <div style={{ position: "relative" }}>
             {
-              item.productItems.some((pi) => pi.image !== null) ?
+              item.urlImage !== "" ?
                 <img
                   src={
-                    item &&
-                    item.productItems && item.productItems[0] &&
-                    item.productItems[0].image && item.productItems[0].image.path
+                    item.urlImage
                   }
                   class=""
                   alt=""
@@ -167,9 +371,9 @@ const ManagementProducts = () => {
       width: "15%",
       render: (text, record) => (
         <div>
-          <span style={{ fontWeight: "400", whiteSpace: "pre-line" }}>{totalAmountInStock(record.productItems)}
+          <span style={{ fontWeight: "400", whiteSpace: "pre-line" }}>{record.quantityInstock}
           </span>
-          <span style={{ color: "gray", fontSize: "14px", display: "block" }}>({record.productItems && record.productItems.length} phiên bản)</span>
+          <span style={{ color: "gray", fontSize: "14px", display: "block" }}>({record.quantityVersion} phiên bản)</span>
         </div>
       ),
     },
@@ -251,7 +455,7 @@ const ManagementProducts = () => {
           <Card.Header className="d-flex justify-content-between">
             <div className="header-title mt-2">
               <TextField
-                label="Tìm kiếm theo mã, tên, số lượng tồn"
+                label="Tìm kiếm sản phẩm theo mã, tên"
                 // onChange={handleGetValueFromInputTextField}
                 // value={keyword}
                 InputLabelProps={{
@@ -270,7 +474,18 @@ const ManagementProducts = () => {
                 className=""
               />
               <Button
-                // onClick={handleRefreshData}
+                onClick={() => {
+                  setKeyword("");
+                  setCurrentPage(1);
+                  setSelectedValueCpus([0]);
+                  setSelectedValueCategorys([0]);
+                  setSelectedValueScreens([0]);
+                  setSelectedValueBrands([0]);
+                  setSelectedValueOperas(["None"]);
+                  setSelectedValuePins([0]);
+                  setSize(10);
+                  setSort("New");
+                }}
                 className="rounded-2 ms-2"
                 type="warning"
                 style={{ width: "100px", fontSize: "15px" }}
@@ -369,20 +584,12 @@ const ManagementProducts = () => {
               </Button>
             </div>
           </Card.Header>
-          <div className="d-flex mt-4 pt-1 mx-auto">
+          <div className="d-flex justify-content-center mt-4">
             <div
               className="d-flex"
-              style={{
-                height: "40px",
-                position: "relative",
-                cursor: "pointer",
-              }}
+              style={{ height: "40px", cursor: "pointer" }}
             >
-              <div
-                // onClick={handleOpenSelect1}
-                className=""
-                style={{ marginTop: "8px" }}
-              >
+              <div onClick={handleOpenCategory} className="mt-2">
                 <span
                   className="ms-2 ps-1"
                   style={{ fontSize: "15px", fontWeight: "450" }}
@@ -390,13 +597,9 @@ const ManagementProducts = () => {
                   Danh Mục:{" "}
                 </span>
               </div>
-              <FormControl
-                sx={{
-                  minWidth: 50,
-                }}
-                size="small"
-              >
-                <Select
+              <FormControl sx={{ maxWidth: 200 }} size="small">
+                <SelectMui
+                  multiple
                   MenuProps={{
                     PaperProps: {
                       style: {
@@ -410,36 +613,49 @@ const ManagementProducts = () => {
                       border: "none !important",
                     },
                     "& .MuiSelect-select": {
-                      color: "#2f80ed",
+                      color: "#288ad6",
                       fontWeight: "500",
                     },
                   }}
-                  // open={openSelect1}
-                  // onClose={handleCloseSelect1}
-                  // onOpen={handleOpenSelect1}
-                  defaultValue={14}
+                  open={openCategory}
+                  onClose={handleCloseOpenCategory}
+                  onOpen={handleOpenCategory}
+                  defaultValue={selectedValueCategorys}
+                  value={selectedValueCategorys}
+                  onChange={(e) => {
+                    setSelectedValueCategorys(e.target.value);
+                  }}
+                  renderValue={(selected) =>
+                    selected && selected.length > 1
+                      ? selected
+                        .filter((id) =>
+                          categorys.find((c) => c.id === id)
+                        ) // Loại bỏ các giá trị không hợp lệ
+                        .map(
+                          (id) =>
+                            categorys.find((c) => c.id === id).tenDanhMuc
+                        ) // Lấy tên danh mục tương ứng
+                        .join(", ")
+                      : "Chọn Danh Mục"
+                  }
                 >
-                  <MenuItem className="" value={14}>
-                    Tất cả
-                  </MenuItem>
-                  <MenuItem value={15}>Khách hàng mới</MenuItem>
-                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
-                </Select>
+                  {categorys.map((c) => (
+                    <MenuItem key={c.id} value={c.id}>
+                      <CheckBoxMui
+                        checked={selectedValueCategorys.indexOf(c.id) > -1}
+                      />
+                      <ListItemText primary={c.tenDanhMuc} />
+                    </MenuItem>
+                  ))}
+                </SelectMui>
               </FormControl>
             </div>
+
             <div
-              className="d-flex ms-3"
-              style={{
-                height: "40px",
-                position: "relative",
-                cursor: "pointer",
-              }}
+              className="ms-2 d-flex"
+              style={{ height: "40px", cursor: "pointer" }}
             >
-              <div
-                // onClick={handleOpenSelect1}
-                className=""
-                style={{ marginTop: "8px" }}
-              >
+              <div onClick={handleOpenBrand} className="mt-2">
                 <span
                   className="ms-2 ps-1"
                   style={{ fontSize: "15px", fontWeight: "450" }}
@@ -449,11 +665,11 @@ const ManagementProducts = () => {
               </div>
               <FormControl
                 sx={{
-                  minWidth: 50,
+                  maxWidth: 150,
                 }}
                 size="small"
               >
-                <Select
+                <SelectMui
                   MenuProps={{
                     PaperProps: {
                       style: {
@@ -467,36 +683,49 @@ const ManagementProducts = () => {
                       border: "none !important",
                     },
                     "& .MuiSelect-select": {
-                      color: "#2f80ed",
+                      color: "#288ad6",
                       fontWeight: "500",
                     },
                   }}
-                  // open={openSelect1}
-                  // onClose={handleCloseSelect1}
-                  // onOpen={handleOpenSelect1}
-                  defaultValue={14}
+                  open={openBrand}
+                  onClose={handleCloseBrand}
+                  onOpen={handleOpenBrand}
+                  defaultValue={selectedValueBrands}
+                  value={selectedValueBrands}
+                  onChange={(e) => {
+                    setSelectedValueBrands(e.target.value);
+                    console.log(e.target.value);
+                  }}
+                  multiple
+                  renderValue={(selected) =>
+                    selected && selected.length > 1
+                      ? selected
+                        .filter((id) => listHang.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
+                        .map(
+                          (id) =>
+                            listHang.find((c) => c.id === id).tenHang
+                        ) // Lấy tên danh mục tương ứng
+                        .join(", ")
+                      : "Chọn Hãng"
+                  }
                 >
-                  <MenuItem className="" value={14}>
-                    Tất cả
-                  </MenuItem>
-                  <MenuItem value={15}>Khách hàng mới</MenuItem>
-                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
-                </Select>
+                  {listHang.map((c) => (
+                    <MenuItem key={c.id} value={c.id}>
+                      <CheckBoxMui
+                        checked={selectedValueBrands.indexOf(c.id) > -1}
+                      />
+                      <ListItemText primary={c.tenHang} />
+                    </MenuItem>
+                  ))}
+                </SelectMui>
               </FormControl>
             </div>
+
             <div
-              className="d-flex ms-3"
-              style={{
-                height: "40px",
-                position: "relative",
-                cursor: "pointer",
-              }}
+              className="ms-2 d-flex"
+              style={{ height: "40px", cursor: "pointer" }}
             >
-              <div
-                // onClick={handleOpenSelect1}
-                className=""
-                style={{ marginTop: "8px" }}
-              >
+              <div onClick={handleOpenOpera} className="mt-2">
                 <span
                   className="ms-2 ps-1"
                   style={{ fontSize: "15px", fontWeight: "450" }}
@@ -506,11 +735,11 @@ const ManagementProducts = () => {
               </div>
               <FormControl
                 sx={{
-                  minWidth: 50,
+                  maxWidth: 200,
                 }}
                 size="small"
               >
-                <Select
+                <SelectMui
                   MenuProps={{
                     PaperProps: {
                       style: {
@@ -524,50 +753,70 @@ const ManagementProducts = () => {
                       border: "none !important",
                     },
                     "& .MuiSelect-select": {
-                      color: "#2f80ed",
+                      color: "#288ad6",
                       fontWeight: "500",
                     },
                   }}
-                  // open={openSelect1}
-                  // onClose={handleCloseSelect1}
-                  // onOpen={handleOpenSelect1}
-                  defaultValue={14}
+                  open={openOpera}
+                  onClose={handleCloseOpera}
+                  onOpen={handleOpenOpera}
+                  multiple
+                  defaultValue={selectedValueOperas}
+                  value={selectedValueOperas}
+                  onChange={(e) => {
+                    if (e.target.value.length === 0) {
+                      setSelectedValueOperas(["None"]);
+                    } else {
+                      const values = e.target.value.filter(
+                        (value) => value !== "None"
+                      );
+                      setSelectedValueOperas(values);
+                    }
+                  }}
+                  renderValue={(selected) =>
+                    selected &&
+                      selected.filter((value) => value !== "None").length > 0
+                      ? selected
+                        .filter((id) =>
+                          ["ANDROID", "IOS"].find((c) => c === id)
+                        ) // Loại bỏ các giá trị không hợp lệ
+                        .map((id) =>
+                          ["ANDROID", "IOS"].find((c) => c === id)
+                        ) // Lấy tên danh mục tương ứng
+                        .join(", ")
+                      : "Chọn Hệ Điều Hành"
+                  }
                 >
-                  <MenuItem className="" value={14}>
-                    Tất cả
-                  </MenuItem>
-                  <MenuItem value={15}>Khách hàng mới</MenuItem>
-                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
-                </Select>
+                  {["ANDROID", "IOS"].map((c) => (
+                    <MenuItem key={c} value={c}>
+                      <CheckBoxMui
+                        checked={selectedValueOperas.indexOf(c) > -1}
+                      />
+                      <ListItemText primary={c} />
+                    </MenuItem>
+                  ))}
+                </SelectMui>
               </FormControl>
             </div>
             <div
-              className="d-flex ms-3"
-              style={{
-                height: "40px",
-                position: "relative",
-                cursor: "pointer",
-              }}
+              className="ms-2 d-flex"
+              style={{ height: "40px", cursor: "pointer" }}
             >
-              <div
-                // onClick={handleOpenSelect1}
-                className=""
-                style={{ marginTop: "8px" }}
-              >
+              <div onClick={handleOpenCpu} className="mt-2">
                 <span
                   className="ms-2 ps-1"
                   style={{ fontSize: "15px", fontWeight: "450" }}
                 >
-                  CPU:{""}
+                  Chip:{" "}
                 </span>
               </div>
               <FormControl
                 sx={{
-                  minWidth: 50,
+                  maxWidth: 150,
                 }}
                 size="small"
               >
-                <Select
+                <SelectMui
                   MenuProps={{
                     PaperProps: {
                       style: {
@@ -581,50 +830,61 @@ const ManagementProducts = () => {
                       border: "none !important",
                     },
                     "& .MuiSelect-select": {
-                      color: "#2f80ed",
+                      color: "#288ad6",
                       fontWeight: "500",
                     },
                   }}
-                  // open={openSelect1}
-                  // onClose={handleCloseSelect1}
-                  // onOpen={handleOpenSelect1}
-                  defaultValue={14}
+                  open={openCpu}
+                  onClose={handleCloseCpu}
+                  onOpen={handleOpenCpu}
+                  defaultValue={selectedValueCpus}
+                  value={selectedValueCpus}
+                  onChange={(e) => {
+                    setSelectedValueCpus(e.target.value);
+                  }}
+                  multiple
+                  renderValue={(selected) =>
+                    selected && selected.length > 1
+                      ? selected
+                        .filter((id) => listChip.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
+                        .map(
+                          (id) =>
+                            listChip.find((c) => c.id === id).tenChip
+                        ) // Lấy tên danh mục tương ứng
+                        .join(", ")
+                      : "Chọn Chip"
+                  }
                 >
-                  <MenuItem className="" value={14}>
-                    Tất cả
-                  </MenuItem>
-                  <MenuItem value={15}>Khách hàng mới</MenuItem>
-                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
-                </Select>
+                  {listChip.map((c) => (
+                    <MenuItem key={c.id} value={c.id}>
+                      <CheckBoxMui
+                        checked={selectedValueCpus.indexOf(c.id) > -1}
+                      />
+                      <ListItemText primary={c.tenChip} />
+                    </MenuItem>
+                  ))}
+                </SelectMui>
               </FormControl>
             </div>
             <div
-              className="d-flex ms-3"
-              style={{
-                height: "40px",
-                position: "relative",
-                cursor: "pointer",
-              }}
+              className="d-flex ms-2"
+              style={{ height: "40px", cursor: "pointer" }}
             >
-              <div
-                // onClick={handleOpenSelect1}
-                className=""
-                style={{ marginTop: "8px" }}
-              >
+              <div onClick={handleOpenPin} className="mt-2">
                 <span
                   className="ms-2 ps-1"
                   style={{ fontSize: "15px", fontWeight: "450" }}
                 >
-                  Màn Hình:{""}
+                  Pin:{" "}
                 </span>
               </div>
               <FormControl
                 sx={{
-                  minWidth: 50,
+                  maxWidth: 150,
                 }}
                 size="small"
               >
-                <Select
+                <SelectMui
                   MenuProps={{
                     PaperProps: {
                       style: {
@@ -638,52 +898,70 @@ const ManagementProducts = () => {
                       border: "none !important",
                     },
                     "& .MuiSelect-select": {
-                      color: "#2f80ed",
+                      color: "#288ad6",
                       fontWeight: "500",
                     },
                   }}
-                  // open={openSelect1}
-                  // onClose={handleCloseSelect1}
-                  // onOpen={handleOpenSelect1}
-                  defaultValue={14}
+                  open={openPin}
+                  onClose={handleClosePin}
+                  onOpen={handleOpenPin}
+                  defaultValue={selectedValuePins}
+                  value={selectedValuePins}
+                  onChange={(e) => {
+                    setSelectedValuePins(e.target.value);
+                  }}
+                  multiple
+                  renderValue={(selected) =>
+                    selected && selected.length > 1
+                      ? selected
+                        .filter((id) => listPin.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
+                        .map(
+                          (id) =>
+                            listPin.find((c) => c.id === id).loaiPin +
+                            " " +
+                            listPin.find((c) => c.id === id).dungLuong +
+                            " mAh"
+                        ) // Lấy tên danh mục tương ứng
+                        .join(", ")
+                      : "Chọn Pin"
+                  }
                 >
-                  <MenuItem className="" value={14}>
-                    Tất cả
-                  </MenuItem>
-                  <MenuItem value={15}>Khách hàng mới</MenuItem>
-                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
-                </Select>
+                  {listPin.map((c) => (
+                    <MenuItem key={c.id} value={c.id}>
+                      <CheckBoxMui
+                        checked={selectedValuePins.indexOf(c.id) > -1}
+                      />
+                      <ListItemText
+                        primary={c.loaiPin + " " + c.dungLuong + " mAh"}
+                      />
+                    </MenuItem>
+                  ))}
+                </SelectMui>
               </FormControl>
             </div>
+
           </div>
-          <div className="d-flex mt-3 mx-auto">
+
+          <div className="d-flex justify-content-center mt-3">
             <div
-              className="d-flex ms-3"
-              style={{
-                height: "40px",
-                position: "relative",
-                cursor: "pointer",
-              }}
+              className="ms-2 d-flex"
+              style={{ height: "40px", cursor: "pointer" }}
             >
-              <div
-                // onClick={handleOpenSelect1}
-                className=""
-                style={{ marginTop: "8px" }}
-              >
+              <div onClick={handleOpenScreen} className="mt-2">
                 <span
                   className="ms-2 ps-1"
                   style={{ fontSize: "15px", fontWeight: "450" }}
                 >
-                  Khoảng Giá:{""}
+                  Màn hình:{" "}
                 </span>
               </div>
               <FormControl
                 sx={{
-                  minWidth: 50,
+                  maxWidth: 200,
                 }}
                 size="small"
               >
-                <Select
+                <SelectMui
                   MenuProps={{
                     PaperProps: {
                       style: {
@@ -697,25 +975,68 @@ const ManagementProducts = () => {
                       border: "none !important",
                     },
                     "& .MuiSelect-select": {
-                      color: "#2f80ed",
+                      color: "#288ad6",
                       fontWeight: "500",
                     },
                   }}
-                  // open={openSelect1}
-                  // onClose={handleCloseSelect1}
-                  // onOpen={handleOpenSelect1}
-                  defaultValue={14}
+                  open={openScreen}
+                  onClose={handleCloseScreen}
+                  onOpen={handleOpenScreen}
+                  defaultValue={selectedValueScreens}
+                  value={selectedValueScreens}
+                  onChange={(e) => {
+                    setSelectedValueScreens(e.target.value);
+                  }}
+                  multiple
+                  renderValue={(selected) =>
+                    selected && selected.length > 1
+                      ? selected
+                        .filter((id) =>
+                          listManHinh.find((c) => c.id === id)
+                        ) // Loại bỏ các giá trị không hợp lệ
+                        .map(
+                          (id) =>
+                            listManHinh.find((c) => c.id === id)
+                              .loaiManHinh +
+                            " " +
+                            `(${listManHinh.find((c) => c.id === id)
+                              .doPhanGiaiManHinh.chieuRong +
+                            " x " +
+                            listManHinh.find((c) => c.id === id)
+                              .doPhanGiaiManHinh.chieuDai
+                            } pixels) ` +
+                            listManHinh.find((c) => c.id === id)
+                              .kichThuoc +
+                            `"`
+                        ) // Lấy tên danh mục tương ứng
+                        .join(", ")
+                      : "Chọn Màn Hình"
+                  }
                 >
-                  <MenuItem className="" value={14}>
-                    Tất cả
-                  </MenuItem>
-                  <MenuItem value={15}>Khách hàng mới</MenuItem>
-                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
-                </Select>
+                  {listManHinh.map((c) => (
+                    <MenuItem key={c.id} value={c.id}>
+                      <CheckBoxMui
+                        checked={selectedValueScreens.indexOf(c.id) > -1}
+                      />
+                      <ListItemText
+                        primary={
+                          c.loaiManHinh +
+                          " " +
+                          `(${c.doPhanGiaiManHinh.chieuRong +
+                          " x " +
+                          c.doPhanGiaiManHinh.chieuDai
+                          } pixels) ` +
+                          c.kichThuoc +
+                          `"`
+                        }
+                      />
+                    </MenuItem>
+                  ))}
+                </SelectMui>
               </FormControl>
             </div>
             <div
-              className="d-flex ms-3"
+              className="d-flex ms-2"
               style={{
                 height: "40px",
                 position: "relative",
@@ -723,7 +1044,7 @@ const ManagementProducts = () => {
               }}
             >
               <div
-                // onClick={handleOpenSelect1}
+                onClick={handleOpenSort}
                 className=""
                 style={{ marginTop: "8px" }}
               >
@@ -736,11 +1057,11 @@ const ManagementProducts = () => {
               </div>
               <FormControl
                 sx={{
-                  minWidth: 50,
+                  maxWidth: 170,
                 }}
                 size="small"
               >
-                <Select
+                <SelectMui
                   MenuProps={{
                     PaperProps: {
                       style: {
@@ -758,21 +1079,18 @@ const ManagementProducts = () => {
                       fontWeight: "500",
                     },
                   }}
-                  // open={openSelect1}
-                  // onClose={handleCloseSelect1}
-                  // onOpen={handleOpenSelect1}
-                  defaultValue={14}
+                  open={openSort}
+                  onClose={handleCloseOpenSort}
+                  onOpen={handleOpenSort}
+                  defaultValue={"New"}
                 >
-                  <MenuItem className="" value={14}>
-                    Tất cả
-                  </MenuItem>
-                  <MenuItem value={15}>Khách hàng mới</MenuItem>
-                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
-                </Select>
+                  <MenuItem value={"New"}>Mới</MenuItem>
+                  <MenuItem value={"Old"}>Cũ</MenuItem>
+                </SelectMui>
               </FormControl>
             </div>
             <div
-              className="d-flex ms-3"
+              className="d-flex ms-2"
               style={{
                 height: "40px",
                 position: "relative",
@@ -780,7 +1098,7 @@ const ManagementProducts = () => {
               }}
             >
               <div
-                // onClick={handleOpenSelect1}
+                onClick={handleOpenSort}
                 className=""
                 style={{ marginTop: "8px" }}
               >
@@ -793,11 +1111,11 @@ const ManagementProducts = () => {
               </div>
               <FormControl
                 sx={{
-                  minWidth: 50,
+                  maxWidth: 170,
                 }}
                 size="small"
               >
-                <Select
+                <SelectMui
                   MenuProps={{
                     PaperProps: {
                       style: {
@@ -815,21 +1133,18 @@ const ManagementProducts = () => {
                       fontWeight: "500",
                     },
                   }}
-                  // open={openSelect1}
-                  // onClose={handleCloseSelect1}
-                  // onOpen={handleOpenSelect1}
-                  defaultValue={14}
+                  open={openSort}
+                  onClose={handleCloseOpenSort}
+                  onOpen={handleOpenSort}
+                  defaultValue={"New"}
                 >
-                  <MenuItem className="" value={14}>
-                    Tất cả
-                  </MenuItem>
-                  <MenuItem value={15}>Khách hàng mới</MenuItem>
-                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
-                </Select>
+                  <MenuItem value={"New"}>Mới</MenuItem>
+                  <MenuItem value={"Old"}>Cũ</MenuItem>
+                </SelectMui>
               </FormControl>
             </div>
             <div
-              className="d-flex ms-3"
+              className="d-flex ms-2"
               style={{
                 height: "40px",
                 position: "relative",
@@ -837,7 +1152,7 @@ const ManagementProducts = () => {
               }}
             >
               <div
-                // onClick={handleOpenSelect1}
+                onClick={handleOpenPage}
                 className=""
                 style={{ marginTop: "8px" }}
               >
@@ -850,11 +1165,11 @@ const ManagementProducts = () => {
               </div>
               <FormControl
                 sx={{
-                  minWidth: 50,
+                  maxWidth: 170,
                 }}
                 size="small"
               >
-                <Select
+                <SelectMui
                   MenuProps={{
                     PaperProps: {
                       style: {
@@ -872,26 +1187,29 @@ const ManagementProducts = () => {
                       fontWeight: "500",
                     },
                   }}
-                  // open={openSelect1}
-                  // onClose={handleCloseSelect1}
-                  // onOpen={handleOpenSelect1}
-                  defaultValue={14}
+                  open={openPage}
+                  onClose={handleCloseOpenPage}
+                  onOpen={handleOpenPage}
+                  defaultValue={10}
+                  value={size}
+                  onChange={(e) => {
+                    setSize(e.target.value);
+                  }}
                 >
-                  <MenuItem className="" value={14}>
-                    Tất cả
-                  </MenuItem>
-                  <MenuItem value={15}>Khách hàng mới</MenuItem>
-                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
-                </Select>
+                  <MenuItem value={10}>10/Pages</MenuItem>
+                  <MenuItem value={20}>20/Pages</MenuItem>
+                  <MenuItem value={50}>50/Pages</MenuItem>
+                </SelectMui>
               </FormControl>
             </div>
           </div>
+
           <Card.Body>
             <OrderTable />
           </Card.Body>
           <div className='mx-auto'>
-            <Pagination color="primary" /* page={parseInt(currentPage)} key={refreshPage} count={totalPages} */
-            // onChange={handlePageChange} 
+            <Pagination color="primary" page={parseInt(currentPage)} key={refreshPage} count={totalPages}
+              onChange={handlePageChange}
             />
           </div>
           <div className="mt-4"></div>

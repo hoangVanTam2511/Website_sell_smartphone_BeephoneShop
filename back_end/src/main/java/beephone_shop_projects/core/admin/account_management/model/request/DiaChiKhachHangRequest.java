@@ -37,6 +37,8 @@ public class DiaChiKhachHangRequest {
 
     private String account;
 
+    private String ma;
+
     private Integer trangThai;
 
 }

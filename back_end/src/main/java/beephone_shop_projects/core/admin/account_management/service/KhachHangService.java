@@ -22,4 +22,6 @@ public interface KhachHangService {
 
     Account updateKH(CreateKhachHangRequest request, String id);
     Page<AccountResponse> search(Optional<String> tenSearch, Integer pageNo);
+
+    Boolean isPhoneNumberUnique(String phoneNumberToCheck);
 }

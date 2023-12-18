@@ -160,6 +160,7 @@ const PointOfSales = () => {
   const [idCustomer, setIdCustomer] = useState("");
   const [customerNeedPay, setCustomerNeedPay] = useState(null);
   const [customerNeedPayFormat, setCustomerNeedPayFormat] = useState(0);
+  const [address, setAddress] = useState(null);
 
   const [idVoucher, setIdVoucher] = useState("");
   const [vouchers, setVouchers] = useState([]);
@@ -657,6 +658,9 @@ const PointOfSales = () => {
 
   const getCustomer = (customer) => {
     setCustomer(customer);
+  };
+  const getAddress = (add) => {
+    setAddress(add);
   };
   const getClear = (clear) => {
     setClear(clear);
@@ -3179,6 +3183,7 @@ const PointOfSales = () => {
         data={customerAddressList}
         isOpen={isOpen}
         add={updateInfoShip}
+        getAddress={getAddress}
       />
 
       <MultiplePaymentMethods

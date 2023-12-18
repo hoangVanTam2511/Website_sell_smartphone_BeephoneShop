@@ -2,20 +2,21 @@ package beephone_shop_projects.core.admin.product_managements.controller;
 
 import beephone_shop_projects.core.admin.product_managements.model.request.FindFilterProductsRequest;
 import beephone_shop_projects.core.admin.product_managements.model.request.TheSimRequest;
+import beephone_shop_projects.core.admin.product_managements.model.response.DoPhanGiaiResponse;
 import beephone_shop_projects.core.admin.product_managements.model.response.TheSimResponse;
 import beephone_shop_projects.core.admin.product_managements.service.impl.TheSimServiceImpl;
 import beephone_shop_projects.core.common.base.ResponseObject;
 import beephone_shop_projects.core.common.base.ResponsePage;
 import beephone_shop_projects.entity.TheSim;
 import beephone_shop_projects.infrastructure.constant.ApiConstants;
-import beephone_shop_projects.infrastructure.constant.StatusCommon;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(ApiConstants.ApiSystems.API_SIM_CARD_URI)
@@ -33,9 +34,8 @@ public class TheSimController {
 
     @GetMapping("/all")
     public ResponseObject<List<TheSimResponse>> getSimCards() {
-        List<TheSimResponse> simCards = theSimService.findAll().stream()
-                .filter(products -> StatusCommon.ACTIVE.equals(products.getStatus()))
-                .collect(Collectors.toList());
+        List<TheSimResponse> simCards = theSimService.findAll();
+        Collections.sort(simCards, Comparator.comparing(TheSimResponse::getUpdatedAt).reversed());
         return new ResponseObject<>(simCards);
     }
 
