@@ -197,7 +197,13 @@ const PointOfSales = () => {
   const [customerProvinceShip, setCustomerProvinceShip] = useState("");
   const [customerDistrictShip, setCustomerDistrictShip] = useState("");
   const [customerWardShip, setCustomerWardShip] = useState("");
-
+  let [hoTenKH, setHoTenKH] = useState("");
+  let [quanHuyen, setQuanHuyen] = useState("");
+  let [tinhThanhPho, setTinhThanhPho] = useState("");
+  let [diaChi, setDiaChi] = useState("");
+  let [soDienThoaiKhachHang, setSoDienThoaiKhachHang] = useState("");
+  let [xaPhuong, setXaPhuong] = useState("");
+  let [diaChiList, setDiaChiList] = useState({});
   const [customerAddressList, setCustomerAddressList] = useState([]);
   const [isShow, setIsShow] = useState(false);
 
@@ -519,6 +525,25 @@ const PointOfSales = () => {
       setIsLoading(false);
     }
   };
+  const openEditModal = async (diaChiList) => {
+    try {
+      await axios
+        .get(`http://localhost:8080/khach-hang/mot-dia-chi?id=${diaChiList.ma}`)
+        .then((response) => {
+          // const data = response.data.data;
+          setSoDienThoaiKhachHang(diaChiList.soDienThoaiKhachHang);
+          setHoTenKH(diaChiList.hoTenKH);
+          setQuanHuyen(diaChiList.quanHuyen);
+          setDiaChi(diaChiList.diaChi);
+          setTinhThanhPho(diaChiList.tinhThanhPho);
+          setXaPhuong(diaChiList.xaPhuong);
+          setDiaChiList(diaChiList);
+          console.log(diaChiList);
+        });
+    } catch (error) {
+      setIsLoading(false);
+    }
+  };
   const updatePhoneShipOrder = async (phone) => {
     const orderRequest = {
       soDienThoaiNguoiNhan: phone === "" ? null : phone,
@@ -545,7 +570,7 @@ const PointOfSales = () => {
           setCustomerPhoneShip(data && data.soDienThoaiNguoiNhan);
           getAllOrdersPending();
         });
-    } catch (error) { }
+    } catch (error) {}
   };
   const updateAddressShipOrder = async (address) => {
     const orderRequest = {
@@ -573,7 +598,7 @@ const PointOfSales = () => {
           setCustomerAddressShip(data && data.diaChiNguoiNhan);
           getAllOrdersPending();
         });
-    } catch (error) { }
+    } catch (error) {}
   };
   const updateNoteShipOrder = async (note) => {
     const orderRequest = {
@@ -722,7 +747,7 @@ const PointOfSales = () => {
           setCustomerNameShip(data && data.tenNguoiNhan);
           getAllOrdersPending();
         });
-    } catch (error) { }
+    } catch (error) {}
   };
 
   const updateInfoShipOrder = async (
@@ -763,7 +788,7 @@ const PointOfSales = () => {
           setCustomerDistrictShip(data && data.quanHuyenNguoiNhan);
           getAllOrdersPending();
         });
-    } catch (error) { }
+    } catch (error) {}
   };
 
 
@@ -1026,7 +1051,7 @@ const PointOfSales = () => {
           // handlePrint();
           console.log(orderRequest);
         });
-    } catch (error) { }
+    } catch (error) {}
   };
 
   // const updateAccount = async (id) => {
@@ -1474,19 +1499,19 @@ const PointOfSales = () => {
           (response &&
             response.data.data[0].voucher &&
             response.data.data[0].voucher.ma) ||
-          ""
+            ""
         );
         setIdVoucher(
           (response &&
             response.data.data[0].voucher &&
             response.data.data[0].voucher.id) ||
-          ""
+            ""
         );
         setDiscountValue(
           (response &&
             response.data.data[0].voucher &&
             response.data.data[0].voucher.giaTriVoucher) ||
-          0
+            0
         );
         console.log(order);
 
@@ -3649,8 +3674,24 @@ const PointOfSales = () => {
         open={openAddresses}
         onClose={handleCloseDialogAddresses}
         data={customerAddressList}
+        setData={setCustomerAddressList}
         isOpen={isOpen}
-        add={updateInfoShip}
+        add={openEditModal}
+        add1={updateInfoShip}
+        idCus={idCustomer}
+        hoTenKH={hoTenKH}
+        xaPhuong={xaPhuong}
+        tinhThanhPho={tinhThanhPho}
+        quanHuyen={quanHuyen}
+        sdt={soDienThoaiKhachHang}
+        diaChi={diaChi}
+        setXaPhuong={setXaPhuong}
+        setDiaChi={setDiaChi}
+        setTinhThanhPho={setTinhThanhPho}
+        setHoTenKH={setHoTenKH}
+        setSDT={setSoDienThoaiKhachHang}
+        setQuanHuyen={setQuanHuyen}
+        diaChiList={diaChiList}
       />
 
       <MultiplePaymentMethods

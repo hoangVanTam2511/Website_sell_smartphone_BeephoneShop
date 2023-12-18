@@ -9,6 +9,8 @@ import beephone_shop_projects.infrastructure.constant.ApiConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -22,6 +24,7 @@ public class DoPhanGiaiController {
     @GetMapping
     public ResponseObject<List<DoPhanGiaiResponse>> getSimCards() {
         List<DoPhanGiaiResponse> simCards = doPhanGiaiService.findAll();
+        Collections.sort(simCards, Comparator.comparing(DoPhanGiaiResponse::getUpdatedAt).reversed());
         return new ResponseObject<>(simCards);
     }
 

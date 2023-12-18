@@ -1,5 +1,5 @@
 import { Button, Modal } from "antd";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
 import { apiURLKH } from "../../../../service/api";
@@ -27,8 +27,7 @@ import useCustomSnackbar from "../../../../utilities/notistack";
 import { useNavigate } from "react-router-dom";
 import { ConfirmDialog } from "../../../../utilities/confirmModalDialoMui";
 import { request } from '../../../../store/helpers/axios_helper'
-
-const ModalAddKhachHang = ({ close }) => {
+const ModalAddKhachHang = ({ close, openCustomer, setOP, getCustomer }) => {
   let [listKH, setListKH] = useState([]);
   let [hoVaTen, setTen] = useState("");
   let [ngaySinh, setNgaySinh] = useState("");
@@ -66,8 +65,8 @@ const ModalAddKhachHang = ({ close }) => {
   const [diaChiError, setDiaChiError] = useState("");
   const [sdtError, setSDTError] = useState("");
   const [sdtkhError, setSDTKHError] = useState("");
-  const [hoTenKHErr, setHoTenKHErr] = useState("");
-  let [huy, setHuy] = useState(false);
+  const [hoTenkhError, sethoTenKHError] = useState("");
+  const [huy, setHuy] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
 
   const handleOpenDialogConfirmAdd = () => {
@@ -120,15 +119,15 @@ const ModalAddKhachHang = ({ close }) => {
     const trimmedValue = value.replace(/\s/g, "");
     setHoTenKH(value);
     if (!value.trim()) {
-      setHoTenKHErr("Họ và tên không được trống");
+      sethoTenKHError("Họ và tên không được trống");
     } else if (specialCharPattern.test(value)) {
-      setHoTenKHErr("Họ và tên không được chứa ký tự đặc biệt");
+      sethoTenKHError("Họ và tên không được chứa ký tự đặc biệt");
     } else if (trimmedValue.length < 5) {
-      setHoTenKHErr("Họ và tên phải có ít nhất 5 ký tự");
+      sethoTenKHError("Họ và tên phải có ít nhất 5 ký tự");
     } else if (/^\s+|\s+$/.test(value)) {
-      setHoTenKHErr("Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi");
+      sethoTenKHError("Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi");
     } else {
-      setHoTenKHErr("");
+      sethoTenKHError("");
     }
   };
 
@@ -216,12 +215,15 @@ const ModalAddKhachHang = ({ close }) => {
     setEmail("");
     setGioiTinh(true);
     setSoDienThoaiKhachHang("");
+    setFormSubmitted(false);
     setAnhDaiDien("");
-    setXaPhuong("");
-    setQuanHuyen("");
-    setTinhThanhPho("");
+    sethoTenKHError("");
+    setSDTKHError("");
+    setHoVaTenError("");
+    setDiaChiError("");
     setDiaChi("");
     setHuy(true);
+    setAnhDaiDien("");
   };
 
   const AddKH = async () => {
@@ -257,7 +259,7 @@ const ModalAddKhachHang = ({ close }) => {
         hoVaTenError ||
         sdtError ||
         emailError ||
-        hoTenKHErr ||
+        hoTenkhError ||
         sdtkhError ||
         diaChiError
       ) {
@@ -269,7 +271,7 @@ const ModalAddKhachHang = ({ close }) => {
         return;
       }
       // Gọi API tạo khách hàng mới
-      
+
       request('POST',
         apiURLKH + "/add",
         khachHangData
@@ -280,32 +282,33 @@ const ModalAddKhachHang = ({ close }) => {
         const generatedMaKhachHang = khachHangResponse.data.data.id;
         addDiaChiList(generatedMaKhachHang);
 
-        // Cập nhật danh sách khách hàng và hiển thị thông báo
-        const newKhachHangResponse = {
-          hoVaTen: hoVaTen,
-          ngaySinh: ngaySinh,
-          soDienThoai: soDienThoai,
-          gioiTinh: gioiTinh,
-          diaChiList: [],
-          email: email,
-          anhDaiDien: anhDaiDien,
-        };
-
-        setListKH([newKhachHangResponse, ...listKH]);
-        close();
-        handleResetForm();
-        handleOpenAlertVariant("Thêm thành công", Notistack.SUCCESS);
-      }).catch((error) => {
-        console.log(error)
-      })
-
-     
+      // Cập nhật danh sách khách hàng và hiển thị thông báo
+      const newKhachHangResponse = {
+        hoVaTen: hoVaTen,
+        ngaySinh: ngaySinh,
+        soDienThoai: soDienThoai,
+        gioiTinh: gioiTinh,
+        diaChiList: [],
+        email: email,
+        anhDaiDien: anhDaiDien,
+      };
+      setListKH([newKhachHangResponse, ...listKH]);
+      close();
+      handleResetForm();
+      getCustomer();
+      handleOpenAlertVariant("Thêm thành công", Notistack.SUCCESS);
+      return;
     } catch (error) {
       console.log(error)
       handleOpenAlertVariant("Lỗi khi thêm khách hàng", Notistack.ERROR);
     }
   };
-
+  useEffect(() => {
+    if (!openCustomer) {
+      handleResetForm();
+      close();
+    }
+  }, [close, openCustomer]);
   const addDiaChiList = (generatedMaKhachHang) => {
     //day
     setSubmitted(true);
@@ -346,244 +349,163 @@ const ModalAddKhachHang = ({ close }) => {
 
   return (
     <>
-      <div className="text-center" style={{ marginBottom: "20px" }}>
-        <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>
-          THÊM KHÁCH HÀNG
+      <div style={{ marginBottom: "20px" }}>
+        <span style={{ fontSize: "22px", fontWeight: "500" }}>
+          Thêm Khách Hàng
         </span>
       </div>
       <Grid container justifyContent="space-between">
         {/* Left column */}
-        <Grid item xs={6.2}>
+        <Grid item xs={0.1}></Grid>
+        <Grid item xs={5}>
           <div
             style={{
               display: "flex",
+              flexDirection: "column",
               alignItems: "center",
-              justifyContent: "space-between",
-              position: "sticky",
-              fontSize: "16px",
-              top: 0,
-              backgroundColor: "white",
-              borderLeft: "4px solid #e2e2e2",
-              zIndex: 1,
-              paddingLeft: "10px",
-              color: "gray",
+              width: "95%",
+              marginTop: "20px",
+              marginBottom: "16px",
             }}
           >
-            {/* <span
-              style={{
-                color: "gray",
-                display: "block",
-                padding: "15px",
-                borderBottom: "1px solid #e2e2e2",
-                flex: "1",
-                margin: "0",
-              }}
+            <ImageUploadComponent
+              setAnhDaiDien={handleAnhDaiDienChange}
+              // existingImageUrl={anhDaiDien}
+              openCustomer={openCustomer}
+              hoten={hoVaTen}
+            />
+            <br />
+          </div>
+          <div style={{ width: "95.7%" }}>
+            <div
+              className="text-f"
+              style={{ textAlign: "center", marginBottom: "20px" }}
             >
-              Thông tin Khách Hàng
-            </span> */}
-          </div>
-          <div
-            bordered={false}
-            headStyle={{ borderLeft: "4px solid #e2e2e2", borderRadius: 0 }}
-            style={{
-              height: "100%",
-              overflowY: "auto",
+              <TextField
+                label="Họ và tên"
+                value={hoVaTen}
+                id="fullWidth"
+                onChange={handleHoVaTenChange}
+                error={(formSubmitted && !hoVaTen) || !!hoVaTenError}
+                helperText={
+                  hoVaTenError ||
+                  (formSubmitted && !hoVaTen && "Họ và tên trống")
+                }
+                style={{ width: "100%" }}
+              />
+            </div>
+            <div style={{ display: "flex", alignItems: "right" }}>
+              <div
+                className="text-f"
+                style={{
+                  marginBottom: "30px",
+                  width: "63%",
+                }}
+              >
+                {/* Ngày sinh */}
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DemoContainer components={["DatePicker"]}>
+                    <DatePicker
+                      disableFuture
+                      label="Ngày Sinh"
+                      value={dayjs(ngaySinh)}
+                      format="DD/MM/YYYY"
+                      onChange={handleChangeDate}
+                      sx={{
+                        position: "relative",
 
-              zIndex: 0,
-              position: "relative",
-            }}
-          >
-            <Grid container justifyContent="space-between">
-              <Grid item xs={4}>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    width: "95%",
-                    marginTop: "20px",
-                  }}
-                >
-                  <ImageUploadComponent
-                    setAnhDaiDien={handleAnhDaiDienChange}
-                    existingImageUrl={anhDaiDien}
-                    hoten={hoVaTen}
-                  />
-                  <br />
-                </div>
-              </Grid>
-              <Grid item xs={8} style={{ marginTop: "30px" }}>
-                {/* <b style={{ fontSize: "16px" }}>{hoVaTen}</b>{" "}
-                {gioiTinh === true ? (
-                  <FontAwesomeIcon icon={faMars} />
-                ) : gioiTinh === false ? (
-                  <FontAwesomeIcon icon={faVenus} />
-                ) : null}{" "}
-                <br />
-                {email} */}
-                <div style={{ width: "95.7%" }}>
-                  <div
-                    className="text-f"
-                    style={{ textAlign: "center", marginBottom: "20px" }}
-                  >
-                    <TextField
-                      label="Họ và tên"
-                      value={hoVaTen}
-                      id="fullWidth"
-                      onChange={handleHoVaTenChange}
-                      error={(formSubmitted && !hoVaTen) || !!hoVaTenError}
-                      helperText={
-                        hoVaTenError ||
-                        (formSubmitted && !hoVaTen && "Họ và tên trống")
-                      }
-                      style={{ width: "100%" }}
-                    />
-                  </div>
-                  <div style={{ display: "flex", alignItems: "right" }}>
-                    <div
-                      className="text-f"
-                      style={{
-                        marginBottom: "30px",
-                        width: "63%",
+                        "& .MuiInputBase-root": {
+                          width: "100%",
+                        },
                       }}
-                    >
-                      {/* Ngày sinh */}
-                      <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DemoContainer components={["DatePicker"]}>
-                          <DatePicker
-                            disableFuture
-                            label="Ngày Sinh"
-                            value={dayjs(ngaySinh)}
-                            format="DD/MM/YYYY"
-                            onChange={handleChangeDate}
-                            sx={{
-                              position: "relative",
-
-                              "& .MuiInputBase-root": {
-                                width: "100%",
-                              },
-                            }}
-                            slotProps={{
-                              textField: {
-                                error: formSubmitted && !ngaySinh,
-                                helperText:
-                                  formSubmitted && !ngaySinh
-                                    ? "Chưa chọn ngày sinh"
-                                    : "",
-                              },
-                            }}
-                          />
-                        </DemoContainer>
-                      </LocalizationProvider>
-                    </div>
-                    <div
-                      className="text-f"
-                      style={{
-                        width: "45%",
-                        marginLeft: "15px",
-                        marginTop: "15px",
+                      slotProps={{
+                        textField: {
+                          error: formSubmitted && !ngaySinh,
+                          helperText:
+                            formSubmitted && !ngaySinh
+                              ? "Chưa chọn ngày sinh"
+                              : "",
+                        },
                       }}
-                    >
-                      {/* Giới tính */}
-                      <FormControl component="fieldset">
-                        <RadioGroup
-                          row
-                          aria-label="gioiTinh"
-                          name="gioiTinh"
-                          value={gioiTinh}
-                          onChange={(e) => {
-                            setGioiTinh(e.target.value === "true"); // Convert the string to a boolean value
-                          }}
-                        >
-                          <FormControlLabel
-                            value="true"
-                            control={<Radio style={{ borderRadius: "50%" }} />} // Add border radius to the radio button
-                            label="Nam"
-                          />
-                          <FormControlLabel
-                            value="false"
-                            control={<Radio style={{ borderRadius: "50%" }} />} // Add border radius to the radio button
-                            label="Nữ"
-                          />
-                        </RadioGroup>
-                      </FormControl>
-                    </div>
-                  </div>
+                    />
+                  </DemoContainer>
+                </LocalizationProvider>
+              </div>
+              <div
+                className="text-f"
+                style={{
+                  width: "45%",
+                  marginLeft: "15px",
+                  marginTop: "15px",
+                }}
+              >
+                {/* Giới tính */}
+                <FormControl component="fieldset">
+                  <RadioGroup
+                    row
+                    aria-label="gioiTinh"
+                    name="gioiTinh"
+                    value={gioiTinh}
+                    onChange={(e) => {
+                      setGioiTinh(e.target.value === "true"); // Convert the string to a boolean value
+                    }}
+                  >
+                    <FormControlLabel
+                      value="true"
+                      control={<Radio style={{ borderRadius: "50%" }} />} // Add border radius to the radio button
+                      label="Nam"
+                    />
+                    <FormControlLabel
+                      value="false"
+                      control={<Radio style={{ borderRadius: "50%" }} />} // Add border radius to the radio button
+                      label="Nữ"
+                    />
+                  </RadioGroup>
+                </FormControl>
+              </div>
+            </div>
 
-                  <div
-                    className="text-f"
-                    style={{ textAlign: "center", marginBottom: "30px" }}
-                  >
-                    <TextField
-                      label="Email"
-                      value={email}
-                      // id="fullWidth"
-                      onChange={handleEmailChange}
-                      error={(formSubmitted && !email) || !!emailError} // Show error if form submitted and hoVaTen is empty
-                      helperText={
-                        emailError || (formSubmitted && !email && "Email trống")
-                      }
-                      style={{ width: "100%" }}
-                    />
-                  </div>
-                  <div
-                    className="text-f"
-                    style={{ textAlign: "center", marginBottom: "30px" }}
-                  >
-                    <TextField
-                      label="Số điện thoại"
-                      id="fullWidth"
-                      value={soDienThoai}
-                      onChange={handleSDT}
-                      error={(formSubmitted && !soDienThoai) || !!sdtError}
-                      helperText={
-                        sdtError ||
-                        (formSubmitted && !soDienThoai && "Số điện thoại trống")
-                      }
-                      style={{ width: "100%" }}
-                    />
-                  </div>
-                </div>{" "}
-              </Grid>
-            </Grid>
-          </div>
+            <div
+              className="text-f"
+              style={{ textAlign: "center", marginBottom: "30px" }}
+            >
+              <TextField
+                label="Email"
+                value={email}
+                // id="fullWidth"
+                onChange={handleEmailChange}
+                error={(formSubmitted && !email) || !!emailError} // Show error if form submitted and hoVaTen is empty
+                helperText={
+                  emailError || (formSubmitted && !email && "Email trống")
+                }
+                style={{ width: "100%" }}
+              />
+            </div>
+            <div
+              className="text-f"
+              style={{ textAlign: "center", marginBottom: "30px" }}
+            >
+              <TextField
+                label="Số điện thoại"
+                id="fullWidth"
+                value={soDienThoai}
+                onChange={handleSDT}
+                error={(formSubmitted && !soDienThoai) || !!sdtError}
+                helperText={
+                  sdtError ||
+                  (formSubmitted && !soDienThoai && "Số điện thoại trống")
+                }
+                style={{ width: "100%" }}
+              />
+            </div>
+          </div>{" "}
         </Grid>{" "}
         <Grid
           item
-          xs={5.6}
+          xs={6}
           style={{ borderLeft: "1px solid #e2e2e2", paddingLeft: "20px" }}
         >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              position: "sticky",
-              fontSize: "16px",
-              top: 0,
-              backgroundColor: "white",
-              borderLeft: "4px solid #e2e2e2",
-              zIndex: 1,
-              paddingLeft: "10px",
-              color: "gray",
-            }}
-          >
-            {/* <span
-              style={{
-                color: "gray",
-                display: "block",
-                padding: "15px",
-                borderBottom: "1px solid #e2e2e2",
-                flex: "1",
-                margin: "0",
-              }}
-            >
-              Thông tin Địa Chỉ Mặc định
-            </span> */}
-          </div>
-          {/* <h4 style={{ color: "gray" }}>Địa chỉ mặc định</h4> */}
-
-          <div style={{ width: "95%", margin: "0 auto", marginTop: "30px" }}>
+          <div style={{ width: "95%", margin: "0 auto" }}>
             <div
               className="text-f"
               style={{ marginBottom: "30px", marginTop: "13px" }}
@@ -593,9 +515,10 @@ const ModalAddKhachHang = ({ close }) => {
                 value={hoTenKH}
                 id="fullWidth"
                 onChange={handleHoVaTenKH}
-                error={(formSubmitted && !hoTenKH) || !!hoTenKHErr}
+                error={(formSubmitted && !hoTenKH) || !!hoTenkhError}
                 helperText={
-                  hoTenKHErr || (formSubmitted && !hoTenKH && "Họ và tên trống")
+                  hoTenkhError ||
+                  (formSubmitted && !hoTenKH && "Họ và tên trống")
                 }
                 style={{ width: "100%" }}
               />
@@ -640,12 +563,22 @@ const ModalAddKhachHang = ({ close }) => {
                 formSubmitted={formSubmitted}
                 huy={huy}
                 set={setHuy}
+                openCustomer={openCustomer}
               />
             </div>
           </div>
         </Grid>{" "}
       </Grid>
       <div style={{ float: "right", marginTop: "10px", marginRight: "10px" }}>
+        {/* <Button
+          onClick={() => {
+            handleResetForm();
+          }}
+          size="large"
+          type="text"
+        >
+          Hủy
+        </Button> */}
         <Button
           type="primary"
           onClick={handleOpenDialogConfirmAdd}

@@ -231,7 +231,8 @@ const AddNV = () => {
       );
 
     } catch (error) {
-      handleOpenAlertVariant("Thêm thất bại", Notistack.ERROR);
+      handleOpenAlertVariant(error.response.data, Notistack.ERROR);
+      setIsConfirmVisible(false);
     }
   };
   const addDiaChiList = (generatedMaKhachHang) => {
@@ -267,7 +268,7 @@ const AddNV = () => {
   };
   return (
     <>
-      <Card bordered={false} style={{ width: "100%" }}>
+      <Card bordered="false" style={{ width: "100%" }}>
         <h3
           style={{
             color: "gray",

@@ -28,5 +28,8 @@ public interface NhanVienService {
     Account getOne(UUID id);
 
     Page<Account> filterTrangThai(StatusAccountCus trangThai, Integer pageableNo);
+    Boolean isPhoneNumberUnique(String phoneNumberToCheck);
+    Boolean isPhoneNumberUniqueCustomer(String phoneNumberToCheck);
+    Boolean existsByCanCuocCongDan(String canCuoc);
 
 }

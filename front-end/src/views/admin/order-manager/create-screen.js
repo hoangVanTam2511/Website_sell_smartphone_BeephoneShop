@@ -48,19 +48,21 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
   };
   useEffect(() => {
     // Load data when the component mounts
+    getDoPhanGiai();
+  }, []);
+  const getDoPhanGiai = () => {
     axios
       .get(apiURLDoPhanGiai)
       .then((response) => {
         setListPhanGiai(response.data.data);
-        console.log(response.data.data);
       })
       .catch((error) => {
         console.error("Error loading data:", error);
       });
-  }, []);
-
+  };
   const [formSubmitDPG, setFormSubmitDPG] = useState(false);
   const [formSubmitMH, setFormSubmitMH] = useState(false);
+  const [idDPG, setIdDPG] = useState(false);
   const handleChieuDai = (e) => {
     const value = e.target.value;
     setChieuDai(value);
@@ -131,7 +133,7 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
       chieuRong: chieuRong,
     };
     if (!chieuDai || !chieuRong) {
-      // message.error("Vui lòng điền đủ thông tin");
+      message.error("Vui lòng điền đủ thông tin");
       setOpenDoPhanGiai(true);
       return;
     }
@@ -144,10 +146,10 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
           chieuRong: chieuRong,
         };
         setListPhanGiai([newDoPhanGiai, ...listPhanGiai]);
+        getDoPhanGiai();
         message.success("Thêm thành công");
         handleReset();
         setOpenDoPhanGiai(false);
-        // redirectToHienThiKH(generatedMaKhachHang);
       })
       .catch((error) => {
         alert("Thêm thất bại");

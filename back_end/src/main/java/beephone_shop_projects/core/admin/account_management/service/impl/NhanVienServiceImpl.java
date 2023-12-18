@@ -72,7 +72,7 @@ public class NhanVienServiceImpl implements NhanVienService {
         String code = String.format("NV%04d", number);
         String hoVaTen = request.getHoVaTen();
 
-        String hoVaTenWithoutSpaces = hoVaTen.replaceAll("\\s+", ""); // Loại bỏ khoảng trắng
+        String hoVaTenWithoutSpaces = hoVaTen.replaceAll("\\s+", "");
         String hoVaTenWithoutDiacritics = removeDiacritics(hoVaTenWithoutSpaces);
         Date date = null;
         try {
@@ -80,6 +80,7 @@ public class NhanVienServiceImpl implements NhanVienService {
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
+
         String[] specialCharsArray = {"!", "@", "#", "$", "%", "^", "&", "*", "+", "-"};
         String specialChars = getRandomSpecialChars(specialCharsArray);
         String matKhau = hoVaTenWithoutDiacritics + specialChars + code;
@@ -133,7 +134,6 @@ public class NhanVienServiceImpl implements NhanVienService {
     public Page<Account> search(Optional<String> tenSearch,Integer acc,  Integer pageNo) {
         Pageable pageable = PageRequest.of(pageNo - 1, 5);
         return accountRepository.searchAllNV(tenSearch, pageable);
-//        return null;
     }
 
     @Override
@@ -145,6 +145,21 @@ public class NhanVienServiceImpl implements NhanVienService {
     public Page<Account> filterTrangThai(StatusAccountCus trangThai, Integer pageableNo) {
         Pageable pageable = PageRequest.of(pageableNo - 1, 5);
         return accountRepository.filterTrangThai(trangThai, pageable);
+    }
+
+    @Override
+    public Boolean isPhoneNumberUnique(String phoneNumberToCheck) {
+        return accountRepository.existsBySoDienThoaiNhanVien(phoneNumberToCheck);
+    }
+
+    @Override
+    public Boolean isPhoneNumberUniqueCustomer(String phoneNumberToCheck) {
+        return accountRepository.existsBySoDienThoaiKhachHang(phoneNumberToCheck);
+    }
+
+    @Override
+    public Boolean existsByCanCuocCongDan(String canCuoc) {
+        return accountRepository.existsByCanCuocCongDan(canCuoc);
     }
 
     public static String removeDiacritics(String str) {
