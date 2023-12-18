@@ -74,7 +74,6 @@ public interface VoucherRepository extends IVoucherRepository, CustomVoucherRepo
             """)
     VoucherResponse findCodeVoucher(String code);
 
-
     @Query(value = """
             SELECT v.id, v.ma, v.ten, v.so_luong as soLuong, v.gia_tri_voucher as giaTriVoucher, v.trang_thai as trangThai, v.loai_voucher as loaiVoucher, 
              v.dieu_kien_ap_dung as dieuKienApDung, v.ngay_bat_dau as ngayBatDau, v.ngay_ket_thuc as ngayKetThuc, v.gia_tri_toi_da as giaTriToiDa 
@@ -86,5 +85,12 @@ public interface VoucherRepository extends IVoucherRepository, CustomVoucherRepo
              ORDER BY v.gia_tri_voucher DESC          
             """, nativeQuery = true)
     Page<VoucherResponse> getVoucherStatusIsActive(Pageable pageable, @Param("request") FindVoucherRequest request);
+
+    @Query(value = """
+            SELECT v.id, v.ma, v.ten, v.so_luong as soLuong, v.gia_tri_voucher as giaTriVoucher, v.trang_thai as trangThai, v.loai_voucher as loaiVoucher, 
+             v.dieu_kien_ap_dung as dieuKienApDung, v.ngay_bat_dau as ngayBatDau, v.ngay_ket_thuc as ngayKetThuc, v.gia_tri_toi_da as giaTriToiDa 
+             FROM voucher v WHERE (v.trang_thai  = 1 AND  v.so_luong > 0)
+            """, nativeQuery = true)
+    List<VoucherResponse> getVoucherStatusIsActiveList();
 
 }

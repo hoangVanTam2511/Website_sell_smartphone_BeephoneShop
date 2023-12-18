@@ -75,7 +75,7 @@ public class ProductItemRepositoryImpl extends AbstractRepositoryImpl<SanPhamChi
       Fetch<SanPhamChiTiet, MauSac> joinColor = root.fetch("mauSac", JoinType.LEFT);
       Fetch<SanPhamChiTiet, Image> joinImage = root.fetch("image", JoinType.LEFT);
 //      Fetch<SanPhamChiTiet, KhuyenMaiChiTiet> joinPromotions = root.fetch("promotions", JoinType.LEFT);
-      Fetch<SanPhamChiTiet, MauSac> joinImeis = root.fetch("imeis", JoinType.LEFT);
+      Fetch<SanPhamChiTiet, Imei> joinImeis = root.fetch("imeis", JoinType.LEFT);
       Fetch<SanPhamChiTiet, SanPham> joinProduct = root.fetch("sanPham", JoinType.LEFT);
 
       Fetch<SanPham, Chip> joinChip = joinProduct.fetch("chip", JoinType.LEFT);
@@ -124,7 +124,7 @@ public class ProductItemRepositoryImpl extends AbstractRepositoryImpl<SanPhamChi
       Fetch<SanPhamChiTiet, MauSac> joinColor = root.fetch("mauSac", JoinType.LEFT);
       Fetch<SanPhamChiTiet, Image> joinImage = root.fetch("image", JoinType.LEFT);
 //      Fetch<SanPhamChiTiet, KhuyenMaiChiTiet> joinPromotions = root.fetch("promotions", JoinType.LEFT);
-      Fetch<SanPhamChiTiet, MauSac> joinImeis = root.fetch("imeis", JoinType.LEFT);
+      Fetch<SanPhamChiTiet, Imei> joinImeis = root.fetch("imeis", JoinType.LEFT);
       Fetch<SanPhamChiTiet, SanPham> joinProduct = root.fetch("sanPham", JoinType.LEFT);
 
       Fetch<SanPham, Chip> joinChip = joinProduct.fetch("chip", JoinType.LEFT);

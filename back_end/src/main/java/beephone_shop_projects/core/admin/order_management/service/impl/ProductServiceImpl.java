@@ -18,6 +18,7 @@ import beephone_shop_projects.core.admin.order_management.repository.CameraSauDi
 import beephone_shop_projects.core.admin.order_management.repository.CameraSauRepository;
 import beephone_shop_projects.core.admin.order_management.repository.CameraTruocDienThoaiRepository;
 import beephone_shop_projects.core.admin.order_management.repository.CameraTruocRepository;
+import beephone_shop_projects.core.admin.order_management.repository.ProductItemCustomRepository;
 import beephone_shop_projects.core.admin.order_management.repository.impl.DanhMucDienThoaiRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.repository.impl.ImeiRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.repository.impl.ProductItemRepositoryImpl;
@@ -94,6 +95,9 @@ public class ProductServiceImpl extends AbstractServiceImpl<SanPham, ProductResp
 
   @Autowired
   private ImeiRepositoryImpl imeiRepositoryImpl;
+
+  @Autowired
+  private ProductItemCustomRepository productItemCustomRepository;
 
   @Autowired
   private BarcodeGenerator barcodeGenerator;
@@ -204,7 +208,7 @@ public class ProductServiceImpl extends AbstractServiceImpl<SanPham, ProductResp
       searchFilter.setCurrentPage(1);
     }
     if (searchFilter.getPageSize() == null) {
-      searchFilter.setPageSize(10);
+      searchFilter.setPageSize(7);
     }
     Pageable pageable = PageRequest.of(searchFilter.getCurrentPage() - 1, searchFilter.getPageSize());
 
@@ -228,7 +232,7 @@ public class ProductServiceImpl extends AbstractServiceImpl<SanPham, ProductResp
         quantityImei += productItem.getImeis().size();
       }
 
-      List<SanPhamChiTiet> findProductItemById = productItemRepositoryImpl.findByIdProductItem(product.getId());
+      List<SanPhamChiTiet> findProductItemById = productItemCustomRepository.getProductsById(product.getId());
 
       if (findProductItemById != null && findProductItemById.size() > 0) {
         SanPhamChiTiet sanPhamChiTiet = findProductItemById.get(0);
@@ -254,6 +258,7 @@ public class ProductServiceImpl extends AbstractServiceImpl<SanPham, ProductResp
     pageResponse.setCode(200);
     pageResponse.setMessage("Success");
     pageResponse.setPageable(pageableResponse);
+    pageResponse.setTotalPages(pageProducts.getTotalPages());
 
     return pageResponse;
   }
