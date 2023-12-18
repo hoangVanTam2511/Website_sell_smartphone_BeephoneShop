@@ -27,7 +27,7 @@ import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
 import useCustomSnackbar from "../../../utilities/notistack";
 import LoadingIndicator from "../../../utilities/loading";
 import { Navigate, useNavigate } from "react-router-dom";
-import { request } from "../../../store/helpers/axios_helper";
+import { request, requestParam } from "../../../store/helpers/axios_helper";
 
 const AddVoucher = () => {
   const navigate = useNavigate();
@@ -141,10 +141,10 @@ const AddVoucher = () => {
       startTime: ngayBatDau,
       endTime: ngayKetThuc,
     };
-    axios
-      .post(`http://localhost:8080/send-html-email/voucher`, obj)
+    request("POST", "/email/send-html-email/voucher", obj)
       .then((response) => {})
       .catch((error) => {
+        console.log(error);
         handleOpenAlertVariant("Đã xảy ra lỗi", Notistack.ERROR);
       });
   };

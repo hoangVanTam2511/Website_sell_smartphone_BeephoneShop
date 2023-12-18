@@ -22,6 +22,7 @@ import { Notistack } from "../order-manager/enum";
 import axios from "axios";
 import { format } from "date-fns";
 import { request, requestParam } from "../../../store/helpers/axios_helper";
+import { current } from "@reduxjs/toolkit";
 
 const Transaction = () => {
   const [form] = useForm();
@@ -119,7 +120,8 @@ const Transaction = () => {
   const handleSearchTypeTransaction = (event) => {
     const selectedValue = event.target.value;
     setSearchLoaiThanhToan(selectedValue);
-    setCurrentPage(1);
+    if (loadDataListTransaction(currentPage) === null)
+      setCurrentPage(totalPages);
   };
 
   const handleSearchFormTransaction = (event) => {
