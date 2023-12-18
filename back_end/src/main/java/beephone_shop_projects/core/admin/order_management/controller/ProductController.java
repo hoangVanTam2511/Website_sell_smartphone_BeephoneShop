@@ -1,9 +1,11 @@
 package beephone_shop_projects.core.admin.order_management.controller;
 
 import beephone_shop_projects.core.admin.order_management.model.request.ProductItemConfigurationsRequest;
+import beephone_shop_projects.core.admin.order_management.model.request.SearchFilterProductDto;
 import beephone_shop_projects.core.admin.order_management.model.request.SearchFilterProductItemDto;
 import beephone_shop_projects.core.admin.order_management.model.response.product_response.ProductCustomResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.product_response.ProductItemResponse;
+import beephone_shop_projects.core.admin.order_management.model.response.product_response.ProductResponse;
 import beephone_shop_projects.core.admin.order_management.repository.ProductCustomRepository;
 import beephone_shop_projects.core.admin.order_management.repository.ProductItemCustomRepository;
 import beephone_shop_projects.core.admin.order_management.repository.ProductItemRepository;
@@ -60,6 +62,11 @@ public class ProductController {
 
   @Autowired
   private ModelMapper modelMapper;
+
+  @GetMapping("/products/page")
+  public ResponseEntity<?> home1012(@ModelAttribute SearchFilterProductDto searchFilter) {
+    return new ResponseEntity<>(productService.findAllProducts(searchFilter), HttpStatus.OK);
+  }
 
   @GetMapping("/product-items/page")
     public ResponsePage home101(@ModelAttribute SearchFilterProductItemDto searchFilter) {

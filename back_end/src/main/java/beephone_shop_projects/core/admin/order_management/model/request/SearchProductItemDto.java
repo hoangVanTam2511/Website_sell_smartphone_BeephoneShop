@@ -7,9 +7,11 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
-public class SearchProductDto {
+public class SearchProductItemDto {
 
   private String ma;
+
+  private BigDecimal soLuongTonKho;
 
   private String tenSanPham;
 

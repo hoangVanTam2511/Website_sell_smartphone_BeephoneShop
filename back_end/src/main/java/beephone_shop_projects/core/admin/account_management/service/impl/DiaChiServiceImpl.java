@@ -201,13 +201,13 @@ public class DiaChiServiceImpl implements DiaChiService {
 
     @Override
     public DiaChi getOneDiaChi(String ma) {
-        Optional<DiaChi>  optional=diaChiRepository.findByMa(ma);
+        Optional<DiaChi>  optional=diaChiRepository.findById(ma);
         return optional.get();
     }
 
     @Override
     public DiaChi searchDiaChi(String id) {
-        return diaChiRepository.findByMa(id).get();
+        return diaChiRepository.findById(id).get();
     }
 
     @Override

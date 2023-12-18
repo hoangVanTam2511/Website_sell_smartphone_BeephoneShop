@@ -9,9 +9,11 @@ import beephone_shop_projects.core.admin.order_management.model.request.ProductI
 import beephone_shop_projects.core.admin.order_management.model.request.ProductItemCustomRequest;
 import beephone_shop_projects.core.admin.order_management.model.request.ProductItemImeiRequest;
 import beephone_shop_projects.core.admin.order_management.model.request.ProductRequest;
+import beephone_shop_projects.core.admin.order_management.model.request.SearchFilterProductDto;
 import beephone_shop_projects.core.admin.order_management.model.response.product_response.ProductCustomResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.product_response.ProductItemCustomResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.product_response.ProductResponse;
+import beephone_shop_projects.core.admin.order_management.model.response.product_response.ProductsResponse;
 import beephone_shop_projects.core.admin.order_management.repository.CameraSauDienThoaiRepository;
 import beephone_shop_projects.core.admin.order_management.repository.CameraSauRepository;
 import beephone_shop_projects.core.admin.order_management.repository.CameraTruocDienThoaiRepository;
@@ -22,6 +24,8 @@ import beephone_shop_projects.core.admin.order_management.repository.impl.Produc
 import beephone_shop_projects.core.admin.order_management.repository.impl.ProductRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.repository.impl.TheSimDienThoaiRepositoryImpl;
 import beephone_shop_projects.core.admin.order_management.service.ProductService;
+import beephone_shop_projects.core.common.base.PageableResponse;
+import beephone_shop_projects.core.common.base.ResponsePage;
 import beephone_shop_projects.entity.CameraSau;
 import beephone_shop_projects.entity.CameraSauDienThoai;
 import beephone_shop_projects.entity.CameraTruoc;
@@ -36,6 +40,9 @@ import beephone_shop_projects.entity.TheSimDienThoai;
 import beephone_shop_projects.utils.BarcodeGenerator;
 import com.google.zxing.BarcodeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -186,5 +193,68 @@ public class ProductServiceImpl extends AbstractServiceImpl<SanPham, ProductResp
     }
 
     return response;
+  }
+
+  @Override
+  public ResponsePage<ProductsResponse> findAllProducts(SearchFilterProductDto searchFilter) {
+    if (searchFilter.getKeyword() == null) {
+      searchFilter.setKeyword("");
+    }
+    if (searchFilter.getCurrentPage() == null) {
+      searchFilter.setCurrentPage(1);
+    }
+    if (searchFilter.getPageSize() == null) {
+      searchFilter.setPageSize(10);
+    }
+    Pageable pageable = PageRequest.of(searchFilter.getCurrentPage() - 1, searchFilter.getPageSize());
+
+    Page<SanPham> pageProducts = productRepositoryImpl.findProductByMultipleWithPagination(pageable, searchFilter);
+    List<ProductsResponse> data = new ArrayList<>();
+
+    for (SanPham product : pageProducts.getContent()) {
+      ProductsResponse productsResponse = new ProductsResponse();
+      productsResponse.setId(product.getId());
+      productsResponse.setMa(product.getMa());
+      productsResponse.setTenSanPham(product.getTenSanPham());
+      productsResponse.setOperatingType(product.getOperatingType());
+      productsResponse.setHang(product.getHang());
+      productsResponse.setTrangThai(product.getTrangThai());
+
+      String urlImage = "";
+      int quantityVerison = product.getProductItems().size();
+      int quantityImei = 0;
+
+      for (SanPhamChiTiet productItem : product.getProductItems()) {
+        quantityImei += productItem.getImeis().size();
+      }
+
+      List<SanPhamChiTiet> findProductItemById = productItemRepositoryImpl.findByIdProductItem(product.getId());
+
+      if (findProductItemById != null && findProductItemById.size() > 0) {
+        SanPhamChiTiet sanPhamChiTiet = findProductItemById.get(0);
+        if (sanPhamChiTiet.getImage() != null) {
+          urlImage = sanPhamChiTiet.getImage().getPath();
+        }
+      }
+
+      productsResponse.setQuantityInstock(quantityImei);
+      productsResponse.setQuantityVersion(quantityVerison);
+      productsResponse.setUrlImage(urlImage);
+
+      data.add(productsResponse);
+
+    }
+
+    PageableResponse pageableResponse = new PageableResponse();
+    pageableResponse.setCurrentPage(pageable.getPageNumber());
+    pageableResponse.setPageSize(pageable.getPageSize());
+
+    ResponsePage<ProductsResponse> pageResponse = new ResponsePage<>();
+    pageResponse.setData(data);
+    pageResponse.setCode(200);
+    pageResponse.setMessage("Success");
+    pageResponse.setPageable(pageableResponse);
+
+    return pageResponse;
   }
 }

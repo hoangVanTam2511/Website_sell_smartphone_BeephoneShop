@@ -29,6 +29,6 @@ public interface DiaChiRepository extends IDiaChiRepository {
 //    @Query(value = """
 //                SELECT  kh FROM DiaChi kh where kh.ma=:id
 //            """)
-    Optional<DiaChi> findByMa(String ma);
+    Optional<DiaChi> findById(String id);
     DiaChi findByAccount_Id(String id);
 }

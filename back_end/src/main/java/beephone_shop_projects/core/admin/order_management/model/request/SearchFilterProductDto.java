@@ -9,7 +9,11 @@ import java.util.List;
 
 @Getter
 @Setter
-public class SearchFilterProductItemDto {
+public class SearchFilterProductDto {
+
+  private Integer state;
+
+  private String sort;
 
   private Integer currentPage;
 
@@ -25,16 +29,8 @@ public class SearchFilterProductItemDto {
 
   private List<String> chips;
 
-  private List<String> rams;
-
-  private List<String> roms;
-
   private List<String> manHinhs;
 
   private List<String> pins;
-
-  private BigDecimal fromPrice;
-
-  private BigDecimal toPrice;
 
 }
