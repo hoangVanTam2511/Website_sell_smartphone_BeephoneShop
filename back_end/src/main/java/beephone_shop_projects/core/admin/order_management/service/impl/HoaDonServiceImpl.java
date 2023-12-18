@@ -586,6 +586,11 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
           });
         }
         imeiChuaBanCustomRepository.deleteAll(cartItem.getImeisChuaBan());
+        Voucher voucher = convertOrder.getVoucher();
+        if (voucher != null){
+          voucher.setSoLuong(voucher.getSoLuong() + 1);
+          voucherRepository.save(voucher);
+        }
 //        SanPhamChiTiet productItem = cartItem.getSanPhamChiTiet();
 //        productItem.setSoLuongTonKho(productItem.getSoLuongTonKho() + cartItem.getSoLuong());
 //        productItemsToUpdate.add(productItem);

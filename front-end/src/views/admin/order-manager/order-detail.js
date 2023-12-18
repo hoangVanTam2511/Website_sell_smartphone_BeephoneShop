@@ -58,6 +58,7 @@ const OrderDetail = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
 
+  const [vouchersActive, setVouchersActive] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isRefund, setIsRefund] = useState(false);
   const [order, setOrder] = useState({});
@@ -95,6 +96,17 @@ const OrderDetail = (props) => {
   const filteredItems = orderHistories.filter((item) =>
     [1, 3, 4].includes(item.loaiThaoTac)
   );
+
+  const getVouchersIsActiveAll = () => {
+    request("GET", `/voucher/voucherActive/all`, {
+    })
+      .then((response) => {
+        setVouchersActive(response.data.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
   const largestItem =
     filteredItems &&
     filteredItems.sort((a, b) => b.loaiThaoTac - a.loaiThaoTac)[0];
@@ -444,7 +456,6 @@ const OrderDetail = (props) => {
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
   );
 
-
   const orderImeis = orderItems.map((order) => {
     return order.imeisDaBan.map((item) => {
       return {
@@ -460,6 +471,7 @@ const OrderDetail = (props) => {
     getOrderItemsById();
     // getAllProducts();
     getCustomers();
+    getVouchersIsActiveAll();
     if (stompClient === null) {
       connect();
     }

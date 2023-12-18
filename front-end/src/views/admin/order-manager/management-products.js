@@ -510,8 +510,8 @@ const ManagementProducts = () => {
             <div className="header-title">
               <TextField
                 label="Tìm kiếm sản phẩm theo mã, tên"
-                // onChange={handleGetValueFromInputTextField}
-                // value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+                value={keyword}
                 InputLabelProps={{
                   sx: {
                     marginTop: "",

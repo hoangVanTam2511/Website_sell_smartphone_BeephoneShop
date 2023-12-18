@@ -26,9 +26,13 @@ public interface ProductItemCustomRepository extends ISanPhamChiTietRepository {
   List<SanPhamChiTiet> getProducts();
 
   @Query("""
-                select P from SanPhamChiTiet P
+                select distinct P from SanPhamChiTiet P
+                left join fetch P.imeis
+                left join fetch P.ram
+                left join fetch P.rom
+                left join fetch P.mauSac
+                left join fetch P.image
                 left join fetch P.sanPham S
-                left join fetch S.theNho
                 left join fetch S.theSims
                 left join fetch S.pin
                 left join fetch S.manHinh
