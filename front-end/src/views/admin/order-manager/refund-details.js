@@ -1095,11 +1095,7 @@ const RefundDetail = () => {
       orderItemRefunds: orderRefunds,
       tongTien: totalRefundFinal(),
       id: order.id,
-      amount: totalSizeRefundFinal().toLocaleString("vi-VN", {
-        style: "currency",
-        currency: "VND",
-      }) ||
-        0,
+      amount: totalSizeRefundFinal(),
       createdByRefund: userId,
       ghiChu: note,
     };

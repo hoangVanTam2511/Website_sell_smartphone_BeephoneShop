@@ -179,6 +179,7 @@ const PointOfSales = () => {
   const [idVoucher, setIdVoucher] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [vouchers, setVouchers] = useState([]);
+  const [vouchersActive, setVouchersActive] = useState([]);
   const [order, setOrder] = useState({});
   const [cartId, setCartId] = useState("");
   const [orders, setOrders] = useState([]);
@@ -971,15 +972,32 @@ const PointOfSales = () => {
     setDieuKien(dieuKien);
   };
 
+  //   useEffect(() => {
+  //     if (order.cart?.cartItems?.length > 0) {
+  //   const validVouchers = vouchers.filter(item => handleCountTotalMoney() >= item.dieuKienApDung);
+  //   const sortedVouchers = validVouchers.sort((a, b) => b.giaTriVoucher - a.giaTriVoucher);
+  //   const maxVoucher = sortedVouchers[0];
+  //   if (maxVoucher) {
+  //     console.log(order.cart.cartItems.length);
+  //     console.log(maxVoucher);
+  //     handleCheckVoucher(maxVoucher.ma);
+  //   }
+  // }
+  //   }, [])
+
   useEffect(() => {
-    const validVouchers = vouchers.filter(item => handleCountTotalMoney() >= item.dieuKienApDung);
+    const validVouchers = vouchersActive.filter(item => handleCountTotalMoney() >= item.dieuKienApDung);
     const sortedVouchers = validVouchers.sort((a, b) => b.giaTriVoucher - a.giaTriVoucher);
+    const maxVoucher = sortedVouchers[0];
     if (cartItems.length === 0 && discountValue != 0) {
       handleCheckVoucher(discount);
     } else if (cartItems.length !== 0) {
       if (discount != "" && discountValue == 0) {
-        if (discount.trim().length === 10) {
+        if (discount.trim().length === 10 && !maxVoucher) {
           handleCheckVoucher(discount);
+        }
+        else {
+          handleCheckVoucher(maxVoucher.ma);
         }
       } else if (discount != "" && discountValue != 0) {
         if (handleCountTotalMoney() < dieuKien) {
@@ -999,7 +1017,7 @@ const PointOfSales = () => {
         }
       }
     }
-  }, [changedCartItems]);
+  }, [changedCartItems, cartItems]);
 
   const paymentOrder = async (data) => {
     setIsLoading(true);
@@ -1311,6 +1329,8 @@ const PointOfSales = () => {
   const userId = getUser().id;
 
   const processingPaymentOrder = () => {
+    const currentTime = new Date();
+    currentTime.setSeconds(currentTime.getSeconds() - 2);
     console.log(userId);
     if (cartItems && cartItems.length > 0) {
       const statusOrder = delivery
@@ -1336,7 +1356,7 @@ const PointOfSales = () => {
           thaoTac: "Thanh Toán Thành Công",
           loaiThaoTac: 6,
           moTa: "Khách hàng đã thanh toán đơn hàng",
-          createdAt: new Date(new Date().getTime() - 2000), // Giảm 2 giây so với thời gian hiện tại
+          createdAt: currentTime,
           createdBy: userId,
           hoaDon: {
             id: order.id,
@@ -1360,7 +1380,7 @@ const PointOfSales = () => {
           thaoTac: "Chờ Giao Hàng",
           loaiThaoTac: 1,
           moTa: "Thông tin đơn hàng đã được xác nhận bởi nhân viên và đang trong quá trình chờ giao hàng",
-          createdAt: new Date(new Date().getTime() - 2000), // Giảm 2 giây so với thời gian hiện tại
+          createdAt: currentTime,
           createdBy: userId,
           hoaDon: {
             id: order.id,
@@ -1550,6 +1570,7 @@ const PointOfSales = () => {
         const indexTab = data.indexOf(order);
         setValueTabs(indexTab + 1);
 
+
         if (order.loaiHoaDon === OrderTypeString.DELIVERY) {
           setCustomerNameShip(
             order.loaiHoaDon === OrderTypeString.DELIVERY &&
@@ -1599,7 +1620,7 @@ const PointOfSales = () => {
         setSdt(order.soDienThoai != null ? order.soDienThoai : "");
         setFullName(order.hoVaTen != null ? order.hoVaTen : "");
 
-        console.log((order && order.cart.id) || "");
+        console.log((order && order.cart.cartItems.length) || 0);
         setOrder(order);
         // setShipFee(order && order.phiShip || 0);
         setDelivery(
@@ -1730,6 +1751,17 @@ const PointOfSales = () => {
   };
 
   const [totalPagesVoucher, setTotalPagesVoucher] = useState();
+
+  const getVouchersIsActiveAll = () => {
+    request("GET", `/voucher/voucherActive/all`, {
+    })
+      .then((response) => {
+        setVouchersActive(response.data.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
   const getVouchersIsActive = (page, keyword) => {
     request("GET", `/voucher/voucherActive`, {
@@ -2379,6 +2411,7 @@ const PointOfSales = () => {
     }
     getAllCustomers();
     getVouchersIsActive();
+    getVouchersIsActiveAll();
   }, []);
 
   const [openModalConfirmRedirectPayment, setOpenModalConfirmRedirectPayment] =
