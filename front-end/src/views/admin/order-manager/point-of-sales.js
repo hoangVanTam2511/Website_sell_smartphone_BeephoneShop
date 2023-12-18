@@ -86,6 +86,7 @@ import Html5QrcodePlugin from "./Html5QrcodePlugin";
 import { PrintBillAtTheCounter, PrintBillAtTheCounterAuto } from "./printer-invoice";
 import { useReactToPrint } from "react-to-print";
 import { request, requestBodyParam, requestParam } from "../../../store/helpers/axios_helper";
+import { getUser } from "../../../store/user/userSlice";
 
 const IOSSwitch = styled((props) => (
   <Switch focusVisibleClassName=".Mui-focusVisible" disableRipple {...props} />
@@ -1307,7 +1308,7 @@ const PointOfSales = () => {
   //   }
   // };
 
-  const userId = useSelector(state => state.user.user.id);
+  const userId = getUser().id;
 
   const processingPaymentOrder = () => {
     console.log(userId);

@@ -36,6 +36,7 @@ import {
 } from "./AlertDialogSlide";
 import { ref, updateMetadata } from "firebase/storage";
 import { useSelector } from "react-redux";
+import { getUser } from "../../../store/user/userSlice";
 const RefundDetail = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -50,7 +51,7 @@ const RefundDetail = () => {
   const [totalDiscount, setTotalDiscount] = useState(0);
   const [codeDiscount, setCodeDiscount] = useState("");
 
-  const userId = useSelector(state => state.user.user.id);
+  const userId = getUser().id;
 
   const getOrderItemsById = async () => {
     await axios
@@ -1095,10 +1096,10 @@ const RefundDetail = () => {
       tongTien: totalRefundFinal(),
       id: order.id,
       amount: totalSizeRefundFinal().toLocaleString("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                    }) ||
-                    0,
+        style: "currency",
+        currency: "VND",
+      }) ||
+        0,
       createdByRefund: userId,
       ghiChu: note,
     };

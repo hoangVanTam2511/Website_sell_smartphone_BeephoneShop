@@ -7,7 +7,7 @@ export const loginUser = createAsyncThunk('user/login', async data => {
     id: '',
     ma: ''
   }
- request("POST", "/client/account/login", data)
+  request("POST", "/client/account/login", data)
     .then(res => {
       if (res.status === 200) {
         setAuthHeader(res.data.token)
@@ -30,7 +30,7 @@ export const getUser = () => {
 export const changeInformationUser = createAsyncThunk(
   'user/changeInformationUser',
   async data => {
-    localStorage.setItem('user',  JSON.stringify(data))
+    localStorage.setItem('user', JSON.stringify(data))
     return data
   }
 )

@@ -50,6 +50,7 @@ import SockJS from "sockjs-client";
 import PrinterInvoice, { Print, PrintDelivery } from "./printer-invoice";
 import { useSelector } from "react-redux";
 import { request } from '../../../store/helpers/axios_helper'
+import { getUser } from "../../../store/user/userSlice";
 
 var stompClient = null;
 const OrderDetail = (props) => {
@@ -82,7 +83,7 @@ const OrderDetail = (props) => {
   const [openScanner, setOpenScanner] = useState(false);
   const [scannerRef, setScannerRef] = useState([]);
 
-  const userId = useSelector((state) => state.user.user.id);
+  const userId = getUser().id;
 
   const handleOpenScanner = () => {
     setOpenScanner(true);
