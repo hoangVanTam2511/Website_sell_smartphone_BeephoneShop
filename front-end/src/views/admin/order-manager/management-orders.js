@@ -1,9 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  Link,
-  useNavigate,
-  useSearchParams,
-} from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Empty, Table } from "antd";
 import {
   FormControl,
@@ -31,7 +27,9 @@ import { over } from "stompjs";
 import SockJS from "sockjs-client";
 import { FaPencilAlt } from "react-icons/fa";
 import * as dayjs from "dayjs";
-import { request, requestParam } from '../../../store/helpers/axios_helper'
+import { request, requestParam } from "../../../store/helpers/axios_helper";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHouse } from "@fortawesome/free-solid-svg-icons";
 
 const ManagementOrders = () => {
   const navigate = useNavigate();
@@ -106,7 +104,7 @@ const ManagementOrders = () => {
   };
 
   const findOrdersByMultipleCriteriaWithPagination = (page) => {
-    requestParam('GET', `/api/orders`, {
+    requestParam("GET", `/api/orders`, {
       currentPage: page,
       keyword: keyword,
       fromDate: fromDate,
@@ -116,8 +114,7 @@ const ManagementOrders = () => {
       type: type,
       state: state,
       pageSize: size,
-    },
-    )
+    })
       .then((response) => {
         setOrders(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -138,7 +135,17 @@ const ManagementOrders = () => {
       connect();
     }
     findOrdersByMultipleCriteriaWithPagination(currentPage);
-  }, [fromDate, toDate, keyword, currentPage, type, sort, size, state, changeOfRealtime]);
+  }, [
+    fromDate,
+    toDate,
+    keyword,
+    currentPage,
+    type,
+    sort,
+    size,
+    state,
+    changeOfRealtime,
+  ]);
 
   const handleRefreshData = () => {
     navigate(`/dashboard/management-orders`);
@@ -253,19 +260,24 @@ const ManagementOrders = () => {
       title: "Khách Hàng",
       align: "center",
       width: "10%",
-      render: (text, order) =>
-        <span style={{/*  textOverflow: "ellipsis", maxWidth: "300px", whiteSpace: "normal" */ }}>
-          {
-            order.account === null &&
-              order.loaiHoaDon === OrderTypeString.AT_COUNTER
-              ? order.hoVaTen
-              : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
-                order.account &&
-                order.account.hoVaTen
-                ? order.account.hoVaTen
-                : order.tenNguoiNhan
+      render: (text, order) => (
+        <span
+          style={
+            {
+              /*  textOverflow: "ellipsis", maxWidth: "300px", whiteSpace: "normal" */
+            }
           }
+        >
+          {order.account === null &&
+          order.loaiHoaDon === OrderTypeString.AT_COUNTER
+            ? order.hoVaTen
+            : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
+              order.account &&
+              order.account.hoVaTen
+            ? order.account.hoVaTen
+            : order.tenNguoiNhan}
         </span>
+      ),
     },
     {
       title: "Số Điện Thoại",
@@ -274,13 +286,13 @@ const ManagementOrders = () => {
       render: (text, order) => (
         <span style={{ fontWeight: "400" }}>
           {order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
-            order.account === null
+          order.account === null
             ? order.soDienThoai
             : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
               order.account &&
               order.account.soDienThoai
-              ? order.account.soDienThoai
-              : order.soDienThoaiNguoiNhan}
+            ? order.account.soDienThoai
+            : order.soDienThoaiNguoiNhan}
         </span>
       ),
     },
@@ -490,8 +502,14 @@ const ManagementOrders = () => {
         }}
       >
         <Card className="">
+          <span
+            className="header-title mt-3 ms-4"
+            style={{ fontWeight: "500px" }}
+          >
+            <FontAwesomeIcon icon={faHouse} size={"sm"} /> Quản Lý Đơn Hàng
+          </span>
           <Card.Header className="d-flex justify-content-between">
-            <div className="header-title mt-2">
+            <div className="header-title">
               <TextField
                 label="Tìm đơn hàng"
                 onChange={handleGetValueFromInputTextField}
@@ -639,10 +657,19 @@ const ManagementOrders = () => {
                   value={state}
                   onChange={(e) => {
                     setState(e.target.value);
-                    searchParams.set("orderStatus", state === 0 ? OrderStatusString.PENDING_CONFIRM
-                      : state === 1 ? OrderStatusString.CONFIRMED : state === 3 ? OrderStatusString.DELIVERING
-                        : state === 4 ? "COMPLETE" : OrderStatusString.CANCELLED);
-                    setSearchParams(searchParams)
+                    searchParams.set(
+                      "orderStatus",
+                      state === 0
+                        ? OrderStatusString.PENDING_CONFIRM
+                        : state === 1
+                        ? OrderStatusString.CONFIRMED
+                        : state === 3
+                        ? OrderStatusString.DELIVERING
+                        : state === 4
+                        ? "COMPLETE"
+                        : OrderStatusString.CANCELLED
+                    );
+                    setSearchParams(searchParams);
                   }}
                 >
                   <MenuItem className="" value={10}>
@@ -706,8 +733,14 @@ const ManagementOrders = () => {
                   defaultValue={10}
                   value={type}
                   onChange={(e) => {
-                    setType(e.target.value); searchParams.set("orderType", type === 0 ? OrderTypeString.AT_COUNTER : OrderTypeString.DELIVERY);
-                    setSearchParams(searchParams)
+                    setType(e.target.value);
+                    searchParams.set(
+                      "orderType",
+                      type === 0
+                        ? OrderTypeString.AT_COUNTER
+                        : OrderTypeString.DELIVERY
+                    );
+                    setSearchParams(searchParams);
                   }}
                 >
                   <MenuItem className="" value={10}>
@@ -768,8 +801,9 @@ const ManagementOrders = () => {
                   defaultValue={"default"}
                   value={sort}
                   onChange={(e) => {
-                    setSort(e.target.value); searchParams.set("sortType", sort);
-                    setSearchParams(searchParams)
+                    setSort(e.target.value);
+                    searchParams.set("sortType", sort);
+                    setSearchParams(searchParams);
                   }}
                 >
                   <MenuItem className="" value={"default"}>
@@ -830,8 +864,9 @@ const ManagementOrders = () => {
                   defaultValue={10}
                   value={size}
                   onChange={(e) => {
-                    setSize(e.target.value); searchParams.set("pageSize", size);
-                    setSearchParams(searchParams)
+                    setSize(e.target.value);
+                    searchParams.set("pageSize", size);
+                    setSearchParams(searchParams);
                   }}
                 >
                   <MenuItem className="" value={10}>

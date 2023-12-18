@@ -23,6 +23,7 @@ import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDown
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowsRotate,
+  faHouse,
   faPenToSquare,
 } from "@fortawesome/free-solid-svg-icons";
 import ExcelExportHelper from "../khachhang/ExcelExportHelper";
@@ -344,8 +345,14 @@ const HienThiKH = () => {
           }}
         >
           <Card className="">
+            <span
+              className="header-title mt-3 ms-4"
+              style={{ fontWeight: "500px" }}
+            >
+              <FontAwesomeIcon icon={faHouse} size={"sm"} /> Quản Lý Khách Hàng
+            </span>
             <Card.Header className="d-flex justify-content-between">
-              <div className="header-title mt-2">
+              <div className="header-title">
                 <TextField
                   label="Tìm khách hàng"
                   value={searchText}

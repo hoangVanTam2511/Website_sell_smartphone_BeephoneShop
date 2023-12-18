@@ -142,3 +142,13 @@ export const StatusImei = {
   CANCELLED: "CANCELLED",
   IN_ACTIVE: "IN_ACTIVE",
 };
+
+export const StatusImeiNumber = {
+  IN_THE_CART: 0,
+  SOLD: 1,
+  NOT_SOLD: 2,
+  PENDING_DELIVERY: 3,
+  REFUND: 4,
+  CANCELLED: 5,
+  IN_ACTIVE: 6,
+};

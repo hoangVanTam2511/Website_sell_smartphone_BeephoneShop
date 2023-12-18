@@ -3,6 +3,8 @@ import {
   StatusCommonProductsNumber,
   StatusDiscount,
   StatusDiscountNumber,
+  StatusImei,
+  StatusImeiNumber,
   TypeCamera,
   TypeCameraNumber,
   TypeDiscountNumber,
@@ -65,6 +67,38 @@ export const ConvertStatusProductsNumberToString = (EnumNumber) => {
       break;
     case StatusCommonProductsNumber.IN_ACTIVE:
       statusNumber = StatusCommonProducts.IN_ACTIVE;
+      break;
+    default:
+      statusNumber = ""; // Nếu giá trị không khớp với bất kỳ trạng thái nào.
+  }
+
+  return statusNumber;
+};
+
+export const ConvertStatusImeisNumberToString = (EnumNumber) => {
+  let statusNumber;
+
+  switch (EnumNumber) {
+    case StatusImeiNumber.IN_THE_CART:
+      statusNumber = StatusImei.IN_THE_CART;
+      break;
+    case StatusImeiNumber.SOLD:
+      statusNumber = StatusImei.SOLD;
+      break;
+    case StatusImeiNumber.NOT_SOLD:
+      statusNumber = StatusImei.NOT_SOLD;
+      break;
+    case StatusImeiNumber.PENDING_DELIVERY:
+      statusNumber = StatusImei.PENDING_DELIVERY;
+      break;
+    case StatusImeiNumber.REFUND:
+      statusNumber = StatusImei.REFUND;
+      break;
+    case StatusImeiNumber.CANCELLED:
+      statusNumber = StatusImei.CANCELLED;
+      break;
+    case StatusImeiNumber.IN_ACTIVE:
+      statusNumber = StatusImei.IN_ACTIVE;
       break;
     default:
       statusNumber = ""; // Nếu giá trị không khớp với bất kỳ trạng thái nào.

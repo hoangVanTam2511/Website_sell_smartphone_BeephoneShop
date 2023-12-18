@@ -52,6 +52,7 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
     // Load data when the component mounts
     getDoPhanGiai();
   }, []);
+
   const getDoPhanGiai = () => {
     axios
       .get(apiURLDoPhanGiai)
@@ -59,7 +60,7 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
         setListPhanGiai(response.data.data);
       })
       .catch((error) => {});
-  }, []);
+  };
 
   const [formSubmitDPG, setFormSubmitDPG] = useState(false);
   const [formSubmitMH, setFormSubmitMH] = useState(false);

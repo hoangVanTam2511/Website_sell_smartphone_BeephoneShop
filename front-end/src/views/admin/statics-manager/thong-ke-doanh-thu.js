@@ -144,143 +144,143 @@ const ThongKeDoanhThu = () => {
     }).format(number);
   };
 
-  const [numberOfDays, setNumberOfDays] = useState(10);
-  const [chartData, setChartData] = useState({});
-  const currentDate = new Date();
+  // const [numberOfDays, setNumberOfDays] = useState(10);
+  // const [chartData, setChartData] = useState({});
+  // const currentDate = new Date();
 
-  const daysInMonth = new Date(
-    currentDate.getFullYear(),
-    currentDate.getMonth() + 1,
-    0
-  ).getDate();
+  // const daysInMonth = new Date(
+  //   currentDate.getFullYear(),
+  //   currentDate.getMonth() + 1,
+  //   0
+  // ).getDate();
 
-  const allDaysInMonth = Array.from(
-    { length: daysInMonth },
-    (_, index) => index + 1
-  );
+  // const allDaysInMonth = Array.from(
+  //   { length: daysInMonth },
+  //   (_, index) => index + 1
+  // );
 
-  const formattedDays = allDaysInMonth.map((day) => {
-    const formattedDay = day < 10 ? `0${day}` : `${day}`;
-    const formattedMonth =
-      currentDate.getMonth() + 1 < 10
-        ? `0${currentDate.getMonth() + 1}`
-        : `${currentDate.getMonth() + 1}`;
-    return `${currentDate.getFullYear()}-${formattedMonth}-${formattedDay}`;
-  });
+  // const formattedDays = allDaysInMonth.map((day) => {
+  //   const formattedDay = day < 10 ? `0${day}` : `${day}`;
+  //   const formattedMonth =
+  //     currentDate.getMonth() + 1 < 10
+  //       ? `0${currentDate.getMonth() + 1}`
+  //       : `${currentDate.getMonth() + 1}`;
+  //   return `${currentDate.getFullYear()}-${formattedMonth}-${formattedDay}`;
+  // });
 
-  const fetchData = (numberOfDays) => {
-    const sanPhamPromise = request("GET", `/thong-ke/san-pham-khoang-ngay`, {
-      params: {
-        date1: searchNgayBatDau,
-        date2: searchNgayKetThuc,
-      },
-    });
+  // const fetchData = (numberOfDays) => {
+  //   const sanPhamPromise = request("GET", `/thong-ke/san-pham-khoang-ngay`, {
+  //     params: {
+  //       date1: searchNgayBatDau,
+  //       date2: searchNgayKetThuc,
+  //     },
+  //   });
 
-    const donHangPromise = request("GET", `/thong-ke/don-hang-khoang-ngay`, {
-      params: {
-        date1: searchNgayBatDau,
-        date2: searchNgayKetThuc,
-      },
-    });
-    Promise.all([sanPhamPromise, donHangPromise])
-      .then(([sanPhamResponse, donHangResponse]) => {
-        const sanPhamData = sanPhamResponse.data;
-        const donHangData = donHangResponse.data;
+  //   const donHangPromise = request("GET", `/thong-ke/don-hang-khoang-ngay`, {
+  //     params: {
+  //       date1: searchNgayBatDau,
+  //       date2: searchNgayKetThuc,
+  //     },
+  //   });
+  //   Promise.all([sanPhamPromise, donHangPromise])
+  //     .then(([sanPhamResponse, donHangResponse]) => {
+  //       const sanPhamData = sanPhamResponse.data;
+  //       const donHangData = donHangResponse.data;
 
-        const availableDays = [
-          ...new Set([
-            ...sanPhamData.map((item) => item.ngayTao),
-            ...donHangData.map((item) => item.ngayTao),
-          ]),
-        ];
+  //       const availableDays = [
+  //         ...new Set([
+  //           ...sanPhamData.map((item) => item.ngayTao),
+  //           ...donHangData.map((item) => item.ngayTao),
+  //         ]),
+  //       ];
 
-        // Kết hợp dữ liệu của sanPhamData và donHangData
-        const combinedData = formattedDays.map((day) => {
-          const sanPhamItem = sanPhamData.find((item) => item.ngayTao === day);
-          const donHangItem = donHangData.find((item) => item.ngayTao === day);
+  //       // Kết hợp dữ liệu của sanPhamData và donHangData
+  //       const combinedData = formattedDays.map((day) => {
+  //         const sanPhamItem = sanPhamData.find((item) => item.ngayTao === day);
+  //         const donHangItem = donHangData.find((item) => item.ngayTao === day);
 
-          return {
-            ngayTao: day,
-            soLuongSanPham: sanPhamItem ? sanPhamItem.soLuong : 0,
-            soLuongDonHang: donHangItem ? donHangItem.soLuong : 0,
-          };
-        });
+  //         return {
+  //           ngayTao: day,
+  //           soLuongSanPham: sanPhamItem ? sanPhamItem.soLuong : 0,
+  //           soLuongDonHang: donHangItem ? donHangItem.soLuong : 0,
+  //         };
+  //       });
 
-        // Tạo dữ liệu cho biểu đồ
-        const labels = combinedData.map((item) => item.ngayTao);
-        const dataSanPham = combinedData.map((item) => item.soLuongSanPham);
-        const dataDonHang = combinedData.map((item) => item.soLuongDonHang);
+  //       // Tạo dữ liệu cho biểu đồ
+  //       const labels = combinedData.map((item) => item.ngayTao);
+  //       const dataSanPham = combinedData.map((item) => item.soLuongSanPham);
+  //       const dataDonHang = combinedData.map((item) => item.soLuongDonHang);
 
-        const truncatedData = combinedData.slice(-numberOfDays);
-        const truncatedLabels = labels.slice(-numberOfDays);
-        const truncatedDataSanPham = dataSanPham.slice(-numberOfDays);
-        const truncatedDataDonHang = dataDonHang.slice(-numberOfDays);
+  //       const truncatedData = combinedData.slice(-numberOfDays);
+  //       const truncatedLabels = labels.slice(-numberOfDays);
+  //       const truncatedDataSanPham = dataSanPham.slice(-numberOfDays);
+  //       const truncatedDataDonHang = dataDonHang.slice(-numberOfDays);
 
-        const filteredData = combinedData.filter((item) =>
-          availableDays.includes(item.ngayTao)
-        );
+  //       const filteredData = combinedData.filter((item) =>
+  //         availableDays.includes(item.ngayTao)
+  //       );
 
-        // Cập nhật biểu đồ
-        setChartData({
-          labels: truncatedLabels,
-          datasets: [
-            {
-              label: "Số lượng đơn hàng",
-              data: truncatedDataDonHang,
-              backgroundColor: "#2f80ed",
-              borderColor: "#2f80ed",
-              borderWidth: 1,
-            },
-            {
-              label: "Sản phẩm",
-              data: truncatedDataSanPham,
-              backgroundColor: "#ff7b00",
-              borderColor: "#ff7b00",
-              borderWidth: 1,
-            },
-          ],
-        });
-      })
-      .catch((error) => {
-        // Xử lý lỗi nếu có
-      });
-  };
+  //       // Cập nhật biểu đồ
+  //       setChartData({
+  //         labels: truncatedLabels,
+  //         datasets: [
+  //           {
+  //             label: "Số lượng đơn hàng",
+  //             data: truncatedDataDonHang,
+  //             backgroundColor: "#2f80ed",
+  //             borderColor: "#2f80ed",
+  //             borderWidth: 1,
+  //           },
+  //           {
+  //             label: "Sản phẩm",
+  //             data: truncatedDataSanPham,
+  //             backgroundColor: "#ff7b00",
+  //             borderColor: "#ff7b00",
+  //             borderWidth: 1,
+  //           },
+  //         ],
+  //       });
+  //     })
+  //     .catch((error) => {
+  //       // Xử lý lỗi nếu có
+  //     });
+  // };
 
-  useEffect(() => {
-    fetchData(numberOfDays);
-  }, [numberOfDays, searchNgayBatDau, searchNgayKetThuc]);
+  // useEffect(() => {
+  //   fetchData(numberOfDays);
+  // }, [numberOfDays, searchNgayBatDau, searchNgayKetThuc]);
 
-  useEffect(() => {
-    const ctx = document.getElementById("mixedChart");
+  // useEffect(() => {
+  //   const ctx = document.getElementById("mixedChart");
 
-    let chartRef = null;
-    if (ctx) {
-      chartRef = new Chart(ctx, {
-        type: "bar",
-        data: chartData,
-        options: {
-          indexAxis: "x",
-          plugins: {
-            datalabels: {
-              anchor: "end",
-              align: "end",
-            },
-          },
-        },
-      });
-    }
+  //   let chartRef = null;
+  //   if (ctx) {
+  //     chartRef = new Chart(ctx, {
+  //       type: "bar",
+  //       data: chartData,
+  //       options: {
+  //         indexAxis: "x",
+  //         plugins: {
+  //           datalabels: {
+  //             anchor: "end",
+  //             align: "end",
+  //           },
+  //         },
+  //       },
+  //     });
+  //   }
 
-    return () => {
-      if (chartRef) {
-        chartRef.destroy();
-      }
-    };
-  }, [chartData]);
+  //   return () => {
+  //     if (chartRef) {
+  //       chartRef.destroy();
+  //     }
+  //   };
+  // }, [chartData]);
 
-  const handleSliderChange = (event, newValue) => {
-    setNumberOfDays(newValue);
-    fetchData(newValue);
-  };
+  // const handleSliderChange = (event, newValue) => {
+  //   setNumberOfDays(newValue);
+  //   fetchData(newValue);
+  // };
 
   const handleSearchNgayBatDauChange = (date) => {
     setSearchNgayBatDau(dayjs(date).format("DD/MM/YYYY"));
@@ -623,7 +623,7 @@ const ThongKeDoanhThu = () => {
               </Card>
             </Col>
           </Row>
-          <Row
+          {/* <Row
             className="mt-3"
             style={{
               margin: "10px",
@@ -710,7 +710,7 @@ const ThongKeDoanhThu = () => {
                 </div>
               </div>
             </Col>
-          </Row>
+          </Row> */}
           <Row
             className="mb-3 mt-3"
             style={{
@@ -726,13 +726,13 @@ const ThongKeDoanhThu = () => {
               Sản phẩm bán chạy
             </h5>
             <div
-              className="mt-2 mb-2"
+              className="mt-3 mb-2"
               style={{ display: "flex", justifyContent: "flex-end" }}
             >
               <div
                 className="d-flex"
                 style={{
-                  height: "60px",
+                  height: "40px",
                   position: "relative",
                   cursor: "pointer",
                 }}
@@ -794,7 +794,7 @@ const ThongKeDoanhThu = () => {
                   >
                     Năm
                   </Button>
-                  <Button
+                  {/* <Button
                     onClick={() => {
                       handleSearchLoaiBoLoc("tuyChinh");
                       setOpenDate(true);
@@ -809,9 +809,9 @@ const ThongKeDoanhThu = () => {
                     }}
                   >
                     Tùy chỉnh
-                  </Button>
+                  </Button> */}
 
-                  {openDate && (
+                  {/* {openDate && (
                     <div className="d-flex">
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DemoContainer components={["DatePicker"]}>
@@ -857,28 +857,8 @@ const ThongKeDoanhThu = () => {
                           />
                         </DemoContainer>
                       </LocalizationProvider>
-                      <div style={{ paddingTop: "7px" }}>
-                        <Button
-                          onClick={() => {
-                            handleReset();
-                          }}
-                          type="warning"
-                          style={{
-                            height: "40px",
-                            width: "100px",
-                            fontSize: "15px",
-                          }}
-                        >
-                          <span
-                            className="text-dark"
-                            style={{ fontWeight: "500" }}
-                          >
-                            Làm Mới
-                          </span>
-                        </Button>
-                      </div>
                     </div>
-                  )}
+                  )} */}
                 </ButtonGroup>
               </div>
             </div>
@@ -1199,7 +1179,7 @@ const ThongKeDoanhThu = () => {
               <Card variant="outlined" style={{ paddingTop: "10px" }}>
                 <h4>Biểu đồ trạng thái đơn hàng</h4>
                 <div
-                  className="mt-2 mb-2"
+                  className="mt-3 mb-2"
                   style={{ display: "flex", justifyContent: "flex-end" }}
                 >
                   <div
@@ -1221,6 +1201,11 @@ const ThongKeDoanhThu = () => {
                         className={
                           activeButton1 === "ngay" ? "button-active" : ""
                         }
+                        style={{
+                          height: "40px",
+                          width: "100px",
+                          fontSize: "15px",
+                        }}
                       >
                         Ngày
                       </Button>
@@ -1231,6 +1216,11 @@ const ThongKeDoanhThu = () => {
                         className={
                           activeButton1 === "tuan" ? "button-active" : ""
                         }
+                        style={{
+                          height: "40px",
+                          width: "100px",
+                          fontSize: "15px",
+                        }}
                       >
                         Tuần
                       </Button>
@@ -1241,6 +1231,11 @@ const ThongKeDoanhThu = () => {
                         className={
                           activeButton1 === "thang" ? "button-active" : ""
                         }
+                        style={{
+                          height: "40px",
+                          width: "100px",
+                          fontSize: "15px",
+                        }}
                       >
                         Tháng
                       </Button>
@@ -1251,10 +1246,15 @@ const ThongKeDoanhThu = () => {
                         className={
                           activeButton1 === "nam" ? "button-active" : ""
                         }
+                        style={{
+                          height: "40px",
+                          width: "100px",
+                          fontSize: "15px",
+                        }}
                       >
                         Năm
                       </Button>
-                      <Button
+                      {/* <Button
                         onClick={() => {
                           handleSearchLoaiBoLoc1("nam");
                         }}
@@ -1263,7 +1263,7 @@ const ThongKeDoanhThu = () => {
                         }
                       >
                         Tùy Chỉnh
-                      </Button>
+                      </Button> */}
                     </ButtonGroup>
                     {/*                    
                     <FormControl
@@ -1308,7 +1308,7 @@ const ThongKeDoanhThu = () => {
                   className="mb-3"
                   style={{
                     width: "600px",
-                    height: "400px",
+                    height: "450px",
                     display: "flex",
                     justifyContent: "center",
                   }}

@@ -35,6 +35,7 @@ import { ConvertStatusProductsNumberToString } from "../../../utilities/convertE
 import { request, requestParam } from "../../../store/helpers/axios_helper";
 import {
   faArrowsRotate,
+  faHouse,
   faPenToSquare,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -473,8 +474,14 @@ const ManagementTheNhos = () => {
         }}
       >
         <Card className="">
+          <span
+            className="header-title mt-3 ms-4"
+            style={{ fontWeight: "500px" }}
+          >
+            <FontAwesomeIcon icon={faHouse} size={"sm"} /> Quản Lý Thẻ Nhớ
+          </span>
           <Card.Header className="d-flex justify-content-between">
-            <div className="header-title mt-2">
+            <div className="header-title">
               <TextField
                 placeholder="Tìm theo mã, loại thẻ nhớ, dung lượng tối đa"
                 label="Tìm Thẻ Nhớ"

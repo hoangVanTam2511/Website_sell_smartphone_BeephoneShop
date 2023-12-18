@@ -23,6 +23,8 @@ import axios from "axios";
 import { format } from "date-fns";
 import { request, requestParam } from "../../../store/helpers/axios_helper";
 import { current } from "@reduxjs/toolkit";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHouse } from "@fortawesome/free-solid-svg-icons";
 
 const Transaction = () => {
   const [form] = useForm();
@@ -405,8 +407,14 @@ const Transaction = () => {
         }}
       >
         <Card className="">
-          <Card.Header className="">
-            <div className="header-title mt-2">
+          <span
+            className="header-title mt-3 ms-4"
+            style={{ fontWeight: "500px" }}
+          >
+            <FontAwesomeIcon icon={faHouse} size={"sm"} /> Quản Lý Thu Chi
+          </span>
+          <Card.Header className="d-flex justify-content-between">
+            <div className="header-title">
               <TextField
                 placeholder="Tìm theo mã, số tiền, người xác nhận giao dịch"
                 label="Tìm giao dịch"

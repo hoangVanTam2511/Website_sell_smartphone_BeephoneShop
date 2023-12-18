@@ -1,28 +1,46 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import { Button, Empty, Table } from "antd";
-import { Box, FormControl, IconButton, ListItemText, MenuItem, Pagination, Select as SelectMui, TextField, Tooltip, Checkbox as CheckBoxMui } from "@mui/material";
+import {
+  Box,
+  FormControl,
+  IconButton,
+  ListItemText,
+  MenuItem,
+  Pagination,
+  Select as SelectMui,
+  TextField,
+  Tooltip,
+  Checkbox as CheckBoxMui,
+} from "@mui/material";
 import { PlusOutlined } from "@ant-design/icons";
 import Card from "../../../components/Card";
 import { format } from "date-fns";
 import axios from "axios";
 import { parseInt } from "lodash";
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
-import Zoom from '@mui/material/Zoom';
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
+import Zoom from "@mui/material/Zoom";
 import * as dayjs from "dayjs";
 import { OrderStatusString, OrderTypeString } from "./enum";
-import LoadingIndicator from '../../../utilities/loading';
+import LoadingIndicator from "../../../utilities/loading";
 import { FaPencilAlt } from "react-icons/fa";
 import ManagementProductItems from "./management-product-items";
 import { FaDownload, FaEye, FaUpload } from "react-icons/fa6";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
-import Barcode from 'react-barcode';
-import html2canvas from 'html2canvas';
-import { request, requestParam } from '../../../store/helpers/axios_helper'
+import Barcode from "react-barcode";
+import html2canvas from "html2canvas";
+import { request, requestParam } from "../../../store/helpers/axios_helper";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHouse } from "@fortawesome/free-solid-svg-icons";
 
 const ManagementProducts = () => {
   const navigate = useNavigate();
@@ -59,10 +77,9 @@ const ManagementProducts = () => {
     setOpenPage(false);
   };
 
-
   const handleRedirectCreateProduct = () => {
     navigate(`/dashboard/create-product`);
-  }
+  };
 
   const handleCloseOpenCategory = () => {
     setOpenCategory(false);
@@ -187,7 +204,6 @@ const ManagementProducts = () => {
     setCurrentPage(page);
   };
 
-
   const operas = ["ANDROID", "IOS"];
 
   const findProductsByMultipleCriteriaWithPagination = (page) => {
@@ -199,19 +215,22 @@ const ManagementProducts = () => {
       "danhMucs",
       selectedValueCategorys.length === 1 && selectedValueCategorys[0] === 0
         ? []
-        : selectedValueCategorys && selectedValueCategorys.filter((item) => item !== 0)
+        : selectedValueCategorys &&
+            selectedValueCategorys.filter((item) => item !== 0)
     );
     params.append(
       "hangs",
       selectedValueBrands.length === 1 && selectedValueBrands[0] === 0
         ? []
-        : selectedValueBrands && selectedValueBrands.filter((item) => item !== 0)
+        : selectedValueBrands &&
+            selectedValueBrands.filter((item) => item !== 0)
     );
     params.append(
       "heDieuHanhs",
       selectedValueOperas.length === 1 && selectedValueOperas[0] === "None"
         ? operas
-        : selectedValueOperas && selectedValueOperas.filter((item) => item !== "None")
+        : selectedValueOperas &&
+            selectedValueOperas.filter((item) => item !== "None")
     );
     params.append(
       "chips",
@@ -223,7 +242,8 @@ const ManagementProducts = () => {
       "manHinhs",
       selectedValueScreens.length === 1 && selectedValueScreens[0] === 0
         ? []
-        : selectedValueScreens && selectedValueScreens.filter((item) => item !== 0)
+        : selectedValueScreens &&
+            selectedValueScreens.filter((item) => item !== 0)
     );
     params.append(
       "pins",
@@ -232,10 +252,7 @@ const ManagementProducts = () => {
         : selectedValuePins && selectedValuePins.filter((item) => item !== 0)
     );
     axios
-      .get(
-        `http://localhost:8080/api/products/products/page?${params}`,
-        {}
-      )
+      .get(`http://localhost:8080/api/products/products/page?${params}`, {})
       .then((response) => {
         const data = response.data.data;
         setProducts(data);
@@ -274,7 +291,8 @@ const ManagementProducts = () => {
   const OrderTable = () => {
     return (
       <>
-        <Table className="table-container"
+        <Table
+          className="table-container"
           columns={columns}
           rowKey="ma"
           dataSource={products}
@@ -293,7 +311,6 @@ const ManagementProducts = () => {
   //   return total;
   // }
 
-
   const columns = [
     {
       title: "STT",
@@ -301,7 +318,9 @@ const ManagementProducts = () => {
       dataIndex: "stt",
       width: "5%",
       render: (text, record, index) => (
-        <span style={{ fontWeight: "400" }}>{products.indexOf(record) + 1}</span>
+        <span style={{ fontWeight: "400" }}>
+          {products.indexOf(record) + 1}
+        </span>
       ),
     },
     {
@@ -311,19 +330,37 @@ const ManagementProducts = () => {
       render: (text, item) => (
         <>
           <div style={{ position: "relative" }}>
-            {
-              item.urlImage !== "" ?
-                <img
-                  src={
-                    item.urlImage
-                  }
-                  class=""
-                  alt=""
-                  style={{ width: "125px", height: "125px" }}
-                />
-                :
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="90" height="90" style={{ width: "125px", height: "125px", color: "rgb(232, 234, 235)", margin: "0px auto" }}><path d="M19 3H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h14c1.103 0 2-.897 2-2V5c0-1.103-.897-2-2-2ZM5 19V5h14l.002 14H5Z" fill="currentColor"></path><path d="m10 14-1-1-3 4h12l-5-7-3 4ZM8.5 11a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" fill="currentColor"></path></svg>
-            }
+            {item.urlImage !== "" ? (
+              <img
+                src={item.urlImage}
+                class=""
+                alt=""
+                style={{ width: "125px", height: "125px" }}
+              />
+            ) : (
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                width="90"
+                height="90"
+                style={{
+                  width: "125px",
+                  height: "125px",
+                  color: "rgb(232, 234, 235)",
+                  margin: "0px auto",
+                }}
+              >
+                <path
+                  d="M19 3H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h14c1.103 0 2-.897 2-2V5c0-1.103-.897-2-2-2ZM5 19V5h14l.002 14H5Z"
+                  fill="currentColor"
+                ></path>
+                <path
+                  d="m10 14-1-1-3 4h12l-5-7-3 4ZM8.5 11a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"
+                  fill="currentColor"
+                ></path>
+              </svg>
+            )}
           </div>
         </>
       ),
@@ -335,7 +372,9 @@ const ManagementProducts = () => {
       width: "15%",
       dataIndex: "ma",
       render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>{"SP00000" + products.indexOf(record) + 1}</span>
+        <span style={{ fontWeight: "400" }}>
+          {"SP00000" + products.indexOf(record) + 1}
+        </span>
       ),
     },
     {
@@ -345,7 +384,9 @@ const ManagementProducts = () => {
       width: "15%",
       dataIndex: "tenSanPham",
       render: (text, record) => (
-        <span className="" style={{ fontWeight: "400" }}>{record.tenSanPham}</span>
+        <span className="" style={{ fontWeight: "400" }}>
+          {record.tenSanPham}
+        </span>
       ),
     },
     {
@@ -361,9 +402,7 @@ const ManagementProducts = () => {
       title: "Hệ Điều Hành",
       align: "center",
       width: "15%",
-      render: (text, record) => (
-        record.operatingType
-      ),
+      render: (text, record) => record.operatingType,
     },
     {
       title: "Số Lượng Tồn",
@@ -371,9 +410,12 @@ const ManagementProducts = () => {
       width: "15%",
       render: (text, record) => (
         <div>
-          <span style={{ fontWeight: "400", whiteSpace: "pre-line" }}>{record.quantityInstock}
+          <span style={{ fontWeight: "400", whiteSpace: "pre-line" }}>
+            {record.quantityInstock}
           </span>
-          <span style={{ color: "gray", fontSize: "14px", display: "block" }}>({record.quantityVersion} phiên bản)</span>
+          <span style={{ color: "gray", fontSize: "14px", display: "block" }}>
+            ({record.quantityVersion} phiên bản)
+          </span>
         </div>
       ),
     },
@@ -392,10 +434,7 @@ const ManagementProducts = () => {
               padding: "4px",
             }}
           >
-            <span
-              className="text-white"
-              style={{ fontSize: "14px" }}
-            >
+            <span className="text-white" style={{ fontSize: "14px" }}>
               Kinh doanh
             </span>
           </div>
@@ -404,10 +443,7 @@ const ManagementProducts = () => {
             className="rounded-pill badge-danger mx-auto"
             style={{ height: "35px", width: "150px", padding: "4px" }}
           >
-            <span
-              className="text-white"
-              style={{ fontSize: "14px" }}
-            >
+            <span className="text-white" style={{ fontSize: "14px" }}>
               Ngừng kinh doanh
             </span>
           </div>
@@ -424,15 +460,23 @@ const ManagementProducts = () => {
         <>
           <div className="button-container">
             <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
-              <IconButton size="" className="me-2" onClick={() => {
-                navigate(`/dashboard/update-product/${record.id}`);
-              }}
+              <IconButton
+                size=""
+                className="me-2"
+                onClick={() => {
+                  navigate(`/dashboard/update-product/${record.id}`);
+                }}
               >
                 <FaPencilAlt color="#2f80ed" />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Xem chi tiết các phiên bản" TransitionComponent={Zoom}>
-              <IconButton size="" className=""
+            <Tooltip
+              title="Xem chi tiết các phiên bản"
+              TransitionComponent={Zoom}
+            >
+              <IconButton
+                size=""
+                className=""
                 onClick={() => {
                   navigate(`/dashboard/products/${record.id}`);
                 }}
@@ -446,14 +490,24 @@ const ManagementProducts = () => {
     },
   ];
 
-
-
   return (
     <>
-      <div className="mt-4" style={{ backgroundColor: "#ffffff", boxShadow: "0 0.1rem 0.3rem #00000010" }}>
+      <div
+        className="mt-4"
+        style={{
+          backgroundColor: "#ffffff",
+          boxShadow: "0 0.1rem 0.3rem #00000010",
+        }}
+      >
         <Card className="">
+          <span
+            className="header-title mt-3 ms-4"
+            style={{ fontWeight: "500px" }}
+          >
+            <FontAwesomeIcon icon={faHouse} size={"sm"} /> Quản Lý Sản Phẩm
+          </span>
           <Card.Header className="d-flex justify-content-between">
-            <div className="header-title mt-2">
+            <div className="header-title">
               <TextField
                 label="Tìm kiếm sản phẩm theo mã, tên"
                 // onChange={handleGetValueFromInputTextField}
@@ -515,7 +569,11 @@ const ManagementProducts = () => {
                 />
                 <span
                   className=""
-                  style={{ marginBottom: "2px", fontWeight: "500", marginLeft: "21px" }}
+                  style={{
+                    marginBottom: "2px",
+                    fontWeight: "500",
+                    marginLeft: "21px",
+                  }}
                 >
                   Import IMEI
                 </span>
@@ -536,7 +594,11 @@ const ManagementProducts = () => {
                 />
                 <span
                   className=""
-                  style={{ marginBottom: "2px", fontWeight: "500", marginLeft: "21px" }}
+                  style={{
+                    marginBottom: "2px",
+                    fontWeight: "500",
+                    marginLeft: "21px",
+                  }}
                 >
                   Tải Mẫu Import IMEI
                 </span>
@@ -557,7 +619,11 @@ const ManagementProducts = () => {
                 />
                 <span
                   className=""
-                  style={{ marginBottom: "2px", fontWeight: "500", marginLeft: "21px" }}
+                  style={{
+                    marginBottom: "2px",
+                    fontWeight: "500",
+                    marginLeft: "21px",
+                  }}
                 >
                   Export Excel
                 </span>
@@ -568,7 +634,8 @@ const ManagementProducts = () => {
                 type="primary"
                 style={{ height: "40px", width: "150px", fontSize: "15px" }}
               >
-                <PlusOutlined className="ms-1"
+                <PlusOutlined
+                  className="ms-1"
                   style={{
                     position: "absolute",
                     bottom: "12.5px",
@@ -628,14 +695,12 @@ const ManagementProducts = () => {
                   renderValue={(selected) =>
                     selected && selected.length > 1
                       ? selected
-                        .filter((id) =>
-                          categorys.find((c) => c.id === id)
-                        ) // Loại bỏ các giá trị không hợp lệ
-                        .map(
-                          (id) =>
-                            categorys.find((c) => c.id === id).tenDanhMuc
-                        ) // Lấy tên danh mục tương ứng
-                        .join(", ")
+                          .filter((id) => categorys.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
+                          .map(
+                            (id) =>
+                              categorys.find((c) => c.id === id).tenDanhMuc
+                          ) // Lấy tên danh mục tương ứng
+                          .join(", ")
                       : "Chọn Danh Mục"
                   }
                 >
@@ -700,12 +765,11 @@ const ManagementProducts = () => {
                   renderValue={(selected) =>
                     selected && selected.length > 1
                       ? selected
-                        .filter((id) => listHang.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
-                        .map(
-                          (id) =>
-                            listHang.find((c) => c.id === id).tenHang
-                        ) // Lấy tên danh mục tương ứng
-                        .join(", ")
+                          .filter((id) => listHang.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
+                          .map(
+                            (id) => listHang.find((c) => c.id === id).tenHang
+                          ) // Lấy tên danh mục tương ứng
+                          .join(", ")
                       : "Chọn Hãng"
                   }
                 >
@@ -775,15 +839,13 @@ const ManagementProducts = () => {
                   }}
                   renderValue={(selected) =>
                     selected &&
-                      selected.filter((value) => value !== "None").length > 0
+                    selected.filter((value) => value !== "None").length > 0
                       ? selected
-                        .filter((id) =>
-                          ["ANDROID", "IOS"].find((c) => c === id)
-                        ) // Loại bỏ các giá trị không hợp lệ
-                        .map((id) =>
-                          ["ANDROID", "IOS"].find((c) => c === id)
-                        ) // Lấy tên danh mục tương ứng
-                        .join(", ")
+                          .filter((id) =>
+                            ["ANDROID", "IOS"].find((c) => c === id)
+                          ) // Loại bỏ các giá trị không hợp lệ
+                          .map((id) => ["ANDROID", "IOS"].find((c) => c === id)) // Lấy tên danh mục tương ứng
+                          .join(", ")
                       : "Chọn Hệ Điều Hành"
                   }
                 >
@@ -846,12 +908,11 @@ const ManagementProducts = () => {
                   renderValue={(selected) =>
                     selected && selected.length > 1
                       ? selected
-                        .filter((id) => listChip.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
-                        .map(
-                          (id) =>
-                            listChip.find((c) => c.id === id).tenChip
-                        ) // Lấy tên danh mục tương ứng
-                        .join(", ")
+                          .filter((id) => listChip.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
+                          .map(
+                            (id) => listChip.find((c) => c.id === id).tenChip
+                          ) // Lấy tên danh mục tương ứng
+                          .join(", ")
                       : "Chọn Chip"
                   }
                 >
@@ -914,15 +975,15 @@ const ManagementProducts = () => {
                   renderValue={(selected) =>
                     selected && selected.length > 1
                       ? selected
-                        .filter((id) => listPin.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
-                        .map(
-                          (id) =>
-                            listPin.find((c) => c.id === id).loaiPin +
-                            " " +
-                            listPin.find((c) => c.id === id).dungLuong +
-                            " mAh"
-                        ) // Lấy tên danh mục tương ứng
-                        .join(", ")
+                          .filter((id) => listPin.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
+                          .map(
+                            (id) =>
+                              listPin.find((c) => c.id === id).loaiPin +
+                              " " +
+                              listPin.find((c) => c.id === id).dungLuong +
+                              " mAh"
+                          ) // Lấy tên danh mục tương ứng
+                          .join(", ")
                       : "Chọn Pin"
                   }
                 >
@@ -939,7 +1000,6 @@ const ManagementProducts = () => {
                 </SelectMui>
               </FormControl>
             </div>
-
           </div>
 
           <div className="d-flex justify-content-center mt-3">
@@ -991,25 +1051,22 @@ const ManagementProducts = () => {
                   renderValue={(selected) =>
                     selected && selected.length > 1
                       ? selected
-                        .filter((id) =>
-                          listManHinh.find((c) => c.id === id)
-                        ) // Loại bỏ các giá trị không hợp lệ
-                        .map(
-                          (id) =>
-                            listManHinh.find((c) => c.id === id)
-                              .loaiManHinh +
-                            " " +
-                            `(${listManHinh.find((c) => c.id === id)
-                              .doPhanGiaiManHinh.chieuRong +
-                            " x " +
-                            listManHinh.find((c) => c.id === id)
-                              .doPhanGiaiManHinh.chieuDai
-                            } pixels) ` +
-                            listManHinh.find((c) => c.id === id)
-                              .kichThuoc +
-                            `"`
-                        ) // Lấy tên danh mục tương ứng
-                        .join(", ")
+                          .filter((id) => listManHinh.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
+                          .map(
+                            (id) =>
+                              listManHinh.find((c) => c.id === id).loaiManHinh +
+                              " " +
+                              `(${
+                                listManHinh.find((c) => c.id === id)
+                                  .doPhanGiaiManHinh.chieuRong +
+                                " x " +
+                                listManHinh.find((c) => c.id === id)
+                                  .doPhanGiaiManHinh.chieuDai
+                              } pixels) ` +
+                              listManHinh.find((c) => c.id === id).kichThuoc +
+                              `"`
+                          ) // Lấy tên danh mục tương ứng
+                          .join(", ")
                       : "Chọn Màn Hình"
                   }
                 >
@@ -1022,9 +1079,10 @@ const ManagementProducts = () => {
                         primary={
                           c.loaiManHinh +
                           " " +
-                          `(${c.doPhanGiaiManHinh.chieuRong +
-                          " x " +
-                          c.doPhanGiaiManHinh.chieuDai
+                          `(${
+                            c.doPhanGiaiManHinh.chieuRong +
+                            " x " +
+                            c.doPhanGiaiManHinh.chieuDai
                           } pixels) ` +
                           c.kichThuoc +
                           `"`
@@ -1207,8 +1265,12 @@ const ManagementProducts = () => {
           <Card.Body>
             <OrderTable />
           </Card.Body>
-          <div className='mx-auto'>
-            <Pagination color="primary" page={parseInt(currentPage)} key={refreshPage} count={totalPages}
+          <div className="mx-auto">
+            <Pagination
+              color="primary"
+              page={parseInt(currentPage)}
+              key={refreshPage}
+              count={totalPages}
               onChange={handlePageChange}
             />
           </div>
@@ -1217,7 +1279,6 @@ const ManagementProducts = () => {
       </div>
       {isLoading && <LoadingIndicator />}
     </>
-  )
-
-}
+  );
+};
 export default ManagementProducts;

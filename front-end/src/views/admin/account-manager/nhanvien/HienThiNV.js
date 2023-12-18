@@ -6,6 +6,7 @@ import { apiURLNV } from "../../../../service/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowsRotate,
+  faHouse,
   faPenToSquare,
 } from "@fortawesome/free-solid-svg-icons";
 import "../../../../assets/scss/HienThiNV.scss";
@@ -331,8 +332,14 @@ const HienThiNV = () => {
             }}
           >
             <Card className="">
+              <span
+                className="header-title mt-3 ms-4"
+                style={{ fontWeight: "500px" }}
+              >
+                <FontAwesomeIcon icon={faHouse} size={"sm"} /> Quản Lý Nhân Viên
+              </span>
               <Card.Header className="d-flex justify-content-between">
-                <div className="header-title mt-2">
+                <div className="header-title">
                   <TextField
                     label="Tìm nhân viên"
                     value={searchText}

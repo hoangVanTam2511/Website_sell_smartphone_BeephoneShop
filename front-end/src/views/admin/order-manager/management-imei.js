@@ -20,14 +20,18 @@ import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import Card from "../../../components/Card";
 import axios from "axios";
 import Zoom from "@mui/material/Zoom";
-import { Notistack, StatusImei } from "./enum";
+import { Notistack, StatusImei, StatusImeiNumber } from "./enum";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import LoadingIndicator from "../../../utilities/loading";
 import useCustomSnackbar from "../../../utilities/notistack";
-import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
+import {
+  ConvertStatusImeisNumberToString,
+  ConvertStatusProductsNumberToString,
+} from "../../../utilities/convertEnum";
 import { request, requestParam } from "../../../store/helpers/axios_helper";
 import {
   faArrowsRotate,
+  faHouse,
   faPenToSquare,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -44,7 +48,7 @@ const ManagementImei = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchTatCa, setSearchTatCa] = useState("");
-  const [searchTrangThai, setSearchTrangThai] = useState("");
+  const [searchTrangThai, setSearchTrangThai] = useState("a");
   const [open, setOpen] = React.useState(false);
   const [open1, setOpen1] = React.useState(false);
   const [trangThai, setTrangThai] = React.useState("");
@@ -69,7 +73,7 @@ const ManagementImei = () => {
     requestParam("GET", `/api/imeis/search`, {
       keyword: searchTatCa,
       currentPage: page,
-      trangThai: ConvertStatusProductsNumberToString(searchTrangThai),
+      trangThai: ConvertStatusImeisNumberToString(searchTrangThai),
     })
       .then((response) => {
         setImeiPages(response.data.data);
@@ -355,8 +359,14 @@ const ManagementImei = () => {
         }}
       >
         <Card className="">
-          <Card.Header className="d-flex">
-            <div className="header-title mt-2">
+          <span
+            className="header-title mt-3 ms-4"
+            style={{ fontWeight: "500px" }}
+          >
+            <FontAwesomeIcon icon={faHouse} size={"sm"} /> Quản Lý IMEI
+          </span>
+          <Card.Header className="d-flex justify-content-between">
+            <div className="header-title">
               <TextField
                 label="Tìm Imei"
                 onChange={handleSearchTatCaChange}
@@ -440,12 +450,14 @@ const ManagementImei = () => {
                   value={searchTrangThai}
                   onChange={handleSearchTrangThaiChange}
                 >
-                  <MenuItem className="" value={5}>
+                  <MenuItem className="" value={"a"}>
                     Tất cả
                   </MenuItem>
-                  <MenuItem value={StatusImei.NOT_SOLD}>Chưa Bán</MenuItem>
-                  <MenuItem value={StatusImei.SOLD}>Đã Bán</MenuItem>
-                  <MenuItem value={StatusImei.IN_ACTIVE}>
+                  <MenuItem value={StatusImeiNumber.NOT_SOLD}>
+                    Chưa Bán
+                  </MenuItem>
+                  <MenuItem value={StatusImeiNumber.SOLD}>Đã Bán</MenuItem>
+                  <MenuItem value={StatusImeiNumber.IN_ACTIVE}>
                     Ngưng Hoạt Động
                   </MenuItem>
                 </Select>

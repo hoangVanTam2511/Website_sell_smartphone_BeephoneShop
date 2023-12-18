@@ -47,6 +47,7 @@ import { request, requestParam } from "../../../store/helpers/axios_helper";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowsRotate,
+  faHouse,
   faPenToSquare,
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -777,8 +778,15 @@ const HienThiVoucher = () => {
         }}
       >
         <Card className="">
-          <Card.Header className="">
-            <div className="header-title mt-2">
+          <span
+            className="header-title mt-3 ms-4"
+            style={{ fontWeight: "500px" }}
+          >
+            <FontAwesomeIcon icon={faHouse} size={"sm"} /> Quản Lý Phiếu Giảm
+            Giá
+          </span>
+          <Card.Header className="d-flex justify-content-between">
+            <div className="header-title">
               <TextField
                 placeholder="Tìm theo mã, giá trị, số lượng phiếu giảm giá"
                 label="Tìm phiếu giảm giá"
