@@ -134,7 +134,7 @@ export const DefaultRouter = [
       },
       {
         path: "/dashboard/statistic",
-        element: <ThongKe />,
+        element: <ThongKeDoanhThu />,
       },
       {
         path: "chip",

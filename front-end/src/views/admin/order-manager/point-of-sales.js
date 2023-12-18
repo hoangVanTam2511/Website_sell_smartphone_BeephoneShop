@@ -528,7 +528,7 @@ const PointOfSales = () => {
   const openEditModal = async (diaChiList) => {
     try {
       await axios
-        .get(`http://localhost:8080/khach-hang/mot-dia-chi?id=${diaChiList.ma}`)
+        .get(`http://localhost:8080/khach-hang/mot-dia-chi?id=${diaChiList.id}`)
         .then((response) => {
           // const data = response.data.data;
           setSoDienThoaiKhachHang(diaChiList.soDienThoaiKhachHang);
@@ -570,7 +570,7 @@ const PointOfSales = () => {
           setCustomerPhoneShip(data && data.soDienThoaiNguoiNhan);
           getAllOrdersPending();
         });
-    } catch (error) {}
+    } catch (error) { }
   };
   const updateAddressShipOrder = async (address) => {
     const orderRequest = {
@@ -598,7 +598,7 @@ const PointOfSales = () => {
           setCustomerAddressShip(data && data.diaChiNguoiNhan);
           getAllOrdersPending();
         });
-    } catch (error) {}
+    } catch (error) { }
   };
   const updateNoteShipOrder = async (note) => {
     const orderRequest = {
@@ -747,7 +747,7 @@ const PointOfSales = () => {
           setCustomerNameShip(data && data.tenNguoiNhan);
           getAllOrdersPending();
         });
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const updateInfoShipOrder = async (
@@ -788,7 +788,7 @@ const PointOfSales = () => {
           setCustomerDistrictShip(data && data.quanHuyenNguoiNhan);
           getAllOrdersPending();
         });
-    } catch (error) {}
+    } catch (error) { }
   };
 
 
@@ -1051,7 +1051,7 @@ const PointOfSales = () => {
           // handlePrint();
           console.log(orderRequest);
         });
-    } catch (error) {}
+    } catch (error) { }
   };
 
   // const updateAccount = async (id) => {
@@ -1377,8 +1377,14 @@ const PointOfSales = () => {
 
   const getAllOrdersPending = async () => {
     await request("GET", `/api/orders/pending`, {})
-      .then((response) => {
-        setOrders(response.data.data);
+      .then(async (response) => {
+        const data = response.data.data;
+        if (data && data.length === 0) {
+          await handleAddOrderPendingDefault();
+        }
+        else {
+          setOrders(response.data.data);
+        }
       })
       .catch((error) => {
         console.error(error);
@@ -1499,19 +1505,19 @@ const PointOfSales = () => {
           (response &&
             response.data.data[0].voucher &&
             response.data.data[0].voucher.ma) ||
-            ""
+          ""
         );
         setIdVoucher(
           (response &&
             response.data.data[0].voucher &&
             response.data.data[0].voucher.id) ||
-            ""
+          ""
         );
         setDiscountValue(
           (response &&
             response.data.data[0].voucher &&
             response.data.data[0].voucher.giaTriVoucher) ||
-            0
+          0
         );
         console.log(order);
 
@@ -1921,6 +1927,54 @@ const PointOfSales = () => {
       });
   };
 
+  const handleAddOrderPendingDefault = async () => {
+    setIsLoading(true);
+    const data = {
+      id: order.id,
+    };
+    try {
+      await request("POST", `/api/orders?isPending=true`, data
+      ).then(async (response) => {
+        await getAllOrdersPending();
+        setValueTabs(1);
+        setOrder(response.data.data);
+        navigate(`/dashboard/point-of-sales/${response.data.data.ma}`);
+        setCartId(response.data.data.cart.id);
+        setDelivery(false);
+        setPaymentWhenReceive(false);
+        setCartItems([]);
+        setPaymentHistories([]);
+        setCustomerPayment(0);
+        setShipFee(0);
+        setDiscount("");
+        setIdVoucher("");
+        setConfirm(false);
+        setDiscountValue(0);
+        setIdCustomer("");
+        setCustomerName("");
+        setCustomerPhone("");
+        setCustomerEmail("");
+        setCustomerAddressList([]);
+        setCustomerNameShip("");
+        setCustomerPhoneShip("");
+        setCustomerAddressShip("");
+        setCustomerWardShip("");
+        setCustomerProvinceShip("");
+        setCustomerDistrictShip("");
+        setCustomerNoteShip("");
+
+        setFullName("");
+        setEmail("");
+        setSdt("");
+        setIsLoading(false);
+      });
+    } catch (error) {
+      handleOpenAlertVariant(error.response.data.message, "warning");
+      setIsLoading(false);
+      console.log(error);
+    }
+  };
+
   const handleAddOrderPending = async () => {
     setIsLoading(true);
     const data = {
@@ -1929,41 +1983,42 @@ const PointOfSales = () => {
     try {
       const response = await request("POST", `/api/orders?isPending=true`,
         data
-      );
-     await getAllOrdersPending();
-      setValueTabs(orders.length + 1);
-      setOrder(response.data.data);
-      navigate(`/dashboard/point-of-sales/${response.data.data.ma}`);
-      setCartId(response.data.data.cart.id);
-      setDelivery(false);
-      setPaymentWhenReceive(false);
-      setCartItems([]);
-      setPaymentHistories([]);
-      setCustomerPayment(0);
-      // setSelectedValuePaymentMethod("Tiền mặt");
-      // setHadPaymentBank(false);
-      setShipFee(0);
-      setDiscount("");
-      setIdVoucher("");
-      setConfirm(false);
-      setDiscountValue(0);
-      setIdCustomer("");
-      setCustomerName("");
-      setCustomerPhone("");
-      setCustomerEmail("");
-      setCustomerAddressList([]);
-      setCustomerNameShip("");
-      setCustomerPhoneShip("");
-      setCustomerAddressShip("");
-      setCustomerWardShip("");
-      setCustomerProvinceShip("");
-      setCustomerDistrictShip("");
-      setCustomerNoteShip("");
+      ).then(async (response) => {
+        await getAllOrdersPending();
+        setValueTabs(orders.length + 1);
+        setOrder(response.data.data);
+        navigate(`/dashboard/point-of-sales/${response.data.data.ma}`);
+        setCartId(response.data.data.cart.id);
+        setDelivery(false);
+        setPaymentWhenReceive(false);
+        setCartItems([]);
+        setPaymentHistories([]);
+        setCustomerPayment(0);
+        // setSelectedValuePaymentMethod("Tiền mặt");
+        // setHadPaymentBank(false);
+        setShipFee(0);
+        setDiscount("");
+        setIdVoucher("");
+        setConfirm(false);
+        setDiscountValue(0);
+        setIdCustomer("");
+        setCustomerName("");
+        setCustomerPhone("");
+        setCustomerEmail("");
+        setCustomerAddressList([]);
+        setCustomerNameShip("");
+        setCustomerPhoneShip("");
+        setCustomerAddressShip("");
+        setCustomerWardShip("");
+        setCustomerProvinceShip("");
+        setCustomerDistrictShip("");
+        setCustomerNoteShip("");
 
-      setFullName("");
-      setEmail("");
-      setSdt("");
-      setIsLoading(false);
+        setFullName("");
+        setEmail("");
+        setSdt("");
+        setIsLoading(false);
+      });
     } catch (error) {
       handleOpenAlertVariant(error.response.data.message, "warning");
       setIsLoading(false);
@@ -2013,10 +2068,10 @@ const PointOfSales = () => {
         Notistack.ERROR
       );
     } else {
-        setIsLoading(true);
+      setIsLoading(true);
       try {
         await request("DELETE", `/api/orders/${id}`).then(async (response) => {
-        await getOrderPendingLastRemove();
+          await getOrderPendingLastRemove();
           setIsLoading(false);
         });
       } catch (error) {
@@ -2313,10 +2368,7 @@ const PointOfSales = () => {
     }
   };
 
-  // const isMounted = useRef(false);
   useEffect(() => {
-    // if (!isMounted.current) {
-    // isMounted.current = true;
     setIsLoading(true);
     getAllOrdersPending();
     if (id) {
@@ -2326,7 +2378,6 @@ const PointOfSales = () => {
     }
     getAllCustomers();
     getVouchersIsActive();
-    // }
   }, []);
 
   const [openModalConfirmRedirectPayment, setOpenModalConfirmRedirectPayment] =
@@ -2861,13 +2912,36 @@ const PointOfSales = () => {
           }}
         >
           <div className="d-flex justify-content-between mt-1" ref={divRef1}>
-            <div className="ms-2" style={{ marginTop: "5px" }}>
+            <div className="ms-2 d-flex" style={{ marginTop: "5px" }}>
               <span
                 className=""
                 style={{ fontSize: "22px", fontWeight: "500" }}
               >
                 Khách hàng
               </span>
+              {idCustomer !== "" &&
+                <div className="ms-2" style={{ marginTop: "3px" }}>
+                  <Tooltip
+                    title="Bỏ chọn"
+                    TransitionComponent={Zoom}
+                  >
+                    <IconButton
+                      onClick={() => {
+                        getCustomerById(null);
+                      }}
+                      aria-label="delete"
+                      size="small"
+                      className=""
+                    >
+                      <HighlightOffOutlinedIcon
+                        className="text-dark"
+                        fontSize="inherit"
+                      />
+                    </IconButton>
+                  </Tooltip>
+
+                </div>
+              }
             </div>
             <div className="">
               <Button

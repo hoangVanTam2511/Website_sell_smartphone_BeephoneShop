@@ -86,7 +86,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
   }
   const [listColor, setListColor] = useState([]);
   const getListColor = async () => {
-    request('GET',`/api/colors`)
+    request('GET', `/api/colors`)
       .then((response) => {
         setListColor(response.data.data);
       })
@@ -97,7 +97,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
   const [listRam, setListRam] = useState([]);
   const [listRom, setListRom] = useState([]);
   const getListRom = () => {
-    request('GET',`/api/roms`)
+    request('GET', `/api/roms`)
       .then((response) => {
         setListRom(response.data.data);
       })
@@ -106,7 +106,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
       });
   };
   const getListRam = () => {
-    request('GET',`/api/rams`)
+    request('GET', `/api/rams`)
       .then((response) => {
         setListRam(response.data.data);
       })
@@ -118,8 +118,8 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
   const [listImeiCurrent, setListImeiCurrent] = useState([]);
 
   const getAllImei = () => {
-    request('GET',`/api/imeis/all`, {
-      })
+    request('GET', `/api/imeis/all`, {
+    })
       .then((response) => {
         setListImeiCurrent(response.data.data);
         console.log(response.data.data);
@@ -142,7 +142,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
   const [isLoadingInside, setIsLoadingInside] = useState(false);
   const handleDownloadSample = () => {
     setIsLoading(true);
-    request('POST','/api/create-excel-template-by', {}, { responseType: 'blob' }) // Sử dụng phương thức POST
+    request('POST', '/api/create-excel-template-by', {}, { responseType: 'blob' }) // Sử dụng phương thức POST
       .then((response) => {
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');
@@ -888,8 +888,8 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
     // check product  
     console.log(products)
     try {
-      request('POST',`/api/products`, products).then(
-        async(res) => {
+      await request('POST', `/api/products`, products).then(
+        async (res) => {
           console.log(res)
           const isMissingImage = cauHinhsFinal.some((cauHinh) => !cauHinh.image);
           if (!isMissingImage) {
@@ -897,7 +897,7 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
           }
         }
       )
-    
+
       handleOpenAlertVariant("Thêm sản phẩm thành công!", Notistack.SUCCESS);
       setIsLoadingInside(false);
       getOverplay(false);
@@ -928,8 +928,8 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
 
   const addFiles = async (ma) => {
     try {
-      requestBodyMultipartFile('POST','/api/products/upload-multiple', formData, {
-          ma: ma,
+      await requestBodyMultipartFile('POST', '/api/products/upload-multiple', formData, {
+        ma: ma,
       }).then((res) => {
         // console.log(res)
       })

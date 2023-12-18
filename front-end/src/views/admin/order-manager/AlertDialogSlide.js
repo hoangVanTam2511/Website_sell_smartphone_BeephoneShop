@@ -896,7 +896,6 @@ export function ProductsDialog(props) {
   const [openPin, setOpenPin] = useState(false);
   const [openSort, setOpenSort] = useState(false);
   const [openPage, setOpenPage] = useState(false);
-  const [page, setPage] = useState(false);
 
   const handleOpenSort = () => {
     setOpenSort(true);
@@ -4363,11 +4362,13 @@ export const ModalUpdateImeiByProductItem = ({
   }, [refresh]);
 
   useEffect(() => {
-    let newCurrentPage = currentPage;
-    while (newCurrentPage > 1 && filteredData.slice((newCurrentPage - 1) * itemsPerPage, newCurrentPage * itemsPerPage).length === 0) {
-      newCurrentPage--;
+    if (imei.trim() !== "") {
+      let newCurrentPage = currentPage;
+      while (newCurrentPage > 1 && filteredData.slice((newCurrentPage - 1) * itemsPerPage, newCurrentPage * itemsPerPage).length === 0) {
+        newCurrentPage--;
+      }
+      setCurrentPage(newCurrentPage);
     }
-    setCurrentPage(newCurrentPage);
   }, [filteredData]);
 
   return (

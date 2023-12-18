@@ -187,7 +187,7 @@ const Header = memo((props) => {
         <Container fluid className="navbar-inner">
           <div>
             <Breadcrumbs separator="›" aria-label="breadcrumbs">
-              {navigationItems.length > 1 && navigationItems.map((item) => (
+              {navigationItems.map((item) => (
                 location.pathname === item.path ?
                   <Typography color="neutral" sx={{ display: 'flex', alignItems: 'center' }}>
                     {item.label}

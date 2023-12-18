@@ -275,29 +275,32 @@ const ModalAddKhachHang = ({ close, openCustomer, setOP, getCustomer }) => {
       request('POST',
         apiURLKH + "/add",
         khachHangData
-      ).then((res) => {
-        const khachHangResponse = res;
+      ).then((response) => {
+        const data = response.data;
+        console.log(response);
 
         // Lấy mã khách hàng từ response
-        const generatedMaKhachHang = khachHangResponse.data.data.id;
-        addDiaChiList(generatedMaKhachHang);
+        if (data) {
+          addDiaChiList(data.id);
+        }
 
-      // Cập nhật danh sách khách hàng và hiển thị thông báo
-      const newKhachHangResponse = {
-        hoVaTen: hoVaTen,
-        ngaySinh: ngaySinh,
-        soDienThoai: soDienThoai,
-        gioiTinh: gioiTinh,
-        diaChiList: [],
-        email: email,
-        anhDaiDien: anhDaiDien,
-      };
-      setListKH([newKhachHangResponse, ...listKH]);
-      close();
-      handleResetForm();
-      getCustomer();
-      handleOpenAlertVariant("Thêm thành công", Notistack.SUCCESS);
-      return;
+        // Cập nhật danh sách khách hàng và hiển thị thông báo
+        const newKhachHangResponse = {
+          hoVaTen: hoVaTen,
+          ngaySinh: ngaySinh,
+          soDienThoai: soDienThoai,
+          gioiTinh: gioiTinh,
+          diaChiList: [],
+          email: email,
+          anhDaiDien: anhDaiDien,
+        };
+        setListKH([newKhachHangResponse, ...listKH]);
+        close();
+        handleResetForm();
+        getCustomer();
+        handleOpenAlertVariant("Thêm thành công", Notistack.SUCCESS);
+        return;
+      })
     } catch (error) {
       console.log(error)
       handleOpenAlertVariant("Lỗi khi thêm khách hàng", Notistack.ERROR);
