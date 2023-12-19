@@ -2,11 +2,7 @@ package beephone_shop_projects.core.admin.statistic_management.service.impl;
 
 import beephone_shop_projects.core.admin.statistic_management.model.request.FindByMonthAndYearRequest;
 import beephone_shop_projects.core.admin.statistic_management.model.request.ThongKeKhoangNgayDonHangRequest;
-import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeDonHangKhoangNgay;
-import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeDonHangResponse;
-import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeSanPhamResponse;
-import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeTocDoTangTruongCustom;
-import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeTrangThaiDonHang;
+import beephone_shop_projects.core.admin.statistic_management.model.response.*;
 import beephone_shop_projects.core.admin.statistic_management.repository.ThongKeDonHangRepository;
 import beephone_shop_projects.core.admin.statistic_management.repository.ThongKeSanPhamRepository;
 import beephone_shop_projects.core.admin.statistic_management.service.ThongKeDonHangService;
@@ -74,65 +70,95 @@ public class ThongKeDonHangServiceImpl implements ThongKeDonHangService {
         BigDecimal tangTruongSoHoaDonNam = BigDecimal.ZERO;
         BigDecimal tangTruongSoSanPhamThang = BigDecimal.ZERO;
 
-        if (donHangInYesterday != null && donHangInYesterday.getTongTien() != null && donHangInYesterday.getTongTien().compareTo(zero) != 0) {
+        BigDecimal doanhThuNgay = BigDecimal.ZERO;
+        BigDecimal doanhThuThang = BigDecimal.ZERO;
+        BigDecimal doanhThuNam = BigDecimal.ZERO;
+        Integer soHoaDonNgay = 0;
+        Integer soHoaDonThang = 0;
+        Integer soHoaDonNam = 0;
+        Integer soSanPhamThang = 0;
+
+        if (donHangInYesterday != null && donHangInDay != null && donHangInYesterday.getTongTien() != null &&
+                donHangInDay.getTongTien() != null && donHangInYesterday.getTongTien().compareTo(zero) != 0 &&
+                donHangInDay.getTongTien().compareTo(zero) != 0) {
             tangTruongDoanhThuNgay = donHangInDay.getTongTien().subtract(donHangInYesterday.getTongTien())
                     .divide(donHangInYesterday.getTongTien(), 2, RoundingMode.HALF_UP)
                     .multiply(BigDecimal.valueOf(100));
+            doanhThuNgay = donHangInDay.getTongTien();
         }
 
-        if (donHangLastMonth != null && donHangLastMonth.getTongTien() != null && donHangLastMonth.getTongTien().compareTo(zero) != 0) {
+        if (donHangLastMonth != null && donHangLastMonth.getTongTien() != null &&
+                donHangLastMonth.getTongTien().compareTo(zero) != 0 && donHangInMonth != null
+                && donHangInMonth.getTongTien() != null && donHangInMonth.getTongTien().compareTo(zero) != 0) {
             tangTruongDoanhThuThang = donHangInMonth.getTongTien().subtract(donHangLastMonth.getTongTien())
                     .divide(donHangLastMonth.getTongTien(), 2, RoundingMode.HALF_UP)
                     .multiply(BigDecimal.valueOf(100));
+            doanhThuThang = donHangInMonth.getTongTien();
         }
 
-        if (donHangLastYear != null && donHangLastYear.getTongTien() != null && donHangLastYear.getTongTien().compareTo(zero) != 0) {
+        if (donHangLastYear != null && donHangLastYear.getTongTien() != null &&
+                donHangLastYear.getTongTien().compareTo(zero) != 0 && donHangInYear != null
+                && donHangInYear.getTongTien() != null && donHangInYear.getTongTien().compareTo(zero) != 0) {
             tangTruongDoanhThuNam = donHangInYear.getTongTien().subtract(donHangLastYear.getTongTien())
                     .divide(donHangLastYear.getTongTien(), 2, RoundingMode.HALF_UP)
                     .multiply(BigDecimal.valueOf(100));
+            doanhThuNam = donHangInYear.getTongTien();
         }
 
-        if (donHangInYesterday != null && donHangInYesterday.getSoLuong() != null && donHangInYesterday.getSoLuong() != 0) {
+        if (donHangInYesterday != null && donHangInYesterday.getSoLuong() != null &&
+                donHangInYesterday.getSoLuong() != 0 && donHangInDay != null &&
+                donHangInDay.getSoLuong() != null && donHangInDay.getSoLuong() != 0) {
             tangTruongSoHoaDonNgay = BigDecimal.valueOf(donHangInDay.getSoLuong() - donHangInYesterday.getSoLuong())
                     .divide(BigDecimal.valueOf(donHangInYesterday.getSoLuong()), 2, RoundingMode.HALF_UP)
                     .multiply(BigDecimal.valueOf(100));
+            soHoaDonNgay = donHangInDay.getSoLuong();
         }
 
-        if (donHangLastMonth != null && donHangLastMonth.getSoLuong() != null && donHangLastMonth.getSoLuong() != 0) {
+        if (donHangLastMonth != null && donHangLastMonth.getSoLuong() != null &&
+                donHangLastMonth.getSoLuong() != 0 && donHangInMonth != null &&
+                donHangInMonth.getSoLuong() != null && donHangInMonth.getSoLuong() != 0) {
             tangTruongSoHoaDonThang = BigDecimal.valueOf(donHangInMonth.getSoLuong() - donHangLastMonth.getSoLuong())
                     .divide(BigDecimal.valueOf(donHangLastMonth.getSoLuong()), 2, RoundingMode.HALF_UP)
                     .multiply(BigDecimal.valueOf(100));
+            soHoaDonThang = donHangInMonth.getSoLuong();
         }
 
-        if (donHangLastYear != null && donHangLastYear.getSoLuong() != null && donHangLastYear.getSoLuong() != 0) {
+        if (donHangLastYear != null && donHangLastYear.getSoLuong() != null &&
+                donHangLastYear.getSoLuong() != 0 && donHangInYear != null &&
+                donHangInYear.getSoLuong() != null && donHangInYear.getSoLuong() != 0) {
             tangTruongSoHoaDonNam = BigDecimal.valueOf(donHangInYear.getSoLuong() - donHangLastYear.getSoLuong())
                     .divide(BigDecimal.valueOf(donHangLastYear.getSoLuong()), 2, RoundingMode.HALF_UP)
                     .multiply(BigDecimal.valueOf(100));
+            soHoaDonNam = donHangInYear.getSoLuong();
         }
 
-        if (sanPhamLastMonth != null && sanPhamLastMonth.getSoLuong() != null && sanPhamLastMonth.getSoLuong() != 0) {
+        if (sanPhamLastMonth != null && sanPhamLastMonth.getSoLuong() != null &&
+                sanPhamLastMonth.getSoLuong() != 0 && sanPhamInMonth != null &&
+                sanPhamInMonth.getSoLuong() != null && sanPhamInMonth.getSoLuong() != 0) {
             tangTruongSoSanPhamThang = BigDecimal.valueOf(sanPhamInMonth.getSoLuong() - sanPhamLastMonth.getSoLuong())
                     .divide(BigDecimal.valueOf(sanPhamLastMonth.getSoLuong()), 2, RoundingMode.HALF_UP)
                     .multiply(BigDecimal.valueOf(100));
+            soSanPhamThang = sanPhamInMonth.getSoLuong();
         }
 
-        thongKeTocDoTangTruongCustom.setDoanhThuNgay(donHangInDay.getTongTien());
+        thongKeTocDoTangTruongCustom.setDoanhThuNgay(doanhThuNgay);
         thongKeTocDoTangTruongCustom.setTangTruongDoanhThuNgay(tangTruongDoanhThuNgay);
-        thongKeTocDoTangTruongCustom.setDoanhThuThang(donHangInMonth.getTongTien());
+        thongKeTocDoTangTruongCustom.setDoanhThuThang(doanhThuThang);
         thongKeTocDoTangTruongCustom.setTangTruongDoanhThuThang(tangTruongDoanhThuThang);
-        thongKeTocDoTangTruongCustom.setDoanhThuNam(donHangInYear.getTongTien());
+        thongKeTocDoTangTruongCustom.setDoanhThuNam(doanhThuNam);
         thongKeTocDoTangTruongCustom.setTangTruongDoanhThuNam(tangTruongDoanhThuNam);
-        thongKeTocDoTangTruongCustom.setSoHoaDonNgay(donHangInDay.getSoLuong());
+        thongKeTocDoTangTruongCustom.setSoHoaDonNgay(soHoaDonNgay);
         thongKeTocDoTangTruongCustom.setTangTruongSoHoaDonNgay(tangTruongSoHoaDonNgay);
-        thongKeTocDoTangTruongCustom.setSoHoaDonThang(donHangInMonth.getSoLuong());
+        thongKeTocDoTangTruongCustom.setSoHoaDonThang(soHoaDonThang);
         thongKeTocDoTangTruongCustom.setTangTruongSoHoaDonThang(tangTruongSoHoaDonThang);
-        thongKeTocDoTangTruongCustom.setSoHoaDonNam(donHangInYear.getSoLuong());
+        thongKeTocDoTangTruongCustom.setSoHoaDonNam(soHoaDonNam);
         thongKeTocDoTangTruongCustom.setTangTruongSoHoaDonNam(tangTruongSoHoaDonNam);
-        thongKeTocDoTangTruongCustom.setSoSanPhamThang(sanPhamInMonth.getSoLuong());
+        thongKeTocDoTangTruongCustom.setSoSanPhamThang(soSanPhamThang);
         thongKeTocDoTangTruongCustom.setTangTruongSoSanPhamThang(tangTruongSoSanPhamThang);
 
         return thongKeTocDoTangTruongCustom;
     }
+
 
     @Override
     public List<ThongKeTrangThaiDonHang> getAllTrangThaiDonHang(String chonTheo) {

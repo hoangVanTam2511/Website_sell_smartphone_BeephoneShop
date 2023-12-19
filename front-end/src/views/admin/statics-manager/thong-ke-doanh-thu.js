@@ -352,6 +352,10 @@ const ThongKeDoanhThu = () => {
               ? "Chờ thanh toán"
               : item.trangThai === 7
               ? "Đã thanh toán"
+              : item.trangThai === 8
+              ? "Trả một phần"
+              : item.trangThai === 9
+              ? "Trả toàn bộ"
               : ""
           ),
           datasets: [
@@ -592,7 +596,10 @@ const ThongKeDoanhThu = () => {
                 <Row className="align-items-center">
                   <h5>Doanh thu tháng này</h5>
                   <h5 style={{ color: "#2f80ed" }}>
-                    {listDonHangInMonth.soLuong} đơn hàng /{" "}
+                    {listDonHangInMonth.soLuong == null
+                      ? 0
+                      : listDonHangInMonth.soLuong}{" "}
+                    đơn hàng /{" "}
                     {listDonHangInMonth.tongTien == null
                       ? "0 ₫"
                       : convertToVND(listDonHangInMonth.tongTien)}
@@ -605,7 +612,10 @@ const ThongKeDoanhThu = () => {
                 <h5>Doanh thu hôm nay</h5>
                 <h5 style={{ color: "#2f80ed" }}>
                   <h5 style={{ color: "#2f80ed" }}>
-                    {listDonHangInDay.soLuong} đơn hàng /{" "}
+                    {listDonHangInDay.soLuong == null
+                      ? 0
+                      : listDonHangInDay.soLuong}{" "}
+                    đơn hàng /{" "}
                     {listDonHangInDay.tongTien == null
                       ? "0 ₫"
                       : convertToVND(listDonHangInDay.tongTien)}
@@ -722,8 +732,7 @@ const ThongKeDoanhThu = () => {
             }}
           >
             <h5>
-              <FontAwesomeIcon icon={faRankingStar} />
-              Sản phẩm bán chạy
+              <FontAwesomeIcon icon={faRankingStar} /> Sản phẩm bán chạy
             </h5>
             <div
               className="mt-3 mb-2"
@@ -883,8 +892,7 @@ const ThongKeDoanhThu = () => {
             }}
           >
             <h5>
-              <FontAwesomeIcon icon={faRankingStar} />
-              Sản phẩm sắp hết hàng
+              <FontAwesomeIcon icon={faRankingStar} /> Sản phẩm sắp hết hàng
               <hr />
             </h5>
             <Table
@@ -908,8 +916,7 @@ const ThongKeDoanhThu = () => {
             }}
           >
             <h5>
-              <FontAwesomeIcon icon={faRankingStar} />
-              Sản phẩm trả hàng
+              <FontAwesomeIcon icon={faRankingStar} /> Sản phẩm trả hàng
               <hr />
             </h5>
             <Table
@@ -966,7 +973,7 @@ const ThongKeDoanhThu = () => {
                           ) : (
                             <FontAwesomeIcon icon={faArrowDownWideShort} />
                           )}
-                          {tocDoTangTruong.tangTruongDoanhThuNgay}%
+                          {tocDoTangTruong.tangTruongDoanhThuNgay > 100 ? 100 : tocDoTangTruong.tangTruongDoanhThuNgay}%
                         </span>
                       </Col>
                     </Row>
@@ -1002,7 +1009,7 @@ const ThongKeDoanhThu = () => {
                           ) : (
                             <FontAwesomeIcon icon={faArrowDownWideShort} />
                           )}
-                          {tocDoTangTruong.tangTruongDoanhThuThang}%
+                          {tocDoTangTruong.tangTruongDoanhThuThang > 100 ? 100 : tocDoTangTruong.tangTruongDoanhThuThang}%
                         </span>
                       </Col>
                     </Row>
@@ -1038,7 +1045,7 @@ const ThongKeDoanhThu = () => {
                           ) : (
                             <FontAwesomeIcon icon={faArrowDownWideShort} />
                           )}
-                          {tocDoTangTruong.tangTruongDoanhThuNam}%
+                          {tocDoTangTruong.tangTruongDoanhThuNam > 100 ? 100 : tocDoTangTruong.tangTruongDoanhThuNam}%
                         </span>
                       </Col>
                     </Row>
@@ -1070,7 +1077,7 @@ const ThongKeDoanhThu = () => {
                           ) : (
                             <FontAwesomeIcon icon={faArrowDownWideShort} />
                           )}
-                          {tocDoTangTruong.tangTruongSoSanPhamThang}%
+                          {tocDoTangTruong.tangTruongSoSanPhamThang > 100 ? 100 : tocDoTangTruong.tangTruongSoSanPhamThang}%
                         </span>
                       </Col>
                     </Row>
@@ -1102,7 +1109,7 @@ const ThongKeDoanhThu = () => {
                           ) : (
                             <FontAwesomeIcon icon={faArrowDownWideShort} />
                           )}
-                          {tocDoTangTruong.tangTruongSoHoaDonNgay}%
+                          {tocDoTangTruong.tangTruongSoHoaDonNgay > 100 ? 100: tocDoTangTruong.tangTruongSoHoaDonNgay}%
                         </span>
                       </Col>
                     </Row>
@@ -1134,7 +1141,7 @@ const ThongKeDoanhThu = () => {
                           ) : (
                             <FontAwesomeIcon icon={faArrowDownWideShort} />
                           )}
-                          {tocDoTangTruong.tangTruongSoHoaDonThang}%
+                          {tocDoTangTruong.tangTruongSoHoaDonThang > 100 ? 100 : tocDoTangTruong.tangTruongSoHoaDonThang}%
                         </span>
                       </Col>
                     </Row>
@@ -1167,7 +1174,7 @@ const ThongKeDoanhThu = () => {
                           ) : (
                             <FontAwesomeIcon icon={faArrowDownWideShort} />
                           )}
-                          {tocDoTangTruong.tangTruongSoHoaDonNam}%
+                          {tocDoTangTruong.tangTruongSoHoaDonNam > 100 ? 100: tocDoTangTruong.tangTruongSoHoaDonNam}%
                         </span>
                       </Col>
                     </Row>
