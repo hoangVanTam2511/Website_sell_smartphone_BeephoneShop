@@ -35,14 +35,12 @@ import beephone_shop_projects.entity.ImeiChuaBan;
 import beephone_shop_projects.entity.ImeiDaBan;
 import beephone_shop_projects.entity.LichSuHoaDon;
 import beephone_shop_projects.entity.SanPhamChiTiet;
-import beephone_shop_projects.entity.Voucher;
 import beephone_shop_projects.infrastructure.constant.StatusImei;
 import beephone_shop_projects.infrastructure.exeption.rest.RestApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -730,46 +728,90 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
                     .anyMatch(item -> item.getSoImei().equals(imei.getSoImei())))
             .collect(Collectors.toList());
 
-    Set<Imei> imeisProduct = getOptional.getImeis();
-    for (ImeiDaBan imeiDaBan : imeiToAdd) {
-      if (findOrderCurrent.getTongTien() != null) {
-        BigDecimal tongTienCurrent = findOrderCurrent.getTongTien();
-        findOrderCurrent.setTongTien(tongTienCurrent.add(getOptional.getDonGia()));
-        if (findOrderCurrent.getKhachCanTra() != null) {
-          BigDecimal khachCanTraCurrent = findOrderCurrent.getKhachCanTra();
-          findOrderCurrent.setKhachCanTra(khachCanTraCurrent.add(getOptional.getDonGia()));
+    if (findCartItemOrder.get().getImeisDaBan().size() > 0) {
+      Set<Imei> imeisProduct = getOptional.getImeis();
+      for (ImeiDaBan imeiDaBan : imeiToAdd) {
+        if (findOrderCurrent.getTongTien() != null) {
+          BigDecimal tongTienCurrent = findOrderCurrent.getTongTien();
+          findOrderCurrent.setTongTien(tongTienCurrent.add(getOptional.getDonGia()));
+          if (findOrderCurrent.getKhachCanTra() != null) {
+            BigDecimal khachCanTraCurrent = findOrderCurrent.getKhachCanTra();
+            findOrderCurrent.setKhachCanTra(khachCanTraCurrent.add(getOptional.getDonGia()));
+          }
+          if (findOrderCurrent.getTongTienSauKhiGiam() != null) {
+            BigDecimal tongTienSauKhiGiamCurrent = findOrderCurrent.getTongTienSauKhiGiam();
+            findOrderCurrent.setTongTienSauKhiGiam(tongTienSauKhiGiamCurrent.add(getOptional.getDonGia()));
+          }
+          orderRepository.save(findOrderCurrent);
         }
-        if (findOrderCurrent.getTongTienSauKhiGiam() != null) {
-          BigDecimal tongTienSauKhiGiamCurrent = findOrderCurrent.getTongTienSauKhiGiam();
-          findOrderCurrent.setTongTienSauKhiGiam(tongTienSauKhiGiamCurrent.add(getOptional.getDonGia()));
-        }
-        orderRepository.save(findOrderCurrent);
+        imeisProduct.forEach((s) -> {
+          if (imeiDaBan.getSoImei().equals(s.getSoImei())) {
+            s.setTrangThai(StatusImei.PENDING_DELIVERY);
+          }
+        });
       }
-      imeisProduct.forEach((s) -> {
-        if (imeiDaBan.getSoImei().equals(s.getSoImei())) {
-          s.setTrangThai(StatusImei.PENDING_DELIVERY);
+      for (ImeiDaBan imeiDaBan : imeiToRemove) {
+        if (findOrderCurrent.getTongTien() != null) {
+          BigDecimal tongTienCurrent = findOrderCurrent.getTongTien();
+          findOrderCurrent.setTongTien(tongTienCurrent.subtract(getOptional.getDonGia()));
+          if (findOrderCurrent.getKhachCanTra() != null) {
+            BigDecimal khachCanTraCurrent = findOrderCurrent.getKhachCanTra();
+            findOrderCurrent.setKhachCanTra(khachCanTraCurrent.subtract(getOptional.getDonGia()));
+          }
+          if (findOrderCurrent.getTongTienSauKhiGiam() != null) {
+            BigDecimal tongTienSauKhiGiamCurrent = findOrderCurrent.getTongTienSauKhiGiam();
+            findOrderCurrent.setTongTienSauKhiGiam(tongTienSauKhiGiamCurrent.subtract(getOptional.getDonGia()));
+          }
+          orderRepository.save(findOrderCurrent);
         }
-      });
-    }
-    for (ImeiDaBan imeiDaBan : imeiToRemove) {
-      if (findOrderCurrent.getTongTien() != null) {
-        BigDecimal tongTienCurrent = findOrderCurrent.getTongTien();
-        findOrderCurrent.setTongTien(tongTienCurrent.subtract(getOptional.getDonGia()));
-        if (findOrderCurrent.getKhachCanTra() != null) {
-          BigDecimal khachCanTraCurrent = findOrderCurrent.getKhachCanTra();
-          findOrderCurrent.setKhachCanTra(khachCanTraCurrent.subtract(getOptional.getDonGia()));
-        }
-        if (findOrderCurrent.getTongTienSauKhiGiam() != null) {
-          BigDecimal tongTienSauKhiGiamCurrent = findOrderCurrent.getTongTienSauKhiGiam();
-          findOrderCurrent.setTongTienSauKhiGiam(tongTienSauKhiGiamCurrent.subtract(getOptional.getDonGia()));
-        }
-        orderRepository.save(findOrderCurrent);
+        imeisProduct.forEach((s) -> {
+          if (imeiDaBan.getSoImei().equals(s.getSoImei())) {
+            s.setTrangThai(StatusImei.NOT_SOLD);
+          }
+        });
       }
-      imeisProduct.forEach((s) -> {
-        if (imeiDaBan.getSoImei().equals(s.getSoImei())) {
-          s.setTrangThai(StatusImei.NOT_SOLD);
+    } else if (findCartItemOrder.get().getImeisDaBan().size() == 0) {
+      BigDecimal donGiaProduct = BigDecimal.ZERO;
+      if (findCartItemOrder.get().getDonGiaSauGiam() != null && findCartItemOrder.get().getDonGiaSauGiam().compareTo(BigDecimal.ZERO) != 0) {
+        donGiaProduct.add(findCartItemOrder.get().getDonGiaSauGiam());
+      } else {
+        donGiaProduct.add(findCartItemOrder.get().getDonGia());
+      }
+
+      Set<Imei> imeisProduct = getOptional.getImeis();
+      for (ImeiDaBan imeiDaBan : imeiToAdd) {
+        if (findOrderCurrent.getTongTien() != null) {
+          BigDecimal tongTienCurrent = findOrderCurrent.getTongTien().subtract(donGiaProduct);
+          findOrderCurrent.setTongTien(tongTienCurrent.add(getOptional.getDonGia()));
+          if (findOrderCurrent.getKhachCanTra() != null) {
+            BigDecimal khachCanTraCurrent = findOrderCurrent.getKhachCanTra().subtract(donGiaProduct);
+            findOrderCurrent.setKhachCanTra(khachCanTraCurrent.add(getOptional.getDonGia()));
+          }
+          if (findOrderCurrent.getTongTienSauKhiGiam() != null) {
+            BigDecimal tongTienSauKhiGiamCurrent = findOrderCurrent.getTongTienSauKhiGiam().subtract(donGiaProduct);
+            findOrderCurrent.setTongTienSauKhiGiam(tongTienSauKhiGiamCurrent.add(getOptional.getDonGia()));
+          }
+          orderRepository.save(findOrderCurrent);
         }
-      });
+        imeisProduct.forEach((s) -> {
+          if (imeiDaBan.getSoImei().equals(s.getSoImei())) {
+            s.setTrangThai(StatusImei.PENDING_DELIVERY);
+          }
+        });
+      }
+        if (findOrderCurrent.getTongTien() != null) {
+          BigDecimal tongTienCurrent = findOrderCurrent.getTongTien();
+          findOrderCurrent.setTongTien(tongTienCurrent.subtract(donGiaProduct));
+          if (findOrderCurrent.getKhachCanTra() != null) {
+            BigDecimal khachCanTraCurrent = findOrderCurrent.getKhachCanTra();
+            findOrderCurrent.setKhachCanTra(khachCanTraCurrent.subtract(donGiaProduct));
+          }
+          if (findOrderCurrent.getTongTienSauKhiGiam() != null) {
+            BigDecimal tongTienSauKhiGiamCurrent = findOrderCurrent.getTongTienSauKhiGiam();
+            findOrderCurrent.setTongTienSauKhiGiam(tongTienSauKhiGiamCurrent.subtract(donGiaProduct));
+          }
+          orderRepository.save(findOrderCurrent);
+        }
     }
 
 //    BigDecimal tongTien;
