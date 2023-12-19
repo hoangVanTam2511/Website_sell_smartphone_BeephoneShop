@@ -191,7 +191,7 @@ const ManagementImei = () => {
               Đã Bán
             </span>
           </div>
-        ) : type === StatusImei.NOT_SOLD ? (
+        ) : type === StatusImei.NOT_SOLD || type === StatusImei.IN_THE_CART ? (
           <div
             className="rounded-pill badge-warning mx-auto"
             style={{ height: "35px", width: "135px", padding: "4px" }}
@@ -255,6 +255,7 @@ const ManagementImei = () => {
                 className="ms-2"
                 style={{ marginTop: "6px" }}
                 onClick={() => doiTrangThaiImei(record.id)}
+                disabled={record.trangThai === StatusImei.SOLD ? true : false}
               >
                 <FontAwesomeIcon
                   icon={faArrowsRotate}
