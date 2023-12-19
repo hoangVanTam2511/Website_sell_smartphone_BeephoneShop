@@ -254,7 +254,7 @@ public class VoucherServiceImpl implements VoucherService {
             VoucherResponse voucher = voucherRepository.findCodeVoucher(input);
             if (voucher != null) {
                 if (!voucher.getMa().equals(input) || voucher.getTrangThai() != 1) {
-                    response.setMessage("Mã giảm giá không tồn tại.");
+                    response.setMessage("Mã giảm giá không hợp lệ.");
                 } else if (voucher.getMa().equals(input) && voucher.getSoLuong() <= 0) {
                     response.setMessage("Mã giảm giá đã hết lượt sử dụng.");
                 } else if (tongTien.compareTo(voucher.getDieuKienApDung()) == -1) {
@@ -263,10 +263,10 @@ public class VoucherServiceImpl implements VoucherService {
                     response.setVoucher(voucher);
                     response.setStatus(true);
                 } else {
-                    response.setMessage("Mã giảm giá không tồn tại.");
+                    response.setMessage("Mã giảm giá không hợp lệ.");
                 }
             } else {
-                response.setMessage("Mã giảm giá không tồn tại.");
+                response.setMessage("Mã giảm giá không hợp lệ.");
             }
         }
         return response;

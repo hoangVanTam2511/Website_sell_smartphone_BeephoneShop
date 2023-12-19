@@ -208,7 +208,7 @@ public class ProductServiceImpl extends AbstractServiceImpl<SanPham, ProductResp
       searchFilter.setCurrentPage(1);
     }
     if (searchFilter.getPageSize() == null) {
-      searchFilter.setPageSize(7);
+      searchFilter.setPageSize(10);
     }
     Pageable pageable = PageRequest.of(searchFilter.getCurrentPage() - 1, searchFilter.getPageSize());
 
