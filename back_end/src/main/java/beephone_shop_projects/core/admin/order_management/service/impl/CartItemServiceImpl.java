@@ -1030,7 +1030,7 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
     orderHistory.setCreatedAt(new Date());
     orderHistory.setCreatedBy(req.getCreatedByRefund());
     orderHistory.setThaoTac("Hoàn Trả");
-    orderHistory.setMoTa("Đã hoàn trả [" + req.getAmount() + "] sản phẩm với số tiền là [" + req.getTongTien() + "]. " + req.getGhiChu());
+    orderHistory.setMoTa("Đã hoàn trả [" + req.getAmount() + "] sản phẩm với số tiền là [" + req.getTongTienString() + "]. " + req.getGhiChu());
     orderHistory.setLoaiThaoTac(7);
     lichSuHoaDonRepository.save(orderHistory);
     return null;
