@@ -528,14 +528,8 @@ const ManagementOrders = () => {
         }}
       >
         <Card className="">
-          <span
-            className="header-title mt-3 ms-4"
-            style={{ fontWeight: "500px" }}
-          >
-            <FontAwesomeIcon icon={faHouse} size={"sm"} /> Quản Lý Đơn Hàng
-          </span>
           <Card.Header className="d-flex justify-content-between">
-            <div className="header-title">
+            <div className="header-title mt-2">
               <TextField
                 label="Tìm theo mã đơn hàng, tên, số điện thoại khách hàng"
                 onChange={handleGetValueFromInputTextField}

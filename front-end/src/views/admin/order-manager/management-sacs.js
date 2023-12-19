@@ -413,14 +413,8 @@ const ManagementCongSacs = () => {
         }}
       >
         <Card className="">
-          <span
-            className="header-title mt-3 ms-4"
-            style={{ fontWeight: "500px" }}
-          >
-            <FontAwesomeIcon icon={faHouse} size={"sm"} /> Quản Lý Cổng Sạc
-          </span>
           <Card.Header className="d-flex justify-content-between">
-            <div className="header-title">
+            <div className="header-title mt-2">
               <TextField
                 placeholder="Tìm theo mã, loại cổng sạc"
                 label="Tìm Cổng Sạc"

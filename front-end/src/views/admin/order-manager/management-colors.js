@@ -409,15 +409,9 @@ const ManagementColors = () => {
           boxShadow: "0 0.1rem 0.3rem #00000010",
         }}
       >
-        <Card className="">
-          <span
-            className="header-title mt-3 ms-4"
-            style={{ fontWeight: "500px" }}
-          >
-            <FontAwesomeIcon icon={faHouse} size={"sm"} /> Quản Lý Màu Sắc
-          </span>
+        <Card className="d-flex">
           <Card.Header className="d-flex justify-content-between">
-            <div className="header-title">
+            <div className="header-title mt-2">
               <TextField
                 placeholder="Tìm theo mã, tên màu sắc"
                 label="Tìm màu sắc"

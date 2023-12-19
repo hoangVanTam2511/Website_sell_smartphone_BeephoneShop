@@ -346,7 +346,7 @@ const HienThiKH = () => {
         >
           <Card className="">
             <Card.Header className="d-flex justify-content-between">
-              <div className="header-title">
+              <div className="header-title mt-2">
                 <TextField
                   label="Tìm khách hàng"
                   value={searchText}
