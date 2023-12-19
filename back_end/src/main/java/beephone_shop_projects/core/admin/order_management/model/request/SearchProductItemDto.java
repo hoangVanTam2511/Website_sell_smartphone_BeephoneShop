@@ -11,8 +11,6 @@ public class SearchProductItemDto {
 
   private String ma;
 
-  private BigDecimal soLuongTonKho;
-
   private String tenSanPham;
 
 }

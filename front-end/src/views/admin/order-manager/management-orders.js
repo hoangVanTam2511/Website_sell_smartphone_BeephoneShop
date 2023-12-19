@@ -511,19 +511,19 @@ const ManagementOrders = () => {
           <Card.Header className="d-flex justify-content-between">
             <div className="header-title">
               <TextField
-                label="Tìm đơn hàng"
+                label="Tìm theo mã đơn hàng, tên, số điện thoại khách hàng"
                 onChange={handleGetValueFromInputTextField}
                 value={keyword}
                 InputLabelProps={{
                   sx: {
                     marginTop: "",
-                    textTransform: "capitalize",
+                    // textTransform: "capitalize",
                   },
                 }}
                 inputProps={{
                   style: {
                     height: "23px",
-                    width: "190px",
+                    width: "390px",
                   },
                 }}
                 size="small"

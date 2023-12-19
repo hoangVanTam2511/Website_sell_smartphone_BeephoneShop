@@ -18,6 +18,4 @@ public class SearchOrderDto {
   private String hoVaTen;
 
   private String soDienThoai;
-
-  private BigDecimal khachCanTra;
 }
