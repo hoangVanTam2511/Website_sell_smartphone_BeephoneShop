@@ -83,9 +83,16 @@ import {
 import DeliveryInfoShip from "./delivery-info-ship";
 import AppBarCode from "./App";
 import Html5QrcodePlugin from "./Html5QrcodePlugin";
-import { PrintBillAtTheCounter, PrintBillAtTheCounterAuto } from "./printer-invoice";
+import {
+  PrintBillAtTheCounter,
+  PrintBillAtTheCounterAuto,
+} from "./printer-invoice";
 import { useReactToPrint } from "react-to-print";
-import { request, requestBodyParam, requestParam } from "../../../store/helpers/axios_helper";
+import {
+  request,
+  requestBodyParam,
+  requestParam,
+} from "../../../store/helpers/axios_helper";
 import { getUser } from "../../../store/user/userSlice";
 
 const IOSSwitch = styled((props) => (
@@ -252,15 +259,19 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
-      )
-        .then((response) => {
-          const data = response.data.data;
-          setOrder(data);
-          setSdt(data.soDienThoai === null ? "" : data.soDienThoai);
-          getAllOrdersPending();
-        });
-    } catch (error) { console.log(error) }
+      request(
+        "PUT",
+        `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`,
+        orderRequest
+      ).then((response) => {
+        const data = response.data.data;
+        setOrder(data);
+        setSdt(data.soDienThoai === null ? "" : data.soDienThoai);
+        getAllOrdersPending();
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
   const updateEmail = async (email) => {
     const orderRequest = {
@@ -280,14 +291,19 @@ const PointOfSales = () => {
       isUpdateEmail: true,
     };
     try {
-      request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest)
-        .then((response) => {
-          const data = response.data.data;
-          setOrder(data);
-          setEmail(data.email === null ? "" : data.email);
-          getAllOrdersPending();
-        });
-    } catch (error) { console.log(error) }
+      request(
+        "PUT",
+        `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`,
+        orderRequest
+      ).then((response) => {
+        const data = response.data.data;
+        setOrder(data);
+        setEmail(data.email === null ? "" : data.email);
+        getAllOrdersPending();
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const updateFullName = async (name) => {
@@ -308,15 +324,19 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
-      )
-        .then((response) => {
-          const data = response.data.data;
-          setOrder(data);
-          setFullName(data.hoVaTen === null ? "" : data.hoVaTen);
-          getAllOrdersPending();
-        });
-    } catch (error) { console.log(error) }
+      request(
+        "PUT",
+        `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`,
+        orderRequest
+      ).then((response) => {
+        const data = response.data.data;
+        setOrder(data);
+        setFullName(data.hoVaTen === null ? "" : data.hoVaTen);
+        getAllOrdersPending();
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const [selectedValuePaymentMethod, setSelectedValuePaymentMethod] =
@@ -401,36 +421,31 @@ const PointOfSales = () => {
         isUpdateEmail: false,
       };
       try {
-        await request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
-        )
-          .then((response) => {
-            const data = response.data.data;
-            setOrder(data);
-            setCustomerNameShip(data && data.tenNguoiNhan);
-            setCustomerPhoneShip(data && data.soDienThoaiNguoiNhan);
-            setCustomerAddressShip(data && data.diaChiNguoiNhan);
-            setCustomerWardShip(data && data.xaPhuongNguoiNhan);
-            setCustomerProvinceShip(data && data.tinhThanhPhoNguoiNhan);
-            setCustomerDistrictShip(data && data.quanHuyenNguoiNhan);
-          });
+        await request(
+          "PUT",
+          `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`,
+          orderRequest
+        ).then((response) => {
+          const data = response.data.data;
+          setOrder(data);
+          setCustomerNameShip(data && data.tenNguoiNhan);
+          setCustomerPhoneShip(data && data.soDienThoaiNguoiNhan);
+          setCustomerAddressShip(data && data.diaChiNguoiNhan);
+          setCustomerWardShip(data && data.xaPhuongNguoiNhan);
+          setCustomerProvinceShip(data && data.tinhThanhPhoNguoiNhan);
+          setCustomerDistrictShip(data && data.quanHuyenNguoiNhan);
+        });
       } catch (error) {
         setIsLoading(false);
       }
-    }
-    else {
+    } else {
       const orderRequest = {
-        soDienThoaiNguoiNhan:
-          "",
-        tenNguoiNhan:
-          "",
-        diaChiNguoiNhan:
-          "",
-        tinhThanhPhoNguoiNhan:
-          "",
-        quanHuyenNguoiNhan:
-          "",
-        xaPhuongNguoiNhan:
-          "",
+        soDienThoaiNguoiNhan: "",
+        tenNguoiNhan: "",
+        diaChiNguoiNhan: "",
+        tinhThanhPhoNguoiNhan: "",
+        quanHuyenNguoiNhan: "",
+        xaPhuongNguoiNhan: "",
         // loaiHoaDon: delivery ? OrderTypeString.DELIVERY : OrderTypeString.AT_COUNTER,
         isPayment: false,
         isUpdateType: false,
@@ -447,22 +462,23 @@ const PointOfSales = () => {
         isUpdateEmail: false,
       };
       try {
-        await request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
-        )
-          .then((response) => {
-            const data = response.data.data;
-            setOrder(data);
-            setCustomerNameShip(data && data.tenNguoiNhan);
-            setCustomerPhoneShip(data && data.soDienThoaiNguoiNhan);
-            setCustomerAddressShip(data && data.diaChiNguoiNhan);
-            setCustomerWardShip(data && data.xaPhuongNguoiNhan);
-            setCustomerProvinceShip(data && data.tinhThanhPhoNguoiNhan);
-            setCustomerDistrictShip(data && data.quanHuyenNguoiNhan);
-          });
+        await request(
+          "PUT",
+          `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`,
+          orderRequest
+        ).then((response) => {
+          const data = response.data.data;
+          setOrder(data);
+          setCustomerNameShip(data && data.tenNguoiNhan);
+          setCustomerPhoneShip(data && data.soDienThoaiNguoiNhan);
+          setCustomerAddressShip(data && data.diaChiNguoiNhan);
+          setCustomerWardShip(data && data.xaPhuongNguoiNhan);
+          setCustomerProvinceShip(data && data.tinhThanhPhoNguoiNhan);
+          setCustomerDistrictShip(data && data.quanHuyenNguoiNhan);
+        });
       } catch (error) {
         setIsLoading(false);
       }
-
     }
   };
 
@@ -504,25 +520,27 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
-      )
-        .then((response) => {
-          const data = response.data.data;
-          setOrder(data);
-          setCustomerNameShip(data && data.tenNguoiNhan);
-          setCustomerPhoneShip(data && data.soDienThoaiNguoiNhan);
-          setCustomerAddressShip(data && data.diaChiNguoiNhan);
-          setCustomerWardShip(data && data.xaPhuongNguoiNhan);
-          setCustomerProvinceShip(data && data.tinhThanhPhoNguoiNhan);
-          setCustomerDistrictShip(data && data.quanHuyenNguoiNhan);
-          getAllOrdersPending();
-          setIsLoading(false);
-          handleCloseDialogAddresses();
-          handleOpenAlertVariant(
-            "Chọn địa chỉ giao hàng thành công!",
-            Notistack.SUCCESS
-          );
-        });
+      request(
+        "PUT",
+        `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`,
+        orderRequest
+      ).then((response) => {
+        const data = response.data.data;
+        setOrder(data);
+        setCustomerNameShip(data && data.tenNguoiNhan);
+        setCustomerPhoneShip(data && data.soDienThoaiNguoiNhan);
+        setCustomerAddressShip(data && data.diaChiNguoiNhan);
+        setCustomerWardShip(data && data.xaPhuongNguoiNhan);
+        setCustomerProvinceShip(data && data.tinhThanhPhoNguoiNhan);
+        setCustomerDistrictShip(data && data.quanHuyenNguoiNhan);
+        getAllOrdersPending();
+        setIsLoading(false);
+        handleCloseDialogAddresses();
+        handleOpenAlertVariant(
+          "Chọn địa chỉ giao hàng thành công!",
+          Notistack.SUCCESS
+        );
+      });
     } catch (error) {
       setIsLoading(false);
     }
@@ -564,15 +582,17 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
-      )
-        .then((response) => {
-          const data = response.data.data;
-          setOrder(data);
-          setCustomerPhoneShip(data && data.soDienThoaiNguoiNhan);
-          getAllOrdersPending();
-        });
-    } catch (error) { }
+      request(
+        "PUT",
+        `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`,
+        orderRequest
+      ).then((response) => {
+        const data = response.data.data;
+        setOrder(data);
+        setCustomerPhoneShip(data && data.soDienThoaiNguoiNhan);
+        getAllOrdersPending();
+      });
+    } catch (error) {}
   };
   const updateAddressShipOrder = async (address) => {
     const orderRequest = {
@@ -592,15 +612,17 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
-      )
-        .then((response) => {
-          const data = response.data.data;
-          setOrder(data);
-          setCustomerAddressShip(data && data.diaChiNguoiNhan);
-          getAllOrdersPending();
-        });
-    } catch (error) { }
+      request(
+        "PUT",
+        `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`,
+        orderRequest
+      ).then((response) => {
+        const data = response.data.data;
+        setOrder(data);
+        setCustomerAddressShip(data && data.diaChiNguoiNhan);
+        getAllOrdersPending();
+      });
+    } catch (error) {}
   };
   const updateNoteShipOrder = async (note) => {
     const orderRequest = {
@@ -620,15 +642,19 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
-      )
-        .then((response) => {
-          const data = response.data.data;
-          setOrder(data);
-          setCustomerNoteShip(data && data.ghiChu);
-          getAllOrdersPending();
-        });
-    } catch (error) { console.log(error) }
+      request(
+        "PUT",
+        `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`,
+        orderRequest
+      ).then((response) => {
+        const data = response.data.data;
+        setOrder(data);
+        setCustomerNoteShip(data && data.ghiChu);
+        getAllOrdersPending();
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const updateTypeOrder = async (type) => {
@@ -650,74 +676,76 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
-      )
-        .then((response) => {
-          const order = response.data.data;
-          setOrder(order);
+      request(
+        "PUT",
+        `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`,
+        orderRequest
+      ).then((response) => {
+        const order = response.data.data;
+        setOrder(order);
 
-          const delivery =
-            order.loaiHoaDon === OrderTypeString.DELIVERY ? true : false;
-          setDelivery(
-            order.loaiHoaDon === OrderTypeString.DELIVERY ? true : false
+        const delivery =
+          order.loaiHoaDon === OrderTypeString.DELIVERY ? true : false;
+        setDelivery(
+          order.loaiHoaDon === OrderTypeString.DELIVERY ? true : false
+        );
+
+        if (delivery) {
+          setCustomerNameShip(
+            order.loaiHoaDon === OrderTypeString.DELIVERY &&
+              order.tenNguoiNhan !== null
+              ? order.tenNguoiNhan
+              : ""
           );
-
-          if (delivery) {
-            setCustomerNameShip(
-              order.loaiHoaDon === OrderTypeString.DELIVERY &&
-                order.tenNguoiNhan !== null
-                ? order.tenNguoiNhan
-                : ""
-            );
-            setCustomerPhoneShip(
-              order.loaiHoaDon === OrderTypeString.DELIVERY &&
-                order.soDienThoaiNguoiNhan !== null
-                ? order.soDienThoaiNguoiNhan
-                : ""
-            );
-            setCustomerAddressShip(
-              order.loaiHoaDon === OrderTypeString.DELIVERY &&
-                order.diaChiNguoiNhan !== null
-                ? order.diaChiNguoiNhan
-                : ""
-            );
-            setCustomerWardShip(
-              order.loaiHoaDon === OrderTypeString.DELIVERY &&
-                order.xaPhuongNguoiNhan !== null
-                ? order.xaPhuongNguoiNhan
-                : ""
-            );
-            setCustomerProvinceShip(
-              order.loaiHoaDon === OrderTypeString.DELIVERY &&
-                order.tinhThanhPhoNguoiNhan !== null
-                ? order.tinhThanhPhoNguoiNhan
-                : ""
-            );
-            setCustomerDistrictShip(
-              order.loaiHoaDon === OrderTypeString.DELIVERY &&
-                order.quanHuyenNguoiNhan != null
-                ? order.quanHuyenNguoiNhan
-                : ""
-            );
-            setCustomerNoteShip(
-              order.loaiHoaDon === OrderTypeString.DELIVERY &&
-                order.ghiChu != null
-                ? order.ghiChu
-                : ""
-            );
-          } else {
-            setSelectedValuePaymentMethod("Tiền mặt");
-            setCustomerNameShip("");
-            setCustomerPhoneShip("");
-            setCustomerAddressShip("");
-            setCustomerWardShip("");
-            setCustomerProvinceShip("");
-            setCustomerDistrictShip("");
-            setCustomerNoteShip("");
-          }
-          getAllOrdersPending();
-          setIsLoading(false);
-        });
+          setCustomerPhoneShip(
+            order.loaiHoaDon === OrderTypeString.DELIVERY &&
+              order.soDienThoaiNguoiNhan !== null
+              ? order.soDienThoaiNguoiNhan
+              : ""
+          );
+          setCustomerAddressShip(
+            order.loaiHoaDon === OrderTypeString.DELIVERY &&
+              order.diaChiNguoiNhan !== null
+              ? order.diaChiNguoiNhan
+              : ""
+          );
+          setCustomerWardShip(
+            order.loaiHoaDon === OrderTypeString.DELIVERY &&
+              order.xaPhuongNguoiNhan !== null
+              ? order.xaPhuongNguoiNhan
+              : ""
+          );
+          setCustomerProvinceShip(
+            order.loaiHoaDon === OrderTypeString.DELIVERY &&
+              order.tinhThanhPhoNguoiNhan !== null
+              ? order.tinhThanhPhoNguoiNhan
+              : ""
+          );
+          setCustomerDistrictShip(
+            order.loaiHoaDon === OrderTypeString.DELIVERY &&
+              order.quanHuyenNguoiNhan != null
+              ? order.quanHuyenNguoiNhan
+              : ""
+          );
+          setCustomerNoteShip(
+            order.loaiHoaDon === OrderTypeString.DELIVERY &&
+              order.ghiChu != null
+              ? order.ghiChu
+              : ""
+          );
+        } else {
+          setSelectedValuePaymentMethod("Tiền mặt");
+          setCustomerNameShip("");
+          setCustomerPhoneShip("");
+          setCustomerAddressShip("");
+          setCustomerWardShip("");
+          setCustomerProvinceShip("");
+          setCustomerDistrictShip("");
+          setCustomerNoteShip("");
+        }
+        getAllOrdersPending();
+        setIsLoading(false);
+      });
     } catch (error) {
       setIsLoading(false);
     }
@@ -741,15 +769,17 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
-      )
-        .then((response) => {
-          const data = response.data.data;
-          setOrder(data);
-          setCustomerNameShip(data && data.tenNguoiNhan);
-          getAllOrdersPending();
-        });
-    } catch (error) { }
+      request(
+        "PUT",
+        `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`,
+        orderRequest
+      ).then((response) => {
+        const data = response.data.data;
+        setOrder(data);
+        setCustomerNameShip(data && data.tenNguoiNhan);
+        getAllOrdersPending();
+      });
+    } catch (error) {}
   };
 
   const updateInfoShipOrder = async (
@@ -780,19 +810,20 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      requestBodyParam("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
-      )
-        .then((response) => {
-          const data = response.data.data;
-          setOrder(data);
-          setCustomerWardShip(data && data.xaPhuongNguoiNhan);
-          setCustomerProvinceShip(data && data.tinhThanhPhoNguoiNhan);
-          setCustomerDistrictShip(data && data.quanHuyenNguoiNhan);
-          getAllOrdersPending();
-        });
-    } catch (error) { }
+      requestBodyParam(
+        "PUT",
+        `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`,
+        orderRequest
+      ).then((response) => {
+        const data = response.data.data;
+        setOrder(data);
+        setCustomerWardShip(data && data.xaPhuongNguoiNhan);
+        setCustomerProvinceShip(data && data.tinhThanhPhoNguoiNhan);
+        setCustomerDistrictShip(data && data.quanHuyenNguoiNhan);
+        getAllOrdersPending();
+      });
+    } catch (error) {}
   };
-
 
   // const getCustomerById = async (id) => {
   //   setIsLoading(true);
@@ -848,7 +879,7 @@ const PointOfSales = () => {
         .then(async (response) => {
           const data = response.data;
           await updateAccount(id);
-          console.log(data)
+          console.log(data);
           setCustomer(data);
           setCustomerName(data.hoVaTen);
           setCustomerPhone(data.soDienThoai);
@@ -921,8 +952,13 @@ const PointOfSales = () => {
   };
 
   const checkInfoShip = () => {
-    if (customerNameShip.trim() === "" || customerPhoneShip.trim() === ""
-      || customerAddressShip.trim() === "" || customerDistrictShip.trim() === "" || customerWardShip.trim() === "") {
+    if (
+      customerNameShip.trim() === "" ||
+      customerPhoneShip.trim() === "" ||
+      customerAddressShip.trim() === "" ||
+      customerDistrictShip.trim() === "" ||
+      customerWardShip.trim() === ""
+    ) {
       return true;
     }
     return false;
@@ -934,7 +970,11 @@ const PointOfSales = () => {
       scrollToDiv1();
       return;
     }
-    if (checkInfoShip() === true && order.loaiHoaDon === OrderTypeString.DELIVERY && checkInfoGuest() === false) {
+    if (
+      checkInfoShip() === true &&
+      order.loaiHoaDon === OrderTypeString.DELIVERY &&
+      checkInfoGuest() === false
+    ) {
       scrollToDiv2();
       return;
     }
@@ -986,8 +1026,12 @@ const PointOfSales = () => {
   //   }, [])
 
   useEffect(() => {
-    const validVouchers = vouchersActive.filter(item => handleCountTotalMoney() >= item.dieuKienApDung);
-    const sortedVouchers = validVouchers.sort((a, b) => b.giaTriVoucher - a.giaTriVoucher);
+    const validVouchers = vouchersActive.filter(
+      (item) => handleCountTotalMoney() >= item.dieuKienApDung
+    );
+    const sortedVouchers = validVouchers.sort(
+      (a, b) => b.giaTriVoucher - a.giaTriVoucher
+    );
     const maxVoucher = sortedVouchers[0];
     if (cartItems.length === 0 && discountValue != 0) {
       handleCheckVoucher(discount);
@@ -995,8 +1039,7 @@ const PointOfSales = () => {
       if (discount != "" && discountValue == 0) {
         if (discount.trim().length === 10 && !maxVoucher) {
           handleCheckVoucher(discount);
-        }
-        else {
+        } else {
           if (maxVoucher) {
             handleCheckVoucher(maxVoucher.ma);
           }
@@ -1004,21 +1047,18 @@ const PointOfSales = () => {
       } else if (discount != "" && discountValue != 0) {
         if (handleCountTotalMoney() < dieuKien) {
           handleCheckVoucher(discount);
-        }
-        else {
+        } else {
           if (maxVoucher) {
             if (maxVoucher.ma !== discount) {
               handleCheckVoucher(maxVoucher.ma);
             }
-          }
-          else {
+          } else {
             if (discountValue !== 0) {
               handleCheckVoucher(discount);
             }
           }
         }
-      }
-      else {
+      } else {
         if (maxVoucher) {
           handleCheckVoucher(maxVoucher.ma);
         }
@@ -1043,7 +1083,10 @@ const PointOfSales = () => {
       orderHistories: data.orderHistories,
       hinhThucThanhToan: selectedValuePaymentMethod,
       employee: {
-        id: userId === null || userId === "" || userId === undefined ? null : userId,
+        id:
+          userId === null || userId === "" || userId === undefined
+            ? null
+            : userId,
       },
       cart: order.cart,
       isPayment: true,
@@ -1061,23 +1104,26 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
-      )
-        .then((response) => {
-          setOrder(response.data.data);
-          setIsLoading(false);
-          handleOpenAlertVariant(
-            `${data.loaiHoaDon == OrderTypeString.DELIVERY
+      request(
+        "PUT",
+        `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`,
+        orderRequest
+      ).then((response) => {
+        setOrder(response.data.data);
+        setIsLoading(false);
+        handleOpenAlertVariant(
+          `${
+            data.loaiHoaDon == OrderTypeString.DELIVERY
               ? "Xác nhận đặt hàng thành công!"
               : "Xác nhận thanh toán thành công!"
-            }`,
-            Notistack.SUCCESS
-          );
-          navigate(`/dashboard/order-detail/${order.ma}`);
-          // handlePrint();
-          console.log(orderRequest);
-        });
-    } catch (error) { }
+          }`,
+          Notistack.SUCCESS
+        );
+        navigate(`/dashboard/order-detail/${order.ma}`);
+        // handlePrint();
+        console.log(orderRequest);
+      });
+    } catch (error) {}
   };
 
   // const updateAccount = async (id) => {
@@ -1152,20 +1198,25 @@ const PointOfSales = () => {
     };
 
     try {
-      await request(`PUT`, `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest).then(async (response) => {
+      await request(
+        `PUT`,
+        `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`,
+        orderRequest
+      ).then(async (response) => {
         const data = response.data.data;
         console.log(data);
         setOrder(data);
 
         const account = data && data.account && data.account;
-        const listAddress = data.account && data.account.diaChiList && data.account.diaChiList;
-        const addressActive = listAddress && listAddress.find((item) => item.trangThai === 1);
+        const listAddress =
+          data.account && data.account.diaChiList && data.account.diaChiList;
+        const addressActive =
+          listAddress && listAddress.find((item) => item.trangThai === 1);
 
         if (addressActive) {
-          /* await  */updateInfoShipDefault(addressActive);
-        }
-        else {
-          /* await  */updateInfoShipDefault(null);
+          /* await  */ updateInfoShipDefault(addressActive);
+        } else {
+          /* await  */ updateInfoShipDefault(null);
         }
 
         getAllOrdersPending();
@@ -1173,16 +1224,17 @@ const PointOfSales = () => {
         // handleOpenAlertVariant(message, Notistack.SUCCESS);
       });
     } catch (error) {
-      console.log(error)
+      console.log(error);
       // Xử lý lỗi tại đây (nếu cần)
     }
   };
 
   const handleAddOrRemoveVoucher = async (idVoucher, loading, keep) => {
-    const message = `${idVoucher === null
-      ? "Mã giảm giá đã được gỡ bỏ thành công!"
-      : "Áp dụng thành công mã giảm giá!"
-      }`;
+    const message = `${
+      idVoucher === null
+        ? "Mã giảm giá đã được gỡ bỏ thành công!"
+        : "Áp dụng thành công mã giảm giá!"
+    }`;
     const orderRequest = {
       voucher: {
         id: idVoucher,
@@ -1205,36 +1257,40 @@ const PointOfSales = () => {
       setLoadingChild(true);
       setTimeout(() => {
         try {
-          request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
-          )
-            .then((response) => {
-              setOrder(response.data.data);
-              setDiscount("");
-              setIdVoucher("");
-              setDiscountValue(0);
-              setDiscountValidate("");
-              getAllOrdersPending();
-              handleOpenAlertVariant(message, Notistack.SUCCESS);
-              setLoadingChild(false);
-            });
+          request(
+            "PUT",
+            `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`,
+            orderRequest
+          ).then((response) => {
+            setOrder(response.data.data);
+            setDiscount("");
+            setIdVoucher("");
+            setDiscountValue(0);
+            setDiscountValidate("");
+            getAllOrdersPending();
+            handleOpenAlertVariant(message, Notistack.SUCCESS);
+            setLoadingChild(false);
+          });
         } catch (error) {
           console.log(error);
         }
       }, 1000);
     } else if (idVoucher === null && !loading) {
       try {
-        request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
-        )
-          .then((response) => {
-            setOrder(response.data.data);
-            setIdVoucher("");
-            if (!keep) {
-              setDiscountValue(0);
-              setDiscount("");
-              setDiscountValidate("");
-            }
-            getAllOrdersPending();
-          });
+        request(
+          "PUT",
+          `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`,
+          orderRequest
+        ).then((response) => {
+          setOrder(response.data.data);
+          setIdVoucher("");
+          if (!keep) {
+            setDiscountValue(0);
+            setDiscount("");
+            setDiscountValidate("");
+          }
+          getAllOrdersPending();
+        });
       } catch (error) {
         console.log(error);
       }
@@ -1242,36 +1298,40 @@ const PointOfSales = () => {
       setLoadingChild(true);
       setTimeout(() => {
         try {
-          request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
-          )
-            .then((response) => {
-              setOrder(response.data.data);
-              setDiscount(response.data.data.voucher.ma);
-              setIdVoucher(response.data.data.voucher.id);
-              setDiscountValue(response.data.data.voucher.giaTriVoucher);
-              setDiscountValidate("");
-              getAllOrdersPending();
-              handleOpenAlertVariant(message, Notistack.SUCCESS);
-              setLoadingChild(false);
-            });
-        } catch (error) {
-          console.log(error);
-        }
-      }, 1000);
-    } else {
-      try {
-        request("PUT", `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`, orderRequest
-        )
-          .then((response) => {
+          request(
+            "PUT",
+            `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`,
+            orderRequest
+          ).then((response) => {
             setOrder(response.data.data);
-            setIdVoucher(response.data.data.voucher.id);
             setDiscount(response.data.data.voucher.ma);
+            setIdVoucher(response.data.data.voucher.id);
             setDiscountValue(response.data.data.voucher.giaTriVoucher);
             setDiscountValidate("");
             getAllOrdersPending();
             handleOpenAlertVariant(message, Notistack.SUCCESS);
             setLoadingChild(false);
           });
+        } catch (error) {
+          console.log(error);
+        }
+      }, 1000);
+    } else {
+      try {
+        request(
+          "PUT",
+          `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`,
+          orderRequest
+        ).then((response) => {
+          setOrder(response.data.data);
+          setIdVoucher(response.data.data.voucher.id);
+          setDiscount(response.data.data.voucher.ma);
+          setDiscountValue(response.data.data.voucher.giaTriVoucher);
+          setDiscountValidate("");
+          getAllOrdersPending();
+          handleOpenAlertVariant(message, Notistack.SUCCESS);
+          setLoadingChild(false);
+        });
       } catch (error) {
         console.log(error);
       }
@@ -1289,14 +1349,19 @@ const PointOfSales = () => {
       },
     };
     try {
-      await request("PUT", `/api/carts/amount`, requestBody).then(async (response) => {
-        await getAllOrdersPending();
-        await getCartItems();
-        handleCloseOpenModalUpdateImei();
-        handleOpenAlertVariant("Cập nhật số lượng thành công!", Notistack.SUCCESS);
-        setChangedCartItems(changedCartItems + 1);
-        setIsLoading(false);
-      });
+      await request("PUT", `/api/carts/amount`, requestBody).then(
+        async (response) => {
+          await getAllOrdersPending();
+          await getCartItems();
+          handleCloseOpenModalUpdateImei();
+          handleOpenAlertVariant(
+            "Cập nhật số lượng thành công!",
+            Notistack.SUCCESS
+          );
+          setChangedCartItems(changedCartItems + 1);
+          setIsLoading(false);
+        }
+      );
     } catch (error) {
       setIsLoading(false);
       handleOpenAlertVariant(error.response.data.message, "warning");
@@ -1409,8 +1474,7 @@ const PointOfSales = () => {
         const data = response.data.data;
         if (data && data.length === 0) {
           await handleAddOrderPendingDefault();
-        }
-        else {
+        } else {
           setOrders(response.data.data);
         }
       })
@@ -1533,19 +1597,19 @@ const PointOfSales = () => {
           (response &&
             response.data.data[0].voucher &&
             response.data.data[0].voucher.ma) ||
-          ""
+            ""
         );
         setIdVoucher(
           (response &&
             response.data.data[0].voucher &&
             response.data.data[0].voucher.id) ||
-          ""
+            ""
         );
         setDiscountValue(
           (response &&
             response.data.data[0].voucher &&
             response.data.data[0].voucher.giaTriVoucher) ||
-          0
+            0
         );
         console.log(order);
 
@@ -1576,7 +1640,6 @@ const PointOfSales = () => {
         setCartId((order && order.cart.id) || "");
         const indexTab = data.indexOf(order);
         setValueTabs(indexTab + 1);
-
 
         if (order.loaiHoaDon === OrderTypeString.DELIVERY) {
           setCustomerNameShip(
@@ -1707,12 +1770,11 @@ const PointOfSales = () => {
         code: order.ma,
       };
       try {
-        request("POST", `/api/vnpay/payment`, vnpayReq)
-          .then((response) => {
-            setIsLoading(false);
-            handleCloseOpenModalConfirmRedirectPayment();
-            handleRedirectPayment(response.data.data);
-          });
+        request("POST", `/api/vnpay/payment`, vnpayReq).then((response) => {
+          setIsLoading(false);
+          handleCloseOpenModalConfirmRedirectPayment();
+          handleRedirectPayment(response.data.data);
+        });
       } catch (error) {
         const message = error.response.data.message;
         setIsLoading(false);
@@ -1732,22 +1794,21 @@ const PointOfSales = () => {
           headers: {
             "Content-Type": "application/json",
           },
-        })
-          .then((response) => {
-            const order = response.data.data;
-            setOrder(order);
-            setPaymentHistories(order.paymentMethods);
-            let total = 0;
-            order.paymentMethods.map((item) => {
-              total += item.soTienThanhToan;
-            });
-            setCustomerPayment(total);
-            setPaymentWhenReceive(false);
-            getAllOrdersPending();
-            handleOpenAlertVariant("Xác nhận thành công", Notistack.SUCCESS);
-            handleCloseModalpaymentMultipleCounter();
-            setIsLoading(false);
+        }).then((response) => {
+          const order = response.data.data;
+          setOrder(order);
+          setPaymentHistories(order.paymentMethods);
+          let total = 0;
+          order.paymentMethods.map((item) => {
+            total += item.soTienThanhToan;
           });
+          setCustomerPayment(total);
+          setPaymentWhenReceive(false);
+          getAllOrdersPending();
+          handleOpenAlertVariant("Xác nhận thành công", Notistack.SUCCESS);
+          handleCloseModalpaymentMultipleCounter();
+          setIsLoading(false);
+        });
       } catch (error) {
         const message = error.response.data.message;
         setIsLoading(false);
@@ -1760,8 +1821,7 @@ const PointOfSales = () => {
   const [totalPagesVoucher, setTotalPagesVoucher] = useState();
 
   const getVouchersIsActiveAll = () => {
-    request("GET", `/voucher/voucherActive/all`, {
-    })
+    request("GET", `/voucher/voucherActive/all`, {})
       .then((response) => {
         setVouchersActive(response.data.data);
       })
@@ -1771,12 +1831,11 @@ const PointOfSales = () => {
   };
 
   const getVouchersIsActive = (page, keyword) => {
-    request("GET", `/voucher/voucherActive`, {
-      params: {
-        pageNo: page,
-        keyword: keyword,
-      },
-    })
+    const paramVoucher = {
+      pageNo: page,
+      keyword: keyword,
+    };
+    requestParam("GET", `/voucher/voucherActive`, paramVoucher)
       .then((response) => {
         setVouchers(response.data.data);
         setTotalPagesVoucher(response.data.totalPages);
@@ -1924,7 +1983,8 @@ const PointOfSales = () => {
             : ""
         );
         setCustomerNoteShip(
-          lastOrder.loaiHoaDon === OrderTypeString.DELIVERY && lastOrder.ghiChu != null
+          lastOrder.loaiHoaDon === OrderTypeString.DELIVERY &&
+            lastOrder.ghiChu != null
             ? lastOrder.ghiChu
             : ""
         );
@@ -1973,41 +2033,42 @@ const PointOfSales = () => {
       id: order.id,
     };
     try {
-      await request("POST", `/api/orders?isPending=true`, data
-      ).then(async (response) => {
-        await getAllOrdersPending();
-        setValueTabs(1);
-        setOrder(response.data.data);
-        navigate(`/dashboard/point-of-sales/${response.data.data.ma}`);
-        setCartId(response.data.data.cart.id);
-        setDelivery(false);
-        setPaymentWhenReceive(false);
-        setCartItems([]);
-        setPaymentHistories([]);
-        setCustomerPayment(0);
-        setShipFee(0);
-        setDiscount("");
-        setIdVoucher("");
-        setConfirm(false);
-        setDiscountValue(0);
-        setIdCustomer("");
-        setCustomerName("");
-        setCustomerPhone("");
-        setCustomerEmail("");
-        setCustomerAddressList([]);
-        setCustomerNameShip("");
-        setCustomerPhoneShip("");
-        setCustomerAddressShip("");
-        setCustomerWardShip("");
-        setCustomerProvinceShip("");
-        setCustomerDistrictShip("");
-        setCustomerNoteShip("");
+      await request("POST", `/api/orders?isPending=true`, data).then(
+        async (response) => {
+          await getAllOrdersPending();
+          setValueTabs(1);
+          setOrder(response.data.data);
+          navigate(`/dashboard/point-of-sales/${response.data.data.ma}`);
+          setCartId(response.data.data.cart.id);
+          setDelivery(false);
+          setPaymentWhenReceive(false);
+          setCartItems([]);
+          setPaymentHistories([]);
+          setCustomerPayment(0);
+          setShipFee(0);
+          setDiscount("");
+          setIdVoucher("");
+          setConfirm(false);
+          setDiscountValue(0);
+          setIdCustomer("");
+          setCustomerName("");
+          setCustomerPhone("");
+          setCustomerEmail("");
+          setCustomerAddressList([]);
+          setCustomerNameShip("");
+          setCustomerPhoneShip("");
+          setCustomerAddressShip("");
+          setCustomerWardShip("");
+          setCustomerProvinceShip("");
+          setCustomerDistrictShip("");
+          setCustomerNoteShip("");
 
-        setFullName("");
-        setEmail("");
-        setSdt("");
-        setIsLoading(false);
-      });
+          setFullName("");
+          setEmail("");
+          setSdt("");
+          setIsLoading(false);
+        }
+      );
     } catch (error) {
       handleOpenAlertVariant(error.response.data.message, "warning");
       setIsLoading(false);
@@ -2021,7 +2082,9 @@ const PointOfSales = () => {
       id: order.id,
     };
     try {
-      const response = await request("POST", `/api/orders?isPending=true`,
+      const response = await request(
+        "POST",
+        `/api/orders?isPending=true`,
         data
       ).then(async (response) => {
         await getAllOrdersPending();
@@ -2069,8 +2132,11 @@ const PointOfSales = () => {
   const handleDeletePaymentById = async (id) => {
     setIsLoading(true);
     try {
-      await request("DELETE", `/api/payment/${id}?orderId=${order.id}`, {
-      }).then(async (response) => {
+      await request(
+        "DELETE",
+        `/api/payment/${id}?orderId=${order.id}`,
+        {}
+      ).then(async (response) => {
         await getPaymentsOfOrder();
         await getAllOrdersPending();
         setIsLoading(false);
@@ -2102,7 +2168,11 @@ const PointOfSales = () => {
 
   const handleDeleteOrderPendingById = async (id) => {
     const getOrder = orders.find((item) => item.id === id);
-    if (getOrder && getOrder.paymentMethods && getOrder.paymentMethods.length > 0) {
+    if (
+      getOrder &&
+      getOrder.paymentMethods &&
+      getOrder.paymentMethods.length > 0
+    ) {
       handleOpenAlertVariant(
         "Không cho phép xóa đơn hàng đã thanh toán!",
         Notistack.ERROR
@@ -2560,7 +2630,6 @@ const PointOfSales = () => {
           "Content-Type": "application/json",
         },
       }).then(async (response) => {
-
         await getAllOrdersPending();
         await getCartItems();
         handleCloseOpenModalImei();
@@ -2571,7 +2640,7 @@ const PointOfSales = () => {
         );
         setIsLoading(false);
         setIsOpen(false);
-      })
+      });
     } catch (error) {
       handleOpenAlertVariant(error.response.data.message, "warning");
       setIsLoading(false);
@@ -2827,9 +2896,9 @@ const PointOfSales = () => {
                                       onMouseDown={() => {
                                         handleConfirmBeforeDeleteOrderPendingHasProduct(
                                           item &&
-                                          item.cart &&
-                                          item.cart.cartItems &&
-                                          item.cart.cartItems.length,
+                                            item.cart &&
+                                            item.cart.cartItems &&
+                                            item.cart.cartItems.length,
                                           item.id
                                         );
                                         setItemMa(item.ma);
@@ -2960,12 +3029,9 @@ const PointOfSales = () => {
               >
                 Khách hàng
               </span>
-              {idCustomer !== "" &&
+              {idCustomer !== "" && (
                 <div className="ms-2" style={{ marginTop: "3px" }}>
-                  <Tooltip
-                    title="Bỏ chọn"
-                    TransitionComponent={Zoom}
-                  >
+                  <Tooltip title="Bỏ chọn" TransitionComponent={Zoom}>
                     <IconButton
                       onClick={() => {
                         getCustomerById(null);
@@ -2980,9 +3046,8 @@ const PointOfSales = () => {
                       />
                     </IconButton>
                   </Tooltip>
-
                 </div>
-              }
+              )}
             </div>
             <div className="">
               <Button
@@ -3062,7 +3127,6 @@ const PointOfSales = () => {
                     update={updateFullName}
                   />
                 </div>
-
               </div>
               <div className="d-flex ms-2 mt-3">
                 <div className="" style={{ width: "400px" }}>
@@ -3530,14 +3594,15 @@ const PointOfSales = () => {
                   </div>
 
                   {customerPayment != handleCountTotalMoneyCustomerNeedPay() &&
-                    (delivery == true || delivery == false) &&
-                    paymentWhenReceive == false &&
-                    cartItems.length > 0 ? (
+                  (delivery == true || delivery == false) &&
+                  paymentWhenReceive == false &&
+                  cartItems.length > 0 ? (
                     <div
-                      className={`d-flex justify-content-between ${`${paymentWhenReceive == false && delivery == true
-                        ? "pt-4 mt-1"
-                        : "pt-3 mt-2"
-                        }`} ms-2`}
+                      className={`d-flex justify-content-between ${`${
+                        paymentWhenReceive == false && delivery == true
+                          ? "pt-4 mt-1"
+                          : "pt-3 mt-2"
+                      }`} ms-2`}
                       style={{ marginLeft: "1px" }}
                     >
                       <span
@@ -3857,7 +3922,6 @@ const PointOfSales = () => {
         deleteOrder={() => handleCloseDialogOrderClose(itemId)}
       />
       {isLoading && <LoadingIndicator />}
-
     </>
   );
 };
