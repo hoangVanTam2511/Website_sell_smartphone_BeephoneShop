@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -38,7 +39,7 @@ public class VoucherServiceImpl implements VoucherService {
     @Autowired
     private VoucherRepository voucherRepository;
 
-    //    @Scheduled(fixedRate = 5000, initialDelay = 30000)
+//    @Scheduled(fixedRate = 5000, initialDelay = 30000)
     public List<Voucher> updateStatusVoucher() {
         Date dateTime = new Date();
         List<Voucher> listToUpdate = new ArrayList<>();
@@ -107,7 +108,7 @@ public class VoucherServiceImpl implements VoucherService {
         String codeVoucher = request.getMa().trim();
         if (request.getMa().isBlank()) {
             codeVoucher = "BEE" + generateRandomCode();
-        } else if (!(request.getMa().isBlank() || (request.getMa().length() >=10 && request.getMa().length() <= 15))) {
+        } else if (!(request.getMa().isBlank() || (request.getMa().length() >= 10 && request.getMa().length() <= 15))) {
             throw new RestApiException("Mã voucher phải đủ 10 ký tự và nhỏ hơn 15 ký từ!!!");
         }
         Voucher voucher = Voucher.builder()
@@ -272,8 +273,20 @@ public class VoucherServiceImpl implements VoucherService {
         return response;
     }
 
+    @Scheduled(fixedRate = 5000)
+    public void scheduledTask() {
+
+        Integer pageNo = 1;
+        FindVoucherRequest request = new FindVoucherRequest();
+
+        // Gọi method getVoucherStatusIsActive với các tham số
+        getVoucherStatusIsActive(pageNo, request);
+        updateStatusVoucher();
+    }
+
+
     @Override
-    public Page<VoucherResponse> getVoucherStatusIsActive(Integer pageNo,FindVoucherRequest request) {
+    public Page<VoucherResponse> getVoucherStatusIsActive(Integer pageNo, FindVoucherRequest request) {
         if (request.getPageNo() == null) {
             request.setPageNo(1);
         }
@@ -285,6 +298,7 @@ public class VoucherServiceImpl implements VoucherService {
         }
         Pageable pageable = PageRequest.of(request.getPageNo() - 1, request.getPageSize());
         updateStatusVoucher();
+        System.out.println(123123123);
         return voucherRepository.getVoucherStatusIsActive(pageable, request);
     }
 }
