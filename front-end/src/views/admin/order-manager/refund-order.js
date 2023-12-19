@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "antd";
 import { TextField } from "@mui/material";
 import axios from "axios";
-import { Notistack, OrderStatusString } from "./enum";
+import { Notistack, OrderStatusString, OrderTypeString } from "./enum";
 import useCustomSnackbar from "../../../utilities/notistack";
 import LoadingIndicator from "../../../utilities/loading";
 import { ScannerBarcodeOrder } from "./AlertDialogSlide";
@@ -54,9 +54,17 @@ const RefundOrder = () => {
         ) {
           setIsLoading(false);
           handleRedirectRefundOrderDetail();
-        } else {
+        } else if (data.trangThai === OrderTypeString.DELIVERY && data.trangThai === OrderStatusString.SUCCESS_DELIVERY) {
           setIsLoading(false);
-          handleOpenAlertVariant("Đơn hàng chưa hoàn thành!", Notistack.ERROR);
+          handleOpenAlertVariant("Chỉ cho phép hoàn trả đơn tại quầy!", Notistack.ERROR);
+        }
+        else if (data.trangThai === OrderStatusString.REFUND_FULL) {
+          setIsLoading(false);
+          handleOpenAlertVariant("Đơn hàng này đã được hoàn trả toàn bộ!", Notistack.ERROR);
+        }
+        else {
+          setIsLoading(false);
+          handleOpenAlertVariant("Đơn hàng không hợp lệ!", Notistack.ERROR);
         }
       })
       .catch((error) => {
