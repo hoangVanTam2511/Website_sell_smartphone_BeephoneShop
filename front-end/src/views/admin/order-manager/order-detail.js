@@ -747,7 +747,7 @@ const OrderDetail = (props) => {
       render: (type) =>
         type == 1 ? (
           <div
-            className="rounded-pill mx-auto badge-primary"
+            className="rounded-pill mx-auto badge-danger"
             style={{
               height: "35px",
               width: "120px",

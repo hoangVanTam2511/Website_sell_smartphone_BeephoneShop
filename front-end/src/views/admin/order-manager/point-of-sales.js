@@ -997,21 +997,28 @@ const PointOfSales = () => {
           handleCheckVoucher(discount);
         }
         else {
-          handleCheckVoucher(maxVoucher.ma);
+          if (maxVoucher) {
+            handleCheckVoucher(maxVoucher.ma);
+          }
         }
       } else if (discount != "" && discountValue != 0) {
         if (handleCountTotalMoney() < dieuKien) {
           handleCheckVoucher(discount);
         }
         else {
-          const maxVoucher = sortedVouchers[0];
           if (maxVoucher) {
-            handleCheckVoucher(maxVoucher.ma);
+            if (maxVoucher.ma !== discount) {
+              handleCheckVoucher(maxVoucher.ma);
+            }
+          }
+          else {
+            if (discountValue !== 0) {
+              handleCheckVoucher(discount);
+            }
           }
         }
       }
       else {
-        const maxVoucher = sortedVouchers[0];
         if (maxVoucher) {
           handleCheckVoucher(maxVoucher.ma);
         }
