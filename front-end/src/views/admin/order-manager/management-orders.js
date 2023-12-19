@@ -415,6 +415,32 @@ const ManagementOrders = () => {
               Hoàn thành
             </span>
           </div>
+        ) : status == OrderStatusString.REFUND_A_PART ? (
+          <div
+            className="rounded-pill mx-auto badge-primary"
+            style={{
+              height: "35px",
+              width: "auto",
+              padding: "4px",
+            }}
+          >
+            <span className="text-white" style={{ fontSize: "14px" }}>
+              Hoàn trả 1 phần
+            </span>
+          </div>
+        ) : status == OrderStatusString.REFUND_FULL ? (
+          <div
+            className="rounded-pill mx-auto badge-primary"
+            style={{
+              height: "35px",
+              width: "auto",
+              padding: "4px",
+            }}
+          >
+            <span className="text-white" style={{ fontSize: "14px" }}>
+              Hoàn trả toàn phần
+            </span>
+          </div>
         ) : (
           ""
         );

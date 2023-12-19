@@ -20,12 +20,15 @@ const RefundOrder = () => {
       .get(`http://localhost:8080/api/orders/${code}`)
       .then((response) => {
         const data = response.data.data;
-        if (data.trangThai === OrderStatusString.HAD_PAID || data.trangThai === OrderStatusString.SUCCESS_DELIVERY) {
+        if (
+          data.trangThai === OrderStatusString.HAD_PAID ||
+          data.trangThai === OrderStatusString.SUCCESS_DELIVERY ||
+          data.trangThai === OrderStatusString.REFUND_A_PART
+        ) {
           setIsLoading(false);
           handleRedirectRefundOrderDetail();
           handleCloseOpenScanner();
-        }
-        else {
+        } else {
           setIsLoading(false);
           handleOpenAlertVariant("Đơn hàng chưa hoàn thành!", Notistack.ERROR);
           handleCloseOpenScanner();
@@ -44,11 +47,14 @@ const RefundOrder = () => {
       .get(`http://localhost:8080/api/orders/${orderCode}`)
       .then((response) => {
         const data = response.data.data;
-        if (data.trangThai === OrderStatusString.HAD_PAID || data.trangThai === OrderStatusString.SUCCESS_DELIVERY) {
+        if (
+          data.trangThai === OrderStatusString.HAD_PAID ||
+          data.trangThai === OrderStatusString.SUCCESS_DELIVERY ||
+          data.trangThai === OrderStatusString.REFUND_A_PART
+        ) {
           setIsLoading(false);
           handleRedirectRefundOrderDetail();
-        }
-        else {
+        } else {
           setIsLoading(false);
           handleOpenAlertVariant("Đơn hàng chưa hoàn thành!", Notistack.ERROR);
         }
@@ -151,7 +157,12 @@ const RefundOrder = () => {
           </div>
         </div>
         <div className="mt-4"></div>
-        <ScannerBarcodeOrder open={openScanner} close={handleCloseOpenScanner} getResult={getOrderItemsByIdScanner} refresh={scannerRef} />
+        <ScannerBarcodeOrder
+          open={openScanner}
+          close={handleCloseOpenScanner}
+          getResult={getOrderItemsByIdScanner}
+          refresh={scannerRef}
+        />
         {isLoading && <LoadingIndicator />}
       </div>
     </>

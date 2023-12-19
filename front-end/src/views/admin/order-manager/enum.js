@@ -19,6 +19,8 @@ export const OrderStatusString = {
   CANCELLED: "CANCELLED",
   PENDING_PAYMENT: "PENDING_PAYMENT",
   HAD_PAID: "HAD_PAID",
+  REFUND_A_PART: "REFUND_A_PART",
+  REFUND_FULL: "REFUND_FULL",
 };
 // export const OrderStatusNumber = {
 //   PENDING_CONFIRM: 0,

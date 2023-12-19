@@ -1768,6 +1768,7 @@ const PointOfSales = () => {
         total: parseInt(total),
         info: order.ma,
         code: order.ma,
+        createdByPayment: userId,
       };
       try {
         request("POST", `/api/vnpay/payment`, vnpayReq).then((response) => {

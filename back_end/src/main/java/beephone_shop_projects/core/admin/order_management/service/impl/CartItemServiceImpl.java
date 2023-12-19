@@ -35,6 +35,7 @@ import beephone_shop_projects.entity.ImeiChuaBan;
 import beephone_shop_projects.entity.ImeiDaBan;
 import beephone_shop_projects.entity.LichSuHoaDon;
 import beephone_shop_projects.entity.SanPhamChiTiet;
+import beephone_shop_projects.infrastructure.constant.OrderStatus;
 import beephone_shop_projects.infrastructure.constant.StatusImei;
 import beephone_shop_projects.infrastructure.exeption.rest.RestApiException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -772,46 +773,33 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
       }
     } else if (findCartItemOrder.get().getImeisDaBan().size() == 0) {
       BigDecimal donGiaProduct = BigDecimal.ZERO;
-      if (findCartItemOrder.get().getDonGiaSauGiam() != null && findCartItemOrder.get().getDonGiaSauGiam().compareTo(BigDecimal.ZERO) != 0) {
-        donGiaProduct.add(findCartItemOrder.get().getDonGiaSauGiam());
-      } else {
+//      if (findCartItemOrder.get().getDonGiaSauGiam() != null && findCartItemOrder.get().getDonGiaSauGiam().compareTo(BigDecimal.ZERO) != 0) {
+//        donGiaProduct.add(findCartItemOrder.get().getDonGiaSauGiam());
+//      } else {
         donGiaProduct.add(findCartItemOrder.get().getDonGia());
-      }
-
+//      }
       Set<Imei> imeisProduct = getOptional.getImeis();
       for (ImeiDaBan imeiDaBan : imeiToAdd) {
-        if (findOrderCurrent.getTongTien() != null) {
-          BigDecimal tongTienCurrent = findOrderCurrent.getTongTien().subtract(donGiaProduct);
-          findOrderCurrent.setTongTien(tongTienCurrent.add(getOptional.getDonGia()));
-          if (findOrderCurrent.getKhachCanTra() != null) {
-            BigDecimal khachCanTraCurrent = findOrderCurrent.getKhachCanTra().subtract(donGiaProduct);
-            findOrderCurrent.setKhachCanTra(khachCanTraCurrent.add(getOptional.getDonGia()));
-          }
-          if (findOrderCurrent.getTongTienSauKhiGiam() != null) {
-            BigDecimal tongTienSauKhiGiamCurrent = findOrderCurrent.getTongTienSauKhiGiam().subtract(donGiaProduct);
-            findOrderCurrent.setTongTienSauKhiGiam(tongTienSauKhiGiamCurrent.add(getOptional.getDonGia()));
-          }
-          orderRepository.save(findOrderCurrent);
-        }
         imeisProduct.forEach((s) -> {
           if (imeiDaBan.getSoImei().equals(s.getSoImei())) {
             s.setTrangThai(StatusImei.PENDING_DELIVERY);
           }
         });
       }
-        if (findOrderCurrent.getTongTien() != null) {
-          BigDecimal tongTienCurrent = findOrderCurrent.getTongTien();
-          findOrderCurrent.setTongTien(tongTienCurrent.subtract(donGiaProduct));
-          if (findOrderCurrent.getKhachCanTra() != null) {
-            BigDecimal khachCanTraCurrent = findOrderCurrent.getKhachCanTra();
-            findOrderCurrent.setKhachCanTra(khachCanTraCurrent.subtract(donGiaProduct));
-          }
-          if (findOrderCurrent.getTongTienSauKhiGiam() != null) {
-            BigDecimal tongTienSauKhiGiamCurrent = findOrderCurrent.getTongTienSauKhiGiam();
-            findOrderCurrent.setTongTienSauKhiGiam(tongTienSauKhiGiamCurrent.subtract(donGiaProduct));
-          }
-          orderRepository.save(findOrderCurrent);
+      if (findOrderCurrent.getTongTien() != null) {
+        BigDecimal tongTienCurrent = findOrderCurrent.getTongTien().subtract(findCartItemOrder.get().getDonGia());
+        findOrderCurrent.setTongTien(tongTienCurrent.add(getOptional.getDonGia().multiply(BigDecimal.valueOf(imeiToAdd.size()))));
+        if (findOrderCurrent.getKhachCanTra() != null) {
+          BigDecimal khachCanTraCurrent = findOrderCurrent.getKhachCanTra().subtract(findCartItemOrder.get().getDonGia());
+          findOrderCurrent.setKhachCanTra(khachCanTraCurrent.add(getOptional.getDonGia().multiply(BigDecimal.valueOf(imeiToAdd.size()))));
         }
+        if (findOrderCurrent.getTongTienSauKhiGiam() != null) {
+          BigDecimal tongTienSauKhiGiamCurrent = findOrderCurrent.getTongTienSauKhiGiam().subtract(findCartItemOrder.get().getDonGia());
+          findOrderCurrent.setTongTienSauKhiGiam(tongTienSauKhiGiamCurrent.add(getOptional.getDonGia().multiply(BigDecimal.valueOf(imeiToAdd.size()))));
+        }
+        orderRepository.save(findOrderCurrent);
+      }
+
     }
 
 //    BigDecimal tongTien;
@@ -947,7 +935,7 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
       Set<Imei> imeisProduct = findProductItem.get().getImeis();
       imeisProduct.forEach((s) -> {
         if (order.getImei().getSoImei().equals(s.getSoImei())) {
-          s.setTrangThai(StatusImei.NOT_SOLD);
+          s.setTrangThai(StatusImei.REFUND);
         }
       });
       findCartItemOrder.get().getImeisDaBan().forEach((s) -> {
@@ -956,8 +944,8 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
         }
       });
 
-      findProductItem.get().setSoLuongTonKho(findProductItem.get().getSoLuongTonKho() +
-              order.getSoLuong());
+//      findProductItem.get().setSoLuongTonKho(findProductItem.get().getSoLuongTonKho() +
+//              order.getSoLuong());
       sanPhamChiTietRepository.save(findProductItem.get());
 
 //      if (findOrderCurrent.getKhachCanTra() != null) {
@@ -984,7 +972,6 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
 ////      }
 //    }
 
-
 //    findCartItemOrder.get().setSoLuong(findProductItem.get().getSoLuongTonKho() - req.getAmount());
 //    orderItemRepository.save(findCartItemOrder.get());
     }
@@ -999,6 +986,27 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
 
     } else {
       findOrderCurrent.setTienTraKhach((req.getTongTien()));
+    }
+
+    int totalAmount = 0;
+    for (HoaDonChiTiet orderItem : findOrderCurrent.getOrderItems()) {
+      totalAmount += orderItem.getImeisDaBan().size();
+    }
+
+    int totalAmountRefund = 0;
+    for (HoaDonChiTiet orderItem : findOrderCurrent.getOrderItems()) {
+      for (ImeiDaBan s : orderItem.getImeisDaBan()) {
+        if (s.getTrangThai().equals(StatusImei.REFUND)){
+          totalAmountRefund++;
+        }
+      };
+    }
+
+    if ((req.getAmount() + totalAmountRefund) == totalAmount){
+      findOrderCurrent.setTrangThai(OrderStatus.REFUND_FULL);
+    }
+    else {
+      findOrderCurrent.setTrangThai(OrderStatus.REFUND_A_PART);
     }
 
 //    if (findOrderCurrent.getVoucher() != null) {

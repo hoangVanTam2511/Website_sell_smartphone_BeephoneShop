@@ -64,7 +64,9 @@ const RefundDetail = () => {
         const discountVoucher = data.voucher && data.voucher.giaTriVoucher;
         const discountVoucherCode = data.voucher && data.voucher.ma;
         setTotalDiscount(discountVoucher || 0);
-        setCodeDiscount(discountVoucherCode === null ? "" : discountVoucherCode);
+        setCodeDiscount(
+          discountVoucherCode === null ? "" : discountVoucherCode
+        );
 
         // const filteredData = data.orderItems.filter((item) => item.soLuong > 0);
         setOrderItemsTotal(data.orderItems);
@@ -241,9 +243,9 @@ const RefundDetail = () => {
               >
                 {item && item.donGiaSauGiam !== null && item.donGiaSauGiam !== 0
                   ? item.donGiaSauGiam.toLocaleString("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  })
+                      style: "currency",
+                      currency: "VND",
+                    })
                   : ""}
               </span>
               <span
@@ -256,9 +258,9 @@ const RefundDetail = () => {
               >
                 {item && item.donGia
                   ? item.donGia.toLocaleString("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  })
+                      style: "currency",
+                      currency: "VND",
+                    })
                   : ""}
               </span>
             </div>
@@ -403,9 +405,9 @@ const RefundDetail = () => {
               >
                 {item && item.donGia
                   ? item.donGia.toLocaleString("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  })
+                      style: "currency",
+                      currency: "VND",
+                    })
                   : ""}
               </span>
             </div>
@@ -862,13 +864,13 @@ const RefundDetail = () => {
               </div>
               <div className="ms-5 ps-5">
                 {order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
-                  order.account === null
+                order.account === null
                   ? order.hoVaTen
                   : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
                     order.account &&
                     order.account.hoVaTen
-                    ? order.account.hoVaTen
-                    : order.tenNguoiNhan}
+                  ? order.account.hoVaTen
+                  : order.tenNguoiNhan}
               </div>
             </div>
             <div className="ms-4 mt-4 mt-1 d-flex" style={{ height: "30px" }}>
@@ -878,13 +880,13 @@ const RefundDetail = () => {
               <div className="ms-5 ps-5 mt-1">
                 <span className="text-dark" style={{ fontSize: "17px" }}>
                   {order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
-                    order.account === null
+                  order.account === null
                     ? order.soDienThoai
                     : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
                       order.account &&
                       order.account.soDienThoai
-                      ? order.account.soDienThoai
-                      : order.soDienThoaiNguoiNhan}
+                    ? order.account.soDienThoai
+                    : order.soDienThoaiNguoiNhan}
                 </span>
               </div>
             </div>
@@ -897,8 +899,8 @@ const RefundDetail = () => {
                   {order.account === null
                     ? order.email
                     : order.account && order.account.email
-                      ? order.account.email
-                      : "..."}
+                    ? order.account.email
+                    : "..."}
                 </span>
               </div>
             </div>
@@ -923,7 +925,6 @@ const RefundDetail = () => {
       </div>
     );
   };
-
 
   const ProductRefund = () => {
     return (
@@ -1009,21 +1010,27 @@ const RefundDetail = () => {
               </div>
               <div className="">
                 {order.trangThai === OrderStatusString.SUCCESS_DELIVERY ||
-                  order.trangThai === OrderStatusString.HAD_PAID ? (
+                order.trangThai === OrderStatusString.HAD_PAID ? (
                   <Button
                     onClick={() => {
-                      const updatedOrderItems = orderItemsTotal.map((orderItem) => {
-                        return {
-                          ...orderItem,
-                          soLuong: 0,
-                          imeisDaBan: [],
-                        };
-                      });
+                      const updatedOrderItems = orderItemsTotal.map(
+                        (orderItem) => {
+                          return {
+                            ...orderItem,
+                            soLuong: 0,
+                            imeisDaBan: [],
+                          };
+                        }
+                      );
 
                       setOrderItems(updatedOrderItems);
                       const ordersRefunds = orderItemsTotal.flatMap((order) => {
                         return order.imeisDaBan.flatMap((item) => {
-                          if (orderRefunds.some((refund) => refund.imei.soImei === item.soImei)) {
+                          if (
+                            orderRefunds.some(
+                              (refund) => refund.imei.soImei === item.soImei
+                            )
+                          ) {
                             return [];
                           } else {
                             return {
@@ -1035,10 +1042,16 @@ const RefundDetail = () => {
                           }
                         });
                       });
-                      const updatedOrderRefunds = [...orderRefunds, ...ordersRefunds];
+                      const updatedOrderRefunds = [
+                        ...orderRefunds,
+                        ...ordersRefunds,
+                      ];
                       setOrderRefunds(updatedOrderRefunds);
                       console.log(updatedOrderRefunds);
-                      handleOpenAlertVariant("Trả toàn bộ thành công!", Notistack.SUCCESS);
+                      handleOpenAlertVariant(
+                        "Trả toàn bộ thành công!",
+                        Notistack.SUCCESS
+                      );
                     }}
                     className="rounded-2"
                     type="primary"
@@ -1098,6 +1111,10 @@ const RefundDetail = () => {
       amount: totalSizeRefundFinal(),
       createdByRefund: userId,
       ghiChu: note,
+      tongTienString: totalRefundFinal().toLocaleString("vi-VN", {
+        style: "currency",
+        currency: "VND",
+      }),
     };
     try {
       await axios.put(`http://localhost:8080/api/carts/order/refund`, request, {
@@ -1258,13 +1275,19 @@ const RefundDetail = () => {
                   className="text-dark"
                   style={{ fontSize: "17px", fontWeight: "500" }}
                 >
-                  <span className="underline-custom" style={{ cursor: "pointer", fontWeight: "500" }}>
-                    {codeDiscount !== null || codeDiscount !== "" && "(" + codeDiscount + ") "}
+                  <span
+                    className="underline-custom"
+                    style={{ cursor: "pointer", fontWeight: "500" }}
+                  >
+                    {codeDiscount !== null ||
+                      (codeDiscount !== "" && "(" + codeDiscount + ") ")}
                   </span>
-                  {totalDiscount && totalDiscount.toLocaleString("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  }) || 0}
+                  {(totalDiscount &&
+                    totalDiscount.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })) ||
+                    0}
                 </span>
               </div>
 
