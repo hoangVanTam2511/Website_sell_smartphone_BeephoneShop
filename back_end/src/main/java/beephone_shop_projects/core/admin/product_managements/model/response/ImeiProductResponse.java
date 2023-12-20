@@ -23,7 +23,7 @@ public class ImeiProductResponse {
 
     private String barcode;
 
-    private ProductItemResponse sanPhamChiTiet;
+//    private ProductItemResponse sanPhamChiTiet;
 
     private Date createdAt;
 

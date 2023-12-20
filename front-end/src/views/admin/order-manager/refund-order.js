@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "antd";
 import { TextField } from "@mui/material";
 import axios from "axios";
-import { Notistack, OrderStatusString } from "./enum";
+import { Notistack, OrderStatusString, OrderTypeString } from "./enum";
 import useCustomSnackbar from "../../../utilities/notistack";
 import LoadingIndicator from "../../../utilities/loading";
 import { ScannerBarcodeOrder } from "./AlertDialogSlide";
@@ -20,12 +20,15 @@ const RefundOrder = () => {
       .get(`http://localhost:8080/api/orders/${code}`)
       .then((response) => {
         const data = response.data.data;
-        if (data.trangThai === OrderStatusString.HAD_PAID || data.trangThai === OrderStatusString.SUCCESS_DELIVERY) {
+        if (
+          data.trangThai === OrderStatusString.HAD_PAID ||
+          data.trangThai === OrderStatusString.SUCCESS_DELIVERY ||
+          data.trangThai === OrderStatusString.REFUND_A_PART
+        ) {
           setIsLoading(false);
           handleRedirectRefundOrderDetail();
           handleCloseOpenScanner();
-        }
-        else {
+        } else {
           setIsLoading(false);
           handleOpenAlertVariant("Đơn hàng chưa hoàn thành!", Notistack.ERROR);
           handleCloseOpenScanner();
@@ -44,13 +47,24 @@ const RefundOrder = () => {
       .get(`http://localhost:8080/api/orders/${orderCode}`)
       .then((response) => {
         const data = response.data.data;
-        if (data.trangThai === OrderStatusString.HAD_PAID || data.trangThai === OrderStatusString.SUCCESS_DELIVERY) {
+        if (
+          data.trangThai === OrderStatusString.HAD_PAID ||
+          data.trangThai === OrderStatusString.SUCCESS_DELIVERY ||
+          data.trangThai === OrderStatusString.REFUND_A_PART
+        ) {
           setIsLoading(false);
           handleRedirectRefundOrderDetail();
+        } else if (data.trangThai === OrderTypeString.DELIVERY && data.trangThai === OrderStatusString.SUCCESS_DELIVERY) {
+          setIsLoading(false);
+          handleOpenAlertVariant("Chỉ cho phép hoàn trả đơn tại quầy!", Notistack.ERROR);
+        }
+        else if (data.trangThai === OrderStatusString.REFUND_FULL) {
+          setIsLoading(false);
+          handleOpenAlertVariant("Đơn hàng này đã được hoàn trả toàn bộ!", Notistack.ERROR);
         }
         else {
           setIsLoading(false);
-          handleOpenAlertVariant("Đơn hàng chưa hoàn thành!", Notistack.ERROR);
+          handleOpenAlertVariant("Đơn hàng không hợp lệ!", Notistack.ERROR);
         }
       })
       .catch((error) => {
@@ -151,7 +165,12 @@ const RefundOrder = () => {
           </div>
         </div>
         <div className="mt-4"></div>
-        <ScannerBarcodeOrder open={openScanner} close={handleCloseOpenScanner} getResult={getOrderItemsByIdScanner} refresh={scannerRef} />
+        <ScannerBarcodeOrder
+          open={openScanner}
+          close={handleCloseOpenScanner}
+          getResult={getOrderItemsByIdScanner}
+          refresh={scannerRef}
+        />
         {isLoading && <LoadingIndicator />}
       </div>
     </>

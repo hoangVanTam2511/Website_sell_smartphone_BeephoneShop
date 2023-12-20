@@ -119,7 +119,6 @@ export const PrintBillAtTheCounterAuto = React.forwardRef((ref, props) => {
           <span style={{ fontWeight: "500" }}>
             Nhân viên bán hàng: {" "}
           </span>
-          Trần Quang Hà
         </div>
         <div className='phone mt-1'>
           <span style={{ fontWeight: "500" }}>
@@ -264,7 +263,7 @@ export const PrintBillAtTheCounter = React.forwardRef((props, ref) => {
     });
   });
 
-  const account = props.data.account ? props.data.account : null;
+  const account = props.data.accountEmployee ? props.data.accountEmployee : null;
 
   const tongTien = props.data.tongTien ? props.data.tongTien : 0;
   const phiShip = props.data.phiShip ? props.data.phiShip : 0;
@@ -348,7 +347,7 @@ export const PrintBillAtTheCounter = React.forwardRef((props, ref) => {
           <span style={{ fontWeight: "500" }}>
             Nhân viên bán hàng: {" "}
           </span>
-          Trần Quang Hà
+          {account ? account.hoVaTen : ""}
         </div>
         <div className='phone mt-1'>
           <span style={{ fontWeight: "500" }}>
@@ -586,10 +585,7 @@ const PrintBillDelivery = React.forwardRef((props, ref, data) => {
           borderStyle: "dotted"
         }}
       ></div>
-      <div className='d-flex justify-content-between mt-1' style={{}}>
-        <div className='qrcode ms-1 mt-2' style={{}}>
-          <img src={props.data.maQrCode} style={{ width: "100px", height: "100px" }} alt="" />
-        </div>
+      <div className='d-flex justify-content-center mt-1' style={{}}>
         <div className='header-center text-center'>
           <div className='header-main mt-2'>
             <span style={{ fontSize: "30px", fontWeight: "550" }}>THÔNG TIN ĐƠN HÀNG</span>
@@ -604,15 +600,12 @@ const PrintBillDelivery = React.forwardRef((props, ref, data) => {
             Ngày {format(new Date(createdAt), "dd")} tháng {format(new Date(createdAt), "MM")} năm {format(new Date(createdAt), "yyyy")}
           </div>
         </div>
-        <div className='qrcode-none mt-4' style={{ backgroundColor: "transparent" }}>
-          <img src="https://printplace.files.wordpress.com/2012/02/sample.png" style={{ width: "100px", height: "100px" }} alt="" />
-        </div>
 
       </div>
 
 
       <div
-        className="ms-3"
+        className="ms-3 mt-3"
         style={{
           borderBottom: "1px solid #C7C7C7",
           width: "100%",

@@ -9,5 +9,7 @@ public enum OrderStatus {
   CANCELLED,
   PENDING_PAYMENT,
   HAD_PAID,
+  REFUND_A_PART,
+  REFUND_FULL
 
 }

@@ -269,13 +269,13 @@ const ManagementOrders = () => {
           }
         >
           {order.account === null &&
-          order.loaiHoaDon === OrderTypeString.AT_COUNTER
+            order.loaiHoaDon === OrderTypeString.AT_COUNTER
             ? order.hoVaTen
             : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
               order.account &&
               order.account.hoVaTen
-            ? order.account.hoVaTen
-            : order.tenNguoiNhan}
+              ? order.account.hoVaTen
+              : order.tenNguoiNhan}
         </span>
       ),
     },
@@ -286,13 +286,13 @@ const ManagementOrders = () => {
       render: (text, order) => (
         <span style={{ fontWeight: "400" }}>
           {order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
-          order.account === null
+            order.account === null
             ? order.soDienThoai
             : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
               order.account &&
               order.account.soDienThoai
-            ? order.account.soDienThoai
-            : order.soDienThoaiNguoiNhan}
+              ? order.account.soDienThoai
+              : order.soDienThoaiNguoiNhan}
         </span>
       ),
     },
@@ -415,6 +415,32 @@ const ManagementOrders = () => {
               Hoàn thành
             </span>
           </div>
+        ) : status === OrderStatusString.REFUND_A_PART ? (
+          <div
+            className="rounded-pill mx-auto badge-danger"
+            style={{
+              height: "35px",
+              width: "150px",
+              padding: "4px",
+            }}
+          >
+            <span className="text-white" style={{ fontSize: "14px" }}>
+              Hoàn trả 1 phần
+            </span>
+          </div>
+        ) : status === OrderStatusString.REFUND_FULL ? (
+          <div
+            className="rounded-pill mx-auto badge-danger"
+            style={{
+              height: "35px",
+              width: "150px",
+              padding: "4px",
+            }}
+          >
+            <span className="text-white" style={{ fontSize: "14px" }}>
+              Hoàn trả toàn phần
+            </span>
+          </div>
         ) : (
           ""
         );
@@ -511,19 +537,19 @@ const ManagementOrders = () => {
           <Card.Header className="d-flex justify-content-between">
             <div className="header-title">
               <TextField
-                label="Tìm đơn hàng"
+                label="Tìm theo mã đơn hàng, tên, số điện thoại khách hàng"
                 onChange={handleGetValueFromInputTextField}
                 value={keyword}
                 InputLabelProps={{
                   sx: {
                     marginTop: "",
-                    textTransform: "capitalize",
+                    // textTransform: "capitalize",
                   },
                 }}
                 inputProps={{
                   style: {
                     height: "23px",
-                    width: "190px",
+                    width: "390px",
                   },
                 }}
                 size="small"
@@ -662,12 +688,12 @@ const ManagementOrders = () => {
                       state === 0
                         ? OrderStatusString.PENDING_CONFIRM
                         : state === 1
-                        ? OrderStatusString.CONFIRMED
-                        : state === 3
-                        ? OrderStatusString.DELIVERING
-                        : state === 4
-                        ? "COMPLETE"
-                        : OrderStatusString.CANCELLED
+                          ? OrderStatusString.CONFIRMED
+                          : state === 3
+                            ? OrderStatusString.DELIVERING
+                            : state === 4
+                              ? "COMPLETE"
+                              : OrderStatusString.CANCELLED
                     );
                     setSearchParams(searchParams);
                   }}
@@ -679,6 +705,8 @@ const ManagementOrders = () => {
                   <MenuItem value={1}>Chờ giao hàng</MenuItem>
                   <MenuItem value={3}>Đang giao hàng</MenuItem>
                   <MenuItem value={4}>Hoàn thành</MenuItem>
+                  <MenuItem value={8}>Hoàn trả 1 phần</MenuItem>
+                  <MenuItem value={9}>Hoàn trả toàn phần</MenuItem>
                   <MenuItem value={5}>Đã hủy</MenuItem>
                 </Select>
               </FormControl>

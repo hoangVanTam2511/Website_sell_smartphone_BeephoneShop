@@ -1,7 +1,6 @@
 package beephone_shop_projects.core.admin.order_management.repository.impl;
 
 import beephone_shop_projects.core.admin.order_management.model.request.SearchFilterProductItemDto;
-import beephone_shop_projects.core.admin.order_management.model.request.SearchProductDto;
 import beephone_shop_projects.core.admin.order_management.model.request.SearchProductItemDto;
 import beephone_shop_projects.core.admin.order_management.repository.ProductItemRepository;
 import beephone_shop_projects.core.common.base.JpaPersistence;
@@ -34,9 +33,9 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Fetch;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import org.apache.commons.lang3.StringUtils;
 import org.hibernate.HibernateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +74,7 @@ public class ProductItemRepositoryImpl extends AbstractRepositoryImpl<SanPhamChi
       Fetch<SanPhamChiTiet, MauSac> joinColor = root.fetch("mauSac", JoinType.LEFT);
       Fetch<SanPhamChiTiet, Image> joinImage = root.fetch("image", JoinType.LEFT);
 //      Fetch<SanPhamChiTiet, KhuyenMaiChiTiet> joinPromotions = root.fetch("promotions", JoinType.LEFT);
-      Fetch<SanPhamChiTiet, MauSac> joinImeis = root.fetch("imeis", JoinType.LEFT);
+      Fetch<SanPhamChiTiet, Imei> joinImeis = root.fetch("imeis", JoinType.LEFT);
       Fetch<SanPhamChiTiet, SanPham> joinProduct = root.fetch("sanPham", JoinType.LEFT);
 
       Fetch<SanPham, Chip> joinChip = joinProduct.fetch("chip", JoinType.LEFT);
@@ -124,7 +123,7 @@ public class ProductItemRepositoryImpl extends AbstractRepositoryImpl<SanPhamChi
       Fetch<SanPhamChiTiet, MauSac> joinColor = root.fetch("mauSac", JoinType.LEFT);
       Fetch<SanPhamChiTiet, Image> joinImage = root.fetch("image", JoinType.LEFT);
 //      Fetch<SanPhamChiTiet, KhuyenMaiChiTiet> joinPromotions = root.fetch("promotions", JoinType.LEFT);
-      Fetch<SanPhamChiTiet, MauSac> joinImeis = root.fetch("imeis", JoinType.LEFT);
+      Fetch<SanPhamChiTiet, Imei> joinImeis = root.fetch("imeis", JoinType.LEFT);
       Fetch<SanPhamChiTiet, SanPham> joinProduct = root.fetch("sanPham", JoinType.LEFT);
 
       Fetch<SanPham, Chip> joinChip = joinProduct.fetch("chip", JoinType.LEFT);
@@ -275,6 +274,11 @@ public class ProductItemRepositoryImpl extends AbstractRepositoryImpl<SanPhamChi
       countPredicates.add(criteriaBuilder.between(countRoot.get("donGia"), fromPrice, toPrice));
     }
 
+    List<Order> orderList = new ArrayList<>();
+    orderList.add(criteriaBuilder.desc(root.get("soLuongTonKho")));
+    orderList.add(criteriaBuilder.desc(root.get("createdAt")));
+    criteriaQuery.orderBy(orderList);
+
 //    if (sortType != null) {
 //      // Do something
 //    }
@@ -289,16 +293,7 @@ public class ProductItemRepositoryImpl extends AbstractRepositoryImpl<SanPhamChi
     Field[] fields = entityDTO.getDeclaredFields();
     List<Predicate> predicates = new ArrayList<>();
     for (Field field : fields) {
-      if (field.getName().equals("tenSanPham")) {
-        predicates.add(configuration.getCriteriaBuilder().like(configuration.getCriteriaBuilder().lower(root.get("sanPham").get("tenSanPham").as(String.class)), "%" + keyword.toLowerCase() + "%"));
-      } else if (field.getName().equals("soLuongTonKho")) {
-        if (StringUtils.isNumeric(keyword)) {
-          Integer quantity = Integer.parseInt(keyword);
-          predicates.add(configuration.getCriteriaBuilder().equal(root.get("soLuongTonKho"), quantity));
-        }
-      } else {
-        predicates.add(configuration.getCriteriaBuilder().like(configuration.getCriteriaBuilder().lower(root.get(field.getName()).as(String.class)), "%" + keyword.toLowerCase() + "%"));
-      }
+      predicates.add(configuration.getCriteriaBuilder().like(configuration.getCriteriaBuilder().lower(root.get(field.getName()).as(String.class)), "%" + keyword.toLowerCase() + "%"));
     }
     return configuration.getCriteriaBuilder().or(predicates.toArray(new Predicate[0]));
   }

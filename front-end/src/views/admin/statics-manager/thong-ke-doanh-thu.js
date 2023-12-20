@@ -12,17 +12,12 @@ import {
   faRankingStar,
 } from "@fortawesome/free-solid-svg-icons";
 import { Card, FormControl, MenuItem, Select } from "@mui/material";
-import { DatePicker } from "@mui/x-date-pickers";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { LocalizationProvider } from "@mui/x-date-pickers-pro";
-import { AdapterDayjs } from "@mui/x-date-pickers-pro/AdapterDayjs";
 import * as dayjs from "dayjs";
 import Slider from "@material-ui/core/Slider";
 import { Table, ArrowUpOutlined, Button, Image } from "antd";
 import numeral from "numeral";
 import { request } from "../../../store/helpers/axios_helper";
 import { ButtonGroup } from "@mui/joy";
-import { DateRangePicker } from "@mui/x-date-pickers-pro/DateRangePicker";
 const ThongKeDoanhThu = () => {
   const [listDonHangAll, setListDonHangAll] = useState([]);
   // const [listDonHangInMonth, setListDonHangInMonth] = useState([]);
@@ -57,7 +52,7 @@ const ThongKeDoanhThu = () => {
       .then((response) => {
         setListDonHangInDay(response.data);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
 
   const thongKeTheoThang = () => {
@@ -65,7 +60,7 @@ const ThongKeDoanhThu = () => {
       .then((response) => {
         setListDonHangInMonth(response.data);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
 
   const thongKeTheoSanPham = () => {
@@ -73,7 +68,7 @@ const ThongKeDoanhThu = () => {
       .then((response) => {
         setListSanPham(response.data);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
 
   const getSanPhamBanChay = () => {
@@ -81,7 +76,7 @@ const ThongKeDoanhThu = () => {
       .then((response) => {
         setListSanPhamBanChay(response.data);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
 
   const getSanPhamSapHetHang = () => {
@@ -89,7 +84,7 @@ const ThongKeDoanhThu = () => {
       .then((response) => {
         setListSanPhamSapHet(response.data);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
 
   const getTocDoTangTruong = () => {
@@ -97,7 +92,7 @@ const ThongKeDoanhThu = () => {
       .then((response) => {
         setTocDoTangTruong(response.data);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
 
   // const getSanPhamBanChay = () => {
@@ -312,7 +307,7 @@ const ThongKeDoanhThu = () => {
         .then((response) => {
           setTrangThaiDonHang(response.data);
         })
-        .catch((error) => {});
+        .catch((error) => { });
     };
 
     getTrangThaiDonHang();

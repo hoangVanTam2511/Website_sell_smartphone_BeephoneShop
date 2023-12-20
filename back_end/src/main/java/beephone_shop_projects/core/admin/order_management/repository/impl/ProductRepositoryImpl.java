@@ -182,6 +182,8 @@ public class ProductRepositoryImpl extends AbstractRepositoryImpl<SanPham, Strin
       countPredicates.add(pinJoinCount.get("id").in(pins));
     }
 
+    criteriaQuery.orderBy(criteriaBuilder.desc(root.get("createdAt")));
+
 //    if (sortType != null) {
 //      // Do something
 //    }

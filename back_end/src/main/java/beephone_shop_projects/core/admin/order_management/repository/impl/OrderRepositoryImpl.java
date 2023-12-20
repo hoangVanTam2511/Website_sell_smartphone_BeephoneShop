@@ -369,7 +369,7 @@ public class OrderRepositoryImpl extends AbstractRepositoryImpl<HoaDon, String> 
 
     if (state != null) {
       if (state == 10) {
-        Integer[] states = {0, 1, 2, 3, 4, 5, 7};
+        Integer[] states = {0, 1, 2, 3, 4, 5, 7, 8, 9};
         predicates.add(root.get(fieldState).in(states));
         countPredicates.add(countRoot.get(fieldState).in(states));
       } else if (state == 4) {

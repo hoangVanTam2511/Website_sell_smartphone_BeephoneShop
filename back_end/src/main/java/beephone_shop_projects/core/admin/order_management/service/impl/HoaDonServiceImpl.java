@@ -230,7 +230,6 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
         for (OrderItemResponse orderItem : orderCurrent.getOrderItems()) {
           Optional<SanPhamChiTiet> findProductItem = sanPhamChiTietRepository.
                   findProductById(orderItem.getSanPhamChiTiet().getId());
-
           Set<Imei> imeisProduct = findProductItem.get().getImeis();
           orderItem.getImeisDaBan().forEach(s -> {
             imeisProduct.forEach(s1 -> {
@@ -241,9 +240,9 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
             s.setTrangThai(StatusImei.CANCELLED);
             imeiDaBanCustomRepository.save(s);
           });
-          findProductItem.get().setSoLuongTonKho(findProductItem.get().getSoLuongTonKho() +
-                  orderItem.getImeisDaBan().size());
-          sanPhamChiTietRepository.save(findProductItem.get());
+//          findProductItem.get().setSoLuongTonKho(findProductItem.get().getSoLuongTonKho() +
+//                  orderItem.getImeisDaBan().size());
+//          sanPhamChiTietRepository.save(findProductItem.get());
         }
       } else {
         for (OrderItemResponse orderItem : orderCurrent.getOrderItems()) {
@@ -586,6 +585,11 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
           });
         }
         imeiChuaBanCustomRepository.deleteAll(cartItem.getImeisChuaBan());
+        Voucher voucher = convertOrder.getVoucher();
+        if (voucher != null){
+          voucher.setSoLuong(voucher.getSoLuong() + 1);
+          voucherRepository.save(voucher);
+        }
 //        SanPhamChiTiet productItem = cartItem.getSanPhamChiTiet();
 //        productItem.setSoLuongTonKho(productItem.getSoLuongTonKho() + cartItem.getSoLuong());
 //        productItemsToUpdate.add(productItem);

@@ -83,7 +83,7 @@ public class VNPayController {
     hinhThucThanhToan.setHoaDon(orderConverter.convertResponseToEntity(orderCurrent));
     hinhThucThanhToan.setSoTienThanhToan(req.getTienKhachTra());
     hinhThucThanhToan.setLoaiThanhToan(req.getHoanTien().equals("Hoàn tiền") ? 1 : 0);
-    hinhThucThanhToan.setHinhThucThanhToan(req.getHinhThucThanhToan().equals("Chuyển khoản thường") ? 2 : 1);
+    hinhThucThanhToan.setHinhThucThanhToan(req.getHinhThucThanhToan().equals("Chuyển khoản") ? 2 : 1);
     hinhThucThanhToan.setTrangThai(1);
     hinhThucThanhToan.setCreatedAt(new Date());
     hinhThucThanhToan.setCreatedBy(req.getCreatedByPayment());
@@ -136,7 +136,7 @@ public class VNPayController {
     hinhThucThanhToan.setHoaDon(orderConverter.convertResponseToEntity(orderCurrent));
     hinhThucThanhToan.setSoTienThanhToan(req.getTienKhachTra());
     hinhThucThanhToan.setLoaiThanhToan(0);
-    hinhThucThanhToan.setHinhThucThanhToan(req.getHinhThucThanhToan().equals("Chuyển khoản thường") ? 2 : 1);
+    hinhThucThanhToan.setHinhThucThanhToan(req.getHinhThucThanhToan().equals("Chuyển khoản") ? 2 : 1);
     hinhThucThanhToan.setTrangThai(1);
     hinhThucThanhToan.setCreatedAt(new Date());
     hinhThucThanhToan.setCreatedBy(req.getCreatedByPayment());
