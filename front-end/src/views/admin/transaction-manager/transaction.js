@@ -43,7 +43,7 @@ const Transaction = () => {
 
   const loadDataListTransaction = (page) => {
     const request = {
-      page: page,
+      pageNo: page,
       keyword: searchTatCa,
       hinhThucThanhToan: searchHinhThucThanhToan,
       loaiThanhToan: searchLoaiThanhToan,

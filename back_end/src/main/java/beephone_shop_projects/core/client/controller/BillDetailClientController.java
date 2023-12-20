@@ -1,8 +1,8 @@
 package beephone_shop_projects.core.client.controller;
 
 import beephone_shop_projects.core.client.models.request.BillDetailClientRequest;
-import beephone_shop_projects.core.client.serives.impl.BillClientServiceImpl;
-import beephone_shop_projects.core.client.serives.impl.BillDetailClientServiceImpl;
+import beephone_shop_projects.core.client.servies.impl.BillClientServiceImpl;
+import beephone_shop_projects.core.client.servies.impl.BillDetailClientServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

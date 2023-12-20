@@ -1,6 +1,6 @@
 package beephone_shop_projects.core.client.controller;
 
-import beephone_shop_projects.core.client.serives.impl.BrandClientServiceImpl;
+import beephone_shop_projects.core.client.servies.impl.BrandClientServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;

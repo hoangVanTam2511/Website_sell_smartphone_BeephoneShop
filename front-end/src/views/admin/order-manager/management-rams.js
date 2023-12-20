@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Button, Empty, Table } from "antd";
+import { Button, Empty, Popconfirm, Table } from "antd";
 import {
   Autocomplete,
   Dialog,
@@ -38,11 +38,13 @@ import {
   faPenToSquare,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { ConfirmDialog } from "./AlertDialogSlide";
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
 const ManagementRams = () => {
+  const [selectedStatus, setSelectedStatus] = useState("");
   const navigate = useNavigate();
   // const [isLoading, setIsLoading] = useState(false);
   const [totalPages, setTotalPages] = useState();
@@ -264,38 +266,38 @@ const ManagementRams = () => {
               </Tooltip>
 
               {/* Hàm đổi trạng thái */}
-
-              <Tooltip
-                TransitionComponent={Zoom}
+              <Popconfirm
                 title={
-                  record.status === StatusCommonProducts.ACTIVE
-                    ? "Ngừng kích hoạt"
-                    : record.status === StatusCommonProducts.IN_ACTIVE
-                    ? "Kích hoạt"
-                    : ""
+                  <span style={{ fontSize: "16px" }}>
+                    Bạn có chắc chắn đổi trạng thái ram?
+                  </span>
                 }
+                onConfirm={() => {
+                  doiTrangThaiProducts(record.id);
+                }}
+                okText="Đồng ý"
+                cancelText="Hủy"
               >
-                <IconButton
-                  className="ms-2"
-                  style={{ marginTop: "6px" }}
-                  onClick={() => doiTrangThaiProducts(record.id)}
-                >
-                  <FontAwesomeIcon
-                    icon={faArrowsRotate}
-                    size="sm"
-                    transform={{ rotate: 90 }}
-                    style={{
-                      cursor: "pointer",
-                      color:
-                        record.status === StatusCommonProducts.IN_ACTIVE
-                          ? "#e5383b"
-                          : record.status === StatusCommonProducts.ACTIVE
-                          ? "#09a129"
-                          : "disabled",
-                    }}
-                  />
-                </IconButton>
-              </Tooltip>
+                {" "}
+                <Tooltip TransitionComponent={Zoom} title={"Đổi trạng thái"}>
+                  <IconButton>
+                    <FontAwesomeIcon
+                      icon={faArrowsRotate}
+                      transform={{ rotate: 90 }}
+                      style={{
+                        cursor: "pointer",
+                        color:
+                          record.status === StatusCommonProducts.IN_ACTIVE
+                            ? "#e5383b"
+                            : record.status === StatusCommonProducts.ACTIVE
+                            ? "#09a129"
+                            : "disabled",
+                      }}
+                      size="sm"
+                    />
+                  </IconButton>
+                </Tooltip>
+              </Popconfirm>
             </div>
           </div>
         </>
@@ -668,7 +670,6 @@ const ManagementRams = () => {
               </div>
             </div>
           </div>
-          {/* {isLoading && <LoadingIndicator />} */}
         </DialogContent>
         <div className="mt-3"></div>
       </Dialog>

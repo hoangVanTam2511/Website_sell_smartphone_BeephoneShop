@@ -78,7 +78,6 @@ const HienThiNV = () => {
         filterStatus
     )
       .then((response) => {
-        console.log(response.data.data);
         setListNV(response.data.data);
         setTotalPages(response.data.totalPages);
       })
@@ -138,7 +137,6 @@ const HienThiNV = () => {
       anhDaiDien: record.anhDaiDien,
     });
     navigate(`/dashboard/update-employee/${record.id}`);
-    handleOpenAlertVariant("Sửa thành công", Notistack.SUCCESS);
     setEditingKey(record.id);
   };
   const doChangeTrangThai = (id) => {
@@ -278,15 +276,7 @@ const HienThiNV = () => {
               />
             </Tooltip>
             <Popconfirm
-              title={`Đổi trạng thái tài khoản từ ${
-                record.trangThai === StatusAccountCus.LAM_VIEC
-                  ? `"Làm việc"`
-                  : `"Đã nghỉ"`
-              } sang ${
-                record.trangThai === StatusAccountCus.LAM_VIEC
-                  ? `"Đã nghỉ"`
-                  : `"Làm việc"`
-              } `}
+              title={`Bạn có chắc chắn đổi trạng thái tài khoản? `}
               onConfirm={() => {
                 doChangeTrangThai(record.id);
               }}
@@ -298,7 +288,6 @@ const HienThiNV = () => {
                 color={"black"}
                 placement="bottom"
               >
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <FontAwesomeIcon
                   icon={faArrowsRotate}
                   style={{
@@ -308,6 +297,7 @@ const HienThiNV = () => {
                       record.trangThai === StatusAccountCus.LAM_VIEC
                         ? "#e5383b"
                         : "#09a129",
+                    paddingLeft: "20px",
                   }}
                   transform={{ rotate: 90 }}
                   size="lg"
