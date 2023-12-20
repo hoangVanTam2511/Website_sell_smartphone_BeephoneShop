@@ -1,6 +1,7 @@
 package beephone_shop_projects.core.admin.promotion_management.service.impl;
 
 import beephone_shop_projects.core.admin.promotion_management.model.reponse.*;
+import beephone_shop_projects.core.admin.promotion_management.model.request.FindSanPhamKhuyenMaiRequest;
 import beephone_shop_projects.core.admin.promotion_management.repository.SanPhamChiTietKhuyenMaiRepository;
 import beephone_shop_projects.core.admin.promotion_management.service.SanPhamChiTietKhuyenMaiService;
 import org.springframework.beans.factory.annotation.Autowired;

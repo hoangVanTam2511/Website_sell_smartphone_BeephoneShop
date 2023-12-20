@@ -31,7 +31,7 @@ import useCustomSnackbar from "../../../utilities/notistack";
 import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
 import LoadingIndicator from "../../../utilities/loading";
 import { useNavigate } from "react-router-dom";
-import { request } from "../../../store/helpers/axios_helper";
+import { request, requestParam } from "../../../store/helpers/axios_helper";
 
 const AddKhuyenMai = () => {
   //add-khuyen-mai
@@ -68,6 +68,7 @@ const AddKhuyenMai = () => {
   let successfulCount = 0;
   let successfulCount1 = 0;
   const navigate = useNavigate();
+  const [keyword, setkeyword] = useState("");
 
   const redirectToHienThiKhuyenMai = () => {
     navigate("/dashboard/discounts");
@@ -104,8 +105,11 @@ const AddKhuyenMai = () => {
     );
   };
 
-  const loadDatalistSanPham = () => {
-    request("GET", "/san-pham-1")
+  const loadDatalistSanPham = (keyword) => {
+    const paramSanPham = {
+      keyword: keyword,
+    };
+    requestParam("GET", `/san-pham-1`, paramSanPham)
       .then((response) => {
         setListSanPham(response.data.data);
       })
@@ -121,6 +125,7 @@ const AddKhuyenMai = () => {
     request("GET", `/san-pham-chi-tiet-1/${id}/${check}`)
       .then((response) => {
         setlistSanPhamChiTiet(response.data.data);
+        setSanPhamChiTietKhuyenMai(response.data.data);
         const data = response.data.data;
         const productDetailsIds = data.map((item) => item.id);
         setSelectedRowKeys1(productDetailsIds);
@@ -148,9 +153,14 @@ const AddKhuyenMai = () => {
   };
 
   useEffect(() => {
-    loadDatalistSanPham();
-  }, []);
+    loadDatalistSanPham(keyword);
+  }, [keyword]);
 
+  const handleReset2 = () => {
+    // Đặt giá trị của searchTerm về trống
+    setSearchTerm("");
+    setlistSanPhamChiTiet(sanPhamChiTietKhuyenMai);
+  };
   const handleChange = (event) => {
     // if (selectDiscount === TypeDiscountString.VND) {
     const inputValue = event.target.value;
@@ -191,9 +201,9 @@ const AddKhuyenMai = () => {
   //   handleReset();
   // };
 
-  // const handleReset = () => {
-  //   setValue("");
-  // };
+  const handleReset = () => {
+    setkeyword("");
+  };
 
   //Detail sản phẩm chi tiết đã áp dụng khuyến mãi
   const detailSanPhamSauKhuyenMai = (id) => {
@@ -372,50 +382,34 @@ const AddKhuyenMai = () => {
     ],
   };
 
-  const [openSelect, setOpenSelect] = useState(false);
-
-  const handleCloseSelect = () => {
-    setOpenSelect(false);
-  };
-
-  const handleOpenSelect = () => {
-    setOpenSelect(true);
-  };
-
-  const handleSearchRamChange = (event) => {
+  const handleSearchProductChange = (event) => {
     const selectedValue = event.target.value;
-    setSearchRam(selectedValue);
-    // setCurrentPage(1);
-  };
-  const [openSelect1, setOpenSelect1] = useState(false);
-
-  const handleCloseSelect1 = () => {
-    setOpenSelect1(false);
+    console.log(selectedValue);
+    setkeyword(selectedValue);
   };
 
-  const handleOpenSelect1 = () => {
-    setOpenSelect1(true);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const handleSearchChange = (event) => {
+    const newSearchTerm = event.target.value;
+    setSearchTerm(newSearchTerm);
+
+    // Gọi hàm tìm kiếm với giá trị mới
+    searchListSanPhamChiTiet(newSearchTerm);
   };
 
-  const handleSearchRomChange = (event) => {
-    const selectedValue = event.target.value;
-    setSearchRom(selectedValue);
-    // setCurrentPage(1);
-  };
+  const searchListSanPhamChiTiet = (query) => {
+    // Thực hiện tìm kiếm và cập nhật state hoặc làm các hành động khác
+    // Tùy thuộc vào cấu trúc dữ liệu của bạn
+    const filteredData = listSanPhamChiTiet.filter((item) => {
+      return (
+        item.tenSanPham.toLowerCase().includes(query.toLowerCase()) ||
+        item.tenMauSac.toLowerCase().includes(query.toLowerCase())
+        // Thêm các trường khác cần tìm kiếm ở đây
+      );
+    });
 
-  const [openSelect3, setOpenSelect3] = useState(false);
-  const handleCloseSelect3 = () => {
-    setOpenSelect3(false);
-  };
-
-  const handleOpenSelect3 = () => {
-    setOpenSelect3(true);
-  };
-
-  const handleSortValueProductDetail = (event) => {
-    const selectedValue = event.target.value;
-    setSortValueProductDetail(selectedValue);
-    // setCurrentPage(1);
+    setlistSanPhamChiTiet(filteredData);
   };
 
   //Column bảng Sản Phẩm
@@ -887,8 +881,8 @@ const AddKhuyenMai = () => {
               <TextField
                 placeholder="Tìm theo mã, tên sản phẩm"
                 label="Tìm sản phẩm"
-                // value={searchTatCa}
-                // onChange={handleSearchTatCaChange}
+                value={keyword}
+                onChange={handleSearchProductChange}
                 InputLabelProps={{
                   sx: {
                     marginTop: "",
@@ -905,9 +899,9 @@ const AddKhuyenMai = () => {
                 className=""
               />
               <Button
-                // onClick={() => {
-                //   handleReset();
-                // }}
+                onClick={() => {
+                  handleReset();
+                }}
                 className="rounded-2 ms-2"
                 type="warning"
                 style={{ width: "100px", fontSize: "15px" }}
@@ -950,8 +944,8 @@ const AddKhuyenMai = () => {
           <TextField
             placeholder="Tìm theo mã, tên sản phẩm"
             label="Tìm sản phẩm chi tiết"
-            // value={searchTatCa}
-            // onChange={handleSearchTatCaChange}
+            value={searchTerm}
+            onChange={handleSearchChange}
             InputLabelProps={{
               sx: {
                 marginTop: "",
@@ -968,9 +962,9 @@ const AddKhuyenMai = () => {
             className=""
           />
           <Button
-            // onClick={() => {
-            //   handleReset();
-            // }}
+            onClick={() => {
+              handleReset2();
+            }}
             className="rounded-2 ms-2"
             type="warning"
             style={{ width: "100px", fontSize: "15px" }}
@@ -982,160 +976,6 @@ const AddKhuyenMai = () => {
               Làm Mới
             </span>
           </Button>
-          <div
-            className="d-flex ms-5"
-            style={{
-              height: "40px",
-              // position: "relative",
-              cursor: "pointer",
-            }}
-          >
-            <div
-              // onClick={handleOpenSelect}
-              className=""
-              style={{ marginTop: "7px" }}
-            >
-              <span
-                className="ms-2 ps-1"
-                style={{ fontSize: "15px", fontWeight: "450" }}
-              >
-                RAM:{" "}
-              </span>
-            </div>
-            <FormControl
-              sx={{
-                minWidth: 50,
-              }}
-              size="small"
-            >
-              <Select
-                MenuProps={{
-                  PaperProps: {
-                    style: {
-                      borderRadius: "7px",
-                    },
-                  },
-                }}
-                IconComponent={KeyboardArrowDownOutlinedIcon}
-                sx={{
-                  "& .MuiOutlinedInput-notchedOutline": {
-                    border: "none !important",
-                  },
-                  "& .MuiSelect-select": {
-                    color: "#2f80ed",
-                    fontWeight: "500",
-                  },
-                }}
-                open={openSelect}
-                onClose={handleCloseSelect}
-                onOpen={handleOpenSelect}
-                value={searchRam}
-                onChange={handleSearchRamChange}
-              >
-                <MenuItem className="" value={6}>
-                  Tất cả
-                </MenuItem>
-                <MenuItem value={1}>2 GB</MenuItem>
-              </Select>
-            </FormControl>
-            <div
-              // onClick={handleOpenSelect}
-              className=""
-              style={{ marginTop: "7px" }}
-            >
-              <span
-                className="ms-2 ps-1"
-                style={{ fontSize: "15px", fontWeight: "450" }}
-              >
-                ROM:{" "}
-              </span>
-            </div>
-            <FormControl
-              sx={{
-                minWidth: 50,
-              }}
-              size="small"
-            >
-              <Select
-                MenuProps={{
-                  PaperProps: {
-                    style: {
-                      borderRadius: "7px",
-                    },
-                  },
-                }}
-                IconComponent={KeyboardArrowDownOutlinedIcon}
-                sx={{
-                  "& .MuiOutlinedInput-notchedOutline": {
-                    border: "none !important",
-                  },
-                  "& .MuiSelect-select": {
-                    color: "#2f80ed",
-                    fontWeight: "500",
-                  },
-                }}
-                open={openSelect1}
-                onClose={handleCloseSelect1}
-                onOpen={handleOpenSelect1}
-                value={searchRom}
-                onChange={handleSearchRomChange}
-              >
-                <MenuItem className="" value={6}>
-                  Tất cả
-                </MenuItem>
-                <MenuItem value={1}>2 GB</MenuItem>
-              </Select>
-            </FormControl>
-            <div
-              // onClick={handleOpenSelect}
-              className=""
-              style={{ marginTop: "7px" }}
-            >
-              <span
-                className="ms-2 ps-1"
-                style={{ fontSize: "15px", fontWeight: "450" }}
-              >
-                Sắp Xếp Đơn Giá:{" "}
-              </span>
-            </div>
-            <FormControl
-              sx={{
-                minWidth: 50,
-              }}
-              size="small"
-            >
-              <Select
-                MenuProps={{
-                  PaperProps: {
-                    style: {
-                      borderRadius: "7px",
-                    },
-                  },
-                }}
-                IconComponent={KeyboardArrowDownOutlinedIcon}
-                sx={{
-                  "& .MuiOutlinedInput-notchedOutline": {
-                    border: "none !important",
-                  },
-                  "& .MuiSelect-select": {
-                    color: "#2f80ed",
-                    fontWeight: "500",
-                  },
-                }}
-                open={openSelect3}
-                onClose={handleCloseSelect3}
-                onOpen={handleOpenSelect3}
-                value={sortValueProductDetail}
-                onChange={handleSortValueProductDetail}
-              >
-                <MenuItem className="" value={"all"}>
-                  Mặc định
-                </MenuItem>
-                <MenuItem value={"a-z"}>Tăng dần theo giá trị</MenuItem>
-                <MenuItem value={"z-a"}>Giảm dần theo giá trị</MenuItem>
-              </Select>
-            </FormControl>
-          </div>
         </div>
         <Table
           className="table-container"

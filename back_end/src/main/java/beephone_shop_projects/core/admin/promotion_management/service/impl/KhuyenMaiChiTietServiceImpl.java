@@ -47,55 +47,12 @@ public class KhuyenMaiChiTietServiceImpl implements KhuyenMaiChiTietService {
                     .donGia(sanPhamChiTietKhuyenMaiRepository.findById(request.getIdSanPhamChiTiet()).get().getDonGia())
                     .donGiaSauKhuyenMai(donGiaSauKhuyenMai(request))
                     .build();
-            khuyenMaiChiTietRepository.save(khuyenMaiChiTiet);
-            List<KhuyenMaiChiTietResponse> kmct = sanPhamChiTietKhuyenMaiRepository.getListKhuyenMai(request.getIdSanPhamChiTiet());
-            BigDecimal tong = BigDecimal.ZERO;
-            BigDecimal giaTriKM = BigDecimal.ZERO;
-            BigDecimal donGiaKM = BigDecimal.ZERO;
-            for (KhuyenMaiChiTietResponse km : kmct) {
-                String loaiKhuyenMai = km.getLoaiKhuyenMai();
-                BigDecimal giaTri = km.getGiaTriKhuyenMai();
-                BigDecimal chuyenDoi = BigDecimal.ZERO;
-                if (loaiKhuyenMai.equals("0")) {
-                    chuyenDoi = giaTri;
-                } else if (loaiKhuyenMai.equals("1")) {
-                    chuyenDoi = giaTri;
-                }
-                tong = tong.add(chuyenDoi);
-            }
-            if (kmct.size() > 0) {
-                giaTriKM = tong.divide(new BigDecimal(kmct.size()), 0, RoundingMode.HALF_UP);
-                donGiaKM = donGia.subtract(giaTriKM);
-            }
-            khuyenMaiChiTietRepository.updateSanPhamChiTiet(donGiaKM, giaTriKM, request.getIdSanPhamChiTiet());
-            return khuyenMaiChiTiet;
+            return khuyenMaiChiTietRepository.save(khuyenMaiChiTiet);
         }
         if (khuyenMaiList != null && khuyenMaiList.getDelected() == false) {
             khuyenMaiList.setDelected(true);
             khuyenMaiList.setDonGiaSauKhuyenMai(donGia.subtract(giaTriKhuyenMai));
-            khuyenMaiChiTietRepository.save(khuyenMaiList);
-            List<KhuyenMaiChiTietResponse> kmct = sanPhamChiTietKhuyenMaiRepository.getListKhuyenMai(request.getIdSanPhamChiTiet());
-            BigDecimal tong = BigDecimal.ZERO;
-            BigDecimal giaTriKM = BigDecimal.ZERO;
-            BigDecimal donGiaKM = BigDecimal.ZERO;
-            for (KhuyenMaiChiTietResponse km : kmct) {
-                String loaiKhuyenMai = km.getLoaiKhuyenMai();
-                BigDecimal giaTri = km.getGiaTriKhuyenMai();
-                BigDecimal chuyenDoi = BigDecimal.ZERO;
-                if (loaiKhuyenMai.equals("0")) {
-                    chuyenDoi = giaTri;
-                } else if (loaiKhuyenMai.equals("1")) {
-                    chuyenDoi = giaTri;
-                }
-                tong = tong.add(chuyenDoi);
-            }
-            if (kmct.size() > 0) {
-                giaTriKM = tong.divide(new BigDecimal(kmct.size()), 0, RoundingMode.HALF_UP);
-                donGiaKM = donGia.subtract(giaTriKM);
-            }
-
-            khuyenMaiChiTietRepository.updateSanPhamChiTiet(donGiaKM, giaTriKM, khuyenMaiList.getKhuyenMaiChiTietId().getIdSanPham().getId() );
-            return khuyenMaiList;
+            return khuyenMaiChiTietRepository.save(khuyenMaiList);
         }
         return null;
     }
