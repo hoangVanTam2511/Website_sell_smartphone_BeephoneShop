@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,6 +35,7 @@ public class ChipController {
     public ResponseObject<List<ChipResponse>> getChip() {
         List<ChipResponse> chip = chipService.findAll().stream()
                 .filter(products -> StatusCommon.ACTIVE.equals(products.getStatus()))
+                .sorted(Comparator.comparing(ChipResponse::getCreatedAt).reversed())
                 .collect(Collectors.toList());
         return new ResponseObject<>(chip);
     }

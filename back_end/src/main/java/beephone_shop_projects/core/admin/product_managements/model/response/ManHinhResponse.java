@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.rest.core.config.Projection;
 
+import java.util.Date;
+
 @Setter
 @Getter
 @AllArgsConstructor
@@ -29,5 +31,8 @@ public class ManHinhResponse {
     private StatusCommon status;
 
     private DoPhanGiaiResponse doPhanGiaiManHinh;
+
+    private Date createdAt;
+
 
 }

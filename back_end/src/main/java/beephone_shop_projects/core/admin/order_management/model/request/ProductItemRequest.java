@@ -21,4 +21,6 @@ public class ProductItemRequest {
 
   private BigDecimal donGia;
 
+  private Integer trangThai;
+
 }

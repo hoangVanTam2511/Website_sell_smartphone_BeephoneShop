@@ -5,14 +5,18 @@ import beephone_shop_projects.core.admin.order_management.converter.ProductConve
 import beephone_shop_projects.core.admin.order_management.converter.ProductItemCustomConverter;
 import beephone_shop_projects.core.admin.order_management.converter.ProductRamConverter;
 import beephone_shop_projects.core.admin.order_management.converter.ProductRomConverter;
+import beephone_shop_projects.core.admin.order_management.model.request.ImeiRequest;
+import beephone_shop_projects.core.admin.order_management.model.request.ImeisRequest;
 import beephone_shop_projects.core.admin.order_management.model.request.ProductItemConfigurationsRequest;
 import beephone_shop_projects.core.admin.order_management.model.request.ProductItemCustomRequest;
 import beephone_shop_projects.core.admin.order_management.model.request.ProductItemImeiRequest;
+import beephone_shop_projects.core.admin.order_management.model.request.ProductItemRequest;
 import beephone_shop_projects.core.admin.order_management.model.request.ProductRequest;
 import beephone_shop_projects.core.admin.order_management.model.request.SearchFilterProductDto;
 import beephone_shop_projects.core.admin.order_management.model.response.product_response.ProductCustomResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.product_response.ProductItemCustomResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.product_response.ProductResponse;
+import beephone_shop_projects.core.admin.order_management.model.response.product_response.ProductsItemResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.product_response.ProductsResponse;
 import beephone_shop_projects.core.admin.order_management.repository.CameraSauDienThoaiRepository;
 import beephone_shop_projects.core.admin.order_management.repository.CameraSauRepository;
@@ -38,14 +42,18 @@ import beephone_shop_projects.entity.SanPham;
 import beephone_shop_projects.entity.SanPhamChiTiet;
 import beephone_shop_projects.entity.TheSim;
 import beephone_shop_projects.entity.TheSimDienThoai;
+import beephone_shop_projects.infrastructure.constant.StatusImei;
+import beephone_shop_projects.infrastructure.exeption.rest.RestApiException;
 import beephone_shop_projects.utils.BarcodeGenerator;
 import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -172,6 +180,7 @@ public class ProductServiceImpl extends AbstractServiceImpl<SanPham, ProductResp
           product.setSoLuongTonKho(item.getSoLuongTonKho());
           product.setMa(item.getMa());
           product.setMaCauHinh(item.getId());
+          product.setTrangThai(req.getProduct().getTrangThai());
           product.setDonGia(item.getDonGia() == null ? new BigDecimal(0) : item.getDonGia());
           product.setMauSac(productColorConverter.convertRequestToEntity(item.getColor()));
           product.setRam(productRamConverter.convertRequestToEntity(item.getRam()));
@@ -234,10 +243,9 @@ public class ProductServiceImpl extends AbstractServiceImpl<SanPham, ProductResp
 
       List<SanPhamChiTiet> findProductItemById = productItemCustomRepository.getProductsById(product.getId());
 
-      if (findProductItemById != null && findProductItemById.size() > 0) {
-        SanPhamChiTiet sanPhamChiTiet = findProductItemById.get(0);
-        if (sanPhamChiTiet.getImage() != null) {
-          urlImage = sanPhamChiTiet.getImage().getPath();
+      for (SanPhamChiTiet productItem : findProductItemById) {
+        if (productItem.getImage() != null) {
+          urlImage = productItem.getImage().getPath();
         }
       }
 
@@ -261,5 +269,40 @@ public class ProductServiceImpl extends AbstractServiceImpl<SanPham, ProductResp
     pageResponse.setTotalPages(pageProducts.getTotalPages());
 
     return pageResponse;
+  }
+
+  @Override
+  public ProductsItemResponse updateProduct(ProductItemRequest req) {
+    Optional<SanPhamChiTiet> findProduct = productItemCustomRepository.findById(req.getId());
+    ProductsItemResponse response = new ProductsItemResponse();
+    if (findProduct.isPresent()) {
+      findProduct.get().setTrangThai(req.getTrangThai());
+      findProduct.get().setDonGia(req.getDonGia());
+      SanPhamChiTiet sanPhamChiTiet = productItemCustomRepository.save(findProduct.get());
+
+      response.setDonGia(sanPhamChiTiet.getDonGia());
+      response.setTrangThai(sanPhamChiTiet.getTrangThai());
+      response.setId(sanPhamChiTiet.getId());
+    } else {
+      throw new RestApiException("Không tìm thấy sản phẩm này!");
+    }
+    return response;
+  }
+
+  @Override
+  public void addImeiProduct(ImeisRequest req) throws Exception {
+    Optional<SanPhamChiTiet> findProduct = productItemCustomRepository.findProductById(req.getId());
+    if (findProduct.isPresent()) {
+      for (ImeiRequest imeiRequest : req.getImeis()) {
+        Imei imei = new Imei();
+        imei.setSoImei(imeiRequest.getImei());
+        imei.setTrangThai(StatusImei.NOT_SOLD);
+        String uri = barcodeGenerator.generateBarcodeImageBase64Url(imei.getSoImei(), BarcodeFormat.CODE_128);
+        imei.setBarcode(uri);
+        imei.setSanPhamChiTiet(findProduct.get());
+        imeiRepositoryImpl.save(imei);
+      }
+    }
+
   }
 }

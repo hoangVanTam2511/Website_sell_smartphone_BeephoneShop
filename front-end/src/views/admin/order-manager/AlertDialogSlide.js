@@ -6445,7 +6445,9 @@ export function ConfirmRefund({ open, close, confirm, total, size }) {
         TransitionComponent={Transition}
         keepMounted
         open={open}
-        onClose={close}
+        onClose={() => {
+          close(); setDescription("")
+        }}
         aria-describedby="alert-dialog-slide-description1"
         maxWidth="md"
         maxHeight="md"
@@ -6481,6 +6483,7 @@ export function ConfirmRefund({ open, close, confirm, total, size }) {
           <Button
             onClick={() => {
               confirm(description);
+              setDescription("");
             }}
             className="rounded-2 me-2"
             type="primary"
@@ -6624,4 +6627,130 @@ export function ConfirmRollBack({ open, close, confirm }) {
       </Dialog>
     </div>
   );
+}
+export const ModalUpdateProduct = ({ update, open, close, refresh, priceProduct, statusProduct }) => {
+  const { handleOpenAlertVariant } = useCustomSnackbar();
+
+  const [priceFormat, setPriceFormat] = useState(String(priceProduct)
+    .replace(/[^0-9]+/g, "")
+    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+  );
+  const [status, setStatus] = useState(statusProduct);
+  const handleChangePrice = (event) => {
+    const value = event.target.value;
+    let valueFinal;
+
+    valueFinal = value
+      .replace(/[^0-9]+/g, "")
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    setPriceFormat(valueFinal);
+  }
+
+  const [selectKey, setSelectKey] = useState(0);
+  useEffect(() => {
+    setSelectKey((key) => key + 1);
+    setStatus(statusProduct);
+    setPriceFormat(String(priceProduct)
+      .replace(/[^0-9]+/g, "")
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    );
+
+  }, [priceProduct, statusProduct])
+
+
+  const updateData = () => {
+    const parseNumber = parseFloat(priceFormat.replace(/[^0-9.-]+/g, ""));
+    update(parseNumber, status);
+  }
+
+  return (
+    <>
+      <Dialog
+        open={open}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={() => {
+          close();
+          setStatus(statusProduct);
+          setPriceFormat(String(priceProduct)
+            .replace(/[^0-9]+/g, "")
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+          );
+        }}
+        maxWidth="xl"
+        maxHeight="xl"
+        sx={{
+          marginBottom: "170px",
+        }}
+      >
+        <DialogContent className="">
+          <div style={{ width: "600px", height: "auto" }}>
+            <div className="text-center mt-1" style={{}}>
+              <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>CẬP NHẬT SẢN PHẨM</span>
+            </div>
+            <div className="mx-auto mt-3" style={{ width: "100%" }}>
+              <TextField fullWidth
+                className="custom"
+                label="Đơn giá chung"
+                id="outlined-size-small"
+                value={priceFormat}
+                onChange={handleChangePrice}
+              />
+            </div>
+            <div className="mx-auto mt-3" style={{ width: "100%" }}>
+              <FormControl fullWidth>
+                <InputLabel id="demo-simple-select-label">
+                  Trạng Thái
+                </InputLabel>
+                <SelectMui
+                  className="custom"
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={status}
+                  label="Trạng Thái"
+                  key={selectKey}
+                  onChange={(e) => setStatus(e.target.value)}
+                >
+                  <MenuItem value={0}>
+                    Kinh doanh
+                  </MenuItem>
+                  <MenuItem value={1}>
+                    Chưa kinh doanh
+                  </MenuItem>
+                  <MenuItem value={2}>
+                    Ngừng kinh doanh
+                  </MenuItem>
+                </SelectMui>
+              </FormControl>
+            </div>
+          </div>
+          <div className="mt-4 text-end">
+            <Button
+              onClick={() => {
+                if (priceFormat !== "") {
+                  updateData();
+                }
+                else {
+                  handleOpenAlertVariant("Bạn chưa nhập đơn giá!", "warning");
+                }
+              }}
+              className="rounded-2 button-mui"
+              type="primary"
+              style={{ height: "40px", width: "auto", fontSize: "15px" }}
+            >
+              <span
+                className=""
+                style={{ marginBottom: "2px", fontWeight: "500" }}
+              >
+                Xác Nhận
+              </span>
+            </Button>
+          </div>
+
+        </DialogContent>
+        <div className="mt-2"></div>
+      </Dialog>
+    </>
+  )
+
 }

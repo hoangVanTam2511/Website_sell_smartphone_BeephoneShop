@@ -1209,8 +1209,11 @@ const ThongKeDoanhThu = () => {
               </Card>
             </Col>
             <Col className="col-6">
-              <Card variant="outlined" style={{ paddingTop: "10px" }}>
-                <h4>Biểu đồ trạng thái đơn hàng</h4>
+              <Card
+                variant="outlined"
+                style={{ paddingTop: "10px", paddingRight: "55px" }}
+              >
+                <h4 className="ms-4">Biểu đồ trạng thái đơn hàng</h4>
                 <div
                   className="mt-3 mb-2"
                   style={{ display: "flex", justifyContent: "flex-end" }}
@@ -1344,6 +1347,7 @@ const ThongKeDoanhThu = () => {
                     height: "450px",
                     display: "flex",
                     justifyContent: "center",
+                    paddingRight: "50px",
                   }}
                 >
                   <canvas

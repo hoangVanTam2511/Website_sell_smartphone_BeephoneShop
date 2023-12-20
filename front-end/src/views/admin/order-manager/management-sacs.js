@@ -594,7 +594,7 @@ const ManagementCongSacs = () => {
                   className="ms-3 ps-1"
                   style={{ marginBottom: "3px", fontWeight: "500" }}
                 >
-                  Tạo Sạc
+                  Tạo Cổng Sạc
                 </span>
               </Button>
             </div>

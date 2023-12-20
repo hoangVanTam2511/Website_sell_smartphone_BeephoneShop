@@ -38,6 +38,8 @@ public class SanPhamChiTiet extends PrimaryEntity implements Serializable {
 
   private BigDecimal donGiaSauKhuyenMai;
 
+  private Integer trangThai;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_san_pham")
   @JsonIgnore

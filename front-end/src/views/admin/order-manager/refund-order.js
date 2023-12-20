@@ -48,13 +48,13 @@ const RefundOrder = () => {
       .then((response) => {
         const data = response.data.data;
         if (
-          data.trangThai === OrderStatusString.HAD_PAID ||
-          data.trangThai === OrderStatusString.SUCCESS_DELIVERY ||
-          data.trangThai === OrderStatusString.REFUND_A_PART
+          (data.trangThai === OrderStatusString.HAD_PAID ||
+            data.trangThai === OrderStatusString.SUCCESS_DELIVERY ||
+            data.trangThai === OrderStatusString.REFUND_A_PART) && data.loaiHoaDon === OrderTypeString.AT_COUNTER
         ) {
           setIsLoading(false);
           handleRedirectRefundOrderDetail();
-        } else if (data.trangThai === OrderTypeString.DELIVERY && data.trangThai === OrderStatusString.SUCCESS_DELIVERY) {
+        } else if (data.loaiHoaDon === OrderTypeString.DELIVERY && data.trangThai === OrderStatusString.SUCCESS_DELIVERY) {
           setIsLoading(false);
           handleOpenAlertVariant("Chỉ cho phép hoàn trả đơn tại quầy!", Notistack.ERROR);
         }
@@ -158,7 +158,7 @@ const RefundOrder = () => {
                     marginBottom: "2px",
                   }}
                 >
-                  Quét Barcode
+                  Quét QrCode
                 </span>
               </Button>
             </div>

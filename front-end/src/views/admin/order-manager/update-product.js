@@ -638,32 +638,52 @@ const UpdateProduct = ({ }) => {
     setOpen(false);
   };
 
-  const [products, setProducts] = useState([
-    {
-      ma: "091218273",
-      tenSanPham: "Iphone 14 Pro Max",
-    },
-    {
-      ma: "091218273",
-      tenSanPham: "Iphone 12 Pro",
-    },
-    {
-      ma: "091218273",
-      tenSanPham: "Samsung Galaxy Ultra 23",
-    },
-    {
-      ma: "091218273",
-      tenSanPham: "Xiaomi K40 Pro",
-    },
-  ]);
-  const [colors, setColors] = useState([
-    {
-      ma: "091218273",
-      tenMauSac: "White Smoke",
-      status: 0
-    }
-  ]);
+  const [products, setProducts] = useState([]);
+  const getProducts = () => {
+    request('GET', `/api/products`)
+      .then((response) => {
+        setProducts(response.data.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+  // const [products, setProducts] = useState([
+  //   {
+  //     ma: "091218273",
+  //     tenSanPham: "Iphone 14 Pro Max",
+  //   },
+  //   {
+  //     ma: "091218273",
+  //     tenSanPham: "Iphone 12 Pro",
+  //   },
+  //   {
+  //     ma: "091218273",
+  //     tenSanPham: "Samsung Galaxy Ultra 23",
+  //   },
+  //   {
+  //     ma: "091218273",
+  //     tenSanPham: "Xiaomi K40 Pro",
+  //   },
+  // ]);
+  // const [colors, setColors] = useState([
+  //   {
+  //     ma: "091218273",
+  //     tenMauSac: "White Smoke",
+  //     status: 0
+  //   }
+  // ]);
+  const [weight, setWeight] = React.useState('');
 
+  const handleChangeWeight = (event) => {
+    const value = event.target.value;
+    let valueFinal;
+
+    valueFinal = value
+      .replace(/[^0-9]+/g, "")
+    setWeight(valueFinal);
+
+  }
   const [productId, setProductId] = useState("");
   const [productCode, setProductCode] = useState("");
   const [productName, setProductName] = useState("");
@@ -796,6 +816,9 @@ const UpdateProduct = ({ }) => {
   const handleValidation = () => {
     let isValid = true;
     if (productName && productName.trim() === "") {
+      isValid = false;
+    }
+    if (products.some((item) => item.tenSanPham === productName.trim())) {
       isValid = false;
     }
     if (selectedCategory.length === 0) {
@@ -958,8 +981,16 @@ const UpdateProduct = ({ }) => {
                   inputValue={productName}
                   onInputChange={handleOnInputChangeProductName}
                   renderInput={(params) => <TextField
-                    helperText={confirm && productName.trim() === "" ? "Bạn chưa nhập tên sản phẩm" : ""}
-                    error={confirm && productName.trim() === ""}
+                    helperText={
+                      (confirm && productName.trim() === "") ? "Bạn chưa nhập tên sản phẩm" :
+                        (confirm && products.some((item) => item.tenSanPham === productName.trim())) ? "Tên sản phẩm đã tồn tại" : ""
+                    }
+                    error={
+                      (confirm && productName.trim() === "") ||
+                      (confirm && products.some((item) => item.tenSanPham === productName.trim())) === true
+                    }
+                    // helperText={confirm && productName.trim() === "" ? "Bạn chưa nhập tên sản phẩm" : ""}
+                    // error={confirm && productName.trim() === ""}
                     {...params}
                     label="Tên Sản Phẩm" />}
                 />
@@ -1203,8 +1234,9 @@ const UpdateProduct = ({ }) => {
                       onChange={handleChangeStatus}
                       defaultValue={0}
                     >
-                      <MenuItem value={0}>Kinh Doanh</MenuItem>
-                      <MenuItem value={1}>Ngừng Kinh Doanh</MenuItem>
+                      <MenuItem value={0}>Kinh doanh</MenuItem>
+                      <MenuItem value={1}>Chưa kinh doanh</MenuItem>
+                      <MenuItem value={2}>Ngừng kinh doanh</MenuItem>
                     </Select>
                   </FormControl>
                 </div>
