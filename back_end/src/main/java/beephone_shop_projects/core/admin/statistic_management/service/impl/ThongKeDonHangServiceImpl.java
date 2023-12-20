@@ -78,66 +78,72 @@ public class ThongKeDonHangServiceImpl implements ThongKeDonHangService {
         Integer soHoaDonNam = 0;
         Integer soSanPhamThang = 0;
 
-        if (donHangInYesterday != null && donHangInDay != null && donHangInYesterday.getTongTien() != null &&
-                donHangInDay.getTongTien() != null && donHangInYesterday.getTongTien().compareTo(zero) != 0 &&
-                donHangInDay.getTongTien().compareTo(zero) != 0) {
+        if (donHangInYesterday != null && donHangInYesterday.getTongTien() != null && donHangInYesterday.getTongTien().compareTo(zero) != 0 ) {
             tangTruongDoanhThuNgay = donHangInDay.getTongTien().subtract(donHangInYesterday.getTongTien())
                     .divide(donHangInYesterday.getTongTien(), 2, RoundingMode.HALF_UP)
                     .multiply(BigDecimal.valueOf(100));
+        }
+        if (donHangInDay != null){
             doanhThuNgay = donHangInDay.getTongTien();
         }
 
         if (donHangLastMonth != null && donHangLastMonth.getTongTien() != null &&
-                donHangLastMonth.getTongTien().compareTo(zero) != 0 && donHangInMonth != null
-                && donHangInMonth.getTongTien() != null && donHangInMonth.getTongTien().compareTo(zero) != 0) {
+                donHangLastMonth.getTongTien().compareTo(zero) != 0) {
             tangTruongDoanhThuThang = donHangInMonth.getTongTien().subtract(donHangLastMonth.getTongTien())
                     .divide(donHangLastMonth.getTongTien(), 2, RoundingMode.HALF_UP)
                     .multiply(BigDecimal.valueOf(100));
+        }
+        if(donHangInMonth != null){
             doanhThuThang = donHangInMonth.getTongTien();
         }
 
         if (donHangLastYear != null && donHangLastYear.getTongTien() != null &&
-                donHangLastYear.getTongTien().compareTo(zero) != 0 && donHangInYear != null
-                && donHangInYear.getTongTien() != null && donHangInYear.getTongTien().compareTo(zero) != 0) {
+                donHangLastYear.getTongTien().compareTo(zero) != 0) {
             tangTruongDoanhThuNam = donHangInYear.getTongTien().subtract(donHangLastYear.getTongTien())
                     .divide(donHangLastYear.getTongTien(), 2, RoundingMode.HALF_UP)
                     .multiply(BigDecimal.valueOf(100));
+        }
+        if(donHangInYear != null){
             doanhThuNam = donHangInYear.getTongTien();
         }
 
         if (donHangInYesterday != null && donHangInYesterday.getSoLuong() != null &&
-                donHangInYesterday.getSoLuong() != 0 && donHangInDay != null &&
-                donHangInDay.getSoLuong() != null && donHangInDay.getSoLuong() != 0) {
+                donHangInYesterday.getSoLuong() != 0) {
             tangTruongSoHoaDonNgay = BigDecimal.valueOf(donHangInDay.getSoLuong() - donHangInYesterday.getSoLuong())
                     .divide(BigDecimal.valueOf(donHangInYesterday.getSoLuong()), 2, RoundingMode.HALF_UP)
                     .multiply(BigDecimal.valueOf(100));
+        }
+        if(donHangInDay != null){
             soHoaDonNgay = donHangInDay.getSoLuong();
         }
 
         if (donHangLastMonth != null && donHangLastMonth.getSoLuong() != null &&
-                donHangLastMonth.getSoLuong() != 0 && donHangInMonth != null &&
-                donHangInMonth.getSoLuong() != null && donHangInMonth.getSoLuong() != 0) {
+                donHangLastMonth.getSoLuong() != 0) {
             tangTruongSoHoaDonThang = BigDecimal.valueOf(donHangInMonth.getSoLuong() - donHangLastMonth.getSoLuong())
                     .divide(BigDecimal.valueOf(donHangLastMonth.getSoLuong()), 2, RoundingMode.HALF_UP)
                     .multiply(BigDecimal.valueOf(100));
+        }
+        if(donHangInMonth != null){
             soHoaDonThang = donHangInMonth.getSoLuong();
         }
 
         if (donHangLastYear != null && donHangLastYear.getSoLuong() != null &&
-                donHangLastYear.getSoLuong() != 0 && donHangInYear != null &&
-                donHangInYear.getSoLuong() != null && donHangInYear.getSoLuong() != 0) {
+                donHangLastYear.getSoLuong() != 0) {
             tangTruongSoHoaDonNam = BigDecimal.valueOf(donHangInYear.getSoLuong() - donHangLastYear.getSoLuong())
                     .divide(BigDecimal.valueOf(donHangLastYear.getSoLuong()), 2, RoundingMode.HALF_UP)
                     .multiply(BigDecimal.valueOf(100));
+        }
+        if(donHangInYear != null){
             soHoaDonNam = donHangInYear.getSoLuong();
         }
 
         if (sanPhamLastMonth != null && sanPhamLastMonth.getSoLuong() != null &&
-                sanPhamLastMonth.getSoLuong() != 0 && sanPhamInMonth != null &&
-                sanPhamInMonth.getSoLuong() != null && sanPhamInMonth.getSoLuong() != 0) {
+                sanPhamLastMonth.getSoLuong() != 0) {
             tangTruongSoSanPhamThang = BigDecimal.valueOf(sanPhamInMonth.getSoLuong() - sanPhamLastMonth.getSoLuong())
                     .divide(BigDecimal.valueOf(sanPhamLastMonth.getSoLuong()), 2, RoundingMode.HALF_UP)
                     .multiply(BigDecimal.valueOf(100));
+        }
+        if(sanPhamInMonth != null){
             soSanPhamThang = sanPhamInMonth.getSoLuong();
         }
 

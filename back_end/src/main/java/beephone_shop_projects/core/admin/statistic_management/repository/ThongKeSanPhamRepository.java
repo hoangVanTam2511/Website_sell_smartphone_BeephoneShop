@@ -27,7 +27,7 @@ public interface ThongKeSanPhamRepository extends ISanPhamChiTietRepository {
                     spct.id,
                     a.ten_san_pham,
                     MAX(f.path) AS path,
-                    SUM(h.so_luong) AS so_luong,
+                    COUNT(i.id) AS so_luong,
                     spct.don_gia,
                     ra.dung_luong AS dung_luong_ram,
                     ro.dung_luong AS dung_luong_rom,
@@ -37,11 +37,12 @@ public interface ThongKeSanPhamRepository extends ISanPhamChiTietRepository {
                     LEFT JOIN image f ON spct.id_image = f.id
                     JOIN hoa_don_chi_tiet h ON spct.id = h.id_chi_tiet_san_pham
                     JOIN hoa_don hd ON h.id_hoa_don = hd.id
+                    JOIN imei_da_ban i ON i.id_hoa_don_chi_tiet = h.id
                     LEFT JOIN mau_sac m ON spct.id_mau_sac = m.id
                     LEFT JOIN ram ra ON spct.id_ram = ra.id
                     LEFT JOIN rom ro ON spct.id_rom = ro.id
                 WHERE
-                    hd.trang_thai != 0 AND hd.trang_thai != 6 AND hd.trang_thai != 5 AND hd.trang_thai != 9
+                    hd.trang_thai != 0 AND hd.trang_thai != 6 AND hd.trang_thai != 5 AND hd.trang_thai != 9 AND i.trang_thai = 1
                     AND 
                     CASE
                         WHEN :chonTheo = 'ngay' THEN DATE(hd.created_at) = (CURRENT_DATE) 

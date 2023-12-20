@@ -926,7 +926,7 @@ const ThongKeDoanhThu = () => {
             </h5>
             <Table
               columns={columns2}
-              dataSource={listSanPhamSapHet}
+              dataSource={listSanPhamDoiTra}
               pagination={{
                 // simple: true,
                 pageSize: "3",
