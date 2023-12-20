@@ -19,10 +19,10 @@ public class FindVoucherRequest {
 
     private String ten;
 
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
+    @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     private Date ngayBatDau;
 
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
+    @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     private Date ngayKetThuc;
 
     private String dieuKienApDung;
