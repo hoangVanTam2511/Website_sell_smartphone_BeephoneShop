@@ -24,6 +24,7 @@ const ThongKeDoanhThu = () => {
   const [listSanPham, setListSanPham] = useState([]);
   const [listSanPhambanChay, setListSanPhamBanChay] = useState([]);
   const [listSanPhamSapHet, setListSanPhamSapHet] = useState([]);
+  const [listSanPhamDoiTra, setListSanPhamDoiTra] = useState([]);
   const [loaiBoLoc, setLoaiBoLoc] = useState("thang");
   const [loaiBoLocTDTT, setLoaiBoLocTDTT] = useState("thang");
 
@@ -52,7 +53,7 @@ const ThongKeDoanhThu = () => {
       .then((response) => {
         setListDonHangInDay(response.data);
       })
-      .catch((error) => { });
+      .catch((error) => {});
   };
 
   const thongKeTheoThang = () => {
@@ -60,7 +61,7 @@ const ThongKeDoanhThu = () => {
       .then((response) => {
         setListDonHangInMonth(response.data);
       })
-      .catch((error) => { });
+      .catch((error) => {});
   };
 
   const thongKeTheoSanPham = () => {
@@ -68,7 +69,7 @@ const ThongKeDoanhThu = () => {
       .then((response) => {
         setListSanPham(response.data);
       })
-      .catch((error) => { });
+      .catch((error) => {});
   };
 
   const getSanPhamBanChay = () => {
@@ -76,7 +77,7 @@ const ThongKeDoanhThu = () => {
       .then((response) => {
         setListSanPhamBanChay(response.data);
       })
-      .catch((error) => { });
+      .catch((error) => {});
   };
 
   const getSanPhamSapHetHang = () => {
@@ -84,7 +85,7 @@ const ThongKeDoanhThu = () => {
       .then((response) => {
         setListSanPhamSapHet(response.data);
       })
-      .catch((error) => { });
+      .catch((error) => {});
   };
 
   const getTocDoTangTruong = () => {
@@ -92,7 +93,15 @@ const ThongKeDoanhThu = () => {
       .then((response) => {
         setTocDoTangTruong(response.data);
       })
-      .catch((error) => { });
+      .catch((error) => {});
+  };
+
+  const getSanPhamDoiTra = () => {
+    request("GET", `/thong-ke/san-pham-doi-tra`)
+      .then((response) => {
+        setListSanPhamDoiTra(response.data);
+      })
+      .catch((error) => {});
   };
 
   // const getSanPhamBanChay = () => {
@@ -130,6 +139,7 @@ const ThongKeDoanhThu = () => {
     getSanPhamBanChay();
     getSanPhamSapHetHang();
     getTocDoTangTruong();
+    getSanPhamDoiTra();
   }, [loaiBoLoc]);
 
   const convertToVND = (number) => {
@@ -307,7 +317,7 @@ const ThongKeDoanhThu = () => {
         .then((response) => {
           setTrangThaiDonHang(response.data);
         })
-        .catch((error) => { });
+        .catch((error) => {});
     };
 
     getTrangThaiDonHang();
@@ -334,20 +344,24 @@ const ThongKeDoanhThu = () => {
             item.trangThai === 1
               ? "Đã xác nhận"
               : item.trangThai === 0
-                ? "Chờ xác nhận"
-                : item.trangThai === 2
-                  ? "Chuẩn bị"
-                  : item.trangThai === 3
-                    ? "Giao hàng"
-                    : item.trangThai === 4
-                      ? "Giao hàng thành công"
-                      : item.trangThai === 5
-                        ? "Đã hủy"
-                        : item.trangThai === 6
-                          ? "Chờ thanh toán"
-                          : item.trangThai === 7
-                            ? "Đã thanh toán"
-                            : ""
+              ? "Chờ xác nhận"
+              : item.trangThai === 2
+              ? "Chuẩn bị"
+              : item.trangThai === 3
+              ? "Giao hàng"
+              : item.trangThai === 4
+              ? "Giao hàng thành công"
+              : item.trangThai === 5
+              ? "Đã hủy"
+              : item.trangThai === 6
+              ? "Chờ thanh toán"
+              : item.trangThai === 7
+              ? "Đã thanh toán"
+              : item.trangThai === 8
+              ? "Trả một phần"
+              : item.trangThai === 9
+              ? "Trả toàn bộ"
+              : ""
           ),
           datasets: [
             {
@@ -502,7 +516,7 @@ const ThongKeDoanhThu = () => {
       width: "5%",
       align: "center",
       render: (text, record, index) => (
-        <span>{listSanPhamSapHet.indexOf(record) + 1}</span>
+        <span>{listSanPhamDoiTra.indexOf(record) + 1}</span>
       ),
     },
     {
@@ -587,7 +601,10 @@ const ThongKeDoanhThu = () => {
                 <Row className="align-items-center">
                   <h5>Doanh thu tháng này</h5>
                   <h5 style={{ color: "#2f80ed" }}>
-                    {listDonHangInMonth.soLuong} đơn hàng /{" "}
+                    {listDonHangInMonth.soLuong == null
+                      ? 0
+                      : listDonHangInMonth.soLuong}{" "}
+                    đơn hàng /{" "}
                     {listDonHangInMonth.tongTien == null
                       ? "0 ₫"
                       : convertToVND(listDonHangInMonth.tongTien)}
@@ -600,7 +617,10 @@ const ThongKeDoanhThu = () => {
                 <h5>Doanh thu hôm nay</h5>
                 <h5 style={{ color: "#2f80ed" }}>
                   <h5 style={{ color: "#2f80ed" }}>
-                    {listDonHangInDay.soLuong} đơn hàng /{" "}
+                    {listDonHangInDay.soLuong == null
+                      ? 0
+                      : listDonHangInDay.soLuong}{" "}
+                    đơn hàng /{" "}
                     {listDonHangInDay.tongTien == null
                       ? "0 ₫"
                       : convertToVND(listDonHangInDay.tongTien)}
@@ -717,8 +737,7 @@ const ThongKeDoanhThu = () => {
             }}
           >
             <h5>
-              <FontAwesomeIcon icon={faRankingStar} />
-              Sản phẩm bán chạy
+              <FontAwesomeIcon icon={faRankingStar} /> Sản phẩm bán chạy
             </h5>
             <div
               className="mt-3 mb-2"
@@ -878,8 +897,7 @@ const ThongKeDoanhThu = () => {
             }}
           >
             <h5>
-              <FontAwesomeIcon icon={faRankingStar} />
-              Sản phẩm sắp hết hàng
+              <FontAwesomeIcon icon={faRankingStar} /> Sản phẩm sắp hết hàng
               <hr />
             </h5>
             <Table
@@ -903,13 +921,12 @@ const ThongKeDoanhThu = () => {
             }}
           >
             <h5>
-              <FontAwesomeIcon icon={faRankingStar} />
-              Sản phẩm trả hàng
+              <FontAwesomeIcon icon={faRankingStar} /> Sản phẩm trả hàng
               <hr />
             </h5>
             <Table
               columns={columns2}
-              dataSource={listSanPhamSapHet}
+              dataSource={listSanPhamDoiTra}
               pagination={{
                 // simple: true,
                 pageSize: "3",
@@ -961,7 +978,10 @@ const ThongKeDoanhThu = () => {
                           ) : (
                             <FontAwesomeIcon icon={faArrowDownWideShort} />
                           )}
-                          {tocDoTangTruong.tangTruongDoanhThuNgay}%
+                          {tocDoTangTruong.tangTruongDoanhThuNgay > 100
+                            ? 100
+                            : tocDoTangTruong.tangTruongDoanhThuNgay}
+                          %
                         </span>
                       </Col>
                     </Row>
@@ -997,7 +1017,10 @@ const ThongKeDoanhThu = () => {
                           ) : (
                             <FontAwesomeIcon icon={faArrowDownWideShort} />
                           )}
-                          {tocDoTangTruong.tangTruongDoanhThuThang}%
+                          {tocDoTangTruong.tangTruongDoanhThuThang > 100
+                            ? 100
+                            : tocDoTangTruong.tangTruongDoanhThuThang}
+                          %
                         </span>
                       </Col>
                     </Row>
@@ -1033,7 +1056,10 @@ const ThongKeDoanhThu = () => {
                           ) : (
                             <FontAwesomeIcon icon={faArrowDownWideShort} />
                           )}
-                          {tocDoTangTruong.tangTruongDoanhThuNam}%
+                          {tocDoTangTruong.tangTruongDoanhThuNam > 100
+                            ? 100
+                            : tocDoTangTruong.tangTruongDoanhThuNam}
+                          %
                         </span>
                       </Col>
                     </Row>
@@ -1065,7 +1091,10 @@ const ThongKeDoanhThu = () => {
                           ) : (
                             <FontAwesomeIcon icon={faArrowDownWideShort} />
                           )}
-                          {tocDoTangTruong.tangTruongSoSanPhamThang}%
+                          {tocDoTangTruong.tangTruongSoSanPhamThang > 100
+                            ? 100
+                            : tocDoTangTruong.tangTruongSoSanPhamThang}
+                          %
                         </span>
                       </Col>
                     </Row>
@@ -1097,7 +1126,10 @@ const ThongKeDoanhThu = () => {
                           ) : (
                             <FontAwesomeIcon icon={faArrowDownWideShort} />
                           )}
-                          {tocDoTangTruong.tangTruongSoHoaDonNgay}%
+                          {tocDoTangTruong.tangTruongSoHoaDonNgay > 100
+                            ? 100
+                            : tocDoTangTruong.tangTruongSoHoaDonNgay}
+                          %
                         </span>
                       </Col>
                     </Row>
@@ -1129,7 +1161,10 @@ const ThongKeDoanhThu = () => {
                           ) : (
                             <FontAwesomeIcon icon={faArrowDownWideShort} />
                           )}
-                          {tocDoTangTruong.tangTruongSoHoaDonThang}%
+                          {tocDoTangTruong.tangTruongSoHoaDonThang > 100
+                            ? 100
+                            : tocDoTangTruong.tangTruongSoHoaDonThang}
+                          %
                         </span>
                       </Col>
                     </Row>
@@ -1162,7 +1197,10 @@ const ThongKeDoanhThu = () => {
                           ) : (
                             <FontAwesomeIcon icon={faArrowDownWideShort} />
                           )}
-                          {tocDoTangTruong.tangTruongSoHoaDonNam}%
+                          {tocDoTangTruong.tangTruongSoHoaDonNam > 100
+                            ? 100
+                            : tocDoTangTruong.tangTruongSoHoaDonNam}
+                          %
                         </span>
                       </Col>
                     </Row>

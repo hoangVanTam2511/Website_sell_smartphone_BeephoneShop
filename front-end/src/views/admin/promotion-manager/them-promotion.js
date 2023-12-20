@@ -11,7 +11,7 @@ import {
 import axios from "axios";
 import { apiURLKhuyenMai, apiURLSanPham } from "../../../service/api";
 import TextField from "@mui/material/TextField";
-import { InputAdornment } from "@mui/material";
+import { FormControl, InputAdornment, MenuItem, Select } from "@mui/material";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -20,6 +20,7 @@ import dayjs from "dayjs";
 import { Table } from "antd";
 import numeral from "numeral";
 import style from "./style.css";
+import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 
 import Box from "@mui/joy/Box";
 import Radio, { radioClasses } from "@mui/joy/Radio";
@@ -41,6 +42,8 @@ const AddKhuyenMai = () => {
   const [selectDiscount, setSeclectDiscount] = useState(TypeDiscountString.VND);
   const [value, setValue] = React.useState("");
   const [value2, setValue2] = React.useState();
+  const [searchRam, setSearchRam] = useState(6);
+  const [searchRom, setSearchRom] = useState(6);
 
   //san-pham
   const [listSanPham, setListSanPham] = useState([]);
@@ -57,6 +60,7 @@ const AddKhuyenMai = () => {
   const [sanPhamChiTietKhuyenMai, setSanPhamChiTietKhuyenMai] = useState([]);
   const [isInputChanged, setIsInputChanged] = useState(false);
   const { handleOpenAlertVariant } = useCustomSnackbar();
+  const [sortValueProductDetail, setSortValueProductDetail] = useState("all");
 
   const [open, setOpen] = React.useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -366,6 +370,52 @@ const AddKhuyenMai = () => {
       Table.SELECTION_INVERT,
       Table.SELECTION_NONE,
     ],
+  };
+
+  const [openSelect, setOpenSelect] = useState(false);
+
+  const handleCloseSelect = () => {
+    setOpenSelect(false);
+  };
+
+  const handleOpenSelect = () => {
+    setOpenSelect(true);
+  };
+
+  const handleSearchRamChange = (event) => {
+    const selectedValue = event.target.value;
+    setSearchRam(selectedValue);
+    // setCurrentPage(1);
+  };
+  const [openSelect1, setOpenSelect1] = useState(false);
+
+  const handleCloseSelect1 = () => {
+    setOpenSelect1(false);
+  };
+
+  const handleOpenSelect1 = () => {
+    setOpenSelect1(true);
+  };
+
+  const handleSearchRomChange = (event) => {
+    const selectedValue = event.target.value;
+    setSearchRom(selectedValue);
+    // setCurrentPage(1);
+  };
+
+  const [openSelect3, setOpenSelect3] = useState(false);
+  const handleCloseSelect3 = () => {
+    setOpenSelect3(false);
+  };
+
+  const handleOpenSelect3 = () => {
+    setOpenSelect3(true);
+  };
+
+  const handleSortValueProductDetail = (event) => {
+    const selectedValue = event.target.value;
+    setSortValueProductDetail(selectedValue);
+    // setCurrentPage(1);
   };
 
   //Column bảng Sản Phẩm
@@ -833,6 +883,43 @@ const AddKhuyenMai = () => {
             >
               Danh sách sản phẩm
             </h5>
+            <div className="header-title mb-3 ms-3">
+              <TextField
+                placeholder="Tìm theo mã, tên sản phẩm"
+                label="Tìm sản phẩm"
+                // value={searchTatCa}
+                // onChange={handleSearchTatCaChange}
+                InputLabelProps={{
+                  sx: {
+                    marginTop: "",
+                    textTransform: "capitalize",
+                  },
+                }}
+                inputProps={{
+                  style: {
+                    height: "23px",
+                    width: "350px",
+                  },
+                }}
+                size="small"
+                className=""
+              />
+              <Button
+                // onClick={() => {
+                //   handleReset();
+                // }}
+                className="rounded-2 ms-2"
+                type="warning"
+                style={{ width: "100px", fontSize: "15px" }}
+              >
+                <span
+                  className="text-dark"
+                  style={{ fontWeight: "500", marginBottom: "2px" }}
+                >
+                  Làm Mới
+                </span>
+              </Button>
+            </div>
             <Table
               className="table-container"
               style={{
@@ -859,6 +946,197 @@ const AddKhuyenMai = () => {
         >
           Danh sách sản phẩm chi tiết
         </h5>
+        <div className="header-title mb-3 ms-3 d-flex">
+          <TextField
+            placeholder="Tìm theo mã, tên sản phẩm"
+            label="Tìm sản phẩm chi tiết"
+            // value={searchTatCa}
+            // onChange={handleSearchTatCaChange}
+            InputLabelProps={{
+              sx: {
+                marginTop: "",
+                textTransform: "capitalize",
+              },
+            }}
+            inputProps={{
+              style: {
+                height: "23px",
+                width: "350px",
+              },
+            }}
+            size="small"
+            className=""
+          />
+          <Button
+            // onClick={() => {
+            //   handleReset();
+            // }}
+            className="rounded-2 ms-2"
+            type="warning"
+            style={{ width: "100px", fontSize: "15px" }}
+          >
+            <span
+              className="text-dark"
+              style={{ fontWeight: "500", marginBottom: "2px" }}
+            >
+              Làm Mới
+            </span>
+          </Button>
+          <div
+            className="d-flex ms-5"
+            style={{
+              height: "40px",
+              // position: "relative",
+              cursor: "pointer",
+            }}
+          >
+            <div
+              // onClick={handleOpenSelect}
+              className=""
+              style={{ marginTop: "7px" }}
+            >
+              <span
+                className="ms-2 ps-1"
+                style={{ fontSize: "15px", fontWeight: "450" }}
+              >
+                RAM:{" "}
+              </span>
+            </div>
+            <FormControl
+              sx={{
+                minWidth: 50,
+              }}
+              size="small"
+            >
+              <Select
+                MenuProps={{
+                  PaperProps: {
+                    style: {
+                      borderRadius: "7px",
+                    },
+                  },
+                }}
+                IconComponent={KeyboardArrowDownOutlinedIcon}
+                sx={{
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    border: "none !important",
+                  },
+                  "& .MuiSelect-select": {
+                    color: "#2f80ed",
+                    fontWeight: "500",
+                  },
+                }}
+                open={openSelect}
+                onClose={handleCloseSelect}
+                onOpen={handleOpenSelect}
+                value={searchRam}
+                onChange={handleSearchRamChange}
+              >
+                <MenuItem className="" value={6}>
+                  Tất cả
+                </MenuItem>
+                <MenuItem value={1}>2 GB</MenuItem>
+              </Select>
+            </FormControl>
+            <div
+              // onClick={handleOpenSelect}
+              className=""
+              style={{ marginTop: "7px" }}
+            >
+              <span
+                className="ms-2 ps-1"
+                style={{ fontSize: "15px", fontWeight: "450" }}
+              >
+                ROM:{" "}
+              </span>
+            </div>
+            <FormControl
+              sx={{
+                minWidth: 50,
+              }}
+              size="small"
+            >
+              <Select
+                MenuProps={{
+                  PaperProps: {
+                    style: {
+                      borderRadius: "7px",
+                    },
+                  },
+                }}
+                IconComponent={KeyboardArrowDownOutlinedIcon}
+                sx={{
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    border: "none !important",
+                  },
+                  "& .MuiSelect-select": {
+                    color: "#2f80ed",
+                    fontWeight: "500",
+                  },
+                }}
+                open={openSelect1}
+                onClose={handleCloseSelect1}
+                onOpen={handleOpenSelect1}
+                value={searchRom}
+                onChange={handleSearchRomChange}
+              >
+                <MenuItem className="" value={6}>
+                  Tất cả
+                </MenuItem>
+                <MenuItem value={1}>2 GB</MenuItem>
+              </Select>
+            </FormControl>
+            <div
+              // onClick={handleOpenSelect}
+              className=""
+              style={{ marginTop: "7px" }}
+            >
+              <span
+                className="ms-2 ps-1"
+                style={{ fontSize: "15px", fontWeight: "450" }}
+              >
+                Sắp Xếp Đơn Giá:{" "}
+              </span>
+            </div>
+            <FormControl
+              sx={{
+                minWidth: 50,
+              }}
+              size="small"
+            >
+              <Select
+                MenuProps={{
+                  PaperProps: {
+                    style: {
+                      borderRadius: "7px",
+                    },
+                  },
+                }}
+                IconComponent={KeyboardArrowDownOutlinedIcon}
+                sx={{
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    border: "none !important",
+                  },
+                  "& .MuiSelect-select": {
+                    color: "#2f80ed",
+                    fontWeight: "500",
+                  },
+                }}
+                open={openSelect3}
+                onClose={handleCloseSelect3}
+                onOpen={handleOpenSelect3}
+                value={searchRom}
+                onChange={handleSortValueProductDetail}
+              >
+                <MenuItem className="" value={"all"}>
+                  Mặc định
+                </MenuItem>
+                <MenuItem value={"a-z"}>Tăng dần theo giá trị</MenuItem>
+                <MenuItem value={"z-a"}>Giảm dần theo giá trị</MenuItem>
+              </Select>
+            </FormControl>
+          </div>
+        </div>
         <Table
           className="table-container"
           rowSelection={rowSelection1}

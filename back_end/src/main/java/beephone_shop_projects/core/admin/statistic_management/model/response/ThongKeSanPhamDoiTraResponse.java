@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 import java.math.BigDecimal;
 
-public interface ThongKeSanPhamBanChayResponse {
+public interface ThongKeSanPhamDoiTraResponse {
 
     @Value("#{target.id}")
     String getId();
@@ -29,5 +29,4 @@ public interface ThongKeSanPhamBanChayResponse {
 
     @Value("#{target.ten_mau_sac}")
     String getTenMauSac();
-
 }
