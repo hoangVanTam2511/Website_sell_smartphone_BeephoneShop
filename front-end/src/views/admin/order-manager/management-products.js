@@ -442,7 +442,16 @@ const ManagementProducts = () => {
               Kinh doanh
             </span>
           </div>
-        ) : 1 ? (
+        ) :  type === 1 ? (
+          <div
+            className="rounded-pill badge-primary mx-auto"
+            style={{ height: "35px", width: "145px", padding: "4px" }}
+          >
+            <span className="text-white" style={{ fontSize: "14px" }}>
+              Chưa kinh doanh
+            </span>
+          </div>
+        ) : (
           <div
             className="rounded-pill badge-danger mx-auto"
             style={{ height: "35px", width: "150px", padding: "4px" }}
@@ -451,8 +460,6 @@ const ManagementProducts = () => {
               Ngừng kinh doanh
             </span>
           </div>
-        ) : (
-          ""
         ),
     },
     {

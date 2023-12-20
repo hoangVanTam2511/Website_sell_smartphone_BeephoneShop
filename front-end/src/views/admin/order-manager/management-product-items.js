@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { read, utils, writeFile } from 'xlsx';
+import * as XLSX from 'xlsx';
 import {
   Link,
   useLocation,
@@ -32,16 +34,18 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import Zoom from "@mui/material/Zoom";
 import * as dayjs from "dayjs";
-import { OrderStatusString, OrderTypeString } from "./enum";
+import { Notistack, OrderStatusString, OrderTypeString, StatusImei } from "./enum";
 import LoadingIndicator from "../../../utilities/loading";
 import { FaPencilAlt } from "react-icons/fa";
-import { ImportExcelImei } from "./import-imei-by";
+import { ImportExcelImei, ImportExcelImeiSave } from "./import-imei-by";
 import { FaDownload, FaUpload } from "react-icons/fa6";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import ImportAndExportExcelImei from "../../../utilities/excelUtils";
 import { request } from "../../../store/helpers/axios_helper";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHouse } from "@fortawesome/free-solid-svg-icons";
+import { ModalUpdateProduct } from "./AlertDialogSlide";
+import useCustomSnackbar from "../../../utilities/notistack";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -52,6 +56,12 @@ const ManagementProductItems = (
   }
 ) => {
   const navigate = useNavigate();
+  const inputRef = useRef(null);
+  const handleUploadClick = (id) => {
+    setIdProduct(id);
+    inputRef.current.click();
+  };
+  const { handleOpenAlertVariant } = useCustomSnackbar();
   const [isLoading, setIsLoading] = useState(false);
   const [products, setProducts] = useState([]);
   const [totalPages, setTotalPages] = useState();
@@ -62,12 +72,35 @@ const ManagementProductItems = (
     searchParams.get("currentPage") || 1
   );
   const [productName, setProductName] = useState("");
+  const [statusProduct, setStatusProduct] = useState();
+  const [idProduct, setIdProduct] = useState("");
+  const [priceProduct, setPriceProduct] = useState();
 
   const [imeis, setImeis] = useState([]);
   const [selectedImei, setSelectedImei] = useState([]);
   const [selectedImeiRefresh, setSelectedImeiRefresh] = useState([]);
 
+  const [refreshUpdate, setRefreshUpdate] = useState([]);
+  const [openUpdateProduct, setOpenUpdateProduct] = useState(false);
+
+  const handleCloseOpenUpdateProduct = () => {
+    setOpenUpdateProduct(false);
+  }
+
   const { id } = useParams();
+
+  const [listImeiCurrent, setListImeiCurrent] = useState([]);
+  const getAllImei = () => {
+    request('GET', `/api/imeis/all`, {
+    })
+      .then((response) => {
+        setListImeiCurrent(response.data.data);
+        console.log(response.data.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
 
   // useEffect(() => {
   //   setProducts(productItems);
@@ -107,8 +140,8 @@ const ManagementProductItems = (
 
   const getProductsItemById = async () => {
     setIsLoading(true);
-    request("GET", `/api/products/product-items/${id}`)
-      .then((response) => {
+    await request("GET", `/api/products/product-items/${id}`)
+      .then(async (response) => {
         setProducts(response.data.data);
 
         setIsLoading(false);
@@ -121,11 +154,143 @@ const ManagementProductItems = (
 
   useEffect(() => {
     getProductsItemById();
+    getAllImei();
   }, []);
+
+  useEffect(() => {
+    if (imeis.length > 0) {
+      handleAddImei(imeis);
+    }
+  }, [imeis]);
 
   const countPrice = (price, afterDiscount) => {
     return price - afterDiscount;
   };
+
+
+  const handleUpdateProduct = async (price, status) => {
+    setIsLoading(true);
+    const requestBody = {
+      id: idProduct,
+      donGia: price,
+      trangThai: status,
+    };
+    try {
+      await request('PUT', `/api/products`, requestBody).then(
+        async (res) => {
+          await getProductsItemById();
+          handleCloseOpenUpdateProduct();
+          handleOpenAlertVariant(
+            "Cập nhật thành công!",
+            Notistack.SUCCESS
+          );
+          setIsLoading(false);
+        }
+      )
+    }
+    catch (error) {
+      console.error(error);
+      handleOpenAlertVariant(error.response.data.message, "warning");
+      setIsLoading(false);
+    }
+  }
+
+  // const handleUpdateProduct = async (price, status) => {
+  //   try {
+  //     await axios.put(`http://localhost:8080/api/products`, requestBody, {
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //     }).then(async (response) => {
+  //     });
+  //   } catch (error) {
+  //   }
+  // };
+
+  const handleAddImei = async (imeis) => {
+    setIsLoading(true);
+    const requestBody = {
+      imeis: imeis,
+      id: idProduct,
+    };
+    console.log(idProduct);
+    try {
+      await request('PUT', `/api/products/imeis`, requestBody).then(
+        async (res) => {
+          await getProductsItemById();
+          handleOpenAlertVariant("Import IMEI thành công!", Notistack.SUCCESS);
+          setIsLoading(false);
+        }
+      )
+    }
+    catch (error) {
+      console.error(error);
+      handleOpenAlertVariant(error.response.data.message, "warning");
+      setIsLoading(false);
+    }
+  }
+  const handleImport = ($event) => {
+    const files = $event.target.files;
+    if (files.length) {
+      const file = files[0];
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const wb = read(event.target.result, { type: 'array' });
+        const sheet = wb.Sheets[wb.SheetNames[0]];
+
+        // const imeis = [];
+        const duplicateSet = new Set(); // Đối tượng Set để theo dõi giá trị trùng lặp
+
+        const range = XLSX.utils.decode_range(sheet['!ref']);
+        for (let row = 4; row < range.e.r; row++) {
+          const cellAddress = XLSX.utils.encode_cell({ r: row, c: 2 }); // Cột C
+          const cellValue = sheet[cellAddress] ? sheet[cellAddress].v : '';
+
+          if (cellValue !== '') {
+            const isNumeric = /^\d+$/.test(cellValue);
+            if (!isNumeric) {
+              setIsLoading(false);
+              handleOpenAlertVariant("IMEI không hợp lệ!", Notistack.ERROR);
+              $event.target.value = null;
+              return; // Kết thúc hàm nếu có giá trị trùng lặp
+            }
+            if (duplicateSet.has(cellValue)) {
+              setIsLoading(false);
+              handleOpenAlertVariant("Import thất bại, IMEI trong sheet không được trùng lặp!", Notistack.ERROR);
+              $event.target.value = null;
+              return; // Kết thúc hàm nếu có giá trị trùng lặp
+            }
+            if (listImeiCurrent.some((item) => item.soImei.toString() === cellValue.toString())) {
+              setIsLoading(false);
+              handleOpenAlertVariant("Import thất bại, IMEI đã tồn tại trong hệ thống!", Notistack.ERROR);
+              $event.target.value = null;
+              return; // Kết thúc hàm nếu có giá trị trùng lặp
+            }
+            duplicateSet.add(cellValue); // Thêm giá trị vào đối tượng Set
+
+            const newImeis = [
+              ...imeis,
+              { imei: cellValue, createdAt: new Date(), trangThai: StatusImei.NOT_SOLD }
+            ];
+            setImeis(newImeis);
+            // imeis.push({ imei: cellValue, createdAt: new Date(), trangThai: StatusImei.NOT_SOLD });
+          }
+          // else {
+          //   alert("null");
+          //   setIsLoading(false);
+          //   handleOpenAlertVariant("IMEI không hợp lệ!", Notistack.ERROR);
+          //   $event.target.value = null;
+          //   return; // Kết thúc hàm nếu có giá trị trùng lặp
+          // }
+        }
+        console.log(listImeiCurrent);
+        $event.target.value = null;
+      }
+      reader.readAsArrayBuffer(file);
+    }
+
+
+  }
 
   const columns = [
     {
@@ -218,7 +383,7 @@ const ManagementProductItems = (
       title: "Mã Sản Phẩm",
       align: "center",
       key: "ma",
-      width: "15%",
+      width: "10%",
       dataIndex: "ma",
       render: (text, record) => (
         <span style={{ fontWeight: "400" }}>
@@ -230,10 +395,10 @@ const ManagementProductItems = (
       title: "Tên Sản Phẩm",
       align: "center",
       key: "tenSanPham",
-      width: "15%",
+      width: "20%",
       dataIndex: "tenSanPham",
       render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>
+        <span style={{ fontWeight: "400", whiteSpace: "pre-line" }}>
           {record.sanPham.tenSanPham +
             " " +
             record.ram.dungLuong +
@@ -291,6 +456,45 @@ const ManagementProductItems = (
       ),
     },
     {
+      title: "Trạng Thái",
+      align: "center",
+      width: "15%",
+      dataIndex: "trangThai",
+      render: (type) =>
+        type == 0 ? (
+          <div
+            className="rounded-pill mx-auto badge-success"
+            style={{
+              height: "35px",
+              width: "96px",
+              padding: "4px",
+            }}
+          >
+            <span className="text-white" style={{ fontSize: "14px" }}>
+              Kinh doanh
+            </span>
+          </div>
+        ) : type === 1 ? (
+          <div
+            className="rounded-pill badge-primary mx-auto"
+            style={{ height: "35px", width: "145px", padding: "4px" }}
+          >
+            <span className="text-white" style={{ fontSize: "14px" }}>
+              Chưa kinh doanh
+            </span>
+          </div>
+        ) : (
+          <div
+            className="rounded-pill badge-danger mx-auto"
+            style={{ height: "35px", width: "150px", padding: "4px" }}
+          >
+            <span className="text-white" style={{ fontSize: "14px" }}>
+              Ngừng kinh doanh
+            </span>
+          </div>
+        ),
+    },
+    {
       title: "Thao Tác",
       align: "center",
       width: "15%",
@@ -299,12 +503,21 @@ const ManagementProductItems = (
         <>
           <div className="button-container">
             <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
-              <IconButton size="" className="me-2">
+              <IconButton onClick={() => {
+                setOpenUpdateProduct(true); setRefreshUpdate([]);
+                setPriceProduct(record.donGia); setStatusProduct(record.trangThai); setIdProduct(record.id);
+              }} size="" className="me-2">
                 <FaPencilAlt color="#2f80ed" />
               </IconButton>
             </Tooltip>
-            <ImportExcelImei /* ma={record.ma} get={getImeisFromImport} listImeiCurrent={listImeiCurrent} listImeiCurrentSheet={cauHinhsFinal && imeiObjects} */
-            />
+            <Tooltip title="Import IMEI" TransitionComponent={Zoom}>
+              <IconButton onClick={handleUploadClick}
+                className="me-2">
+                <FaUpload color="#2f80ed" />
+                <input style={{ display: "none" }} ref={inputRef} type="file" name="file" className="custom-file-input" id="inputGroupFile" required onChange={handleImport}
+                  accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
+              </IconButton>
+            </Tooltip>
           </div>
         </>
       ),
@@ -358,11 +571,11 @@ const ManagementProductItems = (
             <div className="mt-2">
               <Button
                 // onClick={handleUploadClick}
-                className="rounded-2 button-mui me-2"
+                className="rounded-2 button-mui"
                 type="primary"
                 style={{ height: "40px", width: "auto", fontSize: "15px" }}
               >
-                <FaDownload
+                <FaUpload
                   className="ms-1"
                   style={{
                     position: "absolute",
@@ -378,32 +591,7 @@ const ManagementProductItems = (
                     marginLeft: "21px",
                   }}
                 >
-                  Export Excel
-                </span>
-              </Button>
-              <Button
-                // onClick={handleUploadClick}
-                className="rounded-2 button-mui me-2"
-                type="primary"
-                style={{ height: "40px", width: "auto", fontSize: "15px" }}
-              >
-                <FaDownload
-                  className="ms-1"
-                  style={{
-                    position: "absolute",
-                    bottom: "13.5px",
-                    left: "10px",
-                  }}
-                />
-                <span
-                  className=""
-                  style={{
-                    marginBottom: "2px",
-                    fontWeight: "500",
-                    marginLeft: "21px",
-                  }}
-                >
-                  Tải Mẫu Import IMEI
+                  Cật Nhật Ảnh
                 </span>
               </Button>
             </div>
@@ -758,13 +946,18 @@ const ManagementProductItems = (
           <div className="mx-auto">
             <Pagination
               color="primary" /* page={parseInt(currentPage)} key={refreshPage} count={totalPages} */
-              // onChange={handlePageChange}
+            // onChange={handlePageChange}
             />
           </div>
           <div className="mt-4"></div>
         </Card>
       </div>
       {isLoading && <LoadingIndicator />}
+
+      <ModalUpdateProduct
+        priceProduct={priceProduct} statusProduct={statusProduct}
+        open={openUpdateProduct} close={handleCloseOpenUpdateProduct} update={handleUpdateProduct} />
+
       <ImportAndExportExcelImei
         open={openModalImel}
         close={handleCloseModalImei}
@@ -772,6 +965,7 @@ const ManagementProductItems = (
         productName={productName}
         view={false}
       />
+
     </>
   );
 };
