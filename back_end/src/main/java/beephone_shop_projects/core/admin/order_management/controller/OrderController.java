@@ -76,7 +76,7 @@ public class OrderController {
   @PostMapping
   public ResponseObject<OrderResponse> createOrder(@RequestBody OrderRequest orderRequest, @RequestParam(value = "isPending", required = true) Boolean isPending) throws Exception {
     if (isPending) {
-      OrderResponse createdOrderPending = hoaDonService.createOrderPending();
+      OrderResponse createdOrderPending = hoaDonService.createOrderPending(orderRequest.getCreatedBy());
       return new ResponseObject(createdOrderPending);
     }
     OrderResponse placedOrder = hoaDonService.placeOrder(orderRequest);
