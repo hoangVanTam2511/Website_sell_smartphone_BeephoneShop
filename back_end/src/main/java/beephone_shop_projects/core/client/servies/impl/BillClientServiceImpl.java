@@ -1,4 +1,4 @@
-package beephone_shop_projects.core.client.serives.impl;
+package beephone_shop_projects.core.client.servies.impl;
 
 import beephone_shop_projects.core.admin.order_management.converter.OrderConverter;
 import beephone_shop_projects.core.admin.order_management.converter.VoucherConverter;
@@ -21,6 +21,7 @@ import beephone_shop_projects.utils.RandomCodeGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
+import beephone_shop_projects.infrastructure.constant.OrderStatus;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -240,5 +241,12 @@ public class BillClientServiceImpl {
 
     public void updateBillByIdBill(String idBill) {
         billClientRepository.updateBillByIDBill(idBill);
+    }
+
+    public void cancelBill(String idBill) throws Exception {
+        HoaDon bill = billClientRepository.findById(idBill).orElseThrow(() -> new Exception("Không tìm thấy hoá đơn"));
+
+        bill.setTrangThai(OrderStatus.CANCELLED);
+        billClientRepository.save(bill);
     }
 }

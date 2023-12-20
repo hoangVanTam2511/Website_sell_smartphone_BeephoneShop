@@ -11,6 +11,7 @@ public interface AddressClientRepository extends IDiaChiRepository {
 
     @Query(value = """
         SELECT * FROM dia_chi_khach_hang WHERE id_account =  :id_account
+        AND delected = 1
         """, nativeQuery = true)
     ArrayList<DiaChi> findAddressById(@Param("id_account") String idAccount);
 

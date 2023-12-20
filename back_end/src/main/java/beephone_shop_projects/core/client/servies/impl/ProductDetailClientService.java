@@ -1,20 +1,16 @@
-package beephone_shop_projects.core.client.serives.impl;
+package beephone_shop_projects.core.client.servies.impl;
 
 import beephone_shop_projects.core.client.models.request.SearchProductDetailClient;
 import beephone_shop_projects.core.client.models.response.*;
 import beephone_shop_projects.core.client.repositories.ProductClientRepository;
 import beephone_shop_projects.core.client.repositories.ProductDetailClientRepository;
-import beephone_shop_projects.entity.Image;
 import beephone_shop_projects.entity.SanPham;
 import beephone_shop_projects.entity.SanPhamChiTiet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 @Service
 public class ProductDetailClientService {
