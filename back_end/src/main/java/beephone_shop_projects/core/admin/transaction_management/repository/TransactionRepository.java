@@ -12,23 +12,22 @@ import org.springframework.data.repository.query.Param;
 public interface TransactionRepository extends IHinhThucThanhToanRepository {
 
     @Query(value = """
-    SELECT h.id AS id, h.ma AS ma, h.so_tien_thanh_toan AS soTienThanhToan, hd.id as idHoaDon, hd.ma AS maHoaDon, h.loai_thanh_toan AS loaiThanhToan, 
-    h.hinh_thuc_thanh_toan AS hinhThucThanhToan, h.trang_thai AS trangThai, h.created_at AS ngayTao, h.created_by as idNhanVien
-    FROM hinh_thuc_thanh_toan h JOIN hoa_don hd ON h.id_hoa_don = hd.id  
-    WHERE ((:#{#request.keyword} IS NULL OR hd.ma LIKE  :#{'%' + #request.keyword + '%'})
-    OR (:#{#request.keyword} IS NULL OR :#{#request.keyword} = '' OR h.so_tien_thanh_toan LIKE :#{'%' + #request.keyword + '%'}) )
-    AND (:#{#request.hinhThucThanhToan} IS NULL OR :#{#request.hinhThucThanhToan} = 3 OR h.hinh_thuc_thanh_toan = :#{#request.hinhThucThanhToan} )
-    AND (:#{#request.loaiThanhToan} IS NULL OR  :#{#request.loaiThanhToan} = 3 OR h.loai_thanh_toan = :#{#request.loaiThanhToan} )
-    AND (:#{#request.trangThai} IS NULL OR :#{#request.trangThai} = 6 OR h.trang_thai = :#{#request.trangThai} )
-    AND ((:#{#request.ngayBatDau} IS NULL AND :#{#request.ngayKetThuc} IS NULL)
-    OR ((:#{#request.ngayBatDau} IS NULL OR h.created_at >= :#{#request.ngayBatDau})
-    AND (:#{#request.ngayKetThuc} IS NULL OR h.created_at <= :#{#request.ngayKetThuc})))
-    ORDER BY CASE WHEN :#{#request.sortValue} = 'a-z' THEN h.so_tien_thanh_toan END ASC,
-    CASE WHEN :#{#request.sortValue} = 'z-a' THEN h.so_tien_thanh_toan END DESC
-""", nativeQuery = true)
+                SELECT h.id AS id, h.ma AS ma, h.so_tien_thanh_toan AS soTienThanhToan, hd.id as idHoaDon, hd.ma AS maHoaDon, h.loai_thanh_toan AS loaiThanhToan, 
+                h.hinh_thuc_thanh_toan AS hinhThucThanhToan, h.trang_thai AS trangThai, h.created_at AS ngayTao, h.created_by as idNhanVien
+                FROM hinh_thuc_thanh_toan h JOIN hoa_don hd ON h.id_hoa_don = hd.id  
+                WHERE ((:#{#request.keyword} IS NULL OR hd.ma LIKE  :#{'%' + #request.keyword + '%'})
+                OR (:#{#request.keyword} IS NULL OR :#{#request.keyword} = '' OR h.so_tien_thanh_toan LIKE :#{'%' + #request.keyword + '%'}) )
+                AND (:#{#request.hinhThucThanhToan} IS NULL OR :#{#request.hinhThucThanhToan} = 3 OR h.hinh_thuc_thanh_toan = :#{#request.hinhThucThanhToan} )
+                AND (:#{#request.loaiThanhToan} IS NULL OR  :#{#request.loaiThanhToan} = 3 OR h.loai_thanh_toan = :#{#request.loaiThanhToan} )
+                AND (:#{#request.trangThai} IS NULL OR :#{#request.trangThai} = 6 OR h.trang_thai = :#{#request.trangThai} )
+                AND ((:#{#request.ngayBatDau} IS NULL AND :#{#request.ngayKetThuc} IS NULL)
+                OR ((:#{#request.ngayBatDau} IS NULL OR h.created_at >= :#{#request.ngayBatDau})
+                AND (:#{#request.ngayKetThuc} IS NULL OR h.created_at <= :#{#request.ngayKetThuc})))
+                ORDER BY
+                        CASE WHEN :#{#request.sortValue} = 'a-z' THEN h.so_tien_thanh_toan END ASC,
+                        CASE WHEN :#{#request.sortValue} = 'z-a' THEN h.so_tien_thanh_toan END DESC
+            """, nativeQuery = true)
     Page<TransactionResponse> getAll(Pageable pageable, @Param("request") TransactionRequest request);
-
-
 
     @Query(value = """
              SELECT * FROM Account a JOIN Role r ON r.id = a.id_role

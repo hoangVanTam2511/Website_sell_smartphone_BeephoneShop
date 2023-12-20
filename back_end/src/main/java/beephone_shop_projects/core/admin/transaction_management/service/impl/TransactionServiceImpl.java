@@ -40,6 +40,9 @@ public class TransactionServiceImpl implements TransactionService {
         if (request.getKeyword() == null) {
             request.setKeyword("");
         }
+        if (request.getSortValue() == null) {
+            request.setSortValue("all");
+        }
 
         Pageable pageable = PageRequest.of(pageNo - 1, 5);
 
