@@ -19,7 +19,7 @@ import AddressForm from "./DiaChi";
 import ImageUploadComponent from "./Anh";
 import IDScan from "./QuetCanCuoc";
 import { useNavigate } from "react-router-dom";
-import { request } from '../../../../store/helpers/axios_helper'
+import { request } from "../../../../store/helpers/axios_helper";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faExclamationCircle,
@@ -157,8 +157,8 @@ const AddNV = () => {
   const handleAnhDaiDienChange = (imageURL) => {
     setAnhDaiDien(imageURL);
   };
-  const redirectToHienThiKH = (generatedMaKhachHang) => {
-    navigate("/dashboard/update-employee/" + generatedMaKhachHang);
+  const redirectToHienThiKH = () => {
+    navigate("/dashboard/employees");
   };
   const showConfirm = () => {
     setIsConfirmVisible(true);
@@ -207,29 +207,25 @@ const AddNV = () => {
         setIsConfirmVisible(false);
         return;
       }
-      request('POST', apiURLNV + "/add", obj).then(
-        (res) => {
-          if (res.status === 200) {
-            var nhanVienRespone = res
-            const generatedMaKhachHang = nhanVienRespone.data.data.id;
-            addDiaChiList(generatedMaKhachHang);
-            redirectToHienThiKH(generatedMaKhachHang);
-            const newNhanVienRespone = {
-              hoVaTen: hoVaTen,
-              ngaySinh: ngaySinh,
-              soDienThoai: soDienThoai,
-              diaChiList: [],
-              gioiTinh: gioiTinh,
-              email: email,
-              anhDaiDien: anhDaiDien,
-              canCuocCongDan: cccd,
-            };
-            setListNV([newNhanVienRespone, ...listNV]);
-            handleOpenAlertVariant("Thêm khách hàng thành công", Notistack.SUCCESS);
-          }
-        }
-      );
-
+      request("POST", apiURLNV + "/add", obj).then((response) => {
+        var nhanVienRespone = response;
+        console.log(response);
+        const generatedMaKhachHang = nhanVienRespone.data.id;
+        addDiaChiList(generatedMaKhachHang);
+        redirectToHienThiKH(generatedMaKhachHang);
+        const newNhanVienRespone = {
+          hoVaTen: hoVaTen,
+          ngaySinh: ngaySinh,
+          soDienThoai: soDienThoai,
+          diaChiList: [],
+          gioiTinh: gioiTinh,
+          email: email,
+          anhDaiDien: anhDaiDien,
+          canCuocCongDan: cccd,
+        };
+        setListNV([newNhanVienRespone, ...listNV]);
+        handleOpenAlertVariant("Thêm khách hàng thành công", Notistack.SUCCESS);
+      });
     } catch (error) {
       handleOpenAlertVariant(error.response.data, Notistack.ERROR);
       setIsConfirmVisible(false);
@@ -247,7 +243,11 @@ const AddNV = () => {
       account: generatedMaKhachHang,
       trangThaiNV: 1,
     };
-    request('POST', `${apiURLNV}/dia-chi/add?id=${generatedMaKhachHang}`, newAddress)
+    request(
+      "POST",
+      `${apiURLNV}/dia-chi/add?id=${generatedMaKhachHang}`,
+      newAddress
+    )
       .then((response) => {
         let newKhachHangResponse = {
           diaChi: diaChi,
@@ -258,8 +258,9 @@ const AddNV = () => {
           trangThaiNV: 1,
         };
         setDiaChiList([newKhachHangResponse, ...diaChiList]);
-      }).catch((error) => {
-        console.log(error)
+      })
+      .catch((error) => {
+        console.log(error);
       });
   };
   const handleChangeDate = (date) => {
