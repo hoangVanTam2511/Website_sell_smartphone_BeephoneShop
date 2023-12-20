@@ -563,7 +563,7 @@ const ThongKeDoanhThu = () => {
       },
     },
     {
-      title: "Số lượng đã bán",
+      title: "Số lượng đã trả",
       dataIndex: "soLuong",
       width: "15%",
       align: "center",

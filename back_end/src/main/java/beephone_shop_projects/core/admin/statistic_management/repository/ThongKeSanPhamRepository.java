@@ -99,8 +99,9 @@ public interface ThongKeSanPhamRepository extends ISanPhamChiTietRepository {
 
     @Query(value = """
             SELECT SUM(h.so_luong) AS so_luong FROM hoa_don_chi_tiet h
-            LEFT JOIN hoa_don hd ON h.id_hoa_don = hd.id
-            WHERE hd.trang_thai != 0 AND hd.trang_thai != 6 AND hd.trang_thai != 5 AND hd.trang_thai != 9
+            JOIN hoa_don hd ON h.id_hoa_don = hd.id
+            JOIN imei_da_ban i ON i.id_hoa_don_chi_tiet = h.id
+            WHERE hd.trang_thai != 0 AND hd.trang_thai != 6 AND hd.trang_thai != 5 AND hd.trang_thai != 9 AND i.trang_thai = 1
             AND YEAR(hd.created_at) = YEAR(CURDATE())
             AND MONTH(hd.created_at) = MONTH(CURDATE())
             GROUP BY YEAR(hd.created_at), MONTH(hd.created_at)
