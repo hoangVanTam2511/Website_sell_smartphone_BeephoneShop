@@ -108,4 +108,13 @@ public class ProductDetailClientRestController {
         }
     }
 
+    @GetMapping("/get-quantity-inventory")
+    public ResponseEntity<?> getQuantityInventory(@RequestParam("id") String id){
+        try{
+            return new ResponseEntity<>(productDetailService.getSoLuongTonByIDChiTietSanPham(id), HttpStatus.OK);
+        }catch (Exception ex){
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }

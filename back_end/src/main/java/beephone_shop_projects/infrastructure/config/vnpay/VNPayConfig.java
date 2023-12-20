@@ -22,6 +22,8 @@ public class VNPayConfig {
   public static String vnp_HashSecret = "UZCEDQTUJVMSQTIKPIXPRJGICESTXTUB";
   public static String vnp_apiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
 
+  public static String VNPAY_CLIENT_VNPAY = "http://localhost:3001/payment-success";
+
   public static String md5(String message) {
     String digest = null;
     try {

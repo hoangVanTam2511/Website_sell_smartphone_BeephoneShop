@@ -65,7 +65,8 @@ public class SecurityConfig {
                                 "/chi-tiet-khuyen-mai/detail/**",
                                 "/detail/khuyen-mai/**",
                                 "/size/khuyen-mai-chi-tiet/**",
-                                "/voucher/**"
+                                "/voucher/**",
+                                "/ws/*"
                                 )
                         .permitAll()
                         .anyRequest().authenticated()
