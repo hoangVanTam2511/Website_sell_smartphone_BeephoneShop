@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Button, Empty, Table } from "antd";
+import { Button, Empty, Popconfirm, Table } from "antd";
 import {
   Autocomplete,
   Dialog,
@@ -249,39 +249,50 @@ const ManagementImei = () => {
             </Tooltip>
 
             {/* Hàm đổi trạng thái */}
-
-            <Tooltip
-              TransitionComponent={Zoom}
+            <Popconfirm
               title={
-                record.trangThai === StatusImei.NOT_SOLD
-                  ? "Chưa bán"
-                  : record.trangThai === StatusImei.IN_ACTIVE
-                  ? "Ngừng kích hoạt"
-                  : ""
+                <span style={{ fontSize: "16px" }}>
+                  Bạn có chắc chắn đổi trạng thái imei ?
+                </span>
               }
+              onConfirm={() => {
+                doiTrangThaiImei(record.id);
+              }}
+              okText="Đồng ý"
+              cancelText="Hủy"
             >
-              <IconButton
-                className="ms-2"
-                style={{ marginTop: "6px" }}
-                onClick={() => doiTrangThaiImei(record.id)}
-                disabled={record.trangThai === StatusImei.SOLD ? true : false}
+              <Tooltip
+                TransitionComponent={Zoom}
+                title={
+                  record.trangThai === StatusImei.NOT_SOLD
+                    ? "Chưa bán"
+                    : record.trangThai === StatusImei.IN_ACTIVE
+                    ? "Ngừng kích hoạt"
+                    : ""
+                }
               >
-                <FontAwesomeIcon
-                  icon={faArrowsRotate}
-                  size="sm"
-                  transform={{ rotate: 90 }}
-                  style={{
-                    cursor: "pointer",
-                    color:
-                      record.trangThai === StatusImei.IN_ACTIVE
-                        ? "#e5383b"
-                        : record.trangThai === StatusImei.NOT_SOLD
-                        ? "#09a129"
-                        : "disabled",
-                  }}
-                />
-              </IconButton>
-            </Tooltip>
+                <IconButton
+                  className="ms-2"
+                  style={{ marginTop: "6px" }}
+                  disabled={record.trangThai === StatusImei.SOLD ? true : false}
+                >
+                  <FontAwesomeIcon
+                    icon={faArrowsRotate}
+                    size="sm"
+                    transform={{ rotate: 90 }}
+                    style={{
+                      cursor: "pointer",
+                      color:
+                        record.trangThai === StatusImei.IN_ACTIVE
+                          ? "#e5383b"
+                          : record.trangThai === StatusImei.NOT_SOLD
+                          ? "#09a129"
+                          : "disabled",
+                    }}
+                  />
+                </IconButton>
+              </Tooltip>
+            </Popconfirm>
           </div>
         </div>
       ),
