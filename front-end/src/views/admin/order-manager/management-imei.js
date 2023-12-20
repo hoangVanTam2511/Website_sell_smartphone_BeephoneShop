@@ -97,7 +97,7 @@ const ManagementImei = () => {
     setSearchTrangThai(parseInt(selectedValue)); // Cập nhật giá trị khi Select thay đổi
     searchParams.set("trangThai", parseInt(selectedValue));
     setSearchParams(searchParams);
-    if (selectedValue === 5) {
+    if (selectedValue === "a") {
       setSearchParams("");
     }
     setCurrentPage(1);
@@ -207,6 +207,15 @@ const ManagementImei = () => {
           >
             <span className="text-white" style={{ fontSize: "14px" }}>
               Ngừng hoạt động
+            </span>
+          </div>
+        ) : type === StatusImei.REFUND ? (
+          <div
+            className="rounded-pill badge-danger mx-auto"
+            style={{ height: "35px", width: "135px", padding: "4px" }}
+          >
+            <span className="text-white" style={{ fontSize: "14px" }}>
+              Hàng Trả
             </span>
           </div>
         ) : (
@@ -360,14 +369,8 @@ const ManagementImei = () => {
         }}
       >
         <Card className="">
-          <span
-            className="header-title mt-3 ms-4"
-            style={{ fontWeight: "500px" }}
-          >
-            <FontAwesomeIcon icon={faHouse} size={"sm"} /> Quản Lý IMEI
-          </span>
           <Card.Header className="d-flex justify-content-between">
-            <div className="header-title">
+            <div className="header-title mt-2">
               <TextField
                 label="Tìm Imei"
                 onChange={handleSearchTatCaChange}
@@ -461,6 +464,7 @@ const ManagementImei = () => {
                   <MenuItem value={StatusImeiNumber.IN_ACTIVE}>
                     Ngưng Hoạt Động
                   </MenuItem>
+                  <MenuItem value={StatusImeiNumber.REFUND}>Hàng Trả</MenuItem>
                 </Select>
               </FormControl>
             </div>

@@ -320,14 +320,8 @@ const ManagementProductItems = (
         }}
       >
         <Card className="">
-          <span
-            className="header-title mt-3 ms-4"
-            style={{ fontWeight: "500px" }}
-          >
-            <FontAwesomeIcon icon={faHouse} size={"sm"} /> Chi Tiết Sản Phẩm
-          </span>
           <Card.Header className="d-flex justify-content-between">
-            <div className="header-title">
+            <div className="header-title mt-2">
               <TextField
                 label="Tìm theo mã, tên, số lượng tồn hoặc đơn giá"
                 // onChange={handleGetValueFromInputTextField}

@@ -92,7 +92,6 @@ const HienThiNV = () => {
 
   useEffect(() => {
     loadDataListRole(1);
-    console.log(123123123123);
   }, [filterStatus]);
   // const fetchEmployeeList = async (currentPage) => {
   //   try {
@@ -139,6 +138,7 @@ const HienThiNV = () => {
       anhDaiDien: record.anhDaiDien,
     });
     navigate(`/dashboard/update-employee/${record.id}`);
+    handleOpenAlertVariant("Sửa thành công", Notistack.SUCCESS);
     setEditingKey(record.id);
   };
   const doChangeTrangThai = (id) => {
@@ -332,14 +332,8 @@ const HienThiNV = () => {
             }}
           >
             <Card className="">
-              <span
-                className="header-title mt-3 ms-4"
-                style={{ fontWeight: "500px" }}
-              >
-                <FontAwesomeIcon icon={faHouse} size={"sm"} /> Quản Lý Nhân Viên
-              </span>
               <Card.Header className="d-flex justify-content-between">
-                <div className="header-title">
+                <div className="header-title mt-2">
                   <TextField
                     label="Tìm nhân viên"
                     value={searchText}

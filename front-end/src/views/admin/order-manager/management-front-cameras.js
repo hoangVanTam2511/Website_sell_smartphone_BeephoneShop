@@ -458,14 +458,8 @@ const ManagementFrontCameras = () => {
         }}
       >
         <Card className="">
-          <span
-            className="header-title mt-3 ms-4"
-            style={{ fontWeight: "500px" }}
-          >
-            <FontAwesomeIcon icon={faHouse} size={"sm"} /> Quản Lý Camera Trước
-          </span>
           <Card.Header className="d-flex justify-content-between">
-            <div className="header-title">
+            <div className="header-title mt-2">
               <TextField
                 placeholder="Tìm theo mã, độ phân giải, tính năng camera trước"
                 label="Tìm camera trước"

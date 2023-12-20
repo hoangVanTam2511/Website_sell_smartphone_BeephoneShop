@@ -25,7 +25,7 @@ import AnhKhachHang from "./AnhKhachHang";
 import useCustomSnackbar from "../../../../utilities/notistack";
 import { Notistack } from "../../order-manager/enum";
 import { useNavigate } from "react-router-dom";
-import { request } from '../../../../store/helpers/axios_helper'
+import { request } from "../../../../store/helpers/axios_helper";
 
 const AddKH = () => {
   const { handleOpenAlertVariant } = useCustomSnackbar();
@@ -153,8 +153,8 @@ const AddKH = () => {
       setSDTKHError("");
     }
   };
-  const redirectToHienThiKH = (generatedMaKhachHang) => {
-    navigate("/dashboard/update-customer/" + generatedMaKhachHang);
+  const redirectToHienThiKH = () => {
+    navigate("/dashboard/customer");
   };
   const handleAddressChange = (result) => {
     setDiaChi(result);
@@ -220,39 +220,32 @@ const AddKH = () => {
         return;
       }
       // Gọi API tạo khách hàng mới
-      request('POST',
-        apiURLKH + "/add",
-        khachHangData
-      ).then((response) => {
-        if(response.status === 200){
-          var khachHangResponse = response;
+      request("POST", apiURLKH + "/add", khachHangData).then((response) => {
+        const data = response.data;
 
-          // Lấy mã khách hàng từ response
-          var generatedMaKhachHang = khachHangResponse.data.data.id;
-          addDiaChiList(generatedMaKhachHang);
-          redirectToHienThiKH(generatedMaKhachHang);
-
-          // Cập nhật danh sách khách hàng và hiển thị thông báo
-          const newKhachHangResponse = {
-            hoVaTen: hoVaTen,
-            ngaySinh: ngaySinh,
-            soDienThoai: soDienThoai,
-            gioiTinh: gioiTinh,
-            diaChiList: [],
-            email: email,
-            anhDaiDien: anhDaiDien,
-          };
-
-          setListKH([newKhachHangResponse, ...listKH]);
-          handleOpenAlertVariant("Thêm thành công", Notistack.SUCCESS);
+        // Lấy mã khách hàng từ response
+        if (data) {
+          addDiaChiList(data.id);
         }
+        // Cập nhật danh sách khách hàng và hiển thị thông báo
+        const newKhachHangResponse = {
+          hoVaTen: hoVaTen,
+          ngaySinh: ngaySinh,
+          soDienThoai: soDienThoai,
+          gioiTinh: gioiTinh,
+          diaChiList: [],
+          email: email,
+          anhDaiDien: anhDaiDien,
+        };
+        setListKH([newKhachHangResponse, ...listKH]);
+        setShowConfirmModal(false);
+        handleOpenAlertVariant("Thêm thành công", Notistack.SUCCESS);
+        redirectToHienThiKH();
       });
-     
     } catch (error) {
       // Xử lý lỗi
       handleOpenAlertVariant(error.response.data, Notistack.ERROR);
       setShowConfirmModal(false);
-      console.log(error.response.data);
     }
   };
   const generateRandomCode = () => {
@@ -281,7 +274,11 @@ const AddKH = () => {
       trangThai: trangThaiKH,
       ma: generateRandomCode(),
     };
-    request('POST', `${apiURLKH}/dia-chi/add?id=${generatedMaKhachHang}`, newAddress)
+    request(
+      "POST",
+      `${apiURLKH}/dia-chi/add?id=${generatedMaKhachHang}`,
+      newAddress
+    )
       .then((response) => {
         let newKhachHangResponse = {
           diaChi: diaChi,

@@ -167,7 +167,8 @@ const AddVoucher = () => {
       .then((response) => {
         setTimeout(() => {
           setIsLoading(true);
-          handleUpdateVoucher(response.data.data.id);
+          // handleUpdateVoucher(response.data.data.id);
+          redirectToHienThiVoucher();
           handleOpenAlertVariant("Thêm thành công!!!", Notistack.SUCCESS);
           sendMailVoucher(response.data.data.ma);
         }, 1000);

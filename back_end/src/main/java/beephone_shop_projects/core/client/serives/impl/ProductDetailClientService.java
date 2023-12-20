@@ -119,4 +119,8 @@ public class ProductDetailClientService {
     public ArrayList<CameraRearResponce> getCameraSauByIDSanPham(String idSanPham) {
         return productDetailClientRepository.getCameraSauByIDSanPham(idSanPham);
     }
+
+    public Integer getSoLuongTonByIDChiTietSanPham(String idChiTietSanPham) {
+        return productDetailClientRepository.getSoLuongTonByIDChiTietSanPham(idChiTietSanPham);
+    }
 }

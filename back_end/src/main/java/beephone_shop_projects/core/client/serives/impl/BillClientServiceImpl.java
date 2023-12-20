@@ -9,6 +9,7 @@ import beephone_shop_projects.core.admin.order_management.repository.impl.OrderR
 import beephone_shop_projects.core.admin.order_management.service.impl.LichSuHoaDonServiceImpl;
 import beephone_shop_projects.core.client.models.request.BillClientRequest;
 import beephone_shop_projects.core.client.models.request.BillDetailClientRequest;
+import beephone_shop_projects.core.client.models.response.BillAfterBuyResponce;
 import beephone_shop_projects.core.client.models.response.BillClientResponce;
 import beephone_shop_projects.core.client.models.response.ProductOfBillDetail;
 import beephone_shop_projects.core.client.repositories.*;
@@ -74,11 +75,20 @@ public class BillClientServiceImpl {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private VoucherClientRepository voucherClientRepository;
+
     public HoaDon createBillClient(BillClientRequest orderRequest) throws Exception {
 
         Account khachHang = null;
         if(!orderRequest.getIdKhachHang().isEmpty()){
             khachHang= accountClientRepository.findById(orderRequest.getIdKhachHang()).get();
+        }
+
+        if(orderRequest.getVoucher() != null){
+            Voucher voucher = orderRequest.getVoucher();
+            voucher.setSoLuong(voucher.getSoLuong() - 1);
+            voucherClientRepository.save(voucher);
         }
 
         String code =  RandomCodeGenerator.generateRandomNumber();
@@ -113,8 +123,6 @@ public class BillClientServiceImpl {
         orderHistory.setLoaiThaoTac(0);
         lichSuHoaDonRepository.save(orderHistory);
 
-        HinhThucThanhToan hinhThucThanhToan = new HinhThucThanhToan();
-//        hinhThucThanhToan.setMa(hinhThucThanhToanRepository.getMaxEntityCodeByClass());
 //        hinhThucThanhToan.setHoaDon(createdOrder);
 //        hinhThucThanhToan.setSoTienThanhToan(new BigDecimal(0));
 //        hinhThucThanhToan.setLoaiThanhToan(0);
@@ -122,7 +130,6 @@ public class BillClientServiceImpl {
 //        hinhThucThanhToan.setTrangThai(null);
 //        hinhThucThanhToan.setCreatedAt(new Date());
 //        hinhThucThanhToan.setNguoiXacNhan("Admin");
-        hinhThucThanhToanRepository.save(hinhThucThanhToan);
 
        return createdOrder;
     }
@@ -171,6 +178,30 @@ public class BillClientServiceImpl {
         return billClientRepository.findById(idHoaDon).orElseThrow(()-> new Exception("Không tìm thấy hoá đơn"));
     }
 
+    public BillAfterBuyResponce getHoaDonSauKhiMuaHangByMaHoaDon(String maHoaDon) throws Exception {
+        HoaDon hd =  billClientRepository.getHoaDonByMaHoaDon(maHoaDon);
+        ArrayList<ProductOfBillDetail> listBillDetail = billDetailClientRepository.getProductOfDetailsByIDBill(hd.getId());
+        int quantityInventory = 0;
+        for(ProductOfBillDetail product: listBillDetail) {
+            quantityInventory += product.getSoLuong();
+        }
+
+       BillAfterBuyResponce bill = new BillAfterBuyResponce();
+       bill.setId(hd.getId());
+       bill.setName(hd.getTenNguoiNhan());
+       bill.setCodeOrder(hd.getMa());
+       bill.setTotalPrice(hd.getTongTien());
+       bill.setTotalPriceAfterPrice(hd.getTongTienSauKhiGiam());
+       bill.setQuantityProduct(quantityInventory);
+       bill.setDeliveryDate(hd.getNgayMongMuonNhan());
+       bill.setPhoneNumber(hd.getSoDienThoaiNguoiNhan());
+       bill.setAddress(hd.getDiaChiNguoiNhan() + ", " + hd.getXaPhuongNguoiNhan() + ", " + hd.getQuanHuyenNguoiNhan() + ", " + hd.getTinhThanhPhoNguoiNhan());
+       bill.setProducts(listBillDetail);
+       bill.setShipFee(hd.getPhiShip());
+       return bill;
+    }
+
+
     public HoaDon getHoaDonBySoDienThoaiVaMaHoaDon(String soDienThoai, String maHoaDon) throws Exception {
         ArrayList<HoaDon> listHoaDon =  billClientRepository.getHoaDonByMaHoaDonVaSoDienThoai(soDienThoai, maHoaDon);
         if(listHoaDon.isEmpty()){
@@ -195,5 +226,14 @@ public class BillClientServiceImpl {
 
         emailService.sendEmailWithHtmlTemplate(bill.getEmail(), "Thông tin đơn hàng " + bill.getMa(), "email-template", context);
         return "Send email successfully";
+    }
+
+    public String deleteBillByCodeBill(String codeBill) {
+        billClientRepository.deleteById(codeBill);
+        return "Delete bill successfully";
+    }
+
+    public void updateBillByIdBill(String idBill){
+        billClientRepository.updateBillByIDBill(idBill);
     }
 }
