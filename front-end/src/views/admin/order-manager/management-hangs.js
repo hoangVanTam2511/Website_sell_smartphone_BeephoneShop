@@ -52,6 +52,7 @@ const ManagementHangs = () => {
   const [currentPage, setCurrentPage] = useState(
     searchParams.get("currentPage") || 1
   );
+  const [createdAt, setCreatedAt] = React.useState("");
 
   const findOrdersByMultipleCriteriaWithPagination = (page) => {
     requestParam("GET", `/api/orders`, {
@@ -337,7 +338,7 @@ const ManagementHangs = () => {
         setHangCode(response.data.data.ma);
         setStatus(response.data.data.status);
         setTenHang(response.data.data.tenHang);
-        console.log(response.data.data);
+        setCreatedAt(new Date(response.data.data.createdAt));
       })
       .catch((error) => {});
   };
@@ -405,6 +406,7 @@ const ManagementHangs = () => {
       ma: hangCode,
       tenHang: tenHang,
       status: status,
+      createdAt: createdAt,
     };
     request("PUT", `/api/brands`, obj)
       .then((response) => {

@@ -44,7 +44,8 @@ const CreateCameraTruoc = ({ open, close, getAll, cameraFront }) => {
   };
 
   const handleChangeDoPhanGiai = (event, value) => {
-    setDoPhanGiai(value);
+    const cleanedValue = value.replace(/\D/g, "");
+    setDoPhanGiai(cleanedValue);
   };
 
   const handleChangeCameraType = (event) => {

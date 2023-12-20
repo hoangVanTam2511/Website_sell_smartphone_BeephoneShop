@@ -284,6 +284,7 @@ const ManagementRoms = () => {
   const [status, setStatus] = useState("");
   const [dungLuong, setDungLuong] = useState("");
   const [idRom, setIdRom] = useState("");
+  const [createdAt, setCreatedAt] = React.useState("");
 
   const detailRoms = async (id) => {
     request("GET", `/api/roms/${id}`)
@@ -291,7 +292,7 @@ const ManagementRoms = () => {
         setRomCode(response.data.data.ma);
         setStatus(response.data.data.status);
         setDungLuong(response.data.data.dungLuong);
-        console.log(response.data.data);
+        setCreatedAt(new Date(response.data.data.createdAt));
       })
       .catch((error) => {});
   };
@@ -367,6 +368,7 @@ const ManagementRoms = () => {
       ma: romCode,
       dungLuong: dungLuong,
       status: status,
+      createdAt: createdAt,
     };
     request("PUT", `/api/roms`, obj)
       .then((response) => {

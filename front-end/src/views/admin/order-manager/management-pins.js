@@ -294,6 +294,7 @@ const ManagementPins = () => {
   const [loaiPin, setLoaiPin] = useState("");
   const [dungLuong, setDungLuong] = useState("");
   const [idPin, setIdPin] = useState("");
+  const [createdAt, setCreatedAt] = React.useState("");
 
   const detailPins = async (id) => {
     request("GET", `/api/pins/${id}`)
@@ -302,7 +303,7 @@ const ManagementPins = () => {
         setStatus(response.data.data.status);
         setLoaiPin(response.data.data.loaiPin);
         setDungLuong(response.data.data.dungLuong);
-        console.log(response.data.data);
+        setCreatedAt(new Date(response.data.data.createdAt));
       })
       .catch((error) => {});
   };
@@ -396,6 +397,7 @@ const ManagementPins = () => {
       loaiPin: loaiPin,
       dungLuong: dungLuong,
       status: status,
+      createdAt: createdAt,
     };
     request("PUT", `/api/pins`, obj)
       .then((response) => {

@@ -63,6 +63,29 @@ const ManagementColors = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [openSelect, setOpenSelect] = useState(false);
 
+  const handleOpenDialogConfirmUpdate = () => {
+    setOpenConfirm(true);
+  };
+
+  const handleCloseDialogConfirmUpdate = () => {
+    setOpenConfirm(false);
+  };
+
+  const Header = () => {
+    return (
+      <>
+        <span className="">Chỉnh sửa voucher</span>
+      </>
+    );
+  };
+  const Title = () => {
+    return (
+      <>
+        <span>Bạn có chắc chắc muốn chỉnh sửa voucher không ?</span>
+      </>
+    );
+  };
+
   const getListColor = () => {
     request("GET", `/api/colors`)
       .then((response) => {
@@ -93,6 +116,7 @@ const ManagementColors = () => {
       });
   };
 
+  const [createdAt, setCreatedAt] = React.useState("");
   const [openSelect3, setOpenSelect3] = useState(false);
   const handleCloseSelect3 = () => {
     setOpenSelect3(false);
@@ -108,6 +132,7 @@ const ManagementColors = () => {
         setColorCode(response.data.data.ma);
         setStatus(response.data.data.status);
         setColorName(response.data.data.tenMauSac);
+        setCreatedAt(new Date(response.data.data.createdAt));
       })
       .catch((error) => {});
   };
@@ -375,6 +400,7 @@ const ManagementColors = () => {
       ma: colorCode,
       tenMauSac: colorName,
       status: status,
+      createdAt: createdAt,
     };
     request("PUT", `/api/colors`, obj)
       .then((response) => {

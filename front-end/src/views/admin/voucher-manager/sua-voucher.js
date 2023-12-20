@@ -69,14 +69,14 @@ const UpdateVoucher = () => {
   const Header = () => {
     return (
       <>
-        <span className="">Chỉnh sửa voucher</span>
+        <span className="">Chỉnh sửa phiếu giảm giá</span>
       </>
     );
   };
   const Title = () => {
     return (
       <>
-        <span>Bạn có chắc chắc muốn chỉnh sửa voucher không ?</span>
+        <span>Bạn có chắc chắc muốn chỉnh sửa phiếu giảm giá không ?</span>
       </>
     );
   };

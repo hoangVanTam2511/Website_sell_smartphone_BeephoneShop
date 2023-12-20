@@ -216,6 +216,7 @@ const AddNV = () => {
         var nhanVienRespone = response;
         const generatedMaKhachHang = nhanVienRespone.data.id;
         addDiaChiList(generatedMaKhachHang);
+        setIsLoading(true);
         redirectToHienThiKH(generatedMaKhachHang);
         const newNhanVienRespone = {
           hoVaTen: hoVaTen,
@@ -228,10 +229,10 @@ const AddNV = () => {
           canCuocCongDan: cccd,
         };
         setListNV([newNhanVienRespone, ...listNV]);
-        setIsLoading(true);
         handleOpenAlertVariant("Thêm khách hàng thành công", Notistack.SUCCESS);
       });
     } catch (error) {
+      setIsLoading(true);
       handleOpenAlertVariant(error.response.data, Notistack.ERROR);
       setIsConfirmVisible(false);
     }

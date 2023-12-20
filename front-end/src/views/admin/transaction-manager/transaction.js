@@ -45,7 +45,6 @@ const Transaction = () => {
     const request = {
       page: page,
       keyword: searchTatCa,
-      soTienThanhToan: searchTatCa,
       hinhThucThanhToan: searchHinhThucThanhToan,
       loaiThanhToan: searchLoaiThanhToan,
       trangThai: searchTrangThai,
@@ -62,6 +61,7 @@ const Transaction = () => {
           "Đã xảy ra lỗi, vui lòng liên hệ quản trị viên.",
           Notistack.ERROR
         );
+        console.log(error);
       });
   };
 
@@ -405,7 +405,7 @@ const Transaction = () => {
           <Card.Header className="d-flex justify-content-between">
             <div className="header-title mt-2">
               <TextField
-                placeholder="Tìm theo mã, số tiền, người xác nhận giao dịch"
+                placeholder="Tìm theo mã và số tiền giao dịch."
                 label="Tìm giao dịch"
                 value={searchTatCa}
                 onChange={handleSearchTatCaChange}

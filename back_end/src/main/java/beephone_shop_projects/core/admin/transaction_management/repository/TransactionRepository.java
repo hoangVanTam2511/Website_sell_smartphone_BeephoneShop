@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
 public interface TransactionRepository extends IHinhThucThanhToanRepository {
 
     @Query(value = """
@@ -27,9 +29,9 @@ public interface TransactionRepository extends IHinhThucThanhToanRepository {
     Page<TransactionResponse> getAll(Pageable pageable, @Param("request") TransactionRequest request);
 
     @Query(value = """
-             SELECT * FROM Account a JOIN Role r ON r.id = a.id_role
-            WHERE (r.ma = 'role1' OR r.ma = 'role3') AND a.id = ?1;
+             SELECT a.id, a.ma, a.id_role, a.ho_va_ten FROM account a JOIN role r ON r.id = a.id_role
+            WHERE (r.ma = 'role1' OR r.ma = 'role3') AND a.id_role = :idParam;
                   """, nativeQuery = true)
-    Account getByIdEmployee(String id);
+    Optional<Account> getByIdEmployee(@Param("idParam") String id);
 
 }

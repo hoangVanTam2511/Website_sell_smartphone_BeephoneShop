@@ -62,6 +62,7 @@ const ManagementFrontCameras = () => {
   const [currentPage, setCurrentPage] = useState(
     searchParams.get("currentPage") || 1
   );
+  const [createdAt, setCreatedAt] = React.useState("");
 
   const getListCameraFront = () => {
     request("GET", `/api/camera-fronts`)
@@ -140,6 +141,7 @@ const ManagementFrontCameras = () => {
         setCameraType(response.data.data.cameraType);
         setStatus(response.data.data.status);
         setDoPhanGiai(response.data.data.doPhanGiai);
+        setCreatedAt(new Date(response.data.data.createdAt));
       })
       .catch((error) => {});
   };
@@ -267,6 +269,7 @@ const ManagementFrontCameras = () => {
       doPhanGiai: doPhanGiai,
       cameraType: cameraType,
       status: status,
+      createdAt: createdAt,
     };
     console.log(obj);
     request("PUT", `/api/camera-fronts/update`, obj)

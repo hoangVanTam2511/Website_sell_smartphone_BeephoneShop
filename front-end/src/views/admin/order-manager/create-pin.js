@@ -33,7 +33,8 @@ const CreatePin = ({ open, close, getAll, pins }) => {
   const { handleOpenAlertVariant } = useCustomSnackbar();
 
   const handleChangeDungLuong = (event, value) => {
-    setDungLuong(value);
+    const cleanedValue = value.replace(/\D/g, "");
+    setDungLuong(cleanedValue);
   };
 
   const handleChangePin = (event, value) => {

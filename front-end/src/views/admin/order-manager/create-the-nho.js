@@ -110,7 +110,8 @@ const CreateTheNho = ({ open, close, getAll, theNhos }) => {
   };
 
   const handleChangeDungLuongToiDa = (event, value) => {
-    setDungLuongToiDa(value);
+    const cleanedValue = value.replace(/\D/g, "");
+    setDungLuongToiDa(cleanedValue);
   };
 
   const uniqueLoaiTheNho = theNhos

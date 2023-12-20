@@ -320,6 +320,7 @@ const ManagementRearCameras = () => {
   const [doPhanGiai, setDoPhanGiai] = useState("");
   const [idCamera, setIdCamera] = useState("");
   const [cameraType, setCameraType] = useState("");
+  const [createdAt, setCreatedAt] = React.useState("");
 
   const detailCameras = async (id) => {
     request("GET", `/api/camera-rears/${id}`)
@@ -328,7 +329,7 @@ const ManagementRearCameras = () => {
         setCameraType(response.data.data.cameraType);
         setStatus(response.data.data.status);
         setDoPhanGiai(response.data.data.doPhanGiai);
-        console.log(response.data.data);
+        setCreatedAt(new Date(response.data.data.createdAt));
       })
       .catch((error) => {});
   };
@@ -409,6 +410,7 @@ const ManagementRearCameras = () => {
       doPhanGiai: doPhanGiai,
       cameraType: cameraType,
       status: status,
+      createdAt: createdAt,
     };
     request("PUT", `/api/camera-rears`, obj)
       .then((response) => {

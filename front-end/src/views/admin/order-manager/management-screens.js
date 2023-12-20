@@ -411,6 +411,7 @@ const ManagementScreens = () => {
   const [idManHinh, setIdManHinh] = useState("");
   const [idDoPhanGiai, setIdDoPhanGiai] = useState("");
   const [maDoPhanGiai, setMaDoPhanGiai] = useState("");
+  const [createdAt, setCreatedAt] = React.useState("");
 
   const detailManHinhs = (id) => {
     request("GET", `/api/display/${id}`)
@@ -424,7 +425,7 @@ const ManagementScreens = () => {
         // setIdDoPhanGiai(response.data.data.doPhanGiaiManHinh.id);
         setChieuDai(response.data.data.doPhanGiaiManHinh.chieuDai);
         setChieuRong(response.data.data.doPhanGiaiManHinh.chieuRong);
-        console.log(response.data.data);
+        setCreatedAt(new Date(response.data.data.createdAt));
       })
       .catch((error) => {
         handleOpenAlertVariant("Đã xảy ra lỗi.");

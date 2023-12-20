@@ -69,6 +69,29 @@ const ManagementImei = () => {
   //     });
   // };
 
+  const handleOpenDialogConfirmUpdate = () => {
+    setOpenConfirm(true);
+  };
+
+  const handleCloseDialogConfirmUpdate = () => {
+    setOpenConfirm(false);
+  };
+
+  const Header = () => {
+    return (
+      <>
+        <span className="">Chỉnh sửa voucher</span>
+      </>
+    );
+  };
+  const Title = () => {
+    return (
+      <>
+        <span>Bạn có chắc chắc muốn chỉnh sửa voucher không ?</span>
+      </>
+    );
+  };
+
   const getListImeiSearchAndPage = (page) => {
     requestParam("GET", `/api/imeis/search`, {
       keyword: searchTatCa,

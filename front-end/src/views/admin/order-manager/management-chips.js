@@ -34,6 +34,7 @@ import {
   faPenToSquare,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -57,6 +58,29 @@ const ManagementChips = () => {
   const [currentPage, setCurrentPage] = useState(
     searchParams.get("currentPage") || 1
   );
+
+  const handleOpenDialogConfirmUpdate = (idChip) => {
+    setOpenConfirm(true);
+  };
+
+  const handleCloseDialogConfirmUpdate = () => {
+    setOpenConfirm(false);
+  };
+
+  const Header = () => {
+    return (
+      <>
+        <span className="">Đổi trạng thái Chip</span>
+      </>
+    );
+  };
+  const Title = () => {
+    return (
+      <>
+        <span>Bạn có chắc chắc muốn đổi trạng thái Chip không ?</span>
+      </>
+    );
+  };
 
   const getListChip = (page) => {
     request("GET", `/api/chips`)
@@ -162,6 +186,7 @@ const ManagementChips = () => {
         setMaChip(response.data.data.ma);
         setStatus(response.data.data.status);
         setTenChip(response.data.data.tenChip);
+        setCreatedAt(new Date(response.data.data.createdAt));
       })
       .catch((error) => {});
   };
@@ -204,6 +229,7 @@ const ManagementChips = () => {
   };
 
   const [validationMsg, setValidationMsg] = useState({});
+  const [createdAt, setCreatedAt] = React.useState("");
 
   const validationAll = () => {
     const msg = {};
@@ -238,6 +264,7 @@ const ManagementChips = () => {
       ma: maChip,
       tenChip: tenChip,
       status: status,
+      createdAt: createdAt,
     };
     request("PUT", `/api/chips`, obj)
       .then((response) => {
@@ -382,7 +409,9 @@ const ManagementChips = () => {
                 <IconButton
                   className="ms-2"
                   style={{ marginTop: "6px" }}
-                  onClick={() => doiTrangThaiChip(record.id)}
+                  onClick={() => {
+                    doiTrangThaiChip(record.id);
+                  }}
                 >
                   <FontAwesomeIcon
                     icon={faArrowsRotate}

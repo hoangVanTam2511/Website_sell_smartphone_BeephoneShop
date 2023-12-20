@@ -55,6 +55,29 @@ const ManagementRams = () => {
   const [keyword, setKeyword] = useState(searchParams.get("keyword"));
   const [currentPage, setCurrentPage] = useState(1);
   const [openSelect, setOpenSelect] = useState(false);
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const handleOpenDialogConfirmUpdate = () => {
+    setOpenConfirm(true);
+  };
+
+  const handleCloseDialogConfirmUpdate = () => {
+    setOpenConfirm(false);
+  };
+
+  const Header = () => {
+    return (
+      <>
+        <span className="">Chỉnh sửa voucher</span>
+      </>
+    );
+  };
+  const Title = () => {
+    return (
+      <>
+        <span>Bạn có chắc chắc muốn chỉnh sửa voucher không ?</span>
+      </>
+    );
+  };
 
   const loadDataRam = () => {
     request("GET", `/api/rams`)
@@ -284,6 +307,7 @@ const ManagementRams = () => {
   const [status, setStatus] = useState("");
   const [dungLuong, setDungLuong] = useState("");
   const [idRam, setIdRam] = useState("");
+  const [createdAt, setCreatedAt] = React.useState("");
 
   const detailRams = async (id) => {
     request("GET", `/api/rams/${id}`)
@@ -291,7 +315,7 @@ const ManagementRams = () => {
         setRamCode(response.data.data.ma);
         setStatus(response.data.data.status);
         setDungLuong(response.data.data.dungLuong);
-        console.log(response.data.data);
+        setCreatedAt(new Date(response.data.data.createdAt));
       })
       .catch((error) => {});
   };
@@ -367,6 +391,7 @@ const ManagementRams = () => {
       ma: ramCode,
       dungLuong: dungLuong,
       status: status,
+      createdAt: createdAt,
     };
     request("PUT", `/api/rams`, obj)
       .then((response) => {

@@ -312,6 +312,7 @@ const ManagementCongSacs = () => {
   const [status, setStatus] = useState("");
   const [loaiCongSac, setLoaiCongSac] = useState("");
   const [idSac, setIdSac] = useState("");
+  const [createdAt, setCreatedAt] = React.useState("");
 
   const detailSacs = async (id) => {
     request("GET", `/api/chargers/${id}`)
@@ -319,7 +320,7 @@ const ManagementCongSacs = () => {
         setSacCode(response.data.data.ma);
         setStatus(response.data.data.status);
         setLoaiCongSac(response.data.data.loaiCongSac);
-        console.log(response.data.data);
+        setCreatedAt(new Date(response.data.data.createdAt));
       })
       .catch((error) => {});
   };
@@ -378,6 +379,7 @@ const ManagementCongSacs = () => {
       ma: sacCode,
       loaiCongSac: loaiCongSac,
       status: status,
+      createdAt: createdAt,
     };
     request("PUT", `/api/chargers`, obj)
       .then((response) => {

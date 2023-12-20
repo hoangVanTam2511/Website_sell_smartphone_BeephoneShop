@@ -42,7 +42,8 @@ const CreateRom = ({ open, close, getAll, roms }) => {
     });
 
   const handleChangeRom = (event, value) => {
-    setKichThuoc(value);
+    const cleanedValue = value.replace(/\D/g, "");
+    setKichThuoc(cleanedValue);
   };
 
   const handleReset = (event) => {

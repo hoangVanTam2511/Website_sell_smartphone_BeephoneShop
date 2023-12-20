@@ -62,6 +62,7 @@ const ManagementDanhMuc = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageShow, setPageShow] = useState(5);
   const [openSelect, setOpenSelect] = useState(false);
+  const [createdAt, setCreatedAt] = React.useState("");
 
   const getListDanhMuc = () => {
     request("GET", `/api/danh-mucs`)
@@ -99,6 +100,7 @@ const ManagementDanhMuc = () => {
         setDanhMucCode(response.data.data.ma);
         setStatus(response.data.data.status);
         setDanhMucName(response.data.data.tenDanhMuc);
+        setCreatedAt(new Date(response.data.data.createdAt));
       })
       .catch((error) => {});
   };
@@ -376,6 +378,7 @@ const ManagementDanhMuc = () => {
       ma: danhMucCode,
       tenDanhMuc: danhMucName,
       status: status,
+      createdAt: createdAt,
     };
     request("PUT", `/api/danh-mucs`, obj)
       .then((response) => {

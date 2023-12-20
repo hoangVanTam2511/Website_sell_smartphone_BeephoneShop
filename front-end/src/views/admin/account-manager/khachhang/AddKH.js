@@ -154,7 +154,7 @@ const AddKH = () => {
     }
   };
   const redirectToHienThiKH = () => {
-    navigate("/dashboard/customer");
+    navigate("/dashboard/customers");
   };
   const handleAddressChange = (result) => {
     setDiaChi(result);
@@ -222,7 +222,6 @@ const AddKH = () => {
       // Gọi API tạo khách hàng mới
       request("POST", apiURLKH + "/add", khachHangData).then((response) => {
         const data = response.data;
-
         // Lấy mã khách hàng từ response
         if (data) {
           addDiaChiList(data.id);

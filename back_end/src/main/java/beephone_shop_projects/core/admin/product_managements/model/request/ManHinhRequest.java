@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
+
 @Setter
 @Getter
 @AllArgsConstructor
@@ -23,5 +25,7 @@ public class ManHinhRequest {
     private StatusCommon status;
 
     private String doPhanGiaiManHinh;
+
+    private Date createdAt;
 
 }

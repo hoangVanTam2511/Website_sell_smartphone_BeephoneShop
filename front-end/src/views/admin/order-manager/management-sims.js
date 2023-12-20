@@ -348,6 +348,7 @@ const ManagementSims = () => {
   const [loaiTheSim, setLoaiTheSim] = useState("");
   const [idTheSim, setIdTheSim] = useState("");
   const [simType, setSimType] = useState("");
+  const [createdAt, setCreatedAt] = React.useState("");
 
   const detailTheSims = async (id) => {
     request("GET", `/api/sim-cards/${id}`)
@@ -364,6 +365,7 @@ const ManagementSims = () => {
           setCheckedDualSim(true);
           setCheckedSingleSim(false);
         }
+        setCreatedAt(new Date(response.data.data.createdAt));
       })
       .catch((error) => {});
   };

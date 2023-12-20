@@ -41,7 +41,8 @@ const CreateRam = ({ open, close, getAll, rams }) => {
     });
 
   const handleChangeRam = (event, value) => {
-    setKichThuoc(value);
+    const cleanedValue = value.replace(/\D/g, "");
+    setKichThuoc(cleanedValue);
   };
 
   const handleReset = (event) => {

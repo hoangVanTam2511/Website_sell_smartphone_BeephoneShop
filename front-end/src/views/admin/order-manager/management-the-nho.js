@@ -348,6 +348,7 @@ const ManagementTheNhos = () => {
   const [loaiTheNho, setLoaiTheNho] = useState("");
   const [dungLuongToiDa, setDungLuongToiDa] = useState("");
   const [idTheNho, setIdTheNho] = useState("");
+  const [createdAt, setCreatedAt] = React.useState("");
 
   const detailTheNhos = async (id) => {
     request("GET", `/api/the-nhos/${id}`)
@@ -356,7 +357,7 @@ const ManagementTheNhos = () => {
         setStatus(response.data.data.status);
         setDungLuongToiDa(response.data.data.dungLuongToiDa);
         setLoaiTheNho(response.data.data.loaiTheNho);
-        console.log(response.data.data);
+        setCreatedAt(new Date(response.data.data.createdAt));
       })
       .catch((error) => {});
   };
