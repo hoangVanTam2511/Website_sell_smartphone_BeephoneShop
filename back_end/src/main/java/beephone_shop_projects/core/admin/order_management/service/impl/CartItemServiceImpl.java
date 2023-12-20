@@ -978,7 +978,7 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
       } else {
         if (findOrderCurrent.getTongTien() != null) {
           BigDecimal tongTienCurrent = findOrderCurrent.getTongTien();
-          findOrderCurrent.setTongTien(tongTienCurrent.subtract(findCartItemOrder.get().getDonGia());
+          findOrderCurrent.setTongTien(tongTienCurrent.subtract(findCartItemOrder.get().getDonGia()));
 
           if (findOrderCurrent.getKhachCanTra() != null) {
             BigDecimal khachCanTraCurrent = findOrderCurrent.getKhachCanTra();
