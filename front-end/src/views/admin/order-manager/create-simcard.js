@@ -161,7 +161,7 @@ const CreateSimCard = ({ open, close, getAll, sims }) => {
           close();
           getAll();
           handleReset();
-          handleOpenAlertVariant("Thêm thành công thẻ sim", Notistack.ERROR);
+          handleOpenAlertVariant("Thêm thành công thẻ sim", Notistack.SUCCESS);
         })
         .catch((error) => {
           handleOpenAlertVariant("Thêm thất bại thẻ sim", Notistack.ERROR);

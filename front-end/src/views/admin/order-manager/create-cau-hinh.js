@@ -891,19 +891,18 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
       await request('POST', `/api/products`, products).then(
         async (res) => {
           console.log(res)
-          const isMissingImage = cauHinhsFinal.some((cauHinh) => !cauHinh.image);
-          if (!isMissingImage) {
+          const isMissingImage = cauHinhsFinal.some((cauHinh) => cauHinh.image || cauHinh.file);
+          if (isMissingImage) {
             await addFiles(res.data.data.ma);
           }
+          handleOpenAlertVariant("Thêm sản phẩm thành công!", Notistack.SUCCESS);
+          setIsLoadingInside(false);
+          getOverplay(false);
+          setTimeout(() => {
+            redirectProductPage();
+          }, 1000);
         }
       )
-
-      handleOpenAlertVariant("Thêm sản phẩm thành công!", Notistack.SUCCESS);
-      setIsLoadingInside(false);
-      getOverplay(false);
-      setTimeout(() => {
-        redirectProductPage();
-      }, 1000);
     }
     catch (error) {
       setIsLoadingInside(false);
@@ -1854,8 +1853,10 @@ const CreateCauHinh = ({ productName, getProduct, getOverplay, confirm, valid, i
 
                                 let removeRom = true;
                                 newCauHinhs && newCauHinhs.forEach((cauHinh) => {
-                                  if (cauHinh.rom && cauHinh.rom.id && cauHinh.rom.id === item.rom && item.rom.id && item.rom.id) {
-                                    removeRom = false;
+                                  if (cauHinh.rom.id !== null && item.rom.id !== null) {
+                                    if (cauHinh.rom.id === item.rom.id) {
+                                      removeRom = false;
+                                    }
                                   }
                                 })
                                 if (removeRom) {

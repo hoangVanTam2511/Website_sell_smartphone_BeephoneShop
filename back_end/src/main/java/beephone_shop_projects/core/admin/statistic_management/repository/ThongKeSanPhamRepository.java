@@ -13,9 +13,10 @@ import java.util.List;
 public interface ThongKeSanPhamRepository extends ISanPhamChiTietRepository {
 
     @Query(value = """
-            SELECT SUM(h.so_luong) AS so_luong FROM hoa_don_chi_tiet h
-            LEFT JOIN hoa_don hd ON h.id_hoa_don = hd.id
-            WHERE hd.trang_thai != 0 AND hd.trang_thai != 6 AND hd.trang_thai != 5
+            SELECT COUNT(i.id) AS so_luong FROM hoa_don_chi_tiet h
+            JOIN hoa_don hd ON h.id_hoa_don = hd.id
+            JOIN imei_da_ban i ON i.id_hoa_don_chi_tiet = h.id
+            WHERE hd.trang_thai != 0 AND hd.trang_thai != 6 AND hd.trang_thai != 5 AND hd.trang_thai != 9 AND i.trang_thai = 1
             AND YEAR(hd.created_at) = YEAR(CURDATE())
             AND MONTH(hd.created_at) = MONTH(CURDATE())
             GROUP BY YEAR(hd.created_at), MONTH(hd.created_at)
@@ -84,12 +85,13 @@ public interface ThongKeSanPhamRepository extends ISanPhamChiTietRepository {
     List<ThongKeSanPhamSapHetHang> getSanPhamSapHetHang();
 
     @Query(value = """
-            SELECT SUM(h.so_luong) AS so_luong, DATE(hd.created_at) AS ngay_tao
+            SELECT COUNT(i.id) AS so_luong, DATE(hd.created_at) AS ngay_tao
                 FROM san_pham a
                 LEFT JOIN san_pham_chi_tiet spct ON a.id = spct.id_san_pham
                 JOIN hoa_don_chi_tiet h ON spct.id = h.id_chi_tiet_san_pham
                 JOIN hoa_don hd ON h.id_hoa_don = hd.id
-                WHERE (hd.trang_thai != 0 AND hd.trang_thai != 6 AND hd.trang_thai != 5 AND hd.trang_thai != 9)
+                JOIN imei_da_ban i ON i.id_hoa_don_chi_tiet = h.id
+                WHERE (hd.trang_thai != 0 AND hd.trang_thai != 6 AND hd.trang_thai != 5 AND hd.trang_thai != 9) AND i.trang_thai = 1
                 AND (:#{#request.date1} IS NULL OR :#{#request.date2} IS NULL
                 OR DATE(hd.created_at) BETWEEN :#{#request.date1} AND :#{#request.date2})
                 GROUP BY DATE(hd.created_at)
@@ -98,7 +100,7 @@ public interface ThongKeSanPhamRepository extends ISanPhamChiTietRepository {
     List<ThongKeSanPhamKhoangNgay> getSanPhamKhoangNgay(@Param("request") ThongKeKhoangNgaySanPhamRequest request);
 
     @Query(value = """
-            SELECT SUM(h.so_luong) AS so_luong FROM hoa_don_chi_tiet h
+            SELECT COUNT(i.id) AS so_luong FROM hoa_don_chi_tiet h
             JOIN hoa_don hd ON h.id_hoa_don = hd.id
             JOIN imei_da_ban i ON i.id_hoa_don_chi_tiet = h.id
             WHERE hd.trang_thai != 0 AND hd.trang_thai != 6 AND hd.trang_thai != 5 AND hd.trang_thai != 9 AND i.trang_thai = 1
@@ -109,9 +111,10 @@ public interface ThongKeSanPhamRepository extends ISanPhamChiTietRepository {
     ThongKeSanPhamResponse getSanPhamInMonth();
 
     @Query(value = """
-            SELECT SUM(h.so_luong) AS so_luong FROM hoa_don_chi_tiet h
-            LEFT JOIN hoa_don hd ON h.id_hoa_don = hd.id
-            WHERE hd.trang_thai != 0 AND hd.trang_thai != 6 AND hd.trang_thai != 5 AND hd.trang_thai != 9
+            SELECT COUNT(i.id) AS so_luong FROM hoa_don_chi_tiet h
+            JOIN hoa_don hd ON h.id_hoa_don = hd.id
+            JOIN imei_da_ban i ON i.id_hoa_don_chi_tiet = h.id
+            WHERE hd.trang_thai != 0 AND hd.trang_thai != 6 AND hd.trang_thai != 5 AND hd.trang_thai != 9 AND i.trang_thai = 1
             AND (YEAR(hd.created_at) = YEAR(CURDATE()) AND MONTH(hd.created_at) = MONTH(DATE_SUB(CURDATE(), INTERVAL 1 MONTH)))
             GROUP BY YEAR(hd.created_at), MONTH(hd.created_at)
                            """, nativeQuery = true)
