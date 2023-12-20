@@ -1404,7 +1404,7 @@ const PointOfSales = () => {
     console.log(userId);
     if (cartItems && cartItems.length > 0) {
       const statusOrder = delivery
-        ? OrderStatusString.CONFIRMED
+        ? OrderStatusString.PENDING_CONFIRM
         : OrderStatusString.HAD_PAID;
       const typeOrder = delivery
         ? OrderTypeString.DELIVERY

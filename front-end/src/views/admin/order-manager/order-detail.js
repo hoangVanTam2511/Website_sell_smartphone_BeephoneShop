@@ -125,8 +125,8 @@ const OrderDetail = (props) => {
           : "";
   };
 
-  const checkImeisDaBan = (order) => {
-    return order.orderItems.some(item => item.imeisDaBan.length === 0);
+  const checkImeisDaBan = () => {
+    return orderItems.some(item => item.imeisDaBan.length === 0);
   }
 
   const updateInfoOrderDelivery = async (name, phone, address, province, district, ward, note, ship) => {
@@ -1120,7 +1120,7 @@ const OrderDetail = (props) => {
             <div>
               <Button
                 onClick={() => {
-                  if (checkImeisDaBan) {
+                  if (checkImeisDaBan()) {
                     scrollToDiv1();
                     return;
                   }
@@ -2259,7 +2259,7 @@ const OrderDetail = (props) => {
                       "(" + order.voucher.ma + ") ") ||
                       ""}
                   </span>
-                  {(totalDiscount(order.tongTien, order.tongTienSauKhiGiam).toLocaleString("vi-VN", {
+                  {(totalDiscount(order && order.tongTien && order.tongTien, order && order.tongTienSauKhiGiam && order.tongTienSauKhiGiam).toLocaleString("vi-VN", {
                     style: "currency",
                     currency: "VND",
                   })) ||
