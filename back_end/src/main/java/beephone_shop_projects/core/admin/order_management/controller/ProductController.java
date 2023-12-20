@@ -1,12 +1,16 @@
 package beephone_shop_projects.core.admin.order_management.controller;
 
+import beephone_shop_projects.core.admin.order_management.model.request.ImeisRequest;
 import beephone_shop_projects.core.admin.order_management.model.request.ProductItemConfigurationsRequest;
+import beephone_shop_projects.core.admin.order_management.model.request.ProductItemRequest;
 import beephone_shop_projects.core.admin.order_management.model.request.SearchFilterProductDto;
 import beephone_shop_projects.core.admin.order_management.model.request.SearchFilterProductItemDto;
 import beephone_shop_projects.core.admin.order_management.model.response.ProductNameResponse;
+import beephone_shop_projects.core.admin.order_management.model.response.product_response.ImeiResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.product_response.ProductCustomResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.product_response.ProductItemResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.product_response.ProductResponse;
+import beephone_shop_projects.core.admin.order_management.model.response.product_response.ProductsItemResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.product_response.ProductsResponse;
 import beephone_shop_projects.core.admin.order_management.repository.ProductCustomRepository;
 import beephone_shop_projects.core.admin.order_management.repository.ProductItemCustomRepository;
@@ -30,6 +34,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -113,6 +118,18 @@ public class ProductController {
   public ResponseEntity<?> createFiles(@RequestPart("files") MultipartFile[] files, @RequestParam String ma) throws Exception {
     imageService.uploadImage(files, ma);
     return new ResponseEntity("a", HttpStatus.OK);
+  }
+
+  @PutMapping("/imeis")
+  public ResponseObject<Void> addImeiProduct(@RequestBody ImeisRequest req) throws Exception {
+    productService.addImeiProduct(req);
+    return new ResponseObject("Ok");
+  }
+
+  @PutMapping
+  public ResponseObject<ProductsItemResponse> updateProduct(@RequestBody ProductItemRequest req) throws Exception {
+    ProductsItemResponse updateProduct = productService.updateProduct(req);
+    return new ResponseObject(updateProduct);
   }
 
   @PostMapping

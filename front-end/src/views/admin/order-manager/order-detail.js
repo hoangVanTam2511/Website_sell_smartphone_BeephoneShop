@@ -1740,7 +1740,7 @@ const OrderDetail = (props) => {
               </span>
             </div>
             <div className="">
-              {order.loaiHoaDon === OrderTypeString.DELIVERY && (order.trangThai === OrderStatusString.PENDING_CONFIRM || order.trangThai === OrderStatusString.CONFIRMED) &&
+              {order.loaiHoaDon === OrderTypeString.DELIVERY && (order.trangThai === OrderStatusString.PENDING_CONFIRM || order.trangThai === OrderStatusString.CONFIRMED || order.trangThai === OrderStatusString.DELIVERING) &&
                 order.tienKhachTra < total ? (
                 <Button
                   onClick={() => setOpenPayment(true)}

@@ -158,7 +158,7 @@ const RefundOrder = () => {
                     marginBottom: "2px",
                   }}
                 >
-                  Quét Barcode
+                  Quét QrCode
                 </span>
               </Button>
             </div>

@@ -13,11 +13,9 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductItemResponse {
+public class ProductsItemResponse {
 
   private String id;
-
-  private String maCauHinh;
 
   private String ma;
 
@@ -28,20 +26,6 @@ public class ProductItemResponse {
   private BigDecimal donGiaSauKhuyenMai;
 
   private Integer trangThai;
-
-  private ColorResponse mauSac;
-
-  private ImageResponse image;
-
-  private RamResponse ram;
-
-  private RomResponse rom;
-
-  private List<ImeiResponse> imeis;
-
-  private ProductResponse sanPham;
-
-  private List<KhuyenMaiChiTiet> promotions;
 
 
 }

@@ -606,7 +606,6 @@ const CreateProduct = ({ }) => {
                       (confirm && productName.trim() === "") ? "Bạn chưa nhập tên sản phẩm" :
                         (confirm && products.some((item) => item.tenSanPham === productName.trim())) ? "Tên sản phẩm đã tồn tại" : ""
                     }
-                    // error={confirm && productName.trim() === ""}
                     error={
                       (confirm && productName.trim() === "") ||
                       (confirm && products.some((item) => item.tenSanPham === productName.trim())) === true
