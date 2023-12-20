@@ -81,17 +81,17 @@ public class BillClientServiceImpl {
     public HoaDon createBillClient(BillClientRequest orderRequest) throws Exception {
 
         Account khachHang = null;
-        if(!orderRequest.getIdKhachHang().isEmpty()){
-            khachHang= accountClientRepository.findById(orderRequest.getIdKhachHang()).get();
+        if (!orderRequest.getIdKhachHang().isEmpty()) {
+            khachHang = accountClientRepository.findById(orderRequest.getIdKhachHang()).get();
         }
 
-        if(orderRequest.getVoucher() != null){
+        if (orderRequest.getVoucher() != null) {
             Voucher voucher = orderRequest.getVoucher();
             voucher.setSoLuong(voucher.getSoLuong() - 1);
             voucherClientRepository.save(voucher);
         }
 
-        String code =  RandomCodeGenerator.generateRandomNumber();
+        String code = RandomCodeGenerator.generateRandomNumber();
         HoaDon newOrder = new HoaDon();
         newOrder.setMa(code);
         newOrder.setAccount(orderRequest.getIdKhachHang().isEmpty() ? null : khachHang);
@@ -108,7 +108,7 @@ public class BillClientServiceImpl {
         newOrder.setTongTien(orderRequest.getTongTien());
         newOrder.setTongTienSauKhiGiam(orderRequest.getTongTienSauKhiGiam());
         newOrder.setKhachCanTra(orderRequest.getTienKhachTra());
-        newOrder.setPhiShip(orderRequest.getPhiShip());
+        newOrder.setPhiShip(orderRequest.getPhiShip() == null ? BigDecimal.ZERO : orderRequest.getPhiShip());
         newOrder.setCreatedAt(new Date());
         newOrder.setTongTien(orderRequest.getTongTien());
         newOrder.setNgayMongMuonNhan(new Date(orderRequest.getNgayNhanHang()));
@@ -131,7 +131,7 @@ public class BillClientServiceImpl {
 //        hinhThucThanhToan.setCreatedAt(new Date());
 //        hinhThucThanhToan.setNguoiXacNhan("Admin");
 
-       return createdOrder;
+        return createdOrder;
     }
 
     public String createBillDetail(BillDetailClientRequest bd) throws Exception {
@@ -148,10 +148,10 @@ public class BillClientServiceImpl {
     }
 
     public List<BillClientResponce> getHoaDonByIDKhachHang(String idKhachHang) {
-        ArrayList<HoaDon> listBill =  billClientRepository.getHoaDonByIDKhachHang(idKhachHang);
+        ArrayList<HoaDon> listBill = billClientRepository.getHoaDonByIDKhachHang(idKhachHang);
         ArrayList<BillClientResponce> billClientResponces = new ArrayList<>();
 
-        for(HoaDon hoaDon : listBill) {
+        for (HoaDon hoaDon : listBill) {
             BillClientResponce billClientResponce = new BillClientResponce();
             billClientResponce.setId(hoaDon.getId());
             billClientResponce.setMa(hoaDon.getMa());
@@ -167,44 +167,49 @@ public class BillClientServiceImpl {
                 billClientResponce.setTenMauSac(productOfBillDetails.get(0).getTenMauSac());
                 billClientResponce.setTenSanPham(productOfBillDetails.get(0).getTenSanPham());
                 billClientResponce.setTrangThai(String.valueOf(hoaDon.getTrangThai()));
-                billClientResponce.setTongTienSauKhiGiam(BigDecimal.valueOf(hoaDon.getTongTienSauKhiGiam().doubleValue() + hoaDon.getPhiShip().doubleValue()));
+                if(hoaDon.getPhiShip() != null){
+                    billClientResponce.setTongTienSauKhiGiam(BigDecimal.valueOf(hoaDon.getTongTienSauKhiGiam().doubleValue() + hoaDon.getPhiShip().doubleValue()));
+                }else{
+                    billClientResponce.setTongTienSauKhiGiam(BigDecimal.valueOf(hoaDon.getTongTienSauKhiGiam().doubleValue()));
+                }
                 billClientResponces.add(billClientResponce);
+
             }
         }
         return billClientResponces;
     }
 
     public HoaDon getHoaDonByIDHoaDon(String idHoaDon) throws Exception {
-        return billClientRepository.findById(idHoaDon).orElseThrow(()-> new Exception("Không tìm thấy hoá đơn"));
+        return billClientRepository.findById(idHoaDon).orElseThrow(() -> new Exception("Không tìm thấy hoá đơn"));
     }
 
     public BillAfterBuyResponce getHoaDonSauKhiMuaHangByMaHoaDon(String maHoaDon) throws Exception {
-        HoaDon hd =  billClientRepository.getHoaDonByMaHoaDon(maHoaDon);
+        HoaDon hd = billClientRepository.getHoaDonByMaHoaDon(maHoaDon);
         ArrayList<ProductOfBillDetail> listBillDetail = billDetailClientRepository.getProductOfDetailsByIDBill(hd.getId());
         int quantityInventory = 0;
-        for(ProductOfBillDetail product: listBillDetail) {
+        for (ProductOfBillDetail product : listBillDetail) {
             quantityInventory += product.getSoLuong();
         }
 
-       BillAfterBuyResponce bill = new BillAfterBuyResponce();
-       bill.setId(hd.getId());
-       bill.setName(hd.getTenNguoiNhan());
-       bill.setCodeOrder(hd.getMa());
-       bill.setTotalPrice(hd.getTongTien());
-       bill.setTotalPriceAfterPrice(hd.getTongTienSauKhiGiam());
-       bill.setQuantityProduct(quantityInventory);
-       bill.setDeliveryDate(hd.getNgayMongMuonNhan());
-       bill.setPhoneNumber(hd.getSoDienThoaiNguoiNhan());
-       bill.setAddress(hd.getDiaChiNguoiNhan() + ", " + hd.getXaPhuongNguoiNhan() + ", " + hd.getQuanHuyenNguoiNhan() + ", " + hd.getTinhThanhPhoNguoiNhan());
-       bill.setProducts(listBillDetail);
-       bill.setShipFee(hd.getPhiShip());
-       return bill;
+        BillAfterBuyResponce bill = new BillAfterBuyResponce();
+        bill.setId(hd.getId());
+        bill.setName(hd.getTenNguoiNhan());
+        bill.setCodeOrder(hd.getMa());
+        bill.setTotalPrice(hd.getTongTien());
+        bill.setTotalPriceAfterPrice(hd.getTongTienSauKhiGiam());
+        bill.setQuantityProduct(quantityInventory);
+        bill.setDeliveryDate(hd.getNgayMongMuonNhan());
+        bill.setPhoneNumber(hd.getSoDienThoaiNguoiNhan());
+        bill.setAddress(hd.getDiaChiNguoiNhan() + ", " + hd.getXaPhuongNguoiNhan() + ", " + hd.getQuanHuyenNguoiNhan() + ", " + hd.getTinhThanhPhoNguoiNhan());
+        bill.setProducts(listBillDetail);
+        bill.setShipFee(hd.getPhiShip());
+        return bill;
     }
 
 
     public HoaDon getHoaDonBySoDienThoaiVaMaHoaDon(String soDienThoai, String maHoaDon) throws Exception {
-        ArrayList<HoaDon> listHoaDon =  billClientRepository.getHoaDonByMaHoaDonVaSoDienThoai(soDienThoai, maHoaDon);
-        if(listHoaDon.isEmpty()){
+        ArrayList<HoaDon> listHoaDon = billClientRepository.getHoaDonByMaHoaDonVaSoDienThoai(soDienThoai, maHoaDon);
+        if (listHoaDon.isEmpty()) {
             throw new Exception("Không tìm thấy hoá đơn");
         }
         return listHoaDon.get(0);
@@ -215,7 +220,7 @@ public class BillClientServiceImpl {
     }
 
     public String sendEmail(String idHoaDon) throws Exception {
-        HoaDon bill = billClientRepository.findById(idHoaDon).orElseThrow(()-> new Exception("Không tìm thấy hoá đơn"));
+        HoaDon bill = billClientRepository.findById(idHoaDon).orElseThrow(() -> new Exception("Không tìm thấy hoá đơn"));
         ArrayList<ProductOfBillDetail> productOfBillDetails = billDetailClientRepository.getProductOfDetailsByIDBill(bill.getId());
 
         //send email
@@ -233,7 +238,7 @@ public class BillClientServiceImpl {
         return "Delete bill successfully";
     }
 
-    public void updateBillByIdBill(String idBill){
+    public void updateBillByIdBill(String idBill) {
         billClientRepository.updateBillByIDBill(idBill);
     }
 }
