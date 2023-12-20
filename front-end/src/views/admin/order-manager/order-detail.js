@@ -287,7 +287,7 @@ const OrderDetail = (props) => {
     let totalAmount = 0;
     orderItems &&
       orderItems.map((item) => {
-        totalAmount += item.imeisDaBan.length;
+        totalAmount += item.soLuong;
       });
     return totalAmount;
   };
@@ -1429,7 +1429,7 @@ const OrderDetail = (props) => {
                   </div>
                 ) : order.trangThai == OrderStatusString.SUCCESS_DELIVERY ? (
                   <div
-                    className="rounded-pill bg-primary text-center"
+                    className="rounded-pill badge-primary text-center"
                     style={{
                       height: "35px",
                       width: "110px",
@@ -1441,6 +1441,38 @@ const OrderDetail = (props) => {
                       style={{ fontSize: "14px" }}
                     >
                       Hoàn thành
+                    </span>
+                  </div>
+                ) : order.trangThai == OrderStatusString.REFUND_FULL ? (
+                  <div
+                    className="rounded-pill badge-danger text-center"
+                    style={{
+                      height: "35px",
+                      width: "160px",
+                      padding: "5px",
+                    }}
+                  >
+                    <span
+                      className="text-white p-2"
+                      style={{ fontSize: "14px" }}
+                    >
+                      Hoàn trả toàn phần
+                    </span>
+                  </div>
+                ) : order.trangThai == OrderStatusString.REFUND_A_PART ? (
+                  <div
+                    className="rounded-pill badge-danger text-center"
+                    style={{
+                      height: "35px",
+                      width: "140px",
+                      padding: "5px",
+                    }}
+                  >
+                    <span
+                      className="text-white p-2"
+                      style={{ fontSize: "14px" }}
+                    >
+                      Hoàn trả 1 phần
                     </span>
                   </div>
                 ) : order.trangThai == OrderStatusString.CANCELLED ? (
@@ -2322,7 +2354,7 @@ const OrderDetail = (props) => {
                   <span className="" style={{ fontSize: "16px", color: "" }}>
                     Tổng tiền trả hàng
                   </span>
-                  <span className="text-dark" style={{ fontSize: "17px" }}>
+                  <span className="text-dark" style={{ fontSize: "17px", fontWeight: "500" }}>
                     {order &&
                       order.tienTraHang.toLocaleString("vi-VN", {
                         style: "currency",
@@ -2336,7 +2368,7 @@ const OrderDetail = (props) => {
                   <span className="" style={{ fontSize: "16px", color: "" }}>
                     Đã trả khách
                   </span>
-                  <span className="text-dark" style={{ fontSize: "17px" }}>
+                  <span className="text-dark" style={{ fontSize: "17px", fontWeight: "500" }}>
                     {order &&
                       order.tienTraKhach.toLocaleString("vi-VN", {
                         style: "currency",

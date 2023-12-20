@@ -51,6 +51,7 @@ const ManagementProducts = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [keyword, setKeyword] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [state, setState] = useState(10);
 
   const [openCategory, setOpenCategory] = useState(false);
   const [openBrand, setOpenBrand] = useState(false);
@@ -60,6 +61,15 @@ const ManagementProducts = () => {
   const [openPin, setOpenPin] = useState(false);
   const [openSort, setOpenSort] = useState(false);
   const [openPage, setOpenPage] = useState(false);
+  const [openState, setOpenState] = useState(false);
+
+  const handleOpenState = () => {
+    setOpenState(true);
+  };
+
+  const handleCloseOpenState = () => {
+    setOpenState(false);
+  };
 
   const handleOpenSort = () => {
     setOpenSort(true);
@@ -216,21 +226,21 @@ const ManagementProducts = () => {
       selectedValueCategorys.length === 1 && selectedValueCategorys[0] === 0
         ? []
         : selectedValueCategorys &&
-            selectedValueCategorys.filter((item) => item !== 0)
+        selectedValueCategorys.filter((item) => item !== 0)
     );
     params.append(
       "hangs",
       selectedValueBrands.length === 1 && selectedValueBrands[0] === 0
         ? []
         : selectedValueBrands &&
-            selectedValueBrands.filter((item) => item !== 0)
+        selectedValueBrands.filter((item) => item !== 0)
     );
     params.append(
       "heDieuHanhs",
       selectedValueOperas.length === 1 && selectedValueOperas[0] === "None"
         ? operas
         : selectedValueOperas &&
-            selectedValueOperas.filter((item) => item !== "None")
+        selectedValueOperas.filter((item) => item !== "None")
     );
     params.append(
       "chips",
@@ -243,7 +253,7 @@ const ManagementProducts = () => {
       selectedValueScreens.length === 1 && selectedValueScreens[0] === 0
         ? []
         : selectedValueScreens &&
-            selectedValueScreens.filter((item) => item !== 0)
+        selectedValueScreens.filter((item) => item !== 0)
     );
     params.append(
       "pins",
@@ -397,12 +407,6 @@ const ManagementProducts = () => {
       render: (text, record) => (
         <span style={{ fontWeight: "400" }}>{record.hang.tenHang}</span>
       ),
-    },
-    {
-      title: "Hệ Điều Hành",
-      align: "center",
-      width: "15%",
-      render: (text, record) => record.operatingType,
     },
     {
       title: "Số Lượng Tồn",
@@ -689,12 +693,12 @@ const ManagementProducts = () => {
                   renderValue={(selected) =>
                     selected && selected.length > 1
                       ? selected
-                          .filter((id) => categorys.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
-                          .map(
-                            (id) =>
-                              categorys.find((c) => c.id === id).tenDanhMuc
-                          ) // Lấy tên danh mục tương ứng
-                          .join(", ")
+                        .filter((id) => categorys.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
+                        .map(
+                          (id) =>
+                            categorys.find((c) => c.id === id).tenDanhMuc
+                        ) // Lấy tên danh mục tương ứng
+                        .join(", ")
                       : "Chọn Danh Mục"
                   }
                 >
@@ -759,11 +763,11 @@ const ManagementProducts = () => {
                   renderValue={(selected) =>
                     selected && selected.length > 1
                       ? selected
-                          .filter((id) => listHang.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
-                          .map(
-                            (id) => listHang.find((c) => c.id === id).tenHang
-                          ) // Lấy tên danh mục tương ứng
-                          .join(", ")
+                        .filter((id) => listHang.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
+                        .map(
+                          (id) => listHang.find((c) => c.id === id).tenHang
+                        ) // Lấy tên danh mục tương ứng
+                        .join(", ")
                       : "Chọn Hãng"
                   }
                 >
@@ -833,13 +837,13 @@ const ManagementProducts = () => {
                   }}
                   renderValue={(selected) =>
                     selected &&
-                    selected.filter((value) => value !== "None").length > 0
+                      selected.filter((value) => value !== "None").length > 0
                       ? selected
-                          .filter((id) =>
-                            ["ANDROID", "IOS"].find((c) => c === id)
-                          ) // Loại bỏ các giá trị không hợp lệ
-                          .map((id) => ["ANDROID", "IOS"].find((c) => c === id)) // Lấy tên danh mục tương ứng
-                          .join(", ")
+                        .filter((id) =>
+                          ["ANDROID", "IOS"].find((c) => c === id)
+                        ) // Loại bỏ các giá trị không hợp lệ
+                        .map((id) => ["ANDROID", "IOS"].find((c) => c === id)) // Lấy tên danh mục tương ứng
+                        .join(", ")
                       : "Chọn Hệ Điều Hành"
                   }
                 >
@@ -902,11 +906,11 @@ const ManagementProducts = () => {
                   renderValue={(selected) =>
                     selected && selected.length > 1
                       ? selected
-                          .filter((id) => listChip.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
-                          .map(
-                            (id) => listChip.find((c) => c.id === id).tenChip
-                          ) // Lấy tên danh mục tương ứng
-                          .join(", ")
+                        .filter((id) => listChip.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
+                        .map(
+                          (id) => listChip.find((c) => c.id === id).tenChip
+                        ) // Lấy tên danh mục tương ứng
+                        .join(", ")
                       : "Chọn Chip"
                   }
                 >
@@ -969,15 +973,15 @@ const ManagementProducts = () => {
                   renderValue={(selected) =>
                     selected && selected.length > 1
                       ? selected
-                          .filter((id) => listPin.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
-                          .map(
-                            (id) =>
-                              listPin.find((c) => c.id === id).loaiPin +
-                              " " +
-                              listPin.find((c) => c.id === id).dungLuong +
-                              " mAh"
-                          ) // Lấy tên danh mục tương ứng
-                          .join(", ")
+                        .filter((id) => listPin.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
+                        .map(
+                          (id) =>
+                            listPin.find((c) => c.id === id).loaiPin +
+                            " " +
+                            listPin.find((c) => c.id === id).dungLuong +
+                            " mAh"
+                        ) // Lấy tên danh mục tương ứng
+                        .join(", ")
                       : "Chọn Pin"
                   }
                 >
@@ -1045,22 +1049,21 @@ const ManagementProducts = () => {
                   renderValue={(selected) =>
                     selected && selected.length > 1
                       ? selected
-                          .filter((id) => listManHinh.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
-                          .map(
-                            (id) =>
-                              listManHinh.find((c) => c.id === id).loaiManHinh +
-                              " " +
-                              `(${
-                                listManHinh.find((c) => c.id === id)
-                                  .doPhanGiaiManHinh.chieuRong +
-                                " x " +
-                                listManHinh.find((c) => c.id === id)
-                                  .doPhanGiaiManHinh.chieuDai
-                              } pixels) ` +
-                              listManHinh.find((c) => c.id === id).kichThuoc +
-                              `"`
-                          ) // Lấy tên danh mục tương ứng
-                          .join(", ")
+                        .filter((id) => listManHinh.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
+                        .map(
+                          (id) =>
+                            listManHinh.find((c) => c.id === id).loaiManHinh +
+                            " " +
+                            `(${listManHinh.find((c) => c.id === id)
+                              .doPhanGiaiManHinh.chieuRong +
+                            " x " +
+                            listManHinh.find((c) => c.id === id)
+                              .doPhanGiaiManHinh.chieuDai
+                            } pixels) ` +
+                            listManHinh.find((c) => c.id === id).kichThuoc +
+                            `"`
+                        ) // Lấy tên danh mục tương ứng
+                        .join(", ")
                       : "Chọn Màn Hình"
                   }
                 >
@@ -1073,10 +1076,9 @@ const ManagementProducts = () => {
                         primary={
                           c.loaiManHinh +
                           " " +
-                          `(${
-                            c.doPhanGiaiManHinh.chieuRong +
-                            " x " +
-                            c.doPhanGiaiManHinh.chieuDai
+                          `(${c.doPhanGiaiManHinh.chieuRong +
+                          " x " +
+                          c.doPhanGiaiManHinh.chieuDai
                           } pixels) ` +
                           c.kichThuoc +
                           `"`
@@ -1096,7 +1098,7 @@ const ManagementProducts = () => {
               }}
             >
               <div
-                onClick={handleOpenSort}
+                onClick={handleOpenState}
                 className=""
                 style={{ marginTop: "8px" }}
               >
@@ -1131,13 +1133,19 @@ const ManagementProducts = () => {
                       fontWeight: "500",
                     },
                   }}
-                  open={openSort}
-                  onClose={handleCloseOpenSort}
-                  onOpen={handleOpenSort}
-                  defaultValue={"New"}
+                  open={openState}
+                  onClose={handleCloseOpenState}
+                  onOpen={handleOpenState}
+                  defaultValue={10}
+                  value={state}
+                  onChange={(e) => {
+                    setState(e.target.value);
+                  }}
                 >
-                  <MenuItem value={"New"}>Mới</MenuItem>
-                  <MenuItem value={"Old"}>Cũ</MenuItem>
+                  <MenuItem value={10}>Tất cả</MenuItem>
+                  <MenuItem value={0}>Kinh doanh</MenuItem>
+                  <MenuItem value={1}>Chưa kinh doanh</MenuItem>
+                  <MenuItem value={2}>Ngừng kinh doanh</MenuItem>
                 </SelectMui>
               </FormControl>
             </div>

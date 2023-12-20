@@ -174,4 +174,11 @@ public interface ProductDetailClientRepository extends ISanPhamChiTietRepository
             WHERE sp.id = :id_san_pham
     """, nativeQuery = true)
     ArrayList<CameraRearResponce> getCameraSauByIDSanPham(@Param("id_san_pham") String idSanPham);
+
+    @Query(value= """
+         select count(*)  from imei
+         where id_chi_tiet_san_pham = :id_chi_tiet_san_pham
+         and trang_thai = 2
+    """, nativeQuery = true)
+    Integer getSoLuongTonByIDChiTietSanPham(@Param("id_chi_tiet_san_pham") String idChiTietSanPham);
 }

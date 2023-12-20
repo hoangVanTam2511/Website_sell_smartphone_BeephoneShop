@@ -776,7 +776,7 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
 //      if (findCartItemOrder.get().getDonGiaSauGiam() != null && findCartItemOrder.get().getDonGiaSauGiam().compareTo(BigDecimal.ZERO) != 0) {
 //        donGiaProduct.add(findCartItemOrder.get().getDonGiaSauGiam());
 //      } else {
-        donGiaProduct.add(findCartItemOrder.get().getDonGia());
+      donGiaProduct.add(findCartItemOrder.get().getDonGia());
 //      }
       Set<Imei> imeisProduct = getOptional.getImeis();
       for (ImeiDaBan imeiDaBan : imeiToAdd) {
@@ -988,24 +988,18 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
       findOrderCurrent.setTienTraKhach((req.getTongTien()));
     }
 
-    int totalAmount = 0;
-    for (HoaDonChiTiet orderItem : findOrderCurrent.getOrderItems()) {
-      totalAmount += orderItem.getImeisDaBan().size();
-    }
-
-    int totalAmountRefund = 0;
+    boolean flagFullRefund = true;
     for (HoaDonChiTiet orderItem : findOrderCurrent.getOrderItems()) {
       for (ImeiDaBan s : orderItem.getImeisDaBan()) {
-        if (s.getTrangThai().equals(StatusImei.REFUND)){
-          totalAmountRefund++;
+        if (!s.getTrangThai().equals(StatusImei.REFUND)) {
+          flagFullRefund = false;
         }
-      };
+      }
     }
 
-    if ((req.getAmount() + totalAmountRefund) == totalAmount){
+    if (flagFullRefund) {
       findOrderCurrent.setTrangThai(OrderStatus.REFUND_FULL);
-    }
-    else {
+    } else {
       findOrderCurrent.setTrangThai(OrderStatus.REFUND_A_PART);
     }
 
@@ -1036,7 +1030,7 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
     orderHistory.setCreatedAt(new Date());
     orderHistory.setCreatedBy(req.getCreatedByRefund());
     orderHistory.setThaoTac("Hoàn Trả");
-    orderHistory.setMoTa("Đã hoàn trả [" + req.getAmount() + "] sản phẩm với số tiền là [" + req.getTongTien() + "]. " + req.getGhiChu());
+    orderHistory.setMoTa("Đã hoàn trả [" + req.getAmount() + "] sản phẩm với số tiền là [" + req.getTongTienString() + "]. " + req.getGhiChu());
     orderHistory.setLoaiThaoTac(7);
     lichSuHoaDonRepository.save(orderHistory);
     return null;

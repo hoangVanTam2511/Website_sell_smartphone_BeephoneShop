@@ -59,4 +59,23 @@ public class BillClientController {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
+    @GetMapping("/get-order-after-buy")
+    public ResponseEntity<?> getHoaDonSauKhiMuaHangByMaHoaDon(@RequestParam("id_bill") String idHoaDon){
+        try{
+            return new ResponseEntity<>(billClientService.getHoaDonSauKhiMuaHangByMaHoaDon(idHoaDon), HttpStatus.OK);
+        }catch (Exception ex){
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping ("/update-state-bill")
+    public ResponseEntity<?> updateStateBill(@RequestParam("id_bill") String idHoaDon){
+        try{
+            billClientService.updateBillByIdBill(idHoaDon);
+            return new ResponseEntity<>("no data", HttpStatus.OK);
+        }catch (Exception ex){
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 }
