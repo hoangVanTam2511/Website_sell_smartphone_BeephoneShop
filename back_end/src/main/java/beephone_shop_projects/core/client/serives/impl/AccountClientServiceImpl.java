@@ -2,13 +2,13 @@ package beephone_shop_projects.core.client.serives.impl;
 
 import beephone_shop_projects.core.admin.account_management.repository.AccountRepository;
 import beephone_shop_projects.core.admin.account_management.repository.RoleRepository;
+import beephone_shop_projects.core.client.models.request.AccountChangeInformationRequest;
 import beephone_shop_projects.core.client.models.request.AccountLoginRequest;
 import beephone_shop_projects.core.client.models.request.AccountRegisterRequest;
 import beephone_shop_projects.core.client.models.response.AccountDto;
 import beephone_shop_projects.core.client.repositories.AccountClientRepository;
 import beephone_shop_projects.core.client.repositories.CartClientRepository;
 import beephone_shop_projects.core.client.repositories.CartDetailClientRepository;
-import beephone_shop_projects.core.client.serives.AccountClientService;
 import beephone_shop_projects.entity.Account;
 import beephone_shop_projects.entity.GioHang;
 import beephone_shop_projects.infrastructure.config.mail.EmailService;
@@ -139,5 +139,16 @@ public class AccountClientServiceImpl{
 
         emailService.sendEmailWithHtmlTemplate(request.getEmail(), "Chúc mừng bạn đãdaăng kí thành công.", "email-get-pass-template", context);
         return dto;
+    }
+
+    public Account changeInformationUser(AccountChangeInformationRequest req){
+        Account account = accountRepository.findById(req.getId()).orElseThrow(() -> new IllegalArgumentException("Không tìm thấy tài khoản"));
+
+        account.setHoVaTen(req.getName());
+        account.setGioiTinh(req.getGender());
+        account.setEmail(req.getEmail());
+        account.setSoDienThoai(req.getPhoneNumber());
+
+        return accountRepository.save(account);
     }
 }
