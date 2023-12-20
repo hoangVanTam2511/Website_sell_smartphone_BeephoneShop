@@ -247,7 +247,6 @@ const HienThiVoucher = () => {
     const formattedDate = selectedDate
       ? dayjs(selectedDate).startOf("day").format("DD/MM/YYYY HH:mm:ss")
       : dayjs().startOf("day").format("DD/MM/YYYY HH:mm:ss"); // Nếu không có giá trị selectedDate, sử dụng ngày và thời gian bắt đầu của ngày hiện tại
-
     setSearchNgayBatDau(formattedDate);
     setCurrentPage(1);
   };
@@ -257,7 +256,6 @@ const HienThiVoucher = () => {
       ? dayjs(selectedDate).endOf("day").format("DD/MM/YYYY HH:mm:ss")
       : dayjs().endOf("day").format("DD/MM/YYYY HH:mm:ss"); // Nếu không có giá trị selectedDate, sử dụng ngày hiện tại
     setSearchNgayKetThuc(formattedDate); // Cập nhật giá trị khi Select thay đổi
-
     setCurrentPage(1);
   };
 
