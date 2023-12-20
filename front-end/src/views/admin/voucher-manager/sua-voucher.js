@@ -1,12 +1,10 @@
 import {
   Button,
-  message,
   // DatePicker, Form, Input, Radio, Select
 } from "antd";
 import React, { useEffect } from "react";
 import { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faCheck } from "@fortawesome/free-solid-svg-icons";
+
 import axios from "axios";
 import { apiURLVoucher } from "../../../service/api";
 import TextField from "@mui/material/TextField";
@@ -19,14 +17,10 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import dayjs from "dayjs"; // Import thư viện Day.js
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Box from "@mui/joy/Box";
-import Radio, { radioClasses } from "@mui/joy/Radio";
-import RadioGroup from "@mui/joy/RadioGroup";
+
 import {
   Notistack,
-  StatusDiscount,
   StatusDiscountNumber,
   TypeDiscountNumber,
   TypeDiscountString,
@@ -632,8 +626,8 @@ const UpdateVoucher = () => {
               className="mx-auto"
               style={{ maxWidth: "65%" }}
             >
-              Không thể sửa khi voucher ĐANG HOẠT ĐỘNG, hãy đổi trạng thái thành
-              tạm dừng!
+              Không thể sửa khi phiếu giảm giá ĐANG HOẠT ĐỘNG, hãy đổi trạng
+              thái thành tạm dừng!
             </Alert>
           ) : status === StatusDiscountNumber.DA_HUY ? (
             <Alert
@@ -641,7 +635,7 @@ const UpdateVoucher = () => {
               className="mx-auto"
               style={{ maxWidth: "65%" }}
             >
-              Không thể sửa khi voucher ĐÃ HỦY!
+              Không thể sửa khi phiếu giảm giá ĐÃ HỦY!
             </Alert>
           ) : (
             ""

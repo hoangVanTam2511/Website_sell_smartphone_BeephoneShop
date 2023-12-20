@@ -1,9 +1,6 @@
-import { Button, Col, Row } from "antd";
+import { Button } from "antd";
 import React from "react";
 import { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faCheck } from "@fortawesome/free-solid-svg-icons";
-import axios from "axios";
 import { apiURLVoucher } from "../../../service/api";
 import TextField from "@mui/material/TextField";
 import { InputAdornment } from "@mui/material";
@@ -13,27 +10,16 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import dayjs from "dayjs"; // Import thư viện Day.js
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Box from "@mui/joy/Box";
-import Radio, { radioClasses } from "@mui/joy/Radio";
-import RadioGroup from "@mui/joy/RadioGroup";
-import {
-  Notistack,
-  TypeDiscountNumber,
-  TypeDiscountString,
-} from "../order-manager/enum";
+import { Notistack, TypeDiscountString } from "../order-manager/enum";
 import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
 import useCustomSnackbar from "../../../utilities/notistack";
-import LoadingIndicator from "../../../utilities/loading";
-import { Navigate, useNavigate } from "react-router-dom";
-import { request, requestParam } from "../../../store/helpers/axios_helper";
+import { useNavigate } from "react-router-dom";
+import { request } from "../../../store/helpers/axios_helper";
 
 const AddVoucher = () => {
   const navigate = useNavigate();
   const [ma, setMa] = useState("");
-  const [maSauAdd, setMaSauAdd] = useState("");
-  const [sendMail, setSendMail] = useState([]);
   const [ten, setTen] = useState("");
   const [ngayBatDau, setNgayBatDau] = useState(dayjs());
   const [ngayKetThuc, setNgayKetThuc] = useState(dayjs());
@@ -43,10 +29,8 @@ const AddVoucher = () => {
   const [giaTriVoucherConvert, setGiaTriVoucherConvert] = useState(0);
   const [value, setValue] = React.useState();
   const [value1, setValue1] = React.useState();
-  const [value2, setValue2] = React.useState();
   const [selectDiscount, setSeclectDiscount] = useState(TypeDiscountString.VND);
   const [giaTriToiDa, setGiaTriToiDa] = useState();
-  const [valueToiThieu, setValueToiThieu] = React.useState();
   const [valueToiDa, setValueToiDa] = React.useState();
   const [isLoading, setIsLoading] = useState(true);
   const [openConfirm, setOpenConfirm] = useState(false);

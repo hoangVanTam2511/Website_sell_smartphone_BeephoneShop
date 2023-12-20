@@ -1125,7 +1125,7 @@ const AddKhuyenMai = () => {
                 open={openSelect3}
                 onClose={handleCloseSelect3}
                 onOpen={handleOpenSelect3}
-                value={searchRom}
+                value={sortValueProductDetail}
                 onChange={handleSortValueProductDetail}
               >
                 <MenuItem className="" value={"all"}>

@@ -12,7 +12,13 @@ import axios from "axios";
 import { apiURLKhuyenMai } from "../../../service/api";
 import TextField from "@mui/material/TextField";
 import "../../../assets/scss/HienThiNV.scss";
-import { InputAdornment } from "@mui/material";
+import {
+  Alert,
+  FormControl,
+  InputAdornment,
+  MenuItem,
+  Select,
+} from "@mui/material";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -20,25 +26,19 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import dayjs from "dayjs"; // Import thư viện Day.js
 import { Table } from "antd";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import numeral from "numeral";
-import Box from "@mui/joy/Box";
-import Radio, { radioClasses } from "@mui/joy/Radio";
-import RadioGroup from "@mui/joy/RadioGroup";
 import Badge from "@mui/material/Badge";
-import Modal from "@mui/joy/Modal";
-import ModalClose from "@mui/joy/ModalClose";
-import Typography from "@mui/joy/Typography";
-import Sheet from "@mui/joy/Sheet";
 import {
   Notistack,
+  StatusDiscountNumber,
   TypeDiscountNumber,
   TypeDiscountString,
 } from "../order-manager/enum";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
 import { request } from "../../../store/helpers/axios_helper";
+import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 
 const SuaKhuyenMai = () => {
   const [ma, setMa] = useState("");
@@ -48,7 +48,8 @@ const SuaKhuyenMai = () => {
   const { id } = useParams();
   const [idChiTietSanPham, setIdChiTietSanPham] = useState([]);
   const [idSanPham, setIdSanPham] = useState([]);
-
+  const [searchRam, setSearchRam] = useState(6);
+  const [searchRom, setSearchRom] = useState(6);
   //san-pham
   const [listSanPham, setListSanPham] = useState([]);
   const [listSanPhamChiTiet, setlistSanPhamChiTiet] = useState([]);
@@ -69,6 +70,8 @@ const SuaKhuyenMai = () => {
   const [isInputChanged, setIsInputChanged] = useState(false);
   const { handleOpenAlertVariant } = useCustomSnackbar();
   const [idCheckboxdelete, setIdCheckboxdelete] = useState([]);
+  const [sortValueProductDetail, setSortValueProductDetail] = useState("all");
+  const [status, setStatus] = useState("");
 
   const [open, setOpen] = React.useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -196,6 +199,7 @@ const SuaKhuyenMai = () => {
             ? TypeDiscountString.VND
             : TypeDiscountString.PERCENT
         );
+        setStatus(response.data.data.trangThai);
         setValue(response.data.data.giaTriKhuyenMai);
         setNgayBatDau(response.data.data.ngayBatDau);
         setNgayKetThuc(response.data.data.ngayKetThuc);
@@ -721,10 +725,56 @@ const SuaKhuyenMai = () => {
     setValue("");
   };
 
+  const [openSelect, setOpenSelect] = useState(false);
+
+  const handleCloseSelect = () => {
+    setOpenSelect(false);
+  };
+
+  const handleOpenSelect = () => {
+    setOpenSelect(true);
+  };
+
+  const handleSearchRamChange = (event) => {
+    const selectedValue = event.target.value;
+    setSearchRam(selectedValue);
+    // setCurrentPage(1);
+  };
+  const [openSelect1, setOpenSelect1] = useState(false);
+
+  const handleCloseSelect1 = () => {
+    setOpenSelect1(false);
+  };
+
+  const handleOpenSelect1 = () => {
+    setOpenSelect1(true);
+  };
+
+  const handleSearchRomChange = (event) => {
+    const selectedValue = event.target.value;
+    setSearchRom(selectedValue);
+    // setCurrentPage(1);
+  };
+
+  const [openSelect3, setOpenSelect3] = useState(false);
+  const handleCloseSelect3 = () => {
+    setOpenSelect3(false);
+  };
+
+  const handleOpenSelect3 = () => {
+    setOpenSelect3(true);
+  };
+
+  const handleSortValueProductDetail = (event) => {
+    const selectedValue = event.target.value;
+    setSortValueProductDetail(selectedValue);
+    // setCurrentPage(1);
+  };
+
   return (
     <>
       <div className="row">
-        <div className="col-5">
+        <div className="col-4">
           <div className="mt-3 add-promotion-container">
             <h5
               className="title-promotion ms-4"
@@ -732,7 +782,7 @@ const SuaKhuyenMai = () => {
             >
               Sửa Giảm Giá
             </h5>
-            <div className="ms-3 mb-4">
+            <div className="ms-3 mb-3 mt-2">
               <div className="input-container">
                 <TextField
                   label="Tên Giảm Giá:"
@@ -741,7 +791,7 @@ const SuaKhuyenMai = () => {
                   onChange={(e) => {
                     setTenKhuyenMai(e.target.value);
                   }}
-                  style={{ width: "430px", marginTop: "10px" }}
+                  style={{ width: "335px", marginTop: "10px" }}
                   inputProps={{
                     maxLength: 255, // Giới hạn tối đa 10 ký tự
                   }}
@@ -829,7 +879,7 @@ const SuaKhuyenMai = () => {
                     ),
                   }}
                   style={{
-                    width: "430px",
+                    width: "335px",
                   }}
                   inputProps={{
                     maxLength: 20, // Giới hạn tối đa 10 ký tự
@@ -853,7 +903,7 @@ const SuaKhuyenMai = () => {
                         setNgayBatDau(e);
                         setNgayKetThuc(e);
                       }}
-                      sx={{ width: "430px" }}
+                      sx={{ width: "335px" }}
                       slotProps={{
                         textField: {
                           error: validationMsg.ngayBatDau !== undefined,
@@ -881,7 +931,7 @@ const SuaKhuyenMai = () => {
                       onChange={(e) => {
                         setNgayKetThuc(e);
                       }}
-                      sx={{ width: "430px", marginTop: "20px" }}
+                      sx={{ width: "335px", marginTop: "20px" }}
                       slotProps={{
                         textField: {
                           error: validationMsg.ngayKetThuc !== undefined,
@@ -896,12 +946,41 @@ const SuaKhuyenMai = () => {
                 </LocalizationProvider>
               </div>
             </div>
+            <div className="mt-2">
+              {status === StatusDiscountNumber.HOAT_DONG ? (
+                <Alert
+                  severity="warning"
+                  className="mx-auto"
+                  style={{ maxWidth: "90%" }}
+                >
+                  Không thể sửa khi giảm giá ĐANG HOẠT ĐỘNG, hãy đổi trạng thái
+                  thành tạm dừng!
+                </Alert>
+              ) : status === StatusDiscountNumber.DA_HUY ? (
+                <Alert
+                  severity="warning"
+                  className="mx-auto"
+                  style={{ maxWidth: "90%" }}
+                >
+                  Không thể sửa khi giảm giá ĐÃ HỦY!
+                </Alert>
+              ) : (
+                ""
+              )}
+            </div>
             <div className="btn-accept mt-3">
               <Button
                 className="rounded-2 button-mui"
                 type="primary"
                 style={{ height: "40px", width: "100px", fontSize: "15px" }}
                 onClick={handleSubmit}
+                disabled={
+                  status === StatusDiscountNumber.HOAT_DONG
+                    ? true
+                    : status === StatusDiscountNumber.DA_HUY
+                    ? true
+                    : false
+                }
               >
                 <FontAwesomeIcon icon={faCheck} />
                 <span
@@ -936,12 +1015,49 @@ const SuaKhuyenMai = () => {
           </div>
         </div>
 
-        <div className="col-7">
+        <div className="col-8">
           <div className="add-promotion-inProduct-container">
             <div className="mt-3">
               <h5 className="title-product" style={{ paddingBottom: "15px" }}>
                 Danh sách sản phẩm
               </h5>
+              <div className="header-title mb-3 ms-3">
+                <TextField
+                  placeholder="Tìm theo mã, tên sản phẩm"
+                  label="Tìm sản phẩm"
+                  // value={searchTatCa}
+                  // onChange={handleSearchTatCaChange}
+                  InputLabelProps={{
+                    sx: {
+                      marginTop: "",
+                      textTransform: "capitalize",
+                    },
+                  }}
+                  inputProps={{
+                    style: {
+                      height: "23px",
+                      width: "350px",
+                    },
+                  }}
+                  size="small"
+                  className=""
+                />
+                <Button
+                  // onClick={() => {
+                  //   handleReset();
+                  // }}
+                  className="rounded-2 ms-2"
+                  type="warning"
+                  style={{ width: "100px", fontSize: "15px" }}
+                >
+                  <span
+                    className="text-dark"
+                    style={{ fontWeight: "500", marginBottom: "2px" }}
+                  >
+                    Làm Mới
+                  </span>
+                </Button>
+              </div>
               <Table
                 className="table-container"
                 style={{
@@ -967,6 +1083,197 @@ const SuaKhuyenMai = () => {
           >
             Danh sách sản phẩm chi tiết
           </h5>
+          <div className="header-title mb-3 ms-3 d-flex">
+            <TextField
+              placeholder="Tìm theo mã, tên sản phẩm"
+              label="Tìm sản phẩm chi tiết"
+              // value={searchTatCa}
+              // onChange={handleSearchTatCaChange}
+              InputLabelProps={{
+                sx: {
+                  marginTop: "",
+                  textTransform: "capitalize",
+                },
+              }}
+              inputProps={{
+                style: {
+                  height: "23px",
+                  width: "350px",
+                },
+              }}
+              size="small"
+              className=""
+            />
+            <Button
+              // onClick={() => {
+              //   handleReset();
+              // }}
+              className="rounded-2 ms-2"
+              type="warning"
+              style={{ width: "100px", fontSize: "15px" }}
+            >
+              <span
+                className="text-dark"
+                style={{ fontWeight: "500", marginBottom: "2px" }}
+              >
+                Làm Mới
+              </span>
+            </Button>
+            <div
+              className="d-flex ms-5"
+              style={{
+                height: "40px",
+                // position: "relative",
+                cursor: "pointer",
+              }}
+            >
+              <div
+                // onClick={handleOpenSelect}
+                className=""
+                style={{ marginTop: "7px" }}
+              >
+                <span
+                  className="ms-2 ps-1"
+                  style={{ fontSize: "15px", fontWeight: "450" }}
+                >
+                  RAM:{" "}
+                </span>
+              </div>
+              <FormControl
+                sx={{
+                  minWidth: 50,
+                }}
+                size="small"
+              >
+                <Select
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        borderRadius: "7px",
+                      },
+                    },
+                  }}
+                  IconComponent={KeyboardArrowDownOutlinedIcon}
+                  sx={{
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none !important",
+                    },
+                    "& .MuiSelect-select": {
+                      color: "#2f80ed",
+                      fontWeight: "500",
+                    },
+                  }}
+                  open={openSelect}
+                  onClose={handleCloseSelect}
+                  onOpen={handleOpenSelect}
+                  value={searchRam}
+                  onChange={handleSearchRamChange}
+                >
+                  <MenuItem className="" value={6}>
+                    Tất cả
+                  </MenuItem>
+                  <MenuItem value={1}>2 GB</MenuItem>
+                </Select>
+              </FormControl>
+              <div
+                // onClick={handleOpenSelect}
+                className=""
+                style={{ marginTop: "7px" }}
+              >
+                <span
+                  className="ms-2 ps-1"
+                  style={{ fontSize: "15px", fontWeight: "450" }}
+                >
+                  ROM:{" "}
+                </span>
+              </div>
+              <FormControl
+                sx={{
+                  minWidth: 50,
+                }}
+                size="small"
+              >
+                <Select
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        borderRadius: "7px",
+                      },
+                    },
+                  }}
+                  IconComponent={KeyboardArrowDownOutlinedIcon}
+                  sx={{
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none !important",
+                    },
+                    "& .MuiSelect-select": {
+                      color: "#2f80ed",
+                      fontWeight: "500",
+                    },
+                  }}
+                  open={openSelect1}
+                  onClose={handleCloseSelect1}
+                  onOpen={handleOpenSelect1}
+                  value={searchRom}
+                  onChange={handleSearchRomChange}
+                >
+                  <MenuItem className="" value={6}>
+                    Tất cả
+                  </MenuItem>
+                  <MenuItem value={1}>2 GB</MenuItem>
+                </Select>
+              </FormControl>
+              <div
+                // onClick={handleOpenSelect}
+                className=""
+                style={{ marginTop: "7px" }}
+              >
+                <span
+                  className="ms-2 ps-1"
+                  style={{ fontSize: "15px", fontWeight: "450" }}
+                >
+                  Sắp Xếp Đơn Giá:{" "}
+                </span>
+              </div>
+              <FormControl
+                sx={{
+                  minWidth: 50,
+                }}
+                size="small"
+              >
+                <Select
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        borderRadius: "7px",
+                      },
+                    },
+                  }}
+                  IconComponent={KeyboardArrowDownOutlinedIcon}
+                  sx={{
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none !important",
+                    },
+                    "& .MuiSelect-select": {
+                      color: "#2f80ed",
+                      fontWeight: "500",
+                    },
+                  }}
+                  open={openSelect3}
+                  onClose={handleCloseSelect3}
+                  onOpen={handleOpenSelect3}
+                  value={sortValueProductDetail}
+                  onChange={handleSortValueProductDetail}
+                >
+                  <MenuItem className="" value={"all"}>
+                    Mặc định
+                  </MenuItem>
+                  <MenuItem value={"a-z"}>Tăng dần theo giá trị</MenuItem>
+                  <MenuItem value={"z-a"}>Giảm dần theo giá trị</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
+          </div>
           <Table
             className="table-container"
             rowSelection={rowSelection1}
