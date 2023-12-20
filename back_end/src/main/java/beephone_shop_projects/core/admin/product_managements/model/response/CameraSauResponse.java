@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
+
 @Setter
 @Getter
 @AllArgsConstructor
@@ -22,5 +24,7 @@ public class CameraSauResponse {
     private CameraType cameraType;
 
     private StatusCommon status;
+
+    private Date createdAt;
 
 }

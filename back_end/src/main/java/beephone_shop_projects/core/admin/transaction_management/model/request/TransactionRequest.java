@@ -34,4 +34,8 @@ public class TransactionRequest {
 
     private String sortValue;
 
+    private Integer pageNo;
+
+    private Integer pageSize;
+
 }

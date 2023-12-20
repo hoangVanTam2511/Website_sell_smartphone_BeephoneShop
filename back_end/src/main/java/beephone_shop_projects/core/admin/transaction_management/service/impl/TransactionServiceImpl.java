@@ -35,16 +35,20 @@ public class TransactionServiceImpl implements TransactionService {
     private AccountRepository accountRepository;
 
     @Override
-    public ResponsePage<TransactionCustomResponse> getAll(Integer pageNo, TransactionRequest request) {
+    public ResponsePage<TransactionCustomResponse> getAll(TransactionRequest request) {
 
+        if (request.getPageNo() == null) {
+            request.setPageNo(1);
+        }
+        if (request.getPageSize() == null) {
+            request.setPageSize(5);
+        }
         if (request.getKeyword() == null) {
             request.setKeyword("");
         }
-        if (request.getSortValue() == null) {
-            request.setSortValue("all");
-        }
 
-        Pageable pageable = PageRequest.of(pageNo - 1, 5);
+
+        Pageable pageable = PageRequest.of(request.getPageNo() - 1, request.getPageSize());
 
         ResponsePage<TransactionCustomResponse> pageCustomResponses = new ResponsePage<>();
 

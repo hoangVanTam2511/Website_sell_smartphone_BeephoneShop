@@ -2,6 +2,7 @@ package beephone_shop_projects.core.admin.product_managements.controller;
 
 import beephone_shop_projects.core.admin.product_managements.model.request.CameraTruocRequest;
 import beephone_shop_projects.core.admin.product_managements.model.request.FindFilterCamerasRequest;
+import beephone_shop_projects.core.admin.product_managements.model.response.CameraSauResponse;
 import beephone_shop_projects.core.admin.product_managements.model.response.CameraTruocResponse;
 import beephone_shop_projects.core.admin.product_managements.service.impl.CameraTruocServiceImpl;
 import beephone_shop_projects.core.common.base.ResponseObject;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,6 +36,7 @@ public class CameraTruocController {
     public ResponseObject<List<CameraTruocResponse>> getCameraTruoc() {
         List<CameraTruocResponse> cameraTruoc = cameraTruocService.findAll().stream()
                 .filter(products -> StatusCommon.ACTIVE.equals(products.getStatus()))
+                .sorted(Comparator.comparing(CameraTruocResponse::getCreatedAt).reversed())
                 .collect(Collectors.toList());
         return new ResponseObject<>(cameraTruoc);
     }

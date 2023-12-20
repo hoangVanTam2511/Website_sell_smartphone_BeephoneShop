@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Button, Empty, Table } from "antd";
+import { Button, Empty, Popconfirm, Table } from "antd";
 import {
   Autocomplete,
   Dialog,
@@ -368,38 +368,46 @@ const ManagementChips = () => {
               </Tooltip>
 
               {/* Hàm đổi trạng thái */}
-
-              <Tooltip
-                TransitionComponent={Zoom}
+              <Popconfirm
                 title={
-                  record.status === StatusCommonProducts.ACTIVE
-                    ? "Ngừng kích hoạt"
-                    : record.status === StatusCommonProducts.IN_ACTIVE
-                    ? "Kích hoạt"
-                    : ""
+                  <span style={{ fontSize: "16px" }}>
+                    Bạn có chắc chắn đổi trạng thái Chip ?
+                  </span>
                 }
+                onConfirm={() => {
+                  doiTrangThaiChip(record.id);
+                }}
+                okText="Đồng ý"
+                cancelText="Hủy"
               >
-                <IconButton
-                  className="ms-2"
-                  style={{ marginTop: "6px" }}
-                  onClick={() => doiTrangThaiChip(record.id)}
+                <Tooltip
+                  TransitionComponent={Zoom}
+                  title={
+                    record.status === StatusCommonProducts.ACTIVE
+                      ? "Ngừng kích hoạt"
+                      : record.status === StatusCommonProducts.IN_ACTIVE
+                      ? "Kích hoạt"
+                      : ""
+                  }
                 >
-                  <FontAwesomeIcon
-                    icon={faArrowsRotate}
-                    size="sm"
-                    transform={{ rotate: 90 }}
-                    style={{
-                      cursor: "pointer",
-                      color:
-                        record.status === StatusCommonProducts.IN_ACTIVE
-                          ? "#e5383b"
-                          : record.status === StatusCommonProducts.ACTIVE
-                          ? "#09a129"
-                          : "disabled",
-                    }}
-                  />
-                </IconButton>
-              </Tooltip>
+                  <IconButton className="ms-2" style={{ marginTop: "6px" }}>
+                    <FontAwesomeIcon
+                      icon={faArrowsRotate}
+                      size="sm"
+                      transform={{ rotate: 90 }}
+                      style={{
+                        cursor: "pointer",
+                        color:
+                          record.status === StatusCommonProducts.IN_ACTIVE
+                            ? "#e5383b"
+                            : record.status === StatusCommonProducts.ACTIVE
+                            ? "#09a129"
+                            : "disabled",
+                      }}
+                    />
+                  </IconButton>
+                </Tooltip>
+              </Popconfirm>
             </div>
           </div>
         </>

@@ -2,6 +2,7 @@ package beephone_shop_projects.core.admin.product_managements.controller;
 
 import beephone_shop_projects.core.admin.product_managements.model.request.FindFilterProductsRequest;
 import beephone_shop_projects.core.admin.product_managements.model.request.ManHinhRequest;
+import beephone_shop_projects.core.admin.product_managements.model.response.CameraSauResponse;
 import beephone_shop_projects.core.admin.product_managements.model.response.ManHinhResponse;
 import beephone_shop_projects.core.admin.product_managements.service.ManHinhService;
 import beephone_shop_projects.core.common.base.ResponseObject;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,6 +29,7 @@ public class ManHinhController {
     public ResponseObject<List<ManHinhResponse>> getSimCards() {
         List<ManHinhResponse> manHinh = manHinhService.findAll().stream()
                 .filter(products -> StatusCommon.ACTIVE.equals(products.getStatus()))
+                .sorted(Comparator.comparing(ManHinhResponse::getCreatedAt).reversed())
                 .collect(Collectors.toList());
         return new ResponseObject<>(manHinh);
     }

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,6 +41,7 @@ public class CameraSauController {
     public ResponseObject<List<CameraSauResponse>> getCameraSau() {
         List<CameraSauResponse> cameraSau = cameraSauService.findAll().stream()
                 .filter(products -> StatusCommon.ACTIVE.equals(products.getStatus()))
+                .sorted(Comparator.comparing(CameraSauResponse::getCreatedAt).reversed())
                 .collect(Collectors.toList());
         return new ResponseObject<>(cameraSau);
     }

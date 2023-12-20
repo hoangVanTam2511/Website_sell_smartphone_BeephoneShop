@@ -1,7 +1,7 @@
 package beephone_shop_projects.core.client.controller;
 
 import beephone_shop_projects.core.client.models.request.BillClientRequest;
-import beephone_shop_projects.core.client.serives.impl.BillClientServiceImpl;
+import beephone_shop_projects.core.client.servies.impl.BillClientServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -73,6 +73,16 @@ public class BillClientController {
     public ResponseEntity<?> updateStateBill(@RequestParam("id_bill") String idHoaDon){
         try{
             billClientService.updateBillByIdBill(idHoaDon);
+            return new ResponseEntity<>("no data", HttpStatus.OK);
+        }catch (Exception ex){
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping ("/cancel-bill")
+    public ResponseEntity<?> cancelBill(@RequestParam("id_bill") String idHoaDon){
+        try{
+            billClientService.cancelBill(idHoaDon);
             return new ResponseEntity<>("no data", HttpStatus.OK);
         }catch (Exception ex){
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
