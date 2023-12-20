@@ -959,19 +959,36 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
           }
         });
       }
-      if (findOrderCurrent.getTongTien() != null) {
-        BigDecimal tongTienCurrent = findOrderCurrent.getTongTien();
-        BigDecimal amount = new BigDecimal(findCartItemOrder.get().getImeisDaBan().size());
-        findOrderCurrent.setTongTien(tongTienCurrent.subtract(findProductItem.get().getDonGia().multiply(amount)));
+      if (findCartItemOrder.get().getImeisDaBan().size() > 0) {
+        if (findOrderCurrent.getTongTien() != null) {
+          BigDecimal tongTienCurrent = findOrderCurrent.getTongTien();
+          BigDecimal amount = new BigDecimal(findCartItemOrder.get().getImeisDaBan().size());
+          findOrderCurrent.setTongTien(tongTienCurrent.subtract(findProductItem.get().getDonGia().multiply(amount)));
 
-        if (findOrderCurrent.getKhachCanTra() != null) {
-          BigDecimal khachCanTraCurrent = findOrderCurrent.getKhachCanTra();
-          findOrderCurrent.setKhachCanTra(khachCanTraCurrent.subtract(findProductItem.get().getDonGia().multiply(amount)));
+          if (findOrderCurrent.getKhachCanTra() != null) {
+            BigDecimal khachCanTraCurrent = findOrderCurrent.getKhachCanTra();
+            findOrderCurrent.setKhachCanTra(khachCanTraCurrent.subtract(findProductItem.get().getDonGia().multiply(amount)));
+          }
+
+          if (findOrderCurrent.getTongTienSauKhiGiam() != null) {
+            BigDecimal tongTienSauKhiGiamCurrent = findOrderCurrent.getTongTienSauKhiGiam();
+            findOrderCurrent.setTongTienSauKhiGiam(tongTienSauKhiGiamCurrent.subtract(findProductItem.get().getDonGia().multiply(amount)));
+          }
         }
+      } else {
+        if (findOrderCurrent.getTongTien() != null) {
+          BigDecimal tongTienCurrent = findOrderCurrent.getTongTien();
+          findOrderCurrent.setTongTien(tongTienCurrent.subtract(findCartItemOrder.get().getDonGia());
 
-        if (findOrderCurrent.getTongTienSauKhiGiam() != null) {
-          BigDecimal tongTienSauKhiGiamCurrent = findOrderCurrent.getTongTienSauKhiGiam();
-          findOrderCurrent.setTongTienSauKhiGiam(tongTienSauKhiGiamCurrent.subtract(findProductItem.get().getDonGia().multiply(amount)));
+          if (findOrderCurrent.getKhachCanTra() != null) {
+            BigDecimal khachCanTraCurrent = findOrderCurrent.getKhachCanTra();
+            findOrderCurrent.setKhachCanTra(khachCanTraCurrent.subtract(findCartItemOrder.get().getDonGia()));
+          }
+
+          if (findOrderCurrent.getTongTienSauKhiGiam() != null) {
+            BigDecimal tongTienSauKhiGiamCurrent = findOrderCurrent.getTongTienSauKhiGiam();
+            findOrderCurrent.setTongTienSauKhiGiam(tongTienSauKhiGiamCurrent.subtract(findCartItemOrder.get().getDonGia()));
+          }
         }
       }
 //      BigDecimal tongTien;
