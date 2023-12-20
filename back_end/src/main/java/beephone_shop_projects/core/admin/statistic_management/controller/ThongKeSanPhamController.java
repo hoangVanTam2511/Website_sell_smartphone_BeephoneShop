@@ -2,10 +2,7 @@ package beephone_shop_projects.core.admin.statistic_management.controller;
 
 import beephone_shop_projects.core.admin.statistic_management.model.request.ThongKeKhoangNgayDonHangRequest;
 import beephone_shop_projects.core.admin.statistic_management.model.request.ThongKeKhoangNgaySanPhamRequest;
-import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeSanPhamKhoangNgay;
-import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeSanPhamResponse;
-import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeSanPhamBanChayResponse;
-import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeSanPhamSapHetHang;
+import beephone_shop_projects.core.admin.statistic_management.model.response.*;
 import beephone_shop_projects.core.admin.statistic_management.service.ThongKeSanPhamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -43,5 +40,10 @@ public class ThongKeSanPhamController {
     @GetMapping("/san-pham-khoang-ngay")
     public List<ThongKeSanPhamKhoangNgay> getSanPhamTheoKhoangNgay(final ThongKeKhoangNgaySanPhamRequest request){
         return thongKeSanPhamService.getSanPhamKhoangNgay(request);
+    }
+
+    @GetMapping("/san-pham-doi-tra")
+    public List<ThongKeSanPhamDoiTraResponse> getSanPhamDoiTra(){
+        return thongKeSanPhamService.getSanPhamDoiTra();
     }
 }

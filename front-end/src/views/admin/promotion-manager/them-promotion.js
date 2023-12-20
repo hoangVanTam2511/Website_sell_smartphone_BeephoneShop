@@ -833,6 +833,43 @@ const AddKhuyenMai = () => {
             >
               Danh sách sản phẩm
             </h5>
+            <div className="header-title mb-3 ms-3">
+              <TextField
+                placeholder="Tìm theo mã, tên sản phẩm"
+                label="Tìm sản phẩm"
+                // value={searchTatCa}
+                // onChange={handleSearchTatCaChange}
+                InputLabelProps={{
+                  sx: {
+                    marginTop: "",
+                    textTransform: "capitalize",
+                  },
+                }}
+                inputProps={{
+                  style: {
+                    height: "23px",
+                    width: "350px",
+                  },
+                }}
+                size="small"
+                className=""
+              />
+              <Button
+                // onClick={() => {
+                //   handleReset();
+                // }}
+                className="rounded-2 ms-2"
+                type="warning"
+                style={{ width: "100px", fontSize: "15px" }}
+              >
+                <span
+                  className="text-dark"
+                  style={{ fontWeight: "500", marginBottom: "2px" }}
+                >
+                  Làm Mới
+                </span>
+              </Button>
+            </div>
             <Table
               className="table-container"
               style={{

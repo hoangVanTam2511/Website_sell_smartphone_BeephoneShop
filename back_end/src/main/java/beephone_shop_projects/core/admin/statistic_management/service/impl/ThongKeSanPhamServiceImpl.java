@@ -1,10 +1,7 @@
 package beephone_shop_projects.core.admin.statistic_management.service.impl;
 
 import beephone_shop_projects.core.admin.statistic_management.model.request.ThongKeKhoangNgaySanPhamRequest;
-import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeSanPhamKhoangNgay;
-import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeSanPhamResponse;
-import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeSanPhamBanChayResponse;
-import beephone_shop_projects.core.admin.statistic_management.model.response.ThongKeSanPhamSapHetHang;
+import beephone_shop_projects.core.admin.statistic_management.model.response.*;
 import beephone_shop_projects.core.admin.statistic_management.repository.ThongKeSanPhamRepository;
 import beephone_shop_projects.core.admin.statistic_management.service.ThongKeSanPhamService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +34,11 @@ public class ThongKeSanPhamServiceImpl implements ThongKeSanPhamService {
     @Override
     public List<ThongKeSanPhamKhoangNgay> getSanPhamKhoangNgay(ThongKeKhoangNgaySanPhamRequest request) {
         return thongKeSanPhamRepository.getSanPhamKhoangNgay(request);
+    }
+
+    @Override
+    public List<ThongKeSanPhamDoiTraResponse> getSanPhamDoiTra() {
+        return thongKeSanPhamRepository.getSanPhamDoiTra();
     }
 
 
