@@ -21,7 +21,7 @@ public interface SanPhamChiTietKhuyenMaiRepository extends ISanPhamChiTietReposi
             RIGHT JOIN ram d ON d.id = ctsp.id_ram
             RIGHT JOIN rom e ON e.id = ctsp.id_rom
             LEFT JOIN image f on ctsp.id_image = f.id
-            WHERE ctsp.id_san_pham = ?1 
+            WHERE ctsp.id_san_pham = ?1 AND ctsp.trang_thai = 0
             ORDER BY ctsp.created_at DESC 
              """, nativeQuery = true)
     List<SanPhamChiTietKhuyenMaiResponse> findAllChiTietSanPham(@Param("id") String id);

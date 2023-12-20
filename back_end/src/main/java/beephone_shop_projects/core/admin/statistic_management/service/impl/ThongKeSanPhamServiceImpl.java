@@ -37,8 +37,8 @@ public class ThongKeSanPhamServiceImpl implements ThongKeSanPhamService {
     }
 
     @Override
-    public List<ThongKeSanPhamDoiTraResponse> getSanPhamDoiTra(String chonTheo) {
-        return thongKeSanPhamRepository.getSanPhamDoiTra(chonTheo);
+    public List<ThongKeSanPhamDoiTraResponse> getSanPhamDoiTra() {
+        return thongKeSanPhamRepository.getSanPhamDoiTra();
     }
 
 

@@ -43,7 +43,7 @@ public class ThongKeSanPhamController {
     }
 
     @GetMapping("/san-pham-doi-tra")
-    public List<ThongKeSanPhamDoiTraResponse> getSanPhamDoiTra(@RequestParam(name = "chonTheo") String chonTheo){
-        return thongKeSanPhamService.getSanPhamDoiTra(chonTheo);
+    public List<ThongKeSanPhamDoiTraResponse> getSanPhamDoiTra(){
+        return thongKeSanPhamService.getSanPhamDoiTra();
     }
 }

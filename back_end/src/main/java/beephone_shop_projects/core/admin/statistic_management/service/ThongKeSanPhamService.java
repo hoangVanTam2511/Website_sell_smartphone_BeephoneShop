@@ -15,6 +15,6 @@ public interface ThongKeSanPhamService {
 
     List<ThongKeSanPhamKhoangNgay> getSanPhamKhoangNgay(ThongKeKhoangNgaySanPhamRequest request);
 
-    List<ThongKeSanPhamDoiTraResponse> getSanPhamDoiTra(String chonTheo);
+    List<ThongKeSanPhamDoiTraResponse> getSanPhamDoiTra();
 
 }

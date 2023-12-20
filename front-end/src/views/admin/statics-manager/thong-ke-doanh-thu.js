@@ -24,6 +24,7 @@ const ThongKeDoanhThu = () => {
   const [listSanPham, setListSanPham] = useState([]);
   const [listSanPhambanChay, setListSanPhamBanChay] = useState([]);
   const [listSanPhamSapHet, setListSanPhamSapHet] = useState([]);
+  const [listSanPhamDoiTra, setListSanPhamDoiTra] = useState([]);
   const [loaiBoLoc, setLoaiBoLoc] = useState("thang");
   const [loaiBoLocTDTT, setLoaiBoLocTDTT] = useState("thang");
 
@@ -52,7 +53,7 @@ const ThongKeDoanhThu = () => {
       .then((response) => {
         setListDonHangInDay(response.data);
       })
-      .catch((error) => { });
+      .catch((error) => {});
   };
 
   const thongKeTheoThang = () => {
@@ -60,7 +61,7 @@ const ThongKeDoanhThu = () => {
       .then((response) => {
         setListDonHangInMonth(response.data);
       })
-      .catch((error) => { });
+      .catch((error) => {});
   };
 
   const thongKeTheoSanPham = () => {
@@ -68,7 +69,7 @@ const ThongKeDoanhThu = () => {
       .then((response) => {
         setListSanPham(response.data);
       })
-      .catch((error) => { });
+      .catch((error) => {});
   };
 
   const getSanPhamBanChay = () => {
@@ -76,7 +77,7 @@ const ThongKeDoanhThu = () => {
       .then((response) => {
         setListSanPhamBanChay(response.data);
       })
-      .catch((error) => { });
+      .catch((error) => {});
   };
 
   const getSanPhamSapHetHang = () => {
@@ -84,7 +85,7 @@ const ThongKeDoanhThu = () => {
       .then((response) => {
         setListSanPhamSapHet(response.data);
       })
-      .catch((error) => { });
+      .catch((error) => {});
   };
 
   const getTocDoTangTruong = () => {
@@ -92,7 +93,15 @@ const ThongKeDoanhThu = () => {
       .then((response) => {
         setTocDoTangTruong(response.data);
       })
-      .catch((error) => { });
+      .catch((error) => {});
+  };
+
+  const getSanPhamDoiTra = () => {
+    request("GET", `/thong-ke/san-pham-doi-tra`)
+      .then((response) => {
+        setListSanPhamDoiTra(response.data);
+      })
+      .catch((error) => {});
   };
 
   // const getSanPhamBanChay = () => {
@@ -130,6 +139,7 @@ const ThongKeDoanhThu = () => {
     getSanPhamBanChay();
     getSanPhamSapHetHang();
     getTocDoTangTruong();
+    getSanPhamDoiTra();
   }, [loaiBoLoc]);
 
   const convertToVND = (number) => {
@@ -307,7 +317,7 @@ const ThongKeDoanhThu = () => {
         .then((response) => {
           setTrangThaiDonHang(response.data);
         })
-        .catch((error) => { });
+        .catch((error) => {});
     };
 
     getTrangThaiDonHang();
@@ -506,7 +516,7 @@ const ThongKeDoanhThu = () => {
       width: "5%",
       align: "center",
       render: (text, record, index) => (
-        <span>{listSanPhamSapHet.indexOf(record) + 1}</span>
+        <span>{listSanPhamDoiTra.indexOf(record) + 1}</span>
       ),
     },
     {
@@ -968,7 +978,10 @@ const ThongKeDoanhThu = () => {
                           ) : (
                             <FontAwesomeIcon icon={faArrowDownWideShort} />
                           )}
-                          {tocDoTangTruong.tangTruongDoanhThuNgay > 100 ? 100 : tocDoTangTruong.tangTruongDoanhThuNgay}%
+                          {tocDoTangTruong.tangTruongDoanhThuNgay > 100
+                            ? 100
+                            : tocDoTangTruong.tangTruongDoanhThuNgay}
+                          %
                         </span>
                       </Col>
                     </Row>
@@ -1004,7 +1017,10 @@ const ThongKeDoanhThu = () => {
                           ) : (
                             <FontAwesomeIcon icon={faArrowDownWideShort} />
                           )}
-                          {tocDoTangTruong.tangTruongDoanhThuThang > 100 ? 100 : tocDoTangTruong.tangTruongDoanhThuThang}%
+                          {tocDoTangTruong.tangTruongDoanhThuThang > 100
+                            ? 100
+                            : tocDoTangTruong.tangTruongDoanhThuThang}
+                          %
                         </span>
                       </Col>
                     </Row>
@@ -1040,7 +1056,10 @@ const ThongKeDoanhThu = () => {
                           ) : (
                             <FontAwesomeIcon icon={faArrowDownWideShort} />
                           )}
-                          {tocDoTangTruong.tangTruongDoanhThuNam > 100 ? 100 : tocDoTangTruong.tangTruongDoanhThuNam}%
+                          {tocDoTangTruong.tangTruongDoanhThuNam > 100
+                            ? 100
+                            : tocDoTangTruong.tangTruongDoanhThuNam}
+                          %
                         </span>
                       </Col>
                     </Row>
@@ -1072,7 +1091,10 @@ const ThongKeDoanhThu = () => {
                           ) : (
                             <FontAwesomeIcon icon={faArrowDownWideShort} />
                           )}
-                          {tocDoTangTruong.tangTruongSoSanPhamThang > 100 ? 100 : tocDoTangTruong.tangTruongSoSanPhamThang}%
+                          {tocDoTangTruong.tangTruongSoSanPhamThang > 100
+                            ? 100
+                            : tocDoTangTruong.tangTruongSoSanPhamThang}
+                          %
                         </span>
                       </Col>
                     </Row>
@@ -1104,7 +1126,10 @@ const ThongKeDoanhThu = () => {
                           ) : (
                             <FontAwesomeIcon icon={faArrowDownWideShort} />
                           )}
-                          {tocDoTangTruong.tangTruongSoHoaDonNgay > 100 ? 100: tocDoTangTruong.tangTruongSoHoaDonNgay}%
+                          {tocDoTangTruong.tangTruongSoHoaDonNgay > 100
+                            ? 100
+                            : tocDoTangTruong.tangTruongSoHoaDonNgay}
+                          %
                         </span>
                       </Col>
                     </Row>
@@ -1136,7 +1161,10 @@ const ThongKeDoanhThu = () => {
                           ) : (
                             <FontAwesomeIcon icon={faArrowDownWideShort} />
                           )}
-                          {tocDoTangTruong.tangTruongSoHoaDonThang > 100 ? 100 : tocDoTangTruong.tangTruongSoHoaDonThang}%
+                          {tocDoTangTruong.tangTruongSoHoaDonThang > 100
+                            ? 100
+                            : tocDoTangTruong.tangTruongSoHoaDonThang}
+                          %
                         </span>
                       </Col>
                     </Row>
@@ -1169,7 +1197,10 @@ const ThongKeDoanhThu = () => {
                           ) : (
                             <FontAwesomeIcon icon={faArrowDownWideShort} />
                           )}
-                          {tocDoTangTruong.tangTruongSoHoaDonNam > 100 ? 100: tocDoTangTruong.tangTruongSoHoaDonNam}%
+                          {tocDoTangTruong.tangTruongSoHoaDonNam > 100
+                            ? 100
+                            : tocDoTangTruong.tangTruongSoHoaDonNam}
+                          %
                         </span>
                       </Col>
                     </Row>
