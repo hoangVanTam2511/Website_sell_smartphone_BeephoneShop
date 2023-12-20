@@ -1,8 +1,10 @@
 package beephone_shop_projects.core.client.controller;
 
+import beephone_shop_projects.core.client.models.request.AccountChangeInformationRequest;
 import beephone_shop_projects.core.client.models.request.AccountLoginRequest;
 import beephone_shop_projects.core.client.models.request.AccountRegisterRequest;
 import beephone_shop_projects.core.client.models.response.AccountDto;
+import beephone_shop_projects.entity.Account;
 import beephone_shop_projects.infrastructure.jwt.UserAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
 import beephone_shop_projects.core.client.serives.impl.AccountClientServiceImpl;
@@ -65,4 +67,13 @@ public class AccountClientController {
       }
     }
 
+    @PutMapping("/change-infor")
+    public ResponseEntity<?> updateAccount(@RequestBody AccountChangeInformationRequest account){
+        try{
+            return new ResponseEntity<>(accountClientService.changeInformationUser(account), HttpStatus.OK);
+        }catch (Exception ex){
+            // không tìm thay tai khoan thi se ban ra exception
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 }

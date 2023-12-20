@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 public interface AccountClientRepository extends IAccountRepository {
 
     @Query(value = """
-            SELECT * FROM account acc WHERE acc.email = :email LIMIT 0, 1
+            SELECT * FROM account acc WHERE acc.email = :email and trang_thai IN (0,2) LIMIT 0, 1
             """, nativeQuery = true)
     Account checkEmailAndPass(@Param("email") String email);
 
