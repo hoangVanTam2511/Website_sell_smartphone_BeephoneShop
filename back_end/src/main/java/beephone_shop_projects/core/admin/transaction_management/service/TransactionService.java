@@ -9,6 +9,6 @@ import org.springframework.data.domain.Page;
 
 public interface TransactionService {
 
-    ResponsePage<TransactionCustomResponse> getAll(Integer pageNo, TransactionRequest request);
+    ResponsePage<TransactionCustomResponse> getAll(TransactionRequest request);
 
 }

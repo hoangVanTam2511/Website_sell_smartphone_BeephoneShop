@@ -2,6 +2,7 @@ package beephone_shop_projects.core.admin.product_managements.controller;
 
 import beephone_shop_projects.core.admin.product_managements.model.request.DanhMucRequest;
 import beephone_shop_projects.core.admin.product_managements.model.request.FindFilterProductsRequest;
+import beephone_shop_projects.core.admin.product_managements.model.response.CameraSauResponse;
 import beephone_shop_projects.core.admin.product_managements.model.response.DanhMucResponse;
 import beephone_shop_projects.core.admin.product_managements.service.impl.DanhMucServiceImpl;
 import beephone_shop_projects.core.common.base.ResponseObject;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,6 +36,7 @@ public class DanhMucController {
     public ResponseObject<List<DanhMucResponse>> getDanhMuc() {
         List<DanhMucResponse> danhMuc = danhMucService.findAll().stream()
                 .filter(products -> StatusCommon.ACTIVE.equals(products.getStatus()))
+                .sorted(Comparator.comparing(DanhMucResponse::getCreatedAt).reversed())
                 .collect(Collectors.toList());
         return new ResponseObject<>(danhMuc);
     }

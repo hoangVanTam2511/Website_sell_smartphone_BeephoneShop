@@ -22,9 +22,6 @@ import { Notistack } from "../order-manager/enum";
 import axios from "axios";
 import { format } from "date-fns";
 import { request, requestParam } from "../../../store/helpers/axios_helper";
-import { current } from "@reduxjs/toolkit";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHouse } from "@fortawesome/free-solid-svg-icons";
 
 const Transaction = () => {
   const [form] = useForm();
@@ -54,7 +51,6 @@ const Transaction = () => {
       trangThai: searchTrangThai,
       ngayBatDau: searchNgayBatDau,
       ngayKetThuc: searchNgayKetThuc,
-      sortValue: sortTransaction,
     };
     requestParam("GET", `/transaction/transactions`, request)
       .then((response) => {
@@ -80,7 +76,6 @@ const Transaction = () => {
     searchHinhThucThanhToan,
     currentPage,
     totalPages,
-    sortTransaction,
   ]);
 
   const handleCloseSelect2 = () => {
@@ -672,7 +667,7 @@ const Transaction = () => {
                   </Select>
                 </FormControl>
               </div>
-              <div
+              {/* <div
                 className="d-flex"
                 style={{
                   height: "40px",
@@ -729,7 +724,7 @@ const Transaction = () => {
                     <MenuItem value={"z-a"}>Giảm dần theo giá trị</MenuItem>
                   </Select>
                 </FormControl>
-              </div>
+              </div> */}
             </div>
           </div>
           <Card.Body>

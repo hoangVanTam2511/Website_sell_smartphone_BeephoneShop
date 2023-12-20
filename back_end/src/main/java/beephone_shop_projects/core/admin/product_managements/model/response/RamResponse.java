@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
+
 @Setter
 @Getter
 @AllArgsConstructor
@@ -19,5 +21,8 @@ public class RamResponse {
     private Integer dungLuong;
 
     private StatusCommon status;
+
+    private Date createdAt;
+
 
 }

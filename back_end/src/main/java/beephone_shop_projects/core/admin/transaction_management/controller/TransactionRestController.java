@@ -19,9 +19,8 @@ public class TransactionRestController {
 
 
     @GetMapping("/transactions")
-    public ResponsePage hienThiTransaction(@RequestParam(name = "page", defaultValue = "1") Integer pageNo,
-                                           final TransactionRequest request) {
-        return transactionService.getAll(pageNo, request);
+    public ResponsePage hienThiTransaction(final TransactionRequest request) {
+        return transactionService.getAll(request);
     }
 
 
