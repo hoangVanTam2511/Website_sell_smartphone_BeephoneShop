@@ -9,4 +9,6 @@ import java.util.List;
 @Setter
 public class ImeisRequest {
   private List<ImeiRequest> imeis;
+
+  private String id;
 }
