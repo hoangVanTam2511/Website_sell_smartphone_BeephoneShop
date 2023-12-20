@@ -74,7 +74,7 @@ const CreateProduct = ({ }) => {
 
   const [categorys, setCategorys] = useState([]);
   const getListDanhMuc = () => {
-    request('GET',`/api/danh-mucs`)
+    request('GET', `/api/danh-mucs`)
       .then((response) => {
         setCategorys(response.data.data);
       })
@@ -88,7 +88,7 @@ const CreateProduct = ({ }) => {
     setOpenHang(false);
   }
   const getListHang = () => {
-    request('GET',`/api/brands`)
+    request('GET', `/api/brands`)
       .then((response) => {
         setListHang(response.data.data);
       })
@@ -103,7 +103,7 @@ const CreateProduct = ({ }) => {
     setOpenChip(false);
   }
   const getListChip = () => {
-    request('GET',`/api/chips`)
+    request('GET', `/api/chips`)
       .then((response) => {
         setListChip(response.data.data);
       })
@@ -118,7 +118,7 @@ const CreateProduct = ({ }) => {
     setOpenPin(false);
   }
   const getListPin = () => {
-    request('GET',`/api/pins`)
+    request('GET', `/api/pins`)
       .then((response) => {
         setListPin(response.data.data);
       })
@@ -133,7 +133,7 @@ const CreateProduct = ({ }) => {
     setOpenSac(false);
   }
   const getListSac = () => {
-    request('GET',`/api/chargers`)
+    request('GET', `/api/chargers`)
       .then((response) => {
         setListSac(response.data.data);
       })
@@ -148,7 +148,7 @@ const CreateProduct = ({ }) => {
     setOpenTheNho(false);
   }
   const getListTheNho = () => {
-    request('GET',`/api/the-nhos`)
+    request('GET', `/api/the-nhos`)
       .then((response) => {
         setListTheNho(response.data.data);
       })
@@ -163,7 +163,7 @@ const CreateProduct = ({ }) => {
     setOpenManHinh(false);
   }
   const getListManHinh = () => {
-    request('GET',`/api/display`)
+    request('GET', `/api/display`)
       .then((response) => {
         setListManHinh(response.data.data);
         console.log(response.data.data)
@@ -183,7 +183,7 @@ const CreateProduct = ({ }) => {
     setOpenTheSim(false);
   }
   const getListTheSim = () => {
-    request('GET',`/api/sim-cards/all`)
+    request('GET', `/api/sim-cards/all`)
       .then((response) => {
         setListTheSim(response.data.data);
       })
@@ -204,154 +204,11 @@ const CreateProduct = ({ }) => {
     getListPin();
     getListHang();
     getListChip();
+    getProducts();
   }, [])
 
   const [selectKey, setSelectKey] = useState(0);
-  const [cauHinhs, setCauHinhs] = useState([
-    {
-      id: 1,
-      soLuongTonKho: 0,
-      ram: {
-        id: 1,
-        dungLuong: 3
-      },
-      rom: {
-        id: 1,
-        dungLuong: 64
-      },
-      color: [
-        { id: 1, tenMauSac: "YELLOW" },
-        { id: 2, tenMauSac: "RED" },
-      ]
 
-    },
-    {
-      id: 2,
-      soLuongTonKho: 0,
-      ram: {
-        id: 2,
-        dungLuong: 4
-      },
-      rom: {
-        id: 2,
-        dungLuong: 128
-      },
-      color: [
-        { id: 1, tenMauSac: "GREEN" },
-        { id: 2, tenMauSac: "BLUE" },
-        { id: 3, tenMauSac: "GRAY" },
-        { id: 4, tenMauSac: "FK" },
-      ]
-
-    },
-  ]);
-
-
-
-  const columns = [
-    {
-      title: "STT",
-      align: "center",
-      dataIndex: "stt",
-      width: "5%",
-      render: (text, record, index) => (
-        <span style={{ fontWeight: "400" }}>{cauHinhs.indexOf(record) + 1}</span>
-      ),
-    },
-    {
-      title: "Tên Sản Phẩm",
-      align: "center",
-      width: "30%",
-      render: (text, record) => {
-        return (
-          <span style={{ fontWeight: "400", whiteSpace: "pre-line" }}>{'Iphone 14 Pro Max ' + record.ram.dungLuong + "/" + record.rom.dungLuong + "GB"}</span>
-        )
-      }
-    },
-    {
-      title: "Màu Sắc",
-      align: "center",
-      width: "15%",
-      render: (text, record) => (
-        <span style={{ fontWeight: "400", whiteSpace: "pre-line" }}>{record.color.tenMauSac}</span>
-      ),
-    },
-    {
-      title: "Số Lượng Tồn Kho",
-      align: "center",
-      width: "15%",
-      render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>
-          {record.soLuongTonKho}
-        </span>
-      ),
-    },
-    {
-      title: "Đơn Giá",
-      align: "center",
-      width: "20%",
-      render: (text, record) => (
-        <TextField
-          label="Đơn giá"
-          id="outlined-size-small"
-          size="small"
-        />
-      ),
-    },
-    {
-      title: "Thao Tác",
-      align: "center",
-      width: "15%",
-      dataIndex: "ma",
-      render: (text, record) => (
-        <div className="d-flex justify-content-center">
-          <div className="button-container">
-            <Tooltip title="Import imei" TransitionComponent={Zoom}>
-              <IconButton
-                onClick={() => {
-                }}
-                className="me-2">
-                <FaUpload color="#2f80ed" />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Xóa" TransitionComponent={Zoom}>
-              <IconButton
-                onClick={() => {
-                }}
-                className="">
-                <FaTrashAlt color="#e5383b" />
-              </IconButton>
-            </Tooltip>
-          </div>
-        </div>
-      ),
-    },
-  ];
-  const CauHinhTable = ({ id }) => {
-    const filterCauHinhs = cauHinhs.filter((item) => item.id === id);
-    const objectsTachRa = filterCauHinhs.flatMap((cauHinh) => {
-      return cauHinh.color.map((color) => {
-        return {
-          ...cauHinh,
-          color: color,
-        };
-      });
-    });
-
-    return (
-      <>
-        <Table
-          className="table-container mt-2"
-          columns={columns}
-          rowKey="id"
-          key={"id"}
-          dataSource={objectsTachRa}
-          pagination={false}
-          locale={{ emptyText: <Empty description="Không có dữ liệu" /> }}
-        />
-      </>
-    );
-  };
   const generateRandomId = () => {
     const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let id = '';
@@ -377,124 +234,11 @@ const CreateProduct = ({ }) => {
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
 
-  const [colorName, setColorName] = useState([
-    "White Smoke", "Black"
-  ]);
-  // const [camerasTruoc, setCamerasTruoc] = useState([
-  //   {
-  //     id: 1,
-  //     doPhanGiai: 20,
-  //   },
-  //   {
-  //     id: 22,
-  //     doPhanGiai: 20,
-  //   },
-  //   {
-  //     id: 2,
-  //     doPhanGiai: 128,
-  //   },
-  //   {
-  //     id: 3,
-  //     doPhanGiai: 108,
-  //   },
-  //   {
-  //     id: 4,
-  //     doPhanGiai: 48,
-  //   },
-  //   {
-  //     id: 5,
-  //     doPhanGiai: 20,
-  //   },
-  //   {
-  //     id: 6,
-  //     doPhanGiai: 12,
-  //   },
-  //   {
-  //     id: 7,
-  //     doPhanGiai: 5,
-  //   },
-  // ]);
-  // const [camerasSau, setCamerasSau] = useState([
-  //   {
-  //     id: 1,
-  //     doPhanGiai: 20,
-  //   },
-  //   {
-  //     id: 22,
-  //     doPhanGiai: 20,
-  //   },
-  //   {
-  //     id: 2,
-  //     doPhanGiai: 128,
-  //   },
-  //   {
-  //     id: 3,
-  //     doPhanGiai: 108,
-  //   },
-  //   {
-  //     id: 4,
-  //     doPhanGiai: 48,
-  //   },
-  //   {
-  //     id: 5,
-  //     doPhanGiai: 20,
-  //   },
-  //   {
-  //     id: 6,
-  //     doPhanGiai: 12,
-  //   },
-  //   {
-  //     id: 7,
-  //     doPhanGiai: 5,
-  //   },
-  // ]);
-  //
-  // const [sims, setSims] = useState([
-  //   {
-  //     id: 1,
-  //     loaiTheSim: "1 Nano SIM",
-  //     multipleSim: 1,
-  //   },
-  //   {
-  //     id: 2,
-  //     loaiTheSim: "2 Nano SIM",
-  //     multipleSim: 2,
-  //   },
-  //   {
-  //     id: 3,
-  //     loaiTheSim: "1 eSIM",
-  //     multipleSim: 1,
-  //   },
-  // ]);
-  // const [categorys, setCategorys] = useState([
-  //   {
-  //     id: 1,
-  //     content: "Chơi Game, Cấu Hình Cao",
-  //   },
-  //   {
-  //     id: 2,
-  //     content: "Pin Trâu",
-  //   },
-  //   {
-  //     id: 3,
-  //     content: "Livestream",
-  //   },
-  //   {
-  //     id: 4,
-  //     content: "Chụp Ảnh, Quay Phim",
-  //   },
-  //   {
-  //     id: 5,
-  //     content: "Mỏng nhẹ",
-  //   },
-  // ]);
-  //
-  //
 
   const [camerasSau, setCamerasSau] = useState([]);
   const [camerasTruoc, setCamerasTruoc] = useState([]);
   const getListCameraTruoc = () => {
-    request('GET',`/api/camera-fronts`)
+    request('GET', `/api/camera-fronts`)
       .then((response) => {
         setCamerasTruoc(response.data.data);
       })
@@ -503,7 +247,7 @@ const CreateProduct = ({ }) => {
       });
   };
   const getListCameraSau = () => {
-    request('GET',`/api/camera-rears`)
+    request('GET', `/api/camera-rears`)
       .then((response) => {
         setCamerasSau(response.data.data);
       })
@@ -633,31 +377,16 @@ const CreateProduct = ({ }) => {
     setOpen(false);
   };
 
-  const [products, setProducts] = useState([
-    {
-      ma: "091218273",
-      tenSanPham: "Iphone 14 Pro Max",
-    },
-    {
-      ma: "091218273",
-      tenSanPham: "Iphone 12 Pro",
-    },
-    {
-      ma: "091218273",
-      tenSanPham: "Samsung Galaxy Ultra 23",
-    },
-    {
-      ma: "091218273",
-      tenSanPham: "Xiaomi K40 Pro",
-    },
-  ]);
-  const [colors, setColors] = useState([
-    {
-      ma: "091218273",
-      tenMauSac: "White Smoke",
-      status: 0
-    }
-  ]);
+  const [products, setProducts] = useState([]);
+  const getProducts = () => {
+    request('GET', `/api/products`)
+      .then((response) => {
+        setProducts(response.data.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
   const [productName, setProductName] = useState('');
   const handleOnInputChangeProductName = (event, value) => {
@@ -673,9 +402,18 @@ const CreateProduct = ({ }) => {
 
 
   const [isLoading, setIsLoading] = React.useState(false);
-  const [isNonNull, setIsNonNull] = React.useState(false);
 
   const [weight, setWeight] = React.useState('');
+
+  const handleChangeWeight = (event) => {
+    const value = event.target.value;
+    let valueFinal;
+
+    valueFinal = value
+      .replace(/[^0-9]+/g, "")
+    setWeight(valueFinal);
+
+  }
   const [status, setStatus] = React.useState();
   const [brand, setBrand] = React.useState('');
   const [brandName, setBrandName] = React.useState('');
@@ -706,9 +444,6 @@ const CreateProduct = ({ }) => {
   };
   const handleChangeStatus = (event) => {
     setStatus(event.target.value);
-  };
-  const handleChangeWeight = (event) => {
-    setWeight(event.target.value);
   };
   const getTenHangById = (id) => {
     const hang = listHang.find((item) => item.id === id);
@@ -795,6 +530,9 @@ const CreateProduct = ({ }) => {
     if (productName.trim() === "") {
       isValid = false;
     }
+    if (products.some((item) => item.tenSanPham === productName.trim())) {
+      isValid = false;
+    }
     if (selectedCategory.length === 0) {
       isValid = false;
     }
@@ -826,6 +564,9 @@ const CreateProduct = ({ }) => {
       isValid = false;
     }
     if (screen.trim() === "") {
+      isValid = false;
+    }
+    if (weight.trim() === "") {
       isValid = false;
     }
     return isValid;
@@ -861,8 +602,15 @@ const CreateProduct = ({ }) => {
                   inputValue={productName}
                   onInputChange={handleOnInputChangeProductName}
                   renderInput={(params) => <TextField
-                    helperText={confirm && productName.trim() === "" ? "Bạn chưa nhập tên sản phẩm" : ""}
-                    error={confirm && productName.trim() === ""}
+                    helperText={
+                      (confirm && productName.trim() === "") ? "Bạn chưa nhập tên sản phẩm" :
+                        (confirm && products.some((item) => item.tenSanPham === productName.trim())) ? "Tên sản phẩm đã tồn tại" : ""
+                    }
+                    // error={confirm && productName.trim() === ""}
+                    error={
+                      (confirm && productName.trim() === "") ||
+                      (confirm && products.some((item) => item.tenSanPham === productName.trim())) === true
+                    }
                     {...params}
                     label="Tên Sản Phẩm" />}
                 />
@@ -893,10 +641,10 @@ const CreateProduct = ({ }) => {
                           </InputAdornment>
                         </>
                       }
-                    renderValue={(selected) => selected.map(id => {
-                      const category = categorys.find(c => c.id === id);
-                      return category ? category.tenDanhMuc : '';
-                    }).join(', ')}
+                      renderValue={(selected) => selected.map(id => {
+                        const category = categorys.find(c => c.id === id);
+                        return category ? category.tenDanhMuc : '';
+                      }).join(', ')}
                     >
                       {categorys.map((c) => (
                         <MenuItem key={c.id} value={c.id}>
@@ -1107,12 +855,23 @@ const CreateProduct = ({ }) => {
                       defaultValue={0}
                     >
                       <MenuItem value={0}>Kinh Doanh</MenuItem>
-                      <MenuItem value={1}>Ngừng Kinh Doanh</MenuItem>
+                      <MenuItem value={1}>Chưa Kinh Doanh</MenuItem>
+                      <MenuItem value={2}>Ngừng Kinh Doanh</MenuItem>
                     </Select>
                   </FormControl>
                 </div>
                 <div className="ms-3" style={{ width: "100%" }}>
-                  <TextField fullWidth inputProps={{}} className="custom" id="outlined-basic" label="Trọng Lượng" variant="outlined" />
+                  <TextField
+
+                    helperText={
+                      (confirm && weight === "" ? "Bạn chưa nhập trọng lượng" : "")
+                    }
+                    // error={confirm && productName.trim() === ""}
+                    error={
+                      (confirm && weight === "")
+                    }
+
+                    fullWidth value={weight} onChange={handleChangeWeight} inputProps={{}} className="custom" id="outlined-basic" label="Trọng Lượng" variant="outlined" />
                 </div>
               </div>
               <div className="mt-4 d-flex">

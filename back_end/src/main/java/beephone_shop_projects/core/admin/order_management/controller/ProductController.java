@@ -3,9 +3,11 @@ package beephone_shop_projects.core.admin.order_management.controller;
 import beephone_shop_projects.core.admin.order_management.model.request.ProductItemConfigurationsRequest;
 import beephone_shop_projects.core.admin.order_management.model.request.SearchFilterProductDto;
 import beephone_shop_projects.core.admin.order_management.model.request.SearchFilterProductItemDto;
+import beephone_shop_projects.core.admin.order_management.model.response.ProductNameResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.product_response.ProductCustomResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.product_response.ProductItemResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.product_response.ProductResponse;
+import beephone_shop_projects.core.admin.order_management.model.response.product_response.ProductsResponse;
 import beephone_shop_projects.core.admin.order_management.repository.ProductCustomRepository;
 import beephone_shop_projects.core.admin.order_management.repository.ProductItemCustomRepository;
 import beephone_shop_projects.core.admin.order_management.repository.ProductItemRepository;
@@ -95,7 +97,7 @@ public class ProductController {
 
   @GetMapping
   public ResponseObject home111() {
-    return new ResponseObject(productRepository.findAll().stream().map(s -> modelMapper.map(s, ProductCustomResponse.class)));
+    return new ResponseObject(productRepository.findAll().stream().map(s -> modelMapper.map(s, ProductNameResponse.class)));
   }
 
   @GetMapping("/{id}")

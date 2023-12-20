@@ -172,6 +172,7 @@ public class ProductServiceImpl extends AbstractServiceImpl<SanPham, ProductResp
           product.setSoLuongTonKho(item.getSoLuongTonKho());
           product.setMa(item.getMa());
           product.setMaCauHinh(item.getId());
+          product.setTrangThai(req.getProduct().getTrangThai());
           product.setDonGia(item.getDonGia() == null ? new BigDecimal(0) : item.getDonGia());
           product.setMauSac(productColorConverter.convertRequestToEntity(item.getColor()));
           product.setRam(productRamConverter.convertRequestToEntity(item.getRam()));

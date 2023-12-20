@@ -26,4 +26,6 @@ public class VoucherResponse {
 
   private BigDecimal giaTriToiDa;
 
+  private BigDecimal dieuKienApDung;
+
 }
