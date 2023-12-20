@@ -56,7 +56,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -228,7 +227,7 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
       throw new RestApiException("Bạn chưa nhập lý do hủy đơn hàng!");
     }
     if (req.getTrangThai().equals(OrderStatus.CANCELLED)) {
-      if (orderCurrent.getTrangThai().equals(OrderStatus.CONFIRMED) || orderCurrent.getTrangThai().equals(OrderStatus.DELIVERING)){
+      if (orderCurrent.getTrangThai().equals(OrderStatus.CONFIRMED) || orderCurrent.getTrangThai().equals(OrderStatus.DELIVERING)) {
         for (OrderItemResponse orderItem : orderCurrent.getOrderItems()) {
           Optional<SanPhamChiTiet> findProductItem = sanPhamChiTietRepository.
                   findProductById(orderItem.getSanPhamChiTiet().getId());
@@ -414,12 +413,12 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
 
           Optional<SanPhamChiTiet> findProductItem = sanPhamChiTietRepository.
                   findProductById(cartItem.getSanPhamChiTiet().getId());
-          if (findProductItem.get().getDonGiaSauKhuyenMai().compareTo(BigDecimal.ZERO) != 0 && findProductItem.get().getDonGiaSauKhuyenMai() != null) {
-            orderItem.setDonGiaSauGiam(cartItem.getSanPhamChiTiet().getDonGiaSauKhuyenMai());
-          }
-          else{
-          orderItem.setDonGia(cartItem.getDonGia());
-          }
+//          if (findProductItem.get().getDonGiaSauKhuyenMai().compareTo(BigDecimal.ZERO) != 0 && findProductItem.get().getDonGiaSauKhuyenMai() != null) {
+//            orderItem.setDonGiaSauGiam(cartItem.getSanPhamChiTiet().getDonGiaSauKhuyenMai());
+//            orderItem.setDonGia(cartItem.getDonGia());
+//          } else {
+            orderItem.setDonGia(cartItem.getDonGia());
+//          }
           if (paymentOrder.getLoaiHoaDon().equals(OrderType.AT_COUNTER)) {
 //            findProductItem.get().setSoLuongTonKho(findProductItem.get().getSoLuongTonKho()
 //                    - cartItem.getImeisChuaBan().size());
@@ -596,7 +595,7 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
         Voucher voucher = convertOrder.getVoucher();
         if (voucher != null) {
           Optional<Voucher> findVoucher = voucherRepository.findById(voucher.getId());
-          if (findVoucher.isPresent()){
+          if (findVoucher.isPresent()) {
             voucher.setSoLuong(voucher.getSoLuong() + 1);
             voucherRepository.save(voucher);
           }
