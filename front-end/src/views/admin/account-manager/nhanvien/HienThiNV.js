@@ -92,7 +92,6 @@ const HienThiNV = () => {
 
   useEffect(() => {
     loadDataListRole(1);
-    console.log(123123123123);
   }, [filterStatus]);
   // const fetchEmployeeList = async (currentPage) => {
   //   try {
@@ -139,6 +138,7 @@ const HienThiNV = () => {
       anhDaiDien: record.anhDaiDien,
     });
     navigate(`/dashboard/update-employee/${record.id}`);
+    handleOpenAlertVariant("Sửa thành công", Notistack.SUCCESS);
     setEditingKey(record.id);
   };
   const doChangeTrangThai = (id) => {

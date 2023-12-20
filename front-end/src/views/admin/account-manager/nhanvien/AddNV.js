@@ -31,6 +31,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import * as dayjs from "dayjs";
 import { Notistack } from "../../order-manager/enum";
 import useCustomSnackbar from "../../../../utilities/notistack";
+import LoadingIndicator from "../../../../utilities/loading";
 const AddNV = () => {
   let [listNV, setListNV] = useState([]);
   let [hoVaTen, setTen] = useState("");
@@ -55,6 +56,7 @@ const AddNV = () => {
   const [sdtError, setSDTError] = useState("");
   const { handleOpenAlertVariant } = useCustomSnackbar();
   var navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
   const [diaChiList, setDiaChiList] = useState([
     {
       diaChi: "",
@@ -169,6 +171,7 @@ const AddNV = () => {
   };
   // add
   const AddNV = async () => {
+    setIsLoading(false);
     setSubmitted(true);
     setFormSubmitted(true);
     try {
@@ -196,6 +199,7 @@ const AddNV = () => {
           "Vui lòng điền đủ thông tin trước khi lưu.",
           Notistack.ERROR
         );
+        setIsLoading(true);
         setIsConfirmVisible(false);
         return;
       }
@@ -204,12 +208,12 @@ const AddNV = () => {
           "Vui lòng điền đúng thông tin trước khi lưu.",
           Notistack.ERROR
         );
+        setIsLoading(true);
         setIsConfirmVisible(false);
         return;
       }
       request("POST", apiURLNV + "/add", obj).then((response) => {
         var nhanVienRespone = response;
-        console.log(response);
         const generatedMaKhachHang = nhanVienRespone.data.id;
         addDiaChiList(generatedMaKhachHang);
         redirectToHienThiKH(generatedMaKhachHang);
@@ -224,6 +228,7 @@ const AddNV = () => {
           canCuocCongDan: cccd,
         };
         setListNV([newNhanVienRespone, ...listNV]);
+        setIsLoading(true);
         handleOpenAlertVariant("Thêm khách hàng thành công", Notistack.SUCCESS);
       });
     } catch (error) {
@@ -524,6 +529,7 @@ const AddNV = () => {
           theme="colored"
         />
       </Card>
+      {!isLoading && <LoadingIndicator />}
     </>
   );
 };
