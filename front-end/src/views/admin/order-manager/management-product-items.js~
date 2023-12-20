@@ -514,9 +514,7 @@ const ManagementProductItems = (
               <IconButton onClick={handleUploadClick}
                 className="me-2">
                 <FaUpload color="#2f80ed" />
-                <input style={{ display: "none" }} ref={inputRef} type="file" name="file" className="custom-file-input" id="inputGroupFile" required onChange={() => {
-                  /* handleImport */
-                }}
+                <input style={{ display: "none" }} ref={inputRef} type="file" name="file" className="custom-file-input" id="inputGroupFile" required onChange={handleImport}
                   accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
               </IconButton>
             </Tooltip>
@@ -958,7 +956,7 @@ const ManagementProductItems = (
 
       <ModalUpdateProduct
         priceProduct={priceProduct} statusProduct={statusProduct}
-        open={openUpdateProduct} close={handleCloseOpenUpdateProduct} update={handleUpdateProduct} />
+        open={openUpdateProduct} close={handleCloseOpenUpdateProduct} /* update={handleUpdateProduct} */ />
 
       <ImportAndExportExcelImei
         open={openModalImel}

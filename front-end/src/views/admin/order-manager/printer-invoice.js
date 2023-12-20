@@ -3,6 +3,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useReactToPrint } from 'react-to-print';
 import { format } from "date-fns";
 import axios from 'axios';
+import { OrderStatusString } from './enum';
+import { request } from '../../../store/helpers/axios_helper';
 export const PrintBillAtTheCounterAuto = React.forwardRef((ref, props) => {
 
   useEffect(() => {
@@ -21,7 +23,7 @@ export const PrintBillAtTheCounterAuto = React.forwardRef((ref, props) => {
 
   const getOrderItemsById = async () => {
     await axios
-      .get(`http://localhost:8080/api/orders/2023234245668`)
+      .get(`http://localhost:8080/api/orders/2023235949279`)
       .then((response) => {
         const data = response.data.data;
         setOrder(data)
@@ -490,6 +492,56 @@ export const PrintBillAtTheCounter = React.forwardRef((props, ref) => {
     </div >
   );
 })
+
+export const Print1 = ({ data, imeis, ma, payment }) => {
+  const componentRef = useRef();
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+  });
+
+  const [order, setOrder] = useState({});
+
+  const getOrderItemsById = async () => {
+    await request('GET', `/api/orders/${ma}`)
+      .then((response) => {
+        const data = response.data.data;
+        setOrder(data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  useEffect(() => {
+    getOrderItemsById();
+  }, [ma])
+
+  return (
+    <div className=''>
+      <PrintBillAtTheCounter ref={componentRef} data={order} imeis={imeis} />
+      <Button
+        onClick={() => {
+          payment(); handlePrint();
+        }}
+        className="rounded-2 me-1 button-mui"
+        type="primary"
+        style={{
+          height: "40px",
+          width: "auto",
+          fontSize: "16px",
+          marginBottom: "20px",
+        }}
+      >
+        <span
+          className="text-white"
+          style={{ fontWeight: "500", marginBottom: "2px" }}
+        >
+          Xác nhận
+        </span>
+      </Button>
+    </div>
+  );
+}
 
 export const Print = ({ data, imeis }) => {
   const componentRef = useRef();

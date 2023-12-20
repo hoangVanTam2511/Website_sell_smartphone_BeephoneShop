@@ -1105,11 +1105,11 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      await request(
+      request(
         "PUT",
         `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`,
         orderRequest
-      ).then(async (response) => {
+      ).then((response) => {
         setOrder(response.data.data);
         setIsLoading(false);
         handleOpenAlertVariant(
@@ -1445,17 +1445,17 @@ const PointOfSales = () => {
             id: order.id,
           },
         },
-        // {
-        //   stt: 2,
-        //   thaoTac: "Chờ Giao Hàng",
-        //   loaiThaoTac: 1,
-        //   moTa: "Thông tin đơn hàng đã được xác nhận bởi nhân viên và đang trong quá trình chờ giao hàng",
-        //   createdAt: currentTime,
-        //   createdBy: userId,
-        //   hoaDon: {
-        //     id: order.id,
-        //   },
-        // },
+        {
+          stt: 2,
+          thaoTac: "Chờ Giao Hàng",
+          loaiThaoTac: 1,
+          moTa: "Thông tin đơn hàng đã được xác nhận bởi nhân viên và đang trong quá trình chờ giao hàng",
+          createdAt: currentTime,
+          createdBy: userId,
+          hoaDon: {
+            id: order.id,
+          },
+        },
       ];
       const data = {
         trangThai: statusOrder,

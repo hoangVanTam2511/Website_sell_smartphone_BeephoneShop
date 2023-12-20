@@ -339,7 +339,6 @@ const PointOfSales = () => {
     }
   };
 
-
   const [selectedValuePaymentMethod, setSelectedValuePaymentMethod] =
     useState("Tiền mặt");
   const handleRadioChange = (event) => {
@@ -1105,11 +1104,11 @@ const PointOfSales = () => {
       isUpdateEmail: false,
     };
     try {
-      await request(
+      request(
         "PUT",
         `/api/orders/${order.id}?isUpdateStatusOrderDelivery=false`,
         orderRequest
-      ).then(async (response) => {
+      ).then((response) => {
         setOrder(response.data.data);
         setIsLoading(false);
         handleOpenAlertVariant(
@@ -1120,6 +1119,7 @@ const PointOfSales = () => {
           Notistack.SUCCESS
         );
         navigate(`/dashboard/order-detail/${order.ma}`);
+        handlePrint();
         console.log(orderRequest);
       });
     } catch (error) { }
@@ -1445,17 +1445,17 @@ const PointOfSales = () => {
             id: order.id,
           },
         },
-        // {
-        //   stt: 2,
-        //   thaoTac: "Chờ Giao Hàng",
-        //   loaiThaoTac: 1,
-        //   moTa: "Thông tin đơn hàng đã được xác nhận bởi nhân viên và đang trong quá trình chờ giao hàng",
-        //   createdAt: currentTime,
-        //   createdBy: userId,
-        //   hoaDon: {
-        //     id: order.id,
-        //   },
-        // },
+        {
+          stt: 2,
+          thaoTac: "Chờ Giao Hàng",
+          loaiThaoTac: 1,
+          moTa: "Thông tin đơn hàng đã được xác nhận bởi nhân viên và đang trong quá trình chờ giao hàng",
+          createdAt: currentTime,
+          createdBy: userId,
+          hoaDon: {
+            id: order.id,
+          },
+        },
       ];
       const data = {
         trangThai: statusOrder,
@@ -3738,20 +3738,6 @@ const PointOfSales = () => {
                 <div className="mt-4 pt-2">
                   <div className="">
                     <div className="text-center">
-                      <Button
-                        type="primary"
-                        onClick={handleOpenDialogConfirmPayment}
-                        className="__add-cart0 add-to-cart trigger ms-1"
-                      >
-                        <span
-                          class=""
-                          style={{ fontSize: "17.5px", fontWeight: "450" }}
-                        >
-                          {delivery == true
-                            ? "XÁC NHẬN ĐẶT HÀNG"
-                            : "XÁC NHẬN THANH TOÁN"}
-                        </span>
-                      </Button>
                     </div>
                   </div>
                 </div>
