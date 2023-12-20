@@ -30,8 +30,13 @@ import AssignmentOutlinedIcon from "@mui/icons-material/AssignmentOutlined";
 import useCustomSnackbar from "../../../utilities/notistack";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
-import { request, requestParam } from '../../../store/helpers/axios_helper'
-
+import { request, requestParam } from "../../../store/helpers/axios_helper";
+import {
+  faArrowsRotate,
+  faHouse,
+  faPenToSquare,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -49,7 +54,7 @@ const ManagementCongSacs = () => {
   );
 
   const loadDataChargers = () => {
-    request('GET',`/api/chargers`)
+    request("GET", `/api/chargers`)
       .then((response) => {
         setCongSacs(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -78,12 +83,12 @@ const ManagementCongSacs = () => {
 
   const getListProductSearchAndPage = (page) => {
     // setIsLoading(false);
-    requestParam('GET',`/api/chargers/search`, {
-          keyword: searchTatCa,
-          currentPage: page,
-          pageSize: pageShow,
-          status: ConvertStatusProductsNumberToString(searchTrangThai),
-      })
+    requestParam("GET", `/api/chargers/search`, {
+      keyword: searchTatCa,
+      currentPage: page,
+      pageSize: pageShow,
+      status: ConvertStatusProductsNumberToString(searchTrangThai),
+    })
       .then((response) => {
         setProductPages(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -252,7 +257,14 @@ const ManagementCongSacs = () => {
                     setIdSac(record.id);
                   }}
                 >
-                  <BorderColorOutlinedIcon color="primary" />
+                  <FontAwesomeIcon
+                    icon={faPenToSquare}
+                    size="sm"
+                    style={{
+                      color: "#2f80ed",
+                      cursor: "pointer",
+                    }}
+                  />
                 </IconButton>
               </Tooltip>
 
@@ -273,14 +285,19 @@ const ManagementCongSacs = () => {
                   style={{ marginTop: "6px" }}
                   onClick={() => doiTrangThaiProducts(record.id)}
                 >
-                  <AssignmentOutlinedIcon
-                    color={
-                      record.status === StatusCommonProducts.IN_ACTIVE
-                        ? "error"
-                        : record.status === StatusCommonProducts.ACTIVE
-                        ? "success"
-                        : "disabled"
-                    }
+                  <FontAwesomeIcon
+                    icon={faArrowsRotate}
+                    size="sm"
+                    transform={{ rotate: 90 }}
+                    style={{
+                      cursor: "pointer",
+                      color:
+                        record.status === StatusCommonProducts.IN_ACTIVE
+                          ? "#e5383b"
+                          : record.status === StatusCommonProducts.ACTIVE
+                          ? "#09a129"
+                          : "disabled",
+                    }}
                   />
                 </IconButton>
               </Tooltip>
@@ -297,7 +314,7 @@ const ManagementCongSacs = () => {
   const [idSac, setIdSac] = useState("");
 
   const detailSacs = async (id) => {
-    request('GET',`/api/chargers/${id}`)
+    request("GET", `/api/chargers/${id}`)
       .then((response) => {
         setSacCode(response.data.data.ma);
         setStatus(response.data.data.status);
@@ -362,7 +379,7 @@ const ManagementCongSacs = () => {
       loaiCongSac: loaiCongSac,
       status: status,
     };
-    request('PUT',`/api/chargers`, obj)
+    request("PUT", `/api/chargers`, obj)
       .then((response) => {
         loadDataChargers();
         handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
@@ -374,9 +391,9 @@ const ManagementCongSacs = () => {
   };
 
   const doiTrangThaiProducts = (idSac) => {
-    request('PUT',`/api/chargers/${idSac}`)
+    request("PUT", `/api/chargers/${idSac}`)
       .then((response) => {
-        loadDataChargers();
+        getListProductSearchAndPage(currentPage);
         handleOpenAlertVariant(
           "Đổi trạng thái thành công!!!",
           Notistack.SUCCESS
@@ -396,11 +413,17 @@ const ManagementCongSacs = () => {
         }}
       >
         <Card className="">
+          <span
+            className="header-title mt-3 ms-4"
+            style={{ fontWeight: "500px" }}
+          >
+            <FontAwesomeIcon icon={faHouse} size={"sm"} /> Quản Lý Cổng Sạc
+          </span>
           <Card.Header className="d-flex justify-content-between">
-            <div className="header-title mt-2">
+            <div className="header-title">
               <TextField
                 placeholder="Tìm theo mã, loại cổng sạc"
-                label="Tìm Sạc"
+                label="Tìm Cổng Sạc"
                 onChange={handleSearchTatCaChange}
                 value={searchTatCa}
                 InputLabelProps={{

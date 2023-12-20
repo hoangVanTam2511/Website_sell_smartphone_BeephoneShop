@@ -18,7 +18,7 @@ import LoadingIndicator from "../../../utilities/loading";
 import generateRandomCode from "../../../utilities/randomCode";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { Notistack, StatusCommonProductsNumber } from "./enum";
-import { request } from '../../../store/helpers/axios_helper'
+import { request } from "../../../store/helpers/axios_helper";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -41,7 +41,7 @@ const CreatePin = ({ open, close, getAll, pins }) => {
   };
 
   const uniqueDungLuong = pins
-    .map((option) => option.dungLuong)
+    .map((option) => option.dungLuong.toString())
     .filter((value, index, self) => {
       return self.indexOf(value) === index;
     });
@@ -60,6 +60,7 @@ const CreatePin = ({ open, close, getAll, pins }) => {
     setStatus(StatusCommonProductsNumber.ACTIVE);
     setLoaiPin("");
     setDungLuong("");
+    setValidationMsg({});
   };
 
   const [validationMsg, setValidationMsg] = useState({});
@@ -67,11 +68,21 @@ const CreatePin = ({ open, close, getAll, pins }) => {
   const validationAll = () => {
     const msg = {};
 
-    if (!loaiPin.trim("")) {
+    const isDuplicate = pins.some(
+      (products) =>
+        products.loaiPin === loaiPin && products.dungLuong == dungLuong
+    );
+
+    if (isDuplicate) {
+      handleOpenAlertVariant("Pin đã tồn tại", Notistack.ERROR);
+      msg = "Đã tồn tại";
+    }
+
+    if (loaiPin.trim() === "") {
       msg.loaiPin = "Loại pin không được trống.";
     }
 
-    if (!dungLuong.trim("")) {
+    if (dungLuong.trim() === "") {
       msg.dungLuong = "Dung lượng pin không được trống.";
     }
 
@@ -101,7 +112,7 @@ const CreatePin = ({ open, close, getAll, pins }) => {
       dungLuong: dungLuong,
       status: status,
     };
-    request('POST',`/api/pins`, obj)
+    request("POST", `/api/pins`, obj)
       .then((response) => {
         close();
         getAll();
@@ -168,11 +179,11 @@ const CreatePin = ({ open, close, getAll, pins }) => {
                         {...params}
                         InputProps={{
                           ...params.InputProps,
-                          endAdornment: (
+                          startAdornment: (
                             <>
                               <InputAdornment
                                 style={{ marginLeft: "5px" }}
-                                position="end"
+                                position="start"
                               >
                                 mAh
                               </InputAdornment>
@@ -187,17 +198,22 @@ const CreatePin = ({ open, close, getAll, pins }) => {
                     )}
                   />
                 </div>
-                <div className="mt-3" style={{}}>
+                {/* <div className="mt-3" style={{}}>
                   <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">
                       Trạng Thái
                     </InputLabel>
                     <Select
+                      disabled={true}
                       className="custom"
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
                       value={status}
                       label="Trạng Thái"
+                      style={{
+                        pointerEvents: "none",
+                        opacity: 0.5,
+                      }}
                       onChange={handleChangeStatus}
                       defaultValue={StatusCommonProductsNumber.ACTIVE}
                     >
@@ -209,8 +225,24 @@ const CreatePin = ({ open, close, getAll, pins }) => {
                       </MenuItem>
                     </Select>
                   </FormControl>
-                </div>
+                </div> */}
                 <div className="mt-4 pt-1 d-flex justify-content-end">
+                  <Button
+                    onClick={() => {
+                      close();
+                      handleReset();
+                    }}
+                    className="rounded-2 me-2 button-mui"
+                    type="error"
+                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                  >
+                    <span
+                      className=""
+                      style={{ marginBottom: "2px", fontWeight: "500" }}
+                    >
+                      Hủy
+                    </span>
+                  </Button>
                   <Button
                     onClick={() => handleSubmit()}
                     className="rounded-2 button-mui"

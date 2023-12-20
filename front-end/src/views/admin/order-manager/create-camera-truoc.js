@@ -22,7 +22,8 @@ import {
   TypeCameraNumber,
 } from "./enum";
 import useCustomSnackbar from "../../../utilities/notistack";
-import { request } from '../../../store/helpers/axios_helper'
+import { ConvertCameraTypeToString } from "../../../utilities/convertEnum";
+import { request } from "../../../store/helpers/axios_helper";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -55,7 +56,22 @@ const CreateCameraTruoc = ({ open, close, getAll, cameraFront }) => {
   const validationAll = () => {
     const msg = {};
 
-    if (!doPhanGiai.trim("")) {
+    const isDuplicate = cameraFront.some(
+      (camera) =>
+        camera.doPhanGiai === Number(doPhanGiai) &&
+        camera.cameraType === ConvertCameraTypeToString(cameraType)
+    );
+
+    if (isDuplicate) {
+      handleOpenAlertVariant("Camera đã tồn tại", Notistack.ERROR);
+      msg = "Đã tồn tại";
+    }
+
+    if (isNaN(doPhanGiai) || doPhanGiai < 1 || doPhanGiai > 10000) {
+      msg.doPhanGiai = "Độ phân giải phải là số và từ 1 đến 10000 Megapixels";
+    }
+
+    if (doPhanGiai.trim() === "") {
       msg.doPhanGiai = "Độ phân giải không được trống.";
     }
 
@@ -77,7 +93,7 @@ const CreateCameraTruoc = ({ open, close, getAll, cameraFront }) => {
       cameraType: cameraType,
       status: status,
     };
-    request('POST',`/api/camera-fronts`, obj)
+    request("POST", `/api/camera-fronts`, obj)
       .then((response) => {
         close();
         getAll();
@@ -93,6 +109,7 @@ const CreateCameraTruoc = ({ open, close, getAll, cameraFront }) => {
     setStatus(StatusCommonProductsNumber.ACTIVE);
     setDoPhanGiai("");
     setCameraType("");
+    setValidationMsg({});
   };
 
   const uniqueDoPhanGiai = cameraFront
@@ -140,11 +157,11 @@ const CreateCameraTruoc = ({ open, close, getAll, cameraFront }) => {
                         {...params}
                         InputProps={{
                           ...params.InputProps,
-                          endAdornment: (
+                          startAdornment: (
                             <>
                               <InputAdornment
                                 style={{ marginLeft: "5px" }}
-                                position="end"
+                                position="start"
                               >
                                 <span className="">Megapixel</span>
                               </InputAdornment>
@@ -213,6 +230,10 @@ const CreateCameraTruoc = ({ open, close, getAll, cameraFront }) => {
                       label="Trạng Thái"
                       onChange={handleChangeStatus}
                       defaultValue={StatusCommonProductsNumber.ACTIVE}
+                      style={{
+                        pointerEvents: "none",
+                        opacity: 0.5,
+                      }}
                     >
                       <MenuItem value={StatusCommonProductsNumber.ACTIVE}>
                         Hoạt Động
@@ -224,6 +245,22 @@ const CreateCameraTruoc = ({ open, close, getAll, cameraFront }) => {
                   </FormControl>
                 </div>
                 <div className="mt-4 pt-1 d-flex justify-content-end">
+                  <Button
+                    onClick={() => {
+                      close();
+                      handleReset();
+                    }}
+                    className="rounded-2 me-2 button-mui"
+                    type="error"
+                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                  >
+                    <span
+                      className=""
+                      style={{ marginBottom: "2px", fontWeight: "500" }}
+                    >
+                      Hủy
+                    </span>
+                  </Button>
                   <Button
                     onClick={() => handleSubmit()}
                     className="rounded-2 button-mui"

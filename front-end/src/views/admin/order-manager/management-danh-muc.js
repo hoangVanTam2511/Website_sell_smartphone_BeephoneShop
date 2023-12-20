@@ -31,8 +31,13 @@ import LoadingIndicator from "../../../utilities/loading";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { ConvertStatusProductsNumberToString } from "../../../utilities/convertEnum";
 import CreateDanhMuc from "./create-danh-muc";
-import { request, requestParam } from '../../../store/helpers/axios_helper'
-
+import { request, requestParam } from "../../../store/helpers/axios_helper";
+import {
+  faArrowsRotate,
+  faHouse,
+  faPenToSquare,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -59,7 +64,7 @@ const ManagementDanhMuc = () => {
   const [openSelect, setOpenSelect] = useState(false);
 
   const getListDanhMuc = () => {
-    request('GET',`/api/danh-mucs`)
+    request("GET", `/api/danh-mucs`)
       .then((response) => {
         setDanhMuc(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -71,12 +76,12 @@ const ManagementDanhMuc = () => {
 
   const getListDanhMucSearchAndPage = (page) => {
     // setIsLoading(false);
-    requestParam('GET',`/api/danh-mucs/search`, {
-          keyword: searchTatCa,
-          currentPage: page,
-          pageSize: pageShow,
-          status: ConvertStatusProductsNumberToString(searchTrangThai),
-      })
+    requestParam("GET", `/api/danh-mucs/search`, {
+      keyword: searchTatCa,
+      currentPage: page,
+      pageSize: pageShow,
+      status: ConvertStatusProductsNumberToString(searchTrangThai),
+    })
       .then((response) => {
         setDanhMucPages(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -89,7 +94,7 @@ const ManagementDanhMuc = () => {
   };
 
   const detailDanhMuc = async (id) => {
-    request('GET',`/api/danh-mucs/${id}`)
+    request("GET", `/api/danh-mucs/${id}`)
       .then((response) => {
         setDanhMucCode(response.data.data.ma);
         setStatus(response.data.data.status);
@@ -176,9 +181,9 @@ const ManagementDanhMuc = () => {
   };
 
   const doiTrangThaiDanhMuc = (idDanhMuc) => {
-    request('PUT',`/api/danh-mucs/${idDanhMuc}`)
+    request("PUT", `/api/danh-mucs/${idDanhMuc}`)
       .then((response) => {
-        getListDanhMuc();
+        getListDanhMucSearchAndPage(currentPage);
         handleOpenAlertVariant(
           "Đổi trạng thái thành công!!!",
           Notistack.SUCCESS
@@ -280,13 +285,19 @@ const ManagementDanhMuc = () => {
           <div className="button-container">
             <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
               <IconButton
-                size=""
                 onClick={() => {
-                  setIdDanhMuc(record.id);
                   handleClickOpen1(record.id);
+                  setIdDanhMuc(record.id);
                 }}
               >
-                <BorderColorOutlinedIcon color="primary" />
+                <FontAwesomeIcon
+                  icon={faPenToSquare}
+                  size="sm"
+                  style={{
+                    color: "#2f80ed",
+                    cursor: "pointer",
+                  }}
+                />
               </IconButton>
             </Tooltip>
 
@@ -307,14 +318,19 @@ const ManagementDanhMuc = () => {
                 style={{ marginTop: "6px" }}
                 onClick={() => doiTrangThaiDanhMuc(record.id)}
               >
-                <AssignmentOutlinedIcon
-                  color={
-                    record.status === StatusCommonProducts.IN_ACTIVE
-                      ? "error"
-                      : record.status === StatusCommonProducts.ACTIVE
-                      ? "success"
-                      : "disabled"
-                  }
+                <FontAwesomeIcon
+                  icon={faArrowsRotate}
+                  size="sm"
+                  transform={{ rotate: 90 }}
+                  style={{
+                    cursor: "pointer",
+                    color:
+                      record.status === StatusCommonProducts.IN_ACTIVE
+                        ? "#e5383b"
+                        : record.status === StatusCommonProducts.ACTIVE
+                        ? "#09a129"
+                        : "disabled",
+                  }}
                 />
               </IconButton>
             </Tooltip>
@@ -328,6 +344,16 @@ const ManagementDanhMuc = () => {
 
   const validationAll = () => {
     const msg = {};
+
+    const isDuplicate = danhMuc.some(
+      (product) =>
+        product.tenDanhMuc === danhMucName && product.id !== idDanhMuc
+    );
+
+    if (isDuplicate) {
+      handleOpenAlertVariant("Danh mục đã tồn tại", Notistack.ERROR);
+      msg = "Đã tồn tại";
+    }
 
     if (!danhMucName.trim("")) {
       msg.danhMucName = "Tên danh mục không được trống.";
@@ -351,7 +377,7 @@ const ManagementDanhMuc = () => {
       tenDanhMuc: danhMucName,
       status: status,
     };
-    request('PUT',`/api/danh-mucs`, obj)
+    request("PUT", `/api/danh-mucs`, obj)
       .then((response) => {
         getListDanhMuc();
         handleOpenAlertVariant("Sửa thành công!!!", Notistack.SUCCESS);
@@ -385,8 +411,14 @@ const ManagementDanhMuc = () => {
         }}
       >
         <Card className="">
+          <span
+            className="header-title mt-3 ms-4"
+            style={{ fontWeight: "500px" }}
+          >
+            <FontAwesomeIcon icon={faHouse} size={"sm"} /> Quản Lý Danh Mục
+          </span>
           <Card.Header className="d-flex justify-content-between">
-            <div className="header-title mt-2">
+            <div className="header-title">
               <TextField
                 placeholder="Tìm theo mã, tên danh mục"
                 label="Tìm danh mục"

@@ -8,11 +8,13 @@ import beephone_shop_projects.core.common.base.ResponseObject;
 import beephone_shop_projects.core.common.base.ResponsePage;
 import beephone_shop_projects.entity.DanhMuc;
 import beephone_shop_projects.infrastructure.constant.ApiConstants;
+import beephone_shop_projects.infrastructure.constant.StatusCommon;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(ApiConstants.ApiSystems.API_DANH_MUC_URI)
@@ -30,7 +32,9 @@ public class DanhMucController {
 
     @GetMapping
     public ResponseObject<List<DanhMucResponse>> getDanhMuc() {
-        List<DanhMucResponse> danhMuc = danhMucService.findAll();
+        List<DanhMucResponse> danhMuc = danhMucService.findAll().stream()
+                .filter(products -> StatusCommon.ACTIVE.equals(products.getStatus()))
+                .collect(Collectors.toList());
         return new ResponseObject<>(danhMuc);
     }
 

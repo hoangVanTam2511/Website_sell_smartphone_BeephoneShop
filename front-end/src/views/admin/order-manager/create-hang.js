@@ -17,7 +17,7 @@ import LoadingIndicator from "../../../utilities/loading";
 import generateRandomCode from "../../../utilities/randomCode";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { Notistack, StatusCommonProductsNumber } from "./enum";
-import { request } from '../../../store/helpers/axios_helper'
+import { request } from "../../../store/helpers/axios_helper";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -35,7 +35,14 @@ const CreateHang = ({ open, close, getAll, hangs }) => {
   const validationAll = () => {
     const msg = {};
 
-    if (!tenHang.trim("")) {
+    const isDuplicate = hangs.some((products) => products.tenHang === tenHang);
+
+    if (isDuplicate) {
+      handleOpenAlertVariant("Hãng đã tồn tại", Notistack.ERROR);
+      msg = "Đã tồn tại";
+    }
+
+    if (tenHang.trim() === "") {
       msg.tenHang = "Tên hãng không được trống.";
     }
 
@@ -56,7 +63,7 @@ const CreateHang = ({ open, close, getAll, hangs }) => {
       tenHang: tenHang,
       status: status,
     };
-    request('POST',`/api/brands`, obj)
+    request("POST", `/api/brands`, obj)
       .then((response) => {
         close();
         getAll();
@@ -71,6 +78,7 @@ const CreateHang = ({ open, close, getAll, hangs }) => {
   const handleReset = (event) => {
     setStatus(StatusCommonProductsNumber.ACTIVE);
     setTenHang("");
+    setValidationMsg({});
   };
 
   const handleChangeStatus = (event) => {
@@ -130,7 +138,7 @@ const CreateHang = ({ open, close, getAll, hangs }) => {
                     )}
                   />
                 </div>
-                <div className="mt-3" style={{}}>
+                {/* <div className="mt-3" style={{}}>
                   <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">
                       Trạng Thái
@@ -141,6 +149,10 @@ const CreateHang = ({ open, close, getAll, hangs }) => {
                       id="demo-simple-select"
                       value={status}
                       label="Trạng Thái"
+                      style={{
+                        pointerEvents: "none",
+                        opacity: 0.5,
+                      }}
                       defaultValue={StatusCommonProductsNumber.ACTIVE}
                       onChange={handleChangeStatus}
                     >
@@ -152,8 +164,24 @@ const CreateHang = ({ open, close, getAll, hangs }) => {
                       </MenuItem>
                     </Select>
                   </FormControl>
-                </div>
+                </div> */}
                 <div className="mt-4 pt-1 d-flex justify-content-end">
+                  <Button
+                    onClick={() => {
+                      close();
+                      handleReset();
+                    }}
+                    className="rounded-2 me-2 button-mui"
+                    type="error"
+                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                  >
+                    <span
+                      className=""
+                      style={{ marginBottom: "2px", fontWeight: "500" }}
+                    >
+                      Hủy
+                    </span>
+                  </Button>
                   <Button
                     onClick={() => handleSubmit()}
                     className="rounded-2 button-mui"

@@ -19,6 +19,8 @@ export const OrderStatusString = {
   CANCELLED: "CANCELLED",
   PENDING_PAYMENT: "PENDING_PAYMENT",
   HAD_PAID: "HAD_PAID",
+  REFUND_A_PART: "REFUND_A_PART",
+  REFUND_FULL: "REFUND_FULL",
 };
 // export const OrderStatusNumber = {
 //   PENDING_CONFIRM: 0,
@@ -141,4 +143,14 @@ export const StatusImei = {
   REFUND: "REFUND",
   CANCELLED: "CANCELLED",
   IN_ACTIVE: "IN_ACTIVE",
+};
+
+export const StatusImeiNumber = {
+  IN_THE_CART: 0,
+  SOLD: 1,
+  NOT_SOLD: 2,
+  PENDING_DELIVERY: 3,
+  REFUND: 4,
+  CANCELLED: 5,
+  IN_ACTIVE: 6,
 };

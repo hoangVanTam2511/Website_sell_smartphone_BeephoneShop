@@ -30,6 +30,11 @@ public class ImeiProductServiceImpl extends AbstractServiceImpl<Imei, ImeiProduc
     private ImeiProductConverter imeiProductConverter;
 
     @Override
+    public Imei getOneImei(String id) {
+        return imeiProductRepository.findOneById(id);
+    }
+
+    @Override
     public Page<ImeiProductResponse> findAllImei(FindFilterImeisRequest findFilterImeisRequest) {
         if (findFilterImeisRequest.getCurrentPage() == null) {
             findFilterImeisRequest.setCurrentPage(1);
@@ -44,7 +49,6 @@ public class ImeiProductServiceImpl extends AbstractServiceImpl<Imei, ImeiProduc
         return imeiProductConverter.convertToPageResponse(imeiProductRepository.findAllImei(pageable, findFilterImeisRequest));
 
     }
-
 
     @Override
     public Imei doiTrangThai(String id) throws Exception {

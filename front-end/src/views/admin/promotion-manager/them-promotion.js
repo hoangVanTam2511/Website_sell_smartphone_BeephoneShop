@@ -30,7 +30,7 @@ import useCustomSnackbar from "../../../utilities/notistack";
 import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
 import LoadingIndicator from "../../../utilities/loading";
 import { useNavigate } from "react-router-dom";
-import { request } from '../../../store/helpers/axios_helper'
+import { request } from "../../../store/helpers/axios_helper";
 
 const AddKhuyenMai = () => {
   //add-khuyen-mai
@@ -39,7 +39,7 @@ const AddKhuyenMai = () => {
   const [ngayBatDau, setNgayBatDau] = useState(dayjs());
   const [ngayKetThuc, setNgayKetThuc] = useState(dayjs());
   const [selectDiscount, setSeclectDiscount] = useState(TypeDiscountString.VND);
-  const [value, setValue] = React.useState("0");
+  const [value, setValue] = React.useState("");
   const [value2, setValue2] = React.useState();
 
   //san-pham
@@ -66,7 +66,7 @@ const AddKhuyenMai = () => {
   const navigate = useNavigate();
 
   const redirectToHienThiKhuyenMai = () => {
-    navigate("/khuyen-mai");
+    navigate("/dashboard/discounts");
   };
 
   const handleOpenDialogConfirmAdd = () => {
@@ -101,7 +101,7 @@ const AddKhuyenMai = () => {
   };
 
   const loadDatalistSanPham = () => {
-    request('GET',"/san-pham-1")
+    request("GET", "/san-pham-1")
       .then((response) => {
         setListSanPham(response.data.data);
       })
@@ -114,7 +114,7 @@ const AddKhuyenMai = () => {
   };
 
   const loadDatalistSanPhamChiTiet = (id, check) => {
-    request('GET',`/san-pham-chi-tiet-1/${id}/${check}`)
+    request("GET", `/san-pham-chi-tiet-1/${id}/${check}`)
       .then((response) => {
         setlistSanPhamChiTiet(response.data.data);
         const data = response.data.data;
@@ -131,7 +131,7 @@ const AddKhuyenMai = () => {
   };
 
   const clear = () => {
-    request('GET',"/san-pham-chi-tiet/removeALL")
+    request("GET", "/san-pham-chi-tiet/removeALL")
       .then((response) => {
         setlistSanPhamChiTiet(response.data.data);
       })
@@ -193,7 +193,7 @@ const AddKhuyenMai = () => {
 
   //Detail sản phẩm chi tiết đã áp dụng khuyến mãi
   const detailSanPhamSauKhuyenMai = (id) => {
-    request('GET',"/san-pham-chi-tiet-khuyen-mai/detail/" + id)
+    request("GET", "/san-pham-chi-tiet-khuyen-mai/detail/" + id)
       .then((response) => {
         setSanPhamChiTietKhuyenMai(response.data.data);
       })
@@ -215,7 +215,7 @@ const AddKhuyenMai = () => {
       ngayKetThuc: ngayKetThuc,
     };
 
-    request('POST', apiURLKhuyenMai + "/add-khuyen-mai", obj)
+    request("POST", apiURLKhuyenMai + "/add-khuyen-mai", obj)
       .then((response) => {
         const khuyenMaiID = response.data.data.id;
         selectedProductDetails.forEach((idSanPhamChiTiet) => {
@@ -241,9 +241,7 @@ const AddKhuyenMai = () => {
       idKhuyenMai: khuyenMaiID,
       idSanPhamChiTiet: idSanPhamChiTiet,
     };
-    request('POST',"/khuyen-mai-chi-tiet/add",
-        objKhuyenMaiChiTiet
-      )
+    request("POST", "/khuyen-mai-chi-tiet/add", objKhuyenMaiChiTiet)
       .then((response) => {
         successfulCount1++;
         if (successfulCount === successfulCount1) {
@@ -265,7 +263,7 @@ const AddKhuyenMai = () => {
   };
 
   const updateSanPhamChiTiet = (idSP) => {
-    request('PUT',"/khuyen-mai-chi-tiet/update-san-pham/" + idSP)
+    request("PUT", "/khuyen-mai-chi-tiet/update-san-pham/" + idSP)
       .then((response) => {
         console.log("Update thành công ");
       })
@@ -620,13 +618,13 @@ const AddKhuyenMai = () => {
   return (
     <>
       <div className="row">
-        <div className="col-5">
+        <div className="col-4">
           <div className="mt-3 add-promotion-container">
             <h5
               className="title-promotion ms-3"
               style={{ paddingBottom: "2px", paddingLeft: "10px" }}
             >
-              Thêm Giảm Giá
+              Thêm Đợt Giảm Giá
             </h5>
             <div className="ms-3 mb-3 mt-2">
               <div className="input-container">
@@ -637,7 +635,7 @@ const AddKhuyenMai = () => {
                   onChange={(e) => {
                     setTenKhuyenMai(e.target.value);
                   }}
-                  style={{ width: "430px", marginTop: "10px" }}
+                  style={{ width: "330px", marginTop: "10px" }}
                   inputProps={{
                     maxLength: 255, // Giới hạn tối đa 10 ký tự
                   }}
@@ -717,18 +715,11 @@ const AddKhuyenMai = () => {
                   InputProps={{
                     inputMode: "numeric",
                     startAdornment: (
-                      <InputAdornment position="start">
-                        {/* {selectDiscount === TypeDiscountString.VND
-                          ? TypeDiscountString.VND
-                          : TypeDiscountString.PERCENT
-                          ? "%"
-                          : ""} */}
-                        đ
-                      </InputAdornment>
+                      <InputAdornment position="start">VNĐ</InputAdornment>
                     ),
                   }}
                   style={{
-                    width: "430px",
+                    width: "330px",
                   }}
                   inputProps={{
                     maxLength: 20, // Giới hạn tối đa 10 ký tự
@@ -752,7 +743,7 @@ const AddKhuyenMai = () => {
                         setNgayBatDau(e);
                         setNgayKetThuc(e);
                       }}
-                      sx={{ width: "430px" }}
+                      sx={{ width: "330px" }}
                       slotProps={{
                         textField: {
                           error: validationMsg.ngayBatDau !== undefined,
@@ -780,7 +771,7 @@ const AddKhuyenMai = () => {
                       onChange={(e) => {
                         setNgayKetThuc(e);
                       }}
-                      sx={{ width: "430px", marginTop: "20px" }}
+                      sx={{ width: "330px", marginTop: "20px" }}
                       slotProps={{
                         textField: {
                           error: validationMsg.ngayKetThuc !== undefined,
@@ -834,7 +825,7 @@ const AddKhuyenMai = () => {
             </div>
           </div>
         </div>
-        <div className="col-7">
+        <div className="col-8">
           <div className="mt-3 add-promotion-inProduct-container">
             <h5
               className="title-product mb-2"

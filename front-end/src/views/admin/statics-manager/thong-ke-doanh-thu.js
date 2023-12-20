@@ -12,16 +12,12 @@ import {
   faRankingStar,
 } from "@fortawesome/free-solid-svg-icons";
 import { Card, FormControl, MenuItem, Select } from "@mui/material";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import * as dayjs from "dayjs";
 import Slider from "@material-ui/core/Slider";
 import { Table, ArrowUpOutlined, Button, Image } from "antd";
 import numeral from "numeral";
-import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
-import { request } from '../../../store/helpers/axios_helper'
-
+import { request } from "../../../store/helpers/axios_helper";
+import { ButtonGroup } from "@mui/joy";
 const ThongKeDoanhThu = () => {
   const [listDonHangAll, setListDonHangAll] = useState([]);
   // const [listDonHangInMonth, setListDonHangInMonth] = useState([]);
@@ -39,62 +35,64 @@ const ThongKeDoanhThu = () => {
   const [searchStartDate, setSearchStartDate] = useState(dayjs());
   const [searchEndDate, setSearchEndDate] = useState(dayjs().add(7, "day"));
   const [searchMonth, setSearchMonth] = useState();
-  const [searchYear, setSearchYear] = useState(dayjs());
-  const currentYear = new Date().getFullYear();
+
   const [searchNgayBatDau, setSearchNgayBatDau] = useState("");
   const [searchNgayKetThuc, setSearchNgayKetThuc] = useState("");
+
+  const [searchNgayBatDau1, setSearchNgayBatDau1] = useState("");
+  const [searchNgayKetThuc1, setSearchNgayKetThuc1] = useState("");
+
   const [tocDoTangTruong, setTocDoTangTruong] = useState([]);
+  const [activeButton, setActiveButton] = useState("thang");
+  const [activeButton1, setActiveButton1] = useState("thang");
+  const [openDate, setOpenDate] = useState(false);
 
   const thongKeTheoNgay = () => {
-    request('GET',`/thong-ke/in-day`)
+    request("GET", `/thong-ke/in-day`)
       .then((response) => {
         setListDonHangInDay(response.data);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
 
   const thongKeTheoThang = () => {
-    request('GET',`/thong-ke/in-month`)
+    request("GET", `/thong-ke/in-month`)
       .then((response) => {
         setListDonHangInMonth(response.data);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
 
   const thongKeTheoSanPham = () => {
-    request('GET',`/thong-ke/san-pham`)
+    request("GET", `/thong-ke/san-pham`)
       .then((response) => {
         setListSanPham(response.data);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
 
   const getSanPhamBanChay = () => {
-    request('GET',`/thong-ke/san-pham-ban-chay`, {
-        params: {
-          chonTheo: loaiBoLoc,
-        },
-      })
+    request("GET", `/thong-ke/san-pham-ban-chay?chonTheo=${loaiBoLoc}`)
       .then((response) => {
         setListSanPhamBanChay(response.data);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
 
   const getSanPhamSapHetHang = () => {
-    request('GET',`/thong-ke/san-pham-sap-het-hang`)
+    request("GET", `/thong-ke/san-pham-sap-het-hang`)
       .then((response) => {
         setListSanPhamSapHet(response.data);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
 
   const getTocDoTangTruong = () => {
-    request('GET',`/thong-ke/toc-do-tang-truong`)
+    request("GET", `/thong-ke/toc-do-tang-truong`)
       .then((response) => {
         setTocDoTangTruong(response.data);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
 
   // const getSanPhamBanChay = () => {
@@ -141,147 +139,143 @@ const ThongKeDoanhThu = () => {
     }).format(number);
   };
 
-  const [numberOfDays, setNumberOfDays] = useState(10);
-  const [chartData, setChartData] = useState({});
-  const currentDate = new Date();
+  // const [numberOfDays, setNumberOfDays] = useState(10);
+  // const [chartData, setChartData] = useState({});
+  // const currentDate = new Date();
 
-  const daysInMonth = new Date(
-    currentDate.getFullYear(),
-    currentDate.getMonth() + 1,
-    0
-  ).getDate();
+  // const daysInMonth = new Date(
+  //   currentDate.getFullYear(),
+  //   currentDate.getMonth() + 1,
+  //   0
+  // ).getDate();
 
-  const allDaysInMonth = Array.from(
-    { length: daysInMonth },
-    (_, index) => index + 1
-  );
+  // const allDaysInMonth = Array.from(
+  //   { length: daysInMonth },
+  //   (_, index) => index + 1
+  // );
 
-  const formattedDays = allDaysInMonth.map((day) => {
-    const formattedDay = day < 10 ? `0${day}` : `${day}`;
-    const formattedMonth =
-      currentDate.getMonth() + 1 < 10
-        ? `0${currentDate.getMonth() + 1}`
-        : `${currentDate.getMonth() + 1}`;
-    return `${currentDate.getFullYear()}-${formattedMonth}-${formattedDay}`;
-  });
+  // const formattedDays = allDaysInMonth.map((day) => {
+  //   const formattedDay = day < 10 ? `0${day}` : `${day}`;
+  //   const formattedMonth =
+  //     currentDate.getMonth() + 1 < 10
+  //       ? `0${currentDate.getMonth() + 1}`
+  //       : `${currentDate.getMonth() + 1}`;
+  //   return `${currentDate.getFullYear()}-${formattedMonth}-${formattedDay}`;
+  // });
 
-  const fetchData = (numberOfDays) => {
-    const sanPhamPromise = request('GET',`/thong-ke/san-pham-khoang-ngay`,
-      {
-        params: {
-          date1: searchNgayBatDau,
-          date2: searchNgayKetThuc,
-        },
-      }
-    );
+  // const fetchData = (numberOfDays) => {
+  //   const sanPhamPromise = request("GET", `/thong-ke/san-pham-khoang-ngay`, {
+  //     params: {
+  //       date1: searchNgayBatDau,
+  //       date2: searchNgayKetThuc,
+  //     },
+  //   });
 
-    const donHangPromise = request('GET',`/thong-ke/don-hang-khoang-ngay`,
-      {
-        params: {
-          date1: searchNgayBatDau,
-          date2: searchNgayKetThuc,
-        },
-      }
-    );
-    Promise.all([sanPhamPromise, donHangPromise])
-      .then(([sanPhamResponse, donHangResponse]) => {
-        const sanPhamData = sanPhamResponse.data;
-        const donHangData = donHangResponse.data;
+  //   const donHangPromise = request("GET", `/thong-ke/don-hang-khoang-ngay`, {
+  //     params: {
+  //       date1: searchNgayBatDau,
+  //       date2: searchNgayKetThuc,
+  //     },
+  //   });
+  //   Promise.all([sanPhamPromise, donHangPromise])
+  //     .then(([sanPhamResponse, donHangResponse]) => {
+  //       const sanPhamData = sanPhamResponse.data;
+  //       const donHangData = donHangResponse.data;
 
-        const availableDays = [
-          ...new Set([
-            ...sanPhamData.map((item) => item.ngayTao),
-            ...donHangData.map((item) => item.ngayTao),
-          ]),
-        ];
+  //       const availableDays = [
+  //         ...new Set([
+  //           ...sanPhamData.map((item) => item.ngayTao),
+  //           ...donHangData.map((item) => item.ngayTao),
+  //         ]),
+  //       ];
 
-        // Kết hợp dữ liệu của sanPhamData và donHangData
-        const combinedData = formattedDays.map((day) => {
-          const sanPhamItem = sanPhamData.find((item) => item.ngayTao === day);
-          const donHangItem = donHangData.find((item) => item.ngayTao === day);
+  //       // Kết hợp dữ liệu của sanPhamData và donHangData
+  //       const combinedData = formattedDays.map((day) => {
+  //         const sanPhamItem = sanPhamData.find((item) => item.ngayTao === day);
+  //         const donHangItem = donHangData.find((item) => item.ngayTao === day);
 
-          return {
-            ngayTao: day,
-            soLuongSanPham: sanPhamItem ? sanPhamItem.soLuong : 0,
-            soLuongDonHang: donHangItem ? donHangItem.soLuong : 0,
-          };
-        });
+  //         return {
+  //           ngayTao: day,
+  //           soLuongSanPham: sanPhamItem ? sanPhamItem.soLuong : 0,
+  //           soLuongDonHang: donHangItem ? donHangItem.soLuong : 0,
+  //         };
+  //       });
 
-        // Tạo dữ liệu cho biểu đồ
-        const labels = combinedData.map((item) => item.ngayTao);
-        const dataSanPham = combinedData.map((item) => item.soLuongSanPham);
-        const dataDonHang = combinedData.map((item) => item.soLuongDonHang);
+  //       // Tạo dữ liệu cho biểu đồ
+  //       const labels = combinedData.map((item) => item.ngayTao);
+  //       const dataSanPham = combinedData.map((item) => item.soLuongSanPham);
+  //       const dataDonHang = combinedData.map((item) => item.soLuongDonHang);
 
-        const truncatedData = combinedData.slice(-numberOfDays);
-        const truncatedLabels = labels.slice(-numberOfDays);
-        const truncatedDataSanPham = dataSanPham.slice(-numberOfDays);
-        const truncatedDataDonHang = dataDonHang.slice(-numberOfDays);
+  //       const truncatedData = combinedData.slice(-numberOfDays);
+  //       const truncatedLabels = labels.slice(-numberOfDays);
+  //       const truncatedDataSanPham = dataSanPham.slice(-numberOfDays);
+  //       const truncatedDataDonHang = dataDonHang.slice(-numberOfDays);
 
-        const filteredData = combinedData.filter((item) =>
-          availableDays.includes(item.ngayTao)
-        );
+  //       const filteredData = combinedData.filter((item) =>
+  //         availableDays.includes(item.ngayTao)
+  //       );
 
-        // Cập nhật biểu đồ
-        setChartData({
-          labels: truncatedLabels,
-          datasets: [
-            {
-              label: "Số lượng đơn hàng",
-              data: truncatedDataDonHang,
-              backgroundColor: "#2f80ed",
-              borderColor: "#2f80ed",
-              borderWidth: 1,
-            },
-            {
-              label: "Sản phẩm",
-              data: truncatedDataSanPham,
-              backgroundColor: "#ff7b00",
-              borderColor: "#ff7b00",
-              borderWidth: 1,
-            },
-          ],
-        });
-      })
-      .catch((error) => {
-        // Xử lý lỗi nếu có
-      });
-  };
+  //       // Cập nhật biểu đồ
+  //       setChartData({
+  //         labels: truncatedLabels,
+  //         datasets: [
+  //           {
+  //             label: "Số lượng đơn hàng",
+  //             data: truncatedDataDonHang,
+  //             backgroundColor: "#2f80ed",
+  //             borderColor: "#2f80ed",
+  //             borderWidth: 1,
+  //           },
+  //           {
+  //             label: "Sản phẩm",
+  //             data: truncatedDataSanPham,
+  //             backgroundColor: "#ff7b00",
+  //             borderColor: "#ff7b00",
+  //             borderWidth: 1,
+  //           },
+  //         ],
+  //       });
+  //     })
+  //     .catch((error) => {
+  //       // Xử lý lỗi nếu có
+  //     });
+  // };
 
-  useEffect(() => {
-    fetchData(numberOfDays);
-  }, [numberOfDays, searchNgayBatDau, searchNgayKetThuc]);
+  // useEffect(() => {
+  //   fetchData(numberOfDays);
+  // }, [numberOfDays, searchNgayBatDau, searchNgayKetThuc]);
 
-  useEffect(() => {
-    const ctx = document.getElementById("mixedChart");
+  // useEffect(() => {
+  //   const ctx = document.getElementById("mixedChart");
 
-    let chartRef = null;
-    if (ctx) {
-      chartRef = new Chart(ctx, {
-        type: "bar",
-        data: chartData,
-        options: {
-          indexAxis: "x",
-          plugins: {
-            datalabels: {
-              anchor: "end",
-              align: "end",
-            },
-          },
-        },
-      });
-    }
+  //   let chartRef = null;
+  //   if (ctx) {
+  //     chartRef = new Chart(ctx, {
+  //       type: "bar",
+  //       data: chartData,
+  //       options: {
+  //         indexAxis: "x",
+  //         plugins: {
+  //           datalabels: {
+  //             anchor: "end",
+  //             align: "end",
+  //           },
+  //         },
+  //       },
+  //     });
+  //   }
 
-    return () => {
-      if (chartRef) {
-        chartRef.destroy();
-      }
-    };
-  }, [chartData]);
+  //   return () => {
+  //     if (chartRef) {
+  //       chartRef.destroy();
+  //     }
+  //   };
+  // }, [chartData]);
 
-  const handleSliderChange = (event, newValue) => {
-    setNumberOfDays(newValue);
-    fetchData(newValue);
-  };
+  // const handleSliderChange = (event, newValue) => {
+  //   setNumberOfDays(newValue);
+  //   fetchData(newValue);
+  // };
 
   const handleSearchNgayBatDauChange = (date) => {
     setSearchNgayBatDau(dayjs(date).format("DD/MM/YYYY"));
@@ -289,6 +283,14 @@ const ThongKeDoanhThu = () => {
 
   const handleSearchNgayKetThucChange = (date) => {
     setSearchNgayKetThuc(dayjs(date).format("DD/MM/YYYY"));
+  };
+
+  const handleSearchNgayBatDauChange1 = (date) => {
+    setSearchNgayBatDau1(dayjs(date).format("DD/MM/YYYY"));
+  };
+
+  const handleSearchNgayKetThucChange1 = (date) => {
+    setSearchNgayKetThuc1(dayjs(date).format("DD/MM/YYYY"));
   };
   //thống kê trạng thái đơn hàng
   const chartContainer = useRef(null);
@@ -301,15 +303,11 @@ const ThongKeDoanhThu = () => {
 
   useEffect(() => {
     const getTrangThaiDonHang = () => {
-      request('GET',`/thong-ke/trang-thai-don-hang`, {
-          params: {
-            chonTheo: loaiBoLocTDTT,
-          },
-        })
+      request("GET", `/thong-ke/trang-thai-don-hang?chonTheo=${loaiBoLocTDTT}`)
         .then((response) => {
           setTrangThaiDonHang(response.data);
         })
-        .catch((error) => {});
+        .catch((error) => { });
     };
 
     getTrangThaiDonHang();
@@ -336,20 +334,20 @@ const ThongKeDoanhThu = () => {
             item.trangThai === 1
               ? "Đã xác nhận"
               : item.trangThai === 0
-              ? "Chờ xác nhận"
-              : item.trangThai === 2
-              ? "Chuẩn bị"
-              : item.trangThai === 3
-              ? "Giao hàng"
-              : item.trangThai === 4
-              ? "Giao hàng thành công"
-              : item.trangThai === 5
-              ? "Đã hủy"
-              : item.trangThai === 6
-              ? "Chờ thanh toán"
-              : item.trangThai === 7
-              ? "Đã thanh toán"
-              : ""
+                ? "Chờ xác nhận"
+                : item.trangThai === 2
+                  ? "Chuẩn bị"
+                  : item.trangThai === 3
+                    ? "Giao hàng"
+                    : item.trangThai === 4
+                      ? "Giao hàng thành công"
+                      : item.trangThai === 5
+                        ? "Đã hủy"
+                        : item.trangThai === 6
+                          ? "Chờ thanh toán"
+                          : item.trangThai === 7
+                            ? "Đã thanh toán"
+                            : ""
           ),
           datasets: [
             {
@@ -395,7 +393,7 @@ const ThongKeDoanhThu = () => {
           <img
             src={record.duongDan}
             alt="Ảnh"
-            style={{ width: "100px", height: "100px" }}
+            style={{ width: "80px", height: "100px" }}
           />
         );
       },
@@ -408,7 +406,8 @@ const ThongKeDoanhThu = () => {
       render: (value, record) => {
         return (
           <span style={{ whiteSpace: "pre-line" }}>
-            {record.tenSanPham} {record.kichThuocRam}GB/{record.kichThuocRom}GB{" "}
+            {record.tenSanPham} {record.dungLuongRam}GB/{record.dungLuongRom}GB{" "}
+            <br />
             {"("}
             {record.tenMauSac}
             {")"}
@@ -464,12 +463,73 @@ const ThongKeDoanhThu = () => {
     {
       title: "Tên Sản Phẩm",
       dataIndex: "tenSanPham",
-      width: "20%",
+      width: "17%",
       align: "center",
       render: (value, record) => {
         return (
           <span style={{ whiteSpace: "pre-line" }}>
-            {record.tenSanPham} {record.kichThuocRam}GB/{record.kichThuocRom}GB{" "}
+            {record.tenSanPham} {record.dungLuongRam}GB/{record.dungLuongRom}GB{" "}
+            {"("}
+            {record.tenMauSac}
+            {")"}
+          </span>
+        );
+      },
+    },
+    {
+      title: "Giá Bán",
+      dataIndex: "donGia",
+      width: "15%",
+      align: "center",
+      render: (value, record) => {
+        let formattedValue = value;
+        formattedValue = numeral(record.donGia).format("0,0 VND") + " ₫";
+        return <span>{formattedValue}</span>;
+      },
+    },
+    {
+      title: "Số lượng đã bán",
+      dataIndex: "soLuong",
+      width: "15%",
+      align: "center",
+    },
+  ];
+
+  const columns2 = [
+    {
+      title: "STT",
+      dataIndex: "stt",
+      width: "5%",
+      align: "center",
+      render: (text, record, index) => (
+        <span>{listSanPhamSapHet.indexOf(record) + 1}</span>
+      ),
+    },
+    {
+      title: "Ảnh",
+      dataIndex: "duongDan",
+      key: "duongDan",
+      width: "15%",
+      align: "center",
+      render: (text, record) => {
+        return (
+          <img
+            src={record.duongDan}
+            alt="Ảnh"
+            style={{ width: "100px", height: "100px" }}
+          />
+        );
+      },
+    },
+    {
+      title: "Tên Sản Phẩm",
+      dataIndex: "tenSanPham",
+      width: "17%",
+      align: "center",
+      render: (value, record) => {
+        return (
+          <span style={{ whiteSpace: "pre-line" }}>
+            {record.tenSanPham} {record.dungLuongRam}GB/{record.dungLuongRom}GB{" "}
             {"("}
             {record.tenMauSac}
             {")"}
@@ -498,32 +558,16 @@ const ThongKeDoanhThu = () => {
 
   const [openSelect, setOpenSelect] = useState(false);
 
-  const handleCloseSelect = () => {
-    setOpenSelect(false);
-  };
-
-  const handleOpenSelect = () => {
-    setOpenSelect(true);
-  };
-
-  const handleSearchLoaiBoLoc = (event) => {
-    const selectedValue = event.target.value;
-    setLoaiBoLoc(selectedValue);
+  const handleSearchLoaiBoLoc = (loaiBoLoc) => {
+    setLoaiBoLoc(loaiBoLoc);
+    setActiveButton(loaiBoLoc);
   };
 
   const [openSelect1, setOpenSelect1] = useState(false);
 
-  const handleCloseSelect1 = () => {
-    setOpenSelect1(false);
-  };
-
-  const handleOpenSelect1 = () => {
-    setOpenSelect1(true);
-  };
-
-  const handleSearchLoaiBoLoc1 = (event) => {
-    const selectedValue = event.target.value;
-    setLoaiBoLocTDTT(selectedValue);
+  const handleSearchLoaiBoLoc1 = (loaiBoLocTDTT) => {
+    setLoaiBoLocTDTT(loaiBoLocTDTT);
+    setActiveButton1(loaiBoLocTDTT);
   };
 
   return (
@@ -574,7 +618,7 @@ const ThongKeDoanhThu = () => {
               </Card>
             </Col>
           </Row>
-          <Row
+          {/* <Row
             className="mt-3"
             style={{
               margin: "10px",
@@ -661,7 +705,7 @@ const ThongKeDoanhThu = () => {
                 </div>
               </div>
             </Col>
-          </Row>
+          </Row> */}
           <Row
             className="mb-3 mt-3"
             style={{
@@ -677,7 +721,7 @@ const ThongKeDoanhThu = () => {
               Sản phẩm bán chạy
             </h5>
             <div
-              className="mt-2 mb-2"
+              className="mt-3 mb-2"
               style={{ display: "flex", justifyContent: "flex-end" }}
             >
               <div
@@ -688,54 +732,129 @@ const ThongKeDoanhThu = () => {
                   cursor: "pointer",
                 }}
               >
-                <div
-                  onClick={handleOpenSelect}
-                  className=""
-                  style={{ marginTop: "7px" }}
-                >
-                  <span
-                    className="ms-2 ps-1"
-                    style={{ fontSize: "15px", fontWeight: "450" }}
-                  >
-                    Trạng Thái:{" "}
-                  </span>
-                </div>
-                <FormControl
-                  sx={{
-                    minWidth: 50,
-                  }}
-                  size="small"
-                >
-                  <Select
-                    MenuProps={{
-                      PaperProps: {
-                        style: {
-                          borderRadius: "7px",
-                        },
-                      },
+                <ButtonGroup spacing="0.5rem" aria-label="spacing button group">
+                  <Button
+                    onClick={() => {
+                      handleSearchLoaiBoLoc("ngay");
+                      setOpenDate(false);
                     }}
-                    IconComponent={KeyboardArrowDownOutlinedIcon}
-                    sx={{
-                      "& .MuiOutlinedInput-notchedOutline": {
-                        border: "none !important",
-                      },
-                      "& .MuiSelect-select": {
-                        color: "#2f80ed",
-                        fontWeight: "500",
-                      },
+                    className={activeButton === "ngay" ? "button-active" : ""}
+                    style={{
+                      height: "40px",
+                      width: "100px",
+                      fontSize: "15px",
                     }}
-                    open={openSelect}
-                    onClose={handleCloseSelect}
-                    onOpen={handleOpenSelect}
-                    value={loaiBoLoc}
-                    onChange={handleSearchLoaiBoLoc}
                   >
-                    <MenuItem value={"ngay"}>Ngày</MenuItem>
-                    <MenuItem value={"tuan"}>Tuần</MenuItem>
-                    <MenuItem value={"thang"}>Tháng</MenuItem>
-                    <MenuItem value={"nam"}>Năm</MenuItem>
-                  </Select>
-                </FormControl>
+                    Ngày
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      handleSearchLoaiBoLoc("tuan");
+                      setOpenDate(false);
+                    }}
+                    className={activeButton === "tuan" ? "button-active" : ""}
+                    style={{
+                      height: "40px",
+                      width: "100px",
+                      fontSize: "15px",
+                    }}
+                  >
+                    Tuần
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      handleSearchLoaiBoLoc("thang");
+                      setOpenDate(false);
+                    }}
+                    className={activeButton === "thang" ? "button-active" : ""}
+                    style={{
+                      height: "40px",
+                      width: "100px",
+                      fontSize: "15px",
+                    }}
+                  >
+                    Tháng
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      handleSearchLoaiBoLoc("nam");
+                      setOpenDate(false);
+                    }}
+                    className={activeButton === "nam" ? "button-active" : ""}
+                    style={{
+                      height: "40px",
+                      width: "100px",
+                      fontSize: "15px",
+                    }}
+                  >
+                    Năm
+                  </Button>
+                  {/* <Button
+                    onClick={() => {
+                      handleSearchLoaiBoLoc("tuyChinh");
+                      setOpenDate(true);
+                    }}
+                    className={
+                      activeButton === "tuyChinh" ? "button-active" : ""
+                    }
+                    style={{
+                      height: "40px",
+                      width: "100px",
+                      fontSize: "15px",
+                    }}
+                  >
+                    Tùy chỉnh
+                  </Button> */}
+
+                  {/* {openDate && (
+                    <div className="d-flex">
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DemoContainer components={["DatePicker"]}>
+                          <DatePicker
+                            label="Ngày Bắt Đầu"
+                            value={
+                              searchNgayBatDau1
+                                ? dayjs(searchNgayBatDau1, "DD/MM/YYYY")
+                                : null
+                            }
+                            format="DD/MM/YYYY"
+                            onChange={handleSearchNgayBatDauChange1}
+                            slotProps={{ textField: { size: "small" } }}
+                            sx={{
+                              position: "relative",
+                              width: "50px",
+                              "& .MuiInputBase-root": {
+                                width: "85%",
+                              },
+                            }}
+                          />
+                        </DemoContainer>
+                      </LocalizationProvider>
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DemoContainer components={["DatePicker"]}>
+                          <DatePicker
+                            label="Ngày Kết Thúc"
+                            value={
+                              searchNgayKetThuc1
+                                ? dayjs(searchNgayKetThuc1, "DD/MM/YYYY")
+                                : null
+                            }
+                            format="DD/MM/YYYY"
+                            onChange={handleSearchNgayKetThucChange1}
+                            slotProps={{ textField: { size: "small" } }}
+                            sx={{
+                              position: "relative",
+                              width: "50px",
+                              "& .MuiInputBase-root": {
+                                width: "85%",
+                              },
+                            }}
+                          />
+                        </DemoContainer>
+                      </LocalizationProvider>
+                    </div>
+                  )} */}
+                </ButtonGroup>
               </div>
             </div>
             <hr />
@@ -772,7 +891,8 @@ const ThongKeDoanhThu = () => {
               }}
             />
           </Row>
-          {/* <Row
+
+          <Row
             className="mb-3 mt-3"
             style={{
               margin: "10px",
@@ -784,19 +904,18 @@ const ThongKeDoanhThu = () => {
           >
             <h5>
               <FontAwesomeIcon icon={faRankingStar} />
-              Sản phẩm đổi trả
+              Sản phẩm trả hàng
               <hr />
             </h5>
             <Table
-              columns={columns}
-              // dataSource={data}
-              onChange={onChange}
+              columns={columns2}
+              dataSource={listSanPhamSapHet}
               pagination={{
                 // simple: true,
                 pageSize: "3",
               }}
             />
-          </Row> */}
+          </Row>
           <Row
             className="mt-3"
             style={{
@@ -1055,7 +1174,7 @@ const ThongKeDoanhThu = () => {
               <Card variant="outlined" style={{ paddingTop: "10px" }}>
                 <h4>Biểu đồ trạng thái đơn hàng</h4>
                 <div
-                  className="mt-2 mb-2"
+                  className="mt-3 mb-2"
                   style={{ display: "flex", justifyContent: "flex-end" }}
                 >
                   <div
@@ -1066,18 +1185,82 @@ const ThongKeDoanhThu = () => {
                       cursor: "pointer",
                     }}
                   >
-                    <div
-                      onClick={handleOpenSelect1}
-                      className=""
-                      style={{ marginTop: "7px" }}
+                    <ButtonGroup
+                      spacing="0.5rem"
+                      aria-label="spacing button group"
                     >
-                      <span
-                        className="ms-2 ps-1"
-                        style={{ fontSize: "15px", fontWeight: "450" }}
+                      <Button
+                        onClick={() => {
+                          handleSearchLoaiBoLoc1("ngay");
+                        }}
+                        className={
+                          activeButton1 === "ngay" ? "button-active" : ""
+                        }
+                        style={{
+                          height: "40px",
+                          width: "100px",
+                          fontSize: "15px",
+                        }}
                       >
-                        Trạng Thái:{" "}
-                      </span>
-                    </div>
+                        Ngày
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          handleSearchLoaiBoLoc1("tuan");
+                        }}
+                        className={
+                          activeButton1 === "tuan" ? "button-active" : ""
+                        }
+                        style={{
+                          height: "40px",
+                          width: "100px",
+                          fontSize: "15px",
+                        }}
+                      >
+                        Tuần
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          handleSearchLoaiBoLoc1("thang");
+                        }}
+                        className={
+                          activeButton1 === "thang" ? "button-active" : ""
+                        }
+                        style={{
+                          height: "40px",
+                          width: "100px",
+                          fontSize: "15px",
+                        }}
+                      >
+                        Tháng
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          handleSearchLoaiBoLoc1("nam");
+                        }}
+                        className={
+                          activeButton1 === "nam" ? "button-active" : ""
+                        }
+                        style={{
+                          height: "40px",
+                          width: "100px",
+                          fontSize: "15px",
+                        }}
+                      >
+                        Năm
+                      </Button>
+                      {/* <Button
+                        onClick={() => {
+                          handleSearchLoaiBoLoc1("nam");
+                        }}
+                        className={
+                          activeButton1 === "nam" ? "button-active" : ""
+                        }
+                      >
+                        Tùy Chỉnh
+                      </Button> */}
+                    </ButtonGroup>
+                    {/*                    
                     <FormControl
                       sx={{
                         minWidth: 50,
@@ -1113,14 +1296,14 @@ const ThongKeDoanhThu = () => {
                         <MenuItem value={"thang"}>Tháng</MenuItem>
                         <MenuItem value={"nam"}>Năm</MenuItem>
                       </Select>
-                    </FormControl>
+                    </FormControl> */}
                   </div>
                 </div>
                 <div
                   className="mb-3"
                   style={{
                     width: "600px",
-                    height: "400px",
+                    height: "450px",
                     display: "flex",
                     justifyContent: "center",
                   }}

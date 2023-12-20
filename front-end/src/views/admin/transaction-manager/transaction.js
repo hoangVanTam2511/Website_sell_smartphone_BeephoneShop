@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useForm } from "antd/es/form/Form";
 import "./style.css";
 import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
@@ -21,7 +21,10 @@ import * as dayjs from "dayjs";
 import { Notistack } from "../order-manager/enum";
 import axios from "axios";
 import { format } from "date-fns";
-import { request } from '../../../store/helpers/axios_helper'
+import { request, requestParam } from "../../../store/helpers/axios_helper";
+import { current } from "@reduxjs/toolkit";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHouse } from "@fortawesome/free-solid-svg-icons";
 
 const Transaction = () => {
   const [form] = useForm();
@@ -39,21 +42,21 @@ const Transaction = () => {
   const [searchNgayBatDau, setSearchNgayBatDau] = useState(null);
   const [searchNgayKetThuc, setSearchNgayKetThuc] = useState(null);
   const [openSelect2, setOpenSelect2] = useState(false);
+  const [idNhanVien, setIdNhanVien] = useState("");
 
   const loadDataListTransaction = (page) => {
-    const requestParams = {
-      maHoaDon: searchTatCa,
+    const request = {
       page: page,
-      hinhThucThanhToan: searchHinhThucThanhToan,
+      keyword: searchTatCa,
       soTienThanhToan: searchTatCa,
+      hinhThucThanhToan: searchHinhThucThanhToan,
       loaiThanhToan: searchLoaiThanhToan,
       trangThai: searchTrangThai,
       ngayBatDau: searchNgayBatDau,
       ngayKetThuc: searchNgayKetThuc,
+      sortValue: sortTransaction,
     };
-    request('GET',`/transaction/transactions`, {
-        params: requestParams,
-      })
+    requestParam("GET", `/transaction/transactions`, request)
       .then((response) => {
         setListTransaction(response.data.data);
         setTotalPages(response.data.totalPages);
@@ -77,6 +80,7 @@ const Transaction = () => {
     searchHinhThucThanhToan,
     currentPage,
     totalPages,
+    sortTransaction,
   ]);
 
   const handleCloseSelect2 = () => {
@@ -118,7 +122,8 @@ const Transaction = () => {
   const handleSearchTypeTransaction = (event) => {
     const selectedValue = event.target.value;
     setSearchLoaiThanhToan(selectedValue);
-    setCurrentPage(1);
+    if (loadDataListTransaction(currentPage) === null)
+      setCurrentPage(totalPages);
   };
 
   const handleSearchFormTransaction = (event) => {
@@ -147,15 +152,19 @@ const Transaction = () => {
 
   const handleSearchNgayBatDauChange = (selectedDate) => {
     const formattedDate = selectedDate
-      ? dayjs(selectedDate).format("DD/MM/YYYY")
-      : "";
+      ? dayjs(selectedDate).startOf("day").format("DD/MM/YYYY HH:mm:ss")
+      : dayjs().startOf("day").format("DD/MM/YYYY HH:mm:ss"); // Nếu không có giá trị selectedDate, sử dụng ngày và thời gian bắt đầu của ngày hiện tại
+
     setSearchNgayBatDau(formattedDate);
     setCurrentPage(1);
   };
 
   const handleSearchNgayKetThucChange = (selectedDate) => {
-    const value = selectedDate.format("DD/MM/YYYY");
-    setSearchNgayKetThuc(value); // Cập nhật giá trị khi Select thay đổi
+    const formattedDate = selectedDate
+      ? dayjs(selectedDate).endOf("day").format("DD/MM/YYYY HH:mm:ss")
+      : dayjs().endOf("day").format("DD/MM/YYYY HH:mm:ss"); // Nếu không có giá trị selectedDate, sử dụng ngày hiện tại
+
+    setSearchNgayKetThuc(formattedDate); // Cập nhật giá trị khi Select thay đổi
     setCurrentPage(1);
   };
 
@@ -166,13 +175,18 @@ const Transaction = () => {
     setSearchHinhThucThanhToan(3);
     setSearchTrangThai(6);
     setCurrentPage(1);
+    setSearchNgayBatDau(null);
+    setSearchNgayKetThuc(null);
     setSearchParams("");
+    loadDataListTransaction(currentPage);
   };
 
   const chuyenTrang = (event, page) => {
     setCurrentPage(page);
     loadDataListTransaction(page);
   };
+
+  const navigate = useNavigate();
 
   const columns = [
     {
@@ -369,6 +383,17 @@ const Transaction = () => {
       dataIndex: "nguoiXacNhan",
       width: "10%",
       align: "center",
+      render: (text, record) => (
+        <span
+          className="underline-custom"
+          style={{ cursor: "pointer" }}
+          onClick={() => {
+            navigate(`/dashboard/update-employee/${record.idNhanVien}`);
+          }}
+        >
+          {record.nguoiXacNhan}
+        </span>
+      ),
     },
   ];
 
@@ -382,8 +407,14 @@ const Transaction = () => {
         }}
       >
         <Card className="">
-          <Card.Header className="">
-            <div className="header-title mt-2">
+          <span
+            className="header-title mt-3 ms-4"
+            style={{ fontWeight: "500px" }}
+          >
+            <FontAwesomeIcon icon={faHouse} size={"sm"} /> Quản Lý Thu Chi
+          </span>
+          <Card.Header className="d-flex justify-content-between">
+            <div className="header-title">
               <TextField
                 placeholder="Tìm theo mã, số tiền, người xác nhận giao dịch"
                 label="Tìm giao dịch"

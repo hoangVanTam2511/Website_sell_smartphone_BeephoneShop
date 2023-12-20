@@ -8,11 +8,13 @@ import beephone_shop_projects.core.common.base.ResponseObject;
 import beephone_shop_projects.core.common.base.ResponsePage;
 import beephone_shop_projects.entity.CameraTruoc;
 import beephone_shop_projects.infrastructure.constant.ApiConstants;
+import beephone_shop_projects.infrastructure.constant.StatusCommon;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(ApiConstants.ApiSystems.API_CAMERA_FRONT_URI)
@@ -30,7 +32,9 @@ public class CameraTruocController {
 
     @GetMapping
     public ResponseObject<List<CameraTruocResponse>> getCameraTruoc() {
-        List<CameraTruocResponse> cameraTruoc = cameraTruocService.findAll();
+        List<CameraTruocResponse> cameraTruoc = cameraTruocService.findAll().stream()
+                .filter(products -> StatusCommon.ACTIVE.equals(products.getStatus()))
+                .collect(Collectors.toList());
         return new ResponseObject<>(cameraTruoc);
     }
 

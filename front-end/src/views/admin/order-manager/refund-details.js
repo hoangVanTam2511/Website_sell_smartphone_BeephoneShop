@@ -50,6 +50,7 @@ const RefundDetail = () => {
   const [total, setTotal] = useState(0);
   const [totalDiscount, setTotalDiscount] = useState(0);
   const [codeDiscount, setCodeDiscount] = useState("");
+  const [addressDefault, setAddressDefault] = useState("");
 
   const userId = getUser().id;
 
@@ -64,7 +65,9 @@ const RefundDetail = () => {
         const discountVoucher = data.voucher && data.voucher.giaTriVoucher;
         const discountVoucherCode = data.voucher && data.voucher.ma;
         setTotalDiscount(discountVoucher || 0);
-        setCodeDiscount(discountVoucherCode === null ? "" : discountVoucherCode);
+        setCodeDiscount(
+          discountVoucherCode === null ? "" : discountVoucherCode
+        );
 
         // const filteredData = data.orderItems.filter((item) => item.soLuong > 0);
         setOrderItemsTotal(data.orderItems);
@@ -108,6 +111,22 @@ const RefundDetail = () => {
           (data && data.voucher && data.voucher.giaTriVoucher) || 0;
         const phiShip = (data && data.phiShip) || 0;
         setTotal(tongTien - discount + phiShip);
+
+        const address =
+          data &&
+          data.account &&
+          data.account.diaChiList &&
+          data.account.diaChiList.find((item) => item.trangThai === 1);
+        const getAddressDefault =
+          address &&
+          address.diaChi +
+          ", " +
+          address.xaPhuong +
+          ", " +
+          address.quanHuyen +
+          ", " +
+          address.tinhThanhPho;
+        setAddressDefault(getAddressDefault);
       })
       .catch((error) => {
         handleOpenAlertVariant("Không tìm thấy đơn hàng!", Notistack.ERROR);
@@ -537,7 +556,7 @@ const RefundDetail = () => {
                   style={{ whiteSpace: "pre-line", width: "50%" }}
                 >
                   - Áp dụng với các hóa đơn thanh toán bằng tiền mặt hoặc chuyển
-                  khoản trực tiếp.
+                  khoản trực tiếp và phải là hóa đơn tại quầy.
                 </td>
                 <td
                   align="center"
@@ -816,6 +835,38 @@ const RefundDetail = () => {
                       Hoàn thành
                     </span>
                   </div>
+                ) : order.trangThai == OrderStatusString.REFUND_FULL ? (
+                  <div
+                    className="rounded-pill badge-danger text-center"
+                    style={{
+                      height: "35px",
+                      width: "160px",
+                      padding: "5px",
+                    }}
+                  >
+                    <span
+                      className="text-white p-2"
+                      style={{ fontSize: "14px" }}
+                    >
+                      Hoàn trả toàn phần
+                    </span>
+                  </div>
+                ) : order.trangThai == OrderStatusString.REFUND_A_PART ? (
+                  <div
+                    className="rounded-pill badge-danger text-center"
+                    style={{
+                      height: "35px",
+                      width: "140px",
+                      padding: "5px",
+                    }}
+                  >
+                    <span
+                      className="text-white p-2"
+                      style={{ fontSize: "14px" }}
+                    >
+                      Hoàn trả 1 phần
+                    </span>
+                  </div>
                 ) : (
                   ""
                 )}
@@ -915,7 +966,22 @@ const RefundDetail = () => {
                 className="ms-5 ps-5 mt-1"
                 style={{ whiteSpace: "pre-line", flex: "1" }}
               >
-                <span className="text-dark" style={{ fontSize: "17px" }}></span>
+                <span className="text-dark" style={{ fontSize: "17px" }}>
+                  {order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
+                    order.account === null
+                    ? "..."
+                    : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
+                      order.account &&
+                      order.account.diaChiList
+                      ? addressDefault
+                      : order.diaChiNguoiNhan +
+                      ", " +
+                      order.xaPhuongNguoiNhan +
+                      ", " +
+                      order.quanHuyenNguoiNhan +
+                      ", " +
+                      order.tinhThanhPhoNguoiNhan}
+                </span>
               </div>
             </div>
           </Col>
@@ -923,7 +989,6 @@ const RefundDetail = () => {
       </div>
     );
   };
-
 
   const ProductRefund = () => {
     return (
@@ -1012,18 +1077,24 @@ const RefundDetail = () => {
                   order.trangThai === OrderStatusString.HAD_PAID ? (
                   <Button
                     onClick={() => {
-                      const updatedOrderItems = orderItemsTotal.map((orderItem) => {
-                        return {
-                          ...orderItem,
-                          soLuong: 0,
-                          imeisDaBan: [],
-                        };
-                      });
+                      const updatedOrderItems = orderItemsTotal.map(
+                        (orderItem) => {
+                          return {
+                            ...orderItem,
+                            soLuong: 0,
+                            imeisDaBan: [],
+                          };
+                        }
+                      );
 
                       setOrderItems(updatedOrderItems);
                       const ordersRefunds = orderItemsTotal.flatMap((order) => {
                         return order.imeisDaBan.flatMap((item) => {
-                          if (orderRefunds.some((refund) => refund.imei.soImei === item.soImei)) {
+                          if (
+                            orderRefunds.some(
+                              (refund) => refund.imei.soImei === item.soImei
+                            )
+                          ) {
                             return [];
                           } else {
                             return {
@@ -1035,10 +1106,16 @@ const RefundDetail = () => {
                           }
                         });
                       });
-                      const updatedOrderRefunds = [...orderRefunds, ...ordersRefunds];
+                      const updatedOrderRefunds = [
+                        ...orderRefunds,
+                        ...ordersRefunds,
+                      ];
                       setOrderRefunds(updatedOrderRefunds);
                       console.log(updatedOrderRefunds);
-                      handleOpenAlertVariant("Trả toàn bộ thành công!", Notistack.SUCCESS);
+                      handleOpenAlertVariant(
+                        "Trả toàn bộ thành công!",
+                        Notistack.SUCCESS
+                      );
                     }}
                     className="rounded-2"
                     type="primary"
@@ -1095,13 +1172,13 @@ const RefundDetail = () => {
       orderItemRefunds: orderRefunds,
       tongTien: totalRefundFinal(),
       id: order.id,
-      amount: totalSizeRefundFinal().toLocaleString("vi-VN", {
-        style: "currency",
-        currency: "VND",
-      }) ||
-        0,
+      amount: totalSizeRefundFinal(),
       createdByRefund: userId,
       ghiChu: note,
+      tongTienString: totalRefundFinal().toLocaleString("vi-VN", {
+        style: "currency",
+        currency: "VND",
+      }),
     };
     try {
       await axios.put(`http://localhost:8080/api/carts/order/refund`, request, {
@@ -1262,13 +1339,19 @@ const RefundDetail = () => {
                   className="text-dark"
                   style={{ fontSize: "17px", fontWeight: "500" }}
                 >
-                  <span className="underline-custom" style={{ cursor: "pointer", fontWeight: "500" }}>
-                    {codeDiscount !== null || codeDiscount !== "" && "(" + codeDiscount + ") "}
+                  <span
+                    className="underline-custom"
+                    style={{ cursor: "pointer", fontWeight: "500" }}
+                  >
+                    {codeDiscount !== null ||
+                      (codeDiscount !== "" && "(" + codeDiscount + ") ")}
                   </span>
-                  {totalDiscount && totalDiscount.toLocaleString("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  }) || 0}
+                  {(totalDiscount &&
+                    totalDiscount.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })) ||
+                    0}
                 </span>
               </div>
 

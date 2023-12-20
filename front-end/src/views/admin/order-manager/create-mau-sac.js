@@ -18,7 +18,7 @@ import { Button } from "@mui/joy";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { Notistack, StatusCommonProductsNumber } from "./enum";
 import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
-import { request } from '../../../store/helpers/axios_helper'
+import { request } from "../../../store/helpers/axios_helper";
 // import Sketch from '@uiw/react-color-sketch';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -39,7 +39,16 @@ const CreateMauSac = ({ open, close, getAll, colors }) => {
   const validationAll = () => {
     const msg = {};
 
-    if (!colorName.trim("")) {
+    const isDuplicate = colors.some(
+      (products) => products.tenMauSac === colorName
+    );
+
+    if (isDuplicate) {
+      handleOpenAlertVariant("Màu sắc đã tồn tại", Notistack.ERROR);
+      msg = "Đã tồn tại";
+    }
+
+    if (colorName.trim() === "") {
       msg.colorName = "Tên màu sắc không được trống.";
     }
 
@@ -60,7 +69,7 @@ const CreateMauSac = ({ open, close, getAll, colors }) => {
       tenMauSac: colorName,
       status: status,
     };
-    request('POST',`/api/colors`, obj)
+    request("POST", `/api/colors`, obj)
       .then((response) => {
         handleReset();
         close();
@@ -75,6 +84,7 @@ const CreateMauSac = ({ open, close, getAll, colors }) => {
   const handleReset = () => {
     setStatus(StatusCommonProductsNumber.ACTIVE);
     setColorName("");
+    setValidationMsg({});
   };
 
   const uniqueTenMauSac = colors
@@ -136,7 +146,7 @@ const CreateMauSac = ({ open, close, getAll, colors }) => {
                   />
                 </div>
 
-                <div className="mt-3">
+                {/* <div className="mt-3">
                   <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">
                       Trạng Thái
@@ -147,6 +157,9 @@ const CreateMauSac = ({ open, close, getAll, colors }) => {
                       id="demo-simple-select"
                       value={status}
                       label="Trạng Thái"
+                      style={{
+                        pointerEvents: "none",
+                      }}
                       defaultValue={StatusCommonProductsNumber.ACTIVE}
                       onChange={handleChangeStatus}
                     >
@@ -158,8 +171,24 @@ const CreateMauSac = ({ open, close, getAll, colors }) => {
                       </MenuItem>
                     </Select>
                   </FormControl>
-                </div>
+                </div> */}
                 <div className="mt-4 pt-1 d-flex justify-content-end">
+                  <Button
+                    onClick={() => {
+                      close();
+                      handleReset();
+                    }}
+                    className="rounded-2 me-2 button-mui"
+                    type="error"
+                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                  >
+                    <span
+                      className=""
+                      style={{ marginBottom: "2px", fontWeight: "500" }}
+                    >
+                      Hủy
+                    </span>
+                  </Button>
                   <Button
                     onClick={() => handleSubmit()}
                     className="rounded-2 button-mui"

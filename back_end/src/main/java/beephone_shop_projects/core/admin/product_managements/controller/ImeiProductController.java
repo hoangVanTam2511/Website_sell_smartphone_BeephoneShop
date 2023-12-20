@@ -1,7 +1,9 @@
 package beephone_shop_projects.core.admin.product_managements.controller;
 
+import beephone_shop_projects.core.admin.product_managements.model.request.DoPhanGiaiRequest;
 import beephone_shop_projects.core.admin.product_managements.model.request.FindFilterImeisRequest;
 import beephone_shop_projects.core.admin.product_managements.model.request.ImeiProductRequest;
+import beephone_shop_projects.core.admin.product_managements.model.response.DoPhanGiaiResponse;
 import beephone_shop_projects.core.admin.product_managements.model.response.ImeiProductResponse;
 import beephone_shop_projects.core.admin.product_managements.service.impl.ImeiProductServiceImpl;
 import beephone_shop_projects.core.common.base.ResponseObject;

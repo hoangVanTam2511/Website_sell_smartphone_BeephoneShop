@@ -1,14 +1,14 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import axios from 'axios'
-import { request, setAuthHeader } from '../../store/helpers/axios_helper'
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
+import { request, setAuthHeader } from "../../store/helpers/axios_helper";
 
-export const loginUser = createAsyncThunk('user/login', async data => {
+export const loginUser = createAsyncThunk("user/login", async (data) => {
   let user = {
-    id: '',
-    ma: ''
-  }
+    id: "",
+    ma: "",
+  };
   request("POST", "/client/account/login", data)
-    .then(res => {
+    .then((res) => {
       if (res.status === 200) {
         setAuthHeader(res.data.token)
         user = res.data

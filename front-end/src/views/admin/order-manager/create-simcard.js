@@ -1,8 +1,4 @@
 import React, { useState } from "react";
-// import {
-//   useNavigate,
-
-// } from "react-router-dom";
 import { Button, message } from "antd";
 import {
   FormControl,
@@ -38,6 +34,7 @@ const CreateSimCard = ({ open, close, getAll, sims }) => {
   const [checkedSingleSim, setCheckedSingleSim] = React.useState(true);
   const [status, setStatus] = React.useState(StatusCommonProductsNumber.ACTIVE);
   const { handleOpenAlertVariant } = useCustomSnackbar();
+
   const uniqueLoaiTheSim = sims
     .map((option) => option.loaiTheSim)
     .filter((value, index, self) => {
@@ -63,7 +60,16 @@ const CreateSimCard = ({ open, close, getAll, sims }) => {
   const validationAll = () => {
     const msg = {};
 
-    if (!loaiTheSim.trim("")) {
+    const isDuplicate =
+      sims.some((products) => products.loaiTheSim == loaiTheSim) &&
+      sims.some((products) => products.simMultiple == loaiTheSim);
+
+    if (isDuplicate) {
+      handleOpenAlertVariant("Loại thẻ sim đã tồn tại", Notistack.ERROR);
+      msg = "Đã tồn tại";
+    }
+
+    if (loaiTheSim.trim() === "") {
       msg.loaiTheSim = "Loại thẻ sim không được trống.";
     }
 
@@ -155,10 +161,10 @@ const CreateSimCard = ({ open, close, getAll, sims }) => {
           close();
           getAll();
           handleReset();
-          message.success("Thêm thành công");
+          handleOpenAlertVariant("Thêm thành công thẻ sim", Notistack.ERROR);
         })
         .catch((error) => {
-          console.log("add thất bại");
+          handleOpenAlertVariant("Thêm thất bại thẻ sim", Notistack.ERROR);
         });
     }
   };
@@ -167,6 +173,7 @@ const CreateSimCard = ({ open, close, getAll, sims }) => {
     setLoaiTheSim("");
     setCheckedSingleSim(true);
     setCheckedDualSim(false);
+    setValidationMsg({});
   };
   return (
     <>
@@ -212,7 +219,7 @@ const CreateSimCard = ({ open, close, getAll, sims }) => {
                     )}
                   />
                 </div>
-                <div className="mt-3" style={{}}>
+                {/* <div className="mt-3" style={{}}>
                   <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">
                       Trạng Thái
@@ -223,6 +230,10 @@ const CreateSimCard = ({ open, close, getAll, sims }) => {
                       id="demo-simple-select"
                       value={status}
                       label="Trạng Thái"
+                      style={{
+                        pointerEvents: "none",
+                        opacity: 0.5,
+                      }}
                       defaultValue={StatusCommonProductsNumber.ACTIVE}
                       onChange={handleChangeStatus}
                     >
@@ -234,7 +245,7 @@ const CreateSimCard = ({ open, close, getAll, sims }) => {
                       </MenuItem>
                     </Select>
                   </FormControl>
-                </div>
+                </div> */}
                 <div className="mt-3 d-flex">
                   <div>
                     <FormControlLabel
@@ -260,6 +271,22 @@ const CreateSimCard = ({ open, close, getAll, sims }) => {
                   </div>
                 </div>
                 <div className="mt-4 pt-1 d-flex justify-content-end">
+                  <Button
+                    onClick={() => {
+                      close();
+                      handleReset();
+                    }}
+                    className="rounded-2 me-2 button-mui"
+                    type="error"
+                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                  >
+                    <span
+                      className=""
+                      style={{ marginBottom: "2px", fontWeight: "500" }}
+                    >
+                      Hủy
+                    </span>
+                  </Button>
                   <Button
                     onClick={() => handleSubmit()}
                     className="rounded-2 button-mui"

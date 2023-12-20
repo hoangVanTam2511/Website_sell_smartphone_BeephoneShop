@@ -238,7 +238,7 @@ const UpdateKH = () => {
   };
 
   const redirectTable = () => {
-    navigate("/khach-hang/");
+    navigate("/dashboard/customers");
   };
   const handleCloseModal = () => {
     setIsModalVisibleS(false);

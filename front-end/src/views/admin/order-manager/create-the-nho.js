@@ -16,8 +16,9 @@ import {
 import axios from "axios";
 import LoadingIndicator from "../../../utilities/loading";
 import generateRandomCode from "../../../utilities/randomCode";
-import { StatusCommonProductsNumber } from "./enum";
-import { request } from '../../../store/helpers/axios_helper'
+import { Notistack, StatusCommonProductsNumber } from "./enum";
+import useCustomSnackbar from "../../../utilities/notistack";
+import { request } from "../../../store/helpers/axios_helper";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -29,13 +30,25 @@ const CreateTheNho = ({ open, close, getAll, theNhos }) => {
   const [loaiTheNho, setLoaiTheNho] = React.useState("");
   const [dungLuongToiDa, setDungLuongToiDa] = React.useState("");
   const [status, setStatus] = React.useState(StatusCommonProductsNumber.ACTIVE);
+  const { handleOpenAlertVariant } = useCustomSnackbar();
 
   const [validationMsg, setValidationMsg] = useState({});
 
   const validationAll = () => {
     const msg = {};
 
-    if (!loaiTheNho.trim("")) {
+    const isDuplicate = theNhos.some(
+      (products) =>
+        products.loaiTheNho === loaiTheNho &&
+        products.dungLuongToiDa == dungLuongToiDa
+    );
+
+    if (isDuplicate) {
+      handleOpenAlertVariant("Thẻ nhớ đã tồn tại", Notistack.ERROR);
+      msg = "Đã tồn tại";
+    }
+
+    if (loaiTheNho.trim() === "") {
       msg.loaiTheNho = "Loại thẻ nhớ không được trống.";
     }
 
@@ -69,14 +82,15 @@ const CreateTheNho = ({ open, close, getAll, theNhos }) => {
       dungLuongToiDa: dungLuongToiDa,
       status: status,
     };
-    request('POST',`/api/the-nhos`, obj)
+    request("POST", `/api/the-nhos`, obj)
       .then((response) => {
         close();
         getAll();
         handleReset();
+        handleOpenAlertVariant("Thêm thẻ nhớ thành công", Notistack.SUCCESS);
       })
       .catch((error) => {
-        console.log("add thất bại");
+        handleOpenAlertVariant("Thêm thẻ nhớ thất bại", Notistack.ERROR);
       });
   };
 
@@ -84,6 +98,7 @@ const CreateTheNho = ({ open, close, getAll, theNhos }) => {
     setStatus(StatusCommonProductsNumber.ACTIVE);
     setLoaiTheNho("");
     setDungLuongToiDa("");
+    setValidationMsg({});
   };
 
   const handleChangeStatus = (event) => {
@@ -169,11 +184,11 @@ const CreateTheNho = ({ open, close, getAll, theNhos }) => {
                         {...params}
                         InputProps={{
                           ...params.InputProps,
-                          endAdornment: (
+                          startAdornment: (
                             <>
                               <InputAdornment
                                 style={{ marginLeft: "5px" }}
-                                position="end"
+                                position="start"
                               >
                                 GB
                               </InputAdornment>
@@ -189,7 +204,7 @@ const CreateTheNho = ({ open, close, getAll, theNhos }) => {
                   />
                 </div>
 
-                <div className="mt-3">
+                {/* <div className="mt-3">
                   <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">
                       Trạng Thái
@@ -200,7 +215,10 @@ const CreateTheNho = ({ open, close, getAll, theNhos }) => {
                       id="demo-simple-select"
                       value={status}
                       label="Trạng Thái"
-                      d
+                      style={{
+                        pointerEvents: "none",
+                        opacity: 0.5,
+                      }}
                       defaultValue={StatusCommonProductsNumber.ACTIVE}
                       onChange={handleChangeStatus}
                     >
@@ -212,8 +230,24 @@ const CreateTheNho = ({ open, close, getAll, theNhos }) => {
                       </MenuItem>
                     </Select>
                   </FormControl>
-                </div>
+                </div> */}
                 <div className="mt-4 pt-1 d-flex justify-content-end">
+                  <Button
+                    onClick={() => {
+                      close();
+                      handleReset();
+                    }}
+                    className="rounded-2 me-2 button-mui"
+                    type="error"
+                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                  >
+                    <span
+                      className=""
+                      style={{ marginBottom: "2px", fontWeight: "500" }}
+                    >
+                      Hủy
+                    </span>
+                  </Button>
                   <Button
                     onClick={() => handleSubmit()}
                     className="rounded-2 button-mui"

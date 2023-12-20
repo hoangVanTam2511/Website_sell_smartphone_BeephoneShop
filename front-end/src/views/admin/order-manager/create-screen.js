@@ -24,7 +24,8 @@ import Zoom from "@mui/material/Zoom";
 import LoadingIndicator from "../../../utilities/loading";
 import axios from "axios";
 import { apiURLDisplay, apiURLDoPhanGiai } from "../../../service/api";
-import { StatusCommonProductsNumber } from "./enum";
+import { Notistack, StatusCommonProductsNumber } from "./enum";
+import useCustomSnackbar from "../../../utilities/notistack";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -46,52 +47,65 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
     const selectedValue = event.target.value;
     setDoPhanGiai(selectedValue);
   };
+
   useEffect(() => {
     // Load data when the component mounts
     getDoPhanGiai();
   }, []);
+
   const getDoPhanGiai = () => {
     axios
       .get(apiURLDoPhanGiai)
       .then((response) => {
         setListPhanGiai(response.data.data);
       })
-      .catch((error) => {
-        console.error("Error loading data:", error);
-      });
+      .catch((error) => {});
   };
+
   const [formSubmitDPG, setFormSubmitDPG] = useState(false);
   const [formSubmitMH, setFormSubmitMH] = useState(false);
+  const { handleOpenAlertVariant } = useCustomSnackbar();
+
   const [idDPG, setIdDPG] = useState(false);
   const handleChieuDai = (e) => {
     const value = e.target.value;
-    setChieuDai(value);
+    if (!isNaN(value)) {
+      setChieuDai(value);
+    }
   };
   const handleChieuRong = (e) => {
     const value = e.target.value;
-    setChieuRong(value);
+    if (!isNaN(value)) {
+      setChieuRong(value);
+    }
   };
   const handleTanSoQuet = (event, value) => {
-    setTanSoQuet(value);
+    if (!isNaN(value)) {
+      setTanSoQuet(value);
+    }
   };
   const handleKichThuoc = (event, value) => {
-    setKichThuoc(value);
+    if (!isNaN(value)) {
+      setKichThuoc(value);
+    }
   };
   const handleLoaiManHinh = (event, value) => {
     setLoaiManHinh(value);
   };
   const handleClose = () => {
-    addDoPhanGiai();
+    // addDoPhanGiai();
   };
   const handleReset = () => {
     setChieuDai("");
     setChieuRong("");
+    setValidationMsg({});
   };
   const handleReset1 = () => {
     setLoaiManHinh("");
     setDoPhanGiai("");
     setTanSoQuet("");
     setKichThuoc("");
+    setValidationMsg({});
   };
 
   const [validationMsg, setValidationMsg] = useState({});
@@ -99,16 +113,44 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
   const validationAll = () => {
     const msg = {};
 
-    if (!loaiManHinh.trim("")) {
+    const isDuplicate = screens.some(
+      (products) =>
+        products.loaiManHinh == loaiManHinh &&
+        products.doPhanGiaiManHinh.id == doPhanGiai &&
+        products.tanSoQuet == tanSoQuet &&
+        products.kichThuoc == kichThuoc
+    );
+
+    if (isDuplicate) {
+      handleOpenAlertVariant("Màn hình đã tồn tại", Notistack.ERROR);
+      msg = "Đã tồn tại";
+    }
+
+    if (loaiManHinh.trim() === "") {
       msg.loaiManHinh = "Loại màn hình không được trống.";
     }
 
-    if (!doPhanGiai.trim("")) {
+    if (doPhanGiai.trim() === "") {
       msg.doPhanGiai = "Độ phân giải không được trống.";
     }
 
-    if (!tanSoQuet.trim("")) {
+    if (tanSoQuet.trim() === "") {
       msg.tanSoQuet = "Tần số quét không được trống.";
+    }
+
+    if (tanSoQuet < 1) {
+      msg.tanSoQuet = "Tần số quét không được nhỏ hơn 1 Hz.";
+    }
+    if (tanSoQuet > 1000) {
+      msg.tanSoQuet = "Tần số quét không được lớn hơn 1000 Hz.";
+    }
+
+    if (kichThuoc < 1) {
+      msg.kichThuoc = "Kích thước màn hình không được nhỏ hơn 1.";
+    }
+
+    if (kichThuoc > 1000) {
+      msg.kichThuoc = "Kích thước màn hình không được lớn hơn 1000 inches.";
     }
 
     if (!kichThuoc.trim("")) {
@@ -124,6 +166,38 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
     const isValid = validationAll();
     if (!isValid) return;
     addManHinh();
+  };
+
+  const [validationMsg1, setValidationMsg1] = useState({});
+
+  const validationAll1 = () => {
+    const msg = {};
+
+    if (chieuDai < 0 || chieuDai > 10000) {
+      msg.chieuDai = "Chiều cao màn hình nằm trong khoảng 0 - 10000 pixels.";
+    }
+
+    if (chieuRong < 0 || chieuRong > 10000) {
+      msg.chieuRong = "Chiều rộng màn hình nằm trong khoảng 0 - 10000 pixels.";
+    }
+
+    if (!chieuDai.trim("")) {
+      msg.chieuDai = "Chiều cao màn hình không được trống.";
+    }
+
+    if (!chieuRong.trim("")) {
+      msg.chieuRong = "Chiều rộng màn hình không được trống.";
+    }
+
+    setValidationMsg1(msg);
+    if (Object.keys(msg).length > 0) return false;
+    return true;
+  };
+
+  const handleSubmit1 = () => {
+    const isValid = validationAll1();
+    if (!isValid) return;
+    addDoPhanGiai();
   };
 
   const addDoPhanGiai = () => {
@@ -147,12 +221,18 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
         };
         setListPhanGiai([newDoPhanGiai, ...listPhanGiai]);
         getDoPhanGiai();
-        message.success("Thêm thành công");
+        handleOpenAlertVariant(
+          "Thêm thành công độ phân giải màn hình",
+          Notistack.SUCCESS
+        );
         handleReset();
         setOpenDoPhanGiai(false);
       })
       .catch((error) => {
-        alert("Thêm thất bại");
+        handleOpenAlertVariant(
+          "Thêm thất bại độ phân giải màn hình",
+          Notistack.ERROR
+        );
       });
   };
 
@@ -171,23 +251,22 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
         close();
         getAll();
         handleReset1();
-        message.success("Thêm thành công");
-
+        handleOpenAlertVariant("Thêm thành công màn hình", Notistack.SUCCESS);
         // setOpen(false);
       })
       .catch((error) => {
-        console.log("add thất bại");
+        handleOpenAlertVariant("Thêm thất bại màn hình", Notistack.ERROR);
       });
   };
 
   const uniqueTanSoQuet = screens
-    .map((option) => option.tanSoQuet)
+    .map((option) => option.tanSoQuet.toString())
     .filter((value, index, self) => {
       return self.indexOf(value) === index;
     });
 
   const uniqueKichThuoc = screens
-    .map((option) => option.kichThuoc)
+    .map((option) => option.kichThuoc.toString())
     .filter((value, index, self) => {
       return self.indexOf(value) === index;
     });
@@ -314,11 +393,11 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
                         {...params}
                         InputProps={{
                           ...params.InputProps,
-                          endAdornment: (
+                          startAdornment: (
                             <>
                               <InputAdornment
                                 style={{ marginLeft: "5px" }}
-                                position="end"
+                                position="start"
                               >
                                 Hz
                               </InputAdornment>
@@ -347,11 +426,11 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
                         {...params}
                         InputProps={{
                           ...params.InputProps,
-                          endAdornment: (
+                          startAdornment: (
                             <>
                               <InputAdornment
                                 style={{ marginLeft: "5px" }}
-                                position="end"
+                                position="start"
                               >
                                 inches
                               </InputAdornment>
@@ -366,7 +445,7 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
                     )}
                   />
                 </div>
-                <div className="mt-3" style={{}}>
+                {/* <div className="mt-3" style={{}}>
                   <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">
                       Trạng Thái
@@ -377,6 +456,10 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
                       id="demo-simple-select"
                       value={trangThai}
                       label="Trạng Thái"
+                      style={{
+                        pointerEvents: "none",
+                        opacity: 0.5,
+                      }}
                       defaultValue={StatusCommonProductsNumber.ACTIVE}
                       onChange={handleChangeStatus}
                     >
@@ -388,8 +471,25 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
                       </MenuItem>
                     </Select>
                   </FormControl>
-                </div>
+                </div> */}
                 <div className="mt-4 pt-1 d-flex justify-content-end">
+                  <Button
+                    onClick={() => {
+                      close();
+                      handleReset();
+                      handleReset1();
+                    }}
+                    className="rounded-2 me-2 button-mui"
+                    type="error"
+                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                  >
+                    <span
+                      className=""
+                      style={{ marginBottom: "2px", fontWeight: "500" }}
+                    >
+                      Hủy
+                    </span>
+                  </Button>
                   <Button
                     onClick={() => {
                       handleSubmit();
@@ -425,18 +525,18 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
         }}
       >
         <DialogTitle className="text-center">{"THÊM ĐỘ PHÂN GIẢI"}</DialogTitle>
-        <DialogContent className="" style={{ height: "180px", width: "350px" }}>
+        <DialogContent className="" style={{ height: "auto", width: "450px" }}>
           <div className="mt-3"></div>
           <div className="mt-3">
             <TextField
-              label="Chiều dài"
+              label="Chiều cao"
               value={chieuDai}
               id="fullWidth"
               onChange={handleChieuDai}
-              // error={formSubmitDPG && !chieuDai}
-              // helperText={formSubmitDPG && !chieuDai && "Chiều Dài trống"}
+              error={validationMsg1.chieuDai !== undefined}
+              helperText={validationMsg1.chieuDai}
               style={{ width: "100%" }}
-              maxLength={30}
+              maxLength={5}
             />
           </div>
           <div className="mt-3">
@@ -445,10 +545,10 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
               value={chieuRong}
               id="fullWidth"
               onChange={handleChieuRong}
-              // error={formSubmitDPG && !chieuRong}
-              // helperText={formSubmitDPG && !chieuRong && "Chiều rộng trống"}
+              error={validationMsg1.chieuRong !== undefined}
+              helperText={validationMsg1.chieuRong}
               style={{ width: "100%" }}
-              maxLength={30}
+              maxLength={5}
             />
           </div>
         </DialogContent>
@@ -466,7 +566,7 @@ const CreateScreen = ({ open, close, getAll, screens }) => {
           </Button>
 
           <Button
-            onClick={handleClose}
+            onClick={() => handleSubmit1()}
             className="rounded-2 button-mui me-3"
             type="primary"
             style={{ height: "40px", width: "auto", fontSize: "15px" }}

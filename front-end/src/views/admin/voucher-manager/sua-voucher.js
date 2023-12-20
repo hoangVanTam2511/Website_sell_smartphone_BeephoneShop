@@ -35,7 +35,7 @@ import useCustomSnackbar from "../../../utilities/notistack";
 import LoadingIndicator from "../../../utilities/loading";
 import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
 import { useNavigate } from "react-router-dom";
-import { request } from '../../../store/helpers/axios_helper'
+import { request } from "../../../store/helpers/axios_helper";
 
 const UpdateVoucher = () => {
   const [voucher, setVoucher] = useState({});
@@ -61,7 +61,7 @@ const UpdateVoucher = () => {
   const navigate = useNavigate();
 
   const redirectToHienThiVoucher = () => {
-    navigate("/dashboard/voucher");
+    navigate("/dashboard/vouchers");
   };
 
   const handleOpenDialogConfirmUpdate = () => {
@@ -115,33 +115,33 @@ const UpdateVoucher = () => {
   const detailVoucher = async () => {
     try {
       console.log(id);
-      request('GET', apiURLVoucher + "/get-by-id/" + id).then((res) => {
-        if(res.status === 200 ){
-            var response = res
-            setMa(response.data.data.ma);
-            setTen(response.data.data.ten);
-            setSoLuong(response.data.data.soLuong);
-            setNgayBatDau(response.data.data.ngayBatDau);
-            setNgayKetThuc(response.data.data.ngayKetThuc);
-            setValueToiDa(response.data.data.giaTriToiDa);
-            setValue1(response.data.data.dieuKienApDung);
-            setValue(response.data.data.giaTriVoucher);
-            setStatus(response.data.data.trangThai);
-            setSelectDiscount(
-              response.data.data.loaiVoucher === TypeDiscountNumber.VND
-                ? TypeDiscountString.VND
-                : TypeDiscountString.PERCENT
-            );
-            convertTien(
-              response.data.data.dieuKienApDung,
-              response.data.data.giaTriVoucher,
-              response.data.data.giaTriToiDa
-            );
-            setVoucher(response.data.data);
-              }
-              console.log(response);
+      request("GET", apiURLVoucher + "/get-by-id/" + id).then((res) => {
+        if (res.status === 200) {
+          var response = res;
+          setMa(response.data.data.ma);
+          setTen(response.data.data.ten);
+          setSoLuong(response.data.data.soLuong);
+          setNgayBatDau(response.data.data.ngayBatDau);
+          setNgayKetThuc(response.data.data.ngayKetThuc);
+          setValueToiDa(response.data.data.giaTriToiDa);
+          setValue1(response.data.data.dieuKienApDung);
+          setValue(response.data.data.giaTriVoucher);
+          setStatus(response.data.data.trangThai);
+          setSelectDiscount(
+            response.data.data.loaiVoucher === TypeDiscountNumber.VND
+              ? TypeDiscountString.VND
+              : TypeDiscountString.PERCENT
+          );
+          convertTien(
+            response.data.data.dieuKienApDung,
+            response.data.data.giaTriVoucher,
+            response.data.data.giaTriToiDa
+          );
+          setVoucher(response.data.data);
+        }
+        console.log(response);
       });
-      
+
       // console.log(response.data.data);
     } catch (error) {
       // Xử lý lỗi nếu cần
@@ -250,7 +250,7 @@ const UpdateVoucher = () => {
       giaTriToiDa: giaTriToiDa,
       loaiVoucher: selectDiscount,
     };
-    request('PUT', apiURLVoucher + "/updateVoucher/" + id, obj)
+    request("PUT", apiURLVoucher + "/updateVoucher/" + id, obj)
       .then((response) => {
         handleOpenAlertVariant("Cập nhật thành công!!!", Notistack.SUCCESS);
         setTimeout(() => {
@@ -491,20 +491,14 @@ const UpdateVoucher = () => {
               <div>
                 <TextField
                   className="custom"
-                  label="Nhập Giá Trị Voucher"
+                  label="Nhập Giá Trị phiếu giảm giá"
                   value={value}
                   onChange={handleChange}
                   id="outlined-start-adornment"
                   InputProps={{
                     inputMode: "numeric",
                     startAdornment: (
-                      <InputAdornment position="start">
-                        {selectDiscount === TypeDiscountString.VND
-                          ? TypeDiscountString.VND
-                          : TypeDiscountString.PERCENT
-                          ? "%"
-                          : ""}
-                      </InputAdornment>
+                      <InputAdornment position="start">VNĐ</InputAdornment>
                     ),
                   }}
                   style={{
@@ -521,14 +515,14 @@ const UpdateVoucher = () => {
                 {" "}
                 <TextField
                   className="custom"
-                  label="Điều kiện áp dụng khi đơn hàng đạt"
+                  label="Điều kiện áp dụng"
                   value={value1}
                   onChange={handleChange1}
                   id="outlined-start-adornment"
                   InputProps={{
                     inputMode: "numeric",
                     startAdornment: (
-                      <InputAdornment position="start">VND</InputAdornment>
+                      <InputAdornment position="start">VNĐ</InputAdornment>
                     ),
                   }}
                   style={{ width: "380px" }}

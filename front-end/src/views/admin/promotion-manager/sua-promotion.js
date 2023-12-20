@@ -38,7 +38,7 @@ import {
 } from "../order-manager/enum";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
-import { request } from '../../../store/helpers/axios_helper'
+import { request } from "../../../store/helpers/axios_helper";
 
 const SuaKhuyenMai = () => {
   const [ma, setMa] = useState("");
@@ -78,7 +78,7 @@ const SuaKhuyenMai = () => {
   let successfulCount1 = 0;
 
   const redirectToHienThiKhuyenMai = () => {
-    navigate("/khuyen-mai");
+    navigate("/dashboard/discounts");
   };
 
   const handleOpenDialogConfirmAdd = () => {
@@ -113,7 +113,7 @@ const SuaKhuyenMai = () => {
   };
 
   const loadDatalistSanPham = () => {
-    request('GET',"/san-pham-1")
+    request("GET", "/san-pham-1")
       .then((response) => {
         setListSanPham(response.data.data);
       })
@@ -126,7 +126,7 @@ const SuaKhuyenMai = () => {
   };
 
   const loadDatalistSanPhamChiTiet = (id, check) => {
-    request('GET',"/san-pham-chi-tiet-1/" + id + "/" + check)
+    request("GET", "/san-pham-chi-tiet-1/" + id + "/" + check)
       .then((response) => {
         setlistSanPhamChiTiet(response.data.data);
       })
@@ -139,7 +139,7 @@ const SuaKhuyenMai = () => {
   };
 
   const clear = () => {
-    request('GET',"/san-pham-chi-tiet/removeALL")
+    request("GET", "/san-pham-chi-tiet/removeALL")
       .then((response) => {
         setlistSanPhamChiTiet(response.data.data);
       })
@@ -187,7 +187,7 @@ const SuaKhuyenMai = () => {
   };
 
   const detailKhuyenMai = () => {
-    request('GET', apiURLKhuyenMai + "/get-by-id/" + id)
+    request("GET", apiURLKhuyenMai + "/get-by-id/" + id)
       .then((response) => {
         console.log(response);
         setTenKhuyenMai(response.data.data.tenKhuyenMai);
@@ -210,7 +210,7 @@ const SuaKhuyenMai = () => {
   };
 
   const detailKhuyenMaiChiTiet = () => {
-    request('GET',"/detail/khuyen-mai/" + id)
+    request("GET", "/detail/khuyen-mai/" + id)
       .then((response) => {
         const data1 = response.data.data;
         const listIdSanPham = data1.map((item) => item.idSanPham);
@@ -234,7 +234,7 @@ const SuaKhuyenMai = () => {
 
   //Detail sản phẩm chi tiết đã áp dụng khuyến mãi
   const detailSanPhamSauKhuyenMai = (id) => {
-    request('GET',"/san-pham-chi-tiet-khuyen-mai/detail/" + id)
+    request("GET", "/san-pham-chi-tiet-khuyen-mai/detail/" + id)
       .then((response) => {
         console.log("SanPHamSauKhuyenMai" + response);
         setSanPhamChiTietKhuyenMai(response.data.data);
@@ -263,7 +263,7 @@ const SuaKhuyenMai = () => {
       loaiKhuyenMai: selectDiscount,
       giaTriKhuyenMai: numericValue2,
     };
-    request('PUT', apiURLKhuyenMai + "/update-khuyen-mai/" + id, obj)
+    request("PUT", apiURLKhuyenMai + "/update-khuyen-mai/" + id, obj)
       .then((response) => {
         idCheckboxdelete.forEach((idSP) => {
           deleteKhuyenMaiChiTiet(id, idSP);
@@ -292,11 +292,7 @@ const SuaKhuyenMai = () => {
   };
 
   const deleteKhuyenMaiChiTiet = (khuyenMaiID, idSP) => {
-    request('DELETE',"/khuyen-mai-chi-tiet/update/" +
-          khuyenMaiID +
-          "/" +
-          idSP
-      )
+    request("DELETE", "/khuyen-mai-chi-tiet/update/" + khuyenMaiID + "/" + idSP)
       .then((response) => {
         console.log("Xóa thành công");
       })
@@ -306,11 +302,10 @@ const SuaKhuyenMai = () => {
   };
 
   const updateKhuyenMaiChiTiet = (khuyenMaiID, idSP) => {
-    request('PUT',"/khuyen-mai-chi-tiet/update-don-gia/" +
-          khuyenMaiID +
-          "/" +
-          idSP
-      )
+    request(
+      "PUT",
+      "/khuyen-mai-chi-tiet/update-don-gia/" + khuyenMaiID + "/" + idSP
+    )
       .then((response) => {
         console.log("Update thành công");
       })
@@ -320,7 +315,7 @@ const SuaKhuyenMai = () => {
   };
 
   const updateSanPhamChiTiet = (idSP) => {
-    request('PUT',"/khuyen-mai-chi-tiet/update-san-pham/" + idSP)
+    request("PUT", "/khuyen-mai-chi-tiet/update-san-pham/" + idSP)
       .then((response) => {
         console.log("Update thành công");
       })
@@ -334,9 +329,7 @@ const SuaKhuyenMai = () => {
       idKhuyenMai: khuyenMaiID,
       idSanPhamChiTiet: idSanPhamChiTiet,
     };
-    request('POST',"/khuyen-mai-chi-tiet/add",
-        objKhuyenMaiChiTiet
-      )
+    request("POST", "/khuyen-mai-chi-tiet/add", objKhuyenMaiChiTiet)
       .then((response) => {
         successfulCount1++;
         if (successfulCount === successfulCount1) {
@@ -832,13 +825,7 @@ const SuaKhuyenMai = () => {
                   InputProps={{
                     inputMode: "numeric",
                     startAdornment: (
-                      <InputAdornment position="start">
-                        {selectDiscount === TypeDiscountString.VND
-                          ? TypeDiscountString.VND
-                          : TypeDiscountString.PERCENT
-                          ? "%"
-                          : ""}
-                      </InputAdornment>
+                      <InputAdornment position="start">VNĐ</InputAdornment>
                     ),
                   }}
                   style={{

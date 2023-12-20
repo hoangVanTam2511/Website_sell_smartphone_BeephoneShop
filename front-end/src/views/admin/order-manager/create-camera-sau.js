@@ -22,7 +22,9 @@ import {
   TypeCameraNumber,
 } from "./enum";
 import useCustomSnackbar from "../../../utilities/notistack";
-import { request } from '../../../store/helpers/axios_helper'
+import { request } from "../../../store/helpers/axios_helper";
+import { ConvertCameraTypeToString } from "../../../utilities/convertEnum";
+
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -42,7 +44,8 @@ const CreateCameraSau = ({ open, close, getAll, cameraRear }) => {
   };
 
   const handleChangeDoPhanGiai = (event, value) => {
-    setDoPhanGiai(value);
+    const cleanedValue = value.replace(/\D/g, "");
+    setDoPhanGiai(cleanedValue);
   };
 
   const handleChangeCameraType = (event) => {
@@ -54,7 +57,22 @@ const CreateCameraSau = ({ open, close, getAll, cameraRear }) => {
   const validationAll = () => {
     const msg = {};
 
-    if (!doPhanGiai.trim("")) {
+    const isDuplicate = cameraRear.some(
+      (camera) =>
+        camera.doPhanGiai === Number(doPhanGiai) &&
+        camera.cameraType === ConvertCameraTypeToString(cameraType)
+    );
+
+    if (isDuplicate) {
+      handleOpenAlertVariant("Camera đã tồn tại", Notistack.ERROR);
+      msg = "Đã tồn tại";
+    }
+
+    if (isNaN(doPhanGiai) || doPhanGiai < 1 || doPhanGiai > 10000) {
+      msg.doPhanGiai = "Độ phân giải phải là số và từ 1 đến 10000 Megapixels";
+    }
+
+    if (doPhanGiai.trim() === "") {
       msg.doPhanGiai = "Độ phân giải không được trống.";
     }
 
@@ -76,7 +94,7 @@ const CreateCameraSau = ({ open, close, getAll, cameraRear }) => {
       doPhanGiai: doPhanGiai,
       status: status,
     };
-    request('POST',`/api/camera-rears`, obj)
+    request("POST", `/api/camera-rears`, obj)
       .then((response) => {
         close();
         getAll();
@@ -91,11 +109,12 @@ const CreateCameraSau = ({ open, close, getAll, cameraRear }) => {
   const handleReset = (event) => {
     setStatus(StatusCommonProductsNumber.ACTIVE);
     setDoPhanGiai("");
-    setCameraType("");
+    setCameraType(TypeCameraNumber.STANDARD_CAMERA);
+    setValidationMsg({});
   };
 
   const uniqueDoPhanGiai = cameraRear
-    .map((option) => option.doPhanGiai)
+    .map((option) => option.doPhanGiai.toString())
     .filter((value, index, self) => {
       return self.indexOf(value) === index;
     });
@@ -139,11 +158,11 @@ const CreateCameraSau = ({ open, close, getAll, cameraRear }) => {
                         {...params}
                         InputProps={{
                           ...params.InputProps,
-                          endAdornment: (
+                          startAdornment: (
                             <>
                               <InputAdornment
                                 style={{ marginLeft: "5px" }}
-                                position="end"
+                                position="start"
                               >
                                 <span className="">Megapixel</span>
                               </InputAdornment>
@@ -199,12 +218,16 @@ const CreateCameraSau = ({ open, close, getAll, cameraRear }) => {
                   </FormControl>
                 </div>
 
-                <div className="mt-3">
+                {/* <div className="mt-3">
                   <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">
                       Trạng Thái
                     </InputLabel>
                     <Select
+                      style={{
+                        pointerEvents: "none",
+                        opacity: 0.5,
+                      }}
                       className="custom"
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
@@ -221,8 +244,24 @@ const CreateCameraSau = ({ open, close, getAll, cameraRear }) => {
                       </MenuItem>
                     </Select>
                   </FormControl>
-                </div>
+                </div> */}
                 <div className="mt-4 pt-1 d-flex justify-content-end">
+                  <Button
+                    onClick={() => {
+                      close();
+                      handleReset();
+                    }}
+                    className="rounded-2 me-2 button-mui"
+                    type="error"
+                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                  >
+                    <span
+                      className=""
+                      style={{ marginBottom: "2px", fontWeight: "500" }}
+                    >
+                      Hủy
+                    </span>
+                  </Button>
                   <Button
                     onClick={() => handleSubmit()}
                     className="rounded-2 button-mui"

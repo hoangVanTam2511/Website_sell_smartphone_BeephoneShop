@@ -27,11 +27,13 @@ import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
 import useCustomSnackbar from "../../../utilities/notistack";
 import LoadingIndicator from "../../../utilities/loading";
 import { Navigate, useNavigate } from "react-router-dom";
-import { request } from '../../../store/helpers/axios_helper'
+import { request, requestParam } from "../../../store/helpers/axios_helper";
 
 const AddVoucher = () => {
   const navigate = useNavigate();
   const [ma, setMa] = useState("");
+  const [maSauAdd, setMaSauAdd] = useState("");
+  const [sendMail, setSendMail] = useState([]);
   const [ten, setTen] = useState("");
   const [ngayBatDau, setNgayBatDau] = useState(dayjs());
   const [ngayKetThuc, setNgayKetThuc] = useState(dayjs());
@@ -121,22 +123,30 @@ const AddVoucher = () => {
     setDieuKienApDungConvert(numericValue);
   };
 
-  // const handleChangeGiaTriToiDa = (event) => {
-  //   const inputValue = event.target.value;
-  //   const numericValue = parseFloat(inputValue.replace(/[^0-9.-]+/g, ""));
-  //   const formattedValue = inputValue
-  //     .replace(/[^0-9]+/g, "")
-  //     .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  //   setValueToiDa(formattedValue);
-  //   setGiaTriToiDa(numericValue);
-  // };
-
   const redirectToHienThiVoucher = () => {
-    navigate("/dashboard/voucher");
+    navigate("/dashboard/vouchers");
   };
 
   const handleUpdateVoucher = (id) => {
     navigate(`/dashboard/update-voucher/${id}`);
+  };
+
+  const sendMailVoucher = (maVoucher) => {
+    let obj = {
+      subject: "ok",
+      ma: maVoucher,
+      ten: ten,
+      dieuKienApDung: dieuKienApDungConvert,
+      giaTriVoucher: giaTriVoucherConvert,
+      startTime: ngayBatDau,
+      endTime: ngayKetThuc,
+    };
+    request("POST", "/email/send-html-email/voucher", obj)
+      .then((response) => {})
+      .catch((error) => {
+        console.log(error);
+        handleOpenAlertVariant("Đã xảy ra lỗi", Notistack.ERROR);
+      });
   };
 
   const addVoucher = () => {
@@ -153,12 +163,13 @@ const AddVoucher = () => {
       loaiVoucher: selectDiscount,
     };
 
-    request('POST', apiURLVoucher + "/addVoucher", obj)
+    request("POST", apiURLVoucher + "/addVoucher", obj)
       .then((response) => {
         setTimeout(() => {
           setIsLoading(true);
           handleUpdateVoucher(response.data.data.id);
           handleOpenAlertVariant("Thêm thành công!!!", Notistack.SUCCESS);
+          sendMailVoucher(response.data.data.ma);
         }, 1000);
       })
       .catch((error) => {
@@ -171,6 +182,10 @@ const AddVoucher = () => {
 
     if (!ten.trim("")) {
       msg.ten = "Tên không được trống.";
+    }
+
+    if (!(ma.trim().length === 0 || (ma.length >= 10 && ma.length <= 15))) {
+      msg.ma = "Mã giảm giá phải từ 10 đến 15 ký tự.";
     }
 
     if (soLuong == null || soLuong === "") {
@@ -193,8 +208,9 @@ const AddVoucher = () => {
     const numericValue2 = parseFloat(value?.replace(/[^0-9.-]+/g, ""));
     if (value == null || value === "") {
       msg.value = "Giá trị voucher không được trống.";
-    } else if (selectDiscount === TypeDiscountString.PERCENT && value <= 0) {
-      msg.value = "Giá trị voucher trong khoảng 1% - 100%.";
+    }
+    if (numericValue2 > numericValue1) {
+      msg.value = "Giá trị voucher không được lớn hơn điều kiện áp dụng.";
     }
 
     if (
@@ -277,7 +293,7 @@ const AddVoucher = () => {
         <div className="mx-auto" style={{ maxWidth: "70%" }}>
           <div className="text-center pt-3 mb-3" style={{}}>
             <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>
-              THÊM VOUCHER
+              THÊM PHIẾU GIẢM GIÁ
             </span>
           </div>
           <div
@@ -287,7 +303,7 @@ const AddVoucher = () => {
             <div className="ms-4">
               <TextField
                 className="custom"
-                label="Tên Voucher"
+                label="Tên phiếu giảm giá"
                 value={ten}
                 id="fullWidth"
                 onChange={(e) => {
@@ -415,20 +431,14 @@ const AddVoucher = () => {
             <div>
               <TextField
                 className="custom"
-                label="Giá Trị Voucher"
+                label="Giá Trị phiếu giảm giá"
                 value={value}
                 onChange={handleChange}
                 id="outlined-end-adornment"
                 InputProps={{
                   inputMode: "numeric",
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      {selectDiscount === TypeDiscountString.VND
-                        ? TypeDiscountString.VND
-                        : TypeDiscountString.PERCENT
-                        ? "%"
-                        : ""}
-                    </InputAdornment>
+                  startAdornment: (
+                    <InputAdornment position="start">VNĐ</InputAdornment>
                   ),
                 }}
                 style={{
@@ -451,8 +461,8 @@ const AddVoucher = () => {
                 id="outlined-end-adornment"
                 InputProps={{
                   inputMode: "numeric",
-                  endAdornment: (
-                    <InputAdornment position="end">VND</InputAdornment>
+                  startAdornment: (
+                    <InputAdornment position="start">VNĐ</InputAdornment>
                   ),
                 }}
                 style={{ width: "380px" }}

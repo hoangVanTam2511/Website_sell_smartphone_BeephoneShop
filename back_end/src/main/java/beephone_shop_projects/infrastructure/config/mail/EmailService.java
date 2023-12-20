@@ -52,4 +52,22 @@ public class EmailService {
     }
   }
 
+  public void sendEmailWithHtmlTemplateVoucher(String to, String subject, String templateName, Context context) {
+    MimeMessage mimeMessage = mailSender.createMimeMessage();
+    MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "UTF-8");
+
+    try {
+      helper.setTo(to);
+      helper.setSubject(subject);
+      String htmlContent = templateEngine.process(templateName, context);
+      helper.setText(htmlContent, true);
+      // Thêm file đính kèm
+//      FileSystemResource file = new FileSystemResource(new File(attachmentPath));
+//      helper.addAttachment(file.getFilename(), file);
+      mailSender.send(mimeMessage);
+    } catch (MessagingException e) {
+      // Handle exception
+    }
+  }
+
 }

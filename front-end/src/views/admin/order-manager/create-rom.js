@@ -16,8 +16,9 @@ import {
 import axios from "axios";
 import LoadingIndicator from "../../../utilities/loading";
 import generateRandomCode from "../../../utilities/randomCode";
-import { StatusCommonProductsNumber } from "./enum";
-import { request } from '../../../store/helpers/axios_helper'
+import { Notistack, StatusCommonProductsNumber } from "./enum";
+import useCustomSnackbar from "../../../utilities/notistack";
+import { request } from "../../../store/helpers/axios_helper";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -28,6 +29,7 @@ const CreateRom = ({ open, close, getAll, roms }) => {
   const [kichThuoc, setKichThuoc] = useState("");
   const [isLoading, setIsLoading] = React.useState(false);
   const [status, setStatus] = React.useState(StatusCommonProductsNumber.ACTIVE);
+  const { handleOpenAlertVariant } = useCustomSnackbar();
 
   const handleChangeStatus = (event) => {
     setStatus(event.target.value);
@@ -46,6 +48,7 @@ const CreateRom = ({ open, close, getAll, roms }) => {
   const handleReset = (event) => {
     setStatus(StatusCommonProductsNumber.ACTIVE);
     setKichThuoc("");
+    setValidationMsg({});
   };
 
   const [validationMsg, setValidationMsg] = useState({});
@@ -53,7 +56,16 @@ const CreateRom = ({ open, close, getAll, roms }) => {
   const validationAll = () => {
     const msg = {};
 
-    if (!kichThuoc.trim("")) {
+    const isDuplicate = roms.some(
+      (products) => products.dungLuong == kichThuoc
+    );
+
+    if (isDuplicate) {
+      handleOpenAlertVariant("Kích thước rom đã tồn tại", Notistack.ERROR);
+      msg = "Đã tồn tại";
+    }
+
+    if (kichThuoc.trim() === "") {
       msg.kichThuoc = "Kích thước rom không được trống.";
     }
 
@@ -82,14 +94,15 @@ const CreateRom = ({ open, close, getAll, roms }) => {
       dungLuong: kichThuoc,
       status: status,
     };
-    request('POST',`/api/roms`, obj)
+    request("POST", `/api/roms`, obj)
       .then((response) => {
         close();
         getAll();
         handleReset();
+        handleOpenAlertVariant("Thêm thành công", Notistack.SUCCESS);
       })
       .catch((error) => {
-        console.log("add thất bại");
+        handleOpenAlertVariant("Thêm thất bại", Notistack.ERROR);
       });
   };
 
@@ -132,11 +145,11 @@ const CreateRom = ({ open, close, getAll, roms }) => {
                         {...params}
                         InputProps={{
                           ...params.InputProps,
-                          endAdornment: (
+                          startAdornment: (
                             <>
                               <InputAdornment
                                 style={{ marginLeft: "5px" }}
-                                position="end"
+                                position="start"
                               >
                                 GB
                               </InputAdornment>
@@ -151,7 +164,7 @@ const CreateRom = ({ open, close, getAll, roms }) => {
                     )}
                   />
                 </div>
-                <div className="mt-3" style={{}}>
+                {/* <div className="mt-3" style={{}}>
                   <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">
                       Trạng Thái
@@ -162,6 +175,10 @@ const CreateRom = ({ open, close, getAll, roms }) => {
                       id="demo-simple-select"
                       value={status}
                       label="Trạng Thái"
+                      style={{
+                        pointerEvents: "none",
+                        opacity: 0.5,
+                      }}
                       defaultValue={StatusCommonProductsNumber.ACTIVE}
                       onChange={handleChangeStatus}
                     >
@@ -173,8 +190,24 @@ const CreateRom = ({ open, close, getAll, roms }) => {
                       </MenuItem>
                     </Select>
                   </FormControl>
-                </div>
+                </div> */}
                 <div className="mt-4 pt-1 d-flex justify-content-end">
+                  <Button
+                    onClick={() => {
+                      close();
+                      handleReset();
+                    }}
+                    className="rounded-2 me-2 button-mui"
+                    type="error"
+                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                  >
+                    <span
+                      className=""
+                      style={{ marginBottom: "2px", fontWeight: "500" }}
+                    >
+                      Hủy
+                    </span>
+                  </Button>
                   <Button
                     onClick={() => handleSubmit()}
                     className="rounded-2 button-mui"

@@ -17,7 +17,7 @@ import generateRandomCode from "../../../utilities/randomCode";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { Notistack, StatusCommonProductsNumber } from "./enum";
 import axios from "axios";
-import { request } from '../../../store/helpers/axios_helper'
+import { request } from "../../../store/helpers/axios_helper";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -35,7 +35,16 @@ const CreateDanhMuc = ({ open, close, getAll, danhMucs }) => {
   const validationAll = () => {
     const msg = {};
 
-    if (!tenDanhMuc.trim("")) {
+    const isDuplicate = danhMucs.some(
+      (products) => products.tenDanhMuc === tenDanhMuc
+    );
+
+    if (isDuplicate) {
+      handleOpenAlertVariant("Tên danh mục đã tồn tại", Notistack.ERROR);
+      msg = "Đã tồn tại";
+    }
+
+    if (tenDanhMuc.trim() === "") {
       msg.tenDanhMuc = "Tên danh mục không được trống.";
     }
 
@@ -56,7 +65,7 @@ const CreateDanhMuc = ({ open, close, getAll, danhMucs }) => {
       tenDanhMuc: tenDanhMuc,
       status: status,
     };
-    request('POST',`/api/danh-mucs`, obj)
+    request("POST", `/api/danh-mucs`, obj)
       .then((response) => {
         close();
         getAll();
@@ -71,6 +80,7 @@ const CreateDanhMuc = ({ open, close, getAll, danhMucs }) => {
   const handleReset = (event) => {
     setStatus(StatusCommonProductsNumber.ACTIVE);
     setTenDanhMuc("");
+    setValidationMsg({});
   };
 
   const handleChangeStatus = (event) => {
@@ -130,7 +140,7 @@ const CreateDanhMuc = ({ open, close, getAll, danhMucs }) => {
                     )}
                   />
                 </div>
-                <div className="mt-3" style={{}}>
+                {/* <div className="mt-3" style={{}}>
                   <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">
                       Trạng Thái
@@ -142,6 +152,10 @@ const CreateDanhMuc = ({ open, close, getAll, danhMucs }) => {
                       value={status}
                       label="Trạng Thái"
                       onChange={handleChangeStatus}
+                      style={{
+                        pointerEvents: "none",
+                        opacity: 0.5,
+                      }}
                       defaultValue={StatusCommonProductsNumber.ACTIVE}
                     >
                       <MenuItem value={StatusCommonProductsNumber.ACTIVE}>
@@ -152,8 +166,24 @@ const CreateDanhMuc = ({ open, close, getAll, danhMucs }) => {
                       </MenuItem>
                     </Select>
                   </FormControl>
-                </div>
+                </div> */}
                 <div className="mt-4 pt-1 d-flex justify-content-end">
+                  <Button
+                    onClick={() => {
+                      close();
+                      handleReset();
+                    }}
+                    className="rounded-2 me-2 button-mui"
+                    type="error"
+                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                  >
+                    <span
+                      className=""
+                      style={{ marginBottom: "2px", fontWeight: "500" }}
+                    >
+                      Hủy
+                    </span>
+                  </Button>
                   <Button
                     onClick={() => handleSubmit()}
                     className="rounded-2 button-mui"

@@ -98,10 +98,44 @@ const IDScan = ({ onScanData }) => {
           {/* 034303011829||Nguyễn Thị Hoa|21032003|Nữ|Thôn Lai Ổn, An Quý, Quỳnh Phụ, Thái Bình|14082021 */}
         </Modal>
       ) : (
-        <Button onClick={startScanning} type="primary">
-          <FontAwesomeIcon icon={faQrcode} style={{ paddingRight: "5px" }} />
-          Quét CCCD
+        <Button
+          onClick={startScanning}
+          type="primary"
+          className="rounded-2 me-2"
+          style={{ height: "38px", width: "120px", fontSize: "15px" }}
+        >
+          <span
+            className=""
+            style={{
+              fontSize: "15px",
+              fontWeight: "500",
+              marginBottom: "2px",
+            }}
+          >
+            <FontAwesomeIcon icon={faQrcode} style={{ paddingRight: "5px" }} />
+            Quét CCCD
+          </span>
         </Button>
+        //   <Button
+        //   onClick={() => {
+        //     handleOpenScanner();
+        //     setScannerRef([]);
+        //   }}
+        //   className="rounded-2 me-2"
+        //   type="warning"
+        //   style={{ height: "38px", width: "120px", fontSize: "15px" }}
+        // >
+        //   <span
+        //     className=""
+        //     style={{
+        //       fontSize: "15px",
+        //       fontWeight: "500",
+        //       marginBottom: "2px",
+        //     }}
+        //   >
+        //     Quét Barcode
+        //   </span>
+        // </Button>
       )}
     </div>
   );

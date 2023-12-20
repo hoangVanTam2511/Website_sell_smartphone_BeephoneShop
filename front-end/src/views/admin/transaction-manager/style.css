@@ -93,3 +93,13 @@ tr:hover {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding-top: 10px;
 }
+
+.gach-chan {
+  font-weight: bold;
+  color: #2f80ed;
+  text-decoration: none; /* Loại bỏ gạch chân mặc định */
+}
+
+.gach-chan:hover {
+  text-decoration: underline; /* Hiển thị gạch chân khi hover */
+}

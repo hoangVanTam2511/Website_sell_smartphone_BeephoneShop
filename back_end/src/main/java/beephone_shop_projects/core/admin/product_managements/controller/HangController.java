@@ -8,11 +8,13 @@ import beephone_shop_projects.core.common.base.ResponseObject;
 import beephone_shop_projects.core.common.base.ResponsePage;
 import beephone_shop_projects.entity.Hang;
 import beephone_shop_projects.infrastructure.constant.ApiConstants;
+import beephone_shop_projects.infrastructure.constant.StatusCommon;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(ApiConstants.ApiSystems.API_BRAND_URI)
@@ -30,7 +32,9 @@ public class HangController {
 
     @GetMapping
     public ResponseObject<List<HangResponse>> getHang() {
-        List<HangResponse> hang = hangService.findAll();
+        List<HangResponse> hang = hangService.findAll().stream()
+                .filter(products -> StatusCommon.ACTIVE.equals(products.getStatus()))
+                .collect(Collectors.toList());
         return new ResponseObject<>(hang);
     }
 

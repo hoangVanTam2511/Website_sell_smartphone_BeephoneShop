@@ -1446,7 +1446,7 @@ export function ProductsDialog(props) {
             <>
               <div className="mt-1 pt-1 d-flex">
                 <TextField
-                  label="Tìm kiếm sản phẩm theo mã, tên, số lượng tồn"
+                  label="Tìm kiếm sản phẩm theo mã, tên"
                   onChange={(e) => {
                     setKeyword(e.target.value);
                   }}
@@ -3137,6 +3137,13 @@ export function AddressDialog(props) {
     },
   ];
 
+  const [keyword, setKeyword] = useState("");
+
+  const filteredData = data.filter((item) =>
+    item.hoTenKH.includes(keyword) || item.soDienThoaiKhachHang.includes(keyword) ||
+    item.diaChi.includes(keyword) || item.tinhThanhPho.includes(keyword) || item.xaPhuong.includes(keyword) ||
+    item.quanHuyen.includes(keyword));
+
   return (
     <div className="rounded-pill">
       <Dialog
@@ -3169,13 +3176,13 @@ export function AddressDialog(props) {
               <div className="mt-2 d-flex justify-content-between">
                 <div>
                   <TextField
-                    label="Tìm Địa Chỉ"
-                    // onChange={handleGetValueFromInputTextField}
-                    // value={keyword}
+                    label="Tìm theo tên, số điện thoại, địa chỉ"
+                    onChange={(e) => setKeyword(e.target.value)}
+                    value={keyword}
                     InputLabelProps={{
                       sx: {
                         marginTop: "0.5px",
-                        textTransform: "capitalize",
+                        // textTransform: "capitalize",
                       },
                     }}
                     inputProps={{
@@ -3188,7 +3195,9 @@ export function AddressDialog(props) {
                     className=""
                   />
                   <Button
-                    // onClick={handleRefreshData}
+                    onClick={() => {
+                      setKeyword("");
+                    }}
                     className="rounded-2 ms-2"
                     type="warning"
                     style={{ height: "40px", width: "100px", fontSize: "15px" }}
@@ -3229,7 +3238,7 @@ export function AddressDialog(props) {
                 <TableAntd
                   className="table-container"
                   columns={columns}
-                  dataSource={data}
+                  dataSource={filteredData}
                   pagination={false}
                   rowKey={"id"}
                   key={"id"}
@@ -4683,7 +4692,7 @@ export function MultiplePaymentMethods({
 
   const [selectedPayment, setSelectedPayment] = useState([
     "Tiền mặt",
-    "Chuyển khoản thường",
+    "Chuyển khoản",
     "Ví VNPAY",
   ]);
   const [paymentCurrent, setPaymentCurrent] = useState("Tiền mặt");
@@ -4951,7 +4960,7 @@ export function MultiplePaymentMethods({
                       style: { fontSize: "19px" },
                     }}
                     variant="standard"
-                    sx={{ width: "205px", fontSize: "17.5px" }}
+                    sx={{ width: "245px", fontSize: "17.5px" }}
                   />
                   <div
                     className=""
@@ -5403,6 +5412,13 @@ export function MultiplePaymentMethodsDelivery({
     }
   };
 
+  const [description, setDescription] = useState("");
+
+  const handleGetValueFromInputTextField = (event) => {
+    const value = event.target.value;
+    setDescription(value);
+  };
+
   const checkHoanTien = () => {
     if (hoanTien === true) {
       return canTraKhach && canTraKhach;
@@ -5545,6 +5561,23 @@ export function MultiplePaymentMethodsDelivery({
                     </List>
                   </div>
                 </div>
+              </div>
+              <div className="mt-2">
+                <TextField
+                  label="Ghi chú"
+                  value={description}
+                  onChange={handleGetValueFromInputTextField}
+                  multiline
+                  maxRows={1}
+                  fullWidth
+                  inputProps={{
+                    style: {
+                      paddingBottom: "80px",
+                    },
+                  }}
+                  size="medium"
+                  className="mt-4"
+                />
               </div>
               <div
                 className="d-flex justify-content-between mt-4 pt-2"

@@ -24,6 +24,8 @@ public class OrderItemsCustomRefundRequest {
 
   private BigDecimal tongTien;
 
+  private String tongTienString;
+
   private String ghiChu;
 
   private BigDecimal phuPhi;

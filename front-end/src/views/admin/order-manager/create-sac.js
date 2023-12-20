@@ -15,8 +15,9 @@ import {
 import axios from "axios";
 import LoadingIndicator from "../../../utilities/loading";
 import generateRandomCode from "../../../utilities/randomCode";
-import { StatusCommonProductsNumber } from "./enum";
-import { request } from '../../../store/helpers/axios_helper'
+import { Notistack, StatusCommonProductsNumber } from "./enum";
+import useCustomSnackbar from "../../../utilities/notistack";
+import { request } from "../../../store/helpers/axios_helper";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -28,6 +29,7 @@ const CreateSac = ({ open, close, getAll, sacs }) => {
   const [isLoading, setIsLoading] = React.useState(false);
   const [status, setStatus] = React.useState(StatusCommonProductsNumber.ACTIVE);
   const [loaiCongSac, setLoaiCongSac] = React.useState("");
+  const { handleOpenAlertVariant } = useCustomSnackbar();
 
   const handleChangeStatus = (event) => {
     setStatus(event.target.value);
@@ -39,6 +41,7 @@ const CreateSac = ({ open, close, getAll, sacs }) => {
   const handleReset = (event) => {
     setStatus(StatusCommonProductsNumber.ACTIVE);
     setLoaiCongSac("");
+    setValidationMsg({});
   };
 
   const [validationMsg, setValidationMsg] = useState({});
@@ -46,7 +49,16 @@ const CreateSac = ({ open, close, getAll, sacs }) => {
   const validationAll = () => {
     const msg = {};
 
-    if (!loaiCongSac.trim("")) {
+    const isDuplicate = sacs.some(
+      (products) => products.loaiCongSac == loaiCongSac
+    );
+
+    if (isDuplicate) {
+      handleOpenAlertVariant("Loại cổng sạc đã tồn tại", Notistack.ERROR);
+      msg = "Đã tồn tại";
+    }
+
+    if (loaiCongSac.trim() === "") {
       msg.loaiCongSac = "Loại cổng sạc không được trống.";
     }
 
@@ -67,7 +79,7 @@ const CreateSac = ({ open, close, getAll, sacs }) => {
       loaiCongSac: loaiCongSac,
       status: status,
     };
-    request('POST',`/api/chargers`, obj)
+    request("POST", `/api/chargers`, obj)
       .then((response) => {
         close();
         getAll();
@@ -128,7 +140,7 @@ const CreateSac = ({ open, close, getAll, sacs }) => {
                     )}
                   />
                 </div>
-                <div className="mt-3" style={{}}>
+                {/* <div className="mt-3" style={{}}>
                   <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">
                       Trạng Thái
@@ -139,6 +151,10 @@ const CreateSac = ({ open, close, getAll, sacs }) => {
                       id="demo-simple-select"
                       value={status}
                       label="Trạng Thái"
+                      style={{
+                        pointerEvents: "none",
+                        opacity: 0.5,
+                      }}
                       defaultValue={StatusCommonProductsNumber.ACTIVE}
                       onChange={handleChangeStatus}
                     >
@@ -150,8 +166,24 @@ const CreateSac = ({ open, close, getAll, sacs }) => {
                       </MenuItem>
                     </Select>
                   </FormControl>
-                </div>
+                </div> */}
                 <div className="mt-4 pt-1 d-flex justify-content-end">
+                  <Button
+                    onClick={() => {
+                      close();
+                      handleReset();
+                    }}
+                    className="rounded-2 me-2 button-mui"
+                    type="error"
+                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                  >
+                    <span
+                      className=""
+                      style={{ marginBottom: "2px", fontWeight: "500" }}
+                    >
+                      Hủy
+                    </span>
+                  </Button>
                   <Button
                     onClick={() => handleSubmit()}
                     className="rounded-2 button-mui"

@@ -40,7 +40,13 @@ import { ConvertStatusVoucherNumberToString } from "../../../utilities/convertEn
 import useCustomSnackbar from "../../../utilities/notistack";
 import LoadingIndicator from "../../../utilities/loading";
 import { ConfirmDialog } from "../../../utilities/confirmModalDialoMui";
-import { request, requestParam } from '../../../store/helpers/axios_helper'
+import { request, requestParam } from "../../../store/helpers/axios_helper";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faArrowsRotate,
+  faHouse,
+  faPenToSquare,
+} from "@fortawesome/free-solid-svg-icons";
 
 //show
 const HienThiKhuyenMai = () => {
@@ -63,6 +69,7 @@ const HienThiKhuyenMai = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [sortVoucher, setSortVoucher] = useState("all");
   const [showPage, setShowPage] = useState(5);
+  const [checkStatus, setCheckStatus] = useState("");
 
   const handleReset = () => {
     setIsLoading(false);
@@ -84,16 +91,15 @@ const HienThiKhuyenMai = () => {
   // cutstom load data
   const loadDataListKhuyenMai = (page) => {
     setIsLoading(false);
-    requestParam('GET', `${apiURLKhuyenMai}/hien-thi`, {
-          keyword: searchTatCa,
-          pageNo: page,
-          pageSize: showPage,
-          trangThai: ConvertStatusVoucherNumberToString(searchTrangThai),
-          sortType: sortVoucher,
-          ngayBatDau: searchNgayBatDau,
-          ngayKetThuc: searchNgayKetThuc,
-        },
-      )
+    requestParam("GET", `${apiURLKhuyenMai}/hien-thi`, {
+      keyword: searchTatCa,
+      pageNo: page,
+      pageSize: showPage,
+      trangThai: ConvertStatusVoucherNumberToString(searchTrangThai),
+      sortType: sortVoucher,
+      ngayBatDau: searchNgayBatDau,
+      ngayKetThuc: searchNgayKetThuc,
+    })
       .then((response) => {
         const modifiedData = response.data.data.map((item, index) => ({
           ...item,
@@ -112,17 +118,17 @@ const HienThiKhuyenMai = () => {
   };
 
   const loadDataListKhuyenMai1 = (page) => {
-    request('GET', `${apiURLKhuyenMai}/hien-thi`, {
-        params: {
-          keyword: searchTatCa,
-          pageNo: page,
-          pageSize: showPage,
-          trangThai: ConvertStatusVoucherNumberToString(searchTrangThai),
-          sortType: sortVoucher,
-          ngayBatDau: searchNgayBatDau,
-          ngayKetThuc: searchNgayKetThuc,
-        },
-      })
+    request("GET", `${apiURLKhuyenMai}/hien-thi`, {
+      params: {
+        keyword: searchTatCa,
+        pageNo: page,
+        pageSize: showPage,
+        trangThai: ConvertStatusVoucherNumberToString(searchTrangThai),
+        sortType: sortVoucher,
+        ngayBatDau: searchNgayBatDau,
+        ngayKetThuc: searchNgayKetThuc,
+      },
+    })
       .then((response) => {
         const modifiedData = response.data.data.map((item, index) => ({
           ...item,
@@ -209,7 +215,7 @@ const HienThiKhuyenMai = () => {
     setIsLoading(false);
     console.log(obj.status);
 
-    request('PUT', `${apiURLKhuyenMai}/doi-trang-thai/${id}`, obj)
+    request("PUT", `${apiURLKhuyenMai}/doi-trang-thai/${id}`, obj)
       .then((response) => {
         loadDataListKhuyenMai(currentPage);
         handleOpenAlertVariant("Đổi trạng thái thành công!", Notistack.SUCCESS);
@@ -226,7 +232,7 @@ const HienThiKhuyenMai = () => {
 
   const kichHoatKhuyenMai = () => {
     setIsLoading(false);
-    request('PUT', `${apiURLKhuyenMai}/kich-hoat-promotion/${id}`)
+    request("PUT", `${apiURLKhuyenMai}/kich-hoat-promotion/${id}`)
       .then((response) => {
         loadDataListKhuyenMai(currentPage);
         handleOpenAlertVariant("Kích hoạt thành công!", Notistack.SUCCESS);
@@ -418,7 +424,7 @@ const HienThiKhuyenMai = () => {
               className="rounded-pill mx-auto badge-primary"
               style={{
                 height: "35px",
-                width: "110px",
+                width: "135px",
                 padding: "4px",
               }}
             >
@@ -431,7 +437,7 @@ const HienThiKhuyenMai = () => {
               className="rounded-pill mx-auto badge-danger"
               style={{
                 height: "35px",
-                width: "auto",
+                width: "135px",
                 padding: "4px",
               }}
             >
@@ -444,7 +450,7 @@ const HienThiKhuyenMai = () => {
               className="rounded-pill mx-auto badge-light"
               style={{
                 height: "35px",
-                width: "120px",
+                width: "135px",
                 padding: "4px",
               }}
             >
@@ -457,7 +463,7 @@ const HienThiKhuyenMai = () => {
               className="rounded-pill mx-auto badge-danger"
               style={{
                 height: "35px",
-                width: "90px",
+                width: "135px",
                 padding: "4px",
               }}
             >
@@ -470,7 +476,7 @@ const HienThiKhuyenMai = () => {
               className="rounded-pill mx-auto badge-warning"
               style={{
                 height: "35px",
-                width: "90px",
+                width: "135px",
                 padding: "4px",
               }}
             >
@@ -495,10 +501,18 @@ const HienThiKhuyenMai = () => {
             <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
               <Link to={`/dashboard/update-discount/${record.id}`}>
                 <IconButton size="">
-                  <BorderColorOutlinedIcon color="primary" />
+                  <FontAwesomeIcon
+                    icon={faPenToSquare}
+                    size="sm"
+                    style={{
+                      color: "#2f80ed",
+                      cursor: "pointer",
+                    }}
+                  />
                 </IconButton>
               </Link>
             </Tooltip>
+
             <Tooltip TransitionComponent={Zoom} title={"Đổi trạng thái"}>
               <IconButton
                 disabled={
@@ -517,29 +531,35 @@ const HienThiKhuyenMai = () => {
                   handleClickChangeStatus(event);
                   setId(record.id);
                   setMa(record.tenKhuyenMai);
+                  setCheckStatus(record.trangThai);
                 }}
               >
-                <AssignmentOutlinedIcon
-                  color={
-                    record.trangThai === StatusDiscount.HOAT_DONG ||
-                    record.trangThai === StatusDiscount.CHUA_DIEN_RA
-                      ? "error"
-                      : record.trangThai === StatusDiscount.DA_HUY &&
-                        isDatePast(record.ngayBatDau) === true
-                      ? "white"
-                      : record.trangThai === StatusDiscount.DA_HUY &&
-                        isRangeDate(record.ngayBatDau, record.ngayKetThuc) ===
-                          true
-                      ? "white"
-                      : record.trangThai === StatusDiscount.TAM_DUNG &&
-                        isDatePast(record.ngayBatDau) === true
-                      ? "success"
-                      : record.trangThai === StatusDiscount.TAM_DUNG &&
-                        isRangeDate(record.ngayBatDau, record.ngayKetThuc) ===
-                          true
-                      ? "success"
-                      : "disabled"
-                  }
+                <FontAwesomeIcon
+                  icon={faArrowsRotate}
+                  size="sm"
+                  transform={{ rotate: 90 }}
+                  style={{
+                    cursor: "pointer",
+                    color:
+                      record.trangThai === StatusDiscount.HOAT_DONG ||
+                      record.trangThai === StatusDiscount.CHUA_DIEN_RA
+                        ? "#e5383b"
+                        : record.trangThai === StatusDiscount.DA_HUY &&
+                          isDatePast(record.ngayBatDau) === true
+                        ? "disabled"
+                        : record.trangThai === StatusDiscount.DA_HUY &&
+                          isRangeDate(record.ngayBatDau, record.ngayKetThuc) ===
+                            true
+                        ? "disabled"
+                        : record.trangThai === StatusDiscount.TAM_DUNG &&
+                          isDatePast(record.ngayBatDau) === true
+                        ? "#09a129"
+                        : record.trangThai === StatusDiscount.TAM_DUNG &&
+                          isRangeDate(record.ngayBatDau, record.ngayKetThuc) ===
+                            true
+                        ? "#09a129"
+                        : "disabled",
+                  }}
                 />
               </IconButton>
             </Tooltip>
@@ -673,7 +693,13 @@ const HienThiKhuyenMai = () => {
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
         <MenuItem
-          // selected={}
+          disabled={
+            checkStatus === StatusDiscount.HOAT_DONG
+              ? true
+              : checkStatus === StatusDiscount.CHUA_DIEN_RA
+              ? true
+              : false
+          }
           onClick={() => {
             handleOpenDialogConfirmUpdate();
             setSelectedStatus(5);
@@ -688,10 +714,12 @@ const HienThiKhuyenMai = () => {
             setSelectedStatus(StatusDiscount.TAM_DUNG);
           }}
           style={{ color: "black" }}
+          disabled={checkStatus === StatusDiscount.TAM_DUNG ? true : false}
         >
           Tạm Dừng
         </MenuItem>
         <MenuItem
+          disabled={checkStatus === StatusDiscount.DA_HUY ? true : false}
           onClick={() => {
             handleOpenDialogConfirmUpdate();
             setSelectedStatus(StatusDiscount.DA_HUY);
@@ -709,8 +737,14 @@ const HienThiKhuyenMai = () => {
         }}
       >
         <Card className="">
-          <Card.Header className="">
-            <div className="header-title mt-2">
+          <span
+            className="header-title mt-3 ms-4"
+            style={{ fontWeight: "500px" }}
+          >
+            <FontAwesomeIcon icon={faHouse} size={"sm"} /> Quản Lý Đợt Giảm Giá
+          </span>
+          <Card.Header className="d-flex justify-content-between">
+            <div className="header-title">
               <TextField
                 label="Tìm giảm giá"
                 value={searchTatCa}
