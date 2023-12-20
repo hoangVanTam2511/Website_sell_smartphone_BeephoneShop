@@ -6445,7 +6445,9 @@ export function ConfirmRefund({ open, close, confirm, total, size }) {
         TransitionComponent={Transition}
         keepMounted
         open={open}
-        onClose={close}
+        onClose={() => {
+          close(); setDescription("")
+        }}
         aria-describedby="alert-dialog-slide-description1"
         maxWidth="md"
         maxHeight="md"
@@ -6481,6 +6483,7 @@ export function ConfirmRefund({ open, close, confirm, total, size }) {
           <Button
             onClick={() => {
               confirm(description);
+              setDescription("");
             }}
             className="rounded-2 me-2"
             type="primary"

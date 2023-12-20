@@ -182,8 +182,13 @@ const RefundDetail = () => {
           }
         }
       });
+    const voucher = order && order.voucher;
+    const dieuKienApDung = order && order.voucher && order.voucher.dieuKienApDung || 0;
+    if (!voucher && (order.tongTien - total) < dieuKienApDung) {
+      return total - (order.tongTien - order.tongTienSauKhiGiam);
+    }
     return total;
-  };
+  }
 
   const canTraKhach = () => {
     return totalRefund() - order.tienTraKhach;
@@ -1306,6 +1311,22 @@ const RefundDetail = () => {
                 </span>
               </div>
               <div className="d-flex justify-content-between mt-3">
+                <span className="" style={{ fontSize: "16px", color: "" }}>
+                  Khách đã trả
+                </span>
+                <span
+                  className="text-dark"
+                  style={{ fontSize: "17px", fontWeight: "500" }}
+                >
+                  {(order.tienKhachTra &&
+                    order.tienKhachTra.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })) ||
+                    0}
+                </span>
+              </div>
+              <div className="d-flex justify-content-between mt-3">
                 <span className="" style={{ fontSize: "16px" }}>
                   Số lượng hoàn trả
                 </span>
@@ -1343,8 +1364,11 @@ const RefundDetail = () => {
                     className="underline-custom"
                     style={{ cursor: "pointer", fontWeight: "500" }}
                   >
-                    {codeDiscount !== null ||
-                      (codeDiscount !== "" && "(" + codeDiscount + ") ")}
+                    {(order &&
+                      order.voucher &&
+                      order.voucher.ma &&
+                      "(" + order.voucher.ma + ") ") ||
+                      ""}
                   </span>
                   {(totalDiscount &&
                     totalDiscount.toLocaleString("vi-VN", {
