@@ -238,7 +238,11 @@ public class ProductServiceImpl extends AbstractServiceImpl<SanPham, ProductResp
       int quantityImei = 0;
 
       for (SanPhamChiTiet productItem : product.getProductItems()) {
-        quantityImei += productItem.getImeis().size();
+        for (Imei imei : productItem.getImeis()){
+          if (imei.getTrangThai().equals(StatusImei.NOT_SOLD)){
+            quantityImei++;
+          }
+        }
       }
 
       List<SanPhamChiTiet> findProductItemById = productItemCustomRepository.getProductsById(product.getId());

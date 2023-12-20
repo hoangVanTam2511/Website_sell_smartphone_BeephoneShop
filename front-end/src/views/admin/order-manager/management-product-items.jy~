@@ -958,7 +958,7 @@ const ManagementProductItems = (
 
       <ModalUpdateProduct
         priceProduct={priceProduct} statusProduct={statusProduct}
-        open={openUpdateProduct} close={handleCloseOpenUpdateProduct} update={handleUpdateProduct} />
+        open={openUpdateProduct} close={handleCloseOpenUpdateProduct} /* update={handleUpdateProduct} */ />
 
       <ImportAndExportExcelImei
         open={openModalImel}
