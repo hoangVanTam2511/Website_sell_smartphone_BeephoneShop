@@ -1,6 +1,6 @@
 package beephone_shop_projects.core.client.controller;
 
-import beephone_shop_projects.core.client.serives.impl.PinClientServiceImpl;
+import beephone_shop_projects.core.client.servies.impl.PinClientServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;

@@ -1,6 +1,6 @@
 package beephone_shop_projects.core.client.controller;
 
-import beephone_shop_projects.core.client.serives.impl.DanhMucClientServiceImpl;
+import beephone_shop_projects.core.client.servies.impl.DanhMucClientServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

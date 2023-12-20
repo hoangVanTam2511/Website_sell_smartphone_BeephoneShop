@@ -4,10 +4,9 @@ import beephone_shop_projects.core.client.models.request.AccountChangeInformatio
 import beephone_shop_projects.core.client.models.request.AccountLoginRequest;
 import beephone_shop_projects.core.client.models.request.AccountRegisterRequest;
 import beephone_shop_projects.core.client.models.response.AccountDto;
-import beephone_shop_projects.entity.Account;
 import beephone_shop_projects.infrastructure.jwt.UserAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
-import beephone_shop_projects.core.client.serives.impl.AccountClientServiceImpl;
+import beephone_shop_projects.core.client.servies.impl.AccountClientServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -73,6 +72,15 @@ public class AccountClientController {
             return new ResponseEntity<>(accountClientService.changeInformationUser(account), HttpStatus.OK);
         }catch (Exception ex){
             // không tìm thay tai khoan thi se ban ra exception
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping("/change-pass")
+    public ResponseEntity<?> changePass(@RequestParam("pass")String pass, @RequestParam("id")String id){
+        try{
+            return new ResponseEntity<>(accountClientService.changePass(pass, id), HttpStatus.OK);
+        }catch(Exception ex){
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }

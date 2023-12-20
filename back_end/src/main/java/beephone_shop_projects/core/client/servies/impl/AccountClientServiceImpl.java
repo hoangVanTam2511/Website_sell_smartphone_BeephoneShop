@@ -1,4 +1,4 @@
-package beephone_shop_projects.core.client.serives.impl;
+package beephone_shop_projects.core.client.servies.impl;
 
 import beephone_shop_projects.core.admin.account_management.repository.AccountRepository;
 import beephone_shop_projects.core.admin.account_management.repository.RoleRepository;
@@ -76,12 +76,12 @@ public class AccountClientServiceImpl{
             accountClientRepository.save(new Account());
             account = accountClientRepository.findByMa();
         }
-            else{
-                GioHang gioHang = cartClientRepository.getGioHangByIDKhachHang(account.getId());
-                if(gioHang != null){
-                    cartDetailClientRepository.deleteGioHangChiTietByIdGioHang(gioHang.getId());
-                }
+        else{
+            GioHang gioHang = cartClientRepository.getGioHangByIDKhachHang(account.getId());
+            if(gioHang != null){
+                cartDetailClientRepository.deleteGioHangChiTietByIdGioHang(gioHang.getId());
             }
+        }
         return account;
     }
 
@@ -150,5 +150,20 @@ public class AccountClientServiceImpl{
         account.setSoDienThoai(req.getPhoneNumber());
 
         return accountRepository.save(account);
+    }
+
+    public String changePass(String newPass, String idAccount){
+        Account account = accountRepository.findById(idAccount).orElseThrow(() -> new IllegalArgumentException("Không tìm thấy tài khoản"));
+
+        // change pass
+        account.setMatKhau(passwordEncoder.encode(newPass));
+        accountRepository.save(account);
+
+        Context context = new Context();
+        //send new pass
+        context.setVariable("password", newPass);
+
+        emailService.sendEmailWithHtmlTemplate(account.getEmail(), "Chúc mừng bạn đã đổi mật khẩu thành công.", "email-get-pass-template", context);
+        return "Đổi mật khẩu thành công";
     }
 }

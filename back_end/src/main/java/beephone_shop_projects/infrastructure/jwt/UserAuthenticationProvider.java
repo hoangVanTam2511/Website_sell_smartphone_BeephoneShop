@@ -1,6 +1,6 @@
 package beephone_shop_projects.infrastructure.jwt;
 
-import beephone_shop_projects.core.client.serives.impl.AccountClientServiceImpl;
+import beephone_shop_projects.core.client.servies.impl.AccountClientServiceImpl;
 import beephone_shop_projects.entity.Account;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;

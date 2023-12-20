@@ -1,4 +1,4 @@
-package beephone_shop_projects.core.client.serives.impl;
+package beephone_shop_projects.core.client.servies.impl;
 
 import beephone_shop_projects.core.client.repositories.ProductLineClientRepository;
 import beephone_shop_projects.entity.DongSanPham;
