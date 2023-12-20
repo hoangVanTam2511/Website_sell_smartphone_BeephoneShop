@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.admin.promotion_management.controller;
 
+import beephone_shop_projects.core.admin.promotion_management.model.request.FindSanPhamKhuyenMaiRequest;
 import beephone_shop_projects.core.admin.promotion_management.service.SanPhamChiTietKhuyenMaiService;
 import beephone_shop_projects.core.admin.promotion_management.service.SanPhamKhuyenMaiService;
 import beephone_shop_projects.core.common.base.ResponseObject;
@@ -21,8 +22,8 @@ public class SanPhamKhuyenMaiController {
     private SanPhamChiTietKhuyenMaiService sanPhamChiTietKhuyenMaiService;
 
     @GetMapping("/san-pham-1")
-    public ResponseObject hienThiSanPham(){
-        return new ResponseObject(sanPhamKhuyenMaiService.getAllSanPham());
+    public ResponseObject hienThiSanPham(final FindSanPhamKhuyenMaiRequest request){
+        return new ResponseObject(sanPhamKhuyenMaiService.getAllSanPham(request));
     }
 
     @GetMapping("/san-pham-chi-tiet-1/{id}/{check}")

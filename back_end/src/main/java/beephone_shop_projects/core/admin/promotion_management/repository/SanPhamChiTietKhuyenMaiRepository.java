@@ -4,6 +4,7 @@ import beephone_shop_projects.core.admin.promotion_management.model.reponse.Deta
 import beephone_shop_projects.core.admin.promotion_management.model.reponse.KhuyenMaiChiTietResponse;
 import beephone_shop_projects.core.admin.promotion_management.model.reponse.SanPhamChiTietKhuyenMaiResponse;
 import beephone_shop_projects.core.admin.promotion_management.model.reponse.SanPhamChiTietSauKhuyenMaiResponse;
+import beephone_shop_projects.core.admin.promotion_management.model.request.FindSanPhamKhuyenMaiRequest;
 import beephone_shop_projects.repository.ISanPhamChiTietRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,7 +22,7 @@ public interface SanPhamChiTietKhuyenMaiRepository extends ISanPhamChiTietReposi
             RIGHT JOIN ram d ON d.id = ctsp.id_ram
             RIGHT JOIN rom e ON e.id = ctsp.id_rom
             LEFT JOIN image f on ctsp.id_image = f.id
-            WHERE ctsp.id_san_pham = ?1 AND ctsp.trang_thai = 0
+            WHERE (ctsp.id_san_pham = ?1 AND ctsp.trang_thai = 0)
             ORDER BY ctsp.created_at DESC 
              """, nativeQuery = true)
     List<SanPhamChiTietKhuyenMaiResponse> findAllChiTietSanPham(@Param("id") String id);
@@ -55,6 +56,10 @@ public interface SanPhamChiTietKhuyenMaiRepository extends ISanPhamChiTietReposi
             JOIN khuyen_mai_chi_tiet k ON k.id_chi_tiet_san_pham = ctsp.id
             JOIN khuyen_mai km ON km.id = k.id_khuyen_mai
             WHERE k.id_chi_tiet_san_pham = ?1 AND f.trang_thai = 1 
+            AND ((:#{#request.keyword} IS NULL OR :#{#request.keyword} = '' OR a.ten_san_pham LIKE :#{'%' + #request.keyword + '%'}) 
+            OR (:#{#request.keyword} IS NULL OR :#{#request.keyword} = '' OR c.ten_mau_sac LIKE :#{'%' + #request.keyword + '%'})
+            OR (:#{#request.keyword} IS NULL OR :#{#request.keyword} = '' OR d.kich_thuoc LIKE :#{'%' + #request.keyword + '%'}) 
+            OR (:#{#request.keyword} IS NULL OR :#{#request.keyword} = '' OR e.kich_thuoc LIKE :#{'%' + #request.keyword + '%'})  
             ORDER BY ctsp.created_at DESC 
              """, nativeQuery = true)
     List<SanPhamChiTietSauKhuyenMaiResponse> getOneChiTietSanPham(@Param("id") String id);
@@ -72,4 +77,12 @@ public interface SanPhamChiTietKhuyenMaiRepository extends ISanPhamChiTietReposi
             JOIN khuyen_mai_chi_tiet k ON k.id_chi_tiet_san_pham = ctsp.id WHERE k.id_khuyen_mai = ?1 AND k.delected = 1
             """, nativeQuery = true)
     List<DetailKhuyenMaiResponse> getDetailKhuyenMai(@Param("id") String id);
+
+    @Query(value = """
+            SELECT k.don_gia, k.don_gia_sau_khuyen_mai, km.gia_tri_khuyen_mai, km.loai_khuyen_mai FROM khuyen_mai_chi_tiet k 
+            JOIN san_pham_chi_tiet ctsp ON k.id_chi_tiet_san_pham = ctsp.id
+            JOIN khuyen_mai km ON km.id = k.id_khuyen_mai
+            WHERE ctsp.id = ?1 AND k.delected = 1 AND km.trang_thai != 1
+            """, nativeQuery = true)
+    List<KhuyenMaiChiTietResponse> getListKhuyenMaiKhacHoatDong(@Param("id") String id);
 }
