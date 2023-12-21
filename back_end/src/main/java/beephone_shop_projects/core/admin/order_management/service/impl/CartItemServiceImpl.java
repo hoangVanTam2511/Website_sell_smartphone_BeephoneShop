@@ -402,8 +402,8 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
       HoaDonChiTiet getProductItemInCartOrderCurrent = findProductItemCurrentInCartOrder.get();
       getProductItemInCartOrderCurrent.setSoLuong(getProductItemInCartOrderCurrent
               .getSoLuong() + req.getAmount());
-      findProductItem.get().setSoLuongTonKho(findProductItem.get().getSoLuongTonKho() - req.getAmount());
-      sanPhamChiTietRepository.save(findProductItem.get());
+//      findProductItem.get().setSoLuongTonKho(findProductItem.get().getSoLuongTonKho() - req.getAmount());
+//      sanPhamChiTietRepository.save(findProductItem.get());
       HoaDonChiTiet updatedCartItemOrder = orderItemRepository.save(getProductItemInCartOrderCurrent);
       Set<Imei> imeisProduct = findProductItem.get().getImeis();
       for (ImeiCustomRequest imeiCustomRequest : req.getImeis()) {
@@ -484,8 +484,8 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
       orderItem.setSanPhamChiTiet(findProductItem.get());
       orderItem.setHoaDon(findOrderCurrent);
       orderItem.setDonGia(req.getPrice());
-      findProductItem.get().setSoLuongTonKho(findProductItem.get().getSoLuongTonKho() - req.getAmount());
-      sanPhamChiTietRepository.save(findProductItem.get());
+//      findProductItem.get().setSoLuongTonKho(findProductItem.get().getSoLuongTonKho() - req.getAmount());
+//      sanPhamChiTietRepository.save(findProductItem.get());
       HoaDonChiTiet createdOrderItem = orderItemRepository.save(orderItem);
 
       Set<Imei> imeisProduct = findProductItem.get().getImeis();
@@ -603,8 +603,8 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
       HoaDonChiTiet getProductItemInCartOrderCurrent = findProductItemCurrentInCartOrder.get();
       getProductItemInCartOrderCurrent.setSoLuong(getProductItemInCartOrderCurrent
               .getSoLuong() + req.getAmount());
-      sanPhamChiTiet.setSoLuongTonKho(sanPhamChiTiet.getSoLuongTonKho() - req.getAmount());
-      sanPhamChiTietRepository.save(sanPhamChiTiet);
+//      sanPhamChiTiet.setSoLuongTonKho(sanPhamChiTiet.getSoLuongTonKho() - req.getAmount());
+//      sanPhamChiTietRepository.save(sanPhamChiTiet);
       HoaDonChiTiet updatedCartItemOrder = orderItemRepository.save(getProductItemInCartOrderCurrent);
       findImei.get().setTrangThai(StatusImei.PENDING_DELIVERY);
       imeiRepository.save(findImei.get());
@@ -679,8 +679,8 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
       orderItem.setSanPhamChiTiet(findImei.get().getSanPhamChiTiet());
       orderItem.setHoaDon(findOrderCurrent);
       orderItem.setDonGia(findImei.get().getSanPhamChiTiet().getDonGia());
-      sanPhamChiTiet.setSoLuongTonKho(sanPhamChiTiet.getSoLuongTonKho() - req.getAmount());
-      sanPhamChiTietRepository.save(sanPhamChiTiet);
+//      sanPhamChiTiet.setSoLuongTonKho(sanPhamChiTiet.getSoLuongTonKho() - req.getAmount());
+//      sanPhamChiTietRepository.save(sanPhamChiTiet);
       HoaDonChiTiet createdOrderItem = orderItemRepository.save(orderItem);
       findImei.get().setTrangThai(StatusImei.PENDING_DELIVERY);
       imeiRepository.save(findImei.get());
@@ -916,9 +916,9 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
 //      orderRepository.save(findOrderCurrent);
 //    }
 
-    System.out.println(getOptional.getSoLuongTonKho());
-    getOptional.setSoLuongTonKho(getOptional.getSoLuongTonKho() + findCartItemOrder.get().getSoLuong() - req.getAmount());
-    System.out.println(getOptional.getSoLuongTonKho());
+//    System.out.println(getOptional.getSoLuongTonKho());
+//    getOptional.setSoLuongTonKho(getOptional.getSoLuongTonKho() + findCartItemOrder.get().getSoLuong() - req.getAmount());
+//    System.out.println(getOptional.getSoLuongTonKho());
     findCartItemOrder.get().setSoLuong(req.getAmount());
     HoaDonChiTiet updatedCartItemOrder = orderItemRepository.save(findCartItemOrder.get());
 
@@ -928,7 +928,7 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
     imeiDaBanCustomRepository.deleteAll(imeiToRemove);
     imeiDaBanCustomRepository.saveAll(imeiToAdd);
 
-    sanPhamChiTietRepository.save(getOptional);
+//    sanPhamChiTietRepository.save(getOptional);
     return null;
 
   }
@@ -1035,12 +1035,12 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
       }
       orderRepository.save(findOrderCurrent);
 
-      Integer resetAmount = findCartItemOrder.get().getSoLuong();
+//      Integer resetAmount = findCartItemOrder.get().getSoLuong();
       imeiDaBanCustomRepository.deleteAll(findCartItemOrder.get().getImeisDaBan());
       orderItemRepository.deleteById(findCartItemOrder.get().getId());
-      findProductItem.get().setSoLuongTonKho(findProductItem.get().getSoLuongTonKho() +
-              resetAmount);
-      sanPhamChiTietRepository.save(findProductItem.get());
+//      findProductItem.get().setSoLuongTonKho(findProductItem.get().getSoLuongTonKho() +
+//              resetAmount);
+//      sanPhamChiTietRepository.save(findProductItem.get());
       return true;
     } catch (Exception e) {
       return false;
