@@ -839,7 +839,7 @@ const HienThiKhuyenMai = () => {
                     className="ms-3 ps-1"
                     style={{ marginBottom: "3px", fontWeight: "500" }}
                   >
-                    Tạo giảm giá
+                    Tạo đợt giảm giá
                   </span>
                 </Button>
               </Link>
