@@ -105,7 +105,6 @@ export function OrderConfirmPayment(props) {
 
   const [order, setOrder] = useState({});
 
-
   const checkTotal = () => {
     if (total === 0) {
       return khachCanTra;
@@ -140,8 +139,9 @@ export function OrderConfirmPayment(props) {
               sx={{ color: "black" }}
               id="alert-dialog-description"
             >
-              {`Bạn có chắc chắn muốn ${delivery ? "đặt đơn hàng" : "thanh toán đơn hàng"
-                }`}{" "}
+              {`Bạn có chắc chắn muốn ${
+                delivery ? "đặt đơn hàng" : "thanh toán đơn hàng"
+              }`}{" "}
               <span className="" style={{ fontWeight: "500" }}>
                 {" "}
                 {ma}
@@ -281,6 +281,84 @@ export function OrderPendingConfirmCloseDialog(props) {
   );
 }
 
+export function ConfirmOrderChange(props) {
+  const { open, onClose, sizeOld, sizeNew, confirm } = props;
+
+  return (
+    <div className="rounded-pill">
+      <Dialog
+        TransitionComponent={Transition1}
+        open={open}
+        onClose={onClose}
+        aria-describedby="alert-dialog-slide-description1"
+        sx={{
+          height: "300px",
+          "& .MuiPaper-root": {
+            borderRadius: "15px", // Giá trị border radius tùy chỉnh
+            marginTop: "150px",
+          },
+        }}
+      >
+        <div className="p-2" style={{}}>
+          <DialogTitle
+            sx={{ color: "#dc3333", fontWeight: "500", fontSize: "18px" }}
+            id="alert-dialog-title"
+          >
+            {"Xác nhận cập nhật số lượng sản phẩm"}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText
+              sx={{ color: "black" }}
+              id="alert-dialog-description"
+            >
+              Bạn có chắc chắn muốn cập nhật số lượng của sản phẩm từ {sizeOld}{" "}
+              thành {sizeNew}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={confirm}
+              className="rounded-2 me-1 button-mui"
+              type="primary"
+              style={{
+                height: "40px",
+                width: "auto",
+                fontSize: "16px",
+                marginBottom: "20px",
+              }}
+            >
+              <span
+                className="text-white"
+                style={{ fontWeight: "500", marginBottom: "2px" }}
+              >
+                Xác nhận
+              </span>
+            </Button>
+            <Button
+              onClick={onClose}
+              className="rounded-2 me-3 ant-btn-danger"
+              type="primary"
+              style={{
+                height: "40px",
+                width: "auto",
+                fontSize: "16px",
+                marginBottom: "20px",
+              }}
+            >
+              <span
+                className="text-white"
+                style={{ fontWeight: "500", marginBottom: "2px" }}
+              >
+                Hủy bỏ
+              </span>
+            </Button>
+          </DialogActions>
+        </div>
+      </Dialog>
+    </div>
+  );
+}
+
 export function UpdateRecipientOrderDialog(props) {
   const {
     open,
@@ -305,7 +383,7 @@ export function UpdateRecipientOrderDialog(props) {
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
-  const [selectedProvince, setSelectedProvince] = useState('');
+  const [selectedProvince, setSelectedProvince] = useState("");
   const [selectedWard, setSelectedWard] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [feeShip, setFeeShip] = useState(0);
@@ -340,45 +418,72 @@ export function UpdateRecipientOrderDialog(props) {
       isValid = false;
     }
     return isValid;
-  }
+  };
 
   const handleUpdateInfo = () => {
     setIsConfirm(true);
     if (isValidation()) {
-      const province = provinces.find((item) => item.ProvinceID === selectedProvince);
-      const district = districts.find((item) => item.DistrictID === selectedDistrict);
+      const province = provinces.find(
+        (item) => item.ProvinceID === selectedProvince
+      );
+      const district = districts.find(
+        (item) => item.DistrictID === selectedDistrict
+      );
       const ward = wards.find((item) => item.WardCode === selectedWard);
-      update(customerName, customerPhone, customerAddress, province.ProvinceName, district.DistrictName, ward.WardName, customerNote, feeShip);
+      update(
+        customerName,
+        customerPhone,
+        customerAddress,
+        province.ProvinceName,
+        district.DistrictName,
+        ward.WardName,
+        customerNote,
+        feeShip
+      );
     }
-  }
+  };
 
   const fetchDataFirst = async () => {
     if (ward && province && district) {
-      const getProvince = provinces.find((item) => item.ProvinceName === province);
+      const getProvince = provinces.find(
+        (item) => item.ProvinceName === province
+      );
       if (getProvince) {
         await Promise.all([
-          getAllDistrictGhnByIdProvinceByCustomer(getProvince.ProvinceID, district, ward),
+          getAllDistrictGhnByIdProvinceByCustomer(
+            getProvince.ProvinceID,
+            district,
+            ward
+          ),
         ]);
       }
-    }
-    else if (!ward && province && district) {
-      const getProvince = provinces.find((item) => item.ProvinceName === province);
+    } else if (!ward && province && district) {
+      const getProvince = provinces.find(
+        (item) => item.ProvinceName === province
+      );
       if (getProvince) {
         await Promise.all([
-          getAllDistrictGhnByIdProvinceByCustomer(getProvince.ProvinceID, district, ""),
+          getAllDistrictGhnByIdProvinceByCustomer(
+            getProvince.ProvinceID,
+            district,
+            ""
+          ),
         ]);
       }
-    }
-    else if (!ward && province && !district) {
-      const getProvince = provinces.find((item) => item.ProvinceName === province);
+    } else if (!ward && province && !district) {
+      const getProvince = provinces.find(
+        (item) => item.ProvinceName === province
+      );
       if (getProvince) {
         await Promise.all([
-          getAllDistrictGhnByIdProvinceByCustomer(getProvince.ProvinceID, "", ""),
+          getAllDistrictGhnByIdProvinceByCustomer(
+            getProvince.ProvinceID,
+            "",
+            ""
+          ),
         ]);
-
       }
-    }
-    else if (!ward && !province && !district) {
+    } else if (!ward && !province && !district) {
       getAllProvinceGhn();
       setSelectedProvince("");
       setSelectedDistrict("");
@@ -391,13 +496,16 @@ export function UpdateRecipientOrderDialog(props) {
   const tokenGhn = "62124d79-4ffa-11ee-b1d4-92b443b7a897";
 
   useEffect(() => {
-    if (selectedProvince != "" && selectedDistrict != "" && selectedWard != "") {
+    if (
+      selectedProvince != "" &&
+      selectedDistrict != "" &&
+      selectedWard != ""
+    ) {
       getShipFeeGhn();
-    }
-    else {
+    } else {
       setFeeShip(0);
     }
-  }, [selectedWard, selectedDistrict, selectedProvince])
+  }, [selectedWard, selectedDistrict, selectedProvince]);
 
   const shopID = 189389;
   const serviceID = 53320;
@@ -405,40 +513,45 @@ export function UpdateRecipientOrderDialog(props) {
   const shopWardCode = 11007;
 
   const getShipFeeGhn = () => {
-    axios.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee`, {
-      params: {
-        from_district_id: shopDistrictId,
-        from_ward_code: shopWardCode,
-        service_id: serviceID,
-        to_district_id: selectedDistrict,
-        to_ward_code: selectedWard,
-        weight: 240,
-      },
-      headers: {
-        token: tokenGhn,
-        Accept: 'application/json',
-      }
-    }).then(
-      (response) => {
+    axios
+      .get(
+        `https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee`,
+        {
+          params: {
+            from_district_id: shopDistrictId,
+            from_ward_code: shopWardCode,
+            service_id: serviceID,
+            to_district_id: selectedDistrict,
+            to_ward_code: selectedWard,
+            weight: 240,
+          },
+          headers: {
+            token: tokenGhn,
+            Accept: "application/json",
+          },
+        }
+      )
+      .then((response) => {
         setFeeShip(response.data.data.total);
         console.log(response.data.data.total);
-      }
-    )
-  }
-
+      });
+  };
 
   const getAllProvinceGhn = async () => {
-    axios.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province`, {
-      headers: {
-        token: tokenGhn,
-        Accept: 'application/json',
-      }
-    }).then(
-      (response) => {
+    axios
+      .get(
+        `https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/province`,
+        {
+          headers: {
+            token: tokenGhn,
+            Accept: "application/json",
+          },
+        }
+      )
+      .then((response) => {
         setProvinces(response.data.data);
-      }
-    )
-  }
+      });
+  };
 
   useEffect(() => {
     getAllProvinceGhn();
@@ -489,20 +602,28 @@ export function UpdateRecipientOrderDialog(props) {
           wardName
         );
       }
-    } catch (error) { }
+    } catch (error) {}
   };
 
-  const getAllWardGhnByIdDistrictByCustomer = async (provinceId, districtId, wardName) => {
-    await axios.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward`, {
-      params: {
-        district_id: districtId,
-      },
-      headers: {
-        token: tokenGhn,
-        Accept: 'application/json',
-      }
-    }).then(
-      (response) => {
+  const getAllWardGhnByIdDistrictByCustomer = async (
+    provinceId,
+    districtId,
+    wardName
+  ) => {
+    await axios
+      .get(
+        `https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward`,
+        {
+          params: {
+            district_id: districtId,
+          },
+          headers: {
+            token: tokenGhn,
+            Accept: "application/json",
+          },
+        }
+      )
+      .then((response) => {
         const data = response.data.data;
         setWards(data);
         const ward = data.find((item) => item.WardName === wardName);
@@ -512,43 +633,47 @@ export function UpdateRecipientOrderDialog(props) {
 
         if (wardName === "") {
           setSelectedWard("");
-        }
-        else {
+        } else {
           setSelectedWard(ward.WardCode);
         }
-      }
-    )
-  }
+      });
+  };
   const getAllDistrictGhnByIdProvince = async (provinceId) => {
-    await axios.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district`, {
-      params: {
-        province_id: provinceId,
-      },
-      headers: {
-        token: tokenGhn,
-        Accept: 'application/json',
-      }
-    }).then(
-      (response) => {
+    await axios
+      .get(
+        `https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/district`,
+        {
+          params: {
+            province_id: provinceId,
+          },
+          headers: {
+            token: tokenGhn,
+            Accept: "application/json",
+          },
+        }
+      )
+      .then((response) => {
         setDistricts(response.data.data);
-      }
-    )
-  }
+      });
+  };
   const getAllWardGhnByIdDistrict = async (districtId) => {
-    await axios.get(`https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward`, {
-      params: {
-        district_id: districtId,
-      },
-      headers: {
-        token: tokenGhn,
-        Accept: 'application/json',
-      }
-    }).then(
-      (response) => {
+    await axios
+      .get(
+        `https://dev-online-gateway.ghn.vn/shiip/public-api/master-data/ward`,
+        {
+          params: {
+            district_id: districtId,
+          },
+          headers: {
+            token: tokenGhn,
+            Accept: "application/json",
+          },
+        }
+      )
+      .then((response) => {
         setWards(response.data.data);
-      }
-    )
-  }
+      });
+  };
   const handleChangeProvince = (event) => {
     const value = event.target.value;
     setSelectedProvince(value);
@@ -604,8 +729,18 @@ export function UpdateRecipientOrderDialog(props) {
                   width: "755px",
                 },
               }}
-              helperText={isConfirm === true && (customerName !== null && customerName.trim() === "") ? "Bạn chưa nhập họ và tên" : ""}
-              error={isConfirm === true && (customerName !== null && customerName.trim() === "")}
+              helperText={
+                isConfirm === true &&
+                customerName !== null &&
+                customerName.trim() === ""
+                  ? "Bạn chưa nhập họ và tên"
+                  : ""
+              }
+              error={
+                isConfirm === true &&
+                customerName !== null &&
+                customerName.trim() === ""
+              }
               size="medium"
               className="mt-2 custom"
             />
@@ -620,45 +755,63 @@ export function UpdateRecipientOrderDialog(props) {
                   width: "755px",
                 },
               }}
-              helperText={isConfirm === true && (customerPhone !== null && customerPhone.trim() === "") ? "Bạn chưa nhập số điện thoại" : ""}
-              error={isConfirm === true && (customerPhone !== null && customerPhone.trim() === "")}
+              helperText={
+                isConfirm === true &&
+                customerPhone !== null &&
+                customerPhone.trim() === ""
+                  ? "Bạn chưa nhập số điện thoại"
+                  : ""
+              }
+              error={
+                isConfirm === true &&
+                customerPhone !== null &&
+                customerPhone.trim() === ""
+              }
               size="medium"
               className="mt-3 custom"
             />
           </div>
           <div className="d-flex mt-3">
-            <FormControl error={isConfirm && selectedProvince === ""} style={{ width: "100%" }}>
-              <InputLabel >Tỉnh / Thành Phố</InputLabel>
+            <FormControl
+              error={isConfirm && selectedProvince === ""}
+              style={{ width: "100%" }}
+            >
+              <InputLabel>Tỉnh / Thành Phố</InputLabel>
               <SelectMui
-                className='custom'
+                className="custom"
                 onChange={handleChangeProvince}
                 input={<OutlinedInput label="Tỉnh / Thành Phố" />}
                 value={selectedProvince}
               >
-                {provinces && provinces.map((province) => (
-                  <MenuItem
-                    key={province.ProvinceID}
-                    value={province.ProvinceID}
-                  >
-                    {province.ProvinceName}
-                  </MenuItem>
-                ))}
+                {provinces &&
+                  provinces.map((province) => (
+                    <MenuItem
+                      key={province.ProvinceID}
+                      value={province.ProvinceID}
+                    >
+                      {province.ProvinceName}
+                    </MenuItem>
+                  ))}
               </SelectMui>
-              {isConfirm && selectedProvince === "" &&
+              {isConfirm && selectedProvince === "" && (
                 <FormHelperText>Bạn chưa chọn Tỉnh / Thành Phố!</FormHelperText>
-              }
+              )}
             </FormControl>
-            <FormControl error={isConfirm && selectedDistrict === ""} style={{ width: "100%" }} className='ms-3'>
-              <InputLabel >Quận / Huyện</InputLabel>
+            <FormControl
+              error={isConfirm && selectedDistrict === ""}
+              style={{ width: "100%" }}
+              className="ms-3"
+            >
+              <InputLabel>Quận / Huyện</InputLabel>
               <SelectMui
-                className='custom'
+                className="custom"
                 label="Quận / Huyện"
                 input={<OutlinedInput label="Quận / Huyện" />}
                 value={selectedDistrict}
                 onChange={handleChangeDistrict}
               >
-                {districts && districts
-                  .map((district) => (
+                {districts &&
+                  districts.map((district) => (
                     <MenuItem
                       key={districts.DistrictID}
                       value={district.DistrictID}
@@ -667,30 +820,32 @@ export function UpdateRecipientOrderDialog(props) {
                     </MenuItem>
                   ))}
               </SelectMui>
-              {isConfirm && selectedDistrict === "" &&
+              {isConfirm && selectedDistrict === "" && (
                 <FormHelperText>Bạn chưa chọn Quận / Huyện!</FormHelperText>
-              }
+              )}
             </FormControl>
-            <FormControl error={isConfirm && selectedWard === ""} style={{ width: "100%" }} className='ms-3'>
+            <FormControl
+              error={isConfirm && selectedWard === ""}
+              style={{ width: "100%" }}
+              className="ms-3"
+            >
               <InputLabel>Phường / Xã</InputLabel>
               <SelectMui
-                className='custom'
+                className="custom"
                 onChange={handleChangeWard}
                 input={<OutlinedInput label="Phường / Xã" />}
                 value={selectedWard}
               >
-                {wards && wards.map((ward) => (
-                  <MenuItem
-                    key={ward.WardCode}
-                    value={ward.WardCode}
-                  >
-                    {ward.WardName}
-                  </MenuItem>
-                ))}
+                {wards &&
+                  wards.map((ward) => (
+                    <MenuItem key={ward.WardCode} value={ward.WardCode}>
+                      {ward.WardName}
+                    </MenuItem>
+                  ))}
               </SelectMui>
-              {isConfirm && selectedWard === "" &&
+              {isConfirm && selectedWard === "" && (
                 <FormHelperText>Bạn chưa chọn Phường / Xã!</FormHelperText>
-              }
+              )}
             </FormControl>
           </div>
           <div>
@@ -703,8 +858,18 @@ export function UpdateRecipientOrderDialog(props) {
                   width: "755px",
                 },
               }}
-              helperText={isConfirm === true && (customerAddress !== null && customerAddress.trim() === "") ? "Bạn chưa nhập số điện thoại" : ""}
-              error={isConfirm === true && (customerAddress !== null && customerAddress.trim() === "")}
+              helperText={
+                isConfirm === true &&
+                customerAddress !== null &&
+                customerAddress.trim() === ""
+                  ? "Bạn chưa nhập số điện thoại"
+                  : ""
+              }
+              error={
+                isConfirm === true &&
+                customerAddress !== null &&
+                customerAddress.trim() === ""
+              }
               size="medium"
               className="mt-3 custom"
             />
@@ -1057,13 +1222,13 @@ export function ProductsDialog(props) {
         <span style={{ color: "#dc1111" }}>
           {item && item.donGiaSauKhuyenMai
             ? item.donGiaSauKhuyenMai.toLocaleString("vi-VN", {
-              style: "currency",
-              currency: "VND",
-            })
+                style: "currency",
+                currency: "VND",
+              })
             : item.donGia.toLocaleString("vi-VN", {
-              style: "currency",
-              currency: "VND",
-            })}
+                style: "currency",
+                currency: "VND",
+              })}
         </span>
       ),
     },
@@ -1298,19 +1463,22 @@ export function ProductsDialog(props) {
       "danhMucs",
       selectedValueCategorys.length === 1 && selectedValueCategorys[0] === 0
         ? []
-        : selectedValueCategorys && selectedValueCategorys.filter((item) => item !== 0)
+        : selectedValueCategorys &&
+            selectedValueCategorys.filter((item) => item !== 0)
     );
     params.append(
       "hangs",
       selectedValueBrands.length === 1 && selectedValueBrands[0] === 0
         ? []
-        : selectedValueBrands && selectedValueBrands.filter((item) => item !== 0)
+        : selectedValueBrands &&
+            selectedValueBrands.filter((item) => item !== 0)
     );
     params.append(
       "heDieuHanhs",
       selectedValueOperas.length === 1 && selectedValueOperas[0] === "None"
         ? operas
-        : selectedValueOperas && selectedValueOperas.filter((item) => item !== "None")
+        : selectedValueOperas &&
+            selectedValueOperas.filter((item) => item !== "None")
     );
     params.append(
       "chips",
@@ -1322,7 +1490,8 @@ export function ProductsDialog(props) {
       "manHinhs",
       selectedValueScreens.length === 1 && selectedValueScreens[0] === 0
         ? []
-        : selectedValueScreens && selectedValueScreens.filter((item) => item !== 0)
+        : selectedValueScreens &&
+            selectedValueScreens.filter((item) => item !== 0)
     );
     params.append(
       "pins",
@@ -1547,14 +1716,14 @@ export function ProductsDialog(props) {
                       renderValue={(selected) =>
                         selected && selected.length > 1
                           ? selected
-                            .filter((id) =>
-                              categorys.find((c) => c.id === id)
-                            ) // Loại bỏ các giá trị không hợp lệ
-                            .map(
-                              (id) =>
-                                categorys.find((c) => c.id === id).tenDanhMuc
-                            ) // Lấy tên danh mục tương ứng
-                            .join(", ")
+                              .filter((id) =>
+                                categorys.find((c) => c.id === id)
+                              ) // Loại bỏ các giá trị không hợp lệ
+                              .map(
+                                (id) =>
+                                  categorys.find((c) => c.id === id).tenDanhMuc
+                              ) // Lấy tên danh mục tương ứng
+                              .join(", ")
                           : "Chọn Danh Mục"
                       }
                     >
@@ -1619,12 +1788,12 @@ export function ProductsDialog(props) {
                       renderValue={(selected) =>
                         selected && selected.length > 1
                           ? selected
-                            .filter((id) => listHang.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
-                            .map(
-                              (id) =>
-                                listHang.find((c) => c.id === id).tenHang
-                            ) // Lấy tên danh mục tương ứng
-                            .join(", ")
+                              .filter((id) => listHang.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
+                              .map(
+                                (id) =>
+                                  listHang.find((c) => c.id === id).tenHang
+                              ) // Lấy tên danh mục tương ứng
+                              .join(", ")
                           : "Chọn Hãng"
                       }
                     >
@@ -1694,15 +1863,15 @@ export function ProductsDialog(props) {
                       }}
                       renderValue={(selected) =>
                         selected &&
-                          selected.filter((value) => value !== "None").length > 0
+                        selected.filter((value) => value !== "None").length > 0
                           ? selected
-                            .filter((id) =>
-                              ["ANDROID", "IOS"].find((c) => c === id)
-                            ) // Loại bỏ các giá trị không hợp lệ
-                            .map((id) =>
-                              ["ANDROID", "IOS"].find((c) => c === id)
-                            ) // Lấy tên danh mục tương ứng
-                            .join(", ")
+                              .filter((id) =>
+                                ["ANDROID", "IOS"].find((c) => c === id)
+                              ) // Loại bỏ các giá trị không hợp lệ
+                              .map((id) =>
+                                ["ANDROID", "IOS"].find((c) => c === id)
+                              ) // Lấy tên danh mục tương ứng
+                              .join(", ")
                           : "Chọn Hệ Điều Hành"
                       }
                     >
@@ -1765,12 +1934,12 @@ export function ProductsDialog(props) {
                       renderValue={(selected) =>
                         selected && selected.length > 1
                           ? selected
-                            .filter((id) => listChip.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
-                            .map(
-                              (id) =>
-                                listChip.find((c) => c.id === id).tenChip
-                            ) // Lấy tên danh mục tương ứng
-                            .join(", ")
+                              .filter((id) => listChip.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
+                              .map(
+                                (id) =>
+                                  listChip.find((c) => c.id === id).tenChip
+                              ) // Lấy tên danh mục tương ứng
+                              .join(", ")
                           : "Chọn Chip"
                       }
                     >
@@ -1834,25 +2003,26 @@ export function ProductsDialog(props) {
                       renderValue={(selected) =>
                         selected && selected.length > 1
                           ? selected
-                            .filter((id) =>
-                              listManHinh.find((c) => c.id === id)
-                            ) // Loại bỏ các giá trị không hợp lệ
-                            .map(
-                              (id) =>
+                              .filter((id) =>
                                 listManHinh.find((c) => c.id === id)
-                                  .loaiManHinh +
-                                " " +
-                                `(${listManHinh.find((c) => c.id === id)
-                                  .doPhanGiaiManHinh.chieuRong +
-                                " x " +
-                                listManHinh.find((c) => c.id === id)
-                                  .doPhanGiaiManHinh.chieuDai
-                                } pixels) ` +
-                                listManHinh.find((c) => c.id === id)
-                                  .kichThuoc +
-                                `"`
-                            ) // Lấy tên danh mục tương ứng
-                            .join(", ")
+                              ) // Loại bỏ các giá trị không hợp lệ
+                              .map(
+                                (id) =>
+                                  listManHinh.find((c) => c.id === id)
+                                    .loaiManHinh +
+                                  " " +
+                                  `(${
+                                    listManHinh.find((c) => c.id === id)
+                                      .doPhanGiaiManHinh.chieuRong +
+                                    " x " +
+                                    listManHinh.find((c) => c.id === id)
+                                      .doPhanGiaiManHinh.chieuDai
+                                  } pixels) ` +
+                                  listManHinh.find((c) => c.id === id)
+                                    .kichThuoc +
+                                  `"`
+                              ) // Lấy tên danh mục tương ứng
+                              .join(", ")
                           : "Chọn Màn Hình"
                       }
                     >
@@ -1865,9 +2035,10 @@ export function ProductsDialog(props) {
                             primary={
                               c.loaiManHinh +
                               " " +
-                              `(${c.doPhanGiaiManHinh.chieuRong +
-                              " x " +
-                              c.doPhanGiaiManHinh.chieuDai
+                              `(${
+                                c.doPhanGiaiManHinh.chieuRong +
+                                " x " +
+                                c.doPhanGiaiManHinh.chieuDai
                               } pixels) ` +
                               c.kichThuoc +
                               `"`
@@ -1926,15 +2097,15 @@ export function ProductsDialog(props) {
                       renderValue={(selected) =>
                         selected && selected.length > 1
                           ? selected
-                            .filter((id) => listPin.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
-                            .map(
-                              (id) =>
-                                listPin.find((c) => c.id === id).loaiPin +
-                                " " +
-                                listPin.find((c) => c.id === id).dungLuong +
-                                " mAh"
-                            ) // Lấy tên danh mục tương ứng
-                            .join(", ")
+                              .filter((id) => listPin.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
+                              .map(
+                                (id) =>
+                                  listPin.find((c) => c.id === id).loaiPin +
+                                  " " +
+                                  listPin.find((c) => c.id === id).dungLuong +
+                                  " mAh"
+                              ) // Lấy tên danh mục tương ứng
+                              .join(", ")
                           : "Chọn Pin"
                       }
                     >
@@ -2003,13 +2174,13 @@ export function ProductsDialog(props) {
                       renderValue={(selected) =>
                         selected && selected.length > 1
                           ? selected
-                            .filter((id) => listRam.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
-                            .map(
-                              (id) =>
-                                listRam.find((c) => c.id === id).dungLuong +
-                                "GB"
-                            ) // Lấy tên danh mục tương ứng
-                            .join(", ")
+                              .filter((id) => listRam.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
+                              .map(
+                                (id) =>
+                                  listRam.find((c) => c.id === id).dungLuong +
+                                  "GB"
+                              ) // Lấy tên danh mục tương ứng
+                              .join(", ")
                           : "Chọn Ram"
                       }
                     >
@@ -2073,15 +2244,15 @@ export function ProductsDialog(props) {
                       renderValue={(selected) =>
                         selected && selected.length > 1
                           ? selected
-                            .filter((id) => listRom.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
-                            .map((id) =>
-                              listRom.find((c) => c.id === id).dungLuong ===
+                              .filter((id) => listRom.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
+                              .map((id) =>
+                                listRom.find((c) => c.id === id).dungLuong ===
                                 1024
-                                ? 1 + "TB"
-                                : listRom.find((c) => c.id === id).dungLuong +
-                                "GB"
-                            ) // Lấy tên danh mục tương ứng
-                            .join(", ")
+                                  ? 1 + "TB"
+                                  : listRom.find((c) => c.id === id).dungLuong +
+                                    "GB"
+                              ) // Lấy tên danh mục tương ứng
+                              .join(", ")
                           : "Chọn Rom"
                       }
                     >
@@ -2102,7 +2273,6 @@ export function ProductsDialog(props) {
                     </SelectMui>
                   </FormControl>
                 </div>
-
 
                 <div
                   className="d-flex ms-2"
@@ -2385,8 +2555,8 @@ export function VouchersDialog(props) {
             discount === item.id
               ? "danger"
               : discount !== item.id
-                ? "primary"
-                : ""
+              ? "primary"
+              : ""
           }
           style={{
             height: "35px",
@@ -2482,112 +2652,114 @@ export function VouchersDialog(props) {
               <TableBody>
                 {filteredData.length > 0
                   ? filteredData.map((item, index) => (
-                    <TableRow
-                      key={index}
-                      sx={{
-                        "&:last-child td, &:last-child th": { border: 0 },
-                      }}
-                    >
-                      <TableCell component="th" scope="row" align="center">
-                        {index + 1}
-                      </TableCell>
-                      <TableCell align="center" style={{ fontSize: "15px" }}>
-                        {item.ma}
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        style={{
-                          width: "",
-                          fontSize: "15px",
-                          color: "#dc1111",
+                      <TableRow
+                        key={index}
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
                         }}
                       >
-                        {item.giaTriVoucher.toLocaleString("vi-VN", {
-                          style: "currency",
-                          currency: "VND",
-                        })}
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        style={{ width: "", fontSize: "15px" }}
-                      >
-                        {item.loaiVoucher === TypeDiscountNumber.VND
-                          ? "..."
-                          : item.giaTriToiDa}
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        style={{ width: "", fontSize: "15px" }}
-                      >
-                        {item.soLuong}
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        style={{
-                          width: "200px",
-                          fontSize: "15px",
-                          whiteSpace: "pre-line",
-                        }}
-                      >
-                        Áp dụng cho đơn tối thiểu
-                        <span className="" style={{}}>
-                          {" " +
-                            item.dieuKienApDung.toLocaleString("vi-VN", {
-                              style: "currency",
-                              currency: "VND",
-                            })}
-                        </span>
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        style={{ width: "", fontSize: "15px" }}
-                      >
-                        <div
-                          className="rounded-pill badge-primary"
+                        <TableCell component="th" scope="row" align="center">
+                          {index + 1}
+                        </TableCell>
+                        <TableCell align="center" style={{ fontSize: "15px" }}>
+                          {item.ma}
+                        </TableCell>
+                        <TableCell
+                          align="center"
                           style={{
-                            height: "35px",
-                            width: "auto",
-                            padding: "7.5px",
+                            width: "",
+                            fontSize: "15px",
+                            color: "#dc1111",
                           }}
                         >
-                          <span className="text-white p-2" style={{}}>
-                            {item.trangThai == 1 ? "Hoạt động" : ""}
+                          {item.giaTriVoucher.toLocaleString("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          })}
+                        </TableCell>
+                        <TableCell
+                          align="center"
+                          style={{ width: "", fontSize: "15px" }}
+                        >
+                          {item.loaiVoucher === TypeDiscountNumber.VND
+                            ? "..."
+                            : item.giaTriToiDa}
+                        </TableCell>
+                        <TableCell
+                          align="center"
+                          style={{ width: "", fontSize: "15px" }}
+                        >
+                          {item.soLuong}
+                        </TableCell>
+                        <TableCell
+                          align="center"
+                          style={{
+                            width: "200px",
+                            fontSize: "15px",
+                            whiteSpace: "pre-line",
+                          }}
+                        >
+                          Áp dụng cho đơn tối thiểu
+                          <span className="" style={{}}>
+                            {" " +
+                              item.dieuKienApDung.toLocaleString("vi-VN", {
+                                style: "currency",
+                                currency: "VND",
+                              })}
                           </span>
-                        </div>
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        style={{
-                          width: "200px",
-                          fontSize: "15px",
-                          whiteSpace: "pre-line",
-                        }}
-                      >
-                        <div
-                          className={`${item.dieuKienApDung <= total()
-                            ? "rounded-pill badge-success"
-                            : "rounded-pill badge-danger"
+                        </TableCell>
+                        <TableCell
+                          align="center"
+                          style={{ width: "", fontSize: "15px" }}
+                        >
+                          <div
+                            className="rounded-pill badge-primary"
+                            style={{
+                              height: "35px",
+                              width: "auto",
+                              padding: "7.5px",
+                            }}
+                          >
+                            <span className="text-white p-2" style={{}}>
+                              {item.trangThai == 1 ? "Hoạt động" : ""}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell
+                          align="center"
+                          style={{
+                            width: "200px",
+                            fontSize: "15px",
+                            whiteSpace: "pre-line",
+                          }}
+                        >
+                          <div
+                            className={`${
+                              item.dieuKienApDung <= total()
+                                ? "rounded-pill badge-success"
+                                : "rounded-pill badge-danger"
                             }`}
-                          style={{
-                            height: "35px",
-                            width: "auto",
-                            padding: "7.5px",
-                          }}
-                        >
-                          <span className="text-white p-2" style={{}}>
-                            <span>{`${item.dieuKienApDung <= total()
-                              ? "Có thể áp dụng"
-                              : "Không thể áp dụng"
+                            style={{
+                              height: "35px",
+                              width: "auto",
+                              padding: "7.5px",
+                            }}
+                          >
+                            <span className="text-white p-2" style={{}}>
+                              <span>{`${
+                                item.dieuKienApDung <= total()
+                                  ? "Có thể áp dụng"
+                                  : "Không thể áp dụng"
                               }`}</span>
-                          </span>
-                        </div>
-                      </TableCell>
-                      <TableCell
-                        align="center"
-                        style={{ width: "" }}
-                      ></TableCell>
-                    </TableRow>
-                  ))
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell
+                          align="center"
+                          style={{ width: "" }}
+                        ></TableCell>
+                      </TableRow>
+                    ))
                   : ""}
               </TableBody>
             </Table>
@@ -3144,10 +3316,15 @@ export function AddressDialog(props) {
 
   const [keyword, setKeyword] = useState("");
 
-  const filteredData = data.filter((item) =>
-    item.hoTenKH.includes(keyword) || item.soDienThoaiKhachHang.includes(keyword) ||
-    item.diaChi.includes(keyword) || item.tinhThanhPho.includes(keyword) || item.xaPhuong.includes(keyword) ||
-    item.quanHuyen.includes(keyword));
+  const filteredData = data.filter(
+    (item) =>
+      item.hoTenKH.includes(keyword) ||
+      item.soDienThoaiKhachHang.includes(keyword) ||
+      item.diaChi.includes(keyword) ||
+      item.tinhThanhPho.includes(keyword) ||
+      item.xaPhuong.includes(keyword) ||
+      item.quanHuyen.includes(keyword)
+  );
 
   return (
     <div className="rounded-pill">
@@ -3488,15 +3665,16 @@ export function ConfirmDialog(props) {
     } else if (status === OrderStatusString.DELIVERING) {
       if (description !== null && description.trim() === "") {
         handleOpenAlertVariant("Bạn chưa nhập ghi chú! ", Notistack.ERROR);
-      }
-      else {
+      } else {
         confirmFinish(description);
       }
     } else if (status === OrderStatusString.CANCELLED) {
       if (description !== null && description.trim() === "") {
-        handleOpenAlertVariant("Bạn chưa nhập lí do hủy đơn! ", Notistack.ERROR);
-      }
-      else {
+        handleOpenAlertVariant(
+          "Bạn chưa nhập lí do hủy đơn! ",
+          Notistack.ERROR
+        );
+      } else {
         confirmCancel(description);
       }
     }
@@ -3666,11 +3844,11 @@ export const ProductDetailsDialog = (props) => {
                   <span style={{ fontWeight: "500", fontSize: "25px" }}>
                     {productItem1 &&
                       productItem1.sanPham.tenSanPham +
-                      " " +
-                      productItem1.ram.dungLuong +
-                      "/" +
-                      productItem1.rom.dungLuong +
-                      "GB"}
+                        " " +
+                        productItem1.ram.dungLuong +
+                        "/" +
+                        productItem1.rom.dungLuong +
+                        "GB"}
                     <span
                       className="ms-2"
                       style={{ fontSize: "13.5px", color: "gray" }}
@@ -3716,9 +3894,9 @@ export const ProductDetailsDialog = (props) => {
                         defaultValue={
                           productItem &&
                           productItem.ram.dungLuong +
-                          "/" +
-                          productItem.rom.dungLuong +
-                          "GB"
+                            "/" +
+                            productItem.rom.dungLuong +
+                            "GB"
                         }
                         size="lg"
                         sx={{ gap: 1.7 }}
@@ -3747,11 +3925,11 @@ export const ProductDetailsDialog = (props) => {
                                         >
                                           {productItem &&
                                             productItem.sanPham.tenSanPham +
-                                            " " +
-                                            item.ram.dungLuong +
-                                            "/" +
-                                            item.rom.dungLuong +
-                                            "GB"}
+                                              " " +
+                                              item.ram.dungLuong +
+                                              "/" +
+                                              item.rom.dungLuong +
+                                              "GB"}
                                         </span>
                                       </div>
                                       <div className="text-center">
@@ -4034,12 +4212,9 @@ export const ModalImeiByProductItem = ({
   //     item.trangThai === StatusImei.NOT_SOLD || item.trangThai === StatusImei.PENDING_DELIVERY ||
   //     item.trangThai === StatusImei.IN_THE_CART
   // );
-  const filteredData = imeis.filter((item) =>
-    item.soImei.includes(imei)
-  ).filter(
-    (item) =>
-      item.trangThai === StatusImei.NOT_SOLD
-  );
+  const filteredData = imeis
+    .filter((item) => item.soImei.includes(imei))
+    .filter((item) => item.trangThai === StatusImei.NOT_SOLD);
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
@@ -4053,12 +4228,18 @@ export const ModalImeiByProductItem = ({
   useEffect(() => {
     setCurrentPage(1);
     setSelectedImei([]);
-    setImeis(imeisChuaBan)
+    setImeis(imeisChuaBan);
   }, [imeisChuaBan]);
 
   useEffect(() => {
     let newCurrentPage = currentPage;
-    while (newCurrentPage > 1 && filteredData.slice((newCurrentPage - 1) * itemsPerPage, newCurrentPage * itemsPerPage).length === 0) {
+    while (
+      newCurrentPage > 1 &&
+      filteredData.slice(
+        (newCurrentPage - 1) * itemsPerPage,
+        newCurrentPage * itemsPerPage
+      ).length === 0
+    ) {
       newCurrentPage--;
     }
     setCurrentPage(newCurrentPage);
@@ -4126,83 +4307,89 @@ export const ModalImeiByProductItem = ({
                       <tbody>
                         {itemsOnCurrentPage.length
                           ? itemsOnCurrentPage.map((item, index) => (
-                            <>
-                              <tr
-                                key={index}
-                                style={{
-                                  cursor: "pointer",
-                                  pointerEvents: item.trangThai === StatusImei.PENDING_DELIVERY ||
-                                    item.trangThai === StatusImei.IN_THE_CART
-                                    ? "none"
-                                    : "auto",
-                                  opacity: item.trangThai === StatusImei.PENDING_DELIVERY ||
-                                    item.trangThai === StatusImei.IN_THE_CART
-                                    ? "0.5"
-                                    : "1",
-                                }}
-                                onClick={() => {
-                                  if (
-                                    selectedImei.length >= 4 &&
-                                    !selectedImei.includes(item)
-                                  ) {
-                                    handleOpenAlertVariant(
-                                      "Lựa chọn tối đa 4 số lượng sản phẩm!",
-                                      "warning"
-                                    );
-                                  } else if (!selectedImei.includes(item)) {
-                                    setSelectedImei((val) => [...val, item]);
-                                  } else {
-                                    setSelectedImei((val) =>
-                                      val.filter((text) => text !== item)
-                                    );
-                                  }
-                                }}
-                              >
-                                <td>
-                                  <Checkbox
-                                    color="primary"
-                                    checked={selectedImei.includes(item)}
-                                  />
-                                </td>
-                                <td className="text-center">{item.soImei}</td>
+                              <>
+                                <tr
+                                  key={index}
+                                  style={{
+                                    cursor: "pointer",
+                                    pointerEvents:
+                                      item.trangThai ===
+                                        StatusImei.PENDING_DELIVERY ||
+                                      item.trangThai === StatusImei.IN_THE_CART
+                                        ? "none"
+                                        : "auto",
+                                    opacity:
+                                      item.trangThai ===
+                                        StatusImei.PENDING_DELIVERY ||
+                                      item.trangThai === StatusImei.IN_THE_CART
+                                        ? "0.5"
+                                        : "1",
+                                  }}
+                                  onClick={() => {
+                                    if (
+                                      selectedImei.length >= 4 &&
+                                      !selectedImei.includes(item)
+                                    ) {
+                                      handleOpenAlertVariant(
+                                        "Lựa chọn tối đa 4 số lượng sản phẩm!",
+                                        "warning"
+                                      );
+                                    } else if (!selectedImei.includes(item)) {
+                                      setSelectedImei((val) => [...val, item]);
+                                    } else {
+                                      setSelectedImei((val) =>
+                                        val.filter((text) => text !== item)
+                                      );
+                                    }
+                                  }}
+                                >
+                                  <td>
+                                    <Checkbox
+                                      color="primary"
+                                      checked={selectedImei.includes(item)}
+                                    />
+                                  </td>
+                                  <td className="text-center">{item.soImei}</td>
 
-                                <td className="text-center">
-                                  {item.trangThai === StatusImei.PENDING_DELIVERY || item.trangThai === StatusImei.NOT_SOLD ||
+                                  <td className="text-center">
+                                    {item.trangThai ===
+                                      StatusImei.PENDING_DELIVERY ||
+                                    item.trangThai === StatusImei.NOT_SOLD ||
                                     item.trangThai ===
-                                    StatusImei.IN_THE_CART ? (
-                                    <div
-                                      className={
-                                        "badge-success rounded-pill mx-auto"
-                                      }
-                                      style={{
-                                        height: "35px",
-                                        width: "115px",
-                                        padding: "4px",
-                                      }}
-                                    >
-                                      <span
-                                        className="text-white"
+                                      StatusImei.IN_THE_CART ? (
+                                      <div
+                                        className={
+                                          "badge-success rounded-pill mx-auto"
+                                        }
                                         style={{
-                                          fontSize: "14px",
-                                          fontWeight: "400",
+                                          height: "35px",
+                                          width: "115px",
+                                          padding: "4px",
                                         }}
                                       >
-                                        {item.trangThai ===
+                                        <span
+                                          className="text-white"
+                                          style={{
+                                            fontSize: "14px",
+                                            fontWeight: "400",
+                                          }}
+                                        >
+                                          {item.trangThai ===
                                           StatusImei.NOT_SOLD
-                                          ? "Chưa Bán"
-                                          : item.trangThai ===
-                                            StatusImei.IN_THE_CART
+                                            ? "Chưa Bán"
+                                            : item.trangThai ===
+                                              StatusImei.IN_THE_CART
                                             ? "Chưa Bán"
                                             : "Chưa Bán"}
-                                      </span>
-                                    </div>
-                                  ) : (
-                                    ""
-                                  )}
-                                </td>
-                              </tr>
-                            </>
-                          ))
+                                        </span>
+                                      </div>
+                                    ) : (
+                                      ""
+                                    )}
+                                  </td>
+                                </tr>
+                              </>
+                            ))
                           : ""}
                       </tbody>
                     ) : null}
@@ -4245,9 +4432,9 @@ export const ModalImeiByProductItem = ({
                               action: ({ checked }) => ({
                                 sx: checked
                                   ? {
-                                    border: "1px solid",
-                                    borderColor: "#2f80ed",
-                                  }
+                                      border: "1px solid",
+                                      borderColor: "#2f80ed",
+                                    }
                                   : {},
                               }),
                             }}
@@ -4337,7 +4524,10 @@ export const ModalUpdateImeiByProductItem = ({
   imeisChuaBan,
   refresh,
   update,
-  max,
+  openOrder,
+  closeOrder,
+  onOpenOrder,
+  size,
 }) => {
   const [selectedImei, setSelectedImei] = useState(imeisChuaBan);
   const [imei, setImei] = useState("");
@@ -4358,10 +4548,16 @@ export const ModalUpdateImeiByProductItem = ({
   //     item.trangThai === StatusImei.PENDING_DELIVERY ||
   //     item.trangThai === StatusImei.IN_THE_CART
   // );
-  const filteredData = imeis.filter((item) =>
-    item.trangThai === StatusImei.NOT_SOLD ||
-    ((item.trangThai === StatusImei.IN_THE_CART || item.trangThai === StatusImei.PENDING_DELIVERY) && imeisChuaBan.some(imei => imei.soImei === item.soImei))
+  const filteredData = imeis.filter(
+    (item) =>
+      item.trangThai === StatusImei.NOT_SOLD ||
+      ((item.trangThai === StatusImei.IN_THE_CART ||
+        item.trangThai === StatusImei.PENDING_DELIVERY) &&
+        imeisChuaBan.some((imei) => imei.soImei === item.soImei))
   );
+
+  const [newSize, setNewSize] = useState();
+  const [oldSize, setOldSize] = useState();
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
@@ -4380,7 +4576,13 @@ export const ModalUpdateImeiByProductItem = ({
   useEffect(() => {
     if (imei.trim() !== "") {
       let newCurrentPage = currentPage;
-      while (newCurrentPage > 1 && filteredData.slice((newCurrentPage - 1) * itemsPerPage, newCurrentPage * itemsPerPage).length === 0) {
+      while (
+        newCurrentPage > 1 &&
+        filteredData.slice(
+          (newCurrentPage - 1) * itemsPerPage,
+          newCurrentPage * itemsPerPage
+        ).length === 0
+      ) {
         newCurrentPage--;
       }
       setCurrentPage(newCurrentPage);
@@ -4394,7 +4596,7 @@ export const ModalUpdateImeiByProductItem = ({
         TransitionComponent={Transition}
         keepMounted
         onClose={() => {
-          close();/*  setSelectedImei([])  */
+          close(); /*  setSelectedImei([])  */
         }}
         maxWidth="xxl"
         maxHeight="xxl"
@@ -4447,77 +4649,77 @@ export const ModalUpdateImeiByProductItem = ({
                     <tbody>
                       {itemsOnCurrentPage.length
                         ? itemsOnCurrentPage.map((item, index) => (
-                          <tr
-                            key={index}
-                            style={{
-                              cursor: "pointer",
-                              pointerEvents:
-                                (
-                                  item.trangThai === StatusImei.PENDING_DELIVERY ||
-                                  item.trangThai ===
-                                  StatusImei.IN_THE_CART) &&
+                            <tr
+                              key={index}
+                              style={{
+                                cursor: "pointer",
+                                pointerEvents:
+                                  (item.trangThai ===
+                                    StatusImei.PENDING_DELIVERY ||
+                                    item.trangThai ===
+                                      StatusImei.IN_THE_CART) &&
                                   !imeisChuaBan.some(
                                     (selectedItem) =>
                                       selectedItem.soImei === item.soImei
                                   )
-                                  ? "none"
-                                  : "auto",
-                              opacity:
-                                (
-                                  item.trangThai === StatusImei.PENDING_DELIVERY ||
-                                  item.trangThai ===
-                                  StatusImei.IN_THE_CART) &&
+                                    ? "none"
+                                    : "auto",
+                                opacity:
+                                  (item.trangThai ===
+                                    StatusImei.PENDING_DELIVERY ||
+                                    item.trangThai ===
+                                      StatusImei.IN_THE_CART) &&
                                   !imeisChuaBan.some(
                                     (selectedItem) =>
                                       selectedItem.soImei === item.soImei
                                   )
-                                  ? "0.5"
-                                  : "1",
-                            }}
-                            onClick={() => {
-                              if (
-                                selectedImei.length >= 4 &&
-                                !selectedImei.some(
-                                  (selectedItem) =>
-                                    selectedItem.soImei === item.soImei
-                                )
-                              ) {
-                                handleOpenAlertVariant(
-                                  "Lựa chọn tối đa 4 số lượng sản phẩm!",
-                                  "warning"
-                                );
-                              } else if (
-                                !selectedImei.some(
-                                  (selectedItem) =>
-                                    selectedItem.soImei === item.soImei
-                                )
-                              ) {
-                                setSelectedImei([...selectedImei, item]);
-                              } else {
-                                setSelectedImei(
-                                  selectedImei.filter(
+                                    ? "0.5"
+                                    : "1",
+                              }}
+                              onClick={() => {
+                                if (
+                                  selectedImei.length >= 4 &&
+                                  !selectedImei.some(
                                     (selectedItem) =>
-                                      selectedItem.soImei !== item.soImei
+                                      selectedItem.soImei === item.soImei
                                   )
-                                );
-                              }
-                            }}
-                          >
-                            <td>
-                              <Checkbox
-                                color="primary"
-                                checked={selectedImei.some(
-                                  (selectedItem) =>
-                                    selectedItem.soImei === item.soImei
-                                )}
-                              />
-                            </td>
-                            <td className="text-center">{item.soImei}</td>
-                            <td className="text-center">
-                              {
-                                item.trangThai === StatusImei.PENDING_DELIVERY ||
-                                  item.trangThai === StatusImei.NOT_SOLD ||
-                                  item.trangThai === StatusImei.IN_THE_CART ? (
+                                ) {
+                                  handleOpenAlertVariant(
+                                    "Lựa chọn tối đa 4 số lượng sản phẩm!",
+                                    "warning"
+                                  );
+                                } else if (
+                                  !selectedImei.some(
+                                    (selectedItem) =>
+                                      selectedItem.soImei === item.soImei
+                                  )
+                                ) {
+                                  setSelectedImei([...selectedImei, item]);
+                                } else {
+                                  setSelectedImei(
+                                    selectedImei.filter(
+                                      (selectedItem) =>
+                                        selectedItem.soImei !== item.soImei
+                                    )
+                                  );
+                                }
+                              }}
+                            >
+                              <td>
+                                <Checkbox
+                                  color="primary"
+                                  checked={selectedImei.some(
+                                    (selectedItem) =>
+                                      selectedItem.soImei === item.soImei
+                                  )}
+                                />
+                              </td>
+                              <td className="text-center">{item.soImei}</td>
+                              <td className="text-center">
+                                {item.trangThai ===
+                                  StatusImei.PENDING_DELIVERY ||
+                                item.trangThai === StatusImei.NOT_SOLD ||
+                                item.trangThai === StatusImei.IN_THE_CART ? (
                                   <div
                                     className={
                                       "badge-success rounded-pill mx-auto"
@@ -4539,16 +4741,16 @@ export const ModalUpdateImeiByProductItem = ({
                                         ? "Chưa Bán"
                                         : item.trangThai ===
                                           StatusImei.IN_THE_CART
-                                          ? "Chưa Bán"
-                                          : "Chưa Bán"}
+                                        ? "Chưa Bán"
+                                        : "Chưa Bán"}
                                     </span>
                                   </div>
                                 ) : (
                                   ""
                                 )}
-                            </td>
-                          </tr>
-                        ))
+                              </td>
+                            </tr>
+                          ))
                         : ""}
                     </tbody>
                   </table>
@@ -4588,9 +4790,9 @@ export const ModalUpdateImeiByProductItem = ({
                               action: ({ checked }) => ({
                                 sx: checked
                                   ? {
-                                    border: "1px solid",
-                                    borderColor: "#2f80ed",
-                                  }
+                                      border: "1px solid",
+                                      borderColor: "#2f80ed",
+                                    }
                                   : {},
                               }),
                             }}
@@ -4623,6 +4825,13 @@ export const ModalUpdateImeiByProductItem = ({
                             "Bạn chưa chọn IMEI!",
                             "warning"
                           );
+                        } else if (
+                          imeisChuaBan.length === 0 &&
+                          selectedImei.length !== size
+                        ) {
+                          onOpenOrder();
+                          setNewSize(selectedImei.length);
+                          setOldSize(size);
                         } else {
                           update(selectedImei);
                         }
@@ -4669,6 +4878,13 @@ export const ModalUpdateImeiByProductItem = ({
           </div>
         </DialogContent>
         <div className="mt-3"></div>
+        <ConfirmOrderChange
+          open={openOrder}
+          onClose={closeOrder}
+          sizeOld={oldSize}
+          sizeNew={newSize}
+          confirm={() => update(selectedImei)}
+        />
       </Dialog>
     </>
   );
@@ -5001,11 +5217,11 @@ export function MultiplePaymentMethods({
                               action: ({ checked }) => ({
                                 sx: checked
                                   ? {
-                                    border: "1px solid",
-                                    borderColor: "#2f80ed",
-                                    // borderRadius: "10px",
-                                    // height: "40px",
-                                  }
+                                      border: "1px solid",
+                                      borderColor: "#2f80ed",
+                                      // borderRadius: "10px",
+                                      // height: "40px",
+                                    }
                                   : {},
                               }),
                             }}
@@ -5542,11 +5758,11 @@ export function MultiplePaymentMethodsDelivery({
                               action: ({ checked }) => ({
                                 sx: checked
                                   ? {
-                                    border: "1px solid",
-                                    borderColor: "#2f80ed",
-                                    // borderRadius: "10px",
-                                    // height: "40px",
-                                  }
+                                      border: "1px solid",
+                                      borderColor: "#2f80ed",
+                                      // borderRadius: "10px",
+                                      // height: "40px",
+                                    }
                                   : {},
                               }),
                             }}
@@ -5716,63 +5932,63 @@ export const ModalRefundProduct = ({ open, close, imeis, refresh, refund }) => {
                     <tbody>
                       {imeis.length
                         ? imeis.map((item, index) => (
-                          <tr
-                            key={index}
-                            style={{
-                              cursor: "pointer",
-                            }}
-                            onClick={() => {
-                              if (
-                                !selectedImei.some(
-                                  (selectedItem) =>
-                                    selectedItem.soImei === item.soImei
-                                )
-                              ) {
-                                setSelectedImei([...selectedImei, item]);
-                              } else {
-                                setSelectedImei(
-                                  selectedImei.filter(
+                            <tr
+                              key={index}
+                              style={{
+                                cursor: "pointer",
+                              }}
+                              onClick={() => {
+                                if (
+                                  !selectedImei.some(
                                     (selectedItem) =>
-                                      selectedItem.soImei !== item.soImei
+                                      selectedItem.soImei === item.soImei
                                   )
-                                );
-                              }
-                            }}
-                          >
-                            <td>
-                              <Checkbox
-                                color="primary"
-                                checked={selectedImei.some(
-                                  (selectedItem) =>
-                                    selectedItem.soImei === item.soImei
-                                )}
-                              />
-                            </td>
-                            <td className="text-center">{item.soImei}</td>
-                            <td className="text-center">
-                              <div
-                                className={
-                                  "badge-success rounded-pill mx-auto"
+                                ) {
+                                  setSelectedImei([...selectedImei, item]);
+                                } else {
+                                  setSelectedImei(
+                                    selectedImei.filter(
+                                      (selectedItem) =>
+                                        selectedItem.soImei !== item.soImei
+                                    )
+                                  );
                                 }
-                                style={{
-                                  height: "35px",
-                                  width: "105px",
-                                  padding: "4px",
-                                }}
-                              >
-                                <span
-                                  className="text-white"
+                              }}
+                            >
+                              <td>
+                                <Checkbox
+                                  color="primary"
+                                  checked={selectedImei.some(
+                                    (selectedItem) =>
+                                      selectedItem.soImei === item.soImei
+                                  )}
+                                />
+                              </td>
+                              <td className="text-center">{item.soImei}</td>
+                              <td className="text-center">
+                                <div
+                                  className={
+                                    "badge-success rounded-pill mx-auto"
+                                  }
                                   style={{
-                                    fontSize: "14px",
-                                    fontWeight: "400",
+                                    height: "35px",
+                                    width: "105px",
+                                    padding: "4px",
                                   }}
                                 >
-                                  Đã Bán
-                                </span>
-                              </div>
-                            </td>
-                          </tr>
-                        ))
+                                  <span
+                                    className="text-white"
+                                    style={{
+                                      fontSize: "14px",
+                                      fontWeight: "400",
+                                    }}
+                                  >
+                                    Đã Bán
+                                  </span>
+                                </div>
+                              </td>
+                            </tr>
+                          ))
                         : ""}
                     </tbody>
                   </table>
@@ -6384,46 +6600,46 @@ export const ModalViewImeiHadBuy = ({ open, close, imeis }) => {
                     <tbody>
                       {imeis.length
                         ? imeis.map((item, index) => (
-                          <tr>
-                            <td className="text-center">{index + 1}</td>
-                            <td className="text-center">{item.soImei}</td>
-                            <td className="text-center">
-                              <div
-                                className={
-                                  item.trangThai === StatusImei.SOLD
-                                    ? "badge-success rounded-pill mx-auto"
-                                    : item.trangThai ===
-                                      StatusImei.CANCELLED ||
-                                      item.trangThai === StatusImei.REFUND
+                            <tr>
+                              <td className="text-center">{index + 1}</td>
+                              <td className="text-center">{item.soImei}</td>
+                              <td className="text-center">
+                                <div
+                                  className={
+                                    item.trangThai === StatusImei.SOLD
+                                      ? "badge-success rounded-pill mx-auto"
+                                      : item.trangThai ===
+                                          StatusImei.CANCELLED ||
+                                        item.trangThai === StatusImei.REFUND
                                       ? "badge-danger rounded-pill mx-auto"
                                       : ""
-                                }
-                                style={{
-                                  height: "35px",
-                                  width: "105px",
-                                  padding: "4px",
-                                }}
-                              >
-                                <span
-                                  className="text-white"
+                                  }
                                   style={{
-                                    fontSize: "14px",
-                                    fontWeight: "400",
+                                    height: "35px",
+                                    width: "105px",
+                                    padding: "4px",
                                   }}
                                 >
-                                  {item.trangThai === StatusImei.SOLD
-                                    ? "Đã bán"
-                                    : item.trangThai === StatusImei.REFUND
+                                  <span
+                                    className="text-white"
+                                    style={{
+                                      fontSize: "14px",
+                                      fontWeight: "400",
+                                    }}
+                                  >
+                                    {item.trangThai === StatusImei.SOLD
+                                      ? "Đã bán"
+                                      : item.trangThai === StatusImei.REFUND
                                       ? "Hoàn trả"
                                       : item.trangThai ===
                                         StatusImei.PENDING_DELIVERY
-                                        ? "Chờ giao"
-                                        : "Đã hủy"}
-                                </span>
-                              </div>
-                            </td>
-                          </tr>
-                        ))
+                                      ? "Chờ giao"
+                                      : "Đã hủy"}
+                                  </span>
+                                </div>
+                              </td>
+                            </tr>
+                          ))
                         : ""}
                     </tbody>
                   </table>
@@ -6453,7 +6669,8 @@ export function ConfirmRefund({ open, close, confirm, total, size }) {
         keepMounted
         open={open}
         onClose={() => {
-          close(); setDescription("")
+          close();
+          setDescription("");
         }}
         aria-describedby="alert-dialog-slide-description1"
         maxWidth="md"
@@ -6550,7 +6767,10 @@ export function ConfirmRollBack({ open, close, confirm }) {
         TransitionComponent={Transition}
         keepMounted
         open={open}
-        onClose={() => { close(); setDescription("") }}
+        onClose={() => {
+          close();
+          setDescription("");
+        }}
         aria-describedby="alert-dialog-slide-description1"
         maxWidth="md"
         maxHeight="md"
@@ -6586,9 +6806,11 @@ export function ConfirmRollBack({ open, close, confirm }) {
           <Button
             onClick={() => {
               if (description !== null && description.trim() === "") {
-                handleOpenAlertVariant("Bạn chưa nhập lí do hoàn tác! ", Notistack.ERROR);
-              }
-              else {
+                handleOpenAlertVariant(
+                  "Bạn chưa nhập lí do hoàn tác! ",
+                  Notistack.ERROR
+                );
+              } else {
                 confirm(description);
               }
               setDescription("");
@@ -6635,12 +6857,20 @@ export function ConfirmRollBack({ open, close, confirm }) {
     </div>
   );
 }
-export const ModalUpdateProduct = ({ update, open, close, refresh, priceProduct, statusProduct }) => {
+export const ModalUpdateProduct = ({
+  update,
+  open,
+  close,
+  refresh,
+  priceProduct,
+  statusProduct,
+}) => {
   const { handleOpenAlertVariant } = useCustomSnackbar();
 
-  const [priceFormat, setPriceFormat] = useState(String(priceProduct)
-    .replace(/[^0-9]+/g, "")
-    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+  const [priceFormat, setPriceFormat] = useState(
+    String(priceProduct)
+      .replace(/[^0-9]+/g, "")
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
   );
   const [status, setStatus] = useState(statusProduct);
   const handleChangePrice = (event) => {
@@ -6651,24 +6881,23 @@ export const ModalUpdateProduct = ({ update, open, close, refresh, priceProduct,
       .replace(/[^0-9]+/g, "")
       .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     setPriceFormat(valueFinal);
-  }
+  };
 
   const [selectKey, setSelectKey] = useState(0);
   useEffect(() => {
     setSelectKey((key) => key + 1);
     setStatus(statusProduct);
-    setPriceFormat(String(priceProduct)
-      .replace(/[^0-9]+/g, "")
-      .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    setPriceFormat(
+      String(priceProduct)
+        .replace(/[^0-9]+/g, "")
+        .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
     );
-
-  }, [priceProduct, statusProduct])
-
+  }, [priceProduct, statusProduct]);
 
   const updateData = () => {
     const parseNumber = parseFloat(priceFormat.replace(/[^0-9.-]+/g, ""));
     update(parseNumber, status);
-  }
+  };
 
   return (
     <>
@@ -6679,9 +6908,10 @@ export const ModalUpdateProduct = ({ update, open, close, refresh, priceProduct,
         onClose={() => {
           close();
           setStatus(statusProduct);
-          setPriceFormat(String(priceProduct)
-            .replace(/[^0-9]+/g, "")
-            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+          setPriceFormat(
+            String(priceProduct)
+              .replace(/[^0-9]+/g, "")
+              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
           );
         }}
         maxWidth="xl"
@@ -6693,10 +6923,16 @@ export const ModalUpdateProduct = ({ update, open, close, refresh, priceProduct,
         <DialogContent className="">
           <div style={{ width: "600px", height: "auto" }}>
             <div className="text-center mt-1" style={{}}>
-              <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>CẬP NHẬT SẢN PHẨM</span>
+              <span
+                className=""
+                style={{ fontWeight: "550", fontSize: "29px" }}
+              >
+                CẬP NHẬT SẢN PHẨM
+              </span>
             </div>
             <div className="mx-auto mt-3" style={{ width: "100%" }}>
-              <TextField fullWidth
+              <TextField
+                fullWidth
                 className="custom"
                 label="Đơn giá chung"
                 id="outlined-size-small"
@@ -6718,15 +6954,9 @@ export const ModalUpdateProduct = ({ update, open, close, refresh, priceProduct,
                   key={selectKey}
                   onChange={(e) => setStatus(e.target.value)}
                 >
-                  <MenuItem value={0}>
-                    Kinh doanh
-                  </MenuItem>
-                  <MenuItem value={1}>
-                    Chưa kinh doanh
-                  </MenuItem>
-                  <MenuItem value={2}>
-                    Ngừng kinh doanh
-                  </MenuItem>
+                  <MenuItem value={0}>Kinh doanh</MenuItem>
+                  <MenuItem value={1}>Chưa kinh doanh</MenuItem>
+                  <MenuItem value={2}>Ngừng kinh doanh</MenuItem>
                 </SelectMui>
               </FormControl>
             </div>
@@ -6736,8 +6966,7 @@ export const ModalUpdateProduct = ({ update, open, close, refresh, priceProduct,
               onClick={() => {
                 if (priceFormat !== "") {
                   updateData();
-                }
-                else {
+                } else {
                   handleOpenAlertVariant("Bạn chưa nhập đơn giá!", "warning");
                 }
               }}
@@ -6753,11 +6982,9 @@ export const ModalUpdateProduct = ({ update, open, close, refresh, priceProduct,
               </span>
             </Button>
           </div>
-
         </DialogContent>
         <div className="mt-2"></div>
       </Dialog>
     </>
-  )
-
-}
+  );
+};
