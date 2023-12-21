@@ -80,6 +80,8 @@ import AppBarCode from "./App";
 import ModalAddKhachHang from "../account-manager/khachhang/ModalAddKhachHang.js";
 import AddressNew from "../account-manager/dia-chi/add-dia-chi.js";
 import AddressUpdate from "../account-manager/dia-chi/update-dia-chi.js";
+import { Print1 } from "./printer-invoice.js";
+import { request } from "../../../store/helpers/axios_helper.js";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -100,6 +102,9 @@ export function OrderConfirmPayment(props) {
     paymentWhenReceive,
     khachCanTra,
   } = props;
+
+  const [order, setOrder] = useState({});
+
 
   const checkTotal = () => {
     if (total === 0) {
@@ -4033,9 +4038,7 @@ export const ModalImeiByProductItem = ({
     item.soImei.includes(imei)
   ).filter(
     (item) =>
-      item.trangThai === StatusImei.NOT_SOLD ||
-      item.trangThai === StatusImei.PENDING_DELIVERY ||
-      item.trangThai === StatusImei.IN_THE_CART
+      item.trangThai === StatusImei.NOT_SOLD
   );
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -4347,13 +4350,17 @@ export const ModalUpdateImeiByProductItem = ({
   //     item.trangThai === StatusImei.IN_THE_CART
   // );
 
+  // const filteredData = imeis.filter((item) =>
+  //   item.soImei.includes(imei)
+  // ).filter(
+  //   (item) =>
+  //     item.trangThai === StatusImei.NOT_SOLD ||
+  //     item.trangThai === StatusImei.PENDING_DELIVERY ||
+  //     item.trangThai === StatusImei.IN_THE_CART
+  // );
   const filteredData = imeis.filter((item) =>
-    item.soImei.includes(imei)
-  ).filter(
-    (item) =>
-      item.trangThai === StatusImei.NOT_SOLD ||
-      item.trangThai === StatusImei.PENDING_DELIVERY ||
-      item.trangThai === StatusImei.IN_THE_CART
+    item.trangThai === StatusImei.NOT_SOLD ||
+    ((item.trangThai === StatusImei.IN_THE_CART || item.trangThai === StatusImei.PENDING_DELIVERY) && imeisChuaBan.some(imei => imei.soImei === item.soImei))
   );
 
   const [currentPage, setCurrentPage] = useState(1);

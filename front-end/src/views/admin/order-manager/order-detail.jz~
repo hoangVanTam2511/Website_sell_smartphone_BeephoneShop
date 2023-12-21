@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import { Row, Col } from "react-bootstrap";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
@@ -57,6 +57,8 @@ const OrderDetail = (props) => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
+  const printBill = location.state?.printBill || false;
 
   const [vouchersActive, setVouchersActive] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -85,10 +87,6 @@ const OrderDetail = (props) => {
   const [scannerRef, setScannerRef] = useState([]);
 
   const userId = getUser().id;
-
-  const totalDiscount = (tongTien, tongTienSauKhiGiam) => {
-    return tongTien - tongTienSauKhiGiam;
-  }
 
   const handleOpenScanner = () => {
     setOpenScanner(true);
@@ -124,10 +122,6 @@ const OrderDetail = (props) => {
           ? "Đang giao hàng"
           : "";
   };
-
-  const checkImeisDaBan = () => {
-    return orderItems.some(item => item.imeisDaBan.length === 0);
-  }
 
   const updateInfoOrderDelivery = async (name, phone, address, province, district, ward, note, ship) => {
     setIsLoading(true);
@@ -1099,17 +1093,6 @@ const OrderDetail = (props) => {
       </div>
     );
   };
-  const divRef1 = useRef(null);
-  const scrollToDiv1 = () => {
-    const { top, height } = divRef1.current.getBoundingClientRect();
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    const offset = top + scrollTop - (window.innerHeight - height) / 2;
-
-    window.scrollTo({
-      top: offset,
-      behavior: "smooth",
-    });
-  };
 
   const ProcessOrder = () => {
     return (
@@ -1119,18 +1102,11 @@ const OrderDetail = (props) => {
             order.loaiHoaDon == OrderTypeString.DELIVERY ? (
             <div>
               <Button
-                onClick={() => {
-                  if (checkImeisDaBan()) {
-                    scrollToDiv1();
-                    return;
-                  }
-                  else {
-                    handleOpenDialogConfirmOrder(
-                      OrderStatusString.PENDING_CONFIRM,
-                      false
-                    )
-                  }
-                }
+                onClick={() =>
+                  handleOpenDialogConfirmOrder(
+                    OrderStatusString.PENDING_CONFIRM,
+                    false
+                  )
                 }
                 className="rounded-2 ms-2"
                 type="primary"
@@ -1261,7 +1237,7 @@ const OrderDetail = (props) => {
           )}
         </div>
         <div className="d-flex">
-          <Print data={order} imeis={orderImeis} />
+          <Print data={order} imeis={orderImeis} printBill={printBill} />
           {order.loaiHoaDon === OrderTypeString.DELIVERY && order.trangThai === OrderStatusString.CONFIRMED && (
             <>
               <PrintDelivery data={order} />
@@ -2019,37 +1995,55 @@ const OrderDetail = (props) => {
       render: (text, item) => (
         <div>
           <div className="button-container">
-            {order.trangThai === OrderStatusString.PENDING_CONFIRM
-              ? (
-                <>
-                  <Button
-                    onClick={() => {
-                      handleOpenModalUpdateImei();
-                      const imeisDaBan = item.imeisDaBan;
-                      const imeiAll = item.sanPhamChiTiet.imeis;
-                      const isSelected = (item) =>
-                        imeisDaBan.some(
-                          (selectedItem) => selectedItem.soImei === item.soImei
-                        );
-                      const sortedItems = [...imeiAll].sort((a, b) => {
-                        const isSelectedA = isSelected(a);
-                        const isSelectedB = isSelected(b);
-                        if (isSelectedA && !isSelectedB) {
-                          return -1;
-                        } else if (!isSelectedA && isSelectedB) {
-                          return 1;
-                        }
-                        return 0;
-                      });
-                      setImeis(sortedItems);
-                      setMaxAmount(item.soLuong);
-                      setIdOrderItem(item.id);
-                      setSelectedImei(item.imeisDaBan);
-                      setSelectedImeiRefresh([]);
+            {order.trangThai === OrderStatusString.PENDING_CONFIRM ||
+              order.trangThai === OrderStatusString.CONFIRMED ? (
+              <>
+                <Button
+                  onClick={() => {
+                    handleOpenModalUpdateImei();
+                    const imeisDaBan = item.imeisDaBan;
+                    const imeiAll = item.sanPhamChiTiet.imeis;
+                    const isSelected = (item) =>
+                      imeisDaBan.some(
+                        (selectedItem) => selectedItem.soImei === item.soImei
+                      );
+                    const sortedItems = [...imeiAll].sort((a, b) => {
+                      const isSelectedA = isSelected(a);
+                      const isSelectedB = isSelected(b);
+                      if (isSelectedA && !isSelectedB) {
+                        return -1;
+                      } else if (!isSelectedA && isSelectedB) {
+                        return 1;
+                      }
+                      return 0;
+                    });
+                    setImeis(sortedItems);
+                    setMaxAmount(item.soLuong);
+                    setIdOrderItem(item.id);
+                    setSelectedImei(item.imeisDaBan);
+                    setSelectedImeiRefresh([]);
+                  }}
+                  className="rounded-2 button-mui"
+                  type="primary"
+                  style={{ height: "38px", width: "100px", fontSize: "15px" }}
+                >
+                  <span
+                    className="text-white"
+                    style={{
+                      marginBottom: "2px",
+                      fontSize: "15px",
+                      fontWeight: "500",
                     }}
-                    className="rounded-2 button-mui"
-                    type="primary"
-                    style={{ height: "38px", width: "100px", fontSize: "15px" }}
+                  >
+                    Cập Nhật
+                  </span>
+                </Button>
+                {orderItems && orderItems.length > 1 && (
+                  <Button
+                    onClick={() => handleDeleteCartItemOrderById(item.id)}
+                    className="rounded-2 button-mui ms-2"
+                    type="danger"
+                    style={{ height: "38px", width: "80px", fontSize: "15px" }}
                   >
                     <span
                       className="text-white"
@@ -2059,50 +2053,32 @@ const OrderDetail = (props) => {
                         fontWeight: "500",
                       }}
                     >
-                      Cập Nhật
+                      Xóa
                     </span>
                   </Button>
-                  {orderItems && orderItems.length > 1 && (
-                    <Button
-                      onClick={() => handleDeleteCartItemOrderById(item.id)}
-                      className="rounded-2 button-mui ms-2"
-                      type="danger"
-                      style={{ height: "38px", width: "80px", fontSize: "15px" }}
-                    >
-                      <span
-                        className="text-white"
-                        style={{
-                          marginBottom: "2px",
-                          fontSize: "15px",
-                          fontWeight: "500",
-                        }}
-                      >
-                        Xóa
-                      </span>
-                    </Button>
-                  )}
-                </>
-              ) : (
-                <Button
-                  onClick={() => {
-                    setOpenViewImei(true);
-                    setViewImeis(item.imeisDaBan);
+                )}
+              </>
+            ) : (
+              <Button
+                onClick={() => {
+                  setOpenViewImei(true);
+                  setViewImeis(item.imeisDaBan);
+                }}
+                className="rounded-2 ant-btn-light"
+                style={{ height: "38px", width: "90px", fontSize: "15px" }}
+              >
+                <span
+                  className=""
+                  style={{
+                    marginBottom: "2px",
+                    fontSize: "15px",
+                    fontWeight: "500",
                   }}
-                  className="rounded-2 ant-btn-light"
-                  style={{ height: "38px", width: "90px", fontSize: "15px" }}
                 >
-                  <span
-                    className=""
-                    style={{
-                      marginBottom: "2px",
-                      fontSize: "15px",
-                      fontWeight: "500",
-                    }}
-                  >
-                    Chi Tiết
-                  </span>
-                </Button>
-              )}
+                  Chi Tiết
+                </span>
+              </Button>
+            )}
           </div>
         </div>
       ),
@@ -2122,48 +2098,48 @@ const OrderDetail = (props) => {
               </span>
             </div>
             <div className="">
-              {order.trangThai === OrderStatusString.PENDING_CONFIRM
-                ? (
-                  <>
-                    <Button
-                      onClick={() => {
-                        handleOpenScanner();
-                        setScannerRef([]);
+              {order.trangThai === OrderStatusString.PENDING_CONFIRM ||
+                order.trangThai === OrderStatusString.CONFIRMED ? (
+                <>
+                  <Button
+                    onClick={() => {
+                      handleOpenScanner();
+                      setScannerRef([]);
+                    }}
+                    className="rounded-2 me-2"
+                    type="warning"
+                    style={{ height: "38px", width: "120px", fontSize: "15px" }}
+                  >
+                    <span
+                      className=""
+                      style={{
+                        fontSize: "15px",
+                        fontWeight: "500",
+                        marginBottom: "2px",
                       }}
-                      className="rounded-2 me-2"
-                      type="warning"
-                      style={{ height: "38px", width: "120px", fontSize: "15px" }}
                     >
-                      <span
-                        className=""
-                        style={{
-                          fontSize: "15px",
-                          fontWeight: "500",
-                          marginBottom: "2px",
-                        }}
-                      >
-                        Quét Barcode
-                      </span>
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        setOpenProducts(true);
-                        getAllProducts();
-                        setIsOpen(true);
-                      }}
-                      className="rounded-2"
-                      type="primary"
-                      style={{ height: "40px", width: "145px", fontSize: "16px" }}
+                      Quét Barcode
+                    </span>
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      setOpenProducts(true);
+                      getAllProducts();
+                      setIsOpen(true);
+                    }}
+                    className="rounded-2"
+                    type="primary"
+                    style={{ height: "40px", width: "145px", fontSize: "16px" }}
+                  >
+                    <span
+                      className="text-white"
+                      style={{ marginBottom: "3px", fontWeight: "500" }}
                     >
-                      <span
-                        className="text-white"
-                        style={{ marginBottom: "3px", fontWeight: "500" }}
-                      >
-                        Thêm sản phẩm
-                      </span>
-                    </Button>
-                  </>
-                ) : null}
+                      Thêm sản phẩm
+                    </span>
+                  </Button>
+                </>
+              ) : null}
             </div>
           </div>
           <div
@@ -2182,7 +2158,7 @@ const OrderDetail = (props) => {
         >
           <Row className="">
             <div className="">
-              <div className="mt-2" style={{ height: "auto" }} ref={divRef1}>
+              <div className="mt-2" style={{ height: "auto" }}>
                 <Table
                   className="table-cart"
                   columns={columnsOrderItems}
@@ -2259,10 +2235,13 @@ const OrderDetail = (props) => {
                       "(" + order.voucher.ma + ") ") ||
                       ""}
                   </span>
-                  {(totalDiscount(order && order.tongTien && order.tongTien, order && order.tongTienSauKhiGiam && order.tongTienSauKhiGiam).toLocaleString("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  })) ||
+                  {(order &&
+                    order.voucher &&
+                    order.voucher.giaTriVoucher &&
+                    order.voucher.giaTriVoucher.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })) ||
                     0}
                 </span>
               </div>

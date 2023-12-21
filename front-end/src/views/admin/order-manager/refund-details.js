@@ -48,12 +48,14 @@ const RefundDetail = () => {
   const { handleOpenAlertVariant } = useCustomSnackbar();
   const { id } = useParams();
   const [total, setTotal] = useState(0);
-  const [totalDiscount, setTotalDiscount] = useState(0);
   const [codeDiscount, setCodeDiscount] = useState("");
   const [addressDefault, setAddressDefault] = useState("");
 
   const userId = getUser().id;
 
+  const totalDiscount = (tongTien, tongTienSauKhiGiam) => {
+    return tongTien - tongTienSauKhiGiam;
+  }
   const getOrderItemsById = async () => {
     await axios
       .get(`http://localhost:8080/api/orders/${id}`)
@@ -64,7 +66,6 @@ const RefundDetail = () => {
 
         const discountVoucher = data.voucher && data.voucher.giaTriVoucher;
         const discountVoucherCode = data.voucher && data.voucher.ma;
-        setTotalDiscount(discountVoucher || 0);
         setCodeDiscount(
           discountVoucherCode === null ? "" : discountVoucherCode
         );
@@ -1370,11 +1371,10 @@ const RefundDetail = () => {
                       "(" + order.voucher.ma + ") ") ||
                       ""}
                   </span>
-                  {(totalDiscount &&
-                    totalDiscount.toLocaleString("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                    })) ||
+                  {(totalDiscount(order.tongTien, order.tongTienSauKhiGiam).toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  })) ||
                     0}
                 </span>
               </div>

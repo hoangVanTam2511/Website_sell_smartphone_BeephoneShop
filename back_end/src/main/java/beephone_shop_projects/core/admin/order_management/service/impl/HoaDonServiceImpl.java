@@ -57,6 +57,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -226,25 +227,27 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
       throw new RestApiException("Bạn chưa nhập lý do hủy đơn hàng!");
     }
     if (req.getTrangThai().equals(OrderStatus.CANCELLED)) {
-      for (OrderItemResponse orderItem : orderCurrent.getOrderItems()) {
-        Optional<SanPhamChiTiet> findProductItem = sanPhamChiTietRepository.
-                findProductById(orderItem.getSanPhamChiTiet().getId());
-        Set<Imei> imeisProduct = findProductItem.get().getImeis();
-        orderItem.getImeisDaBan().forEach(s -> {
-          imeisProduct.forEach(s1 -> {
-            if (s1.getSoImei().equals(s.getSoImei())) {
-              s1.setTrangThai(StatusImei.NOT_SOLD);
-            }
+      if (orderCurrent.getTrangThai().equals(OrderStatus.CONFIRMED) || orderCurrent.getTrangThai().equals(OrderStatus.DELIVERING)) {
+        for (OrderItemResponse orderItem : orderCurrent.getOrderItems()) {
+          Optional<SanPhamChiTiet> findProductItem = sanPhamChiTietRepository.
+                  findProductById(orderItem.getSanPhamChiTiet().getId());
+          Set<Imei> imeisProduct = findProductItem.get().getImeis();
+          orderItem.getImeisDaBan().forEach(s -> {
+            imeisProduct.forEach(s1 -> {
+              if (s1.getSoImei().equals(s.getSoImei())) {
+                s1.setTrangThai(StatusImei.NOT_SOLD);
+              }
+            });
+            s.setTrangThai(StatusImei.CANCELLED);
+            imeiDaBanCustomRepository.save(s);
           });
-          s.setTrangThai(StatusImei.CANCELLED);
-          imeiDaBanCustomRepository.save(s);
-        });
-        findProductItem.get().setSoLuongTonKho(findProductItem.get().getSoLuongTonKho() +
-                orderItem.getImeisDaBan().size());
-        sanPhamChiTietRepository.save(findProductItem.get());
+          findProductItem.get().setSoLuongTonKho(findProductItem.get().getSoLuongTonKho() +
+                  orderItem.getImeisDaBan().size());
+          sanPhamChiTietRepository.save(findProductItem.get());
+        }
       }
     }
-    if (req.getTrangThai().equals(OrderStatus.DELIVERING)) {
+    if (req.getTrangThai().equals(OrderStatus.CONFIRMED)) {
       for (OrderItemResponse orderItem : orderCurrent.getOrderItems()) {
         Optional<SanPhamChiTiet> findProductItem = sanPhamChiTietRepository.
                 findProductById(orderItem.getSanPhamChiTiet().getId());
@@ -259,6 +262,8 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
           s.setTrangThai(StatusImei.SOLD);
           imeiDaBanCustomRepository.save(s);
         });
+        findProductItem.get().setSoLuongTonKho(findProductItem.get().getSoLuongTonKho() -
+                orderItem.getImeisDaBan().size());
         sanPhamChiTietRepository.save(findProductItem.get());
       }
     }
@@ -269,7 +274,7 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
   }
 
   @Override
-  public OrderResponse createOrderPending() throws Exception {
+  public OrderResponse createOrderPending(String user) throws Exception {
     List<OrderResponse> orders = this.getOrdersPending();
     if (orders.size() >= 6) {
       throw new RestApiException("Tối đa 6 tab đơn hàng");
@@ -300,6 +305,15 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
       GioHang createdCart = gioHangRepository.save(cart);
       newOrderPending.setCart(createdCart);
       HoaDon createdOrderPending = hoaDonRepository.save(newOrderPending);
+
+//      LichSuHoaDon lichSuHoaDon = new LichSuHoaDon();
+//      lichSuHoaDon.setCreatedBy(user);
+//      lichSuHoaDon.setCreatedAt(new Date());
+//      lichSuHoaDon.setMoTa("Nhân viên tạo đơn cho khách hàng");
+//      lichSuHoaDon.setHoaDon(createdOrderPending);
+//      lichSuHoaDon.setLoaiThaoTac(0);
+//      lichSuHoaDon.setThaoTac("Tạo Đơn Hàng");
+//      lichSuHoaDonRepository.save(lichSuHoaDon);
 
       return orderConverter.convertEntityToResponse(createdOrderPending);
     }
@@ -392,13 +406,19 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
           HoaDonChiTiet orderItem = new HoaDonChiTiet();
           orderItem.setHoaDon(paymentOrder);
           orderItem.setSanPhamChiTiet(productItemConverter.convertResponseToEntity(cartItem.getSanPhamChiTiet()));
-          orderItem.setDonGia(cartItem.getDonGia());
+//          orderItem.setDonGia(cartItem.getDonGia());
           orderItem.setSoLuong(cartItem.getSoLuong());
 //          orderItem.setDonGiaSauGiam();
           HoaDonChiTiet createdOrderItem = orderItemRepository.save(orderItem);
 
           Optional<SanPhamChiTiet> findProductItem = sanPhamChiTietRepository.
                   findProductById(cartItem.getSanPhamChiTiet().getId());
+//          if (findProductItem.get().getDonGiaSauKhuyenMai().compareTo(BigDecimal.ZERO) != 0 && findProductItem.get().getDonGiaSauKhuyenMai() != null) {
+//            orderItem.setDonGiaSauGiam(cartItem.getSanPhamChiTiet().getDonGiaSauKhuyenMai());
+//            orderItem.setDonGia(cartItem.getDonGia());
+//          } else {
+            orderItem.setDonGia(cartItem.getDonGia());
+//          }
           if (paymentOrder.getLoaiHoaDon().equals(OrderType.AT_COUNTER)) {
 //            findProductItem.get().setSoLuongTonKho(findProductItem.get().getSoLuongTonKho()
 //                    - cartItem.getImeisChuaBan().size());
@@ -424,19 +444,27 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
 
       if (req.getOrderHistories() != null) {
         List<OrderHistoryRequest> sortOrderHistory = req.getOrderHistories();
-        sortOrderHistory.forEach(s -> {
-          System.out.println(s.getCreatedBy());
-        });
         sortOrderHistory.sort((e1, e2) ->
                 e1.getStt() - e2.getStt()
         );
-        lichSuHoaDonCustomRepository.saveAll(orderHistoryConverter.convertListRequestToListEntity(sortOrderHistory));
+        List<LichSuHoaDon> lichSuHoaDons = lichSuHoaDonCustomRepository.saveAll(orderHistoryConverter.convertListRequestToListEntity(sortOrderHistory));
+
+        lichSuHoaDons.forEach(s -> {
+          if (s.getLoaiThaoTac() == 0 && s.getThaoTac().equals("Tạo Đơn Hàng")) {
+            Optional<LichSuHoaDon> findLichSuHoaDon = lichSuHoaDonCustomRepository.findById(s.getId());
+            if (findLichSuHoaDon.isPresent()) {
+              s.setCreatedAt(orderCurrent.getCreatedAt());
+              lichSuHoaDonCustomRepository.save(findLichSuHoaDon.get());
+            }
+          }
+        });
+
 //        orderHistoryServiceImpl.save(req.getOrderHistory());
       }
 
       List<HoaDon> ordersPending = hoaDonRepository.getOrdersPending();
       if (ordersPending.isEmpty()) {
-        createOrderPending();
+        createOrderPending(req.getCreatedBy());
       }
       return orderConverter.convertEntityToResponse(paymentOrder);
 
@@ -551,7 +579,7 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
     OrderResponse getOrder = this.getOrderPendingById(id);
     try {
       HoaDon convertOrder = orderConverter.convertResponseToEntity(getOrder);
-//      List<SanPhamChiTiet> productItemsToUpdate = new ArrayList<>();
+      List<SanPhamChiTiet> productItemsToUpdate = new ArrayList<>();
       for (GioHangChiTiet cartItem : convertOrder.getCart().getCartItems()) {
         Optional<SanPhamChiTiet> findProductItem = sanPhamChiTietRepository.
                 findProductById(cartItem.getSanPhamChiTiet().getId());
@@ -566,15 +594,18 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
         imeiChuaBanCustomRepository.deleteAll(cartItem.getImeisChuaBan());
         Voucher voucher = convertOrder.getVoucher();
         if (voucher != null) {
-          voucher.setSoLuong(voucher.getSoLuong() + 1);
-          voucherRepository.save(voucher);
+          Optional<Voucher> findVoucher = voucherRepository.findById(voucher.getId());
+          if (findVoucher.isPresent()) {
+            voucher.setSoLuong(voucher.getSoLuong() + 1);
+            voucherRepository.save(voucher);
+          }
         }
-//        SanPhamChiTiet productItem = cartItem.getSanPhamChiTiet();
-//        productItem.setSoLuongTonKho(productItem.getSoLuongTonKho() + cartItem.getSoLuong());
-//        productItemsToUpdate.add(productItem);
+        SanPhamChiTiet productItem = cartItem.getSanPhamChiTiet();
+        productItem.setSoLuongTonKho(productItem.getSoLuongTonKho() + cartItem.getSoLuong());
+        productItemsToUpdate.add(productItem);
       }
       this.deleteById(getOrder.getId());
-//      sanPhamChiTietRepository.saveAll(productItemsToUpdate);
+      sanPhamChiTietRepository.saveAll(productItemsToUpdate);
       return true;
     } catch (Exception e) {
       return false;
@@ -589,7 +620,7 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
     }
 
     if (req.getOrderHistory() != null) {
-      if (req.getOrderHistory().getLoaiThaoTac() == 3) {
+      if (req.getOrderHistory().getLoaiThaoTac() == 1) {
         for (OrderItemResponse orderItem : orderCurrent.getOrderItems()) {
           Optional<SanPhamChiTiet> findProductItem = sanPhamChiTietRepository.
                   findProductById(orderItem.getSanPhamChiTiet().getId());
@@ -652,7 +683,7 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
     LichSuHoaDon lichSuHoaDon = new LichSuHoaDon();
     lichSuHoaDon.setCreatedBy(req.getCreatedBy());
     lichSuHoaDon.setCreatedAt(new Date());
-    lichSuHoaDon.setMoTa("Cập nhật thông tin đơn hàng. " + req.getGhiChu());
+    lichSuHoaDon.setMoTa("Cập nhật địa chỉ giao hàng. " + req.getGhiChu());
     lichSuHoaDon.setHoaDon(updatedOrderCurrent);
     lichSuHoaDon.setLoaiThaoTac(9);
     lichSuHoaDon.setThaoTac("Cập Nhật Đơn Hàng");

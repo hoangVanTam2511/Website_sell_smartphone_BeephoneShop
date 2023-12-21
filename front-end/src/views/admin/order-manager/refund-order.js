@@ -17,21 +17,27 @@ const RefundOrder = () => {
   const getOrderItemsByIdScanner = async (code) => {
     setIsLoading(true);
     await axios
-      .get(`http://localhost:8080/api/orders/${code}`)
+      .get(`http://localhost:8080/api/orders/${code.trim()}`)
       .then((response) => {
         const data = response.data.data;
         if (
-          data.trangThai === OrderStatusString.HAD_PAID ||
-          data.trangThai === OrderStatusString.SUCCESS_DELIVERY ||
-          data.trangThai === OrderStatusString.REFUND_A_PART
+          (data.trangThai === OrderStatusString.HAD_PAID ||
+            data.trangThai === OrderStatusString.SUCCESS_DELIVERY ||
+            data.trangThai === OrderStatusString.REFUND_A_PART) && data.loaiHoaDon === OrderTypeString.AT_COUNTER
         ) {
           setIsLoading(false);
           handleRedirectRefundOrderDetail();
-          handleCloseOpenScanner();
-        } else {
+        } else if (data.loaiHoaDon === OrderTypeString.DELIVERY && data.trangThai === OrderStatusString.SUCCESS_DELIVERY) {
           setIsLoading(false);
-          handleOpenAlertVariant("Đơn hàng chưa hoàn thành!", Notistack.ERROR);
-          handleCloseOpenScanner();
+          handleOpenAlertVariant("Chỉ cho phép hoàn trả đơn tại quầy!", Notistack.ERROR);
+        }
+        else if (data.trangThai === OrderStatusString.REFUND_FULL) {
+          setIsLoading(false);
+          handleOpenAlertVariant("Đơn hàng này đã được hoàn trả toàn bộ!", Notistack.ERROR);
+        }
+        else {
+          setIsLoading(false);
+          handleOpenAlertVariant("Đơn hàng không hợp lệ!", Notistack.ERROR);
         }
       })
       .catch((error) => {
@@ -44,7 +50,7 @@ const RefundOrder = () => {
   const getOrderItemsById = async () => {
     setIsLoading(true);
     await axios
-      .get(`http://localhost:8080/api/orders/${orderCode}`)
+      .get(`http://localhost:8080/api/orders/${orderCode.trim()}`)
       .then((response) => {
         const data = response.data.data;
         if (
