@@ -293,7 +293,14 @@ public class ProductItemRepositoryImpl extends AbstractRepositoryImpl<SanPhamChi
     Field[] fields = entityDTO.getDeclaredFields();
     List<Predicate> predicates = new ArrayList<>();
     for (Field field : fields) {
-      predicates.add(configuration.getCriteriaBuilder().like(configuration.getCriteriaBuilder().lower(root.get(field.getName()).as(String.class)), "%" + keyword.toLowerCase() + "%"));
+        if (field.getName().equals("tenSanPham")) {
+        predicates.add(configuration.getCriteriaBuilder().like(configuration.getCriteriaBuilder().lower(root.get("sanPham").get("tenSanPham").as(String.class)), "%" + keyword.toLowerCase() + "%"));
+
+      }
+      else{
+        predicates.add(configuration.getCriteriaBuilder().like(configuration.getCriteriaBuilder().lower(root.get(field.getName()).as(String.class)), "%" + keyword.toLowerCase() + "%"));
+
+      }
     }
     return configuration.getCriteriaBuilder().or(predicates.toArray(new Predicate[0]));
   }

@@ -1,11 +1,7 @@
 package beephone_shop_projects.core.admin.order_management.controller;
 
 import beephone_shop_projects.core.admin.order_management.converter.PaymentConverter;
-import beephone_shop_projects.core.admin.order_management.model.request.CartItemRequest;
-import beephone_shop_projects.core.admin.order_management.model.request.ImeiRequest;
-import beephone_shop_projects.core.admin.order_management.model.request.ImeisRequest;
-import beephone_shop_projects.core.admin.order_management.model.request.OrderItemRequest;
-import beephone_shop_projects.core.admin.order_management.model.request.OrderItemsCustomRefundRequest;
+import beephone_shop_projects.core.admin.order_management.model.request.*;
 import beephone_shop_projects.core.admin.order_management.model.response.CartItemResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.OrderItemResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.OrderResponse;
@@ -142,8 +138,8 @@ public class TestController {
 //    return new ResponseEntity<>(list, HttpStatus.OK);
 //  }
   @DeleteMapping("/carts/order/{id}")
-  public ResponseObject home44(@PathVariable("id") String id) throws Exception {
-    boolean deleted = cartItemService.removeCartItemOrderById(id);
+  public ResponseObject home44(@PathVariable("id") String id, @RequestBody OrderItemRequest req) throws Exception {
+    boolean deleted = cartItemService.removeCartItemOrderById(id, req);
     if (deleted) {
       return new ResponseObject(HttpStatus.NO_CONTENT_CODE, Message.SUCCESS);
     }

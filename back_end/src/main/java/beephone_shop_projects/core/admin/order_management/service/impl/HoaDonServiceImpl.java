@@ -413,6 +413,9 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
 
           Optional<SanPhamChiTiet> findProductItem = sanPhamChiTietRepository.
                   findProductById(cartItem.getSanPhamChiTiet().getId());
+          if (orderCurrent.getLoaiHoaDon().equals(OrderType.DELIVERY)){
+            findProductItem.get().setSoLuongTonKho(findProductItem.get().getSoLuongTonKho() + orderItem.getSoLuong());
+          }
 //          if (findProductItem.get().getDonGiaSauKhuyenMai().compareTo(BigDecimal.ZERO) != 0 && findProductItem.get().getDonGiaSauKhuyenMai() != null) {
 //            orderItem.setDonGiaSauGiam(cartItem.getSanPhamChiTiet().getDonGiaSauKhuyenMai());
 //            orderItem.setDonGia(cartItem.getDonGia());

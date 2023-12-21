@@ -22,6 +22,8 @@ public class OrderItemRequest {
 
   private OrderRequest order;
 
+  private String user;
+
   private ProductItemRequest productItem;
 
   private String id;

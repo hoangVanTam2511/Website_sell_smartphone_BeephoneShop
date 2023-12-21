@@ -1,33 +1,62 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate, useSearchParams, useParams } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+  useParams,
+} from "react-router-dom";
 import { Button, Empty, Table } from "antd";
-import { Box, FormControl, IconButton, Select, InputLabel, MenuItem, Pagination, TextField, Tooltip, Checkbox, FormControlLabel, Autocomplete, InputAdornment, OutlinedInput, Dialog, DialogContent, DialogTitle, DialogActions, Slide, ListItemText, Rating, FormHelperText, } from "@mui/material";
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
+import {
+  Box,
+  FormControl,
+  IconButton,
+  Select,
+  InputLabel,
+  MenuItem,
+  Pagination,
+  TextField,
+  Tooltip,
+  Checkbox,
+  FormControlLabel,
+  Autocomplete,
+  InputAdornment,
+  OutlinedInput,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogActions,
+  Slide,
+  ListItemText,
+  Rating,
+  FormHelperText,
+} from "@mui/material";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import { PlusOutlined } from "@ant-design/icons";
 import Card from "../../../components/Card";
 import { format } from "date-fns";
 import axios from "axios";
 import { parseInt } from "lodash";
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import BorderColorOutlinedIcon from '@mui/icons-material/BorderColorOutlined';
-import Zoom from '@mui/material/Zoom';
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
+import Zoom from "@mui/material/Zoom";
 import * as dayjs from "dayjs";
 import { AiOutlinePlus } from "react-icons/ai";
-import LoadingIndicator from '../../../utilities/loading';
-import useCustomSnackbar from '../../../utilities/notistack';
+import LoadingIndicator from "../../../utilities/loading";
+import useCustomSnackbar from "../../../utilities/notistack";
 import { Notistack, SimMultiple } from "./enum";
 import { MdOutlineAddToPhotos } from "react-icons/md";
-import { Box as BoxJoy, getListDividerUtilityClass } from '@mui/joy';
-import { Button as ButtonJoy } from '@mui/joy';
-import { Card as CardJoy } from '@mui/joy';
-import { Checkbox as CheckboxJoy } from '@mui/joy';
-import Divider from '@mui/joy/Divider';
-import Typography from '@mui/joy/Typography';
-import ArrowForward from '@mui/icons-material/ArrowForward';
+import { Box as BoxJoy, getListDividerUtilityClass } from "@mui/joy";
+import { Button as ButtonJoy } from "@mui/joy";
+import { Card as CardJoy } from "@mui/joy";
+import { Checkbox as CheckboxJoy } from "@mui/joy";
+import Divider from "@mui/joy/Divider";
+import Typography from "@mui/joy/Typography";
+import ArrowForward from "@mui/icons-material/ArrowForward";
 import { FaUpload } from "react-icons/fa6";
 import { FaTrashAlt } from "react-icons/fa";
 import CreateHang from "./create-hang";
@@ -43,6 +72,7 @@ import CreateDanhMuc from "./create-danh-muc";
 import CreateCameraSau from "./create-camera-sau";
 import CreateCameraTruoc from "./create-camera-truoc";
 import UpdateCauHinh from "./update-cau-hinh";
+import { request } from "../../../store/helpers/axios_helper";
 // import Sketch from '@uiw/react-color-sketch';
 
 const ITEM_HEIGHT = 130;
@@ -57,19 +87,18 @@ const MenuProps = {
   },
 };
 
-const UpdateProduct = ({ }) => {
+const UpdateProduct = ({}) => {
   const { id } = useParams();
   let isOverplay = false;
   const getOverplay = (value) => {
     isOverplay = value;
-  }
-
+  };
 
   const [confirm, setConfirm] = useState(false);
 
   const getConfirm = (value) => {
     setConfirm(value);
-  }
+  };
 
   const [categorys, setCategorys] = useState([]);
   const getListDanhMuc = () => {
@@ -86,7 +115,7 @@ const UpdateProduct = ({ }) => {
   const [listHang, setListHang] = useState([]);
   const handleCloseOpenHang = () => {
     setOpenHang(false);
-  }
+  };
   const getListHang = () => {
     axios
       .get(`http://localhost:8080/api/brands`)
@@ -102,7 +131,7 @@ const UpdateProduct = ({ }) => {
   const [listChip, setListChip] = useState([]);
   const handleCloseOpenChip = () => {
     setOpenChip(false);
-  }
+  };
   const getListChip = () => {
     axios
       .get(`http://localhost:8080/api/chips`)
@@ -118,7 +147,7 @@ const UpdateProduct = ({ }) => {
   const [listPin, setListPin] = useState([]);
   const handleCloseOpenPin = () => {
     setOpenPin(false);
-  }
+  };
   const getListPin = () => {
     axios
       .get(`http://localhost:8080/api/pins`)
@@ -134,7 +163,7 @@ const UpdateProduct = ({ }) => {
   const [listSac, setListSac] = useState([]);
   const handleCloseOpenSac = () => {
     setOpenSac(false);
-  }
+  };
   const getListSac = () => {
     axios
       .get(`http://localhost:8080/api/chargers`)
@@ -150,7 +179,7 @@ const UpdateProduct = ({ }) => {
   const [listTheNho, setListTheNho] = useState([]);
   const handleCloseOpenTheNho = () => {
     setOpenTheNho(false);
-  }
+  };
   const getListTheNho = () => {
     axios
       .get(`http://localhost:8080/api/the-nhos`)
@@ -166,13 +195,13 @@ const UpdateProduct = ({ }) => {
   const [listManHinh, setListManHinh] = useState([]);
   const handleCloseOpenManHinh = () => {
     setOpenManHinh(false);
-  }
+  };
   const getListManHinh = () => {
     axios
       .get(`http://localhost:8080/api/display`)
       .then((response) => {
         setListManHinh(response.data.data);
-        console.log(response.data.data)
+        console.log(response.data.data);
       })
       .catch((error) => {
         console.error(error);
@@ -182,12 +211,12 @@ const UpdateProduct = ({ }) => {
   const [openDanhMuc, setOpenDanhMuc] = useState(false);
   const handleCloseOpenDanhMuc = () => {
     setOpenDanhMuc(false);
-  }
+  };
   const [openTheSim, setOpenTheSim] = useState(false);
   const [listTheSim, setListTheSim] = useState([]);
   const handleCloseOpenTheSim = () => {
     setOpenTheSim(false);
-  }
+  };
   const getListTheSim = () => {
     axios
       .get(`http://localhost:8080/api/sim-cards/all`)
@@ -199,11 +228,10 @@ const UpdateProduct = ({ }) => {
       });
   };
 
-
   useEffect(() => {
     getListCameraTruoc();
     getListCameraSau();
-    getListDanhMuc()
+    getListDanhMuc();
     getListTheSim();
     getListManHinh();
     getListTheNho();
@@ -211,7 +239,7 @@ const UpdateProduct = ({ }) => {
     getListPin();
     getListHang();
     getListChip();
-  }, [])
+  }, []);
 
   const [selectKey, setSelectKey] = useState(0);
   const [cauHinhs, setCauHinhs] = useState([
@@ -220,40 +248,36 @@ const UpdateProduct = ({ }) => {
       soLuongTonKho: 0,
       ram: {
         id: 1,
-        dungLuong: 3
+        dungLuong: 3,
       },
       rom: {
         id: 1,
-        dungLuong: 64
+        dungLuong: 64,
       },
       color: [
         { id: 1, tenMauSac: "YELLOW" },
         { id: 2, tenMauSac: "RED" },
-      ]
-
+      ],
     },
     {
       id: 2,
       soLuongTonKho: 0,
       ram: {
         id: 2,
-        dungLuong: 4
+        dungLuong: 4,
       },
       rom: {
         id: 2,
-        dungLuong: 128
+        dungLuong: 128,
       },
       color: [
         { id: 1, tenMauSac: "GREEN" },
         { id: 2, tenMauSac: "BLUE" },
         { id: 3, tenMauSac: "GRAY" },
         { id: 4, tenMauSac: "FK" },
-      ]
-
+      ],
     },
   ]);
-
-
 
   const columns = [
     {
@@ -262,7 +286,9 @@ const UpdateProduct = ({ }) => {
       dataIndex: "stt",
       width: "5%",
       render: (text, record, index) => (
-        <span style={{ fontWeight: "400" }}>{cauHinhs.indexOf(record) + 1}</span>
+        <span style={{ fontWeight: "400" }}>
+          {cauHinhs.indexOf(record) + 1}
+        </span>
       ),
     },
     {
@@ -271,16 +297,24 @@ const UpdateProduct = ({ }) => {
       width: "30%",
       render: (text, record) => {
         return (
-          <span style={{ fontWeight: "400", whiteSpace: "pre-line" }}>{'Iphone 14 Pro Max ' + record.ram.dungLuong + "/" + record.rom.dungLuong + "GB"}</span>
-        )
-      }
+          <span style={{ fontWeight: "400", whiteSpace: "pre-line" }}>
+            {"Iphone 14 Pro Max " +
+              record.ram.dungLuong +
+              "/" +
+              record.rom.dungLuong +
+              "GB"}
+          </span>
+        );
+      },
     },
     {
       title: "Màu Sắc",
       align: "center",
       width: "15%",
       render: (text, record) => (
-        <span style={{ fontWeight: "400", whiteSpace: "pre-line" }}>{record.color.tenMauSac}</span>
+        <span style={{ fontWeight: "400", whiteSpace: "pre-line" }}>
+          {record.color.tenMauSac}
+        </span>
       ),
     },
     {
@@ -288,9 +322,7 @@ const UpdateProduct = ({ }) => {
       align: "center",
       width: "15%",
       render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>
-          {record.soLuongTonKho}
-        </span>
+        <span style={{ fontWeight: "400" }}>{record.soLuongTonKho}</span>
       ),
     },
     {
@@ -298,11 +330,7 @@ const UpdateProduct = ({ }) => {
       align: "center",
       width: "20%",
       render: (text, record) => (
-        <TextField
-          label="Đơn giá"
-          id="outlined-size-small"
-          size="small"
-        />
+        <TextField label="Đơn giá" id="outlined-size-small" size="small" />
       ),
     },
     {
@@ -314,18 +342,12 @@ const UpdateProduct = ({ }) => {
         <div className="d-flex justify-content-center">
           <div className="button-container">
             <Tooltip title="Import imei" TransitionComponent={Zoom}>
-              <IconButton
-                onClick={() => {
-                }}
-                className="me-2">
+              <IconButton onClick={() => {}} className="me-2">
                 <FaUpload color="#2f80ed" />
               </IconButton>
             </Tooltip>
             <Tooltip title="Xóa" TransitionComponent={Zoom}>
-              <IconButton
-                onClick={() => {
-                }}
-                className="">
+              <IconButton onClick={() => {}} className="">
                 <FaTrashAlt color="#e5383b" />
               </IconButton>
             </Tooltip>
@@ -360,8 +382,9 @@ const UpdateProduct = ({ }) => {
     );
   };
   const generateRandomId = () => {
-    const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let id = '';
+    const characters =
+      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let id = "";
 
     for (let i = 0; i < 10; i++) {
       const randomIndex = Math.floor(Math.random() * characters.length);
@@ -372,21 +395,22 @@ const UpdateProduct = ({ }) => {
   };
   const handleRedirectUpdateProduct = () => {
     navigate(`/dashboard/update-product`);
-    handleOpenAlertVariant("Xác nhận thêm sản phẩm thành công!", Notistack.SUCCESS);
-  }
+    handleOpenAlertVariant(
+      "Xác nhận thêm sản phẩm thành công!",
+      Notistack.SUCCESS
+    );
+  };
   const { handleOpenAlertVariant } = useCustomSnackbar();
   const [value, setValue] = React.useState(1);
   const [ratingsCameraTruoc, setRatingsCameraTruoc] = useState([]);
   const [ratingsCameraSau, setRatingsCameraSau] = useState([]);
-  const [idCamera, setIdCamera] = useState('');
+  const [idCamera, setIdCamera] = useState("");
   const [counts, setCounts] = useState([]);
 
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
 
-  const [colorName, setColorName] = useState([
-    "White Smoke", "Black"
-  ]);
+  const [colorName, setColorName] = useState(["White Smoke", "Black"]);
   // const [camerasTruoc, setCamerasTruoc] = useState([
   //   {
   //     id: 1,
@@ -521,19 +545,16 @@ const UpdateProduct = ({ }) => {
       });
   };
 
-
   const [openCameraSau, setOpenCameraSau] = useState(false);
   const [openCameraTruoc, setOpenCameraTruoc] = useState(false);
 
-
   const handleCloseOpenCameraTruoc = () => {
     setOpenCameraTruoc(false);
-  }
+  };
 
   const handleCloseOpenCameraSau = () => {
     setOpenCameraSau(false);
-  }
-
+  };
 
   const [selectedCameraSau, setSelectedCameraSau] = React.useState([]);
   const [selectedCameraTruoc, setSelectedCameraTruoc] = React.useState([]);
@@ -548,11 +569,19 @@ const UpdateProduct = ({ }) => {
       handleOpenAlertVariant("Chỉ được chọn tối đa 2 SIM", "warning");
       return;
     }
-    if (selectedSimLength === 2 && listTheSim.find(sim => sim.id === value[1]).simMultiple === SimMultiple.DUAL_SIM) {
+    if (
+      selectedSimLength === 2 &&
+      listTheSim.find((sim) => sim.id === value[1]).simMultiple ===
+        SimMultiple.DUAL_SIM
+    ) {
       handleOpenAlertVariant("Chỉ được chọn tối đa 2 SIM", "warning");
       return;
     }
-    if (selectedSimLength === 2 && listTheSim.find(sim => sim.id === value[0]).simMultiple === SimMultiple.DUAL_SIM) {
+    if (
+      selectedSimLength === 2 &&
+      listTheSim.find((sim) => sim.id === value[0]).simMultiple ===
+        SimMultiple.DUAL_SIM
+    ) {
       handleOpenAlertVariant("Chỉ được chọn tối đa 2 SIM", "warning");
       return;
     }
@@ -563,29 +592,31 @@ const UpdateProduct = ({ }) => {
   };
 
   const handleChangeSelectedCameraTruoc = (event) => {
-    const value = event.target.value
+    const value = event.target.value;
     setSelectedCameraTruoc(value);
 
     const updatedRatings = {};
     camerasTruoc.forEach((camera) => {
       const isCameraSelected = selectedCameraTruoc.indexOf(camera.id) > -1;
-      updatedRatings[camera.id] = isCameraSelected ? ratingsCameraTruoc[camera.id] || false : false;
+      updatedRatings[camera.id] = isCameraSelected
+        ? ratingsCameraTruoc[camera.id] || false
+        : false;
     });
     setRatingsCameraTruoc(updatedRatings);
-
   };
 
   const handleChangeSelectedCameraSau = (event) => {
-    const value = event.target.value
+    const value = event.target.value;
     setSelectedCameraSau(value);
 
     const updatedRatings = {};
     camerasSau.forEach((camera) => {
       const isCameraSelected = selectedCameraSau.indexOf(camera.id) > -1;
-      updatedRatings[camera.id] = isCameraSelected ? ratingsCameraSau[camera.id] || false : false;
+      updatedRatings[camera.id] = isCameraSelected
+        ? ratingsCameraSau[camera.id] || false
+        : false;
     });
     setRatingsCameraSau(updatedRatings);
-
   };
 
   const [mainCameraTruoc, setMainCameraTruoc] = useState("");
@@ -599,7 +630,9 @@ const UpdateProduct = ({ }) => {
       });
       const newRating = !prevRatings[cameraId];
       updatedRatings[cameraId] = newRating;
-      const trueCameraId = Object.keys(updatedRatings).find((key) => updatedRatings[key] === true);
+      const trueCameraId = Object.keys(updatedRatings).find(
+        (key) => updatedRatings[key] === true
+      );
       setMainCameraTruoc(trueCameraId || "");
 
       return updatedRatings;
@@ -618,7 +651,9 @@ const UpdateProduct = ({ }) => {
       });
       const newRating = !prevRatings[cameraId];
       updatedRatings[cameraId] = newRating;
-      const trueCameraId = Object.keys(updatedRatings).find((key) => updatedRatings[key] === true);
+      const trueCameraId = Object.keys(updatedRatings).find(
+        (key) => updatedRatings[key] === true
+      );
       setMainCameraSau(trueCameraId || "");
 
       return updatedRatings;
@@ -628,7 +663,6 @@ const UpdateProduct = ({ }) => {
       // };
     });
   };
-
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -640,7 +674,7 @@ const UpdateProduct = ({ }) => {
 
   const [products, setProducts] = useState([]);
   const getProducts = () => {
-    request('GET', `/api/products`)
+    request("GET", `/api/products`)
       .then((response) => {
         setProducts(response.data.data);
       })
@@ -673,17 +707,15 @@ const UpdateProduct = ({ }) => {
   //     status: 0
   //   }
   // ]);
-  const [weight, setWeight] = React.useState('');
+  const [weight, setWeight] = React.useState("");
 
   const handleChangeWeight = (event) => {
     const value = event.target.value;
     let valueFinal;
 
-    valueFinal = value
-      .replace(/[^0-9]+/g, "")
+    valueFinal = value.replace(/[^0-9]+/g, "");
     setWeight(valueFinal);
-
-  }
+  };
   const [productId, setProductId] = useState("");
   const [productCode, setProductCode] = useState("");
   const [productName, setProductName] = useState("");
@@ -691,27 +723,32 @@ const UpdateProduct = ({ }) => {
     setProductName(value);
   };
 
-  const uniqueTenSanPham = products.map((option) => option.tenSanPham).filter((value, index, self) => {
-    return self.indexOf(value) === index;
-  });
+  const uniqueTenSanPham = products
+    .map((option) => option.tenSanPham)
+    .filter((value, index, self) => {
+      return self.indexOf(value) === index;
+    });
 
-  const listSortCameraSau = camerasSau.sort((a, b) => b.doPhanGiai - a.doPhanGiai);
-  const listSortCameraTruoc = camerasTruoc.sort((a, b) => b.doPhanGiai - a.doPhanGiai);
-
+  const listSortCameraSau = camerasSau.sort(
+    (a, b) => b.doPhanGiai - a.doPhanGiai
+  );
+  const listSortCameraTruoc = camerasTruoc.sort(
+    (a, b) => b.doPhanGiai - a.doPhanGiai
+  );
 
   const [isLoading, setIsLoading] = React.useState(false);
   const [isNonNull, setIsNonNull] = React.useState(false);
 
   const [status, setStatus] = React.useState();
-  const [brand, setBrand] = React.useState('');
-  const [brandName, setBrandName] = React.useState('');
+  const [brand, setBrand] = React.useState("");
+  const [brandName, setBrandName] = React.useState("");
   const [opera, setOpera] = React.useState();
-  const [chip, setChip] = React.useState('');
-  const [screen, setScreen] = React.useState('');
-  const [pin, setPin] = React.useState('');
-  const [congSac, setCongSac] = React.useState('');
-  const [theSim, setTheSim] = React.useState('');
-  const [theNho, setTheNho] = React.useState('');
+  const [chip, setChip] = React.useState("");
+  const [screen, setScreen] = React.useState("");
+  const [pin, setPin] = React.useState("");
+  const [congSac, setCongSac] = React.useState("");
+  const [theSim, setTheSim] = React.useState("");
+  const [theNho, setTheNho] = React.useState("");
   const handleChangeTheSim = (event) => {
     setTheSim(event.target.value);
   };
@@ -782,7 +819,8 @@ const UpdateProduct = ({ }) => {
     const request = {
       ma: generateRandomId(),
       tenSanPham: productName,
-      operatingType: (opera === "" || opera === null || opera === undefined) ? 0 : 1,
+      operatingType:
+        opera === "" || opera === null || opera === undefined ? 0 : 1,
       theSimDienThoais: convertTheSims,
       danhMucDienThoais: convertDanhMucs,
       cameraSauDienThoais: convertCameraSaus,
@@ -804,14 +842,13 @@ const UpdateProduct = ({ }) => {
         id: theNho === "None" ? null : theNho,
       },
       pin: { id: pin },
-      trangThai: (status === "" || status === null || status === undefined) ? 0 : 1,
-    }
+      trangThai:
+        status === "" || status === null || status === undefined ? 0 : 1,
+    };
     return request;
-  }
+  };
 
   const product = getProduct();
-
-
 
   const handleValidation = () => {
     let isValid = true;
@@ -855,7 +892,7 @@ const UpdateProduct = ({ }) => {
       isValid = false;
     }
     return isValid;
-  }
+  };
 
   const [findProduct, setFindProduct] = useState({});
   const [findProductItem, setFindProductItem] = useState([]);
@@ -872,19 +909,25 @@ const UpdateProduct = ({ }) => {
         setProductCode(data.ma);
         setProductName(data.tenSanPham);
         setBrand(data.hang.id);
-        setChip(data.chip.id)
+        setChip(data.chip.id);
         setPin(data.pin.id);
         setCongSac(data.congSac.id);
-        setTheNho(data.theNho || "None")
+        setTheNho(data.theNho || "None");
         setScreen(data.manHinh.id);
         setOpera(data.operatingType);
         setStatus(data.trangThai);
         setFindProduct(data);
         setFindProductItem(data.productItems);
 
-        const mainCameraSau = data.cameraSaus.find(camera => camera.isCameraMain === true);
-        const findMainCameraSau = mainCameraSau ? mainCameraSau.cameraSau.id : ""
-        const cameraSauIds = data.cameraSaus.map(camera => camera.cameraSau.id);
+        const mainCameraSau = data.cameraSaus.find(
+          (camera) => camera.isCameraMain === true
+        );
+        const findMainCameraSau = mainCameraSau
+          ? mainCameraSau.cameraSau.id
+          : "";
+        const cameraSauIds = data.cameraSaus.map(
+          (camera) => camera.cameraSau.id
+        );
         setSelectedCameraSau(cameraSauIds);
 
         setRatingsCameraSau((prevRatings) => {
@@ -896,15 +939,23 @@ const UpdateProduct = ({ }) => {
           });
           const newRating = !prevRatings[findMainCameraSau];
           updatedRatings[findMainCameraSau] = newRating;
-          const trueCameraId = Object.keys(updatedRatings).find((key) => updatedRatings[key] === true);
+          const trueCameraId = Object.keys(updatedRatings).find(
+            (key) => updatedRatings[key] === true
+          );
           setMainCameraSau(trueCameraId);
 
           return updatedRatings;
         });
 
-        const mainCameraTruoc = data.cameraTruocs.find(camera => camera.isCameraMain === true);
-        const findMainCameraTruoc = mainCameraTruoc ? mainCameraTruoc.cameraTruoc.id : ""
-        const cameraTruocIds = data.cameraTruocs.map(camera => camera.cameraTruoc.id);
+        const mainCameraTruoc = data.cameraTruocs.find(
+          (camera) => camera.isCameraMain === true
+        );
+        const findMainCameraTruoc = mainCameraTruoc
+          ? mainCameraTruoc.cameraTruoc.id
+          : "";
+        const cameraTruocIds = data.cameraTruocs.map(
+          (camera) => camera.cameraTruoc.id
+        );
         setSelectedCameraTruoc(cameraTruocIds);
 
         setRatingsCameraTruoc((prevRatings) => {
@@ -916,28 +967,35 @@ const UpdateProduct = ({ }) => {
           });
           const newRating = !prevRatings[findMainCameraTruoc];
           updatedRatings[findMainCameraTruoc] = newRating;
-          const trueCameraId = Object.keys(updatedRatings).find((key) => updatedRatings[key] === true);
+          const trueCameraId = Object.keys(updatedRatings).find(
+            (key) => updatedRatings[key] === true
+          );
           setMainCameraTruoc(trueCameraId);
 
           return updatedRatings;
         });
 
-        const categoryIds = data.danhMucs.map(item => item.danhMuc.id);
-        const simCardsIds = data.theSims.map(item => item.theSim.id);
+        const categoryIds = data.danhMucs.map((item) => item.danhMuc.id);
+        const simCardsIds = data.theSims.map((item) => item.theSim.id);
 
         setSelectedCategory(categoryIds);
         setSelectecSim(simCardsIds);
 
-        const ramIds = data && data.productItems && data.productItems.map(item => item.ram.id);
+        const ramIds =
+          data &&
+          data.productItems &&
+          data.productItems.map((item) => item.ram.id);
         const uniqueRamIds = [...new Set(ramIds)]; // Lọc các giá trị duy nhất
 
         setSelectedRam(uniqueRamIds);
 
-        const romIds = data && data.productItems && data.productItems.map(item => item.rom.id);
+        const romIds =
+          data &&
+          data.productItems &&
+          data.productItems.map((item) => item.rom.id);
         const uniqueRomIds = [...new Set(romIds)]; // Lọc các giá trị duy nhất
 
         setSelectedRom(uniqueRomIds);
-
 
         console.log(data);
         setIsLoading(false);
@@ -951,7 +1009,6 @@ const UpdateProduct = ({ }) => {
   useEffect(() => {
     getProductById();
   }, []);
-
 
   return (
     <>
@@ -967,42 +1024,84 @@ const UpdateProduct = ({ }) => {
               </div>
 */}
       <div style={{ pointerEvents: isOverplay === true ? "none" : "auto" }}>
-        <div className={"mt-4"} style={{ backgroundColor: "#ffffff", boxShadow: "0 0.1rem 0.3rem #00000010", height: confirm && !handleValidation() ? "800px" : "735px" }}>
+        <div
+          className={"mt-4"}
+          style={{
+            backgroundColor: "#ffffff",
+            boxShadow: "0 0.1rem 0.3rem #00000010",
+            height: confirm && !handleValidation() ? "800px" : "735px",
+          }}
+        >
           <div className="container" style={{}}>
             <div className="mx-auto" style={{ maxWidth: "70%" }}>
               <div className="text-center pt-4" style={{}}>
-                <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>CẬP NHẬT SẢN PHẨM</span>
+                <span
+                  className=""
+                  style={{ fontWeight: "550", fontSize: "29px" }}
+                >
+                  CẬP NHẬT SẢN PHẨM
+                </span>
               </div>
               <div className="mt-3">
-                <Autocomplete fullWidth className="custom"
+                <Autocomplete
+                  fullWidth
+                  className="custom"
                   id="free-solo-demo"
                   freeSolo
                   options={uniqueTenSanPham}
                   inputValue={productName}
                   onInputChange={handleOnInputChangeProductName}
-                  renderInput={(params) => <TextField
-                    helperText={
-                      (confirm && productName.trim() === "") ? "Bạn chưa nhập tên sản phẩm" :
-                        (confirm && products.some((item) => item.tenSanPham === productName.trim())) ? "Tên sản phẩm đã tồn tại" : ""
-                    }
-                    error={
-                      (confirm && productName.trim() === "") ||
-                      (confirm && products.some((item) => item.tenSanPham === productName.trim())) === true
-                    }
-                    // helperText={confirm && productName.trim() === "" ? "Bạn chưa nhập tên sản phẩm" : ""}
-                    // error={confirm && productName.trim() === ""}
-                    {...params}
-                    label="Tên Sản Phẩm" />}
+                  renderInput={(params) => (
+                    <TextField
+                      helperText={
+                        confirm && productName.trim() === ""
+                          ? "Bạn chưa nhập tên sản phẩm"
+                          : confirm &&
+                            products.some(
+                              (item) => item.tenSanPham === productName.trim()
+                            )
+                          ? "Tên sản phẩm đã tồn tại"
+                          : ""
+                      }
+                      error={
+                        (confirm && productName.trim() === "") ||
+                        (confirm &&
+                          products.some(
+                            (item) => item.tenSanPham === productName.trim()
+                          )) === true
+                      }
+                      // helperText={confirm && productName.trim() === "" ? "Bạn chưa nhập tên sản phẩm" : ""}
+                      // error={confirm && productName.trim() === ""}
+                      {...params}
+                      label="Tên Sản Phẩm"
+                    />
+                  )}
                 />
               </div>
               <div className="mt-4">
-                <TextField fullWidth multiline maxRows={1} inputProps={{ style: { height: "50px" } }} className="custom" id="outlined-basic" label="Mô Tả" variant="outlined" />
+                <TextField
+                  fullWidth
+                  multiline
+                  maxRows={1}
+                  inputProps={{ style: { height: "50px" } }}
+                  className="custom"
+                  id="outlined-basic"
+                  label="Mô Tả"
+                  variant="outlined"
+                />
               </div>
               <div className="mt-4 d-flex">
                 <div className="" style={{ width: "100%" }}>
-                  <FormControl fullWidth sx={{ width: 262 }} error={confirm && selectedCategory.length === 0}>
-                    <InputLabel id="demo-simple-select-label">Danh Mục</InputLabel>
-                    <Select className="custom"
+                  <FormControl
+                    fullWidth
+                    sx={{ width: 262 }}
+                    error={confirm && selectedCategory.length === 0}
+                  >
+                    <InputLabel id="demo-simple-select-label">
+                      Danh Mục
+                    </InputLabel>
+                    <Select
+                      className="custom"
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
                       multiple
@@ -1011,37 +1110,52 @@ const UpdateProduct = ({ }) => {
                       input={<OutlinedInput label="Danh Mục" />}
                       endAdornment={
                         <>
-                          <InputAdornment style={{ marginRight: "15px" }} position="end">
-                            <Tooltip title="Thêm danh mục" TransitionComponent={Zoom}>
-                              <IconButton onClick={() => setOpenDanhMuc(true)} size="small">
-                                <AiOutlinePlus className='text-dark' />
+                          <InputAdornment
+                            style={{ marginRight: "15px" }}
+                            position="end"
+                          >
+                            <Tooltip
+                              title="Thêm danh mục"
+                              TransitionComponent={Zoom}
+                            >
+                              <IconButton
+                                onClick={() => setOpenDanhMuc(true)}
+                                size="small"
+                              >
+                                <AiOutlinePlus className="text-dark" />
                               </IconButton>
                             </Tooltip>
-
                           </InputAdornment>
                         </>
                       }
-                      renderValue={(selected) => selected.map(id => {
-                        const category = categorys.find(c => c.id === id);
-                        return category ? category.tenDanhMuc : '';
-                      }).join(', ')}
+                      renderValue={(selected) =>
+                        selected
+                          .map((id) => {
+                            const category = categorys.find((c) => c.id === id);
+                            return category ? category.tenDanhMuc : "";
+                          })
+                          .join(", ")
+                      }
                     >
                       {categorys.map((c) => (
                         <MenuItem key={c.id} value={c.id}>
-                          <Checkbox checked={selectedCategory.indexOf(c.id) > -1} />
+                          <Checkbox
+                            checked={selectedCategory.indexOf(c.id) > -1}
+                          />
                           <ListItemText primary={c.tenDanhMuc} />
                         </MenuItem>
                       ))}
                     </Select>
-                    {confirm && selectedCategory.length === 0 &&
+                    {confirm && selectedCategory.length === 0 && (
                       <FormHelperText>Bạn chưa chọn danh mục!</FormHelperText>
-                    }
+                    )}
                   </FormControl>
                 </div>
                 <div className="ms-3" style={{ width: "100%" }}>
                   <FormControl fullWidth error={confirm && brand.trim() === ""}>
                     <InputLabel id="demo-simple-select-label">Hãng</InputLabel>
-                    <Select className="custom"
+                    <Select
+                      className="custom"
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
                       value={brand}
@@ -1049,10 +1163,19 @@ const UpdateProduct = ({ }) => {
                       onChange={handleChangeBrand}
                       endAdornment={
                         <>
-                          <InputAdornment style={{ marginRight: "15px" }} position="end">
-                            <Tooltip title="Thêm hãng" TransitionComponent={Zoom}>
-                              <IconButton onClick={() => setOpenHang(true)} size="small">
-                                <AiOutlinePlus className='text-dark' />
+                          <InputAdornment
+                            style={{ marginRight: "15px" }}
+                            position="end"
+                          >
+                            <Tooltip
+                              title="Thêm hãng"
+                              TransitionComponent={Zoom}
+                            >
+                              <IconButton
+                                onClick={() => setOpenHang(true)}
+                                size="small"
+                              >
+                                <AiOutlinePlus className="text-dark" />
                               </IconButton>
                             </Tooltip>
                           </InputAdornment>
@@ -1061,19 +1184,22 @@ const UpdateProduct = ({ }) => {
                     >
                       {listHang.map((item) => {
                         return (
-                          <MenuItem key={item.id} value={item.id}>{item.tenHang}</MenuItem>
-                        )
+                          <MenuItem key={item.id} value={item.id}>
+                            {item.tenHang}
+                          </MenuItem>
+                        );
                       })}
                     </Select>
-                    {confirm && brand.trim() === "" &&
+                    {confirm && brand.trim() === "" && (
                       <FormHelperText>Bạn chưa chọn hãng!</FormHelperText>
-                    }
+                    )}
                   </FormControl>
                 </div>
                 <div className="ms-3" style={{ width: "100%" }}>
                   <FormControl fullWidth error={confirm && chip.trim() === ""}>
                     <InputLabel id="demo-simple-select-label">Chip</InputLabel>
-                    <Select className="custom"
+                    <Select
+                      className="custom"
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
                       value={chip}
@@ -1081,26 +1207,36 @@ const UpdateProduct = ({ }) => {
                       onChange={handleChangeChip}
                       endAdornment={
                         <>
-                          <InputAdornment style={{ marginRight: "15px" }} position="end">
-                            <Tooltip title="Thêm chip" TransitionComponent={Zoom}>
-                              <IconButton onClick={() => setOpenChip(true)} size="small">
-                                <AiOutlinePlus className='text-dark' />
+                          <InputAdornment
+                            style={{ marginRight: "15px" }}
+                            position="end"
+                          >
+                            <Tooltip
+                              title="Thêm chip"
+                              TransitionComponent={Zoom}
+                            >
+                              <IconButton
+                                onClick={() => setOpenChip(true)}
+                                size="small"
+                              >
+                                <AiOutlinePlus className="text-dark" />
                               </IconButton>
                             </Tooltip>
-
                           </InputAdornment>
                         </>
                       }
                     >
                       {listChip.map((item) => {
                         return (
-                          <MenuItem key={item.id} value={item.id}>{item.tenChip}</MenuItem>
-                        )
+                          <MenuItem key={item.id} value={item.id}>
+                            {item.tenChip}
+                          </MenuItem>
+                        );
                       })}
                     </Select>
-                    {confirm && chip.trim() === "" &&
+                    {confirm && chip.trim() === "" && (
                       <FormHelperText>Bạn chưa chọn chip!</FormHelperText>
-                    }
+                    )}
                   </FormControl>
                 </div>
               </div>
@@ -1108,7 +1244,8 @@ const UpdateProduct = ({ }) => {
                 <div className="" style={{ width: "100%" }}>
                   <FormControl fullWidth error={confirm && pin.trim() === ""}>
                     <InputLabel id="demo-simple-select-label">Pin</InputLabel>
-                    <Select className="custom"
+                    <Select
+                      className="custom"
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
                       value={pin}
@@ -1116,32 +1253,48 @@ const UpdateProduct = ({ }) => {
                       onChange={handleChangePin}
                       endAdornment={
                         <>
-                          <InputAdornment style={{ marginRight: "15px" }} position="end">
-                            <Tooltip title="Thêm pin" TransitionComponent={Zoom}>
-                              <IconButton onClick={() => setOpenPin(true)} size="small">
-                                <AiOutlinePlus className='text-dark' />
+                          <InputAdornment
+                            style={{ marginRight: "15px" }}
+                            position="end"
+                          >
+                            <Tooltip
+                              title="Thêm pin"
+                              TransitionComponent={Zoom}
+                            >
+                              <IconButton
+                                onClick={() => setOpenPin(true)}
+                                size="small"
+                              >
+                                <AiOutlinePlus className="text-dark" />
                               </IconButton>
                             </Tooltip>
-
                           </InputAdornment>
                         </>
                       }
                     >
                       {listPin.map((item) => {
                         return (
-                          <MenuItem key={item.id} value={item.id}>{item.loaiPin + " " + item.dungLuong + " mAh"}</MenuItem>
-                        )
+                          <MenuItem key={item.id} value={item.id}>
+                            {item.loaiPin + " " + item.dungLuong + " mAh"}
+                          </MenuItem>
+                        );
                       })}
                     </Select>
-                    {confirm && pin.trim() === "" &&
+                    {confirm && pin.trim() === "" && (
                       <FormHelperText>Bạn chưa chọn pin!</FormHelperText>
-                    }
+                    )}
                   </FormControl>
                 </div>
                 <div className="ms-3" style={{ width: "100%" }}>
-                  <FormControl fullWidth error={confirm && congSac.trim() === ""}>
-                    <InputLabel id="demo-simple-select-label">Cổng Sạc</InputLabel>
-                    <Select className="custom"
+                  <FormControl
+                    fullWidth
+                    error={confirm && congSac.trim() === ""}
+                  >
+                    <InputLabel id="demo-simple-select-label">
+                      Cổng Sạc
+                    </InputLabel>
+                    <Select
+                      className="custom"
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
                       value={congSac}
@@ -1149,32 +1302,48 @@ const UpdateProduct = ({ }) => {
                       onChange={handleChangeCongSac}
                       endAdornment={
                         <>
-                          <InputAdornment style={{ marginRight: "15px" }} position="end">
-                            <Tooltip title="Thêm cổng sạc" TransitionComponent={Zoom}>
-                              <IconButton onClick={() => setOpenSac(true)} size="small">
-                                <AiOutlinePlus className='text-dark' />
+                          <InputAdornment
+                            style={{ marginRight: "15px" }}
+                            position="end"
+                          >
+                            <Tooltip
+                              title="Thêm cổng sạc"
+                              TransitionComponent={Zoom}
+                            >
+                              <IconButton
+                                onClick={() => setOpenSac(true)}
+                                size="small"
+                              >
+                                <AiOutlinePlus className="text-dark" />
                               </IconButton>
                             </Tooltip>
-
                           </InputAdornment>
                         </>
                       }
                     >
                       {listSac.map((item) => {
                         return (
-                          <MenuItem key={item.id} value={item.id}>{item.loaiCongSac}</MenuItem>
-                        )
+                          <MenuItem key={item.id} value={item.id}>
+                            {item.loaiCongSac}
+                          </MenuItem>
+                        );
                       })}
                     </Select>
-                    {confirm && congSac.trim() === "" &&
+                    {confirm && congSac.trim() === "" && (
                       <FormHelperText>Bạn chưa chọn cổng sạc!</FormHelperText>
-                    }
+                    )}
                   </FormControl>
                 </div>
                 <div className="ms-3" style={{ width: "100%" }}>
-                  <FormControl fullWidth error={confirm && theNho.trim() === ""}>
-                    <InputLabel id="demo-simple-select-label">Thẻ Nhớ</InputLabel>
-                    <Select className="custom"
+                  <FormControl
+                    fullWidth
+                    error={confirm && theNho.trim() === ""}
+                  >
+                    <InputLabel id="demo-simple-select-label">
+                      Thẻ Nhớ
+                    </InputLabel>
+                    <Select
+                      className="custom"
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
                       value={theNho}
@@ -1182,13 +1351,21 @@ const UpdateProduct = ({ }) => {
                       onChange={handleChangeTheNho}
                       endAdornment={
                         <>
-                          <InputAdornment style={{ marginRight: "15px" }} position="end">
-                            <Tooltip title="Thêm thẻ nhớ" TransitionComponent={Zoom}>
-                              <IconButton onClick={() => setOpenTheNho(true)} size="small">
-                                <AiOutlinePlus className='text-dark' />
+                          <InputAdornment
+                            style={{ marginRight: "15px" }}
+                            position="end"
+                          >
+                            <Tooltip
+                              title="Thêm thẻ nhớ"
+                              TransitionComponent={Zoom}
+                            >
+                              <IconButton
+                                onClick={() => setOpenTheNho(true)}
+                                size="small"
+                              >
+                                <AiOutlinePlus className="text-dark" />
                               </IconButton>
                             </Tooltip>
-
                           </InputAdornment>
                         </>
                       }
@@ -1196,21 +1373,26 @@ const UpdateProduct = ({ }) => {
                       <MenuItem value={"None"}>Không có</MenuItem>
                       {listTheNho.map((item) => {
                         return (
-                          <MenuItem key={item.id} value={item.id}>{item.loaiTheNho}</MenuItem>
-                        )
+                          <MenuItem key={item.id} value={item.id}>
+                            {item.loaiTheNho}
+                          </MenuItem>
+                        );
                       })}
                     </Select>
-                    {confirm && theNho.trim() === "" &&
+                    {confirm && theNho.trim() === "" && (
                       <FormHelperText>Bạn chưa chọn thẻ nhớ!</FormHelperText>
-                    }
+                    )}
                   </FormControl>
                 </div>
               </div>
               <div className="mt-4 d-flex mx-auto" style={{ width: "100%" }}>
                 <div className="" style={{ width: "100%" }}>
                   <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">Hệ Điều Hành</InputLabel>
-                    <Select className="custom"
+                    <InputLabel id="demo-simple-select-label">
+                      Hệ Điều Hành
+                    </InputLabel>
+                    <Select
+                      className="custom"
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
                       value={opera}
@@ -1225,8 +1407,11 @@ const UpdateProduct = ({ }) => {
                 </div>
                 <div className="ms-3" style={{ width: "100%" }}>
                   <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">Trạng Thái</InputLabel>
-                    <Select className="custom"
+                    <InputLabel id="demo-simple-select-label">
+                      Trạng Thái
+                    </InputLabel>
+                    <Select
+                      className="custom"
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
                       value={status}
@@ -1241,14 +1426,33 @@ const UpdateProduct = ({ }) => {
                   </FormControl>
                 </div>
                 <div className="ms-3" style={{ width: "100%" }}>
-                  <TextField fullWidth inputProps={{}} className="custom" id="outlined-basic" label="Trọng Lượng" variant="outlined" />
+                  <TextField
+                    fullWidth
+                    inputProps={{}}
+                    className="custom"
+                    id="outlined-basic"
+                    label="Trọng Lượng"
+                    variant="outlined"
+                  />
                 </div>
               </div>
               <div className="mt-4 d-flex">
                 <div className="" style={{ width: "100%" }}>
-                  <FormControl fullWidth sx={{ width: 402 }} error={(confirm && selectedCameraSau.length === 0) || (confirm && selectedCameraSau.length !== 0 && mainCameraSau === "")}>
-                    <InputLabel id="demo-simple-select-label">Camera Sau</InputLabel>
-                    <Select className="custom"
+                  <FormControl
+                    fullWidth
+                    sx={{ width: 402 }}
+                    error={
+                      (confirm && selectedCameraSau.length === 0) ||
+                      (confirm &&
+                        selectedCameraSau.length !== 0 &&
+                        mainCameraSau === "")
+                    }
+                  >
+                    <InputLabel id="demo-simple-select-label">
+                      Camera Sau
+                    </InputLabel>
+                    <Select
+                      className="custom"
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
                       multiple
@@ -1256,9 +1460,15 @@ const UpdateProduct = ({ }) => {
                       onChange={handleChangeSelectedCameraSau}
                       input={<OutlinedInput label="Camera Sau" />}
                       renderValue={(selected) => {
-                        const selectedCameras = selected.map(id => camerasSau.find(c => c.id === id)).filter(Boolean);
-                        const mainCamera = selectedCameras.find(camera => ratingsCameraSau[camera.id]);
-                        const otherCameras = selectedCameras.filter(camera => !ratingsCameraSau[camera.id]);
+                        const selectedCameras = selected
+                          .map((id) => camerasSau.find((c) => c.id === id))
+                          .filter(Boolean);
+                        const mainCamera = selectedCameras.find(
+                          (camera) => ratingsCameraSau[camera.id]
+                        );
+                        const otherCameras = selectedCameras.filter(
+                          (camera) => !ratingsCameraSau[camera.id]
+                        );
 
                         const renderCameraText = (camera, isMain) => {
                           const cameraText = camera.doPhanGiai + "MP";
@@ -1272,11 +1482,15 @@ const UpdateProduct = ({ }) => {
                         let renderedCameras = [];
 
                         if (mainCamera) {
-                          renderedCameras.push(renderCameraText(mainCamera, true));
+                          renderedCameras.push(
+                            renderCameraText(mainCamera, true)
+                          );
                         }
 
                         if (otherCameras.length > 0) {
-                          const otherCamerasText = otherCameras.map(camera => renderCameraText(camera, false)).join(', ');
+                          const otherCamerasText = otherCameras
+                            .map((camera) => renderCameraText(camera, false))
+                            .join(", ");
                           if (renderedCameras.length > 0) {
                             renderedCameras[0] += ` & Phụ ${otherCamerasText}`;
                           } else {
@@ -1284,35 +1498,57 @@ const UpdateProduct = ({ }) => {
                           }
                         }
 
-                        return renderedCameras.join(', ');
+                        return renderedCameras.join(", ");
                       }}
                       MenuProps={MenuProps}
                       endAdornment={
                         <>
-                          <InputAdornment style={{ marginRight: "15px" }} position="end">
-                            <Tooltip title="Thêm camera sau" TransitionComponent={Zoom}>
-                              <IconButton onClick={() => setOpenCameraSau(true)} size="small">
-                                <AiOutlinePlus className='text-dark' />
+                          <InputAdornment
+                            style={{ marginRight: "15px" }}
+                            position="end"
+                          >
+                            <Tooltip
+                              title="Thêm camera sau"
+                              TransitionComponent={Zoom}
+                            >
+                              <IconButton
+                                onClick={() => setOpenCameraSau(true)}
+                                size="small"
+                              >
+                                <AiOutlinePlus className="text-dark" />
                               </IconButton>
                             </Tooltip>
-
                           </InputAdornment>
                         </>
                       }
                     >
                       {listSortCameraSau.map((c) => (
                         <MenuItem key={c.id} value={c.id}>
-                          <Checkbox checked={selectedCameraSau.indexOf(c.id) > -1} />
-                          <ListItemText primary={c.doPhanGiai + "MP " + `(${c.cameraType})`} />
-                          {selectedCameraSau.indexOf(c.id) > -1 ?
+                          <Checkbox
+                            checked={selectedCameraSau.indexOf(c.id) > -1}
+                          />
+                          <ListItemText
+                            primary={c.doPhanGiai + "MP " + `(${c.cameraType})`}
+                          />
+                          {selectedCameraSau.indexOf(c.id) > -1 ? (
                             <>
                               <Tooltip
-                                title={ratingsCameraSau[c.id] ? "Bỏ đặt làm camera chính" : "Đặt làm camera chính"}
-                                TransitionComponent={Zoom} placement="right-end">
-                                <IconButton onClick={(e) => {
-                                  handleToggleRatingCameraSau(c.id);
-                                  e.stopPropagation();
-                                }} size="small" className="me-1" style={{ marginBottom: "3px" }}
+                                title={
+                                  ratingsCameraSau[c.id]
+                                    ? "Bỏ đặt làm camera chính"
+                                    : "Đặt làm camera chính"
+                                }
+                                TransitionComponent={Zoom}
+                                placement="right-end"
+                              >
+                                <IconButton
+                                  onClick={(e) => {
+                                    handleToggleRatingCameraSau(c.id);
+                                    e.stopPropagation();
+                                  }}
+                                  size="small"
+                                  className="me-1"
+                                  style={{ marginBottom: "3px" }}
                                 >
                                   <Rating
                                     style={{ fontSize: "23px", color: "" }}
@@ -1324,22 +1560,40 @@ const UpdateProduct = ({ }) => {
                                 </IconButton>
                               </Tooltip>
                             </>
-                            : ""}
+                          ) : (
+                            ""
+                          )}
                         </MenuItem>
                       ))}
                     </Select>
-                    {confirm && selectedCameraSau.length === 0 &&
+                    {confirm && selectedCameraSau.length === 0 && (
                       <FormHelperText>Bạn chưa chọn camera sau!</FormHelperText>
-                    }
-                    {confirm && selectedCameraSau.length > 0 && mainCameraSau === "" &&
-                      <FormHelperText>Camera sau chưa có camera chính!</FormHelperText>
-                    }
+                    )}
+                    {confirm &&
+                      selectedCameraSau.length > 0 &&
+                      mainCameraSau === "" && (
+                        <FormHelperText>
+                          Camera sau chưa có camera chính!
+                        </FormHelperText>
+                      )}
                   </FormControl>
                 </div>
                 <div className="ms-3" style={{ width: "100%" }}>
-                  <FormControl fullWidth sx={{ width: 402 }} error={(confirm && selectedCameraTruoc.length === 0) || (confirm && selectedCameraTruoc.length !== 0 && mainCameraTruoc === "")}>
-                    <InputLabel id="demo-simple-select-label">Camera Trước</InputLabel>
-                    <Select className="custom"
+                  <FormControl
+                    fullWidth
+                    sx={{ width: 402 }}
+                    error={
+                      (confirm && selectedCameraTruoc.length === 0) ||
+                      (confirm &&
+                        selectedCameraTruoc.length !== 0 &&
+                        mainCameraTruoc === "")
+                    }
+                  >
+                    <InputLabel id="demo-simple-select-label">
+                      Camera Trước
+                    </InputLabel>
+                    <Select
+                      className="custom"
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
                       multiple
@@ -1347,9 +1601,15 @@ const UpdateProduct = ({ }) => {
                       onChange={handleChangeSelectedCameraTruoc}
                       input={<OutlinedInput label="Camera Trước" />}
                       renderValue={(selected) => {
-                        const selectedCameras = selected.map(id => camerasTruoc.find(c => c.id === id)).filter(Boolean);
-                        const mainCamera = selectedCameras.find(camera => ratingsCameraTruoc[camera.id]);
-                        const otherCameras = selectedCameras.filter(camera => !ratingsCameraTruoc[camera.id]);
+                        const selectedCameras = selected
+                          .map((id) => camerasTruoc.find((c) => c.id === id))
+                          .filter(Boolean);
+                        const mainCamera = selectedCameras.find(
+                          (camera) => ratingsCameraTruoc[camera.id]
+                        );
+                        const otherCameras = selectedCameras.filter(
+                          (camera) => !ratingsCameraTruoc[camera.id]
+                        );
 
                         const renderCameraText = (camera, isMain) => {
                           const cameraText = camera.doPhanGiai + "MP";
@@ -1363,11 +1623,15 @@ const UpdateProduct = ({ }) => {
                         let renderedCameras = [];
 
                         if (mainCamera) {
-                          renderedCameras.push(renderCameraText(mainCamera, true));
+                          renderedCameras.push(
+                            renderCameraText(mainCamera, true)
+                          );
                         }
 
                         if (otherCameras.length > 0) {
-                          const otherCamerasText = otherCameras.map(camera => renderCameraText(camera, false)).join(', ');
+                          const otherCamerasText = otherCameras
+                            .map((camera) => renderCameraText(camera, false))
+                            .join(", ");
                           if (renderedCameras.length > 0) {
                             renderedCameras[0] += ` & Phụ ${otherCamerasText}`;
                           } else {
@@ -1375,35 +1639,57 @@ const UpdateProduct = ({ }) => {
                           }
                         }
 
-                        return renderedCameras.join(', ');
+                        return renderedCameras.join(", ");
                       }}
                       MenuProps={MenuProps}
                       endAdornment={
                         <>
-                          <InputAdornment style={{ marginRight: "15px" }} position="end">
-                            <Tooltip title="Thêm camera sau" TransitionComponent={Zoom}>
-                              <IconButton onClick={() => setOpenCameraTruoc(true)} size="small">
-                                <AiOutlinePlus className='text-dark' />
+                          <InputAdornment
+                            style={{ marginRight: "15px" }}
+                            position="end"
+                          >
+                            <Tooltip
+                              title="Thêm camera sau"
+                              TransitionComponent={Zoom}
+                            >
+                              <IconButton
+                                onClick={() => setOpenCameraTruoc(true)}
+                                size="small"
+                              >
+                                <AiOutlinePlus className="text-dark" />
                               </IconButton>
                             </Tooltip>
-
                           </InputAdornment>
                         </>
                       }
                     >
                       {listSortCameraTruoc.map((c) => (
                         <MenuItem key={c.id} value={c.id}>
-                          <Checkbox checked={selectedCameraTruoc.indexOf(c.id) > -1} />
-                          <ListItemText primary={c.doPhanGiai + "MP " + `(${c.cameraType})`} />
-                          {selectedCameraTruoc.indexOf(c.id) > -1 ?
+                          <Checkbox
+                            checked={selectedCameraTruoc.indexOf(c.id) > -1}
+                          />
+                          <ListItemText
+                            primary={c.doPhanGiai + "MP " + `(${c.cameraType})`}
+                          />
+                          {selectedCameraTruoc.indexOf(c.id) > -1 ? (
                             <>
                               <Tooltip
-                                title={ratingsCameraTruoc[c.id] ? "Bỏ đặt làm camera chính" : "Đặt làm camera chính"}
-                                TransitionComponent={Zoom} placement="right-end">
-                                <IconButton onClick={(e) => {
-                                  handleToggleRatingCameraTruoc(c.id);
-                                  e.stopPropagation();
-                                }} size="small" className="me-1" style={{ marginBottom: "3px" }}
+                                title={
+                                  ratingsCameraTruoc[c.id]
+                                    ? "Bỏ đặt làm camera chính"
+                                    : "Đặt làm camera chính"
+                                }
+                                TransitionComponent={Zoom}
+                                placement="right-end"
+                              >
+                                <IconButton
+                                  onClick={(e) => {
+                                    handleToggleRatingCameraTruoc(c.id);
+                                    e.stopPropagation();
+                                  }}
+                                  size="small"
+                                  className="me-1"
+                                  style={{ marginBottom: "3px" }}
                                 >
                                   <Rating
                                     style={{ fontSize: "23px", color: "" }}
@@ -1415,24 +1701,39 @@ const UpdateProduct = ({ }) => {
                                 </IconButton>
                               </Tooltip>
                             </>
-                            : ""}
+                          ) : (
+                            ""
+                          )}
                         </MenuItem>
                       ))}
                     </Select>
-                    {confirm && selectedCameraTruoc.length === 0 &&
-                      <FormHelperText>Bạn chưa chọn camera trước!</FormHelperText>
-                    }
-                    {confirm && selectedCameraTruoc.length > 0 && mainCameraTruoc === "" &&
-                      <FormHelperText>Camera trước chưa có camera chính!</FormHelperText>
-                    }
+                    {confirm && selectedCameraTruoc.length === 0 && (
+                      <FormHelperText>
+                        Bạn chưa chọn camera trước!
+                      </FormHelperText>
+                    )}
+                    {confirm &&
+                      selectedCameraTruoc.length > 0 &&
+                      mainCameraTruoc === "" && (
+                        <FormHelperText>
+                          Camera trước chưa có camera chính!
+                        </FormHelperText>
+                      )}
                   </FormControl>
                 </div>
               </div>
               <div className="mt-4 d-flex">
                 <div className="" style={{ width: "100%" }}>
-                  <FormControl fullWidth sx={{ width: 402 }} error={confirm && screen.trim() === ""}>
-                    <InputLabel id="demo-simple-select-label">Màn Hình</InputLabel>
-                    <Select className="custom"
+                  <FormControl
+                    fullWidth
+                    sx={{ width: 402 }}
+                    error={confirm && screen.trim() === ""}
+                  >
+                    <InputLabel id="demo-simple-select-label">
+                      Màn Hình
+                    </InputLabel>
+                    <Select
+                      className="custom"
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
                       value={screen}
@@ -1440,32 +1741,57 @@ const UpdateProduct = ({ }) => {
                       onChange={handleChangeScreen}
                       endAdornment={
                         <>
-                          <InputAdornment style={{ marginRight: "15px" }} position="end">
-                            <Tooltip title="Thêm màn hình" TransitionComponent={Zoom}>
-                              <IconButton onClick={() => setOpenManHinh(true)} size="small">
-                                <AiOutlinePlus className='text-dark' />
+                          <InputAdornment
+                            style={{ marginRight: "15px" }}
+                            position="end"
+                          >
+                            <Tooltip
+                              title="Thêm màn hình"
+                              TransitionComponent={Zoom}
+                            >
+                              <IconButton
+                                onClick={() => setOpenManHinh(true)}
+                                size="small"
+                              >
+                                <AiOutlinePlus className="text-dark" />
                               </IconButton>
                             </Tooltip>
-
                           </InputAdornment>
                         </>
                       }
                     >
                       {listManHinh.map((item) => {
                         return (
-                          <MenuItem key={item.id} value={item.id}>{item.loaiManHinh + " " + `(${item.doPhanGiaiManHinh.chieuRong + " x " + item.doPhanGiaiManHinh.chieuDai} pixels) ` + item.kichThuoc + `"`}</MenuItem>
-                        )
+                          <MenuItem key={item.id} value={item.id}>
+                            {item.loaiManHinh +
+                              " " +
+                              `(${
+                                item.doPhanGiaiManHinh.chieuRong +
+                                " x " +
+                                item.doPhanGiaiManHinh.chieuDai
+                              } pixels) ` +
+                              item.kichThuoc +
+                              `"`}
+                          </MenuItem>
+                        );
                       })}
                     </Select>
-                    {confirm && screen.trim() === "" &&
+                    {confirm && screen.trim() === "" && (
                       <FormHelperText>Bạn chưa chọn màn hình!</FormHelperText>
-                    }
+                    )}
                   </FormControl>
                 </div>
                 <div className="ms-3" style={{ width: "100%" }}>
-                  <FormControl fullWidth sx={{ width: 402 }} error={confirm && selectedSim.length === 0}>
-                    <InputLabel id="demo-simple-select-label">Thẻ SIM</InputLabel>
-                    <Select className="custom"
+                  <FormControl
+                    fullWidth
+                    sx={{ width: 402 }}
+                    error={confirm && selectedSim.length === 0}
+                  >
+                    <InputLabel id="demo-simple-select-label">
+                      Thẻ SIM
+                    </InputLabel>
+                    <Select
+                      className="custom"
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
                       multiple
@@ -1474,31 +1800,53 @@ const UpdateProduct = ({ }) => {
                       input={<OutlinedInput label="Thẻ SIM" />}
                       endAdornment={
                         <>
-                          <InputAdornment style={{ marginRight: "15px" }} position="end">
-                            <Tooltip title="Thêm thẻ SIM" TransitionComponent={Zoom}>
-                              <IconButton onClick={() => setOpenTheSim(true)} size="small">
-                                <AiOutlinePlus className='text-dark' />
+                          <InputAdornment
+                            style={{ marginRight: "15px" }}
+                            position="end"
+                          >
+                            <Tooltip
+                              title="Thêm thẻ SIM"
+                              TransitionComponent={Zoom}
+                            >
+                              <IconButton
+                                onClick={() => setOpenTheSim(true)}
+                                size="small"
+                              >
+                                <AiOutlinePlus className="text-dark" />
                               </IconButton>
                             </Tooltip>
-
                           </InputAdornment>
                         </>
                       }
-                      renderValue={(selected) => selected.map(id => {
-                        const sim = listTheSim.find(c => c.id === id);
-                        return sim ? sim.simMultiple === SimMultiple.SINGLE_SIM ? `${'1 ' + sim.loaiTheSim}` : `${'2 ' + sim.loaiTheSim}` : '';
-                      }).join(' & ')}
+                      renderValue={(selected) =>
+                        selected
+                          .map((id) => {
+                            const sim = listTheSim.find((c) => c.id === id);
+                            return sim
+                              ? sim.simMultiple === SimMultiple.SINGLE_SIM
+                                ? `${"1 " + sim.loaiTheSim}`
+                                : `${"2 " + sim.loaiTheSim}`
+                              : "";
+                          })
+                          .join(" & ")
+                      }
                     >
                       {listTheSim.map((c) => (
                         <MenuItem key={c.id} value={c.id}>
                           <Checkbox checked={selectedSim.indexOf(c.id) > -1} />
-                          <ListItemText primary={c.simMultiple === SimMultiple.SINGLE_SIM ? `${'1 ' + c.loaiTheSim}` : `${'2 ' + c.loaiTheSim}`} />
+                          <ListItemText
+                            primary={
+                              c.simMultiple === SimMultiple.SINGLE_SIM
+                                ? `${"1 " + c.loaiTheSim}`
+                                : `${"2 " + c.loaiTheSim}`
+                            }
+                          />
                         </MenuItem>
                       ))}
                     </Select>
-                    {confirm && selectedSim.length === 0 &&
+                    {confirm && selectedSim.length === 0 && (
                       <FormHelperText>Bạn chưa chọn thẻ SIM!</FormHelperText>
-                    }
+                    )}
                   </FormControl>
                 </div>
               </div>
@@ -1560,11 +1908,25 @@ const UpdateProduct = ({ }) => {
         getAll={getListCameraTruoc}
         cameraFront={camerasTruoc}
       />
-      <CreatePin open={openPin} close={handleCloseOpenPin} getAll={getListPin} pins={listPin} />
-      <UpdateCauHinh valid={handleValidation()} confirm={getConfirm} isConfirm={confirm} productName={productName} getProduct={product} getOverplay={getOverplay} getSelectedRam={selectedRam} getSelectedRom={selectedRom} findProductItem={findProductItem} />
+      <CreatePin
+        open={openPin}
+        close={handleCloseOpenPin}
+        getAll={getListPin}
+        pins={listPin}
+      />
+      <UpdateCauHinh
+        valid={handleValidation()}
+        confirm={getConfirm}
+        isConfirm={confirm}
+        productName={productName}
+        getProduct={product}
+        getOverplay={getOverplay}
+        getSelectedRam={selectedRam}
+        getSelectedRom={selectedRom}
+        findProductItem={findProductItem}
+      />
       {isLoading && <LoadingIndicator />}
     </>
-  )
-
-}
+  );
+};
 export default UpdateProduct;
