@@ -1,8 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
-import { read, utils, writeFile } from 'xlsx';
-import LoadingIndicator from './loading.js';
-import axios from 'axios';
-import { Dialog, DialogContent, IconButton, Pagination, Slide, TextField, Tooltip, Zoom } from "@mui/material";
+import { read, utils, writeFile } from "xlsx";
+import LoadingIndicator from "./loading.js";
+import axios from "axios";
+import {
+  Dialog,
+  DialogContent,
+  IconButton,
+  Pagination,
+  Slide,
+  TextField,
+  Tooltip,
+  Zoom,
+} from "@mui/material";
 import { Button, Empty, Table } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
@@ -10,12 +19,19 @@ import { FaDownload } from "react-icons/fa6";
 import { FaUpload } from "react-icons/fa6";
 import useCustomSnackbar from "./notistack.js";
 import { format } from "date-fns";
-import { request } from '../store/helpers/axios_helper'
+import { request } from "../store/helpers/axios_helper";
+import { StatusImei } from "../views/admin/order-manager/enum.js";
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const ImportAndExportExcelImei = ({ open, close, imeis, productName, view }) => {
+const ImportAndExportExcelImei = ({
+  open,
+  close,
+  imeis,
+  productName,
+  view,
+}) => {
   // const getImeis = () => {
   //   get(imeis);
   // }
@@ -57,10 +73,12 @@ const ImportAndExportExcelImei = ({ open, close, imeis, productName, view }) => 
         if (sheets.length) {
           const rows = utils.sheet_to_json(wb.Sheets[sheets[0]]);
 
-          const nonEmptyRows = rows.filter(row => {
-            return Object.values(row).some(cellValue => cellValue !== null && cellValue.trim() !== "");
+          const nonEmptyRows = rows.filter((row) => {
+            return Object.values(row).some(
+              (cellValue) => cellValue !== null && cellValue.trim() !== ""
+            );
           });
-          const updatedRows = nonEmptyRows.map(row => {
+          const updatedRows = nonEmptyRows.map((row) => {
             return {
               imei: row.IMEI,
               createdAt: new Date(),
@@ -70,25 +88,27 @@ const ImportAndExportExcelImei = ({ open, close, imeis, productName, view }) => 
           // getImeis(nonEmptyRows);
         }
         $event.target.value = null;
-      }
+      };
       reader.readAsArrayBuffer(file);
     }
-  }
+  };
   const handleExport = () => {
     if (!imeis) {
       handleOpenAlertVariant("Không thể export vì chưa có dữ liệu!", "warning");
-    }
-    else {
+    } else {
       const request = {
-        imeis
+        imeis,
       };
       setIsLoading(true);
-      request('POST','/api/export-excel-by', request, { responseType: 'blob' }) // Sử dụng phương thức POST
+      request("POST", "/api/export-excel-by", request, { responseType: "blob" }) // Sử dụng phương thức POST
         .then((response) => {
           const url = window.URL.createObjectURL(new Blob([response.data]));
-          const link = document.createElement('a');
+          const link = document.createElement("a");
           link.href = url;
-          link.setAttribute('download', `Danh sách imei của${" " + productName}.xlsx`);
+          link.setAttribute(
+            "download",
+            `Danh sách imei của${" " + productName}.xlsx`
+          );
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
@@ -96,26 +116,30 @@ const ImportAndExportExcelImei = ({ open, close, imeis, productName, view }) => 
         })
         .catch((error) => {
           setIsLoading(false);
-        }
-        );
+        });
     }
     // const headings = [['IMEI']];
     // const wb = utils.book_new();
     // const ws = utils.json_to_sheet([]);
-    // 
+    //
     // utils.sheet_add_aoa(ws, headings);
     // utils.sheet_add_json(ws, imeis, { origin: 'A2', skipHeader: true });
     // utils.book_append_sheet(wb, ws, 'Danh sách imei');
-  }
+  };
 
   const handleDownloadSample = () => {
     setIsLoading(true);
-    request('POST','/api/create-excel-template-by', {}, { responseType: 'blob' }) // Sử dụng phương thức POST
+    request(
+      "POST",
+      "/api/create-excel-template-by",
+      {},
+      { responseType: "blob" }
+    ) // Sử dụng phương thức POST
       .then((response) => {
         const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
+        const link = document.createElement("a");
         link.href = url;
-        link.setAttribute('download', 'Mẫu Import IMEI.xlsx');
+        link.setAttribute("download", "Mẫu Import IMEI.xlsx");
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -123,9 +147,8 @@ const ImportAndExportExcelImei = ({ open, close, imeis, productName, view }) => 
       })
       .catch((error) => {
         setIsLoading(false);
-      }
-      );
-  }
+      });
+  };
 
   const TableImei = () => {
     return (
@@ -149,9 +172,7 @@ const ImportAndExportExcelImei = ({ open, close, imeis, productName, view }) => 
       dataIndex: "stt",
       width: "10%",
       render: (text, record, index) => (
-        <span style={{ fontWeight: "400" }}>
-          {imeis.indexOf(record) + 1}
-        </span>
+        <span style={{ fontWeight: "400" }}>{imeis.indexOf(record) + 1}</span>
       ),
     },
     {
@@ -159,16 +180,60 @@ const ImportAndExportExcelImei = ({ open, close, imeis, productName, view }) => 
       align: "center",
       width: "15%",
       render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>{!view ? record.soImei : record.imei}</span>
+        <span style={{ fontWeight: "400" }}>
+          {!view ? record.soImei : record.imei}
+        </span>
       ),
     },
     {
       title: "Trạng thái",
       align: "center",
       width: "15%",
-      render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>{record.trangThai}</span>
-      ),
+      dataIndex: "trangThai",
+      render: (type) =>
+        type === StatusImei.SOLD ? (
+          <div
+            className="rounded-pill mx-auto badge-success"
+            style={{
+              height: "35px",
+              width: "135px",
+              padding: "4px",
+            }}
+          >
+            <span className="text-white" style={{ fontSize: "14px" }}>
+              Đã Bán
+            </span>
+          </div>
+        ) : type === StatusImei.NOT_SOLD || type === StatusImei.IN_THE_CART ? (
+          <div
+            className="rounded-pill badge-warning mx-auto"
+            style={{ height: "35px", width: "135px", padding: "4px" }}
+          >
+            <span className="" style={{ fontSize: "14px" }}>
+              Chưa Bán
+            </span>
+          </div>
+        ) : type === StatusImei.IN_ACTIVE ? (
+          <div
+            className="rounded-pill badge-danger mx-auto"
+            style={{ height: "35px", width: "135px", padding: "4px" }}
+          >
+            <span className="text-white" style={{ fontSize: "14px" }}>
+              Ngừng hoạt động
+            </span>
+          </div>
+        ) : type === StatusImei.REFUND ? (
+          <div
+            className="rounded-pill badge-danger mx-auto"
+            style={{ height: "35px", width: "135px", padding: "4px" }}
+          >
+            <span className="text-white" style={{ fontSize: "14px" }}>
+              Hàng Trả
+            </span>
+          </div>
+        ) : (
+          ""
+        ),
     },
     {
       title: "Barcode",
@@ -176,7 +241,11 @@ const ImportAndExportExcelImei = ({ open, close, imeis, productName, view }) => 
       width: "15%",
       hide: view ? true : false,
       render: (text, record) => (
-        <img src={record.barcode} style={{ width: "200px", height: "50px" }} alt="" />
+        <img
+          src={record.barcode}
+          style={{ width: "200px", height: "50px" }}
+          alt=""
+        />
       ),
     },
     {
@@ -188,16 +257,12 @@ const ImportAndExportExcelImei = ({ open, close, imeis, productName, view }) => 
           <div className="d-flex justify-content-center">
             <div className="button-container">
               <Tooltip title="Cập Nhật" TransitionComponent={Zoom}>
-                <IconButton size="" className="me-2" onClick={() => {
-
-                }}>
+                <IconButton size="" className="me-2" onClick={() => {}}>
                   <FaPencilAlt color="#2f80ed" />
                 </IconButton>
               </Tooltip>
               <Tooltip title="Xóa" TransitionComponent={Zoom}>
-                <IconButton size="" onClick={() => {
-
-                }}>
+                <IconButton size="" onClick={() => {}}>
                   <FaTrashAlt color="#e5383b" />
                 </IconButton>
               </Tooltip>
@@ -217,13 +282,16 @@ const ImportAndExportExcelImei = ({ open, close, imeis, productName, view }) => 
         onClose={close}
         maxWidth="xxl"
         maxHeight="xxl"
-      // sx={{ marginBottom: !imeis ? "170px" : "" }}
+        // sx={{ marginBottom: !imeis ? "170px" : "" }}
       >
         <DialogContent className="">
           <div className="mt-2" style={{ width: "1100px" }}>
             <div className="container" style={{}}>
               <div className="text-center" style={{}}>
-                <span className="" style={{ fontWeight: "550", fontSize: "29px" }}>
+                <span
+                  className=""
+                  style={{ fontWeight: "550", fontSize: "29px" }}
+                >
                   {"Danh sách IMEI của " + productName}
                 </span>
               </div>
@@ -262,7 +330,7 @@ const ImportAndExportExcelImei = ({ open, close, imeis, productName, view }) => 
                     </span>
                   </Button>
                 </div>
-                <div className="">
+                {/* <div className="">
                   <Button
                     onClick={handleUploadClick}
                     className="rounded-2 button-mui me-2"
@@ -282,17 +350,29 @@ const ImportAndExportExcelImei = ({ open, close, imeis, productName, view }) => 
                       style={{ marginBottom: "3px", fontWeight: "500" }}
                     >
                       Import Excel
-
-                      <input style={{ display: "none" }} ref={inputRef} type="file" name="file" className="custom-file-input" id="inputGroupFile" required onChange={handleImport}
-                        accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
+                      <input
+                        style={{ display: "none" }}
+                        ref={inputRef}
+                        type="file"
+                        name="file"
+                        className="custom-file-input"
+                        id="inputGroupFile"
+                        required
+                        onChange={handleImport}
+                        accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                      />
                     </span>
                   </Button>
-                  {!view &&
+                  {!view && (
                     <Button
                       onClick={handleExport}
                       className="rounded-2 button-mui me-2"
                       type="primary"
-                      style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                      style={{
+                        height: "40px",
+                        width: "auto",
+                        fontSize: "15px",
+                      }}
                     >
                       <FaDownload
                         className="ms-1"
@@ -309,7 +389,7 @@ const ImportAndExportExcelImei = ({ open, close, imeis, productName, view }) => 
                         Export Excel
                       </span>
                     </Button>
-                  }
+                  )}
                   <Button
                     onClick={handleDownloadSample}
                     className="rounded-2 button-mui"
@@ -331,7 +411,7 @@ const ImportAndExportExcelImei = ({ open, close, imeis, productName, view }) => 
                       Tải Mẫu
                     </span>
                   </Button>
-                </div>
+                </div> */}
               </div>
               <div className="mx-auto mt-3">
                 <TableImei />
@@ -351,9 +431,7 @@ const ImportAndExportExcelImei = ({ open, close, imeis, productName, view }) => 
       </Dialog>
       {isLoading && <LoadingIndicator />}
     </>
-
   );
 };
 
 export default ImportAndExportExcelImei;
-

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { read, utils, writeFile } from 'xlsx';
-import * as XLSX from 'xlsx';
+import { read, utils, writeFile } from "xlsx";
+import * as XLSX from "xlsx";
 import {
   Link,
   useLocation,
@@ -34,7 +34,12 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import Zoom from "@mui/material/Zoom";
 import * as dayjs from "dayjs";
-import { Notistack, OrderStatusString, OrderTypeString, StatusImei } from "./enum";
+import {
+  Notistack,
+  OrderStatusString,
+  OrderTypeString,
+  StatusImei,
+} from "./enum";
 import LoadingIndicator from "../../../utilities/loading";
 import { FaPencilAlt } from "react-icons/fa";
 import { ImportExcelImei, ImportExcelImeiSave } from "./import-imei-by";
@@ -85,14 +90,13 @@ const ManagementProductItems = (
 
   const handleCloseOpenUpdateProduct = () => {
     setOpenUpdateProduct(false);
-  }
+  };
 
   const { id } = useParams();
 
   const [listImeiCurrent, setListImeiCurrent] = useState([]);
   const getAllImei = () => {
-    request('GET', `/api/imeis/all`, {
-    })
+    request("GET", `/api/imeis/all`, {})
       .then((response) => {
         setListImeiCurrent(response.data.data);
         console.log(response.data.data);
@@ -100,7 +104,7 @@ const ManagementProductItems = (
       .catch((error) => {
         console.error(error);
       });
-  }
+  };
 
   // useEffect(() => {
   //   setProducts(productItems);
@@ -157,16 +161,15 @@ const ManagementProductItems = (
     getAllImei();
   }, []);
 
-  // useEffect(() => {
-  //   if (imeis.length > 0) {
-  //     handleAddImei(imeis);
-  //   }
-  // }, [imeis]);
+  useEffect(() => {
+    if (imeis.length > 0) {
+      handleAddImei(imeis);
+    }
+  }, [imeis]);
 
   const countPrice = (price, afterDiscount) => {
     return price - afterDiscount;
   };
-
 
   const handleUpdateProduct = async (price, status) => {
     setIsLoading(true);
@@ -176,24 +179,18 @@ const ManagementProductItems = (
       trangThai: status,
     };
     try {
-      await request('PUT', `/api/products`, requestBody).then(
-        async (res) => {
-          await getProductsItemById();
-          handleCloseOpenUpdateProduct();
-          handleOpenAlertVariant(
-            "Cập nhật thành công!",
-            Notistack.SUCCESS
-          );
-          setIsLoading(false);
-        }
-      )
-    }
-    catch (error) {
+      await request("PUT", `/api/products`, requestBody).then(async (res) => {
+        await getProductsItemById();
+        handleCloseOpenUpdateProduct();
+        handleOpenAlertVariant("Cập nhật thành công!", Notistack.SUCCESS);
+        setIsLoading(false);
+      });
+    } catch (error) {
       console.error(error);
       handleOpenAlertVariant(error.response.data.message, "warning");
       setIsLoading(false);
     }
-  }
+  };
 
   // const handleUpdateProduct = async (price, status) => {
   //   try {
@@ -207,90 +204,101 @@ const ManagementProductItems = (
   //   }
   // };
 
-  // const handleAddImei = async (imeis) => {
-  //   setIsLoading(true);
-  //   const requestBody = {
-  //     imeis: imeis,
-  //     id: idProduct,
-  //   };
-  //   console.log(idProduct);
-  //   try {
-  //     await request('PUT', `/api/products/imeis`, requestBody).then(
-  //       async (res) => {
-  //         await getProductsItemById();
-  //         handleOpenAlertVariant("Import IMEI thành công!", Notistack.SUCCESS);
-  //         setIsLoading(false);
-  //       }
-  //     )
-  //   }
-  //   catch (error) {
-  //     console.error(error);
-  //     handleOpenAlertVariant(error.response.data.message, "warning");
-  //     setIsLoading(false);
-  //   }
-  // }
-  // const handleImport = ($event) => {
-  //   const files = $event.target.files;
-  //   if (files.length) {
-  //     const file = files[0];
-  //     const reader = new FileReader();
-  //     reader.onload = (event) => {
-  //       const wb = read(event.target.result, { type: 'array' });
-  //       const sheet = wb.Sheets[wb.SheetNames[0]];
-  //
-  //       // const imeis = [];
-  //       const duplicateSet = new Set(); // Đối tượng Set để theo dõi giá trị trùng lặp
-  //
-  //       const range = XLSX.utils.decode_range(sheet['!ref']);
-  //       for (let row = 4; row < range.e.r; row++) {
-  //         const cellAddress = XLSX.utils.encode_cell({ r: row, c: 2 }); // Cột C
-  //         const cellValue = sheet[cellAddress] ? sheet[cellAddress].v : '';
-  //
-  //         if (cellValue !== '') {
-  //           const isNumeric = /^\d+$/.test(cellValue);
-  //           if (!isNumeric) {
-  //             setIsLoading(false);
-  //             handleOpenAlertVariant("IMEI không hợp lệ!", Notistack.ERROR);
-  //             $event.target.value = null;
-  //             return; // Kết thúc hàm nếu có giá trị trùng lặp
-  //           }
-  //           if (duplicateSet.has(cellValue)) {
-  //             setIsLoading(false);
-  //             handleOpenAlertVariant("Import thất bại, IMEI trong sheet không được trùng lặp!", Notistack.ERROR);
-  //             $event.target.value = null;
-  //             return; // Kết thúc hàm nếu có giá trị trùng lặp
-  //           }
-  //           if (listImeiCurrent.some((item) => item.soImei.toString() === cellValue.toString())) {
-  //             setIsLoading(false);
-  //             handleOpenAlertVariant("Import thất bại, IMEI đã tồn tại trong hệ thống!", Notistack.ERROR);
-  //             $event.target.value = null;
-  //             return; // Kết thúc hàm nếu có giá trị trùng lặp
-  //           }
-  //           duplicateSet.add(cellValue); // Thêm giá trị vào đối tượng Set
-  //
-  //           const newImeis = [
-  //             ...imeis,
-  //             { imei: cellValue, createdAt: new Date(), trangThai: StatusImei.NOT_SOLD }
-  //           ];
-  //           setImeis(newImeis);
-  //           // imeis.push({ imei: cellValue, createdAt: new Date(), trangThai: StatusImei.NOT_SOLD });
-  //         }
-  //         // else {
-  //         //   alert("null");
-  //         //   setIsLoading(false);
-  //         //   handleOpenAlertVariant("IMEI không hợp lệ!", Notistack.ERROR);
-  //         //   $event.target.value = null;
-  //         //   return; // Kết thúc hàm nếu có giá trị trùng lặp
-  //         // }
-  //       }
-  //       console.log(listImeiCurrent);
-  //       $event.target.value = null;
-  //     }
-  //     reader.readAsArrayBuffer(file);
-  //   }
-  //
-  //
-  // }
+  const handleAddImei = async (imeis) => {
+    setIsLoading(true);
+    const requestBody = {
+      imeis: imeis,
+      id: idProduct,
+    };
+    console.log(idProduct);
+    try {
+      await request("PUT", `/api/products/imeis`, requestBody).then(
+        async (res) => {
+          await getProductsItemById();
+          handleOpenAlertVariant("Import IMEI thành công!", Notistack.SUCCESS);
+          setIsLoading(false);
+        }
+      );
+    } catch (error) {
+      console.error(error);
+      handleOpenAlertVariant(error.response.data.message, "warning");
+      setIsLoading(false);
+    }
+  };
+  const handleImport = ($event) => {
+    const files = $event.target.files;
+    if (files.length) {
+      const file = files[0];
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const wb = read(event.target.result, { type: "array" });
+        const sheet = wb.Sheets[wb.SheetNames[0]];
+
+        // const imeis = [];
+        const duplicateSet = new Set(); // Đối tượng Set để theo dõi giá trị trùng lặp
+
+        const range = XLSX.utils.decode_range(sheet["!ref"]);
+        for (let row = 4; row < range.e.r; row++) {
+          const cellAddress = XLSX.utils.encode_cell({ r: row, c: 2 }); // Cột C
+          const cellValue = sheet[cellAddress] ? sheet[cellAddress].v : "";
+
+          if (cellValue !== "") {
+            const isNumeric = /^\d+$/.test(cellValue);
+            if (!isNumeric) {
+              setIsLoading(false);
+              handleOpenAlertVariant("IMEI không hợp lệ!", Notistack.ERROR);
+              $event.target.value = null;
+              return; // Kết thúc hàm nếu có giá trị trùng lặp
+            }
+            if (duplicateSet.has(cellValue)) {
+              setIsLoading(false);
+              handleOpenAlertVariant(
+                "Import thất bại, IMEI trong sheet không được trùng lặp!",
+                Notistack.ERROR
+              );
+              $event.target.value = null;
+              return; // Kết thúc hàm nếu có giá trị trùng lặp
+            }
+            if (
+              listImeiCurrent.some(
+                (item) => item.soImei.toString() === cellValue.toString()
+              )
+            ) {
+              setIsLoading(false);
+              handleOpenAlertVariant(
+                "Import thất bại, IMEI đã tồn tại trong hệ thống!",
+                Notistack.ERROR
+              );
+              $event.target.value = null;
+              return; // Kết thúc hàm nếu có giá trị trùng lặp
+            }
+            duplicateSet.add(cellValue); // Thêm giá trị vào đối tượng Set
+
+            const newImeis = [
+              ...imeis,
+              {
+                imei: cellValue,
+                createdAt: new Date(),
+                trangThai: StatusImei.NOT_SOLD,
+              },
+            ];
+            setImeis(newImeis);
+            // imeis.push({ imei: cellValue, createdAt: new Date(), trangThai: StatusImei.NOT_SOLD });
+          }
+          // else {
+          //   alert("null");
+          //   setIsLoading(false);
+          //   handleOpenAlertVariant("IMEI không hợp lệ!", Notistack.ERROR);
+          //   $event.target.value = null;
+          //   return; // Kết thúc hàm nếu có giá trị trùng lặp
+          // }
+        }
+        console.log(listImeiCurrent);
+        $event.target.value = null;
+      };
+      reader.readAsArrayBuffer(file);
+    }
+  };
 
   const columns = [
     {
@@ -503,21 +511,34 @@ const ManagementProductItems = (
         <>
           <div className="button-container">
             <Tooltip title="Cập nhật" TransitionComponent={Zoom}>
-              <IconButton onClick={() => {
-                setOpenUpdateProduct(true); setRefreshUpdate([]);
-                setPriceProduct(record.donGia); setStatusProduct(record.trangThai); setIdProduct(record.id);
-              }} size="" className="me-2">
+              <IconButton
+                onClick={() => {
+                  setOpenUpdateProduct(true);
+                  setRefreshUpdate([]);
+                  setPriceProduct(record.donGia);
+                  setStatusProduct(record.trangThai);
+                  setIdProduct(record.id);
+                }}
+                size=""
+                className="me-2"
+              >
                 <FaPencilAlt color="#2f80ed" />
               </IconButton>
             </Tooltip>
             <Tooltip title="Import IMEI" TransitionComponent={Zoom}>
-              <IconButton onClick={handleUploadClick}
-                className="me-2">
+              <IconButton onClick={handleUploadClick} className="me-2">
                 <FaUpload color="#2f80ed" />
-                <input style={{ display: "none" }} ref={inputRef} type="file" name="file" className="custom-file-input" id="inputGroupFile" required onChange={() => {
-                  /* handleImport */
-                }}
-                  accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
+                <input
+                  style={{ display: "none" }}
+                  ref={inputRef}
+                  type="file"
+                  name="file"
+                  className="custom-file-input"
+                  id="inputGroupFile"
+                  required
+                  onChange={handleImport}
+                  accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                />
               </IconButton>
             </Tooltip>
           </div>
@@ -536,7 +557,7 @@ const ManagementProductItems = (
       >
         <Card className="">
           <Card.Header className="d-flex justify-content-between">
-            <div className="header-title mt-2">
+            {/* <div className="header-title mt-2">
               <TextField
                 label="Tìm theo mã, tên, số lượng tồn hoặc đơn giá"
                 // onChange={handleGetValueFromInputTextField}
@@ -596,9 +617,9 @@ const ManagementProductItems = (
                   Cật Nhật Ảnh
                 </span>
               </Button>
-            </div>
+            </div> */}
           </Card.Header>
-          <div className="d-flex mt-4 mx-auto">
+          {/* <div className="d-flex mt-4 mx-auto">
             <div
               className="d-flex ms-3"
               style={{
@@ -941,14 +962,14 @@ const ManagementProductItems = (
                 </Select>
               </FormControl>
             </div>
-          </div>
+          </div> */}
           <Card.Body>
             <OrderTable />
           </Card.Body>
           <div className="mx-auto">
             <Pagination
               color="primary" /* page={parseInt(currentPage)} key={refreshPage} count={totalPages} */
-            // onChange={handlePageChange}
+              // onChange={handlePageChange}
             />
           </div>
           <div className="mt-4"></div>
@@ -957,8 +978,12 @@ const ManagementProductItems = (
       {isLoading && <LoadingIndicator />}
 
       <ModalUpdateProduct
-        priceProduct={priceProduct} statusProduct={statusProduct}
-        open={openUpdateProduct} close={handleCloseOpenUpdateProduct} update={handleUpdateProduct} />
+        priceProduct={priceProduct}
+        statusProduct={statusProduct}
+        open={openUpdateProduct}
+        close={handleCloseOpenUpdateProduct}
+        update={handleUpdateProduct}
+      />
 
       <ImportAndExportExcelImei
         open={openModalImel}
@@ -967,7 +992,6 @@ const ManagementProductItems = (
         productName={productName}
         view={false}
       />
-
     </>
   );
 };
