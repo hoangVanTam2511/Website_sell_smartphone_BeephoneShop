@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,6 +15,8 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -27,13 +30,17 @@ public class GioHangChiTiet extends PrimaryEntity implements Serializable {
 
   private BigDecimal donGia;
 
-  @JsonIgnore
+  @OneToMany(mappedBy = "gioHangChiTiet")
+  private Set<ImeiChuaBan> imeisChuaBan;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_gio_hang")
+  @JsonIgnore
   private GioHang gioHang;
 
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "id_chi_tiet_san_pham")
+  @JsonIgnore
   private SanPhamChiTiet sanPhamChiTiet;
 
 }

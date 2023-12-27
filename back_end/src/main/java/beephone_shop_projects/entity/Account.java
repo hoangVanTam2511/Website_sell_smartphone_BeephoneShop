@@ -2,6 +2,9 @@ package beephone_shop_projects.entity;
 
 import beephone_shop_projects.entity.base.IsIdentified;
 import beephone_shop_projects.entity.base.PrimaryEntity;
+import beephone_shop_projects.infrastructure.constant.StatusAccountCus;
+import beephone_shop_projects.infrastructure.constant.StatusDiscount;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +14,7 @@ import lombok.Setter;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -25,36 +29,32 @@ public class Account extends PrimaryEntity implements IsIdentified {
 
     private String hoVaTen;
 
+//    @Column(unique = true)
     private String email;
 
     @Temporal(TemporalType.DATE)
     private Date ngaySinh;
 
-    private String diaChi;
-
     private String matKhau;
 
     private String soDienThoai;
-
-    private String xaPhuong;
-
-    private String quanHuyen;
-
-    private String tinhThanhPho;
 
     private Boolean gioiTinh;
 
     private String anhDaiDien;
 
+    @Column(unique = true)
     private String canCuocCongDan;
 
-    private Integer trangThai;
+    @Enumerated(EnumType.ORDINAL)
+    private StatusAccountCus trangThai;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_role")
+    @JsonIgnore
     private Role idRole;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "account")
-    private List<DiaChi> diaChiList;
+    private Set<DiaChi> diaChiList;
 
 }

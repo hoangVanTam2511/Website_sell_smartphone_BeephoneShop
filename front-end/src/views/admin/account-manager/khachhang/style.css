@@ -1,0 +1,86 @@
+.txt-danger {
+  color: #e5383b;
+}
+.badge-success {
+  background-color: #09a129;
+}
+.badge-warning {
+  background-color: #ffd500;
+}
+.badge-primary {
+  background-color: #2f80ed;
+}
+.badge-danger {
+  background-color: #e5383b;
+}
+
+.ant-btn-warning {
+  background-color: #ffd500 !important;
+  color: black;
+  border: 1px solid #ffd500 !important;
+  height: 40px;
+  font-weight: 500;
+}
+.ant-btn-warning:hover {
+  background-color: #ffe249 !important;
+  color: black !important;
+  border: 1px solid #ffe249 !important;
+  height: 40px;
+  font-weight: 500;
+}
+.ant-btn-danger {
+  background-color: #e5383b !important;
+  color: white;
+  border: 1px solid #e5383b !important;
+  height: 40px;
+  font-weight: 500;
+}
+.ant-btn-danger:hover {
+  background-color: #ee6055 !important;
+  color: white !important;
+  border: 1px solid #ee6055 !important;
+  height: 40px;
+  font-weight: 500;
+}
+.button-mui {
+  border: 1px solid #2f80ed;
+  background-color: #2f80ed;
+  color: white;
+  height: 40px;
+  font-weight: 500;
+}
+.mui-select:hover {
+  background-color: #f8f8f8;
+  transition: all 0.2s linear;
+}
+.mui-select {
+  cursor: pointer;
+  transition: all 0.2s linear;
+  border-radius: 10px;
+  padding: 0 8px 0 8px;
+}
+* {
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+}
+.ant-table-thead .ant-table-cell {
+  font-weight: 450 !important;
+  font-size: 14.5px !important;
+}
+
+.ant-table-row {
+  font-size: 16px !important;
+  height: 70px !important;
+}
+
+tr:hover {
+  background: #f0f0f0 !important;
+}
+
+.ant-table-tbody > tr.ant-table-row:hover > td {
+  background: #f0f0f0 !important;
+}
+.don-hang {
+  border: "1px solid #e2e2e2";
+  border-radius: "10px";
+}

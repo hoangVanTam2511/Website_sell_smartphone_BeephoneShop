@@ -1,141 +1,610 @@
-import React, { Fragment, useState, useEffect } from "react";
-import { styled } from '@mui/material/styles';
+import React, { useState, useEffect, useRef } from "react";
+import { styled } from "@mui/material/styles";
 import { Row, Col } from "react-bootstrap";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { Button, Input, Select, Table } from "antd";
+import {
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
+import { Button, Empty, Table } from "antd";
 import axios from "axios";
-import { FaTruck, FaRegCalendarCheck, FaRegFileAlt } from "react-icons/fa";
-import { MdCancelPresentation } from "react-icons/md";
-import { Table as TableMui } from '@mui/material';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import EditIcon from '@mui/icons-material/Edit';
 import {
-  Dialog,
-  Select as SelectMui,
-  IconButton,
-  Slide,
-  Button as MuiButton,
-  TextField,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  FormHelperText,
-  CardActionArea,
-  CardMedia,
-  CardContent,
-  Typography,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-} from "@mui/material";
+  FaTruck,
+  FaRegCalendarCheck,
+  FaRegFileAlt,
+  FaRegCalendarTimes,
+  FaBusinessTime,
+  FaPencilAlt,
+} from "react-icons/fa";
+import { FaArrowRotateLeft, FaArrowsRotate } from "react-icons/fa6";
+import { Tooltip, Zoom } from "@mui/material";
+import LoadingIndicator from "../../../utilities/loading";
 import Card from "../../../components/Card";
-import {
-  DeleteFilled,
-  DeleteOutlined,
-  DeleteRowOutlined,
-  DeleteTwoTone,
-  EditFilled,
-  PlusOutlined,
-} from "@ant-design/icons";
 import styleCss from "./style.css";
 import { format } from "date-fns";
 import { Timeline, TimelineEvent } from "@mailtop/horizontal-timeline";
-import { useTheme } from "@mui/material/styles";
-import OutlinedInput from "@mui/material/OutlinedInput";
+import Box from "@mui/joy/Box";
+import Alert from "@mui/joy/Alert";
 import {
   UpdateRecipientOrderDialog,
   PaymentDialog,
-  ConfirmOrderDialog,
-  ConfirmDeliveryOrderDialog,
-  ConfirmFinishOrderDialog,
   OrderHistoryDialog,
-  ConfirmCancelOrderDialog,
   ConfirmDialog,
+  MultiplePaymentMethodsDelivery,
+  ProductsDialog,
+  ModalUpdateImeiByProductItem,
+  ModalRefundProduct,
+  ScannerBarcode,
+  ModalViewImeiHadBuy,
+  ConfirmRollbackStatusOrder,
+  ConfirmRollBack,
 } from "./AlertDialogSlide.js";
-import list from "./data";
-import useFormItemStatus from "antd/es/form/hooks/useFormItemStatus";
-import LocalShippingOutlined from "@mui/icons-material/LocalShippingOutlined";
+import {
+  OrderStatusString,
+  OrderTypeString,
+  Notistack,
+  StatusImei,
+} from "./enum";
+import useCustomSnackbar from "../../../utilities/notistack";
+import { add } from "lodash";
+import { FaMoneyBillTransfer, FaMoneyCheckDollar } from "react-icons/fa6";
+import InputNumberAmount from "./input-number-amount-product";
+import { over } from "stompjs";
+import SockJS from "sockjs-client";
+import PrinterInvoice, { Print, PrintDelivery } from "./printer-invoice";
+import { useSelector } from "react-redux";
+import { request } from "../../../store/helpers/axios_helper";
+import { getUser } from "../../../store/user/userSlice";
 
-const OrderDetail = () => {
-  const [isDone, setIsDone] = useState(false);
+var stompClient = null;
+const OrderDetail = (props) => {
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const [vouchersActive, setVouchersActive] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isRefund, setIsRefund] = useState(false);
   const [order, setOrder] = useState({});
   const [orderHistories, setOrderHistories] = useState([]);
   const [status, setStatus] = useState();
   const [paymentHistorys, setPaymentHistorys] = useState([]);
+  const [orderItems, setOrderItems] = useState([]);
+  const [codeDiscount, setCodeDiscount] = useState("");
+  const [orderItemRefund, setOrderItemRefund] = useState([]);
   const { id } = useParams();
+  const { handleOpenAlertVariant } = useCustomSnackbar();
+  const [addressDefault, setAddressDefault] = useState("");
 
-  const getOrderById = () => {
-    axios
-      .get(`http://localhost:8080/api/orders/${id}`)
+  const [customerName, setCustomerName] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
+  const [customerAddress, setCustomerAddress] = useState("");
+  const [customerNote, setCustomerNote] = useState("");
+  const [customerProvince, setCustomerProvince] = useState("");
+  const [customerDistrict, setCustomerDistrict] = useState("");
+  const [customerWard, setCustomerWard] = useState("");
+  const [size, setSize] = useState();
+
+  const [openOrder, setOpenOrder] = useState(false);
+
+  const handleCloseOpenOrder = () => {
+    setOpenOrder(false);
+  };
+
+  const handleOpenOrder = () => {
+    setOpenOrder(true);
+  };
+
+  const [openPayment, setOpenPayment] = useState(false);
+  const [openScanner, setOpenScanner] = useState(false);
+  const [scannerRef, setScannerRef] = useState([]);
+
+  const userId = getUser().id;
+
+  const totalDiscount = (tongTien, tongTienSauKhiGiam) => {
+    return tongTien - tongTienSauKhiGiam;
+  };
+
+  const handleOpenScanner = () => {
+    setOpenScanner(true);
+  };
+
+  const handleCloseOpenScanner = () => {
+    setOpenScanner(false);
+  };
+  const filteredItems = orderHistories.filter((item) =>
+    [1, 3, 4].includes(item.loaiThaoTac)
+  );
+
+  const getVouchersIsActiveAll = () => {
+    request("GET", `/voucher/voucherActive/all`, {})
       .then((response) => {
-        setOrder(response.data);
+        setVouchersActive(response.data.data);
       })
       .catch((error) => {
         console.error(error);
       });
-  }
+  };
+  const largestItem =
+    filteredItems &&
+    filteredItems.sort((a, b) => b.loaiThaoTac - a.loaiThaoTac)[0];
 
-  const getPaymentMethodsById = () => {
-    axios
-      .get(`http://localhost:8080/api/payments/${id}`)
-      .then((response) => {
-        setPaymentHistorys(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }
-  const getOrderHisoriesByOrderId = () => {
-    axios
-      .get(`http://localhost:8080/api/orders/${id}/orderHistory`)
-      .then((response) => {
-        setOrderHistories(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }
+  const getStatusToRollBack = () => {
+    return order.trangThai === OrderStatusString.CONFIRMED
+      ? "Chờ xác nhận"
+      : order.trangThai === OrderStatusString.DELIVERING
+      ? "Chờ giao hàng"
+      : order.trangThai === OrderStatusString.SUCCESS_DELIVERY
+      ? "Đang giao hàng"
+      : "";
+  };
 
-  useEffect(() => {
-    getOrderById();
-    getOrderHisoriesByOrderId();
-    getPaymentMethodsById();
-  }, []);
+  const checkImeisDaBan = () => {
+    return orderItems.some((item) => item.imeisDaBan.length === 0);
+  };
 
-  const IconTrash = () => {
-    return (
-      <>
-        <svg fill="none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-          <path fill-rule="evenodd" clip-rule="evenodd" d="M20.2871 5.24297C20.6761 5.24297 21 5.56596 21 5.97696V6.35696C21 6.75795 20.6761 7.09095 20.2871 7.09095H3.71385C3.32386 7.09095 3 6.75795 3 6.35696V5.97696C3 5.56596 3.32386 5.24297 3.71385 5.24297H6.62957C7.22185 5.24297 7.7373 4.82197 7.87054 4.22798L8.02323 3.54598C8.26054 2.61699 9.0415 2 9.93527 2H14.0647C14.9488 2 15.7385 2.61699 15.967 3.49699L16.1304 4.22698C16.2627 4.82197 16.7781 5.24297 17.3714 5.24297H20.2871ZM18.8058 19.134C19.1102 16.2971 19.6432 9.55712 19.6432 9.48913C19.6626 9.28313 19.5955 9.08813 19.4623 8.93113C19.3193 8.78413 19.1384 8.69713 18.9391 8.69713H5.06852C4.86818 8.69713 4.67756 8.78413 4.54529 8.93113C4.41108 9.08813 4.34494 9.28313 4.35467 9.48913C4.35646 9.50162 4.37558 9.73903 4.40755 10.1359C4.54958 11.8992 4.94517 16.8102 5.20079 19.134C5.38168 20.846 6.50498 21.922 8.13206 21.961C9.38763 21.99 10.6811 22 12.0038 22C13.2496 22 14.5149 21.99 15.8094 21.961C17.4929 21.932 18.6152 20.875 18.8058 19.134Z" fill="currentColor" />
-        </svg>
-      </>
-    )
-  }
-
-  const updateOrder = async (orderStatus, orderHistory) => {
-    const updateData = {
-      orderStatus: orderStatus,
-      orderHistory: orderHistory,
-      orderDto: null,
+  const updateInfoOrderDelivery = async (
+    name,
+    phone,
+    address,
+    province,
+    district,
+    ward,
+    note,
+    ship
+  ) => {
+    setIsLoading(true);
+    const data = {
+      id: id,
+      tenNguoiNhan: name,
+      soDienThoaiNguoiNhan: phone,
+      diaChiNguoiNhan: address,
+      tinhThanhPhoNguoiNhan: province,
+      quanHuyenNguoiNhan: district,
+      xaPhuongNguoiNhan: ward,
+      phiShip: ship,
+      ghiChu: note,
+      createdBy: userId,
     };
     try {
-      await axios.put(`http://localhost:8080/api/orders/${id}`, updateData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        params: {
-          isPending: false,
+      await request("PUT", `/api/orders/update-info-delivery`, data).then(
+        async (response) => {
+          await getOrderItemsById();
+          handleOpenAlertVariant(
+            "Cập nhật thông tin đơn hàng thành công ",
+            Notistack.SUCCESS
+          );
+          handleCloseDialogUpdateRecipientOrder();
+          setIsLoading(false);
         }
+      );
+    } catch (error) {
+      handleOpenAlertVariant(error.response.data.message, "warning");
+      setIsLoading(false);
+    }
+  };
+
+  const rollBackStatus = async (note) => {
+    setIsLoading(true);
+    const data = {
+      id: id,
+      orderHistory: largestItem,
+      statusOrder: getStatusToRollBack(),
+      note: note,
+      createdBy: userId,
+    };
+    try {
+      await request("PUT", `/api/orders/roll-back-status`, data).then(
+        async (response) => {
+          await getOrderItemsById();
+          handleOpenAlertVariant("Hoàn tác thành công ", Notistack.SUCCESS);
+          handleCloseOpenRollback();
+          setIsLoading(false);
+        }
+      );
+    } catch (error) {
+      handleOpenAlertVariant(error.response.data.message, "warning");
+      setIsLoading(false);
+    }
+  };
+
+  const addProductToOrderByScanner = async (imei) => {
+    setIsLoading(true);
+    const data = {
+      amount: 1,
+      order: {
+        id: order.id,
+      },
+      imei: imei,
+    };
+    try {
+      await request("PUT", `/api/carts/order/scanner`, data).then(
+        async (response) => {
+          await getOrderItemsById();
+          handleCloseOpenScanner();
+          handleOpenAlertVariant(
+            "Thêm sản phẩm thành công ",
+            Notistack.SUCCESS
+          );
+          setIsLoading(false);
+        }
+      );
+    } catch (error) {
+      handleOpenAlertVariant(error.response.data.message, "warning");
+      handleCloseOpenScanner();
+      setIsLoading(false);
+    }
+  };
+
+  const [customers, setCustomers] = useState([]);
+
+  const getCustomers = () => {
+    axios
+      .get(`http://localhost:8080/nhan-vien/all/no-page`)
+      .then((response) => {
+        setCustomers(response.data.data);
+      })
+      .catch((error) => {
+        console.error("Error");
       });
-      getOrderById();
-      getOrderHisoriesByOrderId();
-    } catch (error) { }
+  };
+
+  //connnect
+  const connect = () => {
+    let Sock = new SockJS("http://localhost:8080/ws");
+    stompClient = over(Sock);
+    stompClient.connect({}, onConnected, onError);
+  };
+
+  const onConnected = () => {
+    stompClient.subscribe("/bill/bills", onMessageReceived);
+  };
+
+  const onMessageReceived = (payload) => {
+    var payloadData = JSON.parse(payload.body);
+  };
+
+  const onError = (err) => {
+    console.log(err);
+  };
+
+  const handleCloseOpenPayment = () => {
+    setOpenPayment(false);
+  };
+  const [products, setProducts] = useState([]);
+  const [openProducts, setOpenProducts] = useState(false);
+  const handleCloseOpenProducts = () => {
+    setIsOpen(false);
+    setOpenProducts(false);
+  };
+  const [openModalImei, setOpenModalImei] = useState(false);
+  const handleOpenModalImei = () => {
+    setOpenModalImei(true);
+  };
+  const handleCloseOpenModalImei = () => {
+    setOpenModalImei(false);
+  };
+  const getAllProducts = async () => {
+    request("GET", `/api/products/product-items`)
+      .then((response) => {
+        setProducts(response.data.data);
+      })
+      .catch((error) => {
+        console.error("Error");
+      });
+  };
+  const [openModalUpdateImei, setOpenModalUpdateImei] = useState(false);
+  const handleOpenModalUpdateImei = () => {
+    setOpenModalUpdateImei(true);
+  };
+  const handleCloseOpenModalUpdateImei = () => {
+    setOpenModalUpdateImei(false);
+  };
+  const [idOrderItem, setIdOrderItem] = useState("");
+  const [orderItem, setOrderItem] = useState({});
+  const [itemImg, setItemImg] = useState("");
+  const [itemPrice, setItemPrice] = useState("");
+  const [itemName, setItemName] = useState("");
+  const [imeis, setImeis] = useState([]);
+  const [selectedImei, setSelectedImei] = useState([]);
+  const [selectedImeiRefresh, setSelectedImeiRefresh] = useState([]);
+
+  const [openViewImei, setOpenViewImei] = useState(false);
+  const [viewImeis, setViewImeis] = useState([]);
+
+  const handleCloseOpenViewImei = () => {
+    setOpenViewImei(false);
+  };
+
+  const [openModalRefund, setOpenModalRefund] = useState(false);
+
+  const handleCloseOpenModalRefund = () => {
+    setOpenModalRefund(false);
+  };
+
+  const totalAmountProduct = () => {
+    let totalAmount = 0;
+    orderItems &&
+      orderItems.map((item) => {
+        totalAmount += item.soLuong;
+      });
+    return totalAmount;
+  };
+
+  const filteredData =
+    selectedImei &&
+    selectedImei.filter((item) => item.trangThai !== StatusImei.REFUND);
+
+  const addCartItemsToCartOrder = async (cartItems) => {
+    setIsLoading(true);
+    const data = {
+      amount: cartItems.amount,
+      price: cartItems.price,
+      order: {
+        id: cartItems.orderId,
+      },
+      productItem: {
+        id: cartItems.productId,
+      },
+      imeis: cartItems.imeis,
+    };
+    try {
+      await request("PUT", `/api/carts/order`, data).then(async (response) => {
+        await getOrderItemsById();
+        handleCloseOpenModalImei();
+        handleCloseOpenProducts();
+        handleOpenAlertVariant("Thêm sản phẩm thành công ", Notistack.SUCCESS);
+        setIsLoading(false);
+        setIsOpen(false);
+      });
+    } catch (error) {
+      handleOpenAlertVariant(error.response.data.message, "warning");
+      setIsLoading(false);
+      // setIsOpen(false);
+    }
+  };
+  const handleAddProductToCartOrder = (price, id, imeis) => {
+    const amount = imeis && imeis.length;
+    const cartItems = {
+      amount: amount,
+      price: price,
+      orderId: order.id,
+      productId: id,
+      imeis: imeis,
+    };
+    if (imeis.length > 0) {
+      addCartItemsToCartOrder(cartItems);
+    }
+  };
+
+  const handleDeleteCartItemOrderById = async (id) => {
+    setIsLoading(true);
+    try {
+      await request("DELETE", `/api/carts/order/${id}`).then(
+        async (response) => {
+          await getOrderItemsById();
+          setIsLoading(false);
+          handleOpenAlertVariant(
+            "Xóa thành công sản phẩm khỏi giỏ hàng!",
+            Notistack.SUCCESS
+          );
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleUpdateAmountCartItemOrder = async (imeis) => {
+    setIsLoading(true);
+    const requestBody = {
+      id: idOrderItem,
+      amount: imeis && imeis.length,
+      imeis: imeis,
+      order: {
+        id: order.id,
+      },
+    };
+    try {
+      await request("PUT", `/api/carts/order/amount`, requestBody).then(
+        async (response) => {
+          await getOrderItemsById();
+          handleCloseOpenModalUpdateImei();
+          handleCloseOpenOrder();
+          handleOpenAlertVariant(
+            "Cập nhật số lượng thành công!",
+            Notistack.SUCCESS
+          );
+          setIsLoading(false);
+        }
+      );
+    } catch (error) {
+      setIsLoading(false);
+      handleOpenAlertVariant(error.response.data.message, "warning");
+      console.error("Error");
+    }
+  };
+
+  const [total, setTotal] = useState(0);
+
+  const getOrderItemsById = async () => {
+    setIsLoading(true);
+    await request("GET", `/api/orders/${id}`)
+      .then((response) => {
+        const data = response.data.data;
+        setOrder(data);
+        const sortOrderHistories =
+          data.orderHistories &&
+          data.orderHistories.sort(
+            (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+          );
+        setOrderHistories(sortOrderHistories);
+        const sortPayments =
+          data.paymentMethods &&
+          data.paymentMethods.sort(
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+          );
+        setPaymentHistorys(sortPayments);
+        setOrderItems(data.orderItems);
+
+        const address =
+          data &&
+          data.account &&
+          data.account.diaChiList &&
+          data.account.diaChiList.find((item) => item.trangThai === 1);
+        const getAddressDefault =
+          address &&
+          address.diaChi +
+            ", " +
+            address.xaPhuong +
+            ", " +
+            address.quanHuyen +
+            ", " +
+            address.tinhThanhPho;
+        setAddressDefault(getAddressDefault);
+
+        if (data.loaiHoaDon === OrderTypeString.DELIVERY) {
+          setCustomerName(data.tenNguoiNhan === null ? "" : data.tenNguoiNhan);
+          setCustomerPhone(
+            data.soDienThoaiNguoiNhan === null ? "" : data.soDienThoaiNguoiNhan
+          );
+          setCustomerAddress(
+            data.diaChiNguoiNhan === null ? "" : data.diaChiNguoiNhan
+          );
+          setCustomerDistrict(
+            data.quanHuyenNguoiNhan === null ? "" : data.quanHuyenNguoiNhan
+          );
+          setCustomerProvince(
+            data.tinhThanhPhoNguoiNhan === null
+              ? ""
+              : data.tinhThanhPhoNguoiNhan
+          );
+          setCustomerWard(
+            data.xaPhuongNguoiNhan === null ? "" : data.xaPhuongNguoiNhan
+          );
+          setCustomerNote(data.ghiChu === null ? "" : data.ghiChu);
+        }
+
+        const tongTien = (data && data.tongTien) || 0;
+        const discount =
+          (data && data.voucher && data.voucher.giaTriVoucher) || 0;
+        const phiShip = (data && data.phiShip) || 0;
+        setTotal(tongTien - discount + phiShip);
+
+        if (data.trangThai === OrderStatusString.HAD_PAID) {
+        }
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error(error);
+        setIsLoading(false);
+      });
+  };
+  const orderItemsSort = orderItems.sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  );
+
+  const orderImeis = orderItems.map((order) => {
+    return order.imeisDaBan.map((item) => {
+      return {
+        ...order,
+        soLuong: 1,
+        imei: item,
+        trangThai: StatusImei.SOLD,
+      };
+    });
+  });
+
+  useEffect(() => {
+    getOrderItemsById();
+    // getAllProducts();
+    getCustomers();
+    getVouchersIsActiveAll();
+    if (stompClient === null) {
+      connect();
+    }
+  }, []);
+
+  const [maxAmount, setMaxAmount] = useState(0);
+
+  const totalItem = (amount, price) => {
+    return amount * price;
+  };
+
+  const countPrice = (price, afterDiscount) => {
+    return price - afterDiscount;
+  };
+
+  const totalOrder = (total, discount, feeShip) => {
+    return total - discount + feeShip;
+  };
+
+  const updateStatusOrderDelivery = async (orderRequest) => {
+    setIsLoading(true);
+    try {
+      await request(
+        "PUT",
+        `/api/orders/${id}?isUpdateStatusOrderDelivery=true`,
+        orderRequest
+      ).then(async (response) => {
+        await getOrderItemsById();
+        var test = {
+          name: "test2" + Math.random(),
+        };
+        if (stompClient) {
+          stompClient.send("/app/bills", {}, JSON.stringify(test));
+        }
+        setIsLoading(false);
+        setOpenCommon(false);
+        handleOpenAlertVariant("Xác nhận thành công", "success");
+      });
+    } catch (error) {
+      const message = error.response.data.message;
+      setIsLoading(false);
+      handleOpenAlertVariant(message, Notistack.ERROR);
+      console.log(error.response.data);
+    }
+  };
+
+  const handlePaymentOrder = async (type, total) => {
+    setIsLoading(true);
+    const orderRequest = {
+      tienKhachTra: total,
+      id: id,
+      hinhThucThanhToan:
+        type === "Chuyển khoản" ? "Chuyển khoản thường" : "Tiền mặt",
+      hoanTien: isRefund === true ? "Hoàn tiền" : "",
+      createdByPayment: userId,
+    };
+    try {
+      await request("PUT", `/api/vnpay/payment/delivery`, orderRequest).then(
+        (response) => {
+          const order = response.data.data;
+          setOrder(order);
+          setPaymentHistorys(order.paymentMethods);
+          handleCloseOpenPayment();
+          var test = {
+            name: "test3",
+          };
+          if (stompClient) {
+            stompClient.send("/app/bills", {}, JSON.stringify(test));
+          }
+          handleOpenAlertVariant(
+            "Xác nhận thanh toán thành công",
+            Notistack.SUCCESS
+          );
+          setIsRefund(false);
+          setIsLoading(false);
+        }
+      );
+    } catch (error) {
+      const message = error.response.data.message;
+      setIsLoading(false);
+      setIsRefund(false);
+      handleOpenAlertVariant(message, Notistack.ERROR);
+      console.log(error.response.data);
+    }
   };
 
   const soTienThanhToan = 15000000;
@@ -153,35 +622,128 @@ const OrderDetail = () => {
       return [...p, newPayment];
     });
   };
+  {
+    /*
+    item.loaiThaoTac == 2 ? (
+              <>
+                <FaMoneyCheckDollar
+                  color="#ffd500"
+                  size={"40px"}
+                  style={{ marginBottom: "5px" }}
+                />
+                <span className="ms-4">{item.thaoTac}</span>
+              </>
+            ) : */
+  }
   const columnsTableOrderHistories = [
     {
-      title: "",
-      align: "center",
-      width: "15%",
-      dataIndex: "loaiThaoTac",
-      render: (text, record) => (
-        <span style={{ fontWeight: "550" }}>{
-          record.loaiThaoTac == 0
-            ? FaRegFileAlt
-            : record.loaiThaoTac == 1
-              ? FaRegFileAlt
-              : record.loaiThaoTac == 2
-                ? FaTruck
-                : record.loaiThaoTac == 3
-                  ? FaRegCalendarCheck
-                  : record.loaiThaoTac == 4
-                    ? MdCancelPresentation
-                    : record.loaiThaoTac == 5
-                      ? MdCancelPresentation
-                      : ""
-        }</span>
-      ),
-    },
-    {
-      title: "Thao Tác",
-      align: "center",
-      dataIndex: "thaoTac",
       width: "10%",
+      dataIndex: "loaiThaoTac",
+      render: (text, item) => (
+        <div className="ms-5">
+          <span className="text-center" style={{ fontWeight: "" }}>
+            {item.loaiThaoTac == 0 ? (
+              <>
+                <FaRegFileAlt
+                  color="#09a129"
+                  size={"40px"}
+                  style={{ marginBottom: "5px" }}
+                />
+                <span className="ms-4">{item.thaoTac}</span>
+              </>
+            ) : item.loaiThaoTac == 1 ? (
+              <>
+                <FaMoneyCheckDollar
+                  color="#09a129"
+                  size={"40px"}
+                  style={{ marginBottom: "5px" }}
+                />
+                <span className="ms-4">{item.thaoTac}</span>
+              </>
+            ) : item.loaiThaoTac == 3 ? (
+              <>
+                <FaTruck
+                  color="#09a129"
+                  size={"40px"}
+                  style={{ marginBottom: "5px" }}
+                />
+                <span className="ms-4">{item.thaoTac}</span>
+              </>
+            ) : item.loaiThaoTac == 4 ? (
+              <>
+                <FaRegCalendarCheck
+                  color="#09a129"
+                  size={"40px"}
+                  style={{ marginBottom: "5px" }}
+                />
+                <span className="ms-4">{item.thaoTac}</span>
+              </>
+            ) : item.loaiThaoTac == 5 ? (
+              <>
+                <FaRegCalendarTimes
+                  color="#e5383b"
+                  size={"40px"}
+                  style={{ marginBottom: "5px" }}
+                />
+                <span className="ms-4">{item.thaoTac}</span>
+              </>
+            ) : item.loaiThaoTac == 6 ? (
+              <>
+                <FaRegCalendarCheck
+                  color="#09a129"
+                  size={"40px"}
+                  style={{ marginBottom: "5px" }}
+                />
+                <span className="ms-4">{item.thaoTac}</span>
+              </>
+            ) : item.loaiThaoTac == 7 ? (
+              <>
+                <FaArrowsRotate
+                  color="#e5383b"
+                  size={"40px"}
+                  style={{ marginBottom: "5px" }}
+                />
+                <span className="ms-4">{item.thaoTac}</span>
+              </>
+            ) : item.loaiThaoTac == 8 ? (
+              <>
+                <FaArrowRotateLeft
+                  color="#e5383b"
+                  size={"40px"}
+                  style={{ marginBottom: "5px" }}
+                />
+                <span className="ms-4">{item.thaoTac}</span>
+              </>
+            ) : item.loaiThaoTac == 9 ? (
+              <>
+                <div className="d-flex" style={{ marginBottom: "5px" }}>
+                  <div
+                    className=""
+                    style={{
+                      backgroundColor: "#ffd500",
+                      width: "40px",
+                      height: "35px",
+                      borderRadius: "5px",
+                      position: "relative",
+                    }}
+                  >
+                    <div
+                      style={{ position: "absolute", left: "9px", top: "4px" }}
+                    >
+                      <FaPencilAlt color="#ffffff" size={"22px"} />
+                    </div>
+                  </div>
+                  <span style={{ marginTop: "5px" }} className="ms-4">
+                    {item.thaoTac}
+                  </span>
+                </div>
+              </>
+            ) : (
+              ""
+            )}
+          </span>
+        </div>
+      ),
     },
     {
       title: "Thời Gian",
@@ -197,27 +759,43 @@ const OrderDetail = () => {
     {
       title: "Người Xác Nhận",
       align: "center",
-      dataIndex: "nguoiXacNhan",
-      width: "10%",
+      width: "25%",
       render: (text, record) => (
-        <span style={{ fontWeight: "550" }}>Admin</span>
+        <span
+          style={{ fontWeight: "500", cursor: "pointer" }}
+          className="underline-custom"
+        >
+          {customers.find((item) => item.id === record.createdBy)?.hoVaTen}
+        </span>
       ),
     },
     {
       title: "Ghi Chú",
       align: "center",
-      width: "15%",
+      width: "65%",
       dataIndex: "moTa",
+      render: (text, record) => (
+        <span style={{ fontWeight: "400", whiteSpace: "pre-line" }}>
+          {record.moTa}
+        </span>
+      ),
     },
   ];
   const columns = [
     {
-      title: "Mã Giao Dịch",
+      title: "Số Tiền",
       align: "center",
+      dataIndex: "soTienThanhToan",
       width: "15%",
-      dataIndex: "ma",
       render: (text, record) => (
-        <span style={{ fontWeight: "550" }}>{record.ma}</span>
+        <span className="txt-danger" style={{ fontSize: "17px" }}>
+          {record &&
+            record.soTienThanhToan &&
+            record.soTienThanhToan.toLocaleString("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            })}
+        </span>
       ),
     },
     {
@@ -228,29 +806,28 @@ const OrderDetail = () => {
       render: (type) =>
         type == 1 ? (
           <div
-            className="rounded-pill mx-auto"
+            className="rounded-pill mx-auto badge-danger"
             style={{
-              height: "38px",
-              width: "100px",
-              padding: "5px",
-              backgroundColor: "#26A65B",
+              height: "35px",
+              width: "120px",
+              padding: "4px",
             }}
           >
             <span
               className="text-white"
-              style={{ fontSize: "14px", fontWeight: "550" }}
+              style={{ fontSize: "14px", fontWeight: "400" }}
             >
               Hoàn tiền
             </span>
           </div>
         ) : type == 0 ? (
           <div
-            className="rounded-pill bg-primary mx-auto"
-            style={{ height: "38px", width: "100px", padding: "5px" }}
+            className="rounded-pill badge-primary mx-auto"
+            style={{ height: "35px", width: "120px", padding: "4px" }}
           >
             <span
               className="text-white"
-              style={{ fontSize: "14px", fontWeight: "550" }}
+              style={{ fontSize: "14px", fontWeight: "400" }}
             >
               Thanh toán
             </span>
@@ -265,31 +842,30 @@ const OrderDetail = () => {
       width: "10%",
       dataIndex: "hinhThucThanhToan",
       render: (text, record) =>
-        record.hinhThucThanhToan == 0 ? (
+        record.hinhThucThanhToan === 0 || record.hinhThucThanhToan === 2 ? (
           <div
-            className="rounded-pill mx-auto"
+            className="rounded-pill mx-auto badge-success"
             style={{
-              height: "38px",
-              width: "120px",
-              padding: "5px",
-              backgroundColor: "#26A65B",
+              height: "35px",
+              width: "130px",
+              padding: "4px",
             }}
           >
             <span
               className="text-white"
-              style={{ fontSize: "14px", fontWeight: "550" }}
+              style={{ fontSize: "14px", fontWeight: "400" }}
             >
               Chuyển khoản
             </span>
           </div>
         ) : record.hinhThucThanhToan == 1 ? (
           <div
-            className="rounded-pill bg-primary mx-auto"
-            style={{ height: "38px", width: "90px", padding: "5px" }}
+            className="rounded-pill badge-success mx-auto"
+            style={{ height: "35px", width: "120px", padding: "4px" }}
           >
             <span
               className="text-white"
-              style={{ fontSize: "14px", fontWeight: "550" }}
+              style={{ fontSize: "14px", fontWeight: "400" }}
             >
               Tiền mặt
             </span>
@@ -306,17 +882,16 @@ const OrderDetail = () => {
       render: (status) =>
         status == 1 ? (
           <div
-            className="rounded-pill bg-success mx-auto"
+            className="rounded-pill badge-primary mx-auto"
             style={{
-              height: "38px",
-              width: "110px",
-              padding: "5px",
-              backgroundColor: "#26A65B",
+              height: "35px",
+              width: "130px",
+              padding: "4px",
             }}
           >
             <span
               className="text-white"
-              style={{ fontSize: "14px", fontWeight: "550" }}
+              style={{ fontSize: "14px", fontWeight: "400" }}
             >
               Thành công
             </span>
@@ -328,38 +903,43 @@ const OrderDetail = () => {
     {
       title: "Thời Gian",
       align: "center",
-      width: "15%",
+      width: "10%",
       dataIndex: "createdAt",
       render: (text, record) => (
-        <span style={{ fontWeight: "normal" }}>
-          {format(new Date(record.createdAt), "HH:mm:ss - dd/MM/yyyy")}
+        <span style={{ fontWeight: "normal", whiteSpace: "pre-line" }}>
+          {format(new Date(record.createdAt), "HH:mm:ss, dd/MM/yyyy")}
         </span>
       ),
     },
     {
-      title: "Số Tiền",
+      title: "Mã Giao Dịch",
       align: "center",
-      dataIndex: "soTienThanhToan",
-      width: "10%",
+      width: "15%",
+      dataIndex: "ma",
       render: (text, record) => (
-        <span
-          className=""
-          style={{ fontSize: "17px", color: "#dc3333" }}
-        >
-          {record &&
-            record.soTienThanhToan &&
-            record.soTienThanhToan.toLocaleString("vi-VN", {
-              style: "currency",
-              currency: "VND",
-            })}
+        <span style={{ fontWeight: "500" }}>
+          {record.hinhThucThanhToan === 0 ? record.ma : "..."}
         </span>
       ),
+    },
+    {
+      title: "Ghi chú",
+      align: "center",
+      width: "15%",
+      dataIndex: "ghiChu",
     },
     {
       title: "Người Xác Nhận",
       align: "center",
       width: "15%",
-      dataIndex: "nguoiXacNhan",
+      render: (text, record) => (
+        <span
+          style={{ fontWeight: "500", cursor: "pointer" }}
+          className="underline-custom"
+        >
+          {customers.find((item) => item.id === record.createdBy)?.hoVaTen}
+        </span>
+      ),
     },
   ];
   const EmptyData = () => {
@@ -374,10 +954,12 @@ const OrderDetail = () => {
     );
   };
 
-  const [openDialogUpdateRecipientOrder, setOpenDialogUpdateRecipientOrder] = useState(false);
+  const [openDialogUpdateRecipientOrder, setOpenDialogUpdateRecipientOrder] =
+    useState(false);
   const [openCommon, setOpenCommon] = useState(false);
   const [openDialogPayment, setOpenDialogPayment] = useState(false);
-  const [openDialogDetailOrderHistories, setOpenDialogDetailOrderHistories] = useState(false);
+  const [openDialogDetailOrderHistories, setOpenDialogDetailOrderHistories] =
+    useState(false);
 
   const handleCloseNoActionCommon = () => {
     setOpenCommon(false);
@@ -388,12 +970,12 @@ const OrderDetail = () => {
   };
 
   const handleCloseDialogPayment = () => {
-    setIsDone(true);
     handleAddPayment();
     setOpenDialogPayment(false);
   };
 
   const handleClickOpenDialogDetailOrderHistories = () => {
+    console.log(orderImeis);
     setOpenDialogDetailOrderHistories(true);
   };
 
@@ -402,48 +984,75 @@ const OrderDetail = () => {
   };
 
   const handleConfirmOrderCancel = (description) => {
-    updateOrder(4, {
-      createdAt: new Date(),
-      thaoTac: "Đã Hủy Đơn",
-      loaiThaoTac: "4",
-      moTa: description,
-    });
-    setOpenCommon(false);
+    const data = {
+      trangThai: OrderStatusString.CANCELLED,
+      orderHistory: {
+        createdAt: new Date(),
+        createdBy: userId,
+        thaoTac: "Đã Hủy Đơn",
+        loaiThaoTac: 5,
+        moTa: description || "",
+        hoaDon: {
+          id: order.id,
+        },
+      },
+    };
+    updateStatusOrderDelivery(data);
   };
   const handleConfirmOrderFinish = (description) => {
-    updateOrder(3, {
-      createdAt: new Date(),
-      thaoTac: "Đã Nhận Được Hàng",
-      loaiThaoTac: "3",
-      moTa: description,
-    });
-    setOpenCommon(false);
+    const data = {
+      trangThai: OrderStatusString.SUCCESS_DELIVERY,
+      orderHistory: {
+        createdAt: new Date(),
+        createdBy: userId,
+        thaoTac: "Giao Hàng Thành Công",
+        loaiThaoTac: 4,
+        moTa: description || "",
+        hoaDon: {
+          id: order.id,
+        },
+      },
+    };
+    updateStatusOrderDelivery(data);
   };
   const handleConfirmDelivery = (description) => {
-    updateOrder(2, {
-      createdAt: new Date(),
-      thaoTac: "Đã Giao Cho Đơn Vị Vận Chuyển",
-      loaiThaoTac: "2",
-      moTa: description,
-    });
-    setOpenCommon(false);
+    const data = {
+      trangThai: OrderStatusString.DELIVERING,
+      orderHistory: {
+        createdAt: new Date(),
+        createdBy: userId,
+        thaoTac: "Đã Giao Hàng Cho Bên Vận Chuyển",
+        loaiThaoTac: 3,
+        moTa: description,
+        hoaDon: {
+          id: order.id,
+        },
+      },
+    };
+    updateStatusOrderDelivery(data);
   };
 
   const handleConfirmOrderInfo = (description) => {
-    updateOrder(1, {
-      createdAt: new Date(),
-      thaoTac: "Đã Xác Nhận Thông Tin Đơn Hàng",
-      loaiThaoTac: "1",
-      moTa: description,
-    });
-    setOpenCommon(false);
+    const data = {
+      trangThai: OrderStatusString.CONFIRMED,
+      orderHistory: {
+        createdAt: new Date(),
+        createdBy: userId,
+        thaoTac: "Chờ Giao Hàng",
+        loaiThaoTac: 1,
+        moTa: description,
+        hoaDon: {
+          id: order.id,
+        },
+      },
+    };
+    updateStatusOrderDelivery(data);
   };
   const handleOpenDialogConfirmOrder = (status, isCancel) => {
     if (isCancel) {
-      setStatus(4);
+      setStatus(OrderStatusString.CANCELLED);
       setOpenCommon(true);
-    }
-    else {
+    } else {
       setStatus(status);
       setOpenCommon(true);
     }
@@ -462,170 +1071,231 @@ const OrderDetail = () => {
     setOpenDialogPayment(false);
   };
 
-  const StyledTableContainer = styled(TableContainer)({
-    boxShadow: 'none',
-  });
+  const [openRollback, setOpenRollback] = useState(false);
 
-  const StyledTableHead = styled(TableHead)`
-  & tr:hover th{
-    background-color: white !important;
-  }
-`;
-
-  const StyledTableBody = styled(TableBody)`
-  & tr:hover td{
-    background-color: white !important;
-  }
-`;
-
-
-  const useStyles = () => ({
-  });
-
-  const classes = useStyles();
+  const handleCloseOpenRollback = () => {
+    setOpenRollback(false);
+  };
 
   const TimeLine = () => {
     return (
       <div className="time-line">
-        <Timeline minEvents={6 + orderHistories.length} placeholder>
-          {orderHistories.map((item, index) => (
-            <TimelineEvent
-              icon={
-                item.loaiThaoTac == 0
-                  ? FaRegFileAlt
-                  : item.loaiThaoTac == 1
+        <Timeline
+          minEvents={orderHistories && 5 + orderHistories.length}
+          placeholder
+        >
+          {orderHistories &&
+            orderHistories.map((item, index) => (
+              <TimelineEvent
+                icon={
+                  item.loaiThaoTac == 0
                     ? FaRegFileAlt
-                    : item.loaiThaoTac == 2
-                      ? FaTruck
-                      : item.loaiThaoTac == 3
-                        ? FaRegCalendarCheck
-                        : item.loaiThaoTac == 4
-                          ? MdCancelPresentation
-                          : item.loaiThaoTac == 5
-                            ? MdCancelPresentation
-                            : ""
-              }
-              title={
-                <div className="mt-1">
-                  <span
-                    style={{ whiteSpace: "pre-line", fontSize: "20px" }}
-                  >
-                    {item.thaoTac}
-                  </span>
-                </div>
-              }
-              subtitle={format(
-                new Date(item.createdAt),
-                "HH:mm:ss - dd/MM/yyyy"
-              )}
-              color={
-                item.loaiThaoTac == 0
-                  ? "#26A65B"
-                  : item.loaiThaoTac == 1
-                    ? "#26A65B"
-                    : item.loaiThaoTac == 2
-                      ? "#26A65B"
-                      : item.loaiThaoTac == 3
-                        ? "#26A65B"
-                        : item.loaiThaoTac == 4
-                          ? "#dc3333"
-                          : ""
-              }
-            />
-          ))}
+                    : item.loaiThaoTac == 1
+                    ? FaMoneyCheckDollar
+                    : item.loaiThaoTac == 3
+                    ? FaTruck
+                    : item.loaiThaoTac == 4
+                    ? FaRegCalendarCheck
+                    : item.loaiThaoTac == 5
+                    ? FaRegCalendarTimes
+                    : item.loaiThaoTac == 6
+                    ? FaRegCalendarCheck
+                    : item.loaiThaoTac == 7
+                    ? FaArrowsRotate
+                    : item.loaiThaoTac == 8
+                    ? FaArrowRotateLeft
+                    : item.loaiThaoTac == 9
+                    ? FaPencilAlt
+                    : ""
+                }
+                title={
+                  <div className="mt-1">
+                    <span style={{ whiteSpace: "pre-line", fontSize: "19px" }}>
+                      {item.thaoTac}
+                    </span>
+                  </div>
+                }
+                subtitle={format(
+                  new Date(item.createdAt),
+                  "HH:mm:ss - dd/MM/yyyy"
+                )}
+                color={
+                  item.loaiThaoTac == 0
+                    ? "#09a129"
+                    : item.loaiThaoTac == 1
+                    ? "#09a129"
+                    : item.loaiThaoTac == 3
+                    ? "#09a129"
+                    : item.loaiThaoTac == 4
+                    ? "#09a129"
+                    : item.loaiThaoTac == 5
+                    ? "#e5383b"
+                    : item.loaiThaoTac == 6
+                    ? "#09a129"
+                    : item.loaiThaoTac == 7
+                    ? "#e5383b"
+                    : item.loaiThaoTac == 8
+                    ? "#e5383b"
+                    : item.loaiThaoTac == 9
+                    ? "#ffd500"
+                    : ""
+                }
+              />
+            ))}
         </Timeline>
       </div>
+    );
+  };
+  const divRef1 = useRef(null);
+  const scrollToDiv1 = () => {
+    const { top, height } = divRef1.current.getBoundingClientRect();
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const offset = top + scrollTop - (window.innerHeight - height) / 2;
 
-    )
-  }
+    window.scrollTo({
+      top: offset,
+      behavior: "smooth",
+    });
+  };
 
   const ProcessOrder = () => {
     return (
       <div className="d-flex justify-content-between mt-2 p-3">
         <div className="d-flex order-info">
-          {order.trangThai == 0 && order.loaiHoaDon == 1 ? (
+          {order.trangThai == OrderStatusString.PENDING_CONFIRM &&
+          order.loaiHoaDon == OrderTypeString.DELIVERY ? (
             <div>
               <Button
-                onClick={() => handleOpenDialogConfirmOrder(order.trangThai, false)}
+                onClick={() => {
+                  if (checkImeisDaBan()) {
+                    scrollToDiv1();
+                    return;
+                  } else {
+                    handleOpenDialogConfirmOrder(
+                      OrderStatusString.PENDING_CONFIRM,
+                      false
+                    );
+                  }
+                }}
                 className="rounded-2 ms-2"
                 type="primary"
                 style={{
-                  height: "50px",
+                  height: "40px",
                   width: "auto",
                   fontSize: "16px",
-                  backgroundColor: "#3A57E8",
                 }}
               >
                 <span
                   className=""
-                  style={{ fontWeight: "550", marginBottom: "2px" }}
+                  style={{ fontWeight: "500", marginBottom: "2px" }}
                 >
                   XÁC NHẬN
                 </span>
               </Button>
             </div>
-          ) : order.trangThai == 1 && order.loaiHoaDon == 1 ? (
+          ) : null}
+          {order.trangThai === OrderStatusString.CONFIRMED &&
+          order.loaiHoaDon === OrderTypeString.DELIVERY ? (
             <div>
               <Button
-                onClick={() => handleOpenDialogConfirmOrder(order.trangThai, false)}
+                onClick={() =>
+                  handleOpenDialogConfirmOrder(
+                    OrderStatusString.CONFIRMED,
+                    false
+                  )
+                }
                 className="rounded-2 ms-2"
                 type="primary"
                 style={{
-                  height: "50px",
+                  height: "40px",
                   width: "auto",
                   fontSize: "16px",
-                  backgroundColor: "#3A57E8",
                 }}
               >
                 <span
                   className=""
-                  style={{ fontWeight: "550", marginBottom: "2px" }}
+                  style={{ fontWeight: "500", marginBottom: "2px" }}
                 >
                   GIAO HÀNG
                 </span>
               </Button>
             </div>
-          ) : isDone == true && order.trangThai == 2 && order.loaiHoaDon == 1 ? (
+          ) : null}
+          {order.tienKhachTra >= total &&
+          order.trangThai == OrderStatusString.DELIVERING &&
+          order.loaiHoaDon == OrderTypeString.DELIVERY ? (
             <div>
               <Button
-                onClick={() => handleOpenDialogConfirmOrder(order.trangThai, false)}
+                onClick={() =>
+                  handleOpenDialogConfirmOrder(
+                    OrderStatusString.DELIVERING,
+                    false
+                  )
+                }
                 className="rounded-2 ms-2"
                 type="primary"
                 style={{
-                  height: "50px",
+                  height: "40px",
                   width: "auto",
                   fontSize: "16px",
-                  backgroundColor: "#3A57E8",
                 }}
               >
                 <span
                   className=""
-                  style={{ fontWeight: "550", marginBottom: "2px" }}
+                  style={{ fontWeight: "500", marginBottom: "2px" }}
                 >
-                  HOÀN THÀNH
+                  HOÀN THÀNH ĐƠN
                 </span>
               </Button>
             </div>
           ) : (
             ""
           )}
-          {order.trangThai != 3 && order.trangThai != 4 && order.loaiHoaDon == 1 ? (
-            <div className="ms-1">
+          {(order.trangThai === OrderStatusString.CONFIRMED ||
+            order.trangThai === OrderStatusString.DELIVERING) &&
+          order.loaiHoaDon === OrderTypeString.DELIVERY ? (
+            <div>
               <Button
-                onClick={() => handleOpenDialogConfirmOrder(null, true)}
-                danger
+                onClick={() => {
+                  setOpenRollback(true);
+                }}
                 className="rounded-2 ms-2"
                 type="primary"
                 style={{
-                  height: "50px",
+                  height: "40px",
                   width: "auto",
                   fontSize: "16px",
-                  backgroundColor: "#dc3333",
                 }}
               >
                 <span
                   className=""
-                  style={{ fontWeight: "550", marginBottom: "2px" }}
+                  style={{ fontWeight: "500", marginBottom: "2px" }}
+                >
+                  HOÀN TÁC
+                </span>
+              </Button>
+            </div>
+          ) : null}
+          {paymentHistorys &&
+          paymentHistorys.length <= 0 &&
+          order.trangThai != OrderStatusString.CANCELLED &&
+          order.trangThai != OrderStatusString.SUCCESS_DELIVERY &&
+          order.loaiHoaDon == OrderTypeString.DELIVERY ? (
+            <div className="">
+              <Button
+                onClick={() => handleOpenDialogConfirmOrder(null, true)}
+                danger
+                className="rounded-2 ms-2"
+                type="danger"
+                style={{
+                  height: "40px",
+                  width: "auto",
+                  fontSize: "16px",
+                }}
+              >
+                <span
+                  className=""
+                  style={{ fontWeight: "500", marginBottom: "2px" }}
                 >
                   HỦY ĐƠN
                 </span>
@@ -635,87 +1305,102 @@ const OrderDetail = () => {
             ""
           )}
         </div>
-        <div>
+        <div className="d-flex">
+          {checkImeisDaBan() && <Print data={order} />}
+
+          {order.loaiHoaDon === OrderTypeString.DELIVERY &&
+            order.trangThai === OrderStatusString.CONFIRMED && (
+              <>
+                <PrintDelivery data={order} />
+              </>
+            )}
           <Button
             onClick={handleClickOpenDialogDetailOrderHistories}
-            className="rounded-2 me-2"
-            type="primary"
+            className="rounded-2"
+            type="warning"
             style={{
-              height: "50px",
+              height: "40px",
               width: "100px",
               fontSize: "16px",
-              backgroundColor: "#F5A524",
             }}
           >
             <span
               className="text-dark"
-              style={{ fontWeight: "550", marginBottom: "2px" }}
+              style={{ fontWeight: "500", marginBottom: "2px" }}
             >
               Chi Tiết
             </span>
           </Button>
-          <OrderHistoryDialog
-            columns={columnsTableOrderHistories}
-            open={openDialogDetailOrderHistories}
-            onClose={handleCloseDialogDetailOrderHistories}
-            dataSource={orderHistories}
-          />
         </div>
       </div>
-
-    )
-  }
+    );
+  };
 
   const OrderInfo = () => {
     return (
-
-      <div className="wrap-order-detail mt-4">
+      <div
+        className="wrap-order-detail mt-4"
+        style={{
+          height:
+            order.loaiHoaDon === OrderTypeString.AT_COUNTER
+              ? "340px"
+              : /* "480px" */ "340px",
+        }}
+      >
         <div className="p-3">
           <div className="d-flex justify-content-between">
-            <div className="ms-2" style={{ marginTop: "5px" }}>
-              <span className='' style={{ fontSize: "25px" }}>THÔNG TIN ĐƠN HÀNG</span>
+            <div className="ms-2" style={{ marginTop: "3px" }}>
+              <span className="" style={{ fontSize: "25px" }}>
+                THÔNG TIN ĐƠN HÀNG
+              </span>
             </div>
             <div className="">
-              <Button
-                onClick={handleClickOpenDialogUpdateRecipientOrder}
-                className="rounded-2 ms-2"
-                type="primary"
-                style={{
-                  height: "45px",
-                  fontSize: "16px",
-                  backgroundColor: "#3A57E8",
-                  width: "100px",
-                }}
-              >
-                <span
-                  className=""
-                  style={{ fontWeight: "550", marginBottom: "3px" }}
+              {order.trangThai === OrderStatusString.PENDING_CONFIRM ||
+              order.trangThai === OrderStatusString.CONFIRMED ? (
+                <Button
+                  onClick={handleClickOpenDialogUpdateRecipientOrder}
+                  className="rounded-2 ms-2"
+                  type="primary"
+                  style={{
+                    height: "40px",
+                    fontSize: "16px",
+                    width: "100px",
+                  }}
                 >
-                  Cập nhật
-                </span>
-              </Button>
-              <UpdateRecipientOrderDialog
-                open={openDialogUpdateRecipientOrder}
-                onClose={handleCloseDialogUpdateRecipientOrder}
-                onCloseNoAction={handleCloseNoActionDialogUpdateRecipientOrder}
-              />
+                  <span
+                    className=""
+                    style={{ fontWeight: "500", marginBottom: "2px" }}
+                  >
+                    Cập nhật
+                  </span>
+                </Button>
+              ) : null}
             </div>
           </div>
-          <div className='ms-2 mt-2' style={{ borderBottom: "2px solid #C7C7C7", width: "99.2%", borderWidth: "2px" }}></div>
+          <div
+            className="ms-2 mt-2"
+            style={{
+              borderBottom: "2px solid #C7C7C7",
+              width: "99.2%",
+              borderWidth: "2px",
+            }}
+          ></div>
         </div>
 
         <Row>
           <Col sm="5">
             <div className="ms-4 mt-3 d-flex" style={{ height: "30px" }}>
-              <div className="ms-2" style={{ width: "130px" }}>
-                <span style={{ fontSize: "17px" }}>Mã Đơn Hàng</span>
+              <div className="ms-2 mt-1" style={{ width: "140px" }}>
+                <span className="" style={{ fontSize: "17px" }}>
+                  Mã Đơn Hàng
+                </span>
               </div>
               <div className="ms-5 ps-5">
                 <div
-                  className="rounded-pill"
+                  className="rounded-pill text-center"
                   style={{
-                    height: "31px",
-                    width: "auto",
+                    height: "35px",
+                    width: "140px",
                     padding: "5px",
                     backgroundColor: "#e1e1e1",
                   }}
@@ -727,18 +1412,17 @@ const OrderDetail = () => {
               </div>
             </div>
             <div className="ms-4 mt-4 d-flex" style={{ height: "30px" }}>
-              <div className="ms-2" style={{ width: "130px" }}>
+              <div className="ms-2 mt-1" style={{ width: "140px" }}>
                 <span style={{ fontSize: "17px" }}>Loại Đơn Hàng</span>
               </div>
               <div className="ms-5 ps-5">
-                {order.loaiHoaDon == 1 ? (
+                {order.loaiHoaDon == OrderTypeString.DELIVERY ? (
                   <div
-                    className="rounded-pill"
+                    className="rounded-pill badge-success text-center"
                     style={{
-                      height: "31px",
-                      width: "auto",
+                      height: "35px",
+                      width: "100px",
                       padding: "5px",
-                      backgroundColor: "#26A65B",
                     }}
                   >
                     <span
@@ -750,10 +1434,10 @@ const OrderDetail = () => {
                   </div>
                 ) : (
                   <div
-                    className="rounded-pill bg-primary"
+                    className="rounded-pill bg-primary text-center"
                     style={{
-                      height: "31px",
-                      width: "auto",
+                      height: "35px",
+                      width: "90px",
                       padding: "5px",
                     }}
                   >
@@ -768,33 +1452,32 @@ const OrderDetail = () => {
               </div>
             </div>
             <div className="ms-4 mt-4 d-flex" style={{ height: "30px" }}>
-              <div className="ms-2" style={{ width: "130px" }}>
+              <div className="ms-2 mt-1" style={{ width: "140px" }}>
                 <span style={{ fontSize: "17px" }}>Trạng Thái</span>
               </div>
               <div className="ms-5 ps-5">
-                {order.trangThai == 0 ? (
+                {order.trangThai == OrderStatusString.PENDING_CONFIRM ? (
                   <div
-                    className="rounded-pill"
+                    className="rounded-pill badge-warning text-center"
                     style={{
-                      height: "31px",
-                      width: "151px",
+                      height: "35px",
+                      width: "125px",
                       padding: "5px",
-                      backgroundColor: "#FAAD14",
                     }}
                   >
                     <span
                       className="text-dark p-2"
                       style={{ fontSize: "14px" }}
                     >
-                      Đang chờ xác nhận
+                      Chờ xác nhận
                     </span>
                   </div>
-                ) : order.trangThai == 1 ? (
+                ) : order.trangThai == OrderStatusString.CONFIRMED ? (
                   <div
-                    className="rounded-pill bg-success"
+                    className="rounded-pill badge-success text-center"
                     style={{
-                      height: "31px",
-                      width: "auto",
+                      height: "35px",
+                      width: "128px",
                       padding: "5px",
                     }}
                   >
@@ -802,15 +1485,15 @@ const OrderDetail = () => {
                       className="text-white p-2"
                       style={{ fontSize: "14px" }}
                     >
-                      Đã xác nhận
+                      Chờ giao hàng
                     </span>
                   </div>
-                ) : order.trangThai == 2 ? (
+                ) : order.trangThai == OrderStatusString.DELIVERING ? (
                   <div
-                    className="rounded-pill bg-primary"
+                    className="rounded-pill badge-primary text-center"
                     style={{
-                      height: "31px",
-                      width: "auto",
+                      height: "35px",
+                      width: "135px",
                       padding: "5px",
                     }}
                   >
@@ -821,12 +1504,12 @@ const OrderDetail = () => {
                       Đang giao hàng
                     </span>
                   </div>
-                ) : order.trangThai == 3 ? (
+                ) : order.trangThai == OrderStatusString.SUCCESS_DELIVERY ? (
                   <div
-                    className="rounded-pill bg-primary"
+                    className="rounded-pill badge-primary text-center"
                     style={{
-                      height: "31px",
-                      width: "auto",
+                      height: "35px",
+                      width: "110px",
                       padding: "5px",
                     }}
                   >
@@ -834,17 +1517,48 @@ const OrderDetail = () => {
                       className="text-white p-2"
                       style={{ fontSize: "14px" }}
                     >
-                      Đã nhận được hàng
+                      Hoàn thành
                     </span>
                   </div>
-                ) : order.trangThai == 4 ? (
+                ) : order.trangThai == OrderStatusString.REFUND_FULL ? (
                   <div
-                    className="rounded-pill"
+                    className="rounded-pill badge-danger text-center"
                     style={{
-                      height: "31px",
-                      width: "auto",
+                      height: "35px",
+                      width: "160px",
                       padding: "5px",
-                      backgroundColor: "#dc3333",
+                    }}
+                  >
+                    <span
+                      className="text-white p-2"
+                      style={{ fontSize: "14px" }}
+                    >
+                      Hoàn trả toàn phần
+                    </span>
+                  </div>
+                ) : order.trangThai == OrderStatusString.REFUND_A_PART ? (
+                  <div
+                    className="rounded-pill badge-danger text-center"
+                    style={{
+                      height: "35px",
+                      width: "140px",
+                      padding: "5px",
+                    }}
+                  >
+                    <span
+                      className="text-white p-2"
+                      style={{ fontSize: "14px" }}
+                    >
+                      Hoàn trả 1 phần
+                    </span>
+                  </div>
+                ) : order.trangThai == OrderStatusString.CANCELLED ? (
+                  <div
+                    className="rounded-pill badge-danger text-center"
+                    style={{
+                      height: "35px",
+                      width: "80px",
+                      padding: "5px",
                     }}
                   >
                     <span
@@ -854,13 +1568,12 @@ const OrderDetail = () => {
                       Đã hủy
                     </span>
                   </div>
-                ) : order.trangThai == 6 && order.loaiHoaDon == 0 ?
-
+                ) : order.trangThai == OrderStatusString.HAD_PAID ? (
                   <div
-                    className="rounded-pill bg-primary"
+                    className="rounded-pill bg-primary text-center"
                     style={{
-                      height: "31px",
-                      width: "auto",
+                      height: "35px",
+                      width: "110px",
                       padding: "5px",
                     }}
                   >
@@ -868,24 +1581,28 @@ const OrderDetail = () => {
                       className="text-white p-2"
                       style={{ fontSize: "14px" }}
                     >
-                      Đã thanh toán
+                      Hoàn thành
                     </span>
                   </div>
-                  : ""
-
-                }
+                ) : (
+                  ""
+                )}
               </div>
             </div>
             <div className="ms-4 mt-4 d-flex" style={{ height: "30px" }}>
-              <div className="ms-2" style={{ width: "130px" }}>
-                <span style={{ fontSize: "17px" }}>Ngày tạo</span>
+              <div className="ms-2 mt-1" style={{ width: "140px" }}>
+                <span style={{ fontSize: "17px" }}>
+                  {order.loaiHoaDon === OrderTypeString.AT_COUNTER
+                    ? "Ngày Tạo"
+                    : "Ngày Đặt Hàng"}
+                </span>
               </div>
               <div className="ms-5 ps-5">
                 <div
-                  className="rounded-pill"
+                  className="rounded-pill text-center"
                   style={{
-                    height: "31px",
-                    width: "auto",
+                    height: "35px",
+                    width: "180px",
                     padding: "5px",
                     backgroundColor: "#e1e1e1",
                   }}
@@ -895,128 +1612,257 @@ const OrderDetail = () => {
                       order.createdAt &&
                       format(
                         new Date(order.createdAt),
-                        "HH:mm:ss - dd/MM/yyyy"
+                        "dd/MM/yyyy - HH:mm:ss"
                       )}
                   </span>
                 </div>
               </div>
             </div>
-          </Col>
-          <Col sm="6" className="ms-5">
-            <div className="ms-4 mt-3 d-flex" style={{ height: "30px" }}>
-              <div className="ms-2" style={{ width: "130px" }}>
-                <span style={{ fontSize: "17px" }}>Tên Khách Hàng</span>
-              </div>
-              <div className="ms-5 ps-5">
-                {order.tenNguoiNhan == null ?
+            {/*order.loaiHoaDon === OrderTypeString.DELIVERY ?
+              <div className="ms-4 mt-4 d-flex" style={{ height: "30px" }}>
+                <div className="ms-2 mt-1" style={{ width: "140px" }}>
+                  <span style={{ fontSize: "17px" }}>
+                    Ngày Thanh Toán</span>
+                </div>
+                <div className="ms-5 ps-5">
                   <div
                     className="rounded-pill"
                     style={{
-                      height: "31px",
+                      height: "35px",
                       width: "auto",
                       padding: "5px",
                       backgroundColor: "#e1e1e1",
                     }}
                   >
                     <span className="text-dark p-2" style={{ fontSize: "14px" }}>
-                      Khách Hàng Lẻ
+                      {order &&
+                        order.createdAt &&
+                        format(
+                          new Date(order.createdAt),
+                          "dd/MM/yyyy - HH:mm:ss"
+                        )}
                     </span>
                   </div>
-                  : order.tenNguoiNhan
-                }
+                </div>
+              </div>
+              : ""*/}
+            {/*order.loaiHoaDon === OrderTypeString.DELIVERY ?
+              <div className="ms-4 mt-4 d-flex" style={{ height: "30px" }}>
+                <div className="ms-2 mt-1" style={{ width: "140px" }}>
+                  <span style={{ fontSize: "17px" }}>
+                    Ngày giao hàng cho bên vận chuyển</span>
+                </div>
+                <div className="ms-5 ps-5">
+                  <div
+                    className="rounded-pill"
+                    style={{
+                      height: "35px",
+                      width: "auto",
+                      padding: "5px",
+                      backgroundColor: "#e1e1e1",
+                    }}
+                  >
+                    <span className="text-dark p-2" style={{ fontSize: "14px" }}>
+                      {order &&
+                        order.createdAt &&
+                        format(
+                          new Date(order.createdAt),
+                          "dd/MM/yyyy - HH:mm:ss"
+                        )}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              : ""*/}
+          </Col>
+          <Col sm="6" className="ms-5">
+            <div className="ms-4 mt-3 d-flex" style={{ height: "30px" }}>
+              <div className="ms-2 mt-1" style={{ width: "140px" }}>
+                <span style={{ fontSize: "17px" }}>
+                  {order.loaiHoaDon === OrderTypeString.DELIVERY
+                    ? "Tên Người Nhận"
+                    : "Tên Khách Hàng"}
+                </span>
+              </div>
+              <div className="ms-5 ps-5">
+                {order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
+                order.account === null
+                  ? order.hoVaTen
+                  : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
+                    order.account &&
+                    order.account.hoVaTen
+                  ? order.account.hoVaTen
+                  : order.tenNguoiNhan}
               </div>
             </div>
-            <div className="ms-4 mt-4 d-flex" style={{ height: "30px" }}>
-              <div className="ms-2" style={{ width: "130px" }}>
+            <div className="ms-4 mt-4 mt-1 d-flex" style={{ height: "30px" }}>
+              <div className="ms-2 mt-1" style={{ width: "140px" }}>
                 <span style={{ fontSize: "17px" }}>Số Điện Thoại</span>
               </div>
-              <div className="ms-5 ps-5">
-                <span className="text-dark ms-1" style={{ fontSize: "17px" }}>
-                  {order.soDienThoaiNguoiNhan == null ? "0123901293" : order.soDienThoaiNguoiNhan}
+              <div className="ms-5 ps-5 mt-1">
+                <span className="text-dark" style={{ fontSize: "17px" }}>
+                  {order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
+                  order.account === null
+                    ? order.soDienThoai
+                    : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
+                      order.account &&
+                      order.account.soDienThoai
+                    ? order.account.soDienThoai
+                    : order.soDienThoaiNguoiNhan}
                 </span>
               </div>
             </div>
-            <div className="ms-4 mt-4 d-flex" style={{ height: "30px" }}>
-              <div className="ms-2" style={{ width: "130px" }}>
+            <div className="ms-4 mt-4 mt-1 d-flex" style={{ height: "30px" }}>
+              <div className="ms-2 mt-1" style={{ width: "140px" }}>
                 <span style={{ fontSize: "17px" }}>Email</span>
               </div>
-              <div className="ms-5 ps-5">
-                <span className="text-dark ms-1" style={{ fontSize: "17px" }}>
-                  haog@gmail.com
+              <div className="ms-5 ps-5 mt-1">
+                <span className="text-dark" style={{ fontSize: "17px" }}>
+                  {order.account === null
+                    ? order.email
+                    : order.account && order.account.email
+                    ? order.account.email
+                    : "..."}
                 </span>
               </div>
             </div>
-            <div className="ms-4 mt-4 d-flex" style={{ height: "30px" }}>
-              <div className="ms-2" style={{ width: "130px" }}>
-                <span style={{ fontSize: "17px" }}>Địa Chỉ</span>
+            <div className="ms-4 mt-4 mt-1 d-flex" style={{ height: "30px" }}>
+              <div className="ms-2 mt-1" style={{ width: "140px" }}>
+                <span style={{ fontSize: "17px" }}>
+                  Địa Chỉ{" "}
+                  {order.loaiHoaDon === OrderTypeString.AT_COUNTER
+                    ? ""
+                    : " Nhận"}
+                </span>
               </div>
               <div
-                className="ms-5 ps-5"
+                className="ms-5 ps-5 mt-1"
                 style={{ whiteSpace: "pre-line", flex: "1" }}
               >
-                <span className="text-dark ms-1" style={{ fontSize: "17px" }}>
-                  {order.diaChiNguoiNhan == null ? "ABCXYZ" : order.diaChiNguoiNhan}
+                <span className="text-dark" style={{ fontSize: "17px" }}>
+                  {order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
+                  order.account === null
+                    ? "..."
+                    : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
+                      order.account &&
+                      order.account.diaChiList
+                    ? addressDefault
+                    : order.diaChiNguoiNhan +
+                      ", " +
+                      order.xaPhuongNguoiNhan +
+                      ", " +
+                      order.quanHuyenNguoiNhan +
+                      ", " +
+                      order.tinhThanhPhoNguoiNhan}
                 </span>
               </div>
             </div>
+            {/*order.loaiHoaDon === OrderTypeString.DELIVERY ?
+              <div className="ms-4 mt-4 mt-1 d-flex" style={{ height: "30px" }}>
+                <div className="ms-2 mt-1" style={{ width: "140px" }}>
+                  <span style={{ fontSize: "17px" }}>Ghi Chú Shipper</span>
+                </div>
+                <div
+                  className="ms-5 ps-5 mt-1"
+                  style={{ whiteSpace: "pre-line", flex: "1" }}
+                >
+                  <span className="text-dark ms-1" style={{ fontSize: "17px" }}>
+                    {order.diaChiNguoiNhan == null ? "..." : order.diaChiNguoiNhan}
+                  </span>
+                </div>
+              </div>
+              : ""*/}
+            {/*order.loaiHoaDon === OrderTypeString.DELIVERY ?
+              <div className="ms-4 mt-4 d-flex" style={{ height: "30px" }}>
+                <div className="ms-2 mt-1" style={{ width: "140px" }}>
+                  <span style={{ fontSize: "17px" }}>
+                    Ngày hoàn thành đơn</span>
+                </div>
+                <div className="ms-5 ps-5">
+                  <div
+                    className="rounded-pill"
+                    style={{
+                      height: "35px",
+                      width: "auto",
+                      padding: "5px",
+                      backgroundColor: "#e1e1e1",
+                    }}
+                  >
+                    <span className="text-dark p-2" style={{ fontSize: "14px" }}>
+                      {order &&
+                        order.createdAt &&
+                        format(
+                          new Date(order.createdAt),
+                          "dd/MM/yyyy - HH:mm:ss"
+                        )}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              : ""*/}
           </Col>
         </Row>
       </div>
-
-    )
-  }
+    );
+  };
 
   const PaymentHistories = () => {
     return (
-
       <div className="wrap-payment mt-4 p-3">
         <div className="">
           <div className="d-flex justify-content-between">
-            <div className="ms-2" style={{ marginTop: "5px" }}>
-              <span className='' style={{ fontSize: "25px" }}>LỊCH SỬ THANH TOÁN</span>
+            <div className="ms-2" style={{ marginTop: "3px" }}>
+              <span className="" style={{ fontSize: "25px" }}>
+                LỊCH SỬ THANH TOÁN
+              </span>
             </div>
             <div className="">
-              <Button
-                onClick={handleClickOpenDialogPayment}
-                className="rounded-2 ms-2"
-                type="primary"
-                style={{
-                  height: "45px",
-                  fontSize: "16px",
-                  backgroundColor: "#3A57E8",
-                  width: "193px",
-                }}
-              >
-                <span
-                  className=""
-                  style={{ fontWeight: "550", marginBottom: "3px" }}
+              {order.loaiHoaDon === OrderTypeString.DELIVERY &&
+              (order.trangThai === OrderStatusString.PENDING_CONFIRM ||
+                order.trangThai === OrderStatusString.CONFIRMED ||
+                order.trangThai === OrderStatusString.DELIVERING ||
+                checkImeisDaBan()) &&
+              order.tienKhachTra < total ? (
+                <Button
+                  onClick={() => setOpenPayment(true)}
+                  className="rounded-2 ms-2"
+                  type="primary"
+                  style={{
+                    height: "40px",
+                    fontSize: "16px",
+                    width: "180px",
+                  }}
                 >
-                  Tiến hành thanh toán
-                </span>
-              </Button>
-              <PaymentDialog
-                open={openDialogPayment}
-                onClose={handleCloseDialogPayment}
-                onCloseNoAction={handleCloseNoActionDialogPayment}
-                addPayment={handleAddPayment}
-              />
+                  <span
+                    className=""
+                    style={{ fontWeight: "500", marginBottom: "2px" }}
+                  >
+                    Tiến hành thanh toán
+                  </span>
+                </Button>
+              ) : null}
             </div>
           </div>
-          <div className='ms-2 mt-2' style={{ borderBottom: "2px solid #C7C7C7", width: "99.2%", borderWidth: "2px" }}></div>
-
+          <div
+            className="ms-2 mt-2"
+            style={{
+              borderBottom: "2px solid #C7C7C7",
+              width: "99.2%",
+              borderWidth: "2px",
+            }}
+          ></div>
         </div>
         <div className="mt-3">
-          {paymentHistorys.length <= 0 ? (
-            <EmptyData />
-          ) : (
-            <>
-              <Table
-                className="scroll-container1"
-                columns={columns}
-                dataSource={paymentHistorys}
-                pagination={false}
-              />
-              {/*
+          <Table
+            className="scroll-container1"
+            columns={columns}
+            dataSource={paymentHistorys}
+            pagination={false}
+            rowKey={"id"}
+            key={"id"}
+            locale={{ emptyText: <Empty /> }}
+          />
+          {/*
               <div className="d-flex justify-content-between p-3">
                 <div className="ms-1 mt-2">
                   <div className="" style={{ marginTop: "1px" }}>
@@ -1053,174 +1899,361 @@ const OrderDetail = () => {
                 </div>
               </div>
 */}
-            </>
-          )}
         </div>
       </div>
-    )
-  }
+    );
+  };
+
+  const columnsOrderItems = [
+    {
+      title: "Sản phẩm",
+      width: "40%",
+      align: "center",
+      render: (text, item) => (
+        <div className="d-flex">
+          <div className="product-img" style={{ position: "relative" }}>
+            <img
+              src={
+                item &&
+                item.sanPhamChiTiet &&
+                item.sanPhamChiTiet.image &&
+                item.sanPhamChiTiet.image.path
+              }
+              class=""
+              alt=""
+              style={{ width: "125px", height: "125px" }}
+            />
+            {item && item.donGiaSauGiam !== null && item.donGiaSauGiam !== 0 ? (
+              <div
+                className="category"
+                style={{
+                  userSelect: "none",
+                  backgroundColor: "#ffcc00",
+                  position: "absolute",
+                  top: "0px",
+                  borderTopLeftRadius: `8px`,
+                  fontSize: "11px",
+                  borderTopRightRadius: `20px`,
+                  borderBottomRightRadius: `20px`,
+                  fontWeight: "600",
+                  padding: "4px 8px", // Add padding for better visibility
+                  // width: "auto",
+                  // height: "30px"
+                  marginLeft: "10px",
+                  // marginTop: "25px",
+                }}
+              >
+                Giảm{" "}
+                {countPrice(item.donGia, item.donGiaSauGiam).toLocaleString(
+                  "vi-VN",
+                  {
+                    style: "currency",
+                    currency: "VND",
+                  }
+                )}
+              </div>
+            ) : null}
+          </div>
+          <div className="product ms-3 text-start">
+            <Tooltip
+              TransitionComponent={Zoom}
+              title="Xem sản phẩm"
+              style={{ cursor: "pointer" }}
+              placement="top-start"
+            >
+              <div classNamountme="product-name">
+                <span
+                  className="underline-custom"
+                  style={{
+                    whiteSpace: "pre-line",
+                    fontSize: "17.5px",
+                    fontWeight: "500",
+                  }}
+                >
+                  {item.sanPhamChiTiet.sanPham.tenSanPham +
+                    "\u00A0" +
+                    item.sanPhamChiTiet.ram.dungLuong +
+                    "/" +
+                    item.sanPhamChiTiet.rom.dungLuong +
+                    "GB" +
+                    " " +
+                    `(${item.sanPhamChiTiet.mauSac.tenMauSac})`}
+                </span>
+              </div>
+            </Tooltip>
+            <div className="mt-2">
+              <span
+                className="txt-price"
+                style={{ fontSize: "17.5px", fontWeight: "" }}
+              >
+                {item && item.donGiaSauGiam !== null && item.donGiaSauGiam !== 0
+                  ? item.donGiaSauGiam.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })
+                  : ""}
+              </span>
+              <span
+                className={
+                  item.donGiaSauGiam !== null && item.donGiaSauGiam !== 0
+                    ? "txt-price-discount ms-2"
+                    : "txt-price"
+                }
+                style={{ fontSize: "17px", fontWeight: "" }}
+              >
+                {item && item.donGia
+                  ? item.donGia.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })
+                  : ""}
+              </span>
+            </div>
+            {item.imeisDaBan &&
+              item.imeisDaBan.length <= 0 &&
+              item.imeisDaBan.length !== item.soLuong && (
+                <div className="mt-2 pt-1">
+                  <Box sx={{ width: "100%" }}>
+                    <Alert color="danger" variant="soft">
+                      Bạn cần chọn Imei cho sản phẩm trước khi giao hàng.
+                    </Alert>
+                  </Box>
+                </div>
+              )}
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "Số lượng",
+      align: "center",
+      dataIndex: "soLuong",
+      width: "10%",
+      render: (text, item) => (
+        <div>
+          <span style={{ fontWeight: "", fontSize: "17px" }} className="">
+            {"x" + item.soLuong}
+          </span>
+        </div>
+      ),
+    },
+    {
+      title: "Thành tiền",
+      align: "center",
+      width: "20%",
+      render: (text, item) => (
+        <div>
+          <span
+            style={{ fontSize: "17.5px", fontWeight: "" }}
+            className="txt-price"
+          >
+            {(item &&
+              totalItem(
+                item.soLuong,
+                item.donGiaSauGiam !== null && item.donGiaSauGiam !== 0
+                  ? item.donGiaSauGiam
+                  : item.donGia
+              ).toLocaleString("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              })) ||
+              0}
+          </span>
+        </div>
+      ),
+    },
+    {
+      title: "Thao tác",
+      align: "center",
+      dataIndex: "actions",
+      width: "15%",
+      render: (text, item) => (
+        <div>
+          <div className="button-container">
+            {order.trangThai === OrderStatusString.PENDING_CONFIRM ? (
+              <>
+                <Button
+                  onClick={() => {
+                    handleOpenModalUpdateImei();
+                    const imeisDaBan = item.imeisDaBan;
+                    const imeiAll = item.sanPhamChiTiet.imeis;
+                    const isSelected = (item) =>
+                      imeisDaBan.some(
+                        (selectedItem) => selectedItem.soImei === item.soImei
+                      );
+                    const sortedItems = [...imeiAll].sort((a, b) => {
+                      const isSelectedA = isSelected(a);
+                      const isSelectedB = isSelected(b);
+                      if (isSelectedA && !isSelectedB) {
+                        return -1;
+                      } else if (!isSelectedA && isSelectedB) {
+                        return 1;
+                      }
+                      return 0;
+                    });
+                    setImeis(sortedItems);
+                    setMaxAmount(item.soLuong);
+                    setIdOrderItem(item.id);
+                    setSelectedImei(item.imeisDaBan);
+                    setSelectedImeiRefresh([]);
+                    setSize(item.soLuong);
+                  }}
+                  className="rounded-2 button-mui"
+                  type="primary"
+                  style={{ height: "38px", width: "100px", fontSize: "15px" }}
+                >
+                  <span
+                    className="text-white"
+                    style={{
+                      marginBottom: "2px",
+                      fontSize: "15px",
+                      fontWeight: "500",
+                    }}
+                  >
+                    Cập Nhật
+                  </span>
+                </Button>
+                {orderItems && orderItems.length > 1 && (
+                  <Button
+                    onClick={() => handleDeleteCartItemOrderById(item.id)}
+                    className="rounded-2 button-mui ms-2"
+                    type="danger"
+                    style={{ height: "38px", width: "80px", fontSize: "15px" }}
+                  >
+                    <span
+                      className="text-white"
+                      style={{
+                        marginBottom: "2px",
+                        fontSize: "15px",
+                        fontWeight: "500",
+                      }}
+                    >
+                      Xóa
+                    </span>
+                  </Button>
+                )}
+              </>
+            ) : (
+              <Button
+                onClick={() => {
+                  setOpenViewImei(true);
+                  setViewImeis(item.imeisDaBan);
+                }}
+                className="rounded-2 ant-btn-light"
+                style={{ height: "38px", width: "90px", fontSize: "15px" }}
+              >
+                <span
+                  className=""
+                  style={{
+                    marginBottom: "2px",
+                    fontSize: "15px",
+                    fontWeight: "500",
+                  }}
+                >
+                  Chi Tiết
+                </span>
+              </Button>
+            )}
+          </div>
+        </div>
+      ),
+    },
+  ];
 
   const OrderSummary = () => {
     return (
       <div className="wrap-order-summary mt-4 p-3">
         <div className="">
           <div className="d-flex justify-content-between">
-            <div className="ms-2" style={{ marginTop: "5px" }}>
-              <span className='' style={{ fontSize: "25px" }}>SẢN PHẨM ĐÃ MUA</span>
+            <div className="ms-2" style={{ marginTop: "3px" }}>
+              <span className="" style={{ fontSize: "25px" }}>
+                DANH SÁCH SẢN PHẨM ĐÃ{" "}
+                {order.loaiHoaDon === OrderTypeString.AT_COUNTER ? "" : " ĐẶT "}{" "}
+                MUA
+              </span>
             </div>
             <div className="">
-              <Button
-                // onClick={handleOpenDialogProducts}
-                className="rounded-2 bg-primary"
-                type="primary"
-                style={{ height: "45px", width: "145px", fontSize: "16px" }}
-              >
-                <span
-                  className="text-white"
-                  style={{ marginBottom: "3px", fontWeight: "550" }}
-                >
-                  Thêm sản phẩm
-                </span>
-              </Button>
+              {order.trangThai === OrderStatusString.PENDING_CONFIRM ? (
+                <>
+                  <Button
+                    onClick={() => {
+                      handleOpenScanner();
+                      setScannerRef([]);
+                    }}
+                    className="rounded-2 me-2"
+                    type="warning"
+                    style={{ height: "38px", width: "120px", fontSize: "15px" }}
+                  >
+                    <span
+                      className=""
+                      style={{
+                        fontSize: "15px",
+                        fontWeight: "500",
+                        marginBottom: "2px",
+                      }}
+                    >
+                      Quét Barcode
+                    </span>
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      setOpenProducts(true);
+                      getAllProducts();
+                      setIsOpen(true);
+                    }}
+                    className="rounded-2"
+                    type="primary"
+                    style={{ height: "40px", width: "145px", fontSize: "16px" }}
+                  >
+                    <span
+                      className="text-white"
+                      style={{ marginBottom: "3px", fontWeight: "500" }}
+                    >
+                      Thêm sản phẩm
+                    </span>
+                  </Button>
+                </>
+              ) : null}
             </div>
           </div>
-          <div className='ms-2 mt-2' style={{ borderBottom: "2px solid #C7C7C7", width: "99.2%", borderWidth: "2px" }}></div>
+          <div
+            className="ms-2 mt-2"
+            style={{
+              borderBottom: "2px solid #C7C7C7",
+              width: "99.2%",
+              borderWidth: "2px",
+            }}
+          ></div>
         </div>
 
-        <div className="wrap-cart-order" style={{ height: "auto" }}>
+        <div
+          className="wrap-cart-order mx-auto"
+          style={{ height: "auto", width: "98%" }}
+        >
           <Row className="">
             <div className="">
-              <div className='' style={{ height: "auto" }}>
-                <StyledTableContainer component={Paper}>
-                  <TableMui sx={{ minWidth: 650, boxShadow: "none" }} aria-label="simple table" className={classes.tableContainer}>
-                    <StyledTableHead>
-                      <TableRow>
-                      </TableRow>
-                    </StyledTableHead>
-                    <StyledTableBody>
-                      {list.slice(0, 2).map((item, index) => (
-                        <TableRow
-                          key={index}
-                          sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                        >
-                          <TableCell align='center'>
-                            <img src={item.img} class='' alt="" style={{ width: "155px", height: "155px" }} />
-                          </TableCell>
-                          <TableCell align="center">
-                            <div>
-                              <span className='' style={{ whiteSpace: "pre-line", fontSize: "18px" }}>{item.title}</span>
-                            </div>
-                            <div className='mt-2'>
-                              <span style={{ color: "#dc1111", fontSize: "17px" }}>
-                                {item && item.price ? item.price.toLocaleString("vi-VN", {
-                                  style: "currency",
-                                  currency: "VND",
-                                }) : ""}
-                              </span>
-                            </div>
-                            <div className='mt-2 pt-1 d-flex justify-content-around mx-auto'>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div
-                                className="rounded-pill"
-                                style={{
-                                  height: "31px",
-                                  width: "auto",
-                                  padding: "5px",
-                                  backgroundColor: "#e1e1e1",
-                                }}
-                              >
-                                <span className="text-dark p-2" style={{ fontSize: "14px" }}>
-                                  12/256GB
-                                </span>
-                              </div>
-                              <div
-                                className="rounded-pill"
-                                style={{
-                                  marginLeft: "10px",
-                                  height: "31px",
-                                  width: "auto",
-                                  padding: "5px",
-                                  backgroundColor: "#e1e1e1",
-                                }}
-                              >
-                                <span className="text-dark p-2" style={{ fontSize: "14px" }}>
-                                  Rose Pine
-                                </span>
-                              </div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                            </div>
-                          </TableCell>
-                          <TableCell align="center" style={{ width: "100px" }}>
-                            {/*
-*/}
-                            <div class="number-input1">
-                              <button style={{ marginBottom: "1px" }}
-                                class="minus">-
-                              </button>
-                              <input value={1} min="1" max="100"
-                                name="quantity" class="quantity"
-                                type="number" />
-                              <button class="" style={{ marginTop: "2.3px" }} >+
-                              </button>
-                            </div>
-                          </TableCell>
-                          <TableCell align="center" style={{ color: "#dc1111", fontSize: "15px", width: "200px" }}>
-                            <span style={{ color: "#dc1111", fontSize: "17.5px" }}>
-                              {item && item.price ? item.price.toLocaleString("vi-VN", {
-                                style: "currency",
-                                currency: "VND",
-                              }) : ""}
-                            </span>
-                          </TableCell>
-                          <TableCell align="center" className='' style={{ width: "200px" }}>
-                            <Button className=''
-                              icon={
-                                <EditIcon />
-                              }
-                              type="primary"
-                              style={{ fontSize: "13px" }}
-                            >
-                            </Button>
-                            <Button className='ms-2'
-                              // onClick={() => handleDeleteCartDetailsById(item.id)}
-                              icon={
-                                <IconTrash />
-                              }
-                              type="primary"
-                              style={{ fontSize: "13px", backgroundColor: "#dc3333" }}
-                            >
-                            </Button>
-
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </StyledTableBody>
-                  </TableMui>
-                </StyledTableContainer>
+              <div className="mt-2" style={{ height: "auto" }} ref={divRef1}>
+                <Table
+                  className="table-cart"
+                  columns={columnsOrderItems}
+                  dataSource={orderItemsSort}
+                  pagination={false}
+                  rowKey={"id"}
+                  key={"id"}
+                />
               </div>
             </div>
           </Row>
         </div>
 
-        <div className='ms-2 mt-2' style={{ borderBottom: "2px solid #C7C7C7", width: "99.2%", borderWidth: "2px" }}></div>
+        <div
+          className="ms-2 mt-2"
+          style={{
+            borderBottom: "2px solid #C7C7C7",
+            width: "99.2%",
+            borderWidth: "2px",
+          }}
+        ></div>
         <div className="d-flex mt-3">
           <div
             style={{
@@ -1232,56 +2265,23 @@ const OrderDetail = () => {
           >
             <div className="p-4">
               <div className="d-flex justify-content-between">
-                <span className="" style={{ fontSize: "15px", color: "" }}>
-                  Tổng Tiền Hàng
+                <span className="" style={{ fontSize: "16px", color: "" }}>
+                  Tổng số lượng
                 </span>
                 <span
-                  className="fw-bold text-dark"
-                  style={{ fontSize: "16px" }}
+                  className="text-dark"
+                  style={{ fontSize: "17px", fontWeight: "500" }}
                 >
-                  12.190.000 ₫
+                  {totalAmountProduct()}
                 </span>
               </div>
               <div className="d-flex justify-content-between mt-3">
-                <span className="" style={{ fontSize: "15px", color: "" }}>
-                  Giảm Giá
+                <span className="" style={{ fontSize: "16px", color: "" }}>
+                  Tổng tiền hàng
                 </span>
                 <span
-                  className="fw-bold text-dark"
-                  style={{ fontSize: "16px" }}
-                >
-                  0 ₫
-                </span>
-              </div>
-              <div className="d-flex justify-content-between mt-3">
-                <span className="" style={{ fontSize: "15px", color: "" }}>
-                  Phí Vận Chuyển
-                </span>
-                <span
-                  className="fw-bold text-dark"
-                  style={{ fontSize: "16px" }}
-                >
-                  0 ₫
-                </span>
-              </div>
-              <hr
-                className=""
-                style={{
-                  borderStyle: "dashed",
-                  borderWidth: "1px",
-                  borderColor: "#333",
-                }}
-              />
-              <div className="d-flex justify-content-between mt-4">
-                <span
-                  className="fw-bold text-dark"
-                  style={{ fontSize: "18px", color: "" }}
-                >
-                  Tổng cộng
-                </span>
-                <span
-                  className="fw-bold"
-                  style={{ fontSize: "18px", color: "#dc1111" }}
+                  className="text-dark"
+                  style={{ fontSize: "17px", fontWeight: "500" }}
                 >
                   {order &&
                     order.tongTien &&
@@ -1291,43 +2291,298 @@ const OrderDetail = () => {
                     })}
                 </span>
               </div>
+              <div className="d-flex justify-content-between mt-3">
+                <span className="" style={{ fontSize: "16px", color: "" }}>
+                  Phiếu giảm giá
+                </span>
+                <span
+                  className="text-dark"
+                  style={{ fontSize: "17px", fontWeight: "500" }}
+                >
+                  <span
+                    className="underline-custom"
+                    style={{ cursor: "pointer", fontWeight: "500" }}
+                  >
+                    {(order &&
+                      order.voucher &&
+                      order.voucher.ma &&
+                      "(" + order.voucher.ma + ") ") ||
+                      ""}
+                  </span>
+                  {totalDiscount(
+                    order && order.tongTien && order.tongTien,
+                    order &&
+                      order.tongTienSauKhiGiam &&
+                      order.tongTienSauKhiGiam
+                  ).toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  }) || 0}
+                </span>
+              </div>
+              {order.loaiHoaDon === OrderTypeString.AT_COUNTER ? (
+                <>
+                  <div className="d-flex justify-content-between mt-3">
+                    <span className="" style={{ fontSize: "16px", color: "" }}>
+                      Khách cần trả
+                    </span>
+                    <span
+                      className="text-dark"
+                      style={{ fontSize: "17px", fontWeight: "500" }}
+                    >
+                      {total.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })}
+                    </span>
+                  </div>
+                  <div className="d-flex justify-content-between mt-3">
+                    <span className="" style={{ fontSize: "16px" }}>
+                      Khách đã trả
+                    </span>
+                    <span
+                      className="text-dark"
+                      style={{ fontSize: "17px", fontWeight: "500" }}
+                    >
+                      {(order &&
+                        order.tienKhachTra &&
+                        order.tienKhachTra.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })) ||
+                        0}
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="d-flex justify-content-between mt-3">
+                    <span className="" style={{ fontSize: "16px", color: "" }}>
+                      Phí vận chuyển
+                    </span>
+                    <span
+                      className="text-dark"
+                      style={{ fontSize: "17px", fontWeight: "500" }}
+                    >
+                      {order &&
+                        order.phiShip &&
+                        order.phiShip.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                    </span>
+                  </div>
+                  <div className="d-flex justify-content-between mt-3">
+                    <span
+                      className="text-dark"
+                      style={{ fontSize: "16px", color: "" }}
+                    >
+                      Khách cần trả
+                    </span>
+                    <span
+                      className="text-dark"
+                      style={{ fontSize: "17px", fontWeight: "500" }}
+                    >
+                      {order &&
+                        order.khachCanTra &&
+                        order.khachCanTra.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                    </span>
+                  </div>
+                  <div className="d-flex justify-content-between mt-3">
+                    <span className="" style={{ fontSize: "16px", color: "" }}>
+                      Khách đã trả
+                    </span>
+                    <span
+                      className="text-dark"
+                      style={{ fontSize: "17px", fontWeight: "500" }}
+                    >
+                      {(order &&
+                        order.tienKhachTra &&
+                        order.tienKhachTra.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })) ||
+                        0}
+                    </span>
+                  </div>
+                </>
+              )}
+              {order.tienThua !== 0 ? (
+                <div className="d-flex justify-content-between mt-3">
+                  <span className="" style={{ fontSize: "16px", color: "" }}>
+                    Tiền thừa trả khách
+                  </span>
+                  <span
+                    className="text-dark"
+                    style={{ fontSize: "17px", fontWeight: "500" }}
+                  >
+                    {order &&
+                      order.tienThua &&
+                      order.tienThua.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })}
+                  </span>
+                </div>
+              ) : (
+                ""
+              )}
+              {order.tienTraHang && (
+                <div className="d-flex justify-content-between mt-3">
+                  <span className="" style={{ fontSize: "16px", color: "" }}>
+                    Tổng tiền trả hàng
+                  </span>
+                  <span
+                    className="text-dark"
+                    style={{ fontSize: "17px", fontWeight: "500" }}
+                  >
+                    {order &&
+                      order.tienTraHang.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })}
+                  </span>
+                </div>
+              )}
+              {order.tienTraKhach && (
+                <div className="d-flex justify-content-between mt-3">
+                  <span className="" style={{ fontSize: "16px", color: "" }}>
+                    Đã trả khách
+                  </span>
+                  <span
+                    className="text-dark"
+                    style={{ fontSize: "17px", fontWeight: "500" }}
+                  >
+                    {order &&
+                      order.tienTraKhach.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </div>
-        <div style={{ height: "10px" }}></div>
       </div>
-    )
-  }
+    );
+  };
 
   return (
     <>
-      <div className="wrap-timeline mt-4">
-        <div class="scroll-container mt-2">
-          <Card>
-            <Card.Body>
-              <TimeLine />
-            </Card.Body>
-          </Card>
+      <div className="wrap-container">
+        <div className="wrap-timeline mt-4">
+          <div class="scroll-container mt-2">
+            <Card>
+              <Card.Body>
+                <TimeLine />
+              </Card.Body>
+            </Card>
+          </div>
+          <ConfirmDialog
+            open={openCommon}
+            status={status}
+            confirmOrderInfo={handleConfirmOrderInfo}
+            confirmDelivery={handleConfirmDelivery}
+            confirmFinish={handleConfirmOrderFinish}
+            confirmCancel={handleConfirmOrderCancel}
+            onCloseNoAction={handleCloseNoActionCommon}
+          />
+          <ProcessOrder />
         </div>
-        <ConfirmDialog
-          open={openCommon}
-          status={status}
-          confirmOrderInfo={handleConfirmOrderInfo}
-          confirmDelivery={handleConfirmDelivery}
-          confirmFinish={handleConfirmOrderFinish}
-          confirmCancel={handleConfirmOrderCancel}
-          onCloseNoAction={handleCloseNoActionCommon}
+
+        <OrderInfo />
+        <PaymentHistories />
+        <OrderSummary />
+
+        <OrderHistoryDialog
+          columns={columnsTableOrderHistories}
+          open={openDialogDetailOrderHistories}
+          onClose={handleCloseDialogDetailOrderHistories}
+          dataSource={orderHistories}
         />
-        <ProcessOrder />
+        <PaymentDialog
+          open={openDialogPayment}
+          onClose={handleCloseDialogPayment}
+          onCloseNoAction={handleCloseNoActionDialogPayment}
+          addPayment={handleAddPayment}
+        />
+        <UpdateRecipientOrderDialog
+          open={openDialogUpdateRecipientOrder}
+          onClose={handleCloseDialogUpdateRecipientOrder}
+          onCloseNoAction={handleCloseNoActionDialogUpdateRecipientOrder}
+          name={customerName}
+          phone={customerPhone}
+          address={customerAddress}
+          province={customerProvince}
+          district={customerDistrict}
+          ward={customerWard}
+          note={customerNote}
+          update={updateInfoOrderDelivery}
+        />
+
+        <MultiplePaymentMethodsDelivery
+          open={openPayment}
+          close={handleCloseOpenPayment}
+          hoanTien={isRefund}
+          data={paymentHistorys}
+          khachCanTra={order.khachCanTra}
+          khachThanhToan={order.tienKhachTra}
+          canTraKhach={order.tienTraHang}
+          addPayment={handlePaymentOrder}
+        />
+
+        <ProductsDialog
+          onOpenImei={handleOpenModalImei}
+          onCloseImei={handleCloseOpenModalImei}
+          openImei={openModalImei}
+          isOpen={isOpen}
+          open={openProducts}
+          onClose={handleCloseOpenProducts}
+          data={products}
+          add={handleAddProductToCartOrder}
+        />
+
+        <ModalUpdateImeiByProductItem
+          open={openModalUpdateImei}
+          close={handleCloseOpenModalUpdateImei}
+          imeis={imeis}
+          imeisChuaBan={selectedImei}
+          refresh={selectedImeiRefresh}
+          update={handleUpdateAmountCartItemOrder}
+          delivery={true}
+          max={maxAmount}
+          openOrder={openOrder}
+          closeOrder={handleCloseOpenOrder}
+          onOpenOrder={handleOpenOrder}
+          size={size}
+        />
+
+        <ModalViewImeiHadBuy
+          open={openViewImei}
+          close={handleCloseOpenViewImei}
+          imeis={viewImeis}
+        />
+
+        <ScannerBarcode
+          open={openScanner}
+          close={handleCloseOpenScanner}
+          getResult={addProductToOrderByScanner}
+          refresh={scannerRef}
+        />
+
+        <ConfirmRollBack
+          open={openRollback}
+          confirm={rollBackStatus}
+          close={handleCloseOpenRollback}
+        />
+
+        {isLoading && <LoadingIndicator />}
+        <div className="mt-4"></div>
       </div>
-
-      <OrderInfo />
-      <PaymentHistories />
-      <OrderSummary />
-
-
-
-      <div className="mt-5"></div>
     </>
   );
 };

@@ -1,11 +1,8 @@
 package beephone_shop_projects.core.admin.promotion_management.model.request;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.math.BigDecimal;
 
 @Getter
 @Setter
@@ -21,6 +18,5 @@ public class CreateKhuyenMaiChiTietRequest {
     private String idSanPhamChiTiet;
     @NotBlank
     private String idKhuyenMai;
-
 
 }

@@ -5,12 +5,13 @@
 //         mode: Mode
 //     })
 // )
-
-
 import { configureStore } from '@reduxjs/toolkit';
+import UserReducer from './user/userSlice';
+
 import settingReducer from './setting/reducers';
 export const store = configureStore({
   reducer: {
-    setting: settingReducer
+    setting: settingReducer,
+    user: UserReducer
   }
 });

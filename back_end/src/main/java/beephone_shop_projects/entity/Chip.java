@@ -2,12 +2,12 @@ package beephone_shop_projects.entity;
 
 import beephone_shop_projects.entity.base.IsIdentified;
 import beephone_shop_projects.entity.base.PrimaryEntity;
+import beephone_shop_projects.infrastructure.constant.StatusCommon;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,7 +20,11 @@ import lombok.Setter;
 @Table(name = "chip")
 public class Chip extends PrimaryEntity implements IsIdentified {
 
-    private String ma;
+  private String ma;
 
-    private String tenChip;
+  private String tenChip;
+
+  @Enumerated(EnumType.ORDINAL)
+  private StatusCommon status;
+
 }

@@ -1,17 +1,16 @@
 package beephone_shop_projects.core.admin.voucher_management.controller;
 
+import beephone_shop_projects.core.admin.voucher_management.model.request.ChangeStatusVoucherRequest;
 import beephone_shop_projects.core.admin.voucher_management.model.request.CreateVoucherRequest;
 import beephone_shop_projects.core.admin.voucher_management.model.request.FindVoucherRequest;
 import beephone_shop_projects.core.admin.voucher_management.model.request.UpdateVoucherRequest;
-import beephone_shop_projects.core.admin.voucher_management.model.response.VoucherResponse;
+import beephone_shop_projects.core.admin.voucher_management.repository.VoucherRepository;
 import beephone_shop_projects.core.admin.voucher_management.service.VoucherService;
+import beephone_shop_projects.core.common.base.ResponseObject;
+import beephone_shop_projects.core.common.base.ResponsePage;
+import beephone_shop_projects.utils.mail.EmailUtils;
+import beephone_shop_projects.utils.mail.MailBeePhoneRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,43 +23,76 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
 
 @RestController
 @RequestMapping("/voucher")
 @CrossOrigin("*")
 public class VoucherRestController {
+
+  @Autowired
+  private VoucherService voucherService;
+
     @Autowired
-    private VoucherService voucherService;
+    private VoucherRepository voucherRepository;
 
-    @GetMapping("/get-by-id/{id}")
-    public ResponseEntity getOneVoucher(@PathVariable("id") String id) {
-        return new ResponseEntity(voucherService.getOne(id), HttpStatus.OK);
-    }
+    @Autowired
+    private EmailUtils emailUtils;
 
-    @PostMapping("/addVoucher")
-    public ResponseEntity addVoucher(@RequestBody CreateVoucherRequest request) {
-        return new ResponseEntity(voucherService.addVoucher(request), HttpStatus.CREATED);
-    }
+  @PostMapping("/sendMail")
+  private void testMail(@RequestBody MailBeePhoneRequest emails) {
+    emailUtils.sendEmailEvent(emails);
+  }
 
-    @PutMapping("/updateVoucher/{id}")
-    public ResponseEntity updateVoucher(@PathVariable("id") String id,@RequestBody UpdateVoucherRequest request) {
-        return new ResponseEntity(voucherService.updateVoucher(request, id), HttpStatus.OK);
-    }
+  @GetMapping("/get-by-id/{id}")
+  public ResponseObject getOneVoucher(@PathVariable("id") String id) {
+    return new ResponseObject(voucherService.getOne(id));
+  }
 
-    @DeleteMapping("/deleteVoucher/{id}")
-    public ResponseEntity deleteVoucher(@PathVariable("id") String id) {
-        return new ResponseEntity(voucherService.deleteVoucher(id), HttpStatus.OK);
-    }
+  @PostMapping("/addVoucher")
+  public ResponseObject addVoucher(@RequestBody CreateVoucherRequest request) {
+    return new ResponseObject(voucherService.addVoucher(request));
+  }
 
-    @PutMapping("/deleteTrangThaiVoucher/{id}")
-    public ResponseEntity deleteTrangThaiVoucher(@PathVariable("id") String id) {
-        return new ResponseEntity(voucherService.doiTrangThai(id), HttpStatus.OK);
-    }
+  @PutMapping("/updateVoucher/{id}")
+  public ResponseObject updateVoucher(@PathVariable("id") String id, @RequestBody UpdateVoucherRequest request) {
+    return new ResponseObject(voucherService.updateVoucher(request, id));
+  }
 
-    @GetMapping("/vouchers")
-    public ResponseEntity hienThiVoucher(@ModelAttribute FindVoucherRequest request) {
-        return new ResponseEntity(voucherService.getAll(request), HttpStatus.OK);
-    }
+  @DeleteMapping("/deleteVoucher/{id}")
+  public ResponseObject deleteVoucher(@PathVariable("id") String id) {
+    return new ResponseObject(voucherService.deleteVoucher(id));
+  }
+
+  @PutMapping("/deleteTrangThaiVoucher/{id}")
+  public ResponseObject deleteTrangThaiVoucher(@PathVariable("id") String id, @RequestBody ChangeStatusVoucherRequest request) {
+    return new ResponseObject(voucherService.doiTrangThai(request, id));
+  }
+
+  @PutMapping("/kichHoatVoucher/{id}")
+  public ResponseObject kichHoatVoucher(@PathVariable("id") String id) {
+    return new ResponseObject(voucherService.kichHoatVoucher(id));
+  }
+
+  @GetMapping("/vouchers")
+  public ResponsePage hienThiVoucher(@ModelAttribute FindVoucherRequest request) {
+    return new ResponsePage(voucherService.getAll(request));
+  }
+
+  @GetMapping("/findVoucher")
+  public ResponseObject getList(@RequestParam(value = "input", defaultValue = "") String input,
+                                @RequestParam(value = "tongTien", defaultValue = "0") BigDecimal tongTien) {
+    return new ResponseObject(voucherService.checkVoucher(input, tongTien));
+  }
+
+  @GetMapping("/voucherActive")
+  public ResponsePage getVoucherActive(final FindVoucherRequest request) {
+    return new ResponsePage(voucherService.getVoucherStatusIsActive(request.getPageNo(), request));
+  }
+
+  @GetMapping("/voucherActive/all")
+  public ResponseObject getVoucherActiveList() {
+    return new ResponseObject(voucherRepository.getVoucherStatusIsActiveList());
+  }
 
 }

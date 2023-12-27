@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface HinhThucThanhToanRepository extends GenericRepository<HinhThucThanhToan, String> {
   List<HinhThucThanhToan> getPaymentMethodsByOrderId(String id);
+  HinhThucThanhToan getPaymentMethodById(String id);
 }

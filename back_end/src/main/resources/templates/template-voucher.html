@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Email Template</title>
+</head>
+<div class='send-main' style="width: 100%">
+    <div class='' style="width: 86%; margin: 0 auto; margin-top: 20px">
+        <div class='wrap-header-bill' style="text-align: center; margin-left: 30px">
+            <div class=''>
+                <img class='logo' style="width: 330px; height:82px"
+                     src="https://res.cloudinary.com/dj9e1otbm/image/upload/v1700643568/oeojgihz3v9gtovoijjg.png"
+                     alt=""/>
+            </div>
+        </div>
+    </div>
+    <span style="font-size: 20px">
+        Kính gửi <span class='' style="font-weight: bold" th:text="${fullNameCustomer}"> fullName</span> !
+    </span>
+    <p>Chúc mừng! Chúng tôi xin gửi đến bạn một voucher giá trị để bạn có thể tận hưởng những trải nghiệm mua sắm thú vị
+        trên trang web của chúng tôi. Đây là cách chúng tôi muốn tri ân sự ủng hộ và niềm tin mà bạn đã dành cho chúng
+        tôi.
+    </p>
+
+    <p>Thông tin chi tiết về phiếu giảm giá:</p>
+    <ul>
+        <li> Mã giảm giá:
+            <span class='' style="font-weight: bold" th:text="${codeVoucher}"> codeVoucher</span>
+        </li>
+        <li> Phiếu giảm giá có giá trị
+            <span
+                    class='' style="font-weight: bold; color: red"
+                    th:text="${valueVoucher}"> valueVoucher</span> khi đơn hàng đạt tổng giá trị
+            <span
+                    class='' style="font-weight: bold; color: red"
+                    th:text="${conditionVoucher}"> conditionVoucher</span>
+            </span>
+        </li>
+        <li>
+            Phiếu giảm giá sẽ bắt đầu vào ngày
+            <span class='' style="font-weight: bold" th:text="${startTime}"> startTime</span>
+            và kết thúc vào ngày
+            <span class='' style="font-weight: bold" th:text="${endTime}"> endTime</span>
+        </li>
+    </ul>
+    <p>Hãy sử dụng mã voucher này trong quá trình thanh toán để nhận được ưu đãi đặc biệt từ chúng tôi. Đừng bỏ lỡ cơ
+        hội này để mua sắm các sản phẩm chất lượng cao với mức giá ưu đãi hấp dẫn.</p>
+    <p>Chúng tôi xin chân thành cảm ơn sự ủng hộ của Quý Khách và hy vọng sẽ tiếp tục phục vụ bạn tốt nhất có thể.</p>
+    <p>Trân trọng,<br>BeePhone Shop</p>
+</div>
+<div class='' style="width: 86%; margin: 0 auto; margin-top: 20px">
+                          <span>
+                            Nếu bạn có bất kì câu hỏi nào, hoặc cần hỗ trợ về phiếu giảm giá. Vui lòng liên hệ với chúng tôi qua Hotline:
+                            <span class='' style="cursor: pointer">
+                              0978774487
+                            </span>
+                    hoặc Email:
+                    <span class='' style="cursor: pointer">
+                    beephoneshop@gmail.vn
+                    </span>!
+
+                    </span>
+</div>
+</div>
+<p style="width: 100px; height: 150px" th:text="${message}">Default message</p>
+</body>
+</html>

@@ -21,24 +21,15 @@ import java.io.Serializable;
 @Table(name = "cau_hinh")
 public class CauHinh extends PrimaryEntity implements Serializable {
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_ram")
-    private Ram idRam;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_ram")
+  private Ram ram;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_rom")
-    private Rom idRom;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_rom")
+  private Rom rom;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_pin")
-    private Pin idPin;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_mau_sac")
-    private MauSac idMauSac;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_man_hinh")
-    private ManHinh idManHinh;
-
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "id_mau_sac")
+  private MauSac mauSac;
 }

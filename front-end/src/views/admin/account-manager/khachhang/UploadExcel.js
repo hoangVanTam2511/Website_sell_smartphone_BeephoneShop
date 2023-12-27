@@ -1,6 +1,7 @@
 import React from "react";
 import axios from "axios";
 import { apiURLKH } from "../../../../service/api";
+import { request } from '../../../../store/helpers/axios_helper'
 const YourComponent = () => {
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
@@ -8,7 +9,7 @@ const YourComponent = () => {
     formData.append("file", file);
 
     try {
-      const response = await axios.post(apiURLKH + "/import", formData);
+      const response = request('POST', apiURLKH + "/import", formData);
       // Xử lý phản hồi thành công từ API
       console.log(response.data.content);
     } catch (error) {

@@ -32,6 +32,7 @@ import * as SettingSelector from "../../store/setting/selectors";
 
 // Redux Selector / Action
 import { useSelector } from "react-redux";
+import { Timeline } from "@mailtop/horizontal-timeline";
 
 const Tour = () => {
   const tour = useContext(ShepherdTourContext);
@@ -51,7 +52,7 @@ const Default = memo((props) => {
   // let location = useLocation();
   // const pageLayout = useSelector(SettingSelector.page_layout);
   const appName = useSelector(SettingSelector.app_name);
-  useEffect(() => {});
+  useEffect(() => { });
 
   // const closeTour = () => {
   //   sessionStorage.setItem("tour", "true");
@@ -156,22 +157,19 @@ const Default = memo((props) => {
 
   return (
     <Fragment>
-      <Loader />
       <Sidebar app_name={appName} />
-      <Tour />
       <main className="main-content">
         <div className="position-relative">
           <Header />
           <SubHeader />
         </div>
         <div className="py-0 conatiner-fluid content-inner mt-n5">
-          {/* <DefaultRouter /> */}
+          <div style={{ display: "none" }}>
+            <Timeline></Timeline>
+          </div>
           <Outlet />
         </div>
-
-        <Footer />
       </main>
-      <SettingOffCanvas />
     </Fragment>
   );
 });

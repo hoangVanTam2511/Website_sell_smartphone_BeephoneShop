@@ -1,0 +1,20 @@
+.product-selling {
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: center;
+}
+
+.img-product-selling {
+  margin-right: 10px;
+}
+
+.product-info {
+  text-align: start;
+  display: flex;
+  flex-direction: column;
+}
+
+.button-active {
+  background-color: blue;
+  color: white;
+}

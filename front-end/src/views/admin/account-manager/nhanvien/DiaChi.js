@@ -1,12 +1,12 @@
+/* eslint-disable no-use-before-define */
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { FormControl, Grid, InputLabel, MenuItem, Select } from "@mui/material";
+import { MenuItem, Grid, TextField } from "@mui/material";
+import { request } from '../../../../store/helpers/axios_helper'
 
 const host = "https://provinces.open-api.vn/api/";
 
 const AddressForm = ({
-  required,
-  submitted,
   onProvinceChange,
   onDistrictChange,
   onWardChange,
@@ -18,36 +18,20 @@ const AddressForm = ({
   const [selectedProvince, setSelectedProvince] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedWard, setSelectedWard] = useState("");
-  const [provinceError, setProvinceError] = useState(false);
-  const [districtError, setDistrictError] = useState(false);
-  const [wardError, setWardError] = useState(false);
   useEffect(() => {
     fetchProvinces();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const callAPI = (api) => {
-    // setFormSubmitted(true); // Set formSubmitted to true when the user clicks the "Xác nhận" button
-
-    // Check if required fields are empty
-    if (!selectedProvince) {
-      setProvinceError(true);
-    }
-    if (!selectedDistrict) {
-      setDistrictError(true);
-    }
-    if (!selectedWard) {
-      setWardError(true);
-    }
-    return axios.get(api).then((response) => {
-      return response.data;
-    });
+  const callAPI = async (api) => {
+    const response = await axios.get(api);
+    return response.data;
   };
 
   const fetchProvinces = () => {
-    callAPI(host + "?depth=1")
+    callAPI(host + "?depth=2")
       .then((data) => {
         setProvinces(data);
-        // console.log(data.provinceCode);
       })
       .catch((error) => {
         console.error("Error fetching provinces:", error);
@@ -82,83 +66,65 @@ const AddressForm = ({
     setSelectedWard("");
     fetchDistricts(value.target.value);
     onProvinceChange(value.target.value);
-    setProvinceError(false);
-    if (submitted) {
-      if (!value.target.value) {
-        setProvinceError(true);
-      }
-    }
+    setDistricts([]);
+    setWards([]);
+    onDistrictChange("");
+    onWardChange("");
   };
 
   const handleDistrictChange = (value) => {
     setSelectedDistrict(value.target.value);
-    setSelectedWard("");
+    setSelectedWard(""); // Đặt xã thành rỗng
     fetchWards(value.target.value);
     onDistrictChange(value.target.value);
-    setDistrictError(false);
-    if (submitted) {
-      if (!value.target.value) {
-        setDistrictError(true);
-      }
-    }
+    onWardChange("");
+    setWards([]);
   };
-
   const handleWardChange = (value) => {
     setSelectedWard(value.target.value);
     onWardChange(value.target.value);
-    setWardError(false);
-    if (submitted) {
-      // Nếu đã ấn nút "Lưu" thì kiểm tra trạng thái select
-      if (!value.target.value) {
-        setWardError(true);
-      }
-    }
   };
-
   useEffect(() => {
-    if (selectedProvince) {
+    if (selectedDistrict && selectedProvince && selectedWard) {
       const selectedProvinceName = provinces.find(
         (province) => province.code === selectedProvince
-      )?.name;
-      onProvinceChange(selectedProvinceName);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedProvince, onProvinceChange]);
-
-  useEffect(() => {
-    if (selectedDistrict) {
+      ).name;
       const selectedDistrictName = districts.find(
         (district) => district.code === selectedDistrict
-      )?.name;
-      onDistrictChange(selectedDistrictName);
-    }
-  }, [selectedDistrict, onDistrictChange]);
-
-  useEffect(() => {
-    if (selectedWard) {
+      ).name;
       const selectedWardName = wards.find(
         (ward) => ward.code === selectedWard
-      )?.name;
+      ).name;
+      onProvinceChange(selectedProvinceName);
+      onDistrictChange(selectedDistrictName);
       onWardChange(selectedWardName);
     }
-  }, [selectedWard, onWardChange]);
+  }, [
+    selectedProvince,
+    selectedDistrict,
+    selectedWard,
+    provinces,
+    districts,
+    wards,
+    onProvinceChange,
+    onDistrictChange,
+    onWardChange,
+  ]);
 
   return (
-    <div>
-      <Grid container spacing={3}>
-        <Grid item xs={4}>
-          <FormControl style={{ width: "100%" }}>
-            <InputLabel id="demo-simple-select-label">
-              Chọn Tỉnh/Thành phố
-            </InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
+    <>
+      <div>
+        <Grid container spacing={3.3}>
+          <Grid item xs={4}>
+            <TextField
+              select
               label="Chọn Tỉnh/Thành phố"
-              onChange={handleProvinceChange}
               value={selectedProvince}
-              size="large"
+              onChange={handleProvinceChange}
               error={formSubmitted && !selectedProvince}
+              helperText={
+                formSubmitted && !selectedProvince ? "Vui lòng chọn" : ""
+              }
               style={{ width: "100%" }}
             >
               {provinces.map((province) => (
@@ -166,90 +132,47 @@ const AddressForm = ({
                   {province.name}
                 </MenuItem>
               ))}
-            </Select>
-            {required && submitted && provinceError && (
-              <p
-                style={{
-                  color: " #d32f2f",
-                  paddingLeft: "15px",
-                  fontSize: "12px",
-                }}
-              >
-                Vui lòng chọn
-              </p>
-            )}
-          </FormControl>
-        </Grid>
-        <Grid item xs={4}>
-          <FormControl style={{ width: "100%" }}>
-            <InputLabel id="demo-simple-select-label">
-              Chọn Quận/Huyện
-            </InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
+            </TextField>
+          </Grid>
+          <Grid item xs={4}>
+            <TextField
+              select
               label="Chọn Quận/Huyện"
-              onChange={handleDistrictChange}
               value={selectedDistrict}
-              size="large"
-              style={{ width: "100%" }}
+              onChange={handleDistrictChange}
               error={formSubmitted && !selectedDistrict}
+              helperText={
+                formSubmitted && !selectedDistrict ? "Vui lòng chọn" : ""
+              }
+              style={{ width: "100%" }}
             >
               {districts.map((district) => (
                 <MenuItem key={district.code} value={district.code}>
                   {district.name}
                 </MenuItem>
               ))}
-            </Select>
-            {required && submitted && districtError && (
-              <p
-                style={{
-                  color: " #d32f2f",
-                  paddingLeft: "15px",
-                  fontSize: "12px",
-                }}
-              >
-                Vui lòng chọn
-              </p>
-            )}
-          </FormControl>
-        </Grid>
-        <Grid item xs={4}>
-          <FormControl style={{ textAlign: "center", width: "100%" }}>
-            <InputLabel id="demo-simple-select-label">
-              Chọn Phường/Xã
-            </InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
+            </TextField>
+          </Grid>
+          <Grid item xs={4}>
+            <TextField
+              select
               label="Chọn Phường/Xã"
-              onChange={handleWardChange}
               value={selectedWard}
-              size="large"
+              onChange={handleWardChange}
               error={formSubmitted && !selectedWard}
+              helperText={formSubmitted && !selectedWard ? "Vui lòng chọn" : ""}
+              style={{ width: "100%" }}
             >
               {wards.map((ward) => (
                 <MenuItem key={ward.code} value={ward.code}>
                   {ward.name}
                 </MenuItem>
               ))}
-            </Select>
-            {required && submitted && wardError && (
-              <p
-                style={{
-                  color: " #d32f2f",
-                  fontSize: "12px",
-                  textAlign: "left",
-                  paddingLeft: "15px",
-                }}
-              >
-                Vui lòng chọn
-              </p>
-            )}
-          </FormControl>
+            </TextField>
+          </Grid>
         </Grid>
-      </Grid>
-    </div>
+      </div>
+    </>
   );
 };
 

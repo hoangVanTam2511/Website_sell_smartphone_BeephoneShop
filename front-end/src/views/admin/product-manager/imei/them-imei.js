@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Form, Button } from 'react-bootstrap'
 import { useNavigate, useParams } from 'react-router-dom'
 import axios from "axios"
+import { request } from '../../../../store/helpers/axios_helper'
 
 const ThemMauSac = () => {
 
@@ -20,7 +21,7 @@ const ThemMauSac = () => {
 
     const onSubmit = async (e) => {
         e.preventDefault();
-        await axios.post(`http://localhost:8080/imei/save/${idChiTietSanPham}`, mauSac)
+        request('POST',`/imei/save/${idChiTietSanPham}`, mauSac)
         navigate(`/imei/${idChiTietSanPham}`)
     }
 

@@ -1,24 +1,38 @@
 package beephone_shop_projects.core.admin.order_management.service;
 
-import beephone_shop_projects.core.admin.order_management.dto.OrderDto;
-import beephone_shop_projects.core.admin.order_management.dto.SearchFilterOrderDto;
-import beephone_shop_projects.core.admin.order_management.dto.UpdateOrderDto;
+import beephone_shop_projects.core.admin.order_management.model.request.SearchFilterOrderDto;
+import beephone_shop_projects.core.admin.order_management.model.request.OrderRequest;
+import beephone_shop_projects.core.admin.order_management.model.response.OrderCustomResponse;
+import beephone_shop_projects.core.admin.order_management.model.response.OrderPaginationCustomResponse;
+import beephone_shop_projects.core.admin.order_management.model.response.OrderResponse;
 import beephone_shop_projects.entity.Account;
 import beephone_shop_projects.entity.Voucher;
 import org.springframework.data.domain.Page;
 
-public interface HoaDonService extends GenericService<OrderDto, String> {
+import java.util.List;
 
-  OrderDto getOrderDetailsById(String id);
+public interface HoaDonService extends GenericService<OrderResponse, OrderRequest, String> {
 
-  OrderDto placeOrder(Account account, Voucher voucher) throws Exception;
+  OrderResponse getOrderDetailsById(String id);
 
-  Page<OrderDto> findOrdersByMultipleCriteriaWithPagination(SearchFilterOrderDto searchFilterDTO) throws Exception;
+  OrderResponse placeOrder(OrderRequest orderRequest) throws Exception;
 
-  OrderDto updateOrder(UpdateOrderDto updateOrder, OrderDto orderDto) throws Exception;
+  Page<OrderPaginationCustomResponse> findOrdersByMultipleCriteriaWithPagination(SearchFilterOrderDto searchFilterDTO) throws Exception;
 
-  OrderDto createOrderPending() throws Exception;
+  OrderResponse updateStatusOrderDelivery(OrderRequest req, String id) throws Exception;
 
-  OrderDto updateOrderPending(UpdateOrderDto updateOrderDto) throws Exception;
+  OrderResponse createOrderPending(String user) throws Exception;
+
+  OrderResponse updateOrPaymentOrderPending(OrderRequest req, String id) throws Exception;
+
+  List<OrderResponse> getOrdersPending() throws Exception;
+
+  OrderResponse getOrderPendingById(String id);
+
+  Boolean deleteOrderPening(String id) throws Exception;
+
+  OrderResponse rollBackStatusOrder(OrderRequest req) throws Exception;
+
+  OrderResponse updateInfoOrderDelivery(OrderRequest req) throws Exception;
 
 }

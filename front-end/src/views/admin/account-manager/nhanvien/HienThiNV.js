@@ -1,144 +1,119 @@
-import {
-  Form,
-  Popconfirm,
-  Table,
-  Input,
-  Button,
-  Pagination,
-  // Space,
-  Tooltip,
-  Select,
-  Card,
-} from "antd";
+import { Form, Popconfirm, Table, Button, message } from "antd";
 import moment from "moment";
-import {
-  useState,
-  useEffect, //useRef
-} from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { apiURLNV } from "../../../../service/api";
-import { SearchOutlined } from "@ant-design/icons";
-// import Highlighter from "react-highlight-words";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faPencilAlt,
   faArrowsRotate,
-  faRectangleList,
+  faHouse,
+  faPenToSquare,
 } from "@fortawesome/free-solid-svg-icons";
 import "../../../../assets/scss/HienThiNV.scss";
 import { Link, useNavigate } from "react-router-dom";
 import NhapTuFile from "../nhanvien/NhapTuFile";
-const { Option } = Select;
-const currentDate = new Date().toISOString().split("T")[0];
-const EditableCell = ({
-  editing,
-  dataIndex,
-  title,
-  inputType,
-  record,
-  index,
-  children,
-  ...restProps
-}) => {
-  const [ngaySinhValue, setNgaySinhValue] = useState(null);
-  useEffect(() => {}, [record]);
-  const handleDatePickerChange = (date) => {
-    setNgaySinhValue(date);
-  };
-  const inputNode =
-    inputType === "date" ? (
-      <Input
-        type="date"
-        max={currentDate}
-        value={ngaySinhValue ? moment(ngaySinhValue).format("mm/dd/yyyy") : ""}
-        onChange={(e) =>
-          handleDatePickerChange(moment(e.target.value, "mm/dd/yyyy"))
-        }
-      />
-    ) : (
-      <Input />
-    );
-  return (
-    //copy props bắt buộc nhập các trường sau bấm edit
-    <td {...restProps}>
-      {editing ? (
-        <Form.Item
-          name={dataIndex}
-          style={{
-            margin: 0,
-          }}
-          rules={[
-            {
-              required: true,
-              message: `Please Input ${title}!`,
-            },
-          ]}
-        >
-          {inputNode}
-        </Form.Item>
-      ) : (
-        children
-      )}
-    </td>
-  );
-};
+import Card from "../../../../components/Card";
+import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
+import {
+  TextField,
+  Tooltip,
+  Select as SelectMui,
+  MenuItem,
+  Pagination,
+  FormControl,
+} from "@mui/material";
+import { StatusAccountCus, StatusCusNumber } from "../khachhang/enum";
+import { Notistack } from "../../order-manager/enum";
+import useCustomSnackbar from "../../../../utilities/notistack";
+import { request } from "../../../../store/helpers/axios_helper";
+import ExcelExportHelper from "../nhanvien/ExcelExportHelper";
+import { PlusOutlined } from "@ant-design/icons";
 //show
 const HienThiNV = () => {
   const [form] = Form.useForm();
   let [listNV, setListNV] = useState([]);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-
-  const [filterStatus, setFilterStatus] = useState(null);
-  const handleFilter = (status) => {
-    setFilterStatus(status);
-  };
-  const filteredDataSource = filterStatus
-    ? listNV.filter((item) => item.trangThai === filterStatus)
-    : listNV;
-  const handleSearchTop = async () => {
+  const { handleOpenAlertVariant } = useCustomSnackbar();
+  const [targetPage, setTargetPage] = useState(1);
+  const [searchText, setSearchText] = useState("");
+  const [filterStatus, setFilterStatus] = useState(0);
+  const handleSearch = async (page = currentPage) => {
     try {
-      const response = await axios.get(apiURLNV + "/search-all", {
+      if (!searchText) {
+        setCurrentPage(targetPage);
+        loadDataListRole(targetPage);
+        return;
+      }
+      const response = request("GET", apiURLNV + "/search-all", {
         params: {
           tenKH: searchText,
-          page: currentPage,
+          page: page,
+          trangThai: filterStatus,
         },
       });
-      let count = 0;
-      const modifiedData = response.data.content.map((item) => ({
-        ...item,
-        stt: ++count,
-      }));
-
-      // setFilteredDataSource(modifiedData);
-      setListNV(modifiedData); //1day
+      if (searchText && response.data.data.length === 0 && page !== 1) {
+        setCurrentPage(1); // Chuyển về trang 1
+        return;
+      }
+      setListNV(response.data.data);
       setTotalPages(response.data.totalPages);
     } catch (error) {
       console.log("Error searching accounts:", error);
     }
   };
+  useEffect(() => {
+    loadDataListRole(1); // Nếu không có searchText, tải danh sách ban đầu cho trang hiện tại
+  }, [searchText]);
+  // load
+  const loadDataListRole = (currentPage) => {
+    request(
+      "GET",
+      apiURLNV +
+        "/search-all?page=" +
+        currentPage +
+        "&tenKH=" +
+        searchText +
+        "&trangThai=" +
+        filterStatus
+    )
+      .then((response) => {
+        setListNV(response.data.data);
+        setTotalPages(response.data.totalPages);
+      })
+      .catch(() => {});
+  };
 
-  const [searchText, setSearchText] = useState("");
+  const handleFilter = (status) => {
+    setFilterStatus(status);
+    setCurrentPage(currentPage); // Set the current page to 1 when the filter changes
+  };
+
+  useEffect(() => {
+    loadDataListRole(1);
+  }, [filterStatus]);
+  // const fetchEmployeeList = async (currentPage) => {
+  //   try {
+  //     const response = await axios.get(apiURLNV + "/filter", {
+  //       params: {
+  //         trangThai: filterStatus,
+  //         page: currentPage,
+  //       },
+  //     });
+  //     setListNV(response.data.content);
+  //     setTotalPages(response.data.totalPages);
+  //   } catch (error) {
+  //     console.error("Error fetching employee data:", error);
+  //   }
+  // };
   useEffect(() => {
     loadDataListRole(currentPage);
   }, [currentPage]);
-  // load
-  const loadDataListRole = (currentPage) => {
-    axios
-      .get(apiURLNV + "/hien-thi?page=" + currentPage)
-      .then((response) => {
-        // console.log(response);
-        const modifiedData = response.data.content.map((item, index) => ({
-          ...item,
-          stt: index + 1,
-        }));
-        console.log(modifiedData);
-        // console.log(modifiedData);
-        setListNV(modifiedData);
-        setCurrentPage(response.data.number);
-        setTotalPages(response.data.totalPages);
-      })
-      .catch((error) => {});
+  const [keySelect, setKeySelect] = useState(0);
+  const handleReset = () => {
+    loadDataListRole(1);
+    setSearchText("");
+    setKeySelect(keySelect + 1);
   };
   const navigate = useNavigate();
   const [editingKey, setEditingKey] = useState("");
@@ -161,38 +136,47 @@ const HienThiNV = () => {
       gioiTinh: record.gioiTinh,
       anhDaiDien: record.anhDaiDien,
     });
-    navigate(`/update-nhan-vien/${record.id}`);
+    navigate(`/dashboard/update-employee/${record.id}`);
     setEditingKey(record.id);
   };
   const doChangeTrangThai = (id) => {
-    //  const [trangThai, setTrangThai] = useState(record.trangThai);
-    axios
-      .put(apiURLNV + `/${id}/doi-tt`)
+    request("PUT", apiURLNV + `/${id}/doi-tt`)
       .then((response) => {
         loadDataListRole(currentPage);
-        // console.log("Trạng thái đã được thay đổi");
+        handleOpenAlertVariant("Đổi trạng thái thành công", Notistack.SUCCESS);
       })
       .catch((error) => {
-        // Xử lý lỗi
         console.error("Đã xảy ra lỗi khi thay đổi trạng thái", error);
       });
   };
-  const handleInputChangeTop = (e) => {
-    setSearchText(e.target.value);
+  const chuyenTrang = (event, page) => {
+    setCurrentPage(page);
+    loadDataListRole(page);
   };
+
+  const [openSelect, setOpenSelect] = useState(false);
+  const handleCloseSelect = () => {
+    setOpenSelect(false);
+  };
+
+  const handleOpenSelect = () => {
+    setOpenSelect(true);
+  };
+
   //Ten column
   const columns = [
     {
       title: "STT",
       dataIndex: "stt",
       width: "5%",
-      render: (text) => <span>{text}</span>,
-      sorter: (a, b) => a.stt - b.stt,
+      align: "center",
+      render: (text, record) => <span>{listNV.indexOf(record) + 1}</span>,
     },
     {
-      title: "Ma",
+      title: "Mã",
       dataIndex: "ma",
       width: "8%",
+      align: "center",
       // ...getColumnSearchProps("ma"),
     },
     {
@@ -201,82 +185,71 @@ const HienThiNV = () => {
       width: "15%",
       editable: true,
       ellipsis: true,
-      // ...getColumnSearchProps("hoVaTen"),
+      align: "center",
     },
-
-    // {
-    //   title: "Ngày Sinh",
-    //   dataIndex: "ngaySinh",
-    //   width: "13%",
-    //   editable: true,
-    //   ...getColumnSearchProps("ngaySinh"),
-    // },
     {
       title: "Email",
       dataIndex: "email",
       width: "15%",
       editable: true,
       ellipsis: true,
-      // ...getColumnSearchProps("email"),
+      align: "center",
     },
     {
       title: "Số điện thoại",
       dataIndex: "soDienThoai",
       width: "14%",
       editable: true,
-      // ...getColumnSearchProps("soDienThoai"),
+      align: "center",
     },
-    {
-      title: "Địa chỉ",
-      // dataIndex: "diaChiTongHop",
-      width: "10%",
-      editable: true,
-      ellipsis: true,
-      render: (text, record) => {
-        return (
-          <span>
-            {record.diaChi} {record.xaPhuong}
-            {record.quanHuyen} {record.tinhThanhPho}
-          </span>
-        );
-      },
-    },
-
     {
       title: "Trạng thái",
       dataIndex: "trangThai",
+      align: "center",
       width: "10%",
-      // filters: [
-      //   {
-      //     text: "Làm việc",
-      //     value: "1",
-      //   },
-      //   {
-      //     text: "Đã nghỉ",
-      //     value: "2",
-      //   },
-      // ],
-      // eslint-disable-next-line eqeqeq
-      onFilter: (value, record) => record.trangThai == value,
+      // onFilter: (value, record) => record.trangThai == value,
       filterSearch: true,
-      // editable: true,
-      // editable: true,
       render: (text, record) => (
         <span>
-          {/*  eslint-disable-next-line eqeqeq */}
-          {record.trangThai == 1 ? (
-            <Button type="primary" style={{ borderRadius: "30px" }}>
-              Làm việc
-            </Button>
-          ) : // eslint-disable-next-line eqeqeq
-          record.trangThai == 2 ? (
-            <Button type="primary" danger style={{ borderRadius: "30px" }}>
-              Đã nghỉ
-            </Button>
+          {record.trangThai === StatusAccountCus.LAM_VIEC ? (
+            <div
+              className="rounded-pill mx-auto badge-primary"
+              style={{
+                height: "35px",
+                width: "135px",
+                padding: "4px",
+              }}
+            >
+              <span className="text-white" style={{ fontSize: "14px" }}>
+                Làm việc
+              </span>
+            </div>
+          ) : record.trangThai === StatusAccountCus.DA_NGHI ? (
+            <div
+              className="rounded-pill mx-auto badge-danger"
+              style={{
+                height: "35px",
+                width: "135px",
+                padding: "4px",
+              }}
+            >
+              <span className="text-white" style={{ fontSize: "14px" }}>
+                Đã nghỉ
+              </span>
+            </div>
           ) : (
-            <Button type="primary" style={{ borderRadius: "30px" }}>
-              Không xác định
-            </Button>
+            <div
+              className="rounded-pill mx-auto badge-primary"
+              style={{
+                height: "35px",
+                width: "135px",
+                padding: "4px",
+              }}
+            >
+              <span className="text-white" style={{ fontSize: "14px" }}>
+                Không xác định
+              </span>
+            </div>
           )}
         </span>
       ),
@@ -291,21 +264,19 @@ const HienThiNV = () => {
           ""
         ) : (
           <>
-            <Tooltip title="Sửa Khách Hàng" color={"black"} placement="bottom">
+            <Tooltip title="Sửa Nhân Viên" color={"black"} placement="bottom">
               <FontAwesomeIcon
-                icon={faPencilAlt}
+                icon={faPenToSquare}
                 onClick={() => edit(record)}
                 style={{
                   cursor: "pointer",
-                  color: editingKey === record.id ? "red" : "green",
+                  color: "#2f80ed",
                 }}
-                disabled={editingKey !== ""}
+                size="lg"
               />
             </Tooltip>
             <Popconfirm
-              title={`Đổi trạng thái tài khoản từ ${
-                record.trangThai === 1 ? "LÀM VIỆC" : "ĐÃ NGHỈ"
-              } sang ${record.trangThai === 1 ? "ĐÃ NGHỈ" : "LÀM VIỆC"} `}
+              title={`Bạn có chắc chắn đổi trạng thái tài khoản? `}
               onConfirm={() => {
                 doChangeTrangThai(record.id);
               }}
@@ -317,11 +288,19 @@ const HienThiNV = () => {
                 color={"black"}
                 placement="bottom"
               >
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <FontAwesomeIcon
                   icon={faArrowsRotate}
-                  style={{ cursor: "pointer" }}
+                  style={{
+                    cursor: "pointer",
+                    // eslint-disable-next-line eqeqeq
+                    color:
+                      record.trangThai === StatusAccountCus.LAM_VIEC
+                        ? "#e5383b"
+                        : "#09a129",
+                    paddingLeft: "20px",
+                  }}
                   transform={{ rotate: 90 }}
+                  size="lg"
                 />
               </Tooltip>
             </Popconfirm>
@@ -331,204 +310,197 @@ const HienThiNV = () => {
     },
   ];
 
-  const mergedColumns = columns.map((col) => {
-    if (!col.editable) {
-      return col;
-    }
-    return {
-      ...col,
-      onCell: (record) => ({
-        record,
-        inputType: col.dataIndex === "ngaySinh" ? "date" : "text",
-        dataIndex: col.dataIndex,
-        title: col.title,
-        editing: isEditing(record),
-      }),
-    };
-  });
-
   return (
     <>
-      <div className="btn-add">
-        <span>
-          <Form style={{ width: "20em", display: "inline-block" }}>
-            <Input
-              placeholder="Search by Mã, Tên,..."
-              // value={searchValue}
-              // onChange={handleChange}
-            />
-          </Form>
-        </span>
-        {/* Search */}
-        <FontAwesomeIcon
-          // icon={faMagnifyingGlass}
-          style={{ marginLeft: "5px" }}
-        />
-        <span className="bl-add">
-          Trạng thái{" "}
-          <Select
-            defaultValue="Tất cả"
-            style={{
-              width: 120,
-            }}
-            onChange={handleFilter}
-          >
-            {" "}
-            <Option value="">Tất cả</Option>
-            <Option value={1}>Làm việc</Option>
-            <Option value={2}>Đã nghỉ</Option>
-          </Select>
-          <Link to="/them-nhan-vien">
-            <Button className="btn-them-tk">+ Thêm Tài khoản</Button>
-          </Link>
-          <Button className="btn-them-tu-file">
-            <NhapTuFile />
-          </Button>
-        </span>
-      </div>
       <div className="form-tbl">
-        <Form
-          form={form}
-          component={false}
-          initialValues={ {}}
-        >
-          <Table
-            components={{
-              body: {
-                cell: EditableCell,
-              },
+        <Form form={form} component={false} initialValues={{}}>
+          <div
+            className="mt-4"
+            style={{
+              backgroundColor: "#ffffff",
+              boxShadow: "0 0.1rem 0.3rem #00000010",
             }}
-            bordered
-            dataSource={filteredDataSource}
-            columns={mergedColumns}
-            rowClassName="editable-row"
-            pagination={false}
-            // {{
-            //   pageSize: 10,
-            //   current: currentPage + 1,
-            //   total: totalPages * 10,
-            //   showSizeChanger: false,
-            //   onChange: (value) => {
-            //     setCurrentPage(value - 1);
-            //   },
-            // }}
-            rowKey="id"
-            style={{ marginBottom: "20px" }}
-          />
+          >
+            <Card className="">
+              <Card.Header className="d-flex justify-content-between">
+                <div className="header-title mt-2">
+                  <TextField
+                    label="Tìm nhân viên"
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
+                    InputLabelProps={{
+                      sx: {
+                        marginTop: "",
+                        textTransform: "capitalize",
+                      },
+                    }}
+                    inputProps={{
+                      style: {
+                        height: "23px",
+                        width: "190px",
+                      },
+                    }}
+                    size="small"
+                    className=""
+                  />
+                  <Button
+                    onClick={() => {
+                      handleReset();
+                    }}
+                    className="rounded-2 ms-2"
+                    type="warning"
+                    style={{ width: "100px", fontSize: "15px" }}
+                  >
+                    <span
+                      className="text-dark"
+                      style={{ fontWeight: "500", marginBottom: "2px" }}
+                    >
+                      Làm Mới
+                    </span>
+                  </Button>
+                </div>
 
-      <Card>
-        {/* <h5 style={{ marginBottom: "10px" }}>
-          {" "}
-          <FontAwesomeIcon icon={faFilter} />
-          &nbsp;Lọc
-        </h5> */}
+                <div className="mt-2 d-flex">
+                  <div
+                    className="ms-4 me-5 d-flex"
+                    style={{
+                      height: "40px",
+                      position: "relative",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <div
+                      onClick={handleOpenSelect}
+                      className=""
+                      style={{ marginTop: "7px" }}
+                    >
+                      <span
+                        className="ms-2 ps-1"
+                        style={{ fontSize: "15px", fontWeight: "450" }}
+                      >
+                        Trạng Thái:{" "}
+                      </span>
+                    </div>
+                    <FormControl
+                      sx={{
+                        minWidth: 50,
+                      }}
+                      size="small"
+                    >
+                      <SelectMui
+                        MenuProps={{
+                          PaperProps: {
+                            style: {
+                              borderRadius: "7px",
+                            },
+                          },
+                        }}
+                        IconComponent={KeyboardArrowDownOutlinedIcon}
+                        sx={{
+                          "& .MuiOutlinedInput-notchedOutline": {
+                            border: "none !important",
+                          },
+                          "& .MuiSelect-select": {
+                            color: "#2f80ed",
+                            fontWeight: "500",
+                          },
+                        }}
+                        open={openSelect}
+                        onClose={handleCloseSelect}
+                        onOpen={handleOpenSelect}
+                        defaultValue={0}
+                        onChange={(e) => handleFilter(e.target.value)}
+                        key={keySelect}
+                      >
+                        <MenuItem className="" value={0}>
+                          Tất cả
+                        </MenuItem>
+                        <MenuItem value={StatusCusNumber.LAM_VIEC}>
+                          Làm việc
+                        </MenuItem>
+                        <MenuItem value={StatusCusNumber.DA_NGHI}>
+                          Đã nghỉ
+                        </MenuItem>
+                      </SelectMui>
+                    </FormControl>
+                  </div>
+                  <Link to="/dashboard/create-employee" className="me-3">
+                    <Button
+                      // onClick={handleCreateNewOrderPending}
+                      className="rounded-2 button-mui"
+                      type="primary"
+                      style={{
+                        height: "40px",
+                        width: "auto",
+                        fontSize: "15px",
+                      }}
+                    >
+                      {/* <PlusOutlined
+                    className="ms-1"
+                    style={{
+                      position: "absolute",
+                      bottom: "12.5px",
+                      left: "12px",
+                    }}
+                  /> */}
+                      <PlusOutlined
+                        className="ms-1"
+                        style={{
+                          position: "absolute",
+                          bottom: "12.5px",
+                          left: "12px",
+                        }}
+                      />
+                      <span
+                        className="ms-3 ps-1"
+                        style={{ marginBottom: "3px", fontWeight: "500" }}
+                      >
+                        Tạo tài khoản
+                      </span>
+                    </Button>
+                  </Link>
 
+                  <Button
+                    // onClick={handleCreateNewOrderPending}
+                    className="rounded-2 button-mui me-2"
+                    type="primary"
+                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                  >
+                    <ExcelExportHelper data={listNV} />
+                  </Button>
 
-        <div className="btn-add">
-          <span>
-            <Form
-              style={{
-                display: "inline-block",
-                marginLeft: "50px",
-                paddingBottom: " 10px",
-                width: "20em",
-                height: "32px",
-              }}
-            >
-              <Input
-                placeholder="Tìm theo mã / họ và tên / sdt..."
-                value={searchText}
-                onChange={handleInputChangeTop}
-                style={{
-                  width: "21em",
-                  display: "inline-block",
-                  borderRadius: "10px 0px 0px 10px",
-                }}
-              />
-            </Form>
-          </span>
-          <Tooltip title="Search" color={"black"} placement="bottom">
-            <Button
-              onClick={handleSearchTop}
-              style={{
-                borderRadius: "30px",
-                width: "4em",
-                backgroundColor: "#4976e8",
-                color: "white",
-                paddingBottom: "30px",
-              }}
-            >
-              <SearchOutlined style={{ cursor: "pointer" }} />
-            </Button>
-          </Tooltip>
-
-          <span className="bl-add">
-            Trạng thái{"  "} &nbsp;&nbsp;
-            <Select
-              defaultValue="Tất cả"
-              style={{
-                width: 200,
-                marginRight: "20em",
-              }}
-              onChange={handleFilter}
-            >
-              {" "}
-              <Option value="">Tất cả</Option>
-              <Option value={1}>Làm việc</Option>
-              <Option value={2}>Đã nghỉ</Option>
-            </Select>
-          </span>
-        </div>
-      </Card>
-
-      <Card style={{ marginTop: "10px" }}>
-        {" "}
-        <div className="btn-add">
-          <h5>
-            <FontAwesomeIcon icon={faRectangleList} /> &nbsp;Danh sách Nhân viên
-            <span className="bl-add">
-              <Link to="/them-nhan-vien">
-                <Button className="btn-them-tk">+ Thêm Tài khoản</Button>
-              </Link>
-              <Button className="btn-them-tu-file">
-                <NhapTuFile />
-              </Button>
-            </span>
-          </h5>
-        </div>
-        <div className="form-tbl">
-          {" "}
-          <Form form={form} component={false}>
-            <Table
-              components={{
-                body: {
-                  cell: EditableCell,
-                },
-              }}
-              bordered
-              dataSource={filteredDataSource}
-              columns={mergedColumns}
-              rowClassName="editable-row"
-              pagination={false}
-              rowKey="id"
-              style={{ marginBottom: "20px" }}
-            />
-            <div className="phanTrang" style={{ textAlign: "center" }}>
-              <Pagination
-                simple
-                current={currentPage + 1}
-                onChange={(value) => {
-                  setCurrentPage(value - 1);
-                }}
-                total={totalPages * 10}
-              />
-            </div>
-          </Form>
-        </div>
-      </Card>
-      </Form>
-    
-     </div>
+                  {/* <Button
+                    // onClick={handleCreateNewOrderPending}
+                    className="rounded-2 button-mui"
+                    type="primary"
+                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                  >
+                    <NhapTuFile />
+                  </Button> */}
+                </div>
+              </Card.Header>
+              <Card.Body>
+                <Table
+                  dataSource={listNV}
+                  columns={columns}
+                  pagination={false}
+                  className="table-container"
+                  rowKey="id"
+                />
+              </Card.Body>
+              <div className="mx-auto">
+                <Pagination
+                  page={parseInt(currentPage)}
+                  count={totalPages}
+                  onChange={chuyenTrang}
+                  color="primary"
+                />
+              </div>
+              <div className="mt-4"></div>
+            </Card>
+          </div>
+        </Form>
+      </div>
     </>
   );
 };

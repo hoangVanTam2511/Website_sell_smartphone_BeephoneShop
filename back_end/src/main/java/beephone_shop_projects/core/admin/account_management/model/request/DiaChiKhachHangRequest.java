@@ -16,7 +16,6 @@ public class DiaChiKhachHangRequest {
 
     @NotBlank(message = "Họ tên trống")
     @Size(max = 30, message = "Họ tên không được vượt quá 30 ký tự")
-    @Pattern(regexp = "^[\\p{L} ]+$", message = "Họ tên phải là chuỗi Tiếng Việt hợp lệ")
     private String hoTenKH;
 
     @NotBlank(message = "Số điện thoại trống")
@@ -37,6 +36,8 @@ public class DiaChiKhachHangRequest {
     private String xaPhuong;
 
     private String account;
+
+    private String ma;
 
     private Integer trangThai;
 

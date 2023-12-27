@@ -22,7 +22,6 @@ public interface GenericRepository<T, ID extends Serializable> {
 
   void delete(T entity) throws Exception;
 
-  void deleteById(ID id) throws Exception;
+  boolean deleteById(ID id) throws Exception;
 
-  String getMaxEntityCodeByClass();
 }

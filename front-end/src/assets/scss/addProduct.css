@@ -1,0 +1,122 @@
+.ant-select-selection-overflow {
+  height: 38px;
+}
+
+.ant-select-selector {
+  height: 38px;
+  border: 1px solid #a3c0c9;
+}
+
+.ant-modal-content {
+  width: 680px;
+  transform: translateY(-30px) translateX(-47px);
+}
+
+.ant-input-affix-wrapper {
+  width: 300px;
+  height: 38px;
+}
+
+#addConfig {
+  font-size: 15px;
+  font-weight: 600;
+  height: 38px;
+  margin-top: 6px;
+}
+
+.font_awesome_icon_selection_custom {
+  border-bottom: 1px solid;
+  width: 16px;
+  height: 26px;
+  transform: translateX(187px) translateY(19px);
+  color: #8f8a8a;
+  padding: 8px;
+}
+
+.selection_custom {
+    height: 38px;
+    width: 148px;
+}
+
+.inputlabel_of_selection {
+    color: black;
+}
+
+
+.image-upload>input {
+    display: none;
+}
+
+.upload-icon {
+    width: 100px;
+    height: 97px;
+    border: 1px solid #817e7eab;
+    border-style: dotted;
+    border-radius: 12px;
+}
+
+.upload-icon-img {
+    width: 46px;
+    height: 31px;
+    margin: 19px;
+    cursor: pointer;
+    color: #1d1c1c;
+    transform: translate(5px, 8px);
+}
+
+
+.icon_pin_image {
+    transform: translateX(29px) translateY(66px);
+    color: #1b1b1b6b;
+    font-size: 16px;
+    border: 1px solid;
+    background-color: white;
+    padding: 5px;
+    border-radius: 50%;
+    width: 12px;
+    height: 12px;
+}
+
+.upload-icon-minus {
+    transform: translate(87px, -5px);
+    background-color: red;
+    border-radius: 50%;
+    width: 13px;
+    height: 13px;
+    padding: 2px;
+}
+
+.ant-segmented-item {
+    transition: red 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  }
+  .ant-segmented-item-selected {
+    background-color: red;
+  }
+  
+  .ant-segmented-thumb {
+    background-color: red;
+  }
+
+  .button_exit_form_config{
+    transform: translate(2866%, -70px);
+    border: 1px solid;
+    border-radius: 17%;
+    width: 28px;
+    padding: 5px;
+    height: 28px;
+    color: #ef0b0b;
+  }
+
+  #multiselectContainerReact{
+    width: 62%;
+  }
+
+  .ant-segmented-item-selected{
+    background-color: #1976d2;
+  }
+
+  /* // .css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input{ */
+  /* //   padding-right: 32px; */
+  /* //   height: 32px; */
+  /* // } */
+

@@ -1,14 +1,14 @@
 package beephone_shop_projects.core.admin.voucher_management.model.request;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
+import beephone_shop_projects.infrastructure.constant.StatusDiscount;
+import beephone_shop_projects.infrastructure.constant.TypeDiscount;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.Date;
 
 @Getter
@@ -19,30 +19,32 @@ public class FindVoucherRequest {
 
     private String ten;
 
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
+    @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     private Date ngayBatDau;
 
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
+    @DateTimeFormat(pattern = "dd/MM/yyyy HH:mm:ss")
     private Date ngayKetThuc;
 
-    private BigDecimal dieuKienApDung;
+    private String dieuKienApDung;
 
-    private BigDecimal giaTriToiThieu;
+    private String giaTriVoucher;
 
-    private BigDecimal giaTriVoucher;
-
-    private BigDecimal giaTriToiDa;
+    private String giaTriToiDa;
 
     private Integer soLuong;
 
-    private Integer loaiVoucher;
+    private TypeDiscount loaiVoucher;
 
-    private Integer trangThai;
+    private StatusDiscount trangThai;
 
     private String keyword;
+
+    private String sortType;
 
     private Integer pageNo;
 
     private Integer pageSize;
+
+    private BigDecimal tongTien;
 
 }

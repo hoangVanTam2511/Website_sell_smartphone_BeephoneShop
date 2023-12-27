@@ -10,23 +10,30 @@ import { Provider } from "react-redux";
 //reducer
 import { store } from "./store";
 
-import { IndexRouters } from "./router";
 import { SimpleRouter } from "./router/simple-router";
 import { DefaultRouter } from "./router/default-router";
+import { SnackbarProvider } from "notistack";
 
 const router = createBrowserRouter(
-  [...DefaultRouter, ...IndexRouters, ...SimpleRouter],
+  [...DefaultRouter, ...SimpleRouter],
   { basename: process.env.PUBLIC_URL }
 );
 
-ReactDOM.createRoot(document.getElementById("root")).render(
+{/*
   <React.StrictMode>
-    <Provider store={store}>
+  </React.StrictMode>
+*/}
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <Provider store={store}>
+    <SnackbarProvider style={{ whiteSpace: "pre-line", maxWidth: "500px" }} anchorOrigin={{
+      vertical: 'top',
+      horizontal: 'right',
+    }}>
       <App>
         <RouterProvider router={router}></RouterProvider>
       </App>
-    </Provider>
-  </React.StrictMode>
+    </SnackbarProvider>
+  </Provider>
 );
 
 reportWebVitals();

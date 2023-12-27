@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Email Template</title>
+</head>
+<div class='send-main' style="width: 100%">
+  <div class='wrap-header-bill' style="text-align: center; margin-left: 30px">
+    <div class=''>
+      <img class='logo' style="width: 330px; height:82px"
+           src="https://res.cloudinary.com/dj9e1otbm/image/upload/v1700643568/oeojgihz3v9gtovoijjg.png" alt=""/>
+    </div>
+  </div>
+  <div class='' style="text-align: center; margin-left: 3px">
+    <span style="font-weight: bold; font-size: 25px; color: #2f80ed">Cảm ơn quý khách đã đặt hàng tại BEEPHONESHOP!</span>
+  </div>
+  <div class='' style="margin-top: 10px; margin: 0 auto; width: 86%">
+    <span style="font-size: 20px">
+    Xin chào <span class='' style="font-weight: bold"  th:text="${bill.getTenNguoiNhan()}">Thúy Hằng</span>
+    </span>
+  </div>
+  <div class='' style="margin-top: 5px">
+    <div style="width: 86%; margin: 0 auto">
+        <span >
+          <span style="font-weight: bold">
+            BEEPHONESHOP
+          </span>
+    đã nhận được yêu cầu đặt hàng của bạn và đang trong quá trình xử lý. Bạn
+    sẽ nhận được thông báo tiếp theo khi đơn hàng đã sẵn sàng được giao. Bạn có thể xem tình trạng đơn hàng
+            <a href="" style="cursor: pointer">
+          <span style="text-decoration: underline; color: #2f80ed">
+          tại đây.
+          </span>
+            </a>
+    </span>
+
+    </div>
+  </div>
+
+  <div class='' style="margin-top: 20px; margin: 0 auto">
+    <table style="border-spacing: 0; border-collapse: collapse; margin: 0 auto;
+width: 86%; margin-top: 15px;" class='' border="1" cellpadding="5" cellspacing="10">
+      <thead>
+      <tr class=''>
+        <th colSpan="2" style="border: 1px solid #d1d1d1; text-align: start;
+background-color: #e1e1e1; color: black" class="">Thông tin đơn hàng
+        </th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class=''>
+        <td class='' style="width:
+        50%; border: 1px solid #d1d1d1; vertical-align: top; padding: 5px">
+          <div class=''>
+          <span style="font-weight: bold">
+          Mã đơn hàng:
+          </span>
+            <span class='' style="font-weight: bold"  th:text="${bill.getMa()}">
+          #200392032093
+          </span>
+          </div>
+          <div class=''>
+          <span style="font-weight: bold">
+          Ngày đặt hàng:
+          </span>
+            <span class='' th:text="${bill.getCreatedAt()}">
+                    200392032093
+                  </span>
+          </div>
+          <div class=''>
+          <span style="font-weight: bold">
+          Phương thức thanh toán:
+          </span>
+            <span class=''>
+                    Thanh toán khi nhận hàng
+                  </span>
+          </div>
+          <div class=''>
+          <span style="font-weight: bold">
+          Phương thức vận chuyển:
+          </span>
+            <span class=''>
+                    Giao hàng nhanh
+                  </span>
+          </div>
+        </td>
+        <td style="width: 50%; border: 1px solid #d1d1d1; vertical-align: top" class="">
+          <div class=''>
+          <span style="font-weight: bold">
+          Họ và tên:
+          </span>
+            <span class=''  th:text="${bill.getTenNguoiNhan()}">
+                    Trần Quang Hà
+                  </span>
+          </div>
+          <div class=''>
+          <span style="font-weight: bold">
+          Số điện thoại:
+          </span>
+            <span class=''  th:text="${bill.getSoDienThoaiNguoiNhan()}">
+                    09018239831
+                  </span>
+          </div>
+          <div class=''>
+          <span style="font-weight: bold">
+          Email:
+          </span>
+            <span class=''  th:text="${bill.getEmail()}">
+                    haog@gmail.com
+                  </span>
+          </div>
+          <div class=''>
+          <span style="font-weight: bold">
+          Trạng thái đơn hàng:
+          </span>
+            <span class=''>
+                    Chờ xác nhận
+                  </span>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class='' style="margin: 0 auto">
+      <table style="border-spacing: 0; border-collapse: collapse; margin: 0 auto;
+width: 86%; margin-top: 15px;" class='' border="1" cellpadding="5" cellspacing="10">
+      <thead>
+      <tr class=''>
+        <th style="border: 1px solid #d1d1d1; vertical-align: top; text-align: start;
+background-color: #e1e1e1; color: black" colSpan="2" class="">Địa chỉ nhận hàng
+        </th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class=''>
+        <td style="border: 1px solid #d1d1d1; vertical-align: top" class=""  th:text="${bill.getDiaChiNguoiNhan() + ', ' + bill.getXaPhuongNguoiNhan() + ', ' + bill.getQuanHuyenNguoiNhan() + ', ' + bill.getTinhThanhPhoNguoiNhan()}">
+          Trần Quang Hà - 09787444387 - SN 12 Ngõ 40 Phú Kiều, Kiều mai, bắc từ Liêm Hà nỘi
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class='' style="margin: 0 auto">
+      <table style="border-spacing: 0; border-collapse: collapse; margin: 0 auto;
+width: 86%; margin-top: 15px;" class='' border="1" cellpadding="5" cellspacing="10">
+      <thead>
+      <tr class=''>
+        <th style="border: 1px solid #d1d1d1; vertical-align: top;
+background-color: #e1e1e1; color: black; text-align: center"  class="">Sản phẩm
+        </th>
+        <th style="border: 1px solid #d1d1d1; vertical-align: top;
+background-color: #e1e1e1; color: black; text-align: center"  class="">Số lượng
+        </th>
+        <th style="border: 1px solid #d1d1d1; vertical-align: top;
+background-color: #e1e1e1; color: black; text-align: center"  class="">Đơn giá
+        </th>
+        <th style="border: 1px solid #d1d1d1; vertical-align: top;
+background-color: #e1e1e1; color: black; text-align: center"  class="">Thành tiền
+        </th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr class='' th:each="product : ${billDetails}">
+        <td class='' style="text-align: center; border: 1px solid #d1d1d1; vertical-align: top; padding: 10px">
+          <div class="" style="display: flex">
+            <div class="product-img">
+              <img th:src="${product.getDuongDan()}"
+                   class=""
+                   alt=""
+                   style="width: 155px; height: 155px"
+              />
+            </div>
+            <div class="product" title='Xem sản phẩm' style="margin-left: 10px">
+              <div class="product-name" style="cursor: pointer">
+            <span class="" style="font-weight: bold" th:text="${product.getTenSanPham() + ' ' + product.getRam() + ' GB ' + product.getRom() + ' GB '+ product.getTenMauSac() }">
+            Iphone 14 Pro Max 256GB BLUE
+            </span>
+              </div>
+            </div>
+          </div>
+        </td>
+        <td class='' style="text-align: center; border: 1px solid #d1d1d1; vertical-align: top; width: 15%; padding: 10px" th:text="${product.getSoLuong()}">
+          1
+        </td>
+        <td class='' style="text-align: center; border: 1px solid #d1d1d1; vertical-align: top; padding: 10px" th:text="${product.getDonGiaSauGiam() == 0 ? product.getDonGia() : product.getDonGiaSauGiam()}">
+          500,000,000
+        </td>
+        <td class='' style="text-align: center; border: 1px solid #d1d1d1; vertical-align: top; padding: 10px" th:text="${product.getSoLuong() * product.getDonGiaSauGiam() == 0 ? product.getDonGia() : product.getDonGiaSauGiam()}">
+          500,000,000
+        </td>
+      </tr>
+      <tr class=''>
+        <td class='' colSpan="3" style="text-align: end; font-weight: bold; border: 1px solid #d1d1d1; vertical-align: top">
+          Tổng tiền hàng:
+        </td>
+        <td class='' colSpan="1" style="text-align: center; border: 1px solid #d1d1d1; vertical-align: top" th:text="${bill.getTongTien()}">
+          500,000,000
+        </td>
+      </tr>
+      <tr class=''>
+        <td class='' colSpan="3" style="text-align: end; font-weight: bold; border: 1px solid #d1d1d1; vertical-align: top">
+          Giảm giá:
+        </td>
+        <td class='' colSpan="1" style="text-align: center; border: 1px solid #d1d1d1; vertical-align: top" th:text="${bill.getTongTien() - bill.getTongTienSauKhiGiam()}">
+          50,000
+        </td>
+      </tr>
+      <tr class=''>
+        <td class='' colSpan="3" style="text-align: end; font-weight: bold; border: 1px solid #d1d1d1; vertical-align: top">
+          Phí vận chuyển:
+        </td>
+        <td class='' colSpan="1" style="text-align: center; border: 1px solid #d1d1d1; vertical-align: top" th:text="${bill.getPhiShip()}">
+          50,000
+        </td>
+      </tr>
+      <tr class=''>
+        <td class='' colSpan="3" style="text-align: end; font-weight: bold; border: 1px solid #d1d1d1; vertical-align: top">
+          Tổng cần thanh toán:
+        </td>
+        <td class='' colSpan="1" style="text-align: center; border: 1px solid #d1d1d1; vertical-align: top" th:text="${bill.getTongTienSauKhiGiam() + bill.getPhiShip()}">
+          50,000,000
+        </td>
+      </tr>
+      </tbody>
+    </table>
+
+    <div class='' style="width: 86%; margin: 0 auto; margin-top: 20px">
+          <span>
+            Nếu bạn có bất kì câu hỏi nào, hoặc cần hỗ trợ về đơn hàng. Vui lòng liên hệ với chúng tôi qua Hotline:
+            <span class='' style="cursor: pointer">
+              0978774487
+            </span>
+    hoặc Email:
+    <span class='' style="cursor: pointer">
+    beephoneshop@gmail.vn
+    </span>!
+
+    </span>
+    </div>
+
+  </div>
+
+</div>
+
+</body>
+</html>

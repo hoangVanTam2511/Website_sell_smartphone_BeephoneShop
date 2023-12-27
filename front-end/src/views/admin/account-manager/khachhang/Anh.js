@@ -1,12 +1,11 @@
-import React, { useState } from "react";
-import { Upload, Button, message, Image } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
+import React, { useEffect, useState } from "react";
+import { Upload, message, Image } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
-const ImageUploadComponent = ({ setAnhDaiDien, hoten }) => {
+const ImageUploadComponent = ({ setAnhDaiDien, hoten, openCustomer }) => {
   const [imageUrl, setImageUrl] = useState(null);
-  const [imageSize, setImageSize] = useState({ width: 170, height: 170 });
+  const [imageSize, setImageSize] = useState({ width: 120, height: 120 });
 
   const handleChange = (info) => {
     if (info.file.status === "uploading") {
@@ -30,7 +29,12 @@ const ImageUploadComponent = ({ setAnhDaiDien, hoten }) => {
       });
     }
   };
-
+  useEffect(() => {
+    if (openCustomer) {
+      setAnhDaiDien("");
+      setImageUrl(null);
+    }
+  }, [openCustomer]);
   const customUploadRequest = async (options) => {
     setTimeout(() => {
       const data = {
@@ -44,12 +48,10 @@ const ImageUploadComponent = ({ setAnhDaiDien, hoten }) => {
     customRequest: customUploadRequest,
     showUploadList: false,
     beforeUpload: (file) => {
-      // Hiển thị ảnh ngay sau khi chọn (trước khi tải lên)
       const reader = new FileReader();
       reader.onload = (e) => {
         setImageUrl(e.target.result);
         setAnhDaiDien(e.target.result);
-        console.log("Image URL length:", e.target.result.length);
       };
       reader.readAsDataURL(file);
       return false;
@@ -57,7 +59,7 @@ const ImageUploadComponent = ({ setAnhDaiDien, hoten }) => {
   };
   const calculateImageSize = (width, height) => {
     const aspectRatio = width / height;
-    const maxDimension = 170;
+    const maxDimension = 120;
 
     if (aspectRatio > 1) {
       return { width: maxDimension, height: maxDimension / aspectRatio };
@@ -69,7 +71,7 @@ const ImageUploadComponent = ({ setAnhDaiDien, hoten }) => {
     <div
       style={{
         width: "auto",
-        height: "200px",
+        // height: "200px",
         overflow: "hidden",
         position: "relative",
       }}
@@ -77,9 +79,9 @@ const ImageUploadComponent = ({ setAnhDaiDien, hoten }) => {
       {/* Hiển thị ảnh đã chọn (nếu có) */}
       <div
         style={{
-          width: "170px",
-          height: "170px",
-          borderRadius: "50%",
+          width: "120px",
+          height: "120px",
+          borderRadius: "120%",
           border: "1px dashed #ccc",
           position: "relative",
           overflow: "hidden",
@@ -91,15 +93,17 @@ const ImageUploadComponent = ({ setAnhDaiDien, hoten }) => {
             src={imageUrl}
             alt="Uploaded"
             style={{
-              width: "100%",
-              height: "100%",
+              width: "120%",
+              height: "120%",
               objectFit: "cover",
-              borderRadius: "50%",
+              borderRadius: "120%",
               ...imageSize,
             }}
             onLoad={(e) => {
               const imgElement = e.target;
-              setImageSize(calculateImageSize(imgElement));
+              setImageSize(
+                calculateImageSize(imgElement.width, imgElement.height)
+              );
             }}
           />
         ) : (
@@ -112,6 +116,7 @@ const ImageUploadComponent = ({ setAnhDaiDien, hoten }) => {
               alignItems: "center",
               fontSize: "36px",
               fontWeight: "bold",
+              color: "black",
             }}
           >
             {hoten ? hoten[0].toUpperCase() : ""}
@@ -125,7 +130,7 @@ const ImageUploadComponent = ({ setAnhDaiDien, hoten }) => {
               position: "absolute",
               bottom: 0,
               right: 0,
-              borderRadius: "50%",
+              borderRadius: "120%",
               width: "30px",
               height: "30px",
               display: "flex",
@@ -141,13 +146,15 @@ const ImageUploadComponent = ({ setAnhDaiDien, hoten }) => {
           </div>
         )}
       </div>
+
+      {/* Chọn ảnh từ máy tính cá nhân */}
       <div
         style={{
           position: "absolute",
           bottom: 0,
           right: 0,
           background: "#3a57e8",
-          borderRadius: "100%",
+          borderRadius: "120%",
           width: "30px",
           height: "30px",
           display: "flex",
@@ -157,9 +164,7 @@ const ImageUploadComponent = ({ setAnhDaiDien, hoten }) => {
           fontWeight: "bold",
           cursor: "pointer",
           zIndex: 1,
-          marginBottom: "32px",
           backgroundColor: "#4b69ff",
-          marginRight: "10px",
         }}
       >
         <Upload {...customUploadProps} onChange={handleChange}>

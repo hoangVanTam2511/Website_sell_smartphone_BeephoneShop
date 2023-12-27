@@ -1,7 +1,13 @@
 import React, { useEffect, Fragment, memo } from "react";
 import { Navbar, Container, Nav, Dropdown } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import CustomToggle from "../../../dropdowns";
+import { request, setAuthHeader } from "../../../../store/helpers/axios_helper";
+import { useNavigate } from "react-router-dom";
+import FolderIcon from "@mui/icons-material/Folder";
+import Breadcrumbs from "@mui/joy/Breadcrumbs";
+import { Link as LinkJoy } from "@mui/joy";
+import Typography from "@mui/joy/Typography";
 
 //img
 // import flag1 from '../../../../assets/images/Flag/flag001.png'
@@ -23,6 +29,7 @@ import avatars5 from "../../../../assets/images/avatars/avtar_4.png";
 import avatars6 from "../../../../assets/images/avatars/avtar_5.png";
 // logo
 import Logo from "../../components/logo";
+import { getUser } from "../../../../store/user/userSlice";
 
 // Redux Selector / Action
 import { useSelector } from "react-redux";
@@ -33,6 +40,9 @@ import * as SettingSelector from "../../../../store/setting/selectors";
 const Header = memo((props) => {
   const navbarHide = useSelector(SettingSelector.navbar_show); // array
   const headerNavbar = useSelector(SettingSelector.header_navbar);
+  const navigate = useNavigate();
+  const user = getUser();
+
   useEffect(() => {
     // navbarstylemode
     if (headerNavbar === "navs-sticky" || headerNavbar === "nav-glass") {
@@ -50,6 +60,161 @@ const Header = memo((props) => {
   const minisidebar = () => {
     document.getElementsByTagName("ASIDE")[0].classList.toggle("sidebar-mini");
   };
+
+  const location = useLocation();
+  const [navigationItems, setNavigationItems] = React.useState([]);
+  const { id } = useParams();
+
+  React.useEffect(() => {
+    const path = location.pathname;
+    const breadcrumbList = getBreadcrumbList(path); // Hàm để lấy danh sách breadcrumb cho từng đường dẫn
+    setNavigationItems(breadcrumbList);
+  }, [location.pathname]);
+  const getBreadcrumbList = (path) => {
+    switch (path) {
+      case "/dashboard/management-orders":
+        return [
+          { label: "Quản Lý Đơn Hàng", path: "/dashboard/management-orders" },
+        ];
+      case `/dashboard/order-detail/${id}`:
+        return [
+          { label: "Quản Lý Đơn Hàng", path: "/dashboard/management-orders" },
+          { label: "Chi Tiết Đơn Hàng", path: `/dashboard/order-detail/${id}` },
+          {
+            label: "Bán Hàng Tại Quầy",
+            path: `/dashboard/point-of-sales`,
+          },
+        ];
+      case `/dashboard/point-of-sales/${id}`:
+        return [
+          {
+            label: "Bán Hàng Tại Quầy",
+            path: `/dashboard/point-of-sales/${id}`,
+          },
+        ];
+      case "/dashboard/statistic":
+        return [{ label: "Thống Kê", path: "/dashboard/statistic" }];
+      case "/dashboard/transaction":
+        return [{ label: "Quản Lý Thu Chi", path: "/dashboard/transaction" }];
+      case "/dashboard/refund-order":
+        return [{ label: "Trả Hàng", path: "/dashboard/refund-order" }];
+      case "/dashboard/products":
+        return [{ label: "Quản Lý Sản Phẩm", path: "/dashboard/products" }];
+      case `/dashboard/products/${id}`:
+        return [
+          { label: "Quản Lý Sản Phẩm", path: "/dashboard/products" },
+          { label: "Chi Tiết Sản Phẩm", path: `/dashboard/products/${id}` },
+        ];
+      case "/dashboard/create-product":
+        return [
+          { label: "Quản Lý Sản Phẩm", path: "/dashboard/products" },
+          { label: "Thêm Sản Phẩm", path: "/dashboard/create-product" },
+        ];
+      case `/dashboard/update-product/${id}`:
+        return [
+          { label: "Quản Lý Sản Phẩm", path: "/dashboard/products" },
+          {
+            label: "Cập Nhật Sản Phẩm",
+            path: `/dashboard/update-product/${id}`,
+          },
+        ];
+      case "/dashboard/discounts":
+        return [{ label: "Giảm Giá Sản Phẩm", path: "/dashboard/discounts" }];
+      case "/dashboard/create-discount":
+        return [
+          { label: "Giảm Giá Sản Phẩm", path: "/dashboard/discounts" },
+          { label: "Thêm Đợt Giảm Giá ", path: "/dashboard/create-discount" },
+        ];
+      case `/dashboard/update-discount/${id}`:
+        return [
+          { label: "Giảm Giá Sản Phẩm", path: "/dashboard/discounts" },
+          {
+            label: "Cập Nhật Đợt Giảm Giá",
+            path: `/dashboard/update-discount/${id}`,
+          },
+        ];
+      case "/dashboard/vouchers":
+        return [{ label: "Phiếu Giảm Giá", path: "/dashboard/vouchers" }];
+      case "/dashboard/create-voucher":
+        return [
+          { label: "Phiếu Giảm Giá", path: "/dashboard/vouchers" },
+          { label: "Thêm Phiếu Giảm Giá", path: "/dashboard/create-voucher" },
+        ];
+      case `/dashboard/update-voucher/${id}`:
+        return [
+          { label: "Phiếu Giảm Giá", path: "/dashboard/vouchers" },
+          {
+            label: "Cập Nhật Phiếu Giảm Giá",
+            path: `/dashboard/update-voucher/${id}`,
+          },
+        ];
+      case "/dashboard/employees":
+        return [{ label: "Nhân Viên", path: "/dashboard/employees" }];
+      case "/dashboard/create-employee":
+        return [
+          { label: "Nhân Viên", path: "/dashboard/employees" },
+          { label: "Thêm Nhân Viên", path: "/dashboard/create-employee" },
+        ];
+      case `/dashboard/update-employee/${id}`:
+        return [
+          { label: "Nhân Viên", path: "/dashboard/employees" },
+          {
+            label: "Cập Nhật Nhân Viên",
+            path: `/dashboard/update-employee/${id}`,
+          },
+        ];
+      case "/dashboard/customers":
+        return [{ label: "Khách Hàng", path: "/dashboard/customers" }];
+      case "/dashboard/create-customer":
+        return [
+          { label: "Khách Hàng", path: "/dashboard/customers" },
+          { label: "Thêm Khách Hàng", path: "/dashboard/create-customer" },
+        ];
+      case `/dashboard/update-customer/${id}`:
+        return [
+          { label: "Khách Hàng", path: "/dashboard/customers" },
+          {
+            label: "Cập Nhật Khách Hàng",
+            path: `/dashboard/update-customer/${id}`,
+          },
+        ];
+      case `/dashboard/colors`:
+        return [{ label: "Quản Lý Màu Sắc", path: "/dashboard/colors" }];
+      case `/dashboard/chips`:
+        return [{ label: "Quản Lý Chip", path: "/dashboard/chips" }];
+      case `/dashboard/imeis`:
+        return [{ label: "Quản Lý IMEI", path: "/dashboard/imeis" }];
+      case `/dashboard/rams`:
+        return [{ label: "Quản Lý RAM", path: "/dashboard/rams" }];
+      case `/dashboard/roms`:
+        return [{ label: "Quản Lý ROM", path: "/dashboard/roms" }];
+      case `/dashboard/sacs`:
+        return [{ label: "Quản Lý Cổng Sạc", path: "/dashboard/sacs" }];
+      case `/dashboard/hangs`:
+        return [{ label: "Quản Lý Hãng", path: "/dashboard/hangs" }];
+      case `/dashboard/pins`:
+        return [{ label: "Quản Lý PIN", path: "/dashboard/pins" }];
+      case `/dashboard/danh-mucs`:
+        return [{ label: "Quản Lý Danh Mục", path: "/dashboard/danh-mucs" }];
+      case `/dashboard/sims`:
+        return [{ label: "Quản Lý SIM", path: "/dashboard/sims" }];
+      case `/dashboard/the-nhos`:
+        return [{ label: "Quản Lý Thẻ Nhớ", path: "/dashboard/the-nhos" }];
+      case `/dashboard/screens`:
+        return [{ label: "Quản Lý Màn Hình", path: "/dashboard/screens" }];
+      case `/dashboard/front-cameras`:
+        return [
+          { label: "Quản Lý Camera Trước", path: "/dashboard/front-cameras" },
+        ];
+      case `/dashboard/rear-cameras`:
+        return [
+          { label: "Quản Lý Camera Sau", path: "/dashboard/rear-cameras" },
+        ];
+      default:
+        return [];
+    }
+  };
+
   return (
     <Fragment>
       <Navbar
@@ -58,9 +223,33 @@ const Header = memo((props) => {
         className={`nav iq-navbar ${headerNavbar} ${navbarHide.join(" ")}`}
       >
         <Container fluid className="navbar-inner">
-          <Link to="" className="navbar-brand">
-            <Logo color={true} />
-          </Link>
+          <div>
+            <Breadcrumbs separator="›" aria-label="breadcrumbs">
+              {navigationItems.map((item) =>
+                location.pathname === item.path ? (
+                  <Typography
+                    color="neutral"
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      fontWeight: "500",
+                    }}
+                  >
+                    {item.label}
+                  </Typography>
+                ) : (
+                  <Link key={item.path} color="primary" to={item.path}>
+                    <span
+                      className="underline-custom"
+                      style={{ fontWeight: "500" }}
+                    >
+                      {item.label}
+                    </span>
+                  </Link>
+                )
+              )}
+            </Breadcrumbs>
+          </div>
           <div
             className="sidebar-toggle"
             data-toggle="sidebar"
@@ -77,42 +266,11 @@ const Header = memo((props) => {
             </i>
           </div>
 
-          <Navbar.Toggle aria-controls="navbarSupportedContent">
-            <span className="navbar-toggler-icon">
-              <span className="mt-2 navbar-toggler-bar bar1"></span>
-              <span className="navbar-toggler-bar bar2"></span>
-              <span className="navbar-toggler-bar bar3"></span>
-            </span>
-          </Navbar.Toggle>
           <Navbar.Collapse id="navbarSupportedContent">
             <Nav
               as="ul"
               className="mb-2 ms-auto navbar-list mb-lg-0 align-items-center"
             >
-              <Nav.Link className="ml-4" href="/" target="_blank">
-                <svg
-                  className="icon-22"
-                  width="22"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    opacity="0.4"
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M5.91064 20.5886C5.91064 19.7486 6.59064 19.0686 7.43064 19.0686C8.26064 19.0686 8.94064 19.7486 8.94064 20.5886C8.94064 21.4186 8.26064 22.0986 7.43064 22.0986C6.59064 22.0986 5.91064 21.4186 5.91064 20.5886ZM17.1606 20.5886C17.1606 19.7486 17.8406 19.0686 18.6806 19.0686C19.5106 19.0686 20.1906 19.7486 20.1906 20.5886C20.1906 21.4186 19.5106 22.0986 18.6806 22.0986C17.8406 22.0986 17.1606 21.4186 17.1606 20.5886Z"
-                    fill="currentColor"
-                  ></path>
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M20.1907 6.34909C20.8007 6.34909 21.2007 6.55909 21.6007 7.01909C22.0007 7.47909 22.0707 8.13909 21.9807 8.73809L21.0307 15.2981C20.8507 16.5591 19.7707 17.4881 18.5007 17.4881H7.59074C6.26074 17.4881 5.16074 16.4681 5.05074 15.1491L4.13074 4.24809L2.62074 3.98809C2.22074 3.91809 1.94074 3.52809 2.01074 3.12809C2.08074 2.71809 2.47074 2.44809 2.88074 2.50809L5.26574 2.86809C5.60574 2.92909 5.85574 3.20809 5.88574 3.54809L6.07574 5.78809C6.10574 6.10909 6.36574 6.34909 6.68574 6.34909H20.1907ZM14.1307 11.5481H16.9007C17.3207 11.5481 17.6507 11.2081 17.6507 10.7981C17.6507 10.3781 17.3207 10.0481 16.9007 10.0481H14.1307C13.7107 10.0481 13.3807 10.3781 13.3807 10.7981C13.3807 11.2081 13.7107 11.5481 14.1307 11.5481Z"
-                    fill="currentColor"
-                  ></path>
-                </svg>
-              </Nav.Link>
-
               <Dropdown as="li" className="nav-item">
                 <Dropdown.Toggle
                   as={CustomToggle}
@@ -122,6 +280,7 @@ const Header = memo((props) => {
                   data-bs-toggle="dropdown"
                 >
                   <svg
+                    color="#8A92A6"
                     width="24"
                     viewBox="0 0 24 24"
                     fill="none"
@@ -146,7 +305,7 @@ const Header = memo((props) => {
                   <div className="m-0 shadow-none card">
                     <div className="py-3 card-header d-flex justify-content-between bg-primary">
                       <div className="header-title">
-                        <h5 className="mb-0 text-white">All Notifications</h5>
+                        <h5 className="mb-0 text-white">Thông Báo</h5>
                       </div>
                     </div>
 
@@ -155,201 +314,17 @@ const Header = memo((props) => {
                         <div className="d-flex align-items-center">
                           <img
                             className="p-1 avatar-40 rounded-pill bg-soft-primary"
-                            src={shapes1}
-                            alt=""
-                          />
-                          <div className="ms-3 w-100">
-                            <h6 className="mb-0 ">Emma Watson Bni</h6>
-                            <div className="d-flex justify-content-between align-items-center">
-                              <p className="mb-0">95 MB</p>
-                              <small className="float-right font-size-12">
-                                Just Now
-                              </small>
-                            </div>
-                          </div>
-                        </div>
-                      </Link>
-                      <Link to="#" className="iq-sub-card">
-                        <div className="d-flex align-items-center">
-                          <div className="">
-                            <img
-                              className="p-1 avatar-40 rounded-pill bg-soft-primary"
-                              src={shapes2}
-                              alt=""
-                            />
-                          </div>
-                          <div className="ms-3 w-100">
-                            <h6 className="mb-0 ">New customer is join</h6>
-                            <div className="d-flex justify-content-between align-items-center">
-                              <p className="mb-0">Cyst Bni</p>
-                              <small className="float-right font-size-12">
-                                5 days ago
-                              </small>
-                            </div>
-                          </div>
-                        </div>
-                      </Link>
-                      <Link to="#" className="iq-sub-card">
-                        <div className="d-flex align-items-center">
-                          <img
-                            className="p-1 avatar-40 rounded-pill bg-soft-primary"
-                            src={shapes3}
-                            alt=""
-                          />
-                          <div className="ms-3 w-100">
-                            <h6 className="mb-0 ">Two customer is left</h6>
-                            <div className="d-flex justify-content-between align-items-center">
-                              <p className="mb-0">Cyst Bni</p>
-                              <small className="float-right font-size-12">
-                                2 days ago
-                              </small>
-                            </div>
-                          </div>
-                        </div>
-                      </Link>
-                      <Link to="#" className="iq-sub-card">
-                        <div className="d-flex align-items-center">
-                          <img
-                            className="p-1 avatar-40 rounded-pill bg-soft-primary"
                             src={shapes4}
                             alt=""
                           />
                           <div className="w-100 ms-3">
-                            <h6 className="mb-0 ">New Mail from Fenny</h6>
+                            <h6 className="mb-0 ">Thông báo từ ai đó pro</h6>
                             <div className="d-flex justify-content-between align-items-center">
-                              <p className="mb-0">Cyst Bni</p>
+                              <p className="mb-0">No body for me</p>
                               <small className="float-right font-size-12">
                                 3 days ago
                               </small>
                             </div>
-                          </div>
-                        </div>
-                      </Link>
-                    </div>
-                  </div>
-                </Dropdown.Menu>
-              </Dropdown>
-              <Dropdown as="li" className="nav-item">
-                <Dropdown.Toggle
-                  as={CustomToggle}
-                  href="#"
-                  variant="nav-link"
-                  id="mail-drop"
-                  data-bs-toggle="dropdown"
-                  aria-haspopup="true"
-                  aria-expanded="false"
-                >
-                  <svg
-                    width="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      opacity="0.4"
-                      d="M22 15.94C22 18.73 19.76 20.99 16.97 21H16.96H7.05C4.27 21 2 18.75 2 15.96V15.95C2 15.95 2.006 11.524 2.014 9.298C2.015 8.88 2.495 8.646 2.822 8.906C5.198 10.791 9.447 14.228 9.5 14.273C10.21 14.842 11.11 15.163 12.03 15.163C12.95 15.163 13.85 14.842 14.56 14.262C14.613 14.227 18.767 10.893 21.179 8.977C21.507 8.716 21.989 8.95 21.99 9.367C22 11.576 22 15.94 22 15.94Z"
-                      fill="currentColor"
-                    ></path>
-                    <path
-                      d="M21.4759 5.67351C20.6099 4.04151 18.9059 2.99951 17.0299 2.99951H7.04988C5.17388 2.99951 3.46988 4.04151 2.60388 5.67351C2.40988 6.03851 2.50188 6.49351 2.82488 6.75151L10.2499 12.6905C10.7699 13.1105 11.3999 13.3195 12.0299 13.3195C12.0339 13.3195 12.0369 13.3195 12.0399 13.3195C12.0429 13.3195 12.0469 13.3195 12.0499 13.3195C12.6799 13.3195 13.3099 13.1105 13.8299 12.6905L21.2549 6.75151C21.5779 6.49351 21.6699 6.03851 21.4759 5.67351Z"
-                      fill="currentColor"
-                    ></path>
-                  </svg>
-                  <span className="bg-primary count-mail"></span>
-                </Dropdown.Toggle>
-                <Dropdown.Menu
-                  className="p-0 sub-drop dropdown-menu-end"
-                  aria-labelledby="mail-drop"
-                >
-                  <div className="m-0 shadow-none card">
-                    <div className="py-3 card-header d-flex justify-content-between bg-primary">
-                      <div className="header-title">
-                        <h5 className="mb-0 text-white">All Message</h5>
-                      </div>
-                    </div>
-                    <div className="p-0 card-body ">
-                      <Link to="#" className="iq-sub-card">
-                        <div className="d-flex align-items-center">
-                          <div>
-                            <img
-                              className="p-1 avatar-40 rounded-pill bg-soft-primary"
-                              src={shapes1}
-                              alt=""
-                            />
-                          </div>
-                          <div className=" w-100 ms-3">
-                            <h6 className="mb-0 ">Bni Emma Watson</h6>
-                            <small className="float-left font-size-12">
-                              13 Jun
-                            </small>
-                          </div>
-                        </div>
-                      </Link>
-                      <Link to="#" className="iq-sub-card">
-                        <div className="d-flex align-items-center">
-                          <div>
-                            <img
-                              className="p-1 avatar-40 rounded-pill bg-soft-primary"
-                              src={shapes2}
-                              alt=""
-                            />
-                          </div>
-                          <div className="ms-3">
-                            <h6 className="mb-0 ">Lorem Ipsum Watson</h6>
-                            <small className="float-left font-size-12">
-                              20 Apr
-                            </small>
-                          </div>
-                        </div>
-                      </Link>
-                      <Link to="#" className="iq-sub-card">
-                        <div className="d-flex align-items-center">
-                          <div>
-                            <img
-                              className="p-1 avatar-40 rounded-pill bg-soft-primary"
-                              src={shapes3}
-                              alt=""
-                            />
-                          </div>
-                          <div className="ms-3">
-                            <h6 className="mb-0 ">Why do we use it?</h6>
-                            <small className="float-left font-size-12">
-                              30 Jun
-                            </small>
-                          </div>
-                        </div>
-                      </Link>
-                      <Link to="#" className="iq-sub-card">
-                        <div className="d-flex align-items-center">
-                          <div>
-                            <img
-                              className="p-1 avatar-40 rounded-pill bg-soft-primary"
-                              src={shapes4}
-                              alt=""
-                            />
-                          </div>
-                          <div className="ms-3">
-                            <h6 className="mb-0 ">Variations Passages</h6>
-                            <small className="float-left font-size-12">
-                              12 Sep
-                            </small>
-                          </div>
-                        </div>
-                      </Link>
-                      <Link to="#" className="iq-sub-card">
-                        <div className="d-flex align-items-center">
-                          <div>
-                            <img
-                              className="p-1 avatar-40 rounded-pill bg-soft-primary"
-                              src={shapes5}
-                              alt=""
-                            />
-                          </div>
-                          <div className="ms-3">
-                            <h6 className="mb-0 ">Lorem Ipsum generators</h6>
-                            <small className="float-left font-size-12">
-                              5 Dec
-                            </small>
                           </div>
                         </div>
                       </Link>
@@ -368,38 +343,23 @@ const Header = memo((props) => {
                   aria-expanded="false"
                 >
                   <img
-                    src={avatars1}
+                    src={
+                      user === undefined || user.ma === ""
+                        ? ""
+                        : user.anhDaiDien
+                    }
                     alt="User-Profile"
                     className="theme-color-default-img img-fluid avatar avatar-50 avatar-rounded"
                   />
-                  <img
-                    src={avatars2}
-                    alt="User-Profile"
-                    className="theme-color-purple-img img-fluid avatar avatar-50 avatar-rounded"
-                  />
-                  <img
-                    src={avatars3}
-                    alt="User-Profile"
-                    className="theme-color-blue-img img-fluid avatar avatar-50 avatar-rounded"
-                  />
-                  <img
-                    src={avatars5}
-                    alt="User-Profile"
-                    className="theme-color-green-img img-fluid avatar avatar-50 avatar-rounded"
-                  />
-                  <img
-                    src={avatars6}
-                    alt="User-Profile"
-                    className="theme-color-yellow-img img-fluid avatar avatar-50 avatar-rounded"
-                  />
-                  <img
-                    src={avatars4}
-                    alt="User-Profile"
-                    className="theme-color-pink-img img-fluid avatar avatar-50 avatar-rounded"
-                  />
                   <div className="caption ms-3 d-none d-md-block ">
-                    <h6 className="mb-0 caption-title">Hoàng Văn Tám</h6>
-                    <p className="mb-0 caption-sub-title">Tester</p>
+                    <h6 className="mb-0 caption-title">
+                      {user === undefined || user.ma === "" ? "" : user.hoVaTen}
+                    </h6>
+                    <p className="mb-0 caption-sub-title">
+                      {user === undefined || user.ma === ""
+                        ? ""
+                        : user.tenChucVu}
+                    </p>
                   </div>
                 </Dropdown.Toggle>
                 <Dropdown.Menu
@@ -407,14 +367,19 @@ const Header = memo((props) => {
                   aria-labelledby="navbarDropdown"
                 >
                   <Dropdown.Item href="https://templates.iqonic.design/hope-ui/react/build/dashboard/app/user-profile">
-                    Profile
+                    Thông tin cá nhân
                   </Dropdown.Item>
                   <Dropdown.Item href="https://templates.iqonic.design/hope-ui/react/build/dashboard/app/user-privacy-setting">
-                    Privacy Setting
+                    Cài đặt
                   </Dropdown.Item>
                   <Dropdown.Divider />
-                  <Dropdown.Item href="https://templates.iqonic.design/hope-ui/react/build/auth/sign-in">
-                    Logout
+                  <Dropdown.Item
+                    onClick={() => {
+                      navigate("/login");
+                      setAuthHeader(null);
+                    }}
+                  >
+                    Đăng xuất
                   </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>

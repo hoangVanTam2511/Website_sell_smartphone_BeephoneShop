@@ -20,6 +20,8 @@ public class DiaChi extends PrimaryEntity implements IsIdentified {
 
     private String soDienThoaiKhachHang;
 
+    private String ma;
+
     private String diaChi;
 
     private String tinhThanhPho;
@@ -31,7 +33,7 @@ public class DiaChi extends PrimaryEntity implements IsIdentified {
     private Integer trangThai;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_account")
     private Account account;
 }

@@ -1,12 +1,22 @@
-import React, { useEffect, useState } from "react";
-import { Button, Checkbox, Col, Collapse, Modal, Row, message } from "antd";
+/* eslint-disable eqeqeq */
+import React, { useState } from "react";
+import { Button, Checkbox, Col, Collapse, Modal, Row } from "antd";
 import "../../../../assets/scss/edit-dia-chi.scss";
 import { apiURLKH } from "../../../../service/api";
 import axios from "axios";
 import AddressFormUpdate from "./DiaChiUpdate";
 import { TextField } from "@mui/material";
+import { Notistack } from "../../order-manager/enum";
+import useCustomSnackbar from "../../../../utilities/notistack";
+import { request } from '../../../../store/helpers/axios_helper'
+import { ConfirmDialog } from "../../../../utilities/confirmModalDialoMui";
 
-function AddressTable({ diaChiList, account, updateDiaChiList }) {
+function AddressTable({
+  diaChiList,
+  account,
+  updateDiaChiList,
+  fetchDiaChiList,
+}) {
   const { Panel } = Collapse;
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -19,24 +29,42 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
   let [xaPhuong, setXaPhuong] = useState("");
   let [trangThaiKH, setTrangThaiKH] = useState(1);
   let [idKH, setIDKH] = useState("");
-  const [editingTrangThai, setEditingTrangThai] = useState(trangThaiKH === 1);
-  const [editingAddressIndex, setEditingAddressIndex] = useState(null);
-  const [showEditModals, setShowEditModals] = useState(
-    Array(diaChiList.length).fill(false)
-  );
+  let [huy, setHuy] = useState(false);
+  const [detailValues, setDetailValues] = useState({
+    xaPhuong: diaChiList.xaPhuong,
+    tinhThanhPho: diaChiList.tinhThanhPho,
+    quanHuyen: diaChiList.quanHuyen,
+  });
+  let [
+    editing,
+    // setEditing
+  ] = useState(false);
+  const { handleOpenAlertVariant } = useCustomSnackbar();
+  const [editingTrangThai, setEditingTrangThai] = useState(trangThaiKH == 1);
+  const [showEditModals, setShowEditModals] = useState([
+    Array(diaChiList.length).fill(false),
+  ]);
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const handleCloseDialogConfirmAdd = () => {
+    setOpenConfirm(false);
+  };
+
   const openEditModal = (diaChiList) => {
     setHoTenKH(diaChiList.hoTenKH);
-    setXaPhuong(diaChiList.xaPhuong);
-    setQuanHuyen(diaChiList.quanHuyen);
-    setTinhThanhPho(diaChiList.tinhThanhPho);
+    setQuanHuyen(diaChiList.quanHuyen || ""); // Set default if null or undefined
     setDiaChi(diaChiList.diaChi);
     setSoDienThoaiKhachHang(diaChiList.soDienThoaiKhachHang);
     setTrangThaiKH(diaChiList.trangThai);
-    setEditingAddressIndex(diaChiList.id);
-    setShowEditModal(true);
-    setEditingTrangThai(diaChiList.trangThai === 1);
+    setEditingTrangThai(diaChiList.trangThai == 1);
     setIDKH(diaChiList.id);
-    setEditingAddressIndex(diaChiList.id);
+    setDetailValues({
+      xaPhuong: diaChiList.xaPhuong || "", // Set default if null or undefined
+      tinhThanhPho: diaChiList.tinhThanhPho,
+      quanHuyen: diaChiList.quanHuyen || "", // Set default if null or undefined
+    });
+    setTinhThanhPho(detailValues.tinhThanhPho || "");
+    setXaPhuong(detailValues.xaPhuong || ""); // Set default if null or undefined
+
     setShowEditModals((prevModals) => {
       const updatedModals = [...prevModals];
       updatedModals[diaChiList.id] = true;
@@ -47,9 +75,56 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
     setDeleteId(diaChiList.id);
     setShowDeleteModal(true);
   };
-  const redirectToHienThiKH = () => {
-    // Thực hiện điều hướng tới trang "Hiển thị nhân viên"
-    window.location.href = "/update-khach-hang/" + account;
+  const [formSubmittedS, setFormSubmittedS] = useState(false);
+  const [diaChiError, setDiaChiError] = useState("");
+  const [sdtkhError, setSDTKHError] = useState("");
+  const [hoTenkhError, sethoTenKHError] = useState("");
+  const [submittedS, setSubmittedS] = useState(false);
+
+  const handleHoTenChange = (e) => {
+    const value = e.target.value;
+    const specialCharPattern = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+/;
+
+    setHoTenKH(value);
+    if (!value.trim()) {
+      sethoTenKHError("Họ và tên không được trống");
+    } else if (specialCharPattern.test(value)) {
+      sethoTenKHError("Họ và tên không được chứa ký tự đặc biệt");
+    } else if (value.length < 5) {
+      sethoTenKHError("Họ và tên phải có ít nhất 5 ký tự");
+    } else if (/^\s+|\s+$/.test(value)) {
+      sethoTenKHError("Tên không chứa ký tự khoảng trống ở đầu và cuối chuỗi");
+    } else if (huy) {
+      sethoTenKHError("");
+    } else {
+      sethoTenKHError("");
+    }
+  };
+  const handleSoDienThoaiChange = (e) => {
+    const value = e.target.value.trim();
+    const parn = /^(?:\+84|0)[1-9]\d{8}$/;
+    setSoDienThoaiKhachHang(value);
+    if (!value.trim()) {
+      setSDTKHError("Số điện thoại không được trống");
+    } else if (!parn.test(value)) {
+      setSDTKHError("Sai định dạng số điện thoại");
+    } else if (huy) {
+      setSDTKHError("");
+    } else {
+      setSDTKHError("");
+    }
+  };
+  const handleDiaChi = (e) => {
+    const value = e.target.value;
+    setDiaChi(value);
+    const trimmedValue = value.replace(/\s/g, "");
+    if (!value.trim()) {
+      setDiaChiError("Địa chỉ không được trống");
+    } else if (trimmedValue.length < 5) {
+      setDiaChiError("Địa chỉ phải có ít nhất 5 ký tự");
+    } else {
+      setDiaChiError("");
+    }
   };
   const confirmDelete = (id) => {
     // Gọi API xóa địa chỉ ở đây
@@ -57,7 +132,7 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
       method: "DELETE",
     }).then((response) => {
       if (response.ok) {
-        message.success("Xóa thành công");
+        handleOpenAlertVariant("Xóa thành công", Notistack.SUCCESS);
         // Cập nhật diaChiList bằng cách gọi callback function
         const updatedDiaChiList = diaChiList.filter(
           (address) => address.id !== id
@@ -65,37 +140,88 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
         updateDiaChiList(updatedDiaChiList);
         setShowDeleteModal(false);
       } else {
-        message.error("Lỗi khi xóa địa chỉ");
+        handleOpenAlertVariant("Xảy ra lỗi khi thêm địa chỉ", Notistack.ERROR);
       }
     });
+  };
+  const Header = () => {
+    return (
+      <>
+        <span style={{ fontWeight: "bold" }}>Xác nhận thêm khách hàng</span>
+      </>
+    );
+  };
+  const Title = () => {
+    return (
+      <>
+        <span>
+          Bạn có chắc chắn muốn thêm khách hàng{" "}
+          <span style={{ fontWeight: "bolder" }}>{hoTenKH}</span> không ?
+        </span>
+      </>
+    );
   };
   const handleCloseModals = () => {
     setShowEditModal(false);
     setShowDeleteModal(false);
     setShowSetDefaultModal(false);
+    setHuy(true);
   };
   function sortAddressesByDefaultFirst(addresses) {
     const defaultAddresses = addresses.filter(
-      (address) => address.trangThai === 1
+      (address) => address.trangThai == 1
     );
     const nonDefaultAddresses = addresses.filter(
-      (address) => address.trangThai !== 1
+      (address) => address.trangThai != 1
     );
     return [...defaultAddresses, ...nonDefaultAddresses];
   }
   const sortedDiaChiList = sortAddressesByDefaultFirst(diaChiList);
   const [showEditModal, setShowEditModal] = useState(false);
   const handleEdit = (index) => {
-    setEditingAddressIndex(index.id);
     handleCloseModals(); // Close any open modals
     setShowEditModal(true);
     // redirectToHienThiKH();
   };
+  const handleCloseModal = () => {
+    setShowEditModal(false);
+    setFormSubmittedS(false);
+    setSubmittedS(false);
+    setDiaChiError("");
+    sethoTenKHError("");
+    setSDTKHError("");
+    setTinhThanhPho("");
+    setXaPhuong("");
+  };
   const [showSetDefaultModal, setShowSetDefaultModal] = useState(false);
   const handleSaveChanges = async (id) => {
     // Gọi API để cập nhật thông tin địa chỉ
+    setSubmittedS(true);
+    setFormSubmittedS(true);
+    if (
+      !hoTenKH ||
+      !soDienThoaiKhachHang ||
+      !diaChi ||
+      !xaPhuong ||
+      !diaChi ||
+      !quanHuyen ||
+      !tinhThanhPho
+    ) {
+      handleOpenAlertVariant("Vui lòng điền đủ thông tin", Notistack.ERROR);
+      setShowEditModal(true);
+      return;
+    }
+    if (hoTenkhError || sdtkhError || diaChiError) {
+      handleOpenAlertVariant(
+        "Vui lòng điền đúng thông tin trước khi lưu.",
+        Notistack.ERROR
+      );
+      setShowEditModal(true);
+      return;
+    }
+    setShowEditModal(false);
     try {
-      const updatedItem = {
+      let updatedItem = {
         diaChi: diaChi,
         xaPhuong: xaPhuong,
         quanHuyen: quanHuyen,
@@ -104,58 +230,67 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
         hoTenKH: hoTenKH,
         account: account,
       };
-
-      axios
-        .put(
+      request('PUT',
           `${apiURLKH}/dia-chi/update/${id}`, // Extract id from updatedData
           updatedItem
         )
         .then((response) => {
           if (response.status === 200) {
-            message.success("Cập nhật địa chỉ thành công");
-            // Cập nhật thông tin trong danh sách diaChiList
+            handleOpenAlertVariant(
+              "Cập nhật địa chỉ thành công",
+              Notistack.SUCCESS
+            ); // Cập nhật thông tin trong danh sách diaChiList
             const updatedDiaChiList = diaChiList.map((address) =>
               address.id === id ? { ...address, ...updatedItem } : address
             );
             updateDiaChiList(updatedDiaChiList);
-            setShowEditModal(false);
-            console.log(updatedDiaChiList);
+          } else {
+            handleOpenAlertVariant("Cập nhật thất bại", Notistack.ERROR);
           }
         }); // Đóng modal sau khi cập nhật thành công
     } catch (error) {
       // Xử lý lỗi
-      message.error("Cập nhật địa chỉ thất bại");
+      handleOpenAlertVariant("Cập nhật thất bại", Notistack.ERROR);
     }
   };
-  const handleSetDefault = (id) => {
-    // Gọi API để thiết lập địa chỉ mặc định
-    fetch(apiURLKH + `/dia-chi/thiet-lap-md/${id}?account=${account}`, {
-      method: "PUT",
-    })
+  let isProcessing = false;
+
+  const handleSetDefault = async (id) => {
+    if (isProcessing) {
+      return;
+    }
+    setShowSetDefaultModal(false);
+    isProcessing = true;
+    request("PUT", apiURLKH + `/dia-chi/thiet-lap-md/${id}?account=${account}`)
       .then((response) => {
         if (response.ok) {
-          message.success("Thiết lập địa chỉ mặc định thành công");
           const updatedDiaChiList = diaChiList.map((address) =>
-            address.id === id
+            address.id == id
               ? { ...address, trangThai: 1 }
               : { ...address, trangThai: 0 }
           );
           updateDiaChiList(updatedDiaChiList);
-          setShowSetDefaultModal(false); // Đóng modal sau khi cập nhật thành công
+          setShowSetDefaultModal(false);
+          handleOpenAlertVariant(
+            "Thiết lập địa chỉ mặc định thành công",
+            Notistack.SUCCESS
+          );
         } else {
-          message.error("Lỗi khi thiết lập địa chỉ mặc định");
+          handleOpenAlertVariant(
+            "Lỗi khi thiết lập địa chỉ mặc định",
+            Notistack.ERROR
+          );
         }
       })
       .catch((error) => {
-        message.error("Lỗi khi thiết lập địa chỉ mặc định");
+        handleOpenAlertVariant(
+          "Lỗi khi thiết lập địa chỉ mặc định",
+          Notistack.ERROR
+        );
+      })
+      .finally(() => {
+        isProcessing = false; // Đánh dấu rằng yêu cầu PUT đã hoàn thành
       });
-  };
-  const handleHoTenKHChange = (e) => {
-    setHoTenKH(e.target.value);
-  };
-
-  const handleSoDienThoaiChange = (e) => {
-    setSoDienThoaiKhachHang(e.target.value);
   };
 
   const handleProvinceChange = (value) => {
@@ -169,14 +304,41 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
   const handleWardChange = (value) => {
     setXaPhuong(value);
   };
+  const [openPanelKey, setOpenPanelKey] = useState(null);
+  // const defaultAddressIndex = sortedDiaChiList.findIndex(
+  //   (diaChiList) => diaChiList.trangThai === 1
+  // );
+  // const defaultActiveKey =
+  //   defaultAddressIndex !== -1 ? `${defaultAddressIndex}` : null;
+
   return (
-    <div className="address-container">
-      <Collapse accordion bordered={false}>
-        {sortedDiaChiList.map((diaChiList, index) => (
+    <>
+      <Collapse
+        accordion
+        key={diaChiList.id}
+        bordered={false}
+        activeKey={openPanelKey}
+        // defaultActiveKey={[defaultActiveKey]}
+        onChange={(key) => setOpenPanelKey(key)}
+        style={{
+          boxShadow: "white -1px 10px 8px",
+          marginBottom: "10px",
+          marginTop: "10px",
+        }}
+      >
+        {diaChiList.map((diaChiList, index) => (
           <Panel
             key={diaChiList.id}
             header={`Địa chỉ ${index + 1}`}
-            className="collapse-panel"
+            bordered={false}
+            // className="collapse-panel"
+            style={{
+              marginBottom: "10px",
+              borderRadius: "10px",
+              border: 0,
+              width: "100%",
+              backgroundColor: "white",
+            }}
           >
             <Row gutter={20}>
               <Col span={17}>
@@ -195,7 +357,7 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
                     {diaChiList.xaPhuong}
                   </div>
                 </div>{" "}
-                {diaChiList.trangThai === 1 && (
+                {diaChiList.trangThai == 1 && (
                   <Button
                     danger
                     size="small"
@@ -210,7 +372,6 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
                   <button
                     className="edit-button"
                     onClick={() => {
-                      // handleViewUpdate(index);
                       openEditModal(diaChiList);
                       handleEdit(diaChiList);
                     }}
@@ -219,12 +380,12 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
                   </button>
                   {showEditModals[diaChiList.id] && (
                     <Modal
+                      closable={false}
                       open={showEditModal}
-                      onCancel={() => setShowEditModal(false)}
                       footer={[
                         <Button
                           key="cancel"
-                          onClick={() => setShowEditModal(false)}
+                          onClick={handleCloseModal}
                           size="large"
                           type="text"
                           style={{
@@ -236,7 +397,7 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
                         <Button
                           key="save"
                           type="primary"
-                          onClick={() => handleSaveChanges(idKH)}
+                          onClick={() => handleSaveChanges(diaChiList.id)}
                           size="large"
                           style={{
                             marginRight: "10px",
@@ -244,7 +405,7 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
                             backgroundColor: "#4b69ff",
                             color: "white",
                           }}
-                          bordered="false"
+                          bordered={false}
                         >
                           Lưu
                         </Button>,
@@ -262,11 +423,14 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
                             label="Họ và tên"
                             value={hoTenKH}
                             id="fullWidth"
-                            onChange={handleHoTenKHChange}
-                            // error={formSubmitted && !hoTenKH}
-                            // helperText={
-                            //   formSubmitted && !hoTenKH && "Họ và tên trống"
-                            // }
+                            onChange={handleHoTenChange}
+                            error={
+                              (formSubmittedS && !hoTenKH) || !!hoTenkhError
+                            }
+                            helperText={
+                              hoTenkhError ||
+                              (formSubmittedS && !hoTenKH && "Họ và tên trống")
+                            }
                             style={{ width: "100%" }}
                           />
                         </div>
@@ -279,12 +443,16 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
                             id="fullWidth"
                             value={soDienThoaiKhachHang}
                             onChange={handleSoDienThoaiChange}
-                            //   error={formSubmitted && !soDienThoaiKhachHang}
-                            //   helperText={
-                            //     formSubmitted &&
-                            //     !soDienThoaiKhachHang &&
-                            //     "Số điện thoại trống"
-                            //   }
+                            error={
+                              (formSubmittedS && !soDienThoaiKhachHang) ||
+                              !!sdtkhError
+                            }
+                            helperText={
+                              sdtkhError ||
+                              (formSubmittedS &&
+                                !soDienThoaiKhachHang &&
+                                "Số điện thoại trống")
+                            }
                             style={{ width: "100%" }}
                           />
                         </div>
@@ -296,25 +464,30 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
                             label="Địa chỉ"
                             id="fullWidth"
                             value={diaChi}
-                            onChange={(e) => {
-                              setDiaChi(e.target.value);
-                            }}
-                            //   error={formSubmitted && !diaChi}
-                            //   helperText={formSubmitted && !diaChi && "Địa chỉ trống"}
+                            onChange={handleDiaChi}
+                            error={(formSubmittedS && !diaChi) || !!diaChiError}
+                            helperText={
+                              diaChiError ||
+                              (formSubmittedS && !diaChi && "Địa chỉ trống")
+                            }
                             style={{ width: "100%" }}
                           />
                         </div>
                         <div style={{ marginBottom: "20px" }}>
                           <AddressFormUpdate
-                            // onDiaChiChange={handleDiaChiChange}
-                            //   required={true}
-                            //   submitted={submitted}
+                            showEditModal={showEditModal}
+                            required={true}
+                            submitted={submittedS}
                             onProvinceChange={handleProvinceChange}
                             onDistrictChange={handleDistrictChange}
                             onWardChange={handleWardChange}
-                            selectedTinhThanhPho={diaChiList.tinhThanhPho}
-                            selectedQuanHuyen={diaChiList.quanHuyen}
-                            selectedXaPhuong={diaChiList.xaPhuong}
+                            selectedTinhThanhPho={detailValues.tinhThanhPho}
+                            selectedQuanHuyen={detailValues.quanHuyen}
+                            selectedXaPhuong={detailValues.xaPhuong}
+                            formSubmitted={formSubmittedS}
+                            editing={editing}
+                            huy={huy}
+                            set={setHuy}
                           />
                         </div>
                         <Checkbox
@@ -338,12 +511,15 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
                   <button
                     className="delete-button"
                     onClick={() => handleDelete(diaChiList)}
-                    disabled={diaChiList.trangThai === 1}
+                    // eslint-disable-next-line eqeqeq
+                    disabled={diaChiList.trangThai == 1}
                     style={{
                       backgroundColor:
-                        diaChiList.trangThai === 1 ? "#ff9191" : "#ff4b4b",
+                        // eslint-disable-next-line eqeqeq
+                        diaChiList.trangThai == 1 ? "#ff9191" : "#ff4b4b",
                       cursor:
-                        diaChiList.trangThai === 1 ? "not-allowed" : "pointer",
+                        // eslint-disable-next-line eqeqeq
+                        diaChiList.trangThai == 1 ? "not-allowed" : "pointer",
                     }}
                   >
                     Xóa
@@ -352,18 +528,19 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
                 <Button
                   className="mac-dinh-button"
                   disabled={diaChiList.trangThai === 1}
-                  // onClick={() => handleDelete(index)}
                   type="primary"
                   style={{
                     backgroundColor:
                       diaChiList.trangThai === 1 ? "#c8c8c8" : "#5e5b5b",
                     marginTop: "10px",
+
+                    // eslint-disable-next-line eqeqeq
                     cursor:
                       diaChiList.trangThai === 1 ? "not-allowed" : "pointer",
                   }}
                   onClick={() => setShowSetDefaultModal(true)}
                 >
-                  Thiết lập mặc định
+                  Đặt mặc định
                 </Button>
               </Col>
             </Row>
@@ -408,7 +585,6 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
                     type="primary"
                     onClick={() => {
                       handleSetDefault(diaChiList.id);
-                      setShowSetDefaultModal(false);
                     }}
                   >
                     Xác nhận
@@ -421,7 +597,14 @@ function AddressTable({ diaChiList, account, updateDiaChiList }) {
           </Panel>
         ))}
       </Collapse>
-    </div>
+      <ConfirmDialog
+        open={openConfirm}
+        onClose={handleCloseDialogConfirmAdd}
+        add={handleSetDefault}
+        title={<Title />}
+        header={<Header />}
+      />
+    </>
   );
 }
 export default AddressTable;

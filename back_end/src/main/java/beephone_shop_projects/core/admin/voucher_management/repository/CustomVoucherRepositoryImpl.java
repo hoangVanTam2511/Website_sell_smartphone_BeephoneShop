@@ -1,5 +1,6 @@
 package beephone_shop_projects.core.admin.voucher_management.repository;
 
+import beephone_shop_projects.core.admin.order_management.repository.impl.OrderRepositoryImpl;
 import beephone_shop_projects.core.admin.voucher_management.model.request.FindVoucherRequest;
 import beephone_shop_projects.entity.Voucher;
 import jakarta.persistence.EntityManager;
@@ -12,18 +13,19 @@ import jakarta.persistence.criteria.Order;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.lang.reflect.Field;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class CustomVoucherRepositoryImpl implements CustomVoucherRepository {
+    private static final Logger logger = LoggerFactory.getLogger(OrderRepositoryImpl.class);
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -34,8 +36,6 @@ public class CustomVoucherRepositoryImpl implements CustomVoucherRepository {
         try (EntityManager entityManager = this.entityManager) {
             CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
             CriteriaQuery<Voucher> criteriaQuery = criteriaBuilder.createQuery(Voucher.class);
-
-
 
             Root<Voucher> root = criteriaQuery.from(Voucher.class);
             criteriaQuery.select(root);
@@ -67,20 +67,39 @@ public class CustomVoucherRepositoryImpl implements CustomVoucherRepository {
                 countPredicates.add(criteriaBuilder.equal(countRoot.get("soLuong"), request.getSoLuong()));
             }
 
+            if (request.getLoaiVoucher() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("loaiVoucher"), request.getLoaiVoucher()));
+                countPredicates.add(criteriaBuilder.equal(countRoot.get("loaiVoucher"), request.getLoaiVoucher()));
+            }
+
+            if (request.getSortType() != null) {
+                if (request.getSortType().equals("a-z")) {
+                    criteriaQuery.orderBy(criteriaBuilder.asc(root.get("giaTriVoucher")));
+                } else if (request.getSortType().equals("z-a")) {
+                    criteriaQuery.orderBy(criteriaBuilder.desc(root.get("giaTriVoucher")));
+                }
+            }
+
             Expression<Date> expression2 = criteriaBuilder.function("DATE", Date.class, countRoot.get("ngayBatDau"));
             Expression<Date> expression3 = criteriaBuilder.function("DATE", Date.class, countRoot.get("ngayKetThuc"));
             Expression<Date> expression = criteriaBuilder.function("DATE", Date.class, root.get("ngayBatDau"));
             Expression<Date> expression1 = criteriaBuilder.function("DATE", Date.class, root.get("ngayKetThuc"));
-            if (request.getNgayBatDau() != null && request.getNgayKetThuc() != null) {
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(expression, request.getNgayBatDau()));
-                predicates.add(criteriaBuilder.lessThanOrEqualTo(expression1, request.getNgayKetThuc()));
-                countPredicates.add(criteriaBuilder.greaterThanOrEqualTo(expression2, request.getNgayBatDau()));
-                countPredicates.add(criteriaBuilder.lessThanOrEqualTo(expression3, request.getNgayKetThuc()));
-            } else if (request.getNgayBatDau() != null) {
+            if (request.getNgayBatDau() != null) {
                 predicates.add(criteriaBuilder.greaterThanOrEqualTo(expression, request.getNgayBatDau()));
                 countPredicates.add(criteriaBuilder.greaterThanOrEqualTo(expression2, request.getNgayBatDau()));
             } else if (request.getNgayKetThuc() != null) {
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(expression1, request.getNgayKetThuc()));
+                countPredicates.add(criteriaBuilder.lessThanOrEqualTo(expression3, request.getNgayKetThuc()));
+            } else if (request.getNgayBatDau() != null && request.getNgayKetThuc() != null) {
+                predicates.add(criteriaBuilder.between(expression, request.getNgayBatDau(), request.getNgayKetThuc()));
+                predicates.add(criteriaBuilder.between(expression1, request.getNgayBatDau(), request.getNgayKetThuc()));
+                countPredicates.add(criteriaBuilder.between(expression2, request.getNgayBatDau(), request.getNgayKetThuc()));
+                countPredicates.add(criteriaBuilder.between(expression3, request.getNgayBatDau(), request.getNgayKetThuc()));
+            }
+            if (request.getNgayBatDau() != null && request.getNgayKetThuc() != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(expression, request.getNgayBatDau()));
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(expression1, request.getNgayKetThuc()));
+                countPredicates.add(criteriaBuilder.greaterThanOrEqualTo(expression2, request.getNgayBatDau()));
                 countPredicates.add(criteriaBuilder.lessThanOrEqualTo(expression3, request.getNgayKetThuc()));
             }
 
