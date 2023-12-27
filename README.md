@@ -1,4 +1,4 @@
-# Website bán điện thoại BeePhoneShop 🐝
+# Website bán điện thoại thông minh BeePhoneShop 🐝
 
 ***
 
