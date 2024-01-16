@@ -394,9 +394,7 @@ const ManagementProductItems = (
       width: "10%",
       dataIndex: "ma",
       render: (text, record) => (
-        <span style={{ fontWeight: "400" }}>
-          {"SP00000" + products.indexOf(record) + 1}
-        </span>
+        <span style={{ fontWeight: "400" }}>{record.ma}</span>
       ),
     },
     {
