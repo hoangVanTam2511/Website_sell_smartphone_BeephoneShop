@@ -13,7 +13,5 @@ public class NotificationRequest {
 
     private String duongDan;
 
-    private Date ngayTao;
-
     private String tieuDe;
 }

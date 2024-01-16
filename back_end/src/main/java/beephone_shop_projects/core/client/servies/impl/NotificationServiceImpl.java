@@ -20,7 +20,6 @@ public class NotificationServiceImpl {
         thongBao.setDuongDan(notificationRequest.getDuongDan());
         thongBao.setNoiDung(notificationRequest.getNoiDung());
         thongBao.setTieuDe(notificationRequest.getTieuDe());
-        thongBao.setNgayTao(notificationRequest.getNgayTao());
 
         notificationClientRepository.save(thongBao);
     }

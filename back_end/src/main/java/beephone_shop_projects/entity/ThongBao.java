@@ -23,7 +23,5 @@ public class ThongBao extends PrimaryEntity implements IsIdentified {
 
     private String duongDan;
 
-    private Date ngayTao;
-
     private String tieuDe;
 }
