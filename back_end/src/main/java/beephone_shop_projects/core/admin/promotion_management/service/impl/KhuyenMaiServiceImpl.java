@@ -153,7 +153,7 @@ public class KhuyenMaiServiceImpl implements KhuyenMaiService {
                         giaTriKM = (tong.subtract(tong1)).divide(new BigDecimal(kmct.size() - kmct1.size()), 0, RoundingMode.HALF_UP);
                         donGiaKM = donGia.subtract(giaTriKM);
                     } else{
-                        giaTriKM = null;
+                        giaTriKM = BigDecimal.ZERO;
                         donGiaKM = donGia.subtract(giaTriKM);
                     }
                     khuyenMaiChiTietRepository.updateSanPhamChiTiet(donGiaKM, giaTriKM, d.getIdSanPhamChiTiet());
