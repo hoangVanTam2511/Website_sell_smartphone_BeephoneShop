@@ -259,12 +259,12 @@ const ManagementOrders = () => {
     {
       title: "Khách Hàng",
       align: "center",
-      width: "10%",
+      width: "20%",
       render: (text, order) => (
         <span
           style={
             {
-              /*  textOverflow: "ellipsis", maxWidth: "300px", whiteSpace: "normal" */
+              whiteSpace: "pre-line"
             }
           }
         >
@@ -276,15 +276,7 @@ const ManagementOrders = () => {
               order.account.hoVaTen
               ? order.account.hoVaTen
               : order.tenNguoiNhan}
-        </span>
-      ),
-    },
-    {
-      title: "Số Điện Thoại",
-      align: "center",
-      dataIndex: "soDienThoaiNguoiNhan",
-      render: (text, order) => (
-        <span style={{ fontWeight: "400" }}>
+          {" - "}
           {order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
             order.account === null
             ? order.soDienThoai
@@ -347,7 +339,7 @@ const ManagementOrders = () => {
               className="text-dark"
               style={{ fontSize: "14px", padding: "13px" }}
             >
-              Chờ xác nhận
+              Đang chờ xác nhận
             </span>
           </div>
         ) : status == OrderStatusString.CONFIRMED ? (

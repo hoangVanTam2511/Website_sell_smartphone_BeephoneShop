@@ -221,7 +221,7 @@ const ImportAndExportExcelImei = ({
               Đã Bán
             </span>
           </div>
-        ) : type === StatusImei.NOT_SOLD || type === StatusImei.IN_THE_CART ? (
+        ) : type === StatusImei.NOT_SOLD || type === StatusImei.IN_THE_CART  || type === StatusImei.PENDING_DELIVERY ? (
           <div
             className="rounded-pill badge-success mx-auto"
             style={{ height: "35px", width: "110px", padding: "4px" }}
