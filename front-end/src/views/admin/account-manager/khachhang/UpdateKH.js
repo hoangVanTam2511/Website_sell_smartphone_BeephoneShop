@@ -391,6 +391,7 @@ const UpdateKH = () => {
   };
   return (
     <>
+      <div className="mt-4">
       {" "}
       <Card bordered="false" style={{ width: "100%" }}>
         <Grid container justifyContent="space-between">
@@ -834,61 +835,7 @@ const UpdateKH = () => {
           </div>
         </div>
       </Card>
-      <Card style={{ marginTop: "20px" }}>
-        <div
-          style={{
-            position: "sticky",
-            fontSize: "16px",
-            top: 10,
-            backgroundColor: "white",
-            borderLeft: "4px solid #e2e2e2",
-            zIndex: 1,
-            paddingLeft: "10px",
-            marginTop: "20px",
-          }}
-        >
-          <span
-            style={{
-              color: "gray",
-              display: "block",
-              padding: "10px",
-              borderBottom: "1px solid #e2e2e2", // Border for separation
-            }}
-          >
-            Đơn Hàng Gần Đây
-            <a style={{ float: "right", color: "#4b69ff" }}>
-              Xem toàn bộ đơn hàng &nbsp;{" "}
-            </a>
-            {/* </Button> */}
-          </span>
-        </div>
-        {/* Hiển thị đơn hàng gần đây - có dlieu*/}
-        <Grid container justifyContent="space-between">
-          <Grid item xs={4} style={{ padding: "10px", paddingLeft: "20px" }}>
-            Đơn hàng <b>#DH123</b> <br />
-            500.000đ từ <b>Quản lý đơn hàng</b>
-          </Grid>
-          <Grid item xs={4} style={{ padding: "20px" }}>
-            <Tag color="cyan">Chưa thanh toán</Tag>
-            <Tag color="red">Chưa chuyển</Tag>
-          </Grid>
-          <Grid
-            item
-            xs={4}
-            style={{ padding: "10px", textAlign: "right", color: "gray" }}
-          >
-            21/03/2023 11:11
-          </Grid>
-        </Grid>
-        {/* Hiển thị đơn hàng gần đây - không dlieu*/}
-        {/* <div style={{ padding: "30px", textAlign: "center" }}>
-          {" "}
-          <FontAwesomeIcon icon={faFileCirclePlus} shake size="2xl" /> <br />
-          <span style={{ marginTop: "20px" }}>
-            Khách hàng chưa có đơn đặt nào
-          </span>
-        </div> */}
-      </Card>
+      </div>
     </>
   );
 };

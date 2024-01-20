@@ -1,6 +1,7 @@
 export const OrderTypeString = {
   AT_COUNTER: "AT_COUNTER",
   DELIVERY: "DELIVERY",
+  CLIENT: "CLIENT",
 };
 export const Notistack = {
   SUCCESS: "success",
@@ -141,6 +142,7 @@ export const StatusImei = {
   NOT_SOLD: "NOT_SOLD",
   PENDING_DELIVERY: "PENDING_DELIVERY",
   REFUND: "REFUND",
+  REFUNDING: "REFUNDING",
   CANCELLED: "CANCELLED",
   IN_ACTIVE: "IN_ACTIVE",
 };

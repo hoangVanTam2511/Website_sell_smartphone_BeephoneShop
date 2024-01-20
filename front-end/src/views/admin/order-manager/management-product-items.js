@@ -161,11 +161,11 @@ const ManagementProductItems = (
     getAllImei();
   }, []);
 
-  useEffect(() => {
-    if (imeis.length > 0) {
-      handleAddImei(imeis);
-    }
-  }, [imeis]);
+  // useEffect(() => {
+  //   if (imeis.length > 0) {
+  //     handleAddImei(imeis);
+  //   }
+  // }, [imeis]);
 
   const countPrice = (price, afterDiscount) => {
     return price - afterDiscount;
@@ -395,7 +395,7 @@ const ManagementProductItems = (
       dataIndex: "ma",
       render: (text, record) => (
         <span style={{ fontWeight: "400" }}>
-          {"SP00000" + products.indexOf(record) + 1}
+          {"SP0000000" + products.indexOf(record) + 1}
         </span>
       ),
     },
@@ -433,7 +433,7 @@ const ManagementProductItems = (
       ),
     },
     {
-      title: "Số Lượng Tồn",
+      title: "Số Lượng",
       align: "center",
       width: "11%",
       render: (text, record) => (
@@ -557,9 +557,9 @@ const ManagementProductItems = (
       >
         <Card className="">
           <Card.Header className="d-flex justify-content-between">
-            {/* <div className="header-title mt-2">
+            <div className="header-title mt-2">
               <TextField
-                label="Tìm theo mã, tên, số lượng tồn hoặc đơn giá"
+                label="Tìm theo mã, tên, số lượng hoặc đơn giá"
                 // onChange={handleGetValueFromInputTextField}
                 // value={keyword}
                 InputLabelProps={{
@@ -593,12 +593,15 @@ const ManagementProductItems = (
             </div>
             <div className="mt-2">
               <Button
-                // onClick={handleUploadClick}
-                className="rounded-2 button-mui"
+                className="rounded-2 button-mui me-2"
                 type="primary"
-                style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                style={{
+                  height: "40px",
+                  width: "auto",
+                  fontSize: "15px",
+                }}
               >
-                <FaUpload
+                <FaDownload
                   className="ms-1"
                   style={{
                     position: "absolute",
@@ -607,19 +610,15 @@ const ManagementProductItems = (
                   }}
                 />
                 <span
-                  className=""
-                  style={{
-                    marginBottom: "2px",
-                    fontWeight: "500",
-                    marginLeft: "21px",
-                  }}
+                  className="ms-3 ps-1"
+                  style={{ marginBottom: "3px", fontWeight: "500" }}
                 >
-                  Cật Nhật Ảnh
+                  Export Excel
                 </span>
               </Button>
-            </div> */}
+            </div>
           </Card.Header>
-          {/* <div className="d-flex mt-4 mx-auto">
+          <div className="d-flex mt-4 mx-auto">
             <div
               className="d-flex ms-3"
               style={{
@@ -808,7 +807,7 @@ const ManagementProductItems = (
                   className="ms-2 ps-1"
                   style={{ fontSize: "15px", fontWeight: "450" }}
                 >
-                  Khoảng Giá:{""}
+                  Trạng Thái:{""}
                 </span>
               </div>
               <FormControl
@@ -850,6 +849,65 @@ const ManagementProductItems = (
             </div>
             <div
               className="d-flex ms-3"
+              style={{
+                height: "40px",
+                position: "relative",
+                cursor: "pointer",
+              }}
+            >
+              <div
+                // onClick={handleOpenSelect1}
+                className=""
+                style={{ marginTop: "8px" }}
+              >
+                <span
+                  className="ms-2 ps-1"
+                  style={{ fontSize: "15px", fontWeight: "450" }}
+                >
+                  Khoảng Giá:{""}
+                </span>
+              </div>
+              <FormControl
+                sx={{
+                  minWidth: 50,
+                }}
+                size="small"
+              >
+                <Select
+                  MenuProps={{
+                    PaperProps: {
+                      style: {
+                        borderRadius: "7px",
+                      },
+                    },
+                  }}
+                  IconComponent={KeyboardArrowDownOutlinedIcon}
+                  sx={{
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      border: "none !important",
+                    },
+                    "& .MuiSelect-select": {
+                      color: "#2f80ed",
+                      fontWeight: "500",
+                    },
+                  }}
+                  // open={openSelect1}
+                  // onClose={handleCloseSelect1}
+                  // onOpen={handleOpenSelect1}
+                  defaultValue={14}
+                >
+                  <MenuItem className="" value={14}>
+                    Tất cả
+                  </MenuItem>
+                  <MenuItem value={15}>Khách hàng mới</MenuItem>
+                  <MenuItem value={20}>Khách hàng cũ</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
+          </div>
+          <div className="d-flex mt-3 mx-auto">
+            <div
+              className="d-flex"
               style={{
                 height: "40px",
                 position: "relative",
@@ -962,14 +1020,14 @@ const ManagementProductItems = (
                 </Select>
               </FormControl>
             </div>
-          </div> */}
+          </div>
           <Card.Body>
             <OrderTable />
           </Card.Body>
           <div className="mx-auto">
             <Pagination
               color="primary" /* page={parseInt(currentPage)} key={refreshPage} count={totalPages} */
-              // onChange={handlePageChange}
+            // onChange={handlePageChange}
             />
           </div>
           <div className="mt-4"></div>

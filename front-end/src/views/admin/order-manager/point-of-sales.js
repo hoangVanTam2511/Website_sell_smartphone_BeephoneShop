@@ -86,6 +86,7 @@ import Html5QrcodePlugin from "./Html5QrcodePlugin";
 import {
   PrintBillAtTheCounter,
   PrintBillAtTheCounterAuto,
+  PrintDelivery,
 } from "./printer-invoice";
 import { useReactToPrint } from "react-to-print";
 import {
@@ -151,6 +152,7 @@ const PointOfSales = () => {
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
   });
+  const [orderCompleted, setOrderCompleted] = useState(false);
 
   const navigate = useNavigate();
   const { id } = useParams();
@@ -198,6 +200,7 @@ const PointOfSales = () => {
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerAddress, setCustomerAddress] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
+
 
   const [customerNameShip, setCustomerNameShip] = useState("");
   const [customerPhoneShip, setCustomerPhoneShip] = useState("");
@@ -1119,11 +1122,17 @@ const PointOfSales = () => {
           }`,
           Notistack.SUCCESS
         );
-        navigate(`/dashboard/order-detail/${order.ma}`);
+        navigate(`/dashboard/order-detail/${order.ma}`, { state: { param: "print" } });
+        // setOrderCompleted(true);
+        // handlePrint();
         console.log(orderRequest);
       });
     } catch (error) { }
   };
+
+  // useEffect(() => {
+  //   componentRef.current = <PrintBillAtTheCounter data={order} />;
+  // }, [order]);
 
   // const updateAccount = async (id) => {
   //   return new Promise((resolve, reject) => {
@@ -3919,6 +3928,7 @@ const PointOfSales = () => {
         ma={itemMa && itemMa.substring(1)}
         deleteOrder={() => handleCloseDialogOrderClose(itemId)}
       />
+      <PrintBillAtTheCounter data={order} ref={componentRef} />
       {isLoading && <LoadingIndicator />}
     </>
   );

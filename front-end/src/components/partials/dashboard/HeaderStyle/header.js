@@ -127,7 +127,7 @@ const Header = memo((props) => {
         ];
       case `/dashboard/update-discount/${id}`:
         return [
-          { label: "Giảm Giá Sản Phẩm", path: "/dashboard/discounts" },
+          { label: "Đợt Giảm Giá", path: "/dashboard/discounts" },
           {
             label: "Cập Nhật Đợt Giảm Giá",
             path: `/dashboard/update-discount/${id}`,

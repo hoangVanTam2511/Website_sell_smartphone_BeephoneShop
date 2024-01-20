@@ -408,37 +408,36 @@ const HienThiVoucher = () => {
       render: (text, record) => (
         <>
           <div
-            className={`rounded-pill mx-auto ${
-              record.trangThai === StatusDiscount.HOAT_DONG &&
-              isDatePast(record.ngayBatDau) === true
+            className={`rounded-pill mx-auto ${record.trangThai === StatusDiscount.HOAT_DONG &&
+                isDatePast(record.ngayBatDau) === true
                 ? "badge-light"
                 : record.trangThai === StatusDiscount.HOAT_DONG &&
                   isDateFuture(record.ngayKetThuc) === false
-                ? "badge-primary"
-                : record.trangThai === StatusDiscount.NGUNG_HOAT_DONG
-                ? "badge-danger"
-                : record.trangThai === StatusDiscount.CHUA_DIEN_RA
-                ? "badge-light"
-                : record.trangThai === StatusDiscount.DA_HUY &&
-                  isDateFuture(record.ngayKetThuc) === true
-                ? "badge-danger"
-                : record.trangThai === StatusDiscount.DA_HUY &&
-                  isDatePast(record.ngayBatDau) === true
-                ? "badge-light"
-                : record.trangThai === StatusDiscount.DA_HUY &&
-                  isRangeDate(record.ngayBatDau, record.ngayKetThuc) === true
-                ? "badge-primary"
-                : record.trangThai === StatusDiscount.TAM_DUNG &&
-                  isDateFuture(record.ngayKetThuc) === true
-                ? "badge-danger"
-                : record.trangThai === StatusDiscount.TAM_DUNG &&
-                  isDatePast(record.ngayBatDau) === true
-                ? "badge-light"
-                : record.trangThai === StatusDiscount.TAM_DUNG &&
-                  isRangeDate(record.ngayBatDau, record.ngayKetThuc) === true
-                ? "badge-primary"
-                : ""
-            }`}
+                  ? "badge-primary"
+                  : record.trangThai === StatusDiscount.NGUNG_HOAT_DONG
+                    ? "badge-danger"
+                    : record.trangThai === StatusDiscount.CHUA_DIEN_RA
+                      ? "badge-light"
+                      : record.trangThai === StatusDiscount.DA_HUY &&
+                        isDateFuture(record.ngayKetThuc) === true
+                        ? "badge-danger"
+                        : record.trangThai === StatusDiscount.DA_HUY &&
+                          isDatePast(record.ngayBatDau) === true
+                          ? "badge-light"
+                          : record.trangThai === StatusDiscount.DA_HUY &&
+                            isRangeDate(record.ngayBatDau, record.ngayKetThuc) === true
+                            ? "badge-primary"
+                            : record.trangThai === StatusDiscount.TAM_DUNG &&
+                              isDateFuture(record.ngayKetThuc) === true
+                              ? "badge-danger"
+                              : record.trangThai === StatusDiscount.TAM_DUNG &&
+                                isDatePast(record.ngayBatDau) === true
+                                ? "badge-light"
+                                : record.trangThai === StatusDiscount.TAM_DUNG &&
+                                  isRangeDate(record.ngayBatDau, record.ngayKetThuc) === true
+                                  ? "badge-primary"
+                                  : ""
+              }`}
             style={{
               height: "35px",
               width: "auto",
@@ -446,20 +445,19 @@ const HienThiVoucher = () => {
             }}
           >
             <span
-              className={`p-2 ${
-                record.trangThai === StatusDiscount.CHUA_DIEN_RA
+              className={`p-2 ${record.trangThai === StatusDiscount.CHUA_DIEN_RA
                   ? "text-dark"
                   : record.trangThai === StatusDiscount.DA_HUY &&
                     isDatePast(record.ngayBatDau) === true
-                  ? "text-dark"
-                  : record.trangThai === StatusDiscount.HOAT_DONG &&
-                    isDatePast(record.ngayBatDau) === true
-                  ? "text-dark"
-                  : record.trangThai === StatusDiscount.TAM_DUNG &&
-                    isDatePast(record.ngayBatDau) === true
-                  ? "text-dark"
-                  : "text-white"
-              }`}
+                    ? "text-dark"
+                    : record.trangThai === StatusDiscount.HOAT_DONG &&
+                      isDatePast(record.ngayBatDau) === true
+                      ? "text-dark"
+                      : record.trangThai === StatusDiscount.TAM_DUNG &&
+                        isDatePast(record.ngayBatDau) === true
+                        ? "text-dark"
+                        : "text-white"
+                }`}
               style={{ fontSize: "14px" }}
             >
               {dayjs(record.ngayBatDau).format("DD/MM/YYYY")} -{" "}
@@ -576,8 +574,8 @@ const HienThiVoucher = () => {
               <IconButton
                 disabled={
                   record.trangThai === StatusDiscount.NGUNG_HOAT_DONG ||
-                  // (
-                  record.trangThai === StatusDiscount.DA_HUY
+                    // (
+                    record.trangThai === StatusDiscount.DA_HUY
                     ? true
                     : false
                 }
@@ -600,23 +598,23 @@ const HienThiVoucher = () => {
                     cursor: "pointer",
                     color:
                       record.trangThai === StatusDiscount.HOAT_DONG ||
-                      record.trangThai === StatusDiscount.CHUA_DIEN_RA
+                        record.trangThai === StatusDiscount.CHUA_DIEN_RA
                         ? "#e5383b"
                         : record.trangThai === StatusDiscount.DA_HUY &&
                           isDatePast(record.ngayBatDau) === true
-                        ? "disabled"
-                        : record.trangThai === StatusDiscount.DA_HUY &&
-                          isRangeDate(record.ngayBatDau, record.ngayKetThuc) ===
+                          ? "disabled"
+                          : record.trangThai === StatusDiscount.DA_HUY &&
+                            isRangeDate(record.ngayBatDau, record.ngayKetThuc) ===
                             true
-                        ? "disabled"
-                        : record.trangThai === StatusDiscount.TAM_DUNG &&
-                          isDatePast(record.ngayBatDau) === true
-                        ? "#09a129"
-                        : record.trangThai === StatusDiscount.TAM_DUNG &&
-                          isRangeDate(record.ngayBatDau, record.ngayKetThuc) ===
-                            true
-                        ? "#09a129"
-                        : "disabled",
+                            ? "disabled"
+                            : record.trangThai === StatusDiscount.TAM_DUNG &&
+                              isDatePast(record.ngayBatDau) === true
+                              ? "#09a129"
+                              : record.trangThai === StatusDiscount.TAM_DUNG &&
+                                isRangeDate(record.ngayBatDau, record.ngayKetThuc) ===
+                                true
+                                ? "#09a129"
+                                : "disabled",
                   }}
                 />
               </IconButton>
@@ -740,8 +738,8 @@ const HienThiVoucher = () => {
             checkStatus === StatusDiscount.HOAT_DONG
               ? true
               : checkStatus === StatusDiscount.CHUA_DIEN_RA
-              ? true
-              : false
+                ? true
+                : false
           }
           onClick={() => {
             handleOpenDialogConfirmUpdate();
@@ -869,7 +867,7 @@ const HienThiVoucher = () => {
                 <Button
                   className="rounded-2 button-mui"
                   type="primary"
-                  style={{ height: "40px", width: "200px", fontSize: "15px" }}
+                  style={{ height: "40px", width: "180px", fontSize: "15px" }}
                 >
                   <PlusOutlined
                     className="ms-1"

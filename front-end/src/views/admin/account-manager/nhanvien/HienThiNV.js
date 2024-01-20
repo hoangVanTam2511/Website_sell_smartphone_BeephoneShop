@@ -70,18 +70,18 @@ const HienThiNV = () => {
     request(
       "GET",
       apiURLNV +
-        "/search-all?page=" +
-        currentPage +
-        "&tenKH=" +
-        searchText +
-        "&trangThai=" +
-        filterStatus
+      "/search-all?page=" +
+      currentPage +
+      "&tenKH=" +
+      searchText +
+      "&trangThai=" +
+      filterStatus
     )
       .then((response) => {
         setListNV(response.data.data);
         setTotalPages(response.data.totalPages);
       })
-      .catch(() => {});
+      .catch(() => { });
   };
 
   const handleFilter = (status) => {
@@ -182,7 +182,7 @@ const HienThiNV = () => {
     {
       title: "Họ và tên",
       dataIndex: "hoVaTen",
-      width: "15%",
+      width: "10%",
       editable: true,
       ellipsis: true,
       align: "center",
@@ -190,7 +190,7 @@ const HienThiNV = () => {
     {
       title: "Email",
       dataIndex: "email",
-      width: "15%",
+      width: "10%",
       editable: true,
       ellipsis: true,
       align: "center",
@@ -198,7 +198,7 @@ const HienThiNV = () => {
     {
       title: "Số điện thoại",
       dataIndex: "soDienThoai",
-      width: "14%",
+      width: "10%",
       editable: true,
       align: "center",
     },
@@ -258,6 +258,7 @@ const HienThiNV = () => {
       title: "Thao Tác",
       dataIndex: "operation",
       width: "10%",
+      align: "center",
       render: (_, record) => {
         const editable = isEditing(record);
         return editable ? (
@@ -315,7 +316,7 @@ const HienThiNV = () => {
       <div className="form-tbl">
         <Form form={form} component={false} initialValues={{}}>
           <div
-            className="mt-4"
+            className="mt-1"
             style={{
               backgroundColor: "#ffffff",
               boxShadow: "0 0.1rem 0.3rem #00000010",
@@ -362,7 +363,7 @@ const HienThiNV = () => {
 
                 <div className="mt-2 d-flex">
                   <div
-                    className="ms-4 me-5 d-flex"
+                    className="me-3 d-flex"
                     style={{
                       height: "40px",
                       position: "relative",

@@ -139,9 +139,8 @@ export function OrderConfirmPayment(props) {
               sx={{ color: "black" }}
               id="alert-dialog-description"
             >
-              {`Bạn có chắc chắn muốn ${
-                delivery ? "đặt đơn hàng" : "thanh toán đơn hàng"
-              }`}{" "}
+              {`Bạn có chắc chắn muốn ${delivery ? "đặt đơn hàng" : "thanh toán đơn hàng"
+                }`}{" "}
               <span className="" style={{ fontWeight: "500" }}>
                 {" "}
                 {ma}
@@ -602,7 +601,7 @@ export function UpdateRecipientOrderDialog(props) {
           wardName
         );
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const getAllWardGhnByIdDistrictByCustomer = async (
@@ -731,8 +730,8 @@ export function UpdateRecipientOrderDialog(props) {
               }}
               helperText={
                 isConfirm === true &&
-                customerName !== null &&
-                customerName.trim() === ""
+                  customerName !== null &&
+                  customerName.trim() === ""
                   ? "Bạn chưa nhập họ và tên"
                   : ""
               }
@@ -757,8 +756,8 @@ export function UpdateRecipientOrderDialog(props) {
               }}
               helperText={
                 isConfirm === true &&
-                customerPhone !== null &&
-                customerPhone.trim() === ""
+                  customerPhone !== null &&
+                  customerPhone.trim() === ""
                   ? "Bạn chưa nhập số điện thoại"
                   : ""
               }
@@ -860,8 +859,8 @@ export function UpdateRecipientOrderDialog(props) {
               }}
               helperText={
                 isConfirm === true &&
-                customerAddress !== null &&
-                customerAddress.trim() === ""
+                  customerAddress !== null &&
+                  customerAddress.trim() === ""
                   ? "Bạn chưa nhập số điện thoại"
                   : ""
               }
@@ -1084,10 +1083,11 @@ export function ProductsDialog(props) {
   };
 
   const [price, setPrice] = useState(0);
+  const [name, setName] = useState("");
   const [id, setId] = useState("");
 
   const addProductToCart = (imeis) => {
-    add(price, id, imeis);
+    add(price, id, imeis, name);
     findProductsByMultipleCriteriaWithPagination(currentPage);
   };
   const filterdData = data.filter((item) => item.soLuongTonKho > 0);
@@ -1222,13 +1222,13 @@ export function ProductsDialog(props) {
         <span style={{ color: "#dc1111" }}>
           {item && item.donGiaSauKhuyenMai
             ? item.donGiaSauKhuyenMai.toLocaleString("vi-VN", {
-                style: "currency",
-                currency: "VND",
-              })
+              style: "currency",
+              currency: "VND",
+            })
             : item.donGia.toLocaleString("vi-VN", {
-                style: "currency",
-                currency: "VND",
-              })}
+              style: "currency",
+              currency: "VND",
+            })}
         </span>
       ),
     },
@@ -1250,6 +1250,14 @@ export function ProductsDialog(props) {
               handleOpenModalImeiByProductItem(item);
               setId(item.id);
               setPrice(item.donGia);
+              setName(item.sanPham.tenSanPham +
+                " " +
+                item.ram.dungLuong +
+                "/" +
+                item.rom.dungLuong +
+                "GB (" +
+                item.mauSac.tenMauSac +
+                ")");
             }}
             className="rounded-2 button-mui"
             type="primary"
@@ -1464,21 +1472,21 @@ export function ProductsDialog(props) {
       selectedValueCategorys.length === 1 && selectedValueCategorys[0] === 0
         ? []
         : selectedValueCategorys &&
-            selectedValueCategorys.filter((item) => item !== 0)
+        selectedValueCategorys.filter((item) => item !== 0)
     );
     params.append(
       "hangs",
       selectedValueBrands.length === 1 && selectedValueBrands[0] === 0
         ? []
         : selectedValueBrands &&
-            selectedValueBrands.filter((item) => item !== 0)
+        selectedValueBrands.filter((item) => item !== 0)
     );
     params.append(
       "heDieuHanhs",
       selectedValueOperas.length === 1 && selectedValueOperas[0] === "None"
         ? operas
         : selectedValueOperas &&
-            selectedValueOperas.filter((item) => item !== "None")
+        selectedValueOperas.filter((item) => item !== "None")
     );
     params.append(
       "chips",
@@ -1491,7 +1499,7 @@ export function ProductsDialog(props) {
       selectedValueScreens.length === 1 && selectedValueScreens[0] === 0
         ? []
         : selectedValueScreens &&
-            selectedValueScreens.filter((item) => item !== 0)
+        selectedValueScreens.filter((item) => item !== 0)
     );
     params.append(
       "pins",
@@ -1716,14 +1724,14 @@ export function ProductsDialog(props) {
                       renderValue={(selected) =>
                         selected && selected.length > 1
                           ? selected
-                              .filter((id) =>
-                                categorys.find((c) => c.id === id)
-                              ) // Loại bỏ các giá trị không hợp lệ
-                              .map(
-                                (id) =>
-                                  categorys.find((c) => c.id === id).tenDanhMuc
-                              ) // Lấy tên danh mục tương ứng
-                              .join(", ")
+                            .filter((id) =>
+                              categorys.find((c) => c.id === id)
+                            ) // Loại bỏ các giá trị không hợp lệ
+                            .map(
+                              (id) =>
+                                categorys.find((c) => c.id === id).tenDanhMuc
+                            ) // Lấy tên danh mục tương ứng
+                            .join(", ")
                           : "Chọn Danh Mục"
                       }
                     >
@@ -1788,12 +1796,12 @@ export function ProductsDialog(props) {
                       renderValue={(selected) =>
                         selected && selected.length > 1
                           ? selected
-                              .filter((id) => listHang.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
-                              .map(
-                                (id) =>
-                                  listHang.find((c) => c.id === id).tenHang
-                              ) // Lấy tên danh mục tương ứng
-                              .join(", ")
+                            .filter((id) => listHang.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
+                            .map(
+                              (id) =>
+                                listHang.find((c) => c.id === id).tenHang
+                            ) // Lấy tên danh mục tương ứng
+                            .join(", ")
                           : "Chọn Hãng"
                       }
                     >
@@ -1863,15 +1871,15 @@ export function ProductsDialog(props) {
                       }}
                       renderValue={(selected) =>
                         selected &&
-                        selected.filter((value) => value !== "None").length > 0
+                          selected.filter((value) => value !== "None").length > 0
                           ? selected
-                              .filter((id) =>
-                                ["ANDROID", "IOS"].find((c) => c === id)
-                              ) // Loại bỏ các giá trị không hợp lệ
-                              .map((id) =>
-                                ["ANDROID", "IOS"].find((c) => c === id)
-                              ) // Lấy tên danh mục tương ứng
-                              .join(", ")
+                            .filter((id) =>
+                              ["ANDROID", "IOS"].find((c) => c === id)
+                            ) // Loại bỏ các giá trị không hợp lệ
+                            .map((id) =>
+                              ["ANDROID", "IOS"].find((c) => c === id)
+                            ) // Lấy tên danh mục tương ứng
+                            .join(", ")
                           : "Chọn Hệ Điều Hành"
                       }
                     >
@@ -1934,12 +1942,12 @@ export function ProductsDialog(props) {
                       renderValue={(selected) =>
                         selected && selected.length > 1
                           ? selected
-                              .filter((id) => listChip.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
-                              .map(
-                                (id) =>
-                                  listChip.find((c) => c.id === id).tenChip
-                              ) // Lấy tên danh mục tương ứng
-                              .join(", ")
+                            .filter((id) => listChip.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
+                            .map(
+                              (id) =>
+                                listChip.find((c) => c.id === id).tenChip
+                            ) // Lấy tên danh mục tương ứng
+                            .join(", ")
                           : "Chọn Chip"
                       }
                     >
@@ -2003,26 +2011,25 @@ export function ProductsDialog(props) {
                       renderValue={(selected) =>
                         selected && selected.length > 1
                           ? selected
-                              .filter((id) =>
+                            .filter((id) =>
+                              listManHinh.find((c) => c.id === id)
+                            ) // Loại bỏ các giá trị không hợp lệ
+                            .map(
+                              (id) =>
                                 listManHinh.find((c) => c.id === id)
-                              ) // Loại bỏ các giá trị không hợp lệ
-                              .map(
-                                (id) =>
-                                  listManHinh.find((c) => c.id === id)
-                                    .loaiManHinh +
-                                  " " +
-                                  `(${
-                                    listManHinh.find((c) => c.id === id)
-                                      .doPhanGiaiManHinh.chieuRong +
-                                    " x " +
-                                    listManHinh.find((c) => c.id === id)
-                                      .doPhanGiaiManHinh.chieuDai
-                                  } pixels) ` +
-                                  listManHinh.find((c) => c.id === id)
-                                    .kichThuoc +
-                                  `"`
-                              ) // Lấy tên danh mục tương ứng
-                              .join(", ")
+                                  .loaiManHinh +
+                                " " +
+                                `(${listManHinh.find((c) => c.id === id)
+                                  .doPhanGiaiManHinh.chieuRong +
+                                " x " +
+                                listManHinh.find((c) => c.id === id)
+                                  .doPhanGiaiManHinh.chieuDai
+                                } pixels) ` +
+                                listManHinh.find((c) => c.id === id)
+                                  .kichThuoc +
+                                `"`
+                            ) // Lấy tên danh mục tương ứng
+                            .join(", ")
                           : "Chọn Màn Hình"
                       }
                     >
@@ -2035,10 +2042,9 @@ export function ProductsDialog(props) {
                             primary={
                               c.loaiManHinh +
                               " " +
-                              `(${
-                                c.doPhanGiaiManHinh.chieuRong +
-                                " x " +
-                                c.doPhanGiaiManHinh.chieuDai
+                              `(${c.doPhanGiaiManHinh.chieuRong +
+                              " x " +
+                              c.doPhanGiaiManHinh.chieuDai
                               } pixels) ` +
                               c.kichThuoc +
                               `"`
@@ -2097,15 +2103,15 @@ export function ProductsDialog(props) {
                       renderValue={(selected) =>
                         selected && selected.length > 1
                           ? selected
-                              .filter((id) => listPin.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
-                              .map(
-                                (id) =>
-                                  listPin.find((c) => c.id === id).loaiPin +
-                                  " " +
-                                  listPin.find((c) => c.id === id).dungLuong +
-                                  " mAh"
-                              ) // Lấy tên danh mục tương ứng
-                              .join(", ")
+                            .filter((id) => listPin.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
+                            .map(
+                              (id) =>
+                                listPin.find((c) => c.id === id).loaiPin +
+                                " " +
+                                listPin.find((c) => c.id === id).dungLuong +
+                                " mAh"
+                            ) // Lấy tên danh mục tương ứng
+                            .join(", ")
                           : "Chọn Pin"
                       }
                     >
@@ -2174,13 +2180,13 @@ export function ProductsDialog(props) {
                       renderValue={(selected) =>
                         selected && selected.length > 1
                           ? selected
-                              .filter((id) => listRam.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
-                              .map(
-                                (id) =>
-                                  listRam.find((c) => c.id === id).dungLuong +
-                                  "GB"
-                              ) // Lấy tên danh mục tương ứng
-                              .join(", ")
+                            .filter((id) => listRam.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
+                            .map(
+                              (id) =>
+                                listRam.find((c) => c.id === id).dungLuong +
+                                "GB"
+                            ) // Lấy tên danh mục tương ứng
+                            .join(", ")
                           : "Chọn Ram"
                       }
                     >
@@ -2244,15 +2250,15 @@ export function ProductsDialog(props) {
                       renderValue={(selected) =>
                         selected && selected.length > 1
                           ? selected
-                              .filter((id) => listRom.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
-                              .map((id) =>
-                                listRom.find((c) => c.id === id).dungLuong ===
+                            .filter((id) => listRom.find((c) => c.id === id)) // Loại bỏ các giá trị không hợp lệ
+                            .map((id) =>
+                              listRom.find((c) => c.id === id).dungLuong ===
                                 1024
-                                  ? 1 + "TB"
-                                  : listRom.find((c) => c.id === id).dungLuong +
-                                    "GB"
-                              ) // Lấy tên danh mục tương ứng
-                              .join(", ")
+                                ? 1 + "TB"
+                                : listRom.find((c) => c.id === id).dungLuong +
+                                "GB"
+                            ) // Lấy tên danh mục tương ứng
+                            .join(", ")
                           : "Chọn Rom"
                       }
                     >
@@ -2555,8 +2561,8 @@ export function VouchersDialog(props) {
             discount === item.id
               ? "danger"
               : discount !== item.id
-              ? "primary"
-              : ""
+                ? "primary"
+                : ""
           }
           style={{
             height: "35px",
@@ -2652,114 +2658,112 @@ export function VouchersDialog(props) {
               <TableBody>
                 {filteredData.length > 0
                   ? filteredData.map((item, index) => (
-                      <TableRow
-                        key={index}
-                        sx={{
-                          "&:last-child td, &:last-child th": { border: 0 },
+                    <TableRow
+                      key={index}
+                      sx={{
+                        "&:last-child td, &:last-child th": { border: 0 },
+                      }}
+                    >
+                      <TableCell component="th" scope="row" align="center">
+                        {index + 1}
+                      </TableCell>
+                      <TableCell align="center" style={{ fontSize: "15px" }}>
+                        {item.ma}
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        style={{
+                          width: "",
+                          fontSize: "15px",
+                          color: "#dc1111",
                         }}
                       >
-                        <TableCell component="th" scope="row" align="center">
-                          {index + 1}
-                        </TableCell>
-                        <TableCell align="center" style={{ fontSize: "15px" }}>
-                          {item.ma}
-                        </TableCell>
-                        <TableCell
-                          align="center"
+                        {item.giaTriVoucher.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        style={{ width: "", fontSize: "15px" }}
+                      >
+                        {item.loaiVoucher === TypeDiscountNumber.VND
+                          ? "..."
+                          : item.giaTriToiDa}
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        style={{ width: "", fontSize: "15px" }}
+                      >
+                        {item.soLuong}
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        style={{
+                          width: "200px",
+                          fontSize: "15px",
+                          whiteSpace: "pre-line",
+                        }}
+                      >
+                        Áp dụng cho đơn tối thiểu
+                        <span className="" style={{}}>
+                          {" " +
+                            item.dieuKienApDung.toLocaleString("vi-VN", {
+                              style: "currency",
+                              currency: "VND",
+                            })}
+                        </span>
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        style={{ width: "", fontSize: "15px" }}
+                      >
+                        <div
+                          className="rounded-pill badge-primary"
                           style={{
-                            width: "",
-                            fontSize: "15px",
-                            color: "#dc1111",
+                            height: "35px",
+                            width: "auto",
+                            padding: "7.5px",
                           }}
                         >
-                          {item.giaTriVoucher.toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                          })}
-                        </TableCell>
-                        <TableCell
-                          align="center"
-                          style={{ width: "", fontSize: "15px" }}
-                        >
-                          {item.loaiVoucher === TypeDiscountNumber.VND
-                            ? "..."
-                            : item.giaTriToiDa}
-                        </TableCell>
-                        <TableCell
-                          align="center"
-                          style={{ width: "", fontSize: "15px" }}
-                        >
-                          {item.soLuong}
-                        </TableCell>
-                        <TableCell
-                          align="center"
-                          style={{
-                            width: "200px",
-                            fontSize: "15px",
-                            whiteSpace: "pre-line",
-                          }}
-                        >
-                          Áp dụng cho đơn tối thiểu
-                          <span className="" style={{}}>
-                            {" " +
-                              item.dieuKienApDung.toLocaleString("vi-VN", {
-                                style: "currency",
-                                currency: "VND",
-                              })}
+                          <span className="text-white p-2" style={{}}>
+                            {item.trangThai == 1 ? "Hoạt động" : ""}
                           </span>
-                        </TableCell>
-                        <TableCell
-                          align="center"
-                          style={{ width: "", fontSize: "15px" }}
-                        >
-                          <div
-                            className="rounded-pill badge-primary"
-                            style={{
-                              height: "35px",
-                              width: "auto",
-                              padding: "7.5px",
-                            }}
-                          >
-                            <span className="text-white p-2" style={{}}>
-                              {item.trangThai == 1 ? "Hoạt động" : ""}
-                            </span>
-                          </div>
-                        </TableCell>
-                        <TableCell
-                          align="center"
+                        </div>
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        style={{
+                          width: "200px",
+                          fontSize: "15px",
+                          whiteSpace: "pre-line",
+                        }}
+                      >
+                        <div
+                          className={`${item.dieuKienApDung <= total()
+                            ? "rounded-pill badge-success"
+                            : "rounded-pill badge-danger"
+                            }`}
                           style={{
-                            width: "200px",
-                            fontSize: "15px",
-                            whiteSpace: "pre-line",
+                            height: "35px",
+                            width: "auto",
+                            padding: "7.5px",
                           }}
                         >
-                          <div
-                            className={`${
-                              item.dieuKienApDung <= total()
-                                ? "rounded-pill badge-success"
-                                : "rounded-pill badge-danger"
-                            }`}
-                            style={{
-                              height: "35px",
-                              width: "auto",
-                              padding: "7.5px",
-                            }}
-                          >
-                            <span className="text-white p-2" style={{}}>
-                              <span>{`${
-                                item.dieuKienApDung <= total()
-                                  ? "Có thể áp dụng"
-                                  : "Không thể áp dụng"
+                          <span className="text-white p-2" style={{}}>
+                            <span>{`${item.dieuKienApDung <= total()
+                              ? "Có thể áp dụng"
+                              : "Không thể áp dụng"
                               }`}</span>
-                            </span>
-                          </div>
-                        </TableCell>
-                        <TableCell
-                          align="center"
-                          style={{ width: "" }}
-                        ></TableCell>
-                      </TableRow>
-                    ))
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell
+                        align="center"
+                        style={{ width: "" }}
+                      ></TableCell>
+                    </TableRow>
+                  ))
                   : ""}
               </TableBody>
             </Table>
@@ -2974,7 +2978,7 @@ export function CustomersDialog(props) {
       width: "15%",
       render: (text, item) => (
         <span style={{ fontWeight: "normal", whiteSpace: "pre-line" }}>
-          {format(new Date(), "HH:mm:ss, dd/MM/yyyy")}
+          {format(item.ngayTao, "HH:mm:ss, dd/MM/yyyy")}
         </span>
       ),
     },
@@ -3844,11 +3848,11 @@ export const ProductDetailsDialog = (props) => {
                   <span style={{ fontWeight: "500", fontSize: "25px" }}>
                     {productItem1 &&
                       productItem1.sanPham.tenSanPham +
-                        " " +
-                        productItem1.ram.dungLuong +
-                        "/" +
-                        productItem1.rom.dungLuong +
-                        "GB"}
+                      " " +
+                      productItem1.ram.dungLuong +
+                      "/" +
+                      productItem1.rom.dungLuong +
+                      "GB"}
                     <span
                       className="ms-2"
                       style={{ fontSize: "13.5px", color: "gray" }}
@@ -3894,9 +3898,9 @@ export const ProductDetailsDialog = (props) => {
                         defaultValue={
                           productItem &&
                           productItem.ram.dungLuong +
-                            "/" +
-                            productItem.rom.dungLuong +
-                            "GB"
+                          "/" +
+                          productItem.rom.dungLuong +
+                          "GB"
                         }
                         size="lg"
                         sx={{ gap: 1.7 }}
@@ -3925,11 +3929,11 @@ export const ProductDetailsDialog = (props) => {
                                         >
                                           {productItem &&
                                             productItem.sanPham.tenSanPham +
-                                              " " +
-                                              item.ram.dungLuong +
-                                              "/" +
-                                              item.rom.dungLuong +
-                                              "GB"}
+                                            " " +
+                                            item.ram.dungLuong +
+                                            "/" +
+                                            item.rom.dungLuong +
+                                            "GB"}
                                         </span>
                                       </div>
                                       <div className="text-center">
@@ -4307,89 +4311,89 @@ export const ModalImeiByProductItem = ({
                       <tbody>
                         {itemsOnCurrentPage.length
                           ? itemsOnCurrentPage.map((item, index) => (
-                              <>
-                                <tr
-                                  key={index}
-                                  style={{
-                                    cursor: "pointer",
-                                    pointerEvents:
-                                      item.trangThai ===
-                                        StatusImei.PENDING_DELIVERY ||
-                                      item.trangThai === StatusImei.IN_THE_CART
-                                        ? "none"
-                                        : "auto",
-                                    opacity:
-                                      item.trangThai ===
-                                        StatusImei.PENDING_DELIVERY ||
-                                      item.trangThai === StatusImei.IN_THE_CART
-                                        ? "0.5"
-                                        : "1",
-                                  }}
-                                  onClick={() => {
-                                    if (
-                                      selectedImei.length >= 4 &&
-                                      !selectedImei.includes(item)
-                                    ) {
-                                      handleOpenAlertVariant(
-                                        "Lựa chọn tối đa 4 số lượng sản phẩm!",
-                                        "warning"
-                                      );
-                                    } else if (!selectedImei.includes(item)) {
-                                      setSelectedImei((val) => [...val, item]);
-                                    } else {
-                                      setSelectedImei((val) =>
-                                        val.filter((text) => text !== item)
-                                      );
-                                    }
-                                  }}
-                                >
-                                  <td>
-                                    <Checkbox
-                                      color="primary"
-                                      checked={selectedImei.includes(item)}
-                                    />
-                                  </td>
-                                  <td className="text-center">{item.soImei}</td>
-
-                                  <td className="text-center">
-                                    {item.trangThai ===
+                            <>
+                              <tr
+                                key={index}
+                                style={{
+                                  cursor: "pointer",
+                                  pointerEvents:
+                                    item.trangThai ===
                                       StatusImei.PENDING_DELIVERY ||
+                                      item.trangThai === StatusImei.IN_THE_CART
+                                      ? "none"
+                                      : "auto",
+                                  opacity:
+                                    item.trangThai ===
+                                      StatusImei.PENDING_DELIVERY ||
+                                      item.trangThai === StatusImei.IN_THE_CART
+                                      ? "0.5"
+                                      : "1",
+                                }}
+                                onClick={() => {
+                                  if (
+                                    selectedImei.length >= 4 &&
+                                    !selectedImei.includes(item)
+                                  ) {
+                                    handleOpenAlertVariant(
+                                      "Lựa chọn tối đa 4 số lượng sản phẩm!",
+                                      "warning"
+                                    );
+                                  } else if (!selectedImei.includes(item)) {
+                                    setSelectedImei((val) => [...val, item]);
+                                  } else {
+                                    setSelectedImei((val) =>
+                                      val.filter((text) => text !== item)
+                                    );
+                                  }
+                                }}
+                              >
+                                <td>
+                                  <Checkbox
+                                    color="primary"
+                                    checked={selectedImei.includes(item)}
+                                  />
+                                </td>
+                                <td className="text-center">{item.soImei}</td>
+
+                                <td className="text-center">
+                                  {item.trangThai ===
+                                    StatusImei.PENDING_DELIVERY ||
                                     item.trangThai === StatusImei.NOT_SOLD ||
                                     item.trangThai ===
-                                      StatusImei.IN_THE_CART ? (
-                                      <div
-                                        className={
-                                          "badge-success rounded-pill mx-auto"
-                                        }
+                                    StatusImei.IN_THE_CART ? (
+                                    <div
+                                      className={
+                                        "badge-success rounded-pill mx-auto"
+                                      }
+                                      style={{
+                                        height: "35px",
+                                        width: "115px",
+                                        padding: "4px",
+                                      }}
+                                    >
+                                      <span
+                                        className="text-white"
                                         style={{
-                                          height: "35px",
-                                          width: "115px",
-                                          padding: "4px",
+                                          fontSize: "14px",
+                                          fontWeight: "400",
                                         }}
                                       >
-                                        <span
-                                          className="text-white"
-                                          style={{
-                                            fontSize: "14px",
-                                            fontWeight: "400",
-                                          }}
-                                        >
-                                          {item.trangThai ===
+                                        {item.trangThai ===
                                           StatusImei.NOT_SOLD
-                                            ? "Chưa Bán"
-                                            : item.trangThai ===
-                                              StatusImei.IN_THE_CART
+                                          ? "Chưa Bán"
+                                          : item.trangThai ===
+                                            StatusImei.IN_THE_CART
                                             ? "Chưa Bán"
                                             : "Chưa Bán"}
-                                        </span>
-                                      </div>
-                                    ) : (
-                                      ""
-                                    )}
-                                  </td>
-                                </tr>
-                              </>
-                            ))
+                                      </span>
+                                    </div>
+                                  ) : (
+                                    ""
+                                  )}
+                                </td>
+                              </tr>
+                            </>
+                          ))
                           : ""}
                       </tbody>
                     ) : null}
@@ -4432,9 +4436,9 @@ export const ModalImeiByProductItem = ({
                               action: ({ checked }) => ({
                                 sx: checked
                                   ? {
-                                      border: "1px solid",
-                                      borderColor: "#2f80ed",
-                                    }
+                                    border: "1px solid",
+                                    borderColor: "#2f80ed",
+                                  }
                                   : {},
                               }),
                             }}
@@ -4649,108 +4653,108 @@ export const ModalUpdateImeiByProductItem = ({
                     <tbody>
                       {itemsOnCurrentPage.length
                         ? itemsOnCurrentPage.map((item, index) => (
-                            <tr
-                              key={index}
-                              style={{
-                                cursor: "pointer",
-                                pointerEvents:
-                                  (item.trangThai ===
-                                    StatusImei.PENDING_DELIVERY ||
-                                    item.trangThai ===
-                                      StatusImei.IN_THE_CART) &&
-                                  !imeisChuaBan.some(
-                                    (selectedItem) =>
-                                      selectedItem.soImei === item.soImei
-                                  )
-                                    ? "none"
-                                    : "auto",
-                                opacity:
-                                  (item.trangThai ===
-                                    StatusImei.PENDING_DELIVERY ||
-                                    item.trangThai ===
-                                      StatusImei.IN_THE_CART) &&
-                                  !imeisChuaBan.some(
-                                    (selectedItem) =>
-                                      selectedItem.soImei === item.soImei
-                                  )
-                                    ? "0.5"
-                                    : "1",
-                              }}
-                              onClick={() => {
-                                if (
-                                  selectedImei.length >= 4 &&
-                                  !selectedImei.some(
-                                    (selectedItem) =>
-                                      selectedItem.soImei === item.soImei
-                                  )
-                                ) {
-                                  handleOpenAlertVariant(
-                                    "Lựa chọn tối đa 4 số lượng sản phẩm!",
-                                    "warning"
-                                  );
-                                } else if (
-                                  !selectedImei.some(
-                                    (selectedItem) =>
-                                      selectedItem.soImei === item.soImei
-                                  )
-                                ) {
-                                  setSelectedImei([...selectedImei, item]);
-                                } else {
-                                  setSelectedImei(
-                                    selectedImei.filter(
-                                      (selectedItem) =>
-                                        selectedItem.soImei !== item.soImei
-                                    )
-                                  );
-                                }
-                              }}
-                            >
-                              <td>
-                                <Checkbox
-                                  color="primary"
-                                  checked={selectedImei.some(
-                                    (selectedItem) =>
-                                      selectedItem.soImei === item.soImei
-                                  )}
-                                />
-                              </td>
-                              <td className="text-center">{item.soImei}</td>
-                              <td className="text-center">
-                                {item.trangThai ===
+                          <tr
+                            key={index}
+                            style={{
+                              cursor: "pointer",
+                              pointerEvents:
+                                (item.trangThai ===
                                   StatusImei.PENDING_DELIVERY ||
+                                  item.trangThai ===
+                                  StatusImei.IN_THE_CART) &&
+                                  !imeisChuaBan.some(
+                                    (selectedItem) =>
+                                      selectedItem.soImei === item.soImei
+                                  )
+                                  ? "none"
+                                  : "auto",
+                              opacity:
+                                (item.trangThai ===
+                                  StatusImei.PENDING_DELIVERY ||
+                                  item.trangThai ===
+                                  StatusImei.IN_THE_CART) &&
+                                  !imeisChuaBan.some(
+                                    (selectedItem) =>
+                                      selectedItem.soImei === item.soImei
+                                  )
+                                  ? "0.5"
+                                  : "1",
+                            }}
+                            onClick={() => {
+                              if (
+                                selectedImei.length >= 4 &&
+                                !selectedImei.some(
+                                  (selectedItem) =>
+                                    selectedItem.soImei === item.soImei
+                                )
+                              ) {
+                                handleOpenAlertVariant(
+                                  "Lựa chọn tối đa 4 số lượng sản phẩm!",
+                                  "warning"
+                                );
+                              } else if (
+                                !selectedImei.some(
+                                  (selectedItem) =>
+                                    selectedItem.soImei === item.soImei
+                                )
+                              ) {
+                                setSelectedImei([...selectedImei, item]);
+                              } else {
+                                setSelectedImei(
+                                  selectedImei.filter(
+                                    (selectedItem) =>
+                                      selectedItem.soImei !== item.soImei
+                                  )
+                                );
+                              }
+                            }}
+                          >
+                            <td>
+                              <Checkbox
+                                color="primary"
+                                checked={selectedImei.some(
+                                  (selectedItem) =>
+                                    selectedItem.soImei === item.soImei
+                                )}
+                              />
+                            </td>
+                            <td className="text-center">{item.soImei}</td>
+                            <td className="text-center">
+                              {item.trangThai ===
+                                StatusImei.PENDING_DELIVERY ||
                                 item.trangThai === StatusImei.NOT_SOLD ||
                                 item.trangThai === StatusImei.IN_THE_CART ? (
-                                  <div
-                                    className={
-                                      "badge-success rounded-pill mx-auto"
-                                    }
+                                <div
+                                  className={
+                                    "badge-success rounded-pill mx-auto"
+                                  }
+                                  style={{
+                                    height: "35px",
+                                    width: "115px",
+                                    padding: "4px",
+                                  }}
+                                >
+                                  <span
+                                    className="text-white"
                                     style={{
-                                      height: "35px",
-                                      width: "115px",
-                                      padding: "4px",
+                                      fontSize: "14px",
+                                      fontWeight: "400",
                                     }}
                                   >
-                                    <span
-                                      className="text-white"
-                                      style={{
-                                        fontSize: "14px",
-                                        fontWeight: "400",
-                                      }}
-                                    >
-                                      {item.trangThai === StatusImei.NOT_SOLD
-                                        ? "Chưa Bán"
-                                        : item.trangThai ===
-                                          StatusImei.IN_THE_CART
+                                    {item.trangThai === StatusImei.NOT_SOLD
+                                      ? "Chưa Bán"
+                                      : item.trangThai ===
+                                        StatusImei.IN_THE_CART
                                         ? "Chưa Bán"
                                         : "Chưa Bán"}
-                                    </span>
-                                  </div>
-                                ) : (
-                                  ""
-                                )}
-                              </td>
-                            </tr>
-                          ))
+                                  </span>
+                                </div>
+                              ) : (
+                                ""
+                              )}
+                            </td>
+                          </tr>
+                        ))
                         : ""}
                     </tbody>
                   </table>
@@ -4790,9 +4794,9 @@ export const ModalUpdateImeiByProductItem = ({
                               action: ({ checked }) => ({
                                 sx: checked
                                   ? {
-                                      border: "1px solid",
-                                      borderColor: "#2f80ed",
-                                    }
+                                    border: "1px solid",
+                                    borderColor: "#2f80ed",
+                                  }
                                   : {},
                               }),
                             }}
@@ -5217,11 +5221,11 @@ export function MultiplePaymentMethods({
                               action: ({ checked }) => ({
                                 sx: checked
                                   ? {
-                                      border: "1px solid",
-                                      borderColor: "#2f80ed",
-                                      // borderRadius: "10px",
-                                      // height: "40px",
-                                    }
+                                    border: "1px solid",
+                                    borderColor: "#2f80ed",
+                                    // borderRadius: "10px",
+                                    // height: "40px",
+                                  }
                                   : {},
                               }),
                             }}
@@ -5758,11 +5762,11 @@ export function MultiplePaymentMethodsDelivery({
                               action: ({ checked }) => ({
                                 sx: checked
                                   ? {
-                                      border: "1px solid",
-                                      borderColor: "#2f80ed",
-                                      // borderRadius: "10px",
-                                      // height: "40px",
-                                    }
+                                    border: "1px solid",
+                                    borderColor: "#2f80ed",
+                                    // borderRadius: "10px",
+                                    // height: "40px",
+                                  }
                                   : {},
                               }),
                             }}
@@ -5886,6 +5890,15 @@ export const ModalRefundProduct = ({ open, close, imeis, refresh, refund }) => {
     setSelectedImei([]);
   }, [refresh]);
 
+  useEffect(() => {
+    if (selectedImei.length === imeis.length){
+      setIsAll(true);
+    }
+    else{
+      setIsAll(false);
+    }
+  }, [selectedImei]);
+
   return (
     <>
       <Dialog
@@ -5903,10 +5916,31 @@ export const ModalRefundProduct = ({ open, close, imeis, refresh, refund }) => {
           <div className="mt-2" style={{ width: "900px" }}>
             <div className="container" style={{}}>
               <div className="header-title">
-                <div className="mt-1">
+                <div className="mt-1 d-flex justify-content-between">
                   <span className="fs-4" style={{ fontWeight: "500" }}>
                     Chọn Imei Cần Trả
                   </span>
+                  <TextField
+                    label="Tìm IMEI"
+                    onChange={(e) => {
+                      // setImei(e.target.value);
+                    }}
+                    // value={imei}
+                    InputLabelProps={{
+                      sx: {
+                        marginTop: "",
+                        textTransform: "capitalize",
+                      },
+                    }}
+                    inputProps={{
+                      style: {
+                        height: "23px",
+                        width: "200px",
+                      },
+                    }}
+                    size="small"
+                    className=""
+                  />
                 </div>
               </div>
               <div className="mt-3 pt-2">
@@ -5932,63 +5966,63 @@ export const ModalRefundProduct = ({ open, close, imeis, refresh, refund }) => {
                     <tbody>
                       {imeis.length
                         ? imeis.map((item, index) => (
-                            <tr
-                              key={index}
-                              style={{
-                                cursor: "pointer",
-                              }}
-                              onClick={() => {
-                                if (
-                                  !selectedImei.some(
+                          <tr
+                            key={index}
+                            style={{
+                              cursor: "pointer",
+                            }}
+                            onClick={() => {
+                              if (
+                                !selectedImei.some(
+                                  (selectedItem) =>
+                                    selectedItem.soImei === item.soImei
+                                )
+                              ) {
+                                setSelectedImei([...selectedImei, item]);
+                              } else {
+                                setSelectedImei(
+                                  selectedImei.filter(
                                     (selectedItem) =>
-                                      selectedItem.soImei === item.soImei
+                                      selectedItem.soImei !== item.soImei
                                   )
-                                ) {
-                                  setSelectedImei([...selectedImei, item]);
-                                } else {
-                                  setSelectedImei(
-                                    selectedImei.filter(
-                                      (selectedItem) =>
-                                        selectedItem.soImei !== item.soImei
-                                    )
-                                  );
+                                );
+                              }
+                            }}
+                          >
+                            <td>
+                              <Checkbox
+                                color="primary"
+                                checked={selectedImei.some(
+                                  (selectedItem) =>
+                                    selectedItem.soImei === item.soImei
+                                )}
+                              />
+                            </td>
+                            <td className="text-center">{item.soImei}</td>
+                            <td className="text-center">
+                              <div
+                                className={
+                                  "badge-success rounded-pill mx-auto"
                                 }
-                              }}
-                            >
-                              <td>
-                                <Checkbox
-                                  color="primary"
-                                  checked={selectedImei.some(
-                                    (selectedItem) =>
-                                      selectedItem.soImei === item.soImei
-                                  )}
-                                />
-                              </td>
-                              <td className="text-center">{item.soImei}</td>
-                              <td className="text-center">
-                                <div
-                                  className={
-                                    "badge-success rounded-pill mx-auto"
-                                  }
+                                style={{
+                                  height: "35px",
+                                  width: "105px",
+                                  padding: "4px",
+                                }}
+                              >
+                                <span
+                                  className="text-white"
                                   style={{
-                                    height: "35px",
-                                    width: "105px",
-                                    padding: "4px",
+                                    fontSize: "14px",
+                                    fontWeight: "400",
                                   }}
                                 >
-                                  <span
-                                    className="text-white"
-                                    style={{
-                                      fontSize: "14px",
-                                      fontWeight: "400",
-                                    }}
-                                  >
-                                    Đã Bán
-                                  </span>
-                                </div>
-                              </td>
-                            </tr>
-                          ))
+                                  Đã Bán
+                                </span>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
                         : ""}
                     </tbody>
                   </table>
@@ -6574,11 +6608,34 @@ export const ModalViewImeiHadBuy = ({ open, close, imeis }) => {
         <DialogContent className="">
           <div className="mt-2" style={{ width: "900px" }}>
             <div className="container" style={{}}>
-              <div className="header-title">
+              <div className="header-title d-flex justify-content-between">
                 <div className="mt-1">
                   <span className="fs-4" style={{ fontWeight: "500" }}>
                     Danh sách IMEI đã bán
                   </span>
+                </div>
+                <div className="mt-1">
+                  <TextField
+                    label="Tìm IMEI"
+                    onChange={(e) => {
+                      // setImei(e.target.value);
+                    }}
+                    // value={imei}
+                    InputLabelProps={{
+                      sx: {
+                        marginTop: "",
+                        textTransform: "capitalize",
+                      },
+                    }}
+                    inputProps={{
+                      style: {
+                        height: "23px",
+                        width: "200px",
+                      },
+                    }}
+                    size="small"
+                    className=""
+                  />
                 </div>
               </div>
               <div className="mt-3 pt-2">
@@ -6600,46 +6657,46 @@ export const ModalViewImeiHadBuy = ({ open, close, imeis }) => {
                     <tbody>
                       {imeis.length
                         ? imeis.map((item, index) => (
-                            <tr>
-                              <td className="text-center">{index + 1}</td>
-                              <td className="text-center">{item.soImei}</td>
-                              <td className="text-center">
-                                <div
-                                  className={
-                                    item.trangThai === StatusImei.SOLD
-                                      ? "badge-success rounded-pill mx-auto"
-                                      : item.trangThai ===
-                                          StatusImei.CANCELLED ||
-                                        item.trangThai === StatusImei.REFUND
+                          <tr>
+                            <td className="text-center">{index + 1}</td>
+                            <td className="text-center">{item.soImei}</td>
+                            <td className="text-center">
+                              <div
+                                className={
+                                  item.trangThai === StatusImei.SOLD
+                                    ? "badge-success rounded-pill mx-auto"
+                                    : item.trangThai ===
+                                      StatusImei.CANCELLED ||
+                                      item.trangThai === StatusImei.REFUND
                                       ? "badge-danger rounded-pill mx-auto"
                                       : ""
-                                  }
+                                }
+                                style={{
+                                  height: "35px",
+                                  width: "105px",
+                                  padding: "4px",
+                                }}
+                              >
+                                <span
+                                  className="text-white"
                                   style={{
-                                    height: "35px",
-                                    width: "105px",
-                                    padding: "4px",
+                                    fontSize: "14px",
+                                    fontWeight: "400",
                                   }}
                                 >
-                                  <span
-                                    className="text-white"
-                                    style={{
-                                      fontSize: "14px",
-                                      fontWeight: "400",
-                                    }}
-                                  >
-                                    {item.trangThai === StatusImei.SOLD
-                                      ? "Đã bán"
-                                      : item.trangThai === StatusImei.REFUND
+                                  {item.trangThai === StatusImei.SOLD
+                                    ? "Đã bán"
+                                    : item.trangThai === StatusImei.REFUND
                                       ? "Hoàn trả"
                                       : item.trangThai ===
                                         StatusImei.PENDING_DELIVERY
-                                      ? "Chờ giao"
-                                      : "Đã hủy"}
-                                  </span>
-                                </div>
-                              </td>
-                            </tr>
-                          ))
+                                        ? "Chờ giao"
+                                        : "Đã hủy"}
+                                </span>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
                         : ""}
                     </tbody>
                   </table>

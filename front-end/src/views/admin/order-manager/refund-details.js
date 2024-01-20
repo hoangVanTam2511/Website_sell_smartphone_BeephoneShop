@@ -1,6 +1,6 @@
 import Box from "@mui/joy/Box";
 import Alert from "@mui/joy/Alert";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Row, Col } from "react-bootstrap";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Button, Empty, Table } from "antd";
@@ -13,6 +13,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import LoadingIndicator from "../../../utilities/loading";
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import EditIcon from "@mui/icons-material/Edit";
 import Radio from "@mui/joy/Radio";
 import RadioGroup from "@mui/joy/RadioGroup";
@@ -28,7 +29,7 @@ import {
 } from "./enum";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { add } from "lodash";
-import PrinterInvoice, { Print } from "./printer-invoice";
+import PrinterInvoice, { Print, PrintBillAtTheCounter } from "./printer-invoice";
 import {
   ConfirmRefund,
   ConfirmRefundOrder,
@@ -37,12 +38,16 @@ import {
 import { ref, updateMetadata } from "firebase/storage";
 import { useSelector } from "react-redux";
 import { getUser } from "../../../store/user/userSlice";
+import { request } from "../../../store/helpers/axios_helper";
+import { useReactToPrint } from "react-to-print";
 const RefundDetail = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [vouchersActive, setVouchersActive] = useState([]);
   const [order, setOrder] = useState({});
   const [orderItems, setOrderItems] = useState([]);
   const [orderItemsTotal, setOrderItemsTotal] = useState([]);
+  const [orderItemsCompleted, setOrderItemsCompleted] = useState(false);
   const [orderItem, setOrderItem] = useState([]);
   const [orderRefunds, setOrderRefunds] = useState([]);
   const { handleOpenAlertVariant } = useCustomSnackbar();
@@ -50,13 +55,26 @@ const RefundDetail = () => {
   const [total, setTotal] = useState(0);
   const [codeDiscount, setCodeDiscount] = useState("");
   const [addressDefault, setAddressDefault] = useState("");
+  const [maxVoucher, setMaxVoucher] = useState(null);
+  const [voucher, setVoucher] = useState(null);
+  const componentRef = useRef();
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+  });
 
   const userId = getUser().id;
 
   const totalDiscount = (tongTien, tongTienSauKhiGiam) => {
-    return tongTien - tongTienSauKhiGiam;
+    return tongTien - tongTienSauKhiGiam || 0;
   }
+  useEffect(() => {
+    if (orderItemsCompleted) {
+      handlePrint();
+      setOrderItemsCompleted(false);
+    }
+  }, [orderItemsCompleted]);
   const getOrderItemsById = async () => {
+    setIsLoading(true);
     await axios
       .get(`http://localhost:8080/api/orders/${id}`)
       .then((response) => {
@@ -64,11 +82,13 @@ const RefundDetail = () => {
         setOrder(data);
         console.log(data);
 
+        setIsLoading(false);
         const discountVoucher = data.voucher && data.voucher.giaTriVoucher;
         const discountVoucherCode = data.voucher && data.voucher.ma;
         setCodeDiscount(
           discountVoucherCode === null ? "" : discountVoucherCode
         );
+        setVoucher(data && data.voucher || null);
 
         // const filteredData = data.orderItems.filter((item) => item.soLuong > 0);
         setOrderItemsTotal(data.orderItems);
@@ -154,6 +174,7 @@ const RefundDetail = () => {
   };
   useEffect(() => {
     getOrderItemsById();
+    getVouchersIsActiveAll();
   }, []);
 
   const totalItem = (amount, price) => {
@@ -191,14 +212,34 @@ const RefundDetail = () => {
     return total;
   }
 
-  const canTraKhach = () => {
-    return totalRefund() - order.tienTraKhach;
+  const totalImeis = () => {
+    let total = 0;
+    order &&
+      order.orderItems.map((item) => {
+        total += item.imeisDaBan.length;
+      });
+    return total;
+  };
+
+  const totalRefundNew = () => {
+    let total = 0;
+    orderRefunds &&
+      orderRefunds.map((item) => {
+        if (item.trangThai === StatusImei.SOLD)
+          if (item.donGiaSauGiam !== null && item.donGiaSauGiam !== 0) {
+            total += item.donGiaSauGiam;
+          } else {
+            total += item.donGia;
+          }
+      });
+    return total;
   };
 
   const totalRefund = () => {
     let total = 0;
     orderRefunds &&
       orderRefunds.map((item) => {
+        // if (item.trangThai === StatusImei.REFUND)
         if (item.donGiaSauGiam !== null && item.donGiaSauGiam !== 0) {
           total += item.donGiaSauGiam;
         } else {
@@ -207,6 +248,51 @@ const RefundDetail = () => {
       });
     return total;
   };
+
+
+
+  const canTraKhach = () => {
+    if (maxVoucher) {
+      return totalRefundNew() - totalDiscount(order.tongTien, order.tongTienSauKhiGiam) + maxVoucher.giaTriVoucher;
+    }
+    else {
+      if (totalRefundNew() === 0) {
+        return 0;
+      }
+      if (totalImeis() === orderRefunds.length) {
+        return totalRefundNew() - totalDiscount(order.tongTien, order.tongTienSauKhiGiam);
+      }
+      const dieuKienApDung = order && order.voucher && order.voucher.dieuKienApDung || 0;
+      const totalFinal = order.tongTien - totalRefund();
+      if (totalFinal < dieuKienApDung) {
+        return totalRefundNew() - totalDiscount(order.tongTien, order.tongTienSauKhiGiam);
+      }
+      return totalRefundNew();
+    }
+  };
+
+  useEffect(() => {
+    if (orderRefunds.length > 0 && orderRefunds.some((item) => item.trangThai === StatusImei.SOLD)) {
+      const totalFinal = order.tongTien - totalRefund();
+      const validVouchers = vouchersActive.filter(
+        (item) => totalFinal >= item.dieuKienApDung
+      );
+      const sortedVouchers = validVouchers.sort(
+        (a, b) => b.giaTriVoucher - a.giaTriVoucher
+      );
+      const getVoucher = sortedVouchers[0];
+      if (getVoucher && getVoucher.giaTriVoucher !== totalDiscount(order.tongTien, order.tongTienSauKhiGiam)) {
+        setMaxVoucher(getVoucher);
+      }
+      else {
+        setMaxVoucher(null);
+      }
+    }
+    else {
+      setMaxVoucher(null);
+    }
+  }, [orderRefunds])
+
 
   const countPrice = (price, afterDiscount) => {
     return price - afterDiscount;
@@ -334,7 +420,7 @@ const RefundDetail = () => {
               <Button
                 onClick={() => console.log(totalRefund())}
                 className="rounded-2 ant-btn-light"
-                style={{ height: "38px", width: "130px", fontSize: "15px" }}
+                style={{ height: "38px", width: "130px", fontSize: "15px", PointerEvent: "none" }}
               >
                 <span
                   className=""
@@ -562,7 +648,7 @@ const RefundDetail = () => {
                   style={{ whiteSpace: "pre-line", width: "50%" }}
                 >
                   - Áp dụng với các hóa đơn thanh toán bằng tiền mặt hoặc chuyển
-                  khoản trực tiếp và phải là hóa đơn tại quầy.
+                  khoản trực tiếp.
                 </td>
                 <td
                   align="center"
@@ -1171,17 +1257,31 @@ const RefundDetail = () => {
     );
   };
 
+  const getVouchersIsActiveAll = () => {
+    request("GET", `/voucher/voucherActive/all`, {})
+      .then((response) => {
+        setVouchersActive(response.data.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
   const handleRefund = async (note) => {
-    console.log(order.id);
     setIsLoading(true);
     const request = {
       orderItemRefunds: orderRefunds,
-      tongTien: totalRefundFinal(),
+      tongTien: canTraKhach(),
+      tongTienTraHang: totalRefundNew(),
       id: order.id,
       amount: totalSizeRefundFinal(),
       createdByRefund: userId,
       ghiChu: note,
-      tongTienString: totalRefundFinal().toLocaleString("vi-VN", {
+      voucher: {
+        id: maxVoucher ? maxVoucher.id : null
+      },
+      tongTienSauKhiTra: order.tongTien - totalRefund(),
+      tongTienString: canTraKhach().toLocaleString("vi-VN", {
         style: "currency",
         currency: "VND",
       }),
@@ -1198,6 +1298,7 @@ const RefundDetail = () => {
         "Xác nhận trả hàng thành công!",
         Notistack.SUCCESS
       );
+      setOrderItemsCompleted(true);
       setIsLoading(false);
     } catch (error) {
       handleOpenAlertVariant(error.response.data.message, "warning");
@@ -1234,6 +1335,7 @@ const RefundDetail = () => {
     handleOpenAlertVariant("Hủy trả hàng thành công!", Notistack.SUCCESS);
   };
   const getImeiSelected = (imeis) => {
+
     const updatedOrderItems = orderItems.map((item) => {
       if (item.id === orderItem.id) {
         const updatedImeisDaBan = item.imeisDaBan.filter(
@@ -1324,45 +1426,92 @@ const RefundDetail = () => {
                       style: "currency",
                       currency: "VND",
                     })) ||
-                    0}
+                    "0 ₫"}
                 </span>
               </div>
               <div className="d-flex justify-content-between mt-3">
                 <span className="" style={{ fontSize: "16px" }}>
                   Số lượng hoàn trả
+                  {order.tienTraKhach &&
+                    <span
+                      className="d-block"
+                      style={{ fontWeight: "500", color: "#2f80ed" }}
+                    >
+                      {`(Mới) `}
+                      <span style={{ fontSize: "17px", fontWeight: "500" }} className="text-dark">
+                        {orderRefunds && orderRefunds.filter((item) => item.trangThai === StatusImei.SOLD).length}
+                      </span>
+                    </span>}
                 </span>
                 <span
                   className="text-dark"
                   style={{ fontSize: "17px", fontWeight: "500" }}
                 >
+                  {order.tienTraKhach &&
+                    <span
+                      className=""
+                      style={{ fontWeight: "500", color: "#2f80ed" }}
+                    >
+                      {`(Tổng) `}
+                    </span>
+                  }
                   {orderRefunds && orderRefunds.length}
                 </span>
               </div>
               <div className="d-flex justify-content-between mt-3">
                 <span className="" style={{ fontSize: "16px", color: "" }}>
                   Tổng tiền trả hàng
+                  {order.tienTraKhach &&
+                    <span
+                      className="d-block"
+                      style={{ fontWeight: "500", color: "#2f80ed" }}
+                    >
+                      {`(Mới) `}
+                      <span style={{ fontSize: "17px", fontWeight: "500" }} className="text-dark">
+                        {totalRefundNew().toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        }) || 0}
+                      </span>
+                    </span>}
                 </span>
                 <span
                   className="text-dark"
                   style={{ fontSize: "17px", fontWeight: "500" }}
                 >
-                  {totalRefund().toLocaleString("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  }) || 0}
+                  {order.tienTraKhach ?
+                    <span
+                      className="ms-2"
+                      style={{ fontWeight: "500", color: "#2f80ed" }}
+                    >
+                      {`(Tổng) `}
+                      <span
+                        className="text-dark"
+                        style={{ fontSize: "17px", fontWeight: "500" }}
+                      >
+                        {totalRefund().toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        }) || 0}
+                      </span>
+                    </span>
+                    : <>
+                      <span style={{ fontSize: "17px", fontWeight: "500" }} className="text-dark">
+                        {totalRefundNew().toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        }) || 0}
+                      </span>
+                    </>}
                 </span>
               </div>
 
+
               <div className="d-flex justify-content-between mt-3">
                 <span className="" style={{ fontSize: "16px", color: "" }}>
-                  Phiếu giảm giá
-                </span>
-                <span
-                  className="text-dark"
-                  style={{ fontSize: "17px", fontWeight: "500" }}
-                >
+                  Phiếu giảm giá đã sử dụng
                   <span
-                    className="underline-custom"
+                    className="underline-custom ms-2"
                     style={{ cursor: "pointer", fontWeight: "500" }}
                   >
                     {(order &&
@@ -1371,6 +1520,11 @@ const RefundDetail = () => {
                       "(" + order.voucher.ma + ") ") ||
                       ""}
                   </span>
+                </span>
+                <span
+                  className="text-dark"
+                  style={{ fontSize: "17px", fontWeight: "500" }}
+                >
                   {(totalDiscount(order.tongTien, order.tongTienSauKhiGiam).toLocaleString("vi-VN", {
                     style: "currency",
                     currency: "VND",
@@ -1379,9 +1533,68 @@ const RefundDetail = () => {
                 </span>
               </div>
 
+              {!maxVoucher && voucher && totalRefundNew() > 0 &&
+                <div className="d-flex justify-content-between mt-3">
+                  <span className="" style={{ fontSize: "16px", color: "" }}>
+                    Phiếu giảm giá mới
+                    <span
+                      className="underline-custom d-block"
+                      style={{ cursor: "pointer", fontWeight: "500" }}
+                    >
+                      {(voucher && order.tongTien - totalRefund() >= voucher.dieuKienApDungvoucher &&
+                        "(" + voucher.ma + ") ") ||
+                        ""}
+                    </span>
+                  </span>
+                  <span
+                    className="text-dark"
+                    style={{ fontSize: "17px", fontWeight: "500" }}
+                  >
+                    {voucher && order.tongTien - totalRefund() >= voucher.dieuKienApDungvoucher && voucher.giaTriVoucher && voucher.giaTriVoucher.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    }) ||
+                      0}
+                  </span>
+                </div>
+              }
+
+              {maxVoucher &&
+                <div className="d-flex justify-content-between mt-3">
+                  <span className="" style={{ fontSize: "16px", color: "" }}>
+                    Phiếu giảm giá mới
+                    <span
+                      className="underline-custom d-block"
+                      style={{ cursor: "pointer", fontWeight: "500" }}
+                    >
+                      {(maxVoucher && maxVoucher.ma &&
+                        "(" + maxVoucher.ma + ") ") ||
+                        ""}
+                    </span>
+                  </span>
+                  <span
+                    className="text-dark"
+                    style={{ fontSize: "17px", fontWeight: "500" }}
+                  >
+                    {maxVoucher && maxVoucher.giaTriVoucher && maxVoucher.giaTriVoucher.toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    }) ||
+                      0}
+                  </span>
+                </div>
+              }
+
               <div className="d-flex justify-content-between mt-3">
                 <span className="" style={{ fontSize: "16px", color: "" }}>
                   Cần trả khách
+                  <Tooltip className="ms-2"
+                    TransitionComponent={Zoom}
+                    title="Tổng tiền cần trả = Tổng tiền trả hàng - voucher đã sử dụng + voucher mới"
+                    style={{ cursor: "pointer" }}
+                  >
+                    <HelpOutlineIcon />
+                  </Tooltip>
                 </span>
                 <span
                   className="text-dark"
@@ -1409,6 +1622,30 @@ const RefundDetail = () => {
                     0}
                 </span>
               </div>
+              {order.tienTraKhach &&
+                <div className="d-flex justify-content-between mt-3">
+                  <span className="" style={{ fontSize: "16px", color: "" }}>
+                    Tổng tiền sau hoàn trả
+                    <Tooltip className="ms-2"
+                      TransitionComponent={Zoom}
+                      title="Tổng tiền sau hoàn trả (là tổng tiền của đơn hàng sau khi hoàn trả) = Tiền khách trả - tiền đã trả khách"
+                      style={{ cursor: "pointer" }}
+                    >
+                      <HelpOutlineIcon />
+                    </Tooltip>
+                  </span>
+                  <span
+                    className="text-dark"
+                    style={{ fontSize: "17px", fontWeight: "500" }}
+                  >
+                    {(totalDiscount(order.tienKhachTra, order.tienTraKhach).toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })) ||
+                      0}
+                  </span>
+                </div>
+              }
             </div>
           </div>
         </div>
@@ -1427,12 +1664,13 @@ const RefundDetail = () => {
         open={openModalRefundOrder}
         close={handleCloseOpenModalRefundOrder}
         confirm={handleRefund}
-        total={totalRefundFinal().toLocaleString("vi-VN", {
+        total={canTraKhach().toLocaleString("vi-VN", {
           style: "currency",
           currency: "VND",
         })}
         size={totalSizeRefundFinal()}
       />
+      <PrintBillAtTheCounter data={order} ref={componentRef} />
       {isLoading && <LoadingIndicator />}
     </>
   );

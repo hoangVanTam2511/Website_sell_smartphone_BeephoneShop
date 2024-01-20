@@ -108,7 +108,7 @@ export const TextFieldEmail = ({ emailDefault, getEmail, update }) => {
 }
 
 export const TextFieldPhone = ({ confirm, phoneDefault, getPhone, update }) => {
-  const [customerPhone, setCustomerPhone] = useState(phoneDefault);
+  const [customerPhone, setCustomerPhone] = useState(phoneDefault || "");
   const [initial, setInitial] = useState();
   const setInitialValue = (value) => {
     setCustomerPhone(value);
@@ -116,7 +116,7 @@ export const TextFieldPhone = ({ confirm, phoneDefault, getPhone, update }) => {
   }
 
   useEffect(() => {
-    setCustomerPhone(phoneDefault);
+    setCustomerPhone(phoneDefault || "");
   }, [phoneDefault])
 
   return (
@@ -143,14 +143,14 @@ export const TextFieldPhone = ({ confirm, phoneDefault, getPhone, update }) => {
   )
 }
 export const TextFieldName = ({ confirm, nameDefault, getName, update }) => {
-  const [customerName, setCustomerName] = useState(nameDefault);
+  const [customerName, setCustomerName] = useState(nameDefault || "");
   const [initial, setInitial] = useState('');
   const setInitialValue = (value) => {
     setCustomerName(value);
     setInitial(value);
   }
   useEffect(() => {
-    setCustomerName(nameDefault);
+    setCustomerName(nameDefault || "");
   }, [nameDefault])
 
   return (
@@ -172,7 +172,7 @@ export const TextFieldName = ({ confirm, nameDefault, getName, update }) => {
   )
 }
 export const TextFieldAddress = ({ confirm, addressDefault, getAddress, update }) => {
-  const [customerAddress, setCustomerAddress] = useState(addressDefault);
+  const [customerAddress, setCustomerAddress] = useState(addressDefault || "");
   const [initial, setInitial] = useState('');
   const setInitialValue = (value) => {
     setCustomerAddress(value);
@@ -180,7 +180,7 @@ export const TextFieldAddress = ({ confirm, addressDefault, getAddress, update }
   }
 
   useEffect(() => {
-    setCustomerAddress(addressDefault);
+    setCustomerAddress(addressDefault || "");
   }, [addressDefault])
   return (
     <>
