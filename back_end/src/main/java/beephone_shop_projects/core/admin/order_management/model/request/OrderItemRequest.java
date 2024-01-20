@@ -40,6 +40,8 @@ public class OrderItemRequest {
 
   private String ghiChu;
 
+  private String productName;
+
   private BigDecimal phuPhi;
 
 }

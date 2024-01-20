@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface OrderCustomRepository extends JpaRepository<HoaDon, String> {
@@ -18,6 +19,9 @@ public interface OrderCustomRepository extends JpaRepository<HoaDon, String> {
               FROM HoaDon H left join H.account a
           """)
   List<HoaDon> getAll();
+
+  @Query("SELECT h FROM HoaDon h WHERE  h.loaiHoaDon = 0 AND h.trangThai = 7 ORDER BY h.createdAt DESC LIMIT 1")
+  Optional<HoaDon> getOrderAtTheCounterAfterPayment();
 
 
 }
