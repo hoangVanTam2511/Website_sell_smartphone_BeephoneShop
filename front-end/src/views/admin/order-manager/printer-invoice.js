@@ -3,8 +3,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useReactToPrint } from 'react-to-print';
 import { format } from "date-fns";
 import axios from 'axios';
-import { OrderStatusString } from './enum';
 import { request } from '../../../store/helpers/axios_helper';
+import {
+  OrderStatusString,
+  OrderTypeString,
+  Notistack,
+  StatusImei,
+} from "./enum";
 export const PrintBillAtTheCounterAuto = React.forwardRef((ref, props) => {
 
   useEffect(() => {
@@ -37,8 +42,8 @@ export const PrintBillAtTheCounterAuto = React.forwardRef((ref, props) => {
         const discount = data && data.voucher && data.voucher.giaTriVoucher || 0;
         const phiShip = data.phiShip || 0;
 
-        const khachPhaiTra = tongTien - discount + phiShip;
-        setKhachPhaiTra(khachPhaiTra);
+        // const khachPhaiTra = tongTien - discount + phiShip;
+        setKhachPhaiTra(data.khachCanTra);
         setTienKhachDua(data.tienKhachTra || 0);
         setTienThua(data.tienThua || 0);
       })
@@ -251,9 +256,11 @@ export const PrintBillAtTheCounterAuto = React.forwardRef((ref, props) => {
 })
 export const PrintBillAtTheCounter = React.forwardRef((props, ref) => {
 
-  const createdAt = props.data.createdAt instanceof Date ? props.data.createdAt : new Date();
+  const order = props.data ? props.data : null;
 
-  const orderItems = props.data.orderItems ? props.data.orderItems : [];
+  const createdAt = order.createdAt instanceof Date ? order.createdAt : new Date();
+
+  const orderItems = order.orderItems ? order.orderItems : [];
 
   const orderImeis = orderItems.flatMap((order) => {
     return order.imeisDaBan.map((item) => {
@@ -265,14 +272,19 @@ export const PrintBillAtTheCounter = React.forwardRef((props, ref) => {
     });
   });
 
-  const account = props.data.accountEmployee ? props.data.accountEmployee : null;
+  const account = order.accountEmployee ? order.accountEmployee : null;
 
-  const tongTien = props.data.tongTien ? props.data.tongTien : 0;
-  const phiShip = props.data.phiShip ? props.data.phiShip : 0;
-  const discount = props.data && props.data.voucher && props.data.voucher.giaTriVoucher || 0;
-  const khachPhaiTra = tongTien - discount + phiShip;
-  const tienKhachDua = props.data.tienKhachTra || 0;
-  const tienThua = props.data.tienThua || 0;
+  const tongTien = order.tongTien ? order.tongTien : 0;
+  const phiShip = order.phiShip ? order.phiShip : 0;
+  const discount = order.tongTien - order.tongTienSauKhiGiam;
+  const khachPhaiTra = order.khachCanTra || 0;
+  const tienKhachDua = order.tienKhachTra || 0;
+  const tienThua = order.tienThua || 0;
+
+  const tongTienHangMua = order.tongTien - order.tienTraHang;
+  const tongTienHangTra = order.tienTraHang;
+  const daTraKhach = order.tienTraKhach;
+  const tongTienHoaDon = order.tienKhachTra - order.tienTraKhach;
 
 
 
@@ -312,7 +324,7 @@ export const PrintBillAtTheCounter = React.forwardRef((props, ref) => {
 
       <div className='d-flex justify-content-between' style={{}}>
         <div className='qrcode mt-4 ms-1' style={{}}>
-          <img src={props.data.maQrCode} style={{ width: "100px", height: "100px" }} alt="" />
+          <img src={order.maQrCode} style={{ width: "100px", height: "100px" }} alt="" />
         </div>
         <div className='header-center text-center'>
           <div className='header-main mt-4'>
@@ -322,7 +334,7 @@ export const PrintBillAtTheCounter = React.forwardRef((props, ref) => {
             <span style={{ fontWeight: "500" }}>
               Mã hóa đơn: {" "}
             </span>
-            {props.data.ma}
+            {order.ma}
           </div>
           <div className='code mt-1'>
             Ngày {format(new Date(createdAt), "dd")} tháng {format(new Date(createdAt), "MM")} năm {format(new Date(createdAt), "yyyy")}
@@ -355,13 +367,13 @@ export const PrintBillAtTheCounter = React.forwardRef((props, ref) => {
           <span style={{ fontWeight: "500" }}>
             Khách hàng: {" "}
           </span>
-          {props.data.hoVaTen}
+          {order.hoVaTen}
         </div>
         <div className='phone mt-1'>
           <span style={{ fontWeight: "500" }}>
             SĐT: {" "}
           </span>
-          {props.data.soDienThoai}
+          {order.soDienThoai}
         </div>
       </div>
 
@@ -389,7 +401,7 @@ export const PrintBillAtTheCounter = React.forwardRef((props, ref) => {
                     {"GB "}
                     {item.sanPhamChiTiet && item.sanPhamChiTiet.mauSac && item.sanPhamChiTiet.mauSac.tenMauSac}
                   </td>
-                  <td align='center'>{item.imei ? item.imei.soImei : ""}</td>
+                  <td align='center'>{item.imei ? item.imei.soImei : ""} {" "} {item.imei.trangThai === StatusImei.REFUND ? "(Trả hàng)" : ""}</td>
                   {item.donGiaSauGiam && item.donGiaSauGiam !== null && item.donGiaSauGiam && item.donGiaSauGiam !== 0 ?
                     <td align="center">{item.donGiaSauGiam && item.donGiaSauGiam.toLocaleString("vi-VN", {
                       style: "currency",
@@ -422,13 +434,22 @@ export const PrintBillAtTheCounter = React.forwardRef((props, ref) => {
       <div className='d-flex justify-content-end'>
         <div className="d-flex  mt-1">
           <span className="me-5 pe-5" style={{ fontSize: "15px", color: "", fontWeight: "500" }}>
-            Tổng tiền hàng:
+            Tổng tiền {order.tienTraKhach ? " hàng mua:" : " hàng:"}
           </span>
           <span className="text-dark" style={{ fontSize: "15px", fontWeight: "500", width: "100px" }}>
-            {props.data.tongTien && props.data.tongTien.toLocaleString("vi-VN", {
-              style: "currency",
-              currency: "VND",
-            }) || 0}
+            <span className="text-dark" style={{ fontSize: "15px", fontWeight: "500", width: "100px" }}>
+              {order.tienTraKhach ? (
+                tongTienHangMua.toLocaleString("vi-VN", {
+                  style: "currency",
+                  currency: "VND",
+                })
+              ) : (
+                tongTien.toLocaleString("vi-VN", {
+                  style: "currency",
+                  currency: "VND",
+                })
+              )}
+            </span>
           </span>
         </div>
       </div>
@@ -445,6 +466,21 @@ export const PrintBillAtTheCounter = React.forwardRef((props, ref) => {
           </span>
         </div>
       </div>
+      {phiShip !== 0 &&
+        <div className='d-flex justify-content-end'>
+          <div className="d-flex  mt-1">
+            <span className="me-5 pe-5" style={{ fontSize: "15px", color: "", fontWeight: "500" }}>
+              Phí ship:
+            </span>
+            <span className="text-dark" style={{ fontSize: "15px", fontWeight: "500", width: "100px" }}>
+              {phiShip.toLocaleString("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              }) || 0}
+            </span>
+          </div>
+        </div>
+      }
       <div className='d-flex justify-content-end'>
         <div className="d-flex mt-1">
           <span className="me-5 pe-5" style={{ fontSize: "15px", color: "", fontWeight: "500" }}>
@@ -458,6 +494,23 @@ export const PrintBillAtTheCounter = React.forwardRef((props, ref) => {
           </span>
         </div>
       </div>
+      {tienKhachDua !== 0 && order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
+        <>
+          <div className='d-flex justify-content-end'>
+            <div className="d-flex justify-content-between mt-1">
+              <span className="me-5 pe-5" style={{ fontSize: "15px", color: "", fontWeight: "500" }}>
+                Tiền khách đưa:
+              </span>
+              <span className="text-dark" style={{ fontSize: "15px", fontWeight: "500", width: "100px" }}>
+                {tienKhachDua.toLocaleString("vi-VN", {
+                  style: "currency",
+                  currency: "VND",
+                }) || 0}
+              </span>
+            </div>
+          </div>
+        </>
+      }
       <div className='d-flex justify-content-end'>
         <div className="d-flex justify-content-between mt-1">
           <span className="me-5 pe-5" style={{ fontSize: "15px", color: "", fontWeight: "500" }}>
@@ -471,19 +524,77 @@ export const PrintBillAtTheCounter = React.forwardRef((props, ref) => {
           </span>
         </div>
       </div>
-      <div className='d-flex justify-content-end'>
-        <div className="d-flex mt-1">
-          <span className="me-5 pe-5" style={{ fontSize: "15px", color: "", fontWeight: "500" }}>
-            Tiền trả lại:
-          </span>
-          <span className="text-dark" style={{ fontSize: "15px", fontWeight: "500", width: "100px" }}>
-            {tienThua.toLocaleString("vi-VN", {
-              style: "currency",
-              currency: "VND",
-            }) || 0}
-          </span>
+      {order.tienThua !== 0 ?
+        <div className='d-flex justify-content-end'>
+          <div className="d-flex mt-1">
+            <span className="me-5 pe-5" style={{ fontSize: "15px", color: "", fontWeight: "500" }}>
+              Tiền thừa:
+            </span>
+            <span className="text-dark" style={{ fontSize: "15px", fontWeight: "500", width: "100px" }}>
+              {tienThua.toLocaleString("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              }) || 0}
+            </span>
+          </div>
         </div>
-      </div>
+        : null}
+
+      {order.tienTraKhach &&
+        <>
+          <div className='mt-3'>
+            <div
+              className="mt-1 ms-auto"
+              style={{
+                borderBottom: "1px solid #C7C7C7",
+                width: "45%",
+                borderWidth: "1px",
+                borderStyle: "dotted"
+              }}
+            ></div>
+            <div className='d-flex justify-content-end mt-2'>
+              <div className="d-flex mt-1">
+                <span className="me-5 pe-5" style={{ fontSize: "15px", color: "", fontWeight: "500" }}>
+                  Tổng tiền hàng trả:
+                </span>
+                <span className="text-dark" style={{ fontSize: "15px", fontWeight: "500", width: "100px" }}>
+                  {tongTienHangTra.toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  }) || 0}
+                </span>
+              </div>
+            </div>
+            <div className='d-flex justify-content-end'>
+              <div className="d-flex mt-1">
+                <span className="me-5 pe-5" style={{ fontSize: "15px", color: "", fontWeight: "500" }}>
+                  Đã trả khách:
+                </span>
+                <span className="text-dark" style={{ fontSize: "15px", fontWeight: "500", width: "100px" }}>
+                  {daTraKhach.toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  }) || 0}
+                </span>
+              </div>
+            </div>
+            <div className='d-flex justify-content-end'>
+              <div className="d-flex mt-1">
+                <span className="me-5 pe-5" style={{ fontSize: "15px", color: "", fontWeight: "500" }}>
+                  Tổng tiền hóa đơn:
+                </span>
+                <span className="text-dark" style={{ fontSize: "15px", fontWeight: "500", width: "100px" }}>
+                  {tongTienHoaDon.toLocaleString("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  }) || 0}
+                </span>
+              </div>
+            </div>
+          </div>
+        </>
+
+      }
 
       <div className='mt-5 text-center'>
         <span className='' style={{}}>Cảm ơn quý khách. Hẹn gặp lại!</span>
@@ -603,7 +714,7 @@ export const PrintDelivery = ({ data }) => {
   );
 }
 
-const PrintBillDelivery = React.forwardRef((props, ref, data) => {
+export const PrintBillDelivery = React.forwardRef((props, ref) => {
 
   const createdAt = props.data.createdAt instanceof Date ? props.data.createdAt : new Date();
 

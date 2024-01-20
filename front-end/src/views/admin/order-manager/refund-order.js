@@ -22,18 +22,11 @@ const RefundOrder = () => {
         const data = response.data.data;
         if (
           (data.trangThai === OrderStatusString.HAD_PAID ||
-            data.trangThai === OrderStatusString.SUCCESS_DELIVERY ||
-            data.trangThai === OrderStatusString.REFUND_A_PART) && data.loaiHoaDon === OrderTypeString.AT_COUNTER
+            data.trangThai === OrderStatusString.SUCCESS_DELIVERY || data.trangThai === OrderStatusString.REFUND_FULL || data.trangThai === OrderStatusString.REFUND_A_PART
+          )
         ) {
           setIsLoading(false);
           handleRedirectRefundOrderDetail();
-        } else if (data.loaiHoaDon === OrderTypeString.DELIVERY && data.trangThai === OrderStatusString.SUCCESS_DELIVERY) {
-          setIsLoading(false);
-          handleOpenAlertVariant("Chỉ cho phép hoàn trả đơn tại quầy!", Notistack.ERROR);
-        }
-        else if (data.trangThai === OrderStatusString.REFUND_FULL) {
-          setIsLoading(false);
-          handleOpenAlertVariant("Đơn hàng này đã được hoàn trả toàn bộ!", Notistack.ERROR);
         }
         else {
           setIsLoading(false);
@@ -55,19 +48,13 @@ const RefundOrder = () => {
         const data = response.data.data;
         if (
           (data.trangThai === OrderStatusString.HAD_PAID ||
-            data.trangThai === OrderStatusString.SUCCESS_DELIVERY ||
-            data.trangThai === OrderStatusString.REFUND_A_PART) && data.loaiHoaDon === OrderTypeString.AT_COUNTER
+            data.trangThai === OrderStatusString.SUCCESS_DELIVERY || data.trangThai === OrderStatusString.REFUND_FULL || data.trangThai === OrderStatusString.REFUND_A_PART
+          )
         ) {
           setIsLoading(false);
           handleRedirectRefundOrderDetail();
-        } else if (data.loaiHoaDon === OrderTypeString.DELIVERY && data.trangThai === OrderStatusString.SUCCESS_DELIVERY) {
-          setIsLoading(false);
-          handleOpenAlertVariant("Chỉ cho phép hoàn trả đơn tại quầy!", Notistack.ERROR);
         }
-        else if (data.trangThai === OrderStatusString.REFUND_FULL) {
-          setIsLoading(false);
-          handleOpenAlertVariant("Đơn hàng này đã được hoàn trả toàn bộ!", Notistack.ERROR);
-        }
+
         else {
           setIsLoading(false);
           handleOpenAlertVariant("Đơn hàng không hợp lệ!", Notistack.ERROR);
@@ -112,7 +99,7 @@ const RefundOrder = () => {
             <img
               className=""
               style={{ width: "500px", height: "300px" }}
-              src="https://img.freepik.com/free-vector/flat-design-illustrated-transport-truck_23-2149151340.jpg?w=1060&t=st=1700877824~exp=1700878424~hmac=1f975ae98b8555e1f4dcb9c75f7afcbec36ba6b13f9114b21804578f8506d45a"
+              src="https://shippingchimp.com/blog/wp-content/uploads/2020/08/10_5_eCommerce-Brands-That-Have-Steal-Worthy-Return-Policies.png"
               alt=""
             />
             <div className="header-title mt-2">

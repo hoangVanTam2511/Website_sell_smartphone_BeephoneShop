@@ -227,7 +227,7 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
       throw new RestApiException("Bạn chưa nhập lý do hủy đơn hàng!");
     }
     if (req.getTrangThai().equals(OrderStatus.CANCELLED)) {
-      if (orderCurrent.getTrangThai().equals(OrderStatus.CONFIRMED) || orderCurrent.getTrangThai().equals(OrderStatus.DELIVERING)) {
+      if (orderCurrent.getTrangThai().equals(OrderStatus.CONFIRMED) || orderCurrent.getTrangThai().equals(OrderStatus.DELIVERING) || orderCurrent.getTrangThai().equals(OrderStatus.PENDING_CONFIRM)) {
         for (OrderItemResponse orderItem : orderCurrent.getOrderItems()) {
           Optional<SanPhamChiTiet> findProductItem = sanPhamChiTietRepository.
                   findProductById(orderItem.getSanPhamChiTiet().getId());
@@ -262,8 +262,10 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
           s.setTrangThai(StatusImei.SOLD);
           imeiDaBanCustomRepository.save(s);
         });
-        findProductItem.get().setSoLuongTonKho(findProductItem.get().getSoLuongTonKho() -
-                orderItem.getImeisDaBan().size());
+//        if (orderCurrent.getLoaiHoaDon().equals(OrderType.CLIENT)){
+//          findProductItem.get().setSoLuongTonKho(findProductItem.get().getSoLuongTonKho() -
+//                  orderItem.getImeisDaBan().size());
+//        }
         sanPhamChiTietRepository.save(findProductItem.get());
       }
     }
@@ -414,7 +416,7 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
           Optional<SanPhamChiTiet> findProductItem = sanPhamChiTietRepository.
                   findProductById(cartItem.getSanPhamChiTiet().getId());
           if (orderCurrent.getLoaiHoaDon().equals(OrderType.DELIVERY)){
-            findProductItem.get().setSoLuongTonKho(findProductItem.get().getSoLuongTonKho() + orderItem.getSoLuong());
+//            findProductItem.get().setSoLuongTonKho(findProductItem.get().getSoLuongTonKho() + orderItem.getSoLuong());
           }
 //          if (findProductItem.get().getDonGiaSauKhuyenMai().compareTo(BigDecimal.ZERO) != 0 && findProductItem.get().getDonGiaSauKhuyenMai() != null) {
 //            orderItem.setDonGiaSauGiam(cartItem.getSanPhamChiTiet().getDonGiaSauKhuyenMai());
@@ -453,7 +455,7 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
         List<LichSuHoaDon> lichSuHoaDons = lichSuHoaDonCustomRepository.saveAll(orderHistoryConverter.convertListRequestToListEntity(sortOrderHistory));
 
         lichSuHoaDons.forEach(s -> {
-          if (s.getLoaiThaoTac() == 0 && s.getThaoTac().equals("Tạo Đơn Hàng")) {
+          if (s.getLoaiThaoTac() == 0 && (s.getThaoTac().equals("Tạo Đơn Hàng"))) {
             Optional<LichSuHoaDon> findLichSuHoaDon = lichSuHoaDonCustomRepository.findById(s.getId());
             if (findLichSuHoaDon.isPresent()) {
               s.setCreatedAt(orderCurrent.getCreatedAt());
@@ -461,6 +463,12 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
             }
           }
         });
+        lichSuHoaDons.forEach(s -> {
+        if (s.getLoaiThaoTac() == 0 && (s.getThaoTac().equals("Đặt Hàng Thành Công"))) {
+          orderCurrent.setCreatedAt(s.getCreatedAt());
+          orderJpaCustomRepository.save(orderCurrent);
+        }
+      });
 
 //        orderHistoryServiceImpl.save(req.getOrderHistory());
       }
@@ -637,9 +645,9 @@ public class HoaDonServiceImpl extends AbstractServiceImpl<HoaDon, OrderResponse
             s.setTrangThai(StatusImei.PENDING_DELIVERY);
             imeiDaBanCustomRepository.save(s);
           });
-          findProductItem.get().setSoLuongTonKho(findProductItem.get().getSoLuongTonKho() +
-                  orderItem.getImeisDaBan().size());
-          sanPhamChiTietRepository.save(findProductItem.get());
+//          findProductItem.get().setSoLuongTonKho(findProductItem.get().getSoLuongTonKho() +
+//                  orderItem.getImeisDaBan().size());
+//          sanPhamChiTietRepository.save(findProductItem.get());
         }
       }
     }

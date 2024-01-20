@@ -11,8 +11,10 @@ import {
   TextField,
   Tooltip,
   Zoom,
+  Select, MenuItem, FormControl
 } from "@mui/material";
 import { Button, Empty, Table } from "antd";
+import KeyboardArrowDownOutlinedIcon from "@mui/icons-material/KeyboardArrowDownOutlined";
 import { PlusOutlined } from "@ant-design/icons";
 import { FaPencilAlt, FaTrashAlt } from "react-icons/fa";
 import { FaDownload } from "react-icons/fa6";
@@ -21,9 +23,17 @@ import useCustomSnackbar from "./notistack.js";
 import { format } from "date-fns";
 import { request } from "../store/helpers/axios_helper";
 import { StatusImei } from "../views/admin/order-manager/enum.js";
+import generateRandomCode from "./genCode.js";
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
+
+const downloadImage = (url, filename) => {
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  link.click();
+};
 
 const ImportAndExportExcelImei = ({
   open,
@@ -50,6 +60,13 @@ const ImportAndExportExcelImei = ({
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = currentPage * itemsPerPage;
   const itemsOnCurrentPage = imeis.slice(startIndex, endIndex);
+
+  const handleDownload = (url, imei) => {
+    const imageUrl = url;
+    const filename = `barcode-${imei} .jpg`;
+    downloadImage(imageUrl, filename);
+  };
+
 
   // useEffect(() => {
   //   setCurrentPage(1);
@@ -193,10 +210,10 @@ const ImportAndExportExcelImei = ({
       render: (type) =>
         type === StatusImei.SOLD ? (
           <div
-            className="rounded-pill mx-auto badge-success"
+            className="rounded-pill mx-auto badge-primary"
             style={{
               height: "35px",
-              width: "135px",
+              width: "110px",
               padding: "4px",
             }}
           >
@@ -206,17 +223,17 @@ const ImportAndExportExcelImei = ({
           </div>
         ) : type === StatusImei.NOT_SOLD || type === StatusImei.IN_THE_CART ? (
           <div
-            className="rounded-pill badge-warning mx-auto"
-            style={{ height: "35px", width: "135px", padding: "4px" }}
+            className="rounded-pill badge-success mx-auto"
+            style={{ height: "35px", width: "110px", padding: "4px" }}
           >
-            <span className="" style={{ fontSize: "14px" }}>
+            <span className="text-white" style={{ fontSize: "14px" }}>
               Chưa Bán
             </span>
           </div>
         ) : type === StatusImei.IN_ACTIVE ? (
           <div
             className="rounded-pill badge-danger mx-auto"
-            style={{ height: "35px", width: "135px", padding: "4px" }}
+            style={{ height: "35px", width: "145px", padding: "4px" }}
           >
             <span className="text-white" style={{ fontSize: "14px" }}>
               Ngừng hoạt động
@@ -225,10 +242,10 @@ const ImportAndExportExcelImei = ({
         ) : type === StatusImei.REFUND ? (
           <div
             className="rounded-pill badge-danger mx-auto"
-            style={{ height: "35px", width: "135px", padding: "4px" }}
+            style={{ height: "35px", width: "110px", padding: "4px" }}
           >
             <span className="text-white" style={{ fontSize: "14px" }}>
-              Hàng Trả
+              Hoàn Trả
             </span>
           </div>
         ) : (
@@ -257,13 +274,13 @@ const ImportAndExportExcelImei = ({
           <div className="d-flex justify-content-center">
             <div className="button-container">
               <Tooltip title="Cập Nhật" TransitionComponent={Zoom}>
-                <IconButton size="" className="me-2" onClick={() => {}}>
+                <IconButton size="" className="me-2" onClick={() => { }}>
                   <FaPencilAlt color="#2f80ed" />
                 </IconButton>
               </Tooltip>
-              <Tooltip title="Xóa" TransitionComponent={Zoom}>
-                <IconButton size="" onClick={() => {}}>
-                  <FaTrashAlt color="#e5383b" />
+              <Tooltip title="Tải Ảnh Barcode" TransitionComponent={Zoom}>
+                <IconButton size="" onClick={() => { handleDownload(record.barcode, record.soImei) }}>
+                  <FaDownload color="#e5383b" />
                 </IconButton>
               </Tooltip>
             </div>
@@ -282,7 +299,7 @@ const ImportAndExportExcelImei = ({
         onClose={close}
         maxWidth="xxl"
         maxHeight="xxl"
-        // sx={{ marginBottom: !imeis ? "170px" : "" }}
+      // sx={{ marginBottom: !imeis ? "170px" : "" }}
       >
         <DialogContent className="">
           <div className="mt-2" style={{ width: "1100px" }}>
@@ -330,39 +347,68 @@ const ImportAndExportExcelImei = ({
                     </span>
                   </Button>
                 </div>
-                {/* <div className="">
-                  <Button
-                    onClick={handleUploadClick}
-                    className="rounded-2 button-mui me-2"
-                    type="primary"
-                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
-                  >
-                    <FaUpload
-                      className="ms-1"
+                <div className="d-flex">
+                  <div className="d-flex mx-auto me-3">
+                    <div
+                      className="d-flex ms-3"
                       style={{
-                        position: "absolute",
-                        bottom: "13.5px",
-                        left: "10px",
+                        height: "40px",
+                        position: "relative",
+                        cursor: "pointer",
                       }}
-                    />
-                    <span
-                      className="ms-3 ps-1"
-                      style={{ marginBottom: "3px", fontWeight: "500" }}
                     >
-                      Import Excel
-                      <input
-                        style={{ display: "none" }}
-                        ref={inputRef}
-                        type="file"
-                        name="file"
-                        className="custom-file-input"
-                        id="inputGroupFile"
-                        required
-                        onChange={handleImport}
-                        accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
-                      />
-                    </span>
-                  </Button>
+                      <div
+                        // onClick={handleOpenSelect1}
+                        className=""
+                        style={{ marginTop: "8px" }}
+                      >
+                        <span
+                          className="ms-2 ps-1"
+                          style={{ fontSize: "15px", fontWeight: "450" }}
+                        >
+                          Trạng Thái:{""}
+                        </span>
+                      </div>
+                      <FormControl
+                        sx={{
+                          minWidth: 50,
+                        }}
+                        size="small"
+                      >
+                        <Select
+                          MenuProps={{
+                            PaperProps: {
+                              style: {
+                                borderRadius: "7px",
+                              },
+                            },
+                          }}
+                          IconComponent={KeyboardArrowDownOutlinedIcon}
+                          sx={{
+                            "& .MuiOutlinedInput-notchedOutline": {
+                              border: "none !important",
+                            },
+                            "& .MuiSelect-select": {
+                              color: "#2f80ed",
+                              fontWeight: "500",
+                            },
+                          }}
+                          // open={openSelect1}
+                          // onClose={handleCloseSelect1}
+                          // onOpen={handleOpenSelect1}
+                          defaultValue={14}
+                        >
+                          <MenuItem className="" value={14}>
+                            Tất cả
+                          </MenuItem>
+                          <MenuItem value={15}>Chưa Bán</MenuItem>
+                          <MenuItem value={20}>Đã Bán</MenuItem>
+                          <MenuItem value={25}>Hoàn Trả</MenuItem>
+                          <MenuItem value={30}>Ngưng Hoạt Động</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </div>
+                  </div>
                   {!view && (
                     <Button
                       onClick={handleExport}
@@ -391,27 +437,15 @@ const ImportAndExportExcelImei = ({
                     </Button>
                   )}
                   <Button
-                    onClick={handleDownloadSample}
-                    className="rounded-2 button-mui"
-                    type="primary"
-                    style={{ height: "40px", width: "auto", fontSize: "15px" }}
+                    className="rounded-2"
+                    type="warning"
+                    style={{ height: "40px", width: "120px", fontSize: "15px" }}
                   >
-                    <FaDownload
-                      className="ms-1"
-                      style={{
-                        position: "absolute",
-                        bottom: "13.5px",
-                        left: "10px",
-                      }}
-                    />
-                    <span
-                      className="ms-3 ps-1"
-                      style={{ marginBottom: "3px", fontWeight: "500" }}
-                    >
-                      Tải Mẫu
+                    <span className='' style={{ fontSize: "15px", fontWeight: "500", marginBottom: "2px" }}>
+                      Quét Barcode
                     </span>
                   </Button>
-                </div> */}
+                </div>
               </div>
               <div className="mx-auto mt-3">
                 <TableImei />

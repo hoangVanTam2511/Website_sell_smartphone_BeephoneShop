@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import { styled } from "@mui/material/styles";
 import { Row, Col } from "react-bootstrap";
 import {
@@ -52,15 +53,31 @@ import { FaMoneyBillTransfer, FaMoneyCheckDollar } from "react-icons/fa6";
 import InputNumberAmount from "./input-number-amount-product";
 import { over } from "stompjs";
 import SockJS from "sockjs-client";
-import PrinterInvoice, { Print, PrintDelivery } from "./printer-invoice";
+import PrinterInvoice, { Print, PrintBillAtTheCounter, PrintBillDelivery, PrintDelivery } from "./printer-invoice";
 import { useSelector } from "react-redux";
 import { request } from "../../../store/helpers/axios_helper";
 import { getUser } from "../../../store/user/userSlice";
+import { useReactToPrint } from "react-to-print";
 
 var stompClient = null;
 const OrderDetail = (props) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const paramValue = location.state?.param;
+  const [orderItemsCompleted, setOrderItemsCompleted] = useState(false);
+
+  const componentRef = useRef();
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+  });
+
+  const componentRef1 = useRef();
+  const handlePrint1 = useReactToPrint({
+    content: () => componentRef1.current,
+  });
+
   const [isLoading, setIsLoading] = useState(false);
+  const [isPrint, setIsPrint] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [vouchersActive, setVouchersActive] = useState([]);
@@ -134,10 +151,10 @@ const OrderDetail = (props) => {
     return order.trangThai === OrderStatusString.CONFIRMED
       ? "Chờ xác nhận"
       : order.trangThai === OrderStatusString.DELIVERING
-      ? "Chờ giao hàng"
-      : order.trangThai === OrderStatusString.SUCCESS_DELIVERY
-      ? "Đang giao hàng"
-      : "";
+        ? "Chờ giao hàng"
+        : order.trangThai === OrderStatusString.SUCCESS_DELIVERY
+          ? "Đang giao hàng"
+          : "";
   };
 
   const checkImeisDaBan = () => {
@@ -307,6 +324,7 @@ const OrderDetail = (props) => {
   const [itemPrice, setItemPrice] = useState("");
   const [itemName, setItemName] = useState("");
   const [imeis, setImeis] = useState([]);
+  const [productName, setProductName] = useState("");
   const [selectedImei, setSelectedImei] = useState([]);
   const [selectedImeiRefresh, setSelectedImeiRefresh] = useState([]);
 
@@ -348,6 +366,8 @@ const OrderDetail = (props) => {
         id: cartItems.productId,
       },
       imeis: cartItems.imeis,
+      productName: cartItems.productName,
+      user: cartItems.user
     };
     try {
       await request("PUT", `/api/carts/order`, data).then(async (response) => {
@@ -364,7 +384,7 @@ const OrderDetail = (props) => {
       // setIsOpen(false);
     }
   };
-  const handleAddProductToCartOrder = (price, id, imeis) => {
+  const handleAddProductToCartOrder = (price, id, imeis, name) => {
     const amount = imeis && imeis.length;
     const cartItems = {
       amount: amount,
@@ -372,16 +392,23 @@ const OrderDetail = (props) => {
       orderId: order.id,
       productId: id,
       imeis: imeis,
+      productName: name,
+      user: userId
     };
     if (imeis.length > 0) {
       addCartItemsToCartOrder(cartItems);
     }
   };
 
-  const handleDeleteCartItemOrderById = async (id) => {
+  const handleDeleteCartItemOrderById = async (id, amount, name) => {
     setIsLoading(true);
+    const data = {
+      amount: amount,
+      productName: name,
+      user: userId
+    };
     try {
-      await request("DELETE", `/api/carts/order/${id}`).then(
+      await request("DELETE", `/api/carts/order/${id}`, data).then(
         async (response) => {
           await getOrderItemsById();
           setIsLoading(false);
@@ -405,6 +432,8 @@ const OrderDetail = (props) => {
       order: {
         id: order.id,
       },
+      productName: productName,
+      user: userId
     };
     try {
       await request("PUT", `/api/carts/order/amount`, requestBody).then(
@@ -434,6 +463,7 @@ const OrderDetail = (props) => {
       .then((response) => {
         const data = response.data.data;
         setOrder(data);
+        setOrderItemsCompleted(true);
         const sortOrderHistories =
           data.orderHistories &&
           data.orderHistories.sort(
@@ -456,12 +486,12 @@ const OrderDetail = (props) => {
         const getAddressDefault =
           address &&
           address.diaChi +
-            ", " +
-            address.xaPhuong +
-            ", " +
-            address.quanHuyen +
-            ", " +
-            address.tinhThanhPho;
+          ", " +
+          address.xaPhuong +
+          ", " +
+          address.quanHuyen +
+          ", " +
+          address.tinhThanhPho;
         setAddressDefault(getAddressDefault);
 
         if (data.loaiHoaDon === OrderTypeString.DELIVERY) {
@@ -505,26 +535,32 @@ const OrderDetail = (props) => {
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
   );
 
-  const orderImeis = orderItems.map((order) => {
+  const orderImeis = orderItems.flatMap((order) => {
     return order.imeisDaBan.map((item) => {
       return {
         ...order,
-        soLuong: 1,
-        imei: item,
-        trangThai: StatusImei.SOLD,
+        trangThai: item.trangThai,
+        imei: item.soImei,
       };
     });
   });
 
   useEffect(() => {
     getOrderItemsById();
-    // getAllProducts();
     getCustomers();
     getVouchersIsActiveAll();
     if (stompClient === null) {
       connect();
     }
   }, []);
+
+  useEffect(() => {
+    // Kiểm tra nếu đã hoàn thành getOrderItemsById và có paramValue
+    if (orderItemsCompleted && paramValue) {
+      handlePrint();
+      window.history.replaceState({}, document.title);
+    }
+  }, [orderItemsCompleted, paramValue]);
 
   const [maxAmount, setMaxAmount] = useState(0);
 
@@ -556,6 +592,12 @@ const OrderDetail = (props) => {
           stompClient.send("/app/bills", {}, JSON.stringify(test));
         }
         setIsLoading(false);
+        if (orderRequest.trangThai === OrderStatusString.CONFIRMED) {
+          setIsPrint(true);
+        }
+        if (orderRequest.trangThai === OrderStatusString.SUCCESS_DELIVERY && order.tienKhachTra < order.khachCanTra) {
+          await handlePaymentOrder("Chuyển khoản", order.khachCanTra - order.tienKhachTra)
+        }
         setOpenCommon(false);
         handleOpenAlertVariant("Xác nhận thành công", "success");
       });
@@ -566,6 +608,13 @@ const OrderDetail = (props) => {
       console.log(error.response.data);
     }
   };
+
+  useEffect(() => {
+    if (isPrint) {
+      handlePrint1();
+      setIsPrint(false);
+    }
+  }, [isPrint]);
 
   const handlePaymentOrder = async (type, total) => {
     setIsLoading(true);
@@ -975,7 +1024,6 @@ const OrderDetail = (props) => {
   };
 
   const handleClickOpenDialogDetailOrderHistories = () => {
-    console.log(orderImeis);
     setOpenDialogDetailOrderHistories(true);
   };
 
@@ -1091,22 +1139,22 @@ const OrderDetail = (props) => {
                   item.loaiThaoTac == 0
                     ? FaRegFileAlt
                     : item.loaiThaoTac == 1
-                    ? FaMoneyCheckDollar
-                    : item.loaiThaoTac == 3
-                    ? FaTruck
-                    : item.loaiThaoTac == 4
-                    ? FaRegCalendarCheck
-                    : item.loaiThaoTac == 5
-                    ? FaRegCalendarTimes
-                    : item.loaiThaoTac == 6
-                    ? FaRegCalendarCheck
-                    : item.loaiThaoTac == 7
-                    ? FaArrowsRotate
-                    : item.loaiThaoTac == 8
-                    ? FaArrowRotateLeft
-                    : item.loaiThaoTac == 9
-                    ? FaPencilAlt
-                    : ""
+                      ? FaMoneyCheckDollar
+                      : item.loaiThaoTac == 3
+                        ? FaTruck
+                        : item.loaiThaoTac == 4
+                          ? FaRegCalendarCheck
+                          : item.loaiThaoTac == 5
+                            ? FaRegCalendarTimes
+                            : item.loaiThaoTac == 6
+                              ? FaRegCalendarCheck
+                              : item.loaiThaoTac == 7
+                                ? FaArrowsRotate
+                                : item.loaiThaoTac == 8
+                                  ? FaArrowRotateLeft
+                                  : item.loaiThaoTac == 9
+                                    ? FaPencilAlt
+                                    : ""
                 }
                 title={
                   <div className="mt-1">
@@ -1123,22 +1171,22 @@ const OrderDetail = (props) => {
                   item.loaiThaoTac == 0
                     ? "#09a129"
                     : item.loaiThaoTac == 1
-                    ? "#09a129"
-                    : item.loaiThaoTac == 3
-                    ? "#09a129"
-                    : item.loaiThaoTac == 4
-                    ? "#09a129"
-                    : item.loaiThaoTac == 5
-                    ? "#e5383b"
-                    : item.loaiThaoTac == 6
-                    ? "#09a129"
-                    : item.loaiThaoTac == 7
-                    ? "#e5383b"
-                    : item.loaiThaoTac == 8
-                    ? "#e5383b"
-                    : item.loaiThaoTac == 9
-                    ? "#ffd500"
-                    : ""
+                      ? "#09a129"
+                      : item.loaiThaoTac == 3
+                        ? "#09a129"
+                        : item.loaiThaoTac == 4
+                          ? "#09a129"
+                          : item.loaiThaoTac == 5
+                            ? "#e5383b"
+                            : item.loaiThaoTac == 6
+                              ? "#09a129"
+                              : item.loaiThaoTac == 7
+                                ? "#e5383b"
+                                : item.loaiThaoTac == 8
+                                  ? "#e5383b"
+                                  : item.loaiThaoTac == 9
+                                    ? "#ffd500"
+                                    : ""
                 }
               />
             ))}
@@ -1163,7 +1211,7 @@ const OrderDetail = (props) => {
       <div className="d-flex justify-content-between mt-2 p-3">
         <div className="d-flex order-info">
           {order.trangThai == OrderStatusString.PENDING_CONFIRM &&
-          order.loaiHoaDon == OrderTypeString.DELIVERY ? (
+            order.loaiHoaDon == OrderTypeString.DELIVERY ? (
             <div>
               <Button
                 onClick={() => {
@@ -1195,7 +1243,7 @@ const OrderDetail = (props) => {
             </div>
           ) : null}
           {order.trangThai === OrderStatusString.CONFIRMED &&
-          order.loaiHoaDon === OrderTypeString.DELIVERY ? (
+            order.loaiHoaDon === OrderTypeString.DELIVERY ? (
             <div>
               <Button
                 onClick={() =>
@@ -1221,39 +1269,39 @@ const OrderDetail = (props) => {
               </Button>
             </div>
           ) : null}
-          {order.tienKhachTra >= total &&
-          order.trangThai == OrderStatusString.DELIVERING &&
-          order.loaiHoaDon == OrderTypeString.DELIVERY ? (
-            <div>
-              <Button
-                onClick={() =>
-                  handleOpenDialogConfirmOrder(
-                    OrderStatusString.DELIVERING,
-                    false
-                  )
-                }
-                className="rounded-2 ms-2"
-                type="primary"
-                style={{
-                  height: "40px",
-                  width: "auto",
-                  fontSize: "16px",
-                }}
-              >
-                <span
-                  className=""
-                  style={{ fontWeight: "500", marginBottom: "2px" }}
+          {
+            order.trangThai == OrderStatusString.DELIVERING &&
+              order.loaiHoaDon == OrderTypeString.DELIVERY ? (
+              <div>
+                <Button
+                  onClick={() =>
+                    handleOpenDialogConfirmOrder(
+                      OrderStatusString.DELIVERING,
+                      false
+                    )
+                  }
+                  className="rounded-2 ms-2"
+                  type="primary"
+                  style={{
+                    height: "40px",
+                    width: "auto",
+                    fontSize: "16px",
+                  }}
                 >
-                  HOÀN THÀNH ĐƠN
-                </span>
-              </Button>
-            </div>
-          ) : (
-            ""
-          )}
+                  <span
+                    className=""
+                    style={{ fontWeight: "500", marginBottom: "2px" }}
+                  >
+                    HOÀN THÀNH ĐƠN
+                  </span>
+                </Button>
+              </div>
+            ) : (
+              ""
+            )}
           {(order.trangThai === OrderStatusString.CONFIRMED ||
             order.trangThai === OrderStatusString.DELIVERING) &&
-          order.loaiHoaDon === OrderTypeString.DELIVERY ? (
+            order.loaiHoaDon === OrderTypeString.DELIVERY ? (
             <div>
               <Button
                 onClick={() => {
@@ -1277,10 +1325,10 @@ const OrderDetail = (props) => {
             </div>
           ) : null}
           {paymentHistorys &&
-          paymentHistorys.length <= 0 &&
-          order.trangThai != OrderStatusString.CANCELLED &&
-          order.trangThai != OrderStatusString.SUCCESS_DELIVERY &&
-          order.loaiHoaDon == OrderTypeString.DELIVERY ? (
+            paymentHistorys.length <= 0 &&
+            order.trangThai != OrderStatusString.CANCELLED &&
+            order.trangThai != OrderStatusString.SUCCESS_DELIVERY &&
+            order.loaiHoaDon == OrderTypeString.DELIVERY ? (
             <div className="">
               <Button
                 onClick={() => handleOpenDialogConfirmOrder(null, true)}
@@ -1306,10 +1354,10 @@ const OrderDetail = (props) => {
           )}
         </div>
         <div className="d-flex">
-          {checkImeisDaBan() && <Print data={order} />}
+          {(!checkImeisDaBan()) && <Print data={order} />}
 
-          {order.loaiHoaDon === OrderTypeString.DELIVERY &&
-            order.trangThai === OrderStatusString.CONFIRMED && (
+          {(order.loaiHoaDon === OrderTypeString.DELIVERY || order.loaiHoaDon === OrderTypeString.CLIENT) &&
+            (
               <>
                 <PrintDelivery data={order} />
               </>
@@ -1356,7 +1404,7 @@ const OrderDetail = (props) => {
             </div>
             <div className="">
               {order.trangThai === OrderStatusString.PENDING_CONFIRM ||
-              order.trangThai === OrderStatusString.CONFIRMED ? (
+                order.trangThai === OrderStatusString.CONFIRMED ? (
                 <Button
                   onClick={handleClickOpenDialogUpdateRecipientOrder}
                   className="rounded-2 ms-2"
@@ -1416,7 +1464,7 @@ const OrderDetail = (props) => {
                 <span style={{ fontSize: "17px" }}>Loại Đơn Hàng</span>
               </div>
               <div className="ms-5 ps-5">
-                {order.loaiHoaDon == OrderTypeString.DELIVERY ? (
+                {(order.loaiHoaDon === OrderTypeString.CLIENT || order.loaiHoaDon == OrderTypeString.DELIVERY) ? (
                   <div
                     className="rounded-pill badge-success text-center"
                     style={{
@@ -1686,13 +1734,13 @@ const OrderDetail = (props) => {
               </div>
               <div className="ms-5 ps-5">
                 {order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
-                order.account === null
+                  order.account === null
                   ? order.hoVaTen
                   : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
                     order.account &&
                     order.account.hoVaTen
-                  ? order.account.hoVaTen
-                  : order.tenNguoiNhan}
+                    ? order.account.hoVaTen
+                    : order.tenNguoiNhan}
               </div>
             </div>
             <div className="ms-4 mt-4 mt-1 d-flex" style={{ height: "30px" }}>
@@ -1702,13 +1750,13 @@ const OrderDetail = (props) => {
               <div className="ms-5 ps-5 mt-1">
                 <span className="text-dark" style={{ fontSize: "17px" }}>
                   {order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
-                  order.account === null
+                    order.account === null
                     ? order.soDienThoai
                     : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
                       order.account &&
                       order.account.soDienThoai
-                    ? order.account.soDienThoai
-                    : order.soDienThoaiNguoiNhan}
+                      ? order.account.soDienThoai
+                      : order.soDienThoaiNguoiNhan}
                 </span>
               </div>
             </div>
@@ -1721,8 +1769,8 @@ const OrderDetail = (props) => {
                   {order.account === null
                     ? order.email
                     : order.account && order.account.email
-                    ? order.account.email
-                    : "..."}
+                      ? order.account.email
+                      : "..."}
                 </span>
               </div>
             </div>
@@ -1741,13 +1789,13 @@ const OrderDetail = (props) => {
               >
                 <span className="text-dark" style={{ fontSize: "17px" }}>
                   {order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
-                  order.account === null
+                    order.account === null
                     ? "..."
                     : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
                       order.account &&
                       order.account.diaChiList
-                    ? addressDefault
-                    : order.diaChiNguoiNhan +
+                      ? addressDefault
+                      : order.diaChiNguoiNhan +
                       ", " +
                       order.xaPhuongNguoiNhan +
                       ", " +
@@ -1818,11 +1866,10 @@ const OrderDetail = (props) => {
             </div>
             <div className="">
               {order.loaiHoaDon === OrderTypeString.DELIVERY &&
-              (order.trangThai === OrderStatusString.PENDING_CONFIRM ||
-                order.trangThai === OrderStatusString.CONFIRMED ||
-                order.trangThai === OrderStatusString.DELIVERING ||
-                checkImeisDaBan()) &&
-              order.tienKhachTra < total ? (
+                (
+                  (order.trangThai === OrderStatusString.CONFIRMED ||
+                    order.trangThai === OrderStatusString.DELIVERING) &&
+                  order.tienKhachTra < order.khachCanTra) ? (
                 <Button
                   onClick={() => setOpenPayment(true)}
                   className="rounded-2 ms-2"
@@ -1988,9 +2035,9 @@ const OrderDetail = (props) => {
               >
                 {item && item.donGiaSauGiam !== null && item.donGiaSauGiam !== 0
                   ? item.donGiaSauGiam.toLocaleString("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                    })
+                    style: "currency",
+                    currency: "VND",
+                  })
                   : ""}
               </span>
               <span
@@ -2003,9 +2050,9 @@ const OrderDetail = (props) => {
               >
                 {item && item.donGia
                   ? item.donGia.toLocaleString("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                    })
+                    style: "currency",
+                    currency: "VND",
+                  })
                   : ""}
               </span>
             </div>
@@ -2092,6 +2139,14 @@ const OrderDetail = (props) => {
                       return 0;
                     });
                     setImeis(sortedItems);
+                    setProductName(item.sanPhamChiTiet.sanPham.tenSanPham +
+                      "\u00A0" +
+                      item.sanPhamChiTiet.ram.dungLuong +
+                      "/" +
+                      item.sanPhamChiTiet.rom.dungLuong +
+                      "GB" +
+                      " " +
+                      `(${item.sanPhamChiTiet.mauSac.tenMauSac})`);
                     setMaxAmount(item.soLuong);
                     setIdOrderItem(item.id);
                     setSelectedImei(item.imeisDaBan);
@@ -2115,7 +2170,14 @@ const OrderDetail = (props) => {
                 </Button>
                 {orderItems && orderItems.length > 1 && (
                   <Button
-                    onClick={() => handleDeleteCartItemOrderById(item.id)}
+                    onClick={() => handleDeleteCartItemOrderById(item.id, item.soLuong, item.sanPhamChiTiet.sanPham.tenSanPham +
+                      " " +
+                      item.sanPhamChiTiet.ram.dungLuong +
+                      "/" +
+                      item.sanPhamChiTiet.rom.dungLuong +
+                      "GB (" +
+                      item.sanPhamChiTiet.mauSac.tenMauSac +
+                      ")")}
                     className="rounded-2 button-mui ms-2"
                     type="danger"
                     style={{ height: "38px", width: "80px", fontSize: "15px" }}
@@ -2267,12 +2329,39 @@ const OrderDetail = (props) => {
               <div className="d-flex justify-content-between">
                 <span className="" style={{ fontSize: "16px", color: "" }}>
                   Tổng số lượng
+                  {order.tienTraKhach &&
+                    <span
+                      className="ms-2"
+                      style={{ fontWeight: "500", color: "#2f80ed" }}
+                    >
+                      {`(Hoàn trả) `}
+                      <span
+                        className="text-dark"
+                        style={{ fontSize: "17px", fontWeight: "500" }}
+                      >
+                        {orderImeis.filter((item) => item.trangThai === StatusImei.REFUND).length}
+                      </span>
+                    </span>
+                  }
                 </span>
                 <span
                   className="text-dark"
                   style={{ fontSize: "17px", fontWeight: "500" }}
                 >
-                  {totalAmountProduct()}
+                  {order.tienTraKhach &&
+                    <span
+                      className="ms-2"
+                      style={{ fontWeight: "500", color: "#2f80ed" }}
+                    >
+                      {`(Tổng) `}
+                    </span>
+                  }
+                  <span
+                    className="text-dark"
+                    style={{ fontSize: "17px", fontWeight: "500" }}
+                  >
+                    {totalAmountProduct()}
+                  </span>
                 </span>
               </div>
               <div className="d-flex justify-content-between mt-3">
@@ -2312,8 +2401,8 @@ const OrderDetail = (props) => {
                   {totalDiscount(
                     order && order.tongTien && order.tongTien,
                     order &&
-                      order.tongTienSauKhiGiam &&
-                      order.tongTienSauKhiGiam
+                    order.tongTienSauKhiGiam &&
+                    order.tongTienSauKhiGiam
                   ).toLocaleString("vi-VN", {
                     style: "currency",
                     currency: "VND",
@@ -2330,10 +2419,12 @@ const OrderDetail = (props) => {
                       className="text-dark"
                       style={{ fontSize: "17px", fontWeight: "500" }}
                     >
-                      {total.toLocaleString("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      })}
+                      {order &&
+                        order.khachCanTra &&
+                        order.khachCanTra.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        }) || 0}
                     </span>
                   </div>
                   <div className="d-flex justify-content-between mt-3">
@@ -2388,7 +2479,7 @@ const OrderDetail = (props) => {
                         order.khachCanTra.toLocaleString("vi-VN", {
                           style: "currency",
                           currency: "VND",
-                        })}
+                        }) || 0}
                     </span>
                   </div>
                   <div className="d-flex justify-content-between mt-3">
@@ -2464,6 +2555,30 @@ const OrderDetail = (props) => {
                   </span>
                 </div>
               )}
+              {order.tienTraKhach &&
+                <div className="d-flex justify-content-between mt-3">
+                  <span className="" style={{ fontSize: "16px", color: "" }}>
+                    Tổng tiền sau hoàn trả
+                    <Tooltip className="ms-2"
+                      TransitionComponent={Zoom}
+                      title="Tổng tiền sau hoàn trả (là tổng tiền của đơn hàng sau khi hoàn trả) = Tiền khách trả - tiền đã trả khách"
+                      style={{ cursor: "pointer" }}
+                    >
+                      <HelpOutlineIcon />
+                    </Tooltip>
+                  </span>
+                  <span
+                    className="text-dark"
+                    style={{ fontSize: "17px", fontWeight: "500" }}
+                  >
+                    {(totalDiscount(order.tienKhachTra, order.tienTraKhach).toLocaleString("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    })) ||
+                      0}
+                  </span>
+                </div>
+              }
             </div>
           </div>
         </div>
@@ -2579,6 +2694,8 @@ const OrderDetail = (props) => {
           confirm={rollBackStatus}
           close={handleCloseOpenRollback}
         />
+        <PrintBillAtTheCounter data={order} ref={componentRef} />
+        <PrintBillDelivery ref={componentRef1} data={order} />
 
         {isLoading && <LoadingIndicator />}
         <div className="mt-4"></div>

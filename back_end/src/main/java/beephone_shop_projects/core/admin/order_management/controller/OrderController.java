@@ -4,6 +4,7 @@ import beephone_shop_projects.core.admin.order_management.model.request.OrderReq
 import beephone_shop_projects.core.admin.order_management.model.request.SearchFilterOrderDto;
 import beephone_shop_projects.core.admin.order_management.model.response.OrderPaginationCustomResponse;
 import beephone_shop_projects.core.admin.order_management.model.response.OrderResponse;
+import beephone_shop_projects.core.admin.order_management.model.response.product_response.ProductCustomResponse;
 import beephone_shop_projects.core.admin.order_management.repository.OrderCustomRepository;
 import beephone_shop_projects.core.admin.order_management.service.impl.HoaDonServiceImpl;
 import beephone_shop_projects.core.admin.order_management.service.impl.LichSuHoaDonServiceImpl;
@@ -13,6 +14,7 @@ import beephone_shop_projects.entity.HoaDon;
 import beephone_shop_projects.infrastructure.constant.ApiConstants;
 import beephone_shop_projects.infrastructure.constant.HttpStatus;
 import beephone_shop_projects.infrastructure.constant.Message;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -28,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(ApiConstants.ApiSystems.API_ORDER_URI)
@@ -43,10 +46,16 @@ public class OrderController {
   @Autowired
   private LichSuHoaDonServiceImpl lichSuHoaDonService;
 
-  @GetMapping("/test")
-  public ResponseObject<List<HoaDon>> getOrders() throws Exception {
-    List<HoaDon> orders = orderCustomRepository.getAll();
-    return new ResponseObject<>(orders);
+  @Autowired
+  private ModelMapper modelMapper;
+
+  @GetMapping("/printer")
+  public ResponseObject<OrderResponse> getOrders() throws Exception {
+    Optional<HoaDon> order = orderCustomRepository.getOrderAtTheCounterAfterPayment();
+    if (order.isPresent()) {
+      return new ResponseObject(order.map(s -> modelMapper.map(s, OrderResponse.class)));
+    }
+    return new ResponseObject(beephone_shop_projects.infrastructure.constant.HttpStatus.SERVER_ERROR_COMMON, Message.SERVER_ERROR_COMMON);
   }
 
   @GetMapping

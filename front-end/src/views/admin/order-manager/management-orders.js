@@ -302,7 +302,7 @@ const ManagementOrders = () => {
       width: "15%",
       dataIndex: "loaiHoaDon",
       render: (type) =>
-        type == OrderTypeString.DELIVERY ? (
+        (type == OrderTypeString.DELIVERY || type == OrderTypeString.CLIENT) ? (
           <div
             className="rounded-pill mx-auto badge-success"
             style={{

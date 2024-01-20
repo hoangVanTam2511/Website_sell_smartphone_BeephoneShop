@@ -26,8 +26,10 @@ import useCustomSnackbar from "../../../../utilities/notistack";
 import { Notistack } from "../../order-manager/enum";
 import { useNavigate } from "react-router-dom";
 import { request } from "../../../../store/helpers/axios_helper";
+import LoadingIndicator from "../../../../utilities/loading";
 
 const AddKH = () => {
+  const [isLoading, setIsLoading] = useState(true);
   const { handleOpenAlertVariant } = useCustomSnackbar();
   let [listKH, setListKH] = useState([]);
   let [hoVaTen, setTen] = useState("");
@@ -176,6 +178,7 @@ const AddKH = () => {
   };
 
   const AddKH = async () => {
+    setIsLoading(false);
     setSubmitted(true);
     setFormSubmitted(true);
     try {
@@ -201,6 +204,7 @@ const AddKH = () => {
           "Vui lòng điền đủ thông tin trước khi lưu.",
           Notistack.ERROR
         );
+        setIsLoading(true);
         setShowConfirmModal(false);
         return;
       }
@@ -216,6 +220,7 @@ const AddKH = () => {
           "Vui lòng điền đúng thông tin trước khi lưu.",
           Notistack.ERROR
         );
+        setIsLoading(true);
         setShowConfirmModal(false);
         return;
       }
@@ -237,6 +242,7 @@ const AddKH = () => {
           anhDaiDien: anhDaiDien,
         };
         setListKH([newKhachHangResponse, ...listKH]);
+        setIsLoading(true);
         setShowConfirmModal(false);
         handleOpenAlertVariant("Thêm thành công", Notistack.SUCCESS);
         redirectToHienThiKH();
@@ -586,6 +592,7 @@ const AddKH = () => {
           theme="colored"
         />
       </Card>
+      {!isLoading && <LoadingIndicator />}
     </>
   );
 };

@@ -149,7 +149,7 @@ const HienThiKH = () => {
         console.log(response.data.data);
         setTotalPages(response.data.totalPages);
       })
-      .catch(() => {});
+      .catch(() => { });
   };
   //edit
   const navigate = useNavigate();
@@ -295,11 +295,9 @@ const HienThiKH = () => {
               />
             </Tooltip>
             <Popconfirm
-              title={`Đổi trạng thái tài khoản từ ${
-                record.trangThai === 0 ? `"Hoạt Động"` : `"Ngừng Hoạt Động"`
-              } sang ${
-                record.trangThai === 0 ? `"Ngừng Hoạt Động"` : `"Hoạt Động"`
-              } `}
+              title={`Đổi trạng thái tài khoản từ ${record.trangThai === 0 ? `"Hoạt Động"` : `"Ngừng Hoạt Động"`
+                } sang ${record.trangThai === 0 ? `"Ngừng Hoạt Động"` : `"Hoạt Động"`
+                } `}
               onConfirm={() => {
                 doChangeTrangThai(record.id);
               }}
@@ -385,7 +383,7 @@ const HienThiKH = () => {
 
               <div className="mt-2 d-flex">
                 <div
-                  className="ms-4 me-5 d-flex"
+                  className="me-3 d-flex"
                   style={{
                     height: "40px",
                     position: "relative",
@@ -447,10 +445,10 @@ const HienThiKH = () => {
                     </SelectMui>
                   </FormControl>
                 </div>
-                <Link to="/dashboard/create-customer" className="me-3">
+                <Link to="/dashboard/create-customer" className="">
                   <Button
                     // onClick={handleCreateNewOrderPending}
-                    className="rounded-2 button-mui"
+                    className="rounded-2 button-mui me-2"
                     type="primary"
                     style={{ height: "40px", width: "auto", fontSize: "15px" }}
                   >
@@ -472,25 +470,15 @@ const HienThiKH = () => {
                 </Link>
 
                 <Button
-                  className="rounded-2 button-mui"
+                  className="rounded-2 button-mui me-2"
                   type="success"
                   style={{
                     height: "40px",
                     width: "auto",
                     fontSize: "15px",
-                    marginRight: "20px",
                   }}
                 >
                   <ExcelExportHelper data={listKH} />
-                </Button>
-
-                <Button
-                  // onClick={handleCreateNewOrderPending}
-                  className="rounded-2 button-mui"
-                  type="primary"
-                  style={{ height: "40px", width: "auto", fontSize: "15px" }}
-                >
-                  <NhapTuFile loadAfterImport={loadAfterImport} />
                 </Button>
               </div>
             </Card.Header>

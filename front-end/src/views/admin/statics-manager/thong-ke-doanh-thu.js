@@ -53,7 +53,7 @@ const ThongKeDoanhThu = () => {
       .then((response) => {
         setListDonHangInDay(response.data);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
 
   const thongKeTheoThang = () => {
@@ -61,7 +61,7 @@ const ThongKeDoanhThu = () => {
       .then((response) => {
         setListDonHangInMonth(response.data);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
 
   const thongKeTheoSanPham = () => {
@@ -69,7 +69,7 @@ const ThongKeDoanhThu = () => {
       .then((response) => {
         setListSanPham(response.data);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
 
   const getSanPhamBanChay = () => {
@@ -77,7 +77,7 @@ const ThongKeDoanhThu = () => {
       .then((response) => {
         setListSanPhamBanChay(response.data);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
 
   const getSanPhamSapHetHang = () => {
@@ -85,7 +85,7 @@ const ThongKeDoanhThu = () => {
       .then((response) => {
         setListSanPhamSapHet(response.data);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
 
   const getTocDoTangTruong = () => {
@@ -93,7 +93,7 @@ const ThongKeDoanhThu = () => {
       .then((response) => {
         setTocDoTangTruong(response.data);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
 
   const getSanPhamDoiTra = () => {
@@ -101,7 +101,7 @@ const ThongKeDoanhThu = () => {
       .then((response) => {
         setListSanPhamDoiTra(response.data);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
 
   // const getSanPhamBanChay = () => {
@@ -317,7 +317,7 @@ const ThongKeDoanhThu = () => {
         .then((response) => {
           setTrangThaiDonHang(response.data);
         })
-        .catch((error) => {});
+        .catch((error) => { });
     };
 
     getTrangThaiDonHang();
@@ -344,24 +344,24 @@ const ThongKeDoanhThu = () => {
             item.trangThai === 1
               ? "Đã xác nhận"
               : item.trangThai === 0
-              ? "Chờ xác nhận"
-              : item.trangThai === 2
-              ? "Chuẩn bị"
-              : item.trangThai === 3
-              ? "Giao hàng"
-              : item.trangThai === 4
-              ? "Giao hàng thành công"
-              : item.trangThai === 5
-              ? "Đã hủy"
-              : item.trangThai === 6
-              ? "Chờ thanh toán"
-              : item.trangThai === 7
-              ? "Đã thanh toán"
-              : item.trangThai === 8
-              ? "Trả một phần"
-              : item.trangThai === 9
-              ? "Trả toàn bộ"
-              : ""
+                ? "Chờ xác nhận"
+                : item.trangThai === 2
+                  ? "Chuẩn bị"
+                  : item.trangThai === 3
+                    ? "Giao hàng"
+                    : item.trangThai === 4
+                      ? "Giao hàng thành công"
+                      : item.trangThai === 5
+                        ? "Đã hủy"
+                        : item.trangThai === 6
+                          ? "Chờ thanh toán"
+                          : item.trangThai === 7
+                            ? "Đã thanh toán"
+                            : item.trangThai === 8
+                              ? "Trả một phần"
+                              : item.trangThai === 9
+                                ? "Trả toàn bộ"
+                                : ""
           ),
           datasets: [
             {
@@ -407,7 +407,7 @@ const ThongKeDoanhThu = () => {
           <img
             src={record.duongDan}
             alt="Ảnh"
-            style={{ width: "80px", height: "100px" }}
+            style={{ width: "80px", height: "80px" }}
           />
         );
       },
@@ -469,7 +469,7 @@ const ThongKeDoanhThu = () => {
           <img
             src={record.duongDan}
             alt="Ảnh"
-            style={{ width: "100px", height: "100px" }}
+            style={{ width: "80px", height: "80px" }}
           />
         );
       },
@@ -530,7 +530,7 @@ const ThongKeDoanhThu = () => {
           <img
             src={record.duongDan}
             alt="Ảnh"
-            style={{ width: "100px", height: "100px" }}
+            style={{ width: "80px", height: "80px" }}
           />
         );
       },
@@ -751,7 +751,7 @@ const ThongKeDoanhThu = () => {
                   cursor: "pointer",
                 }}
               >
-                <ButtonGroup spacing="0.5rem" aria-label="spacing button group">
+                <ButtonGroup color="primary" spacing="0.5rem" aria-label="spacing button group">
                   <Button
                     onClick={() => {
                       handleSearchLoaiBoLoc("ngay");

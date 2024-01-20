@@ -958,7 +958,7 @@ public class DBGenerator implements CommandLineRunner {
         voucher.setId(voucherRepository.save(voucher).getId());
 
         Voucher voucher5 = new Voucher();
-        voucher5.setMa("VOUCHER13123");
+        voucher5.setMa("VOUCHER131");
         voucher5.setTen("""
                 Giảm ngay 10 triệu cho đơn hàng của khách hàng đạt 31 triệu
                 """);
@@ -980,7 +980,7 @@ public class DBGenerator implements CommandLineRunner {
         voucher5.setId(voucherRepository.save(voucher5).getId());
 
         Voucher voucher6 = new Voucher();
-        voucher6.setMa("VOUCHER123983");
+        voucher6.setMa("VOUCHER122");
         voucher6.setTen("""
                 Giảm ngay 7000k cho đơn hàng của khách hàng đạt 50000k
                 """);

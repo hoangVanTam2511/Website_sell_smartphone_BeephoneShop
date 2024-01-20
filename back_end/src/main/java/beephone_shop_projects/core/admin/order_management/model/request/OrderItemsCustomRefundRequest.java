@@ -20,9 +20,15 @@ public class OrderItemsCustomRefundRequest {
 
   private Integer amount;
 
+  private String productName;
+
   private ImeiRefundCustomRequest imei;
 
   private BigDecimal tongTien;
+
+  private BigDecimal tongTienTraHang;
+
+  private BigDecimal tongTienSauKhiTra;
 
   private String tongTienString;
 
@@ -31,5 +37,7 @@ public class OrderItemsCustomRefundRequest {
   private BigDecimal phuPhi;
 
   private String createdByRefund;
+
+  private VoucherRequest voucher;
 
 }
