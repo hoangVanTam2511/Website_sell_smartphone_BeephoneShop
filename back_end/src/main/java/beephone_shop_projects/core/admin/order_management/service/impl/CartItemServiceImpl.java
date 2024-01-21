@@ -769,14 +769,11 @@ public class CartItemServiceImpl extends AbstractServiceImpl<GioHangChiTiet, Car
       orderHistory.setCreatedAt(new Date());
       orderHistory.setCreatedBy(req.getUser());
       orderHistory.setThaoTac("Cập Nhật Đơn Hàng");
-      if (findOrderCurrent.getLoaiHoaDon().equals(OrderType.CLIENT)) {
         if (findCartItemOrder.get().getImeisDaBan().size() == 0) {
           orderHistory.setMoTa("Đã cập nhật imei tương ứng với số lượng mua của sản phẩm [" + req.getProductName() + "].");
         } else {
           orderHistory.setMoTa("Đã cập nhật số lượng mua của sản phẩm [" + req.getProductName() + "] từ [" + findCartItemOrder.get().getSoLuong() + "] thành [" + req.getAmount() + "].");
         }
-      }
-      orderHistory.setMoTa("Đã cập nhật số lượng mua của sản phẩm [" + req.getProductName() + "] từ [" + findCartItemOrder.get().getSoLuong() + "] thành [" + req.getAmount() + "].");
       orderHistory.setLoaiThaoTac(9);
       lichSuHoaDonRepository.save(orderHistory);
     }

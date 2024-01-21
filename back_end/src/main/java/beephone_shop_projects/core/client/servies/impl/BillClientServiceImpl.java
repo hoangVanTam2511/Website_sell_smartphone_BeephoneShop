@@ -97,7 +97,7 @@ public class BillClientServiceImpl {
         newOrder.setMa(code);
         newOrder.setAccount(orderRequest.getIdKhachHang().isEmpty() ? null : khachHang);
         newOrder.setVoucher(orderRequest.getVoucher());
-        newOrder.setLoaiHoaDon(OrderType.CLIENT);
+        newOrder.setLoaiHoaDon(OrderType.DELIVERY);
         newOrder.setGhiChu(orderRequest.getGhiChu());
         newOrder.setDiaChiNguoiNhan(orderRequest.getDiaChiNguoiNhan());
         newOrder.setXaPhuongNguoiNhan(orderRequest.getXaPhuongNguoiNhan());

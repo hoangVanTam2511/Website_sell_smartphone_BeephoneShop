@@ -394,13 +394,9 @@ const ManagementProductItems = (
       width: "10%",
       dataIndex: "ma",
       render: (text, record) => (
-<<<<<<< HEAD
-        <span style={{ fontWeight: "400" }}>{record.ma}</span>
-=======
         <span style={{ fontWeight: "400" }}>
           {"SP0000000" + products.indexOf(record) + 1}
         </span>
->>>>>>> c7274c4149221ed82f2a8771bc284f8a2d8828d0
       ),
     },
     {
@@ -1031,7 +1027,7 @@ const ManagementProductItems = (
           <div className="mx-auto">
             <Pagination
               color="primary" /* page={parseInt(currentPage)} key={refreshPage} count={totalPages} */
-            // onChange={handlePageChange}
+              // onChange={handlePageChange}
             />
           </div>
           <div className="mt-4"></div>

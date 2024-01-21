@@ -13,7 +13,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import LoadingIndicator from "../../../utilities/loading";
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import EditIcon from "@mui/icons-material/Edit";
 import Radio from "@mui/joy/Radio";
 import RadioGroup from "@mui/joy/RadioGroup";
@@ -29,7 +29,10 @@ import {
 } from "./enum";
 import useCustomSnackbar from "../../../utilities/notistack";
 import { add } from "lodash";
-import PrinterInvoice, { Print, PrintBillAtTheCounter } from "./printer-invoice";
+import PrinterInvoice, {
+  Print,
+  PrintBillAtTheCounter,
+} from "./printer-invoice";
 import {
   ConfirmRefund,
   ConfirmRefundOrder,
@@ -66,7 +69,7 @@ const RefundDetail = () => {
 
   const totalDiscount = (tongTien, tongTienSauKhiGiam) => {
     return tongTien - tongTienSauKhiGiam || 0;
-  }
+  };
   useEffect(() => {
     if (orderItemsCompleted) {
       handlePrint();
@@ -88,7 +91,7 @@ const RefundDetail = () => {
         setCodeDiscount(
           discountVoucherCode === null ? "" : discountVoucherCode
         );
-        setVoucher(data && data.voucher || null);
+        setVoucher((data && data.voucher) || null);
 
         // const filteredData = data.orderItems.filter((item) => item.soLuong > 0);
         setOrderItemsTotal(data.orderItems);
@@ -141,12 +144,12 @@ const RefundDetail = () => {
         const getAddressDefault =
           address &&
           address.diaChi +
-          ", " +
-          address.xaPhuong +
-          ", " +
-          address.quanHuyen +
-          ", " +
-          address.tinhThanhPho;
+            ", " +
+            address.xaPhuong +
+            ", " +
+            address.quanHuyen +
+            ", " +
+            address.tinhThanhPho;
         setAddressDefault(getAddressDefault);
       })
       .catch((error) => {
@@ -205,12 +208,13 @@ const RefundDetail = () => {
         }
       });
     const voucher = order && order.voucher;
-    const dieuKienApDung = order && order.voucher && order.voucher.dieuKienApDung || 0;
-    if (!voucher && (order.tongTien - total) < dieuKienApDung) {
+    const dieuKienApDung =
+      (order && order.voucher && order.voucher.dieuKienApDung) || 0;
+    if (!voucher && order.tongTien - total < dieuKienApDung) {
       return total - (order.tongTien - order.tongTienSauKhiGiam);
     }
     return total;
-  }
+  };
 
   const totalImeis = () => {
     let total = 0;
@@ -249,30 +253,41 @@ const RefundDetail = () => {
     return total;
   };
 
-
-
   const canTraKhach = () => {
     if (maxVoucher) {
-      return totalRefundNew() - totalDiscount(order.tongTien, order.tongTienSauKhiGiam) + maxVoucher.giaTriVoucher;
-    }
-    else {
+      return (
+        totalRefundNew() -
+        totalDiscount(order.tongTien, order.tongTienSauKhiGiam) +
+        maxVoucher.giaTriVoucher
+      );
+    } else {
       if (totalRefundNew() === 0) {
         return 0;
       }
       if (totalImeis() === orderRefunds.length) {
-        return totalRefundNew() - totalDiscount(order.tongTien, order.tongTienSauKhiGiam);
+        return (
+          totalRefundNew() -
+          totalDiscount(order.tongTien, order.tongTienSauKhiGiam)
+        );
       }
-      const dieuKienApDung = order && order.voucher && order.voucher.dieuKienApDung || 0;
+      const dieuKienApDung =
+        (order && order.voucher && order.voucher.dieuKienApDung) || 0;
       const totalFinal = order.tongTien - totalRefund();
       if (totalFinal < dieuKienApDung) {
-        return totalRefundNew() - totalDiscount(order.tongTien, order.tongTienSauKhiGiam);
+        return (
+          totalRefundNew() -
+          totalDiscount(order.tongTien, order.tongTienSauKhiGiam)
+        );
       }
       return totalRefundNew();
     }
   };
 
   useEffect(() => {
-    if (orderRefunds.length > 0 && orderRefunds.some((item) => item.trangThai === StatusImei.SOLD)) {
+    if (
+      orderRefunds.length > 0 &&
+      orderRefunds.some((item) => item.trangThai === StatusImei.SOLD)
+    ) {
       const totalFinal = order.tongTien - totalRefund();
       const validVouchers = vouchersActive.filter(
         (item) => totalFinal >= item.dieuKienApDung
@@ -281,18 +296,19 @@ const RefundDetail = () => {
         (a, b) => b.giaTriVoucher - a.giaTriVoucher
       );
       const getVoucher = sortedVouchers[0];
-      if (getVoucher && getVoucher.giaTriVoucher !== totalDiscount(order.tongTien, order.tongTienSauKhiGiam)) {
+      if (
+        getVoucher &&
+        getVoucher.giaTriVoucher !==
+          totalDiscount(order.tongTien, order.tongTienSauKhiGiam)
+      ) {
         setMaxVoucher(getVoucher);
-      }
-      else {
+      } else {
         setMaxVoucher(null);
       }
-    }
-    else {
+    } else {
       setMaxVoucher(null);
     }
-  }, [orderRefunds])
-
+  }, [orderRefunds]);
 
   const countPrice = (price, afterDiscount) => {
     return price - afterDiscount;
@@ -352,9 +368,9 @@ const RefundDetail = () => {
               >
                 {item && item.donGiaSauGiam !== null && item.donGiaSauGiam !== 0
                   ? item.donGiaSauGiam.toLocaleString("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  })
+                      style: "currency",
+                      currency: "VND",
+                    })
                   : ""}
               </span>
               <span
@@ -367,9 +383,9 @@ const RefundDetail = () => {
               >
                 {item && item.donGia
                   ? item.donGia.toLocaleString("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  })
+                      style: "currency",
+                      currency: "VND",
+                    })
                   : ""}
               </span>
             </div>
@@ -420,7 +436,12 @@ const RefundDetail = () => {
               <Button
                 onClick={() => console.log(totalRefund())}
                 className="rounded-2 ant-btn-light"
-                style={{ height: "38px", width: "130px", fontSize: "15px", PointerEvent: "none" }}
+                style={{
+                  height: "38px",
+                  width: "130px",
+                  fontSize: "15px",
+                  PointerEvent: "none",
+                }}
               >
                 <span
                   className=""
@@ -514,9 +535,9 @@ const RefundDetail = () => {
               >
                 {item && item.donGia
                   ? item.donGia.toLocaleString("vi-VN", {
-                    style: "currency",
-                    currency: "VND",
-                  })
+                      style: "currency",
+                      currency: "VND",
+                    })
                   : ""}
               </span>
             </div>
@@ -1005,13 +1026,13 @@ const RefundDetail = () => {
               </div>
               <div className="ms-5 ps-5">
                 {order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
-                  order.account === null
+                order.account === null
                   ? order.hoVaTen
                   : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
                     order.account &&
                     order.account.hoVaTen
-                    ? order.account.hoVaTen
-                    : order.tenNguoiNhan}
+                  ? order.account.hoVaTen
+                  : order.tenNguoiNhan}
               </div>
             </div>
             <div className="ms-4 mt-4 mt-1 d-flex" style={{ height: "30px" }}>
@@ -1021,13 +1042,13 @@ const RefundDetail = () => {
               <div className="ms-5 ps-5 mt-1">
                 <span className="text-dark" style={{ fontSize: "17px" }}>
                   {order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
-                    order.account === null
+                  order.account === null
                     ? order.soDienThoai
                     : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
                       order.account &&
                       order.account.soDienThoai
-                      ? order.account.soDienThoai
-                      : order.soDienThoaiNguoiNhan}
+                    ? order.account.soDienThoai
+                    : order.soDienThoaiNguoiNhan}
                 </span>
               </div>
             </div>
@@ -1040,8 +1061,8 @@ const RefundDetail = () => {
                   {order.account === null
                     ? order.email
                     : order.account && order.account.email
-                      ? order.account.email
-                      : "..."}
+                    ? order.account.email
+                    : "..."}
                 </span>
               </div>
             </div>
@@ -1060,13 +1081,13 @@ const RefundDetail = () => {
               >
                 <span className="text-dark" style={{ fontSize: "17px" }}>
                   {order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
-                    order.account === null
+                  order.account === null
                     ? "..."
                     : order.loaiHoaDon === OrderTypeString.AT_COUNTER &&
                       order.account &&
                       order.account.diaChiList
-                      ? addressDefault
-                      : order.diaChiNguoiNhan +
+                    ? addressDefault
+                    : order.diaChiNguoiNhan +
                       ", " +
                       order.xaPhuongNguoiNhan +
                       ", " +
@@ -1166,7 +1187,7 @@ const RefundDetail = () => {
               </div>
               <div className="">
                 {order.trangThai === OrderStatusString.SUCCESS_DELIVERY ||
-                  order.trangThai === OrderStatusString.HAD_PAID ? (
+                order.trangThai === OrderStatusString.HAD_PAID ? (
                   <Button
                     onClick={() => {
                       const updatedOrderItems = orderItemsTotal.map(
@@ -1278,7 +1299,7 @@ const RefundDetail = () => {
       createdByRefund: userId,
       ghiChu: note,
       voucher: {
-        id: maxVoucher ? maxVoucher.id : null
+        id: maxVoucher ? maxVoucher.id : null,
       },
       tongTienSauKhiTra: order.tongTien - totalRefund(),
       tongTienString: canTraKhach().toLocaleString("vi-VN", {
@@ -1335,7 +1356,6 @@ const RefundDetail = () => {
     handleOpenAlertVariant("Hủy trả hàng thành công!", Notistack.SUCCESS);
   };
   const getImeiSelected = (imeis) => {
-
     const updatedOrderItems = orderItems.map((item) => {
       if (item.id === orderItem.id) {
         const updatedImeisDaBan = item.imeisDaBan.filter(
@@ -1432,54 +1452,65 @@ const RefundDetail = () => {
               <div className="d-flex justify-content-between mt-3">
                 <span className="" style={{ fontSize: "16px" }}>
                   Số lượng hoàn trả
-                  {order.tienTraKhach &&
+                  {order.tienTraKhach && (
                     <span
                       className="d-block"
                       style={{ fontWeight: "500", color: "#2f80ed" }}
                     >
                       {`(Mới) `}
-                      <span style={{ fontSize: "17px", fontWeight: "500" }} className="text-dark">
-                        {orderRefunds && orderRefunds.filter((item) => item.trangThai === StatusImei.SOLD).length}
+                      <span
+                        style={{ fontSize: "17px", fontWeight: "500" }}
+                        className="text-dark"
+                      >
+                        {orderRefunds &&
+                          orderRefunds.filter(
+                            (item) => item.trangThai === StatusImei.SOLD
+                          ).length}
                       </span>
-                    </span>}
+                    </span>
+                  )}
                 </span>
                 <span
                   className="text-dark"
                   style={{ fontSize: "17px", fontWeight: "500" }}
                 >
-                  {order.tienTraKhach &&
+                  {order.tienTraKhach && (
                     <span
                       className=""
                       style={{ fontWeight: "500", color: "#2f80ed" }}
                     >
                       {`(Tổng) `}
                     </span>
-                  }
+                  )}
                   {orderRefunds && orderRefunds.length}
                 </span>
               </div>
               <div className="d-flex justify-content-between mt-3">
                 <span className="" style={{ fontSize: "16px", color: "" }}>
                   Tổng tiền trả hàng
-                  {order.tienTraKhach &&
+                  {order.tienTraKhach && (
                     <span
                       className="d-block"
                       style={{ fontWeight: "500", color: "#2f80ed" }}
                     >
                       {`(Mới) `}
-                      <span style={{ fontSize: "17px", fontWeight: "500" }} className="text-dark">
+                      <span
+                        style={{ fontSize: "17px", fontWeight: "500" }}
+                        className="text-dark"
+                      >
                         {totalRefundNew().toLocaleString("vi-VN", {
                           style: "currency",
                           currency: "VND",
                         }) || 0}
                       </span>
-                    </span>}
+                    </span>
+                  )}
                 </span>
                 <span
                   className="text-dark"
                   style={{ fontSize: "17px", fontWeight: "500" }}
                 >
-                  {order.tienTraKhach ?
+                  {order.tienTraKhach ? (
                     <span
                       className="ms-2"
                       style={{ fontWeight: "500", color: "#2f80ed" }}
@@ -1495,17 +1526,21 @@ const RefundDetail = () => {
                         }) || 0}
                       </span>
                     </span>
-                    : <>
-                      <span style={{ fontSize: "17px", fontWeight: "500" }} className="text-dark">
+                  ) : (
+                    <>
+                      <span
+                        style={{ fontSize: "17px", fontWeight: "500" }}
+                        className="text-dark"
+                      >
                         {totalRefundNew().toLocaleString("vi-VN", {
                           style: "currency",
                           currency: "VND",
                         }) || 0}
                       </span>
-                    </>}
+                    </>
+                  )}
                 </span>
               </div>
-
 
               <div className="d-flex justify-content-between mt-3">
                 <span className="" style={{ fontSize: "16px", color: "" }}>
@@ -1525,15 +1560,17 @@ const RefundDetail = () => {
                   className="text-dark"
                   style={{ fontSize: "17px", fontWeight: "500" }}
                 >
-                  {(totalDiscount(order.tongTien, order.tongTienSauKhiGiam).toLocaleString("vi-VN", {
+                  {totalDiscount(
+                    order.tongTien,
+                    order.tongTienSauKhiGiam
+                  ).toLocaleString("vi-VN", {
                     style: "currency",
                     currency: "VND",
-                  })) ||
-                    0}
+                  }) || 0}
                 </span>
               </div>
 
-              {!maxVoucher && voucher && totalRefundNew() > 0 &&
+              {!maxVoucher && voucher && totalRefundNew() > 0 && (
                 <div className="d-flex justify-content-between mt-3">
                   <span className="" style={{ fontSize: "16px", color: "" }}>
                     Phiếu giảm giá mới
@@ -1541,7 +1578,9 @@ const RefundDetail = () => {
                       className="underline-custom d-block"
                       style={{ cursor: "pointer", fontWeight: "500" }}
                     >
-                      {(voucher && order.tongTien - totalRefund() >= voucher.dieuKienApDungvoucher &&
+                      {(voucher &&
+                        order.tongTien - totalRefund() >=
+                          voucher.dieuKienApDung &&
                         "(" + voucher.ma + ") ") ||
                         ""}
                     </span>
@@ -1550,16 +1589,20 @@ const RefundDetail = () => {
                     className="text-dark"
                     style={{ fontSize: "17px", fontWeight: "500" }}
                   >
-                    {voucher && order.tongTien - totalRefund() >= voucher.dieuKienApDungvoucher && voucher.giaTriVoucher && voucher.giaTriVoucher.toLocaleString("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                    }) ||
+                    {(voucher &&
+                      order.tongTien - totalRefund() >=
+                        voucher.dieuKienApDung &&
+                      voucher.giaTriVoucher &&
+                      voucher.giaTriVoucher.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })) ||
                       0}
                   </span>
                 </div>
-              }
+              )}
 
-              {maxVoucher &&
+              {maxVoucher && (
                 <div className="d-flex justify-content-between mt-3">
                   <span className="" style={{ fontSize: "16px", color: "" }}>
                     Phiếu giảm giá mới
@@ -1567,7 +1610,8 @@ const RefundDetail = () => {
                       className="underline-custom d-block"
                       style={{ cursor: "pointer", fontWeight: "500" }}
                     >
-                      {(maxVoucher && maxVoucher.ma &&
+                      {(maxVoucher &&
+                        maxVoucher.ma &&
                         "(" + maxVoucher.ma + ") ") ||
                         ""}
                     </span>
@@ -1576,19 +1620,22 @@ const RefundDetail = () => {
                     className="text-dark"
                     style={{ fontSize: "17px", fontWeight: "500" }}
                   >
-                    {maxVoucher && maxVoucher.giaTriVoucher && maxVoucher.giaTriVoucher.toLocaleString("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                    }) ||
+                    {(maxVoucher &&
+                      maxVoucher.giaTriVoucher &&
+                      maxVoucher.giaTriVoucher.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })) ||
                       0}
                   </span>
                 </div>
-              }
+              )}
 
               <div className="d-flex justify-content-between mt-3">
                 <span className="" style={{ fontSize: "16px", color: "" }}>
                   Cần trả khách
-                  <Tooltip className="ms-2"
+                  <Tooltip
+                    className="ms-2"
                     TransitionComponent={Zoom}
                     title="Tổng tiền cần trả = Tổng tiền trả hàng - voucher đã sử dụng + voucher mới"
                     style={{ cursor: "pointer" }}
@@ -1622,11 +1669,12 @@ const RefundDetail = () => {
                     0}
                 </span>
               </div>
-              {order.tienTraKhach &&
+              {order.tienTraKhach && (
                 <div className="d-flex justify-content-between mt-3">
                   <span className="" style={{ fontSize: "16px", color: "" }}>
                     Tổng tiền sau hoàn trả
-                    <Tooltip className="ms-2"
+                    <Tooltip
+                      className="ms-2"
                       TransitionComponent={Zoom}
                       title="Tổng tiền sau hoàn trả (là tổng tiền của đơn hàng sau khi hoàn trả) = Tiền khách trả - tiền đã trả khách"
                       style={{ cursor: "pointer" }}
@@ -1638,14 +1686,16 @@ const RefundDetail = () => {
                     className="text-dark"
                     style={{ fontSize: "17px", fontWeight: "500" }}
                   >
-                    {(totalDiscount(order.tienKhachTra, order.tienTraKhach).toLocaleString("vi-VN", {
+                    {totalDiscount(
+                      order.tienKhachTra,
+                      order.tienTraKhach
+                    ).toLocaleString("vi-VN", {
                       style: "currency",
                       currency: "VND",
-                    })) ||
-                      0}
+                    }) || 0}
                   </span>
                 </div>
-              }
+              )}
             </div>
           </div>
         </div>
